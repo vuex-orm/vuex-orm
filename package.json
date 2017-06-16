@@ -1,0 +1,23 @@
+{
+  "name": "vuex-orm",
+  "version": "0.1.0",
+  "description": "ORM for Vuex",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "build": "rm -rf lib && tsc -p .",
+    "prepublish": "npm run build"
+  },
+  "author": "Kia Ishii",
+  "license": "MIT",
+  "dependencies": {
+    "@types/lodash": "^4.14.66",
+    "lodash": "^4.17.4",
+    "normalizr": "^3.2.3",
+    "vue": "^2.3.4",
+    "vuex": "^2.3.1"
+  },
+  "devDependencies": {
+    "typescript": "^2.3.4"
+  }
+}
