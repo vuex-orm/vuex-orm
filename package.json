@@ -4,12 +4,25 @@
   "description": "ORM for Vuex",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "rm -rf lib && tsc -p .",
-    "prepublish": "npm run build"
+    "prepare": "npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/revolver-app/vuex-orm.git"
+  },
+  "keywords": [
+    "vue", "vuex", "orm"
+  ],
   "author": "Kia Ishii",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/revolver-app/vuex-orm/issues"
+  },
   "dependencies": {
     "@types/lodash": "^4.14.66",
     "lodash": "^4.17.4",
