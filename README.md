@@ -1,5 +1,6 @@
 # Vuex ORM
 
+[![Travis CI](https://travis-ci.org/revolver-app/vuex-orm.svg?branch=master)](https://travis-ci.org/revolver-app/vuex-orm)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 Object-relational mapping for Vuex.
