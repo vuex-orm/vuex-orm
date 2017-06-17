@@ -13,7 +13,12 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+
+    "lib": [
+      "dom",
+      "es2015"
+    ]
   },
 
   "include": [
