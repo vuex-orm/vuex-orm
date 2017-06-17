@@ -10,11 +10,23 @@ We're really excited that you are interested in contributing to Vuex ORM! Anythi
 
 ### Development
 
-Run following command to build the project.
+```console
+$ npm run dev
+```
+
+Compile files without removing the compiled file first. This is useful when you are using `npm link` during development with other bundler such as Webpack. Plus it's watch mode enabed.
 
 ```console
 $ npm run build
 ```
+
+Compile files into lib directory.
+
+```console
+$ npm run lint
+```
+
+Lint files using rule of Standard JS.
 
 ## License
 

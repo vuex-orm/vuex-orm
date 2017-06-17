@@ -8,7 +8,9 @@
     "lib"
   ],
   "scripts": {
+    "dev": "tsc -p . -w",
     "build": "rm -rf lib && tsc -p .",
+    "lint": "tslint 'src/**/*.ts' -c tslint.json -p . --type-check --fix",
     "prepare": "npm run build"
   },
   "repository": {
@@ -16,7 +18,9 @@
     "url": "git+https://github.com/revolver-app/vuex-orm.git"
   },
   "keywords": [
-    "vue", "vuex", "orm"
+    "vue",
+    "vuex",
+    "orm"
   ],
   "author": "Kia Ishii",
   "license": "MIT",
@@ -31,6 +35,8 @@
     "vuex": "^2.3.1"
   },
   "devDependencies": {
+    "tslint": "^5.4.3",
+    "tslint-config-standard": "^6.0.1",
     "typescript": "^2.3.4"
   }
 }

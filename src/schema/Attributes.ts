@@ -14,7 +14,7 @@ export interface BelongsTo {
   related: typeof Model
   foreignKey: string
   otherKey: string
-  data: Data.Data
+  data: Data.Data | number
 }
 
 export type Relationship = Attr | BelongsTo
