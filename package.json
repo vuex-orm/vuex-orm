@@ -9,9 +9,10 @@
   ],
   "scripts": {
     "dev": "tsc -p . -w",
-    "build": "rm -rf lib && tsc -p .",
+    "build": "rm -rf lib && tsc -p . && rm -rf lib/__test__ && rm -rf rm -rf lib/**/__test__",
     "lint": "tslint 'src/**/*.ts' -c tslint.json -p . --type-check --fix",
-    "prepare": "npm run build"
+    "test": "tsc -p . --target es2015 && ava lib/__test__/**/*.spec.js",
+    "prepare": "npm run lint && npm run test && npm run build"
   },
   "repository": {
     "type": "git",
@@ -35,6 +36,7 @@
     "vuex": "^2.3.1"
   },
   "devDependencies": {
+    "ava": "^0.19.1",
     "tslint": "^5.4.3",
     "tslint-config-standard": "^6.0.1",
     "typescript": "^2.3.4"
