@@ -17,7 +17,7 @@ First let's declare your models extending Vuex ORM `Model`. Here we'll assume we
 // User Model
 import Model from 'vuex-orm/lib/Model'
 
-export default class Post extends Model {
+export default class User extends Model {
   // This is the name used as module name of the Vuex Store.
   static entity = 'users'
 
