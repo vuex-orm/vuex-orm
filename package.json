@@ -35,17 +35,19 @@
     "url": "https://github.com/revolver-app/vuex-orm/issues"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.66",
+    "@types/lodash": "^4.14.74",
     "lodash": "^4.17.4",
     "normalizr": "^3.2.3",
-    "vue": "^2.3.4",
+    "vue": "^2.4.2",
     "vuex": "^2.3.1"
   },
   "devDependencies": {
-    "ava": "^0.19.1",
-    "nyc": "^11.0.2",
-    "tslint": "^5.4.3",
+    "@types/sinon": "^2.3.3",
+    "ava": "^0.22.0",
+    "nyc": "^11.1.0",
+    "sinon": "^3.2.1",
+    "tslint": "^5.6.0",
     "tslint-config-standard": "^6.0.1",
-    "typescript": "^2.3.4"
+    "typescript": "^2.4.2"
   }
 }
