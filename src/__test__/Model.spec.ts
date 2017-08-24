@@ -97,3 +97,21 @@ test('Model can generate normalized data with belogns to relation', (t) => {
 
   t.deepEqual(Post.normalize(data), expected)
 })
+
+test('Model should set default field values as a property on instanciation', (t) => {
+  class User extends Model {
+    static entity = 'users'
+
+    static fields () {
+      return {
+        name: this.attr('John Doe'),
+        email: this.attr('john@example.com')
+      }
+    }
+  }
+
+  const user = new User()
+
+  t.is(user.name, 'John Doe')
+  t.is(user.email, 'john@example.com')
+})

@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 import { schema, Schema as NormalizrSchema } from 'normalizr'
-import { Type as RelationshipType } from './Relation'
+import { Type as AttrType } from './Attributes'
 import Model, { Fields } from './Model'
 
 export default class Schema {
@@ -25,7 +25,7 @@ export default class Schema {
    */
   static definition (fields: Fields): NormalizrSchema {
     return _.reduce(fields, (definition, relation, key) => {
-      if (relation.type === RelationshipType.BelongsTo) {
+      if (relation.type === AttrType.BelongsTo) {
         definition[key] = this.one(relation.model)
       }
 
