@@ -22,7 +22,7 @@ export default class Module {
   }
 
   /**
-   * Creates module from given models.
+   * Creates module from the given entities.
    */
   static create (entities: Entity[]): Vuex.Module<any, any> {
     return {
@@ -33,7 +33,7 @@ export default class Module {
 
   /**
    * Creates module tree to be registered under top level module
-   * from given model.
+   * from the given entities.
    */
   static createTree (entities: Entity[]): Vuex.ModuleTree<any> {
     let tree: Vuex.ModuleTree<any> = {}
