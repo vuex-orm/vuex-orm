@@ -1,6 +1,8 @@
 import * as _ from 'lodash'
 import Vuex from 'vuex'
 import Model from './Model'
+import actions from './modules/actions'
+import mutations from './modules/mutations'
 
 export interface Entity {
   model: typeof Model
@@ -8,6 +10,11 @@ export interface Entity {
 }
 
 export interface State {
+  name: string
+  [key: string]: any
+}
+
+export interface EntityState {
   data: {}
   [key: string]: any
 }
@@ -17,16 +24,20 @@ export default class Module {
    * The default state. This state will be merged with additional
    * entity's state if it has any.
    */
-  static state: State = {
+  static state: EntityState = {
     data: {}
   }
 
   /**
    * Creates module from the given entities.
    */
-  static create (entities: Entity[]): Vuex.Module<any, any> {
+  static create (namespace: string, entities: Entity[]): Vuex.Module<any, any> {
     return {
       namespaced: true,
+      state: { name: namespace },
+      actions,
+      mutations,
+
       modules: this.createTree(entities)
     }
   }

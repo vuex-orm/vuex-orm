@@ -2,6 +2,7 @@ import test from 'ava'
 import * as sinon from 'sinon'
 import Model from '../Model'
 import Database from '../Database'
+import Container from '../connections/Container'
 import VuexOrm from '..'
 
 class User extends Model {
@@ -26,7 +27,8 @@ test('Vuex ORM can register its database to Vuex Store', (t) => {
 
   VuexOrm(database)(store)
 
-  t.true(registerModule.withArgs('entities', database.modules()).calledOnce)
+  t.true(registerModule.withArgs('entities', database.modules('entities')).calledOnce)
+  t.not(Container.connections.entities, {})
 })
 
 test('Vuex ORM lets user override the namespace', (t) => {
@@ -42,5 +44,6 @@ test('Vuex ORM lets user override the namespace', (t) => {
 
   VuexOrm(database, options)(store)
 
-  t.true(registerModule.withArgs('myNameSpace', database.modules()).calledOnce)
+  t.true(registerModule.withArgs('myNameSpace', database.modules('myNameSpace')).calledOnce)
+  t.not(Container.connections.entities, {})
 })

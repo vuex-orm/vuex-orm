@@ -1,4 +1,6 @@
 import test from 'ava'
+import actions from '../modules/actions'
+import mutations from '../modules/mutations'
 import Model from '../Model'
 import Database from '../Database'
 
@@ -35,6 +37,9 @@ test('Database can generate Vuex Module Tree from registered entities', (t) => {
 
   const expected = {
     namespaced: true,
+    state: { name: 'entities' },
+    actions,
+    mutations,
 
     modules: {
       users: {
@@ -50,5 +55,5 @@ test('Database can generate Vuex Module Tree from registered entities', (t) => {
     }
   }
 
-  t.deepEqual<any>(database.modules(), expected)
+  t.deepEqual<any>(database.modules('entities'), expected)
 })

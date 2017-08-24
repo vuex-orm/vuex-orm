@@ -18,7 +18,7 @@ export default class Database {
   /**
    * Generate Vuex Module from registered entities.
    */
-  modules (): Vuex.Module<any, any> {
-    return Module.create(this.entities)
+  modules (namespace: string): Vuex.Module<any, any> {
+    return Module.create(namespace, this.entities)
   }
 }
