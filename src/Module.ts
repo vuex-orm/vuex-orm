@@ -24,7 +24,7 @@ export default class Module {
   /**
    * Creates module from given models.
    */
- static create (entities: Entity[]): Vuex.Module<any, any> {
+  static create (entities: Entity[]): Vuex.Module<any, any> {
     return {
       namespaced: true,
       modules: this.createTree(entities)
