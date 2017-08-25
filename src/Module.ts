@@ -1,6 +1,7 @@
 import * as _ from 'lodash'
 import Vuex from 'vuex'
 import Model from './Model'
+import getters from './modules/getters'
 import actions from './modules/actions'
 import mutations from './modules/mutations'
 
@@ -35,6 +36,7 @@ export default class Module {
     return {
       namespaced: true,
       state: { name: namespace },
+      getters,
       actions,
       mutations,
 

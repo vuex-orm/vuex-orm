@@ -8,7 +8,7 @@ class User extends Model {
   static entity = 'users'
 
   static fields () {
-    return {}
+    return { id: this.attr(null) }
   }
 }
 
@@ -28,6 +28,42 @@ database.register(User, {})
 database.register(Post, {})
 
 Container.register('entities', database)
+
+test('Repo can get all data of the entity as class', (t) => {
+  const state = {
+    name: 'entities',
+    users: { data: {
+      '1': { id: 1 },
+      '2': { id: 2 }
+    }}
+  }
+
+  const users = Repo.all(state, 'users')
+
+  if (users === null) {
+    t.fail('users is empty but its expected to have 2 records.')
+
+    return
+  }
+
+  t.true(users[0] instanceof User)
+  t.is(users[0].id, 1)
+  t.is(users[1].id, 2)
+})
+
+test('Repo can get all data of the entity as plain object', (t) => {
+  const state = {
+    name: 'entities',
+    users: { data: {
+      '1': { id: 1 },
+      '2': { id: 2 }
+    }}
+  }
+
+  const expected = [{ id: 1 }, { id: 2 }]
+
+  t.deepEqual(Repo.all(state, 'users', false), expected)
+})
 
 test('Repo can create data in Vuex Store', (t) => {
   const state = {

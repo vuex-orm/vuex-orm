@@ -1,4 +1,5 @@
 import test from 'ava'
+import getters from '../modules/getters'
 import actions from '../modules/actions'
 import mutations from '../modules/mutations'
 import Model from '../Model'
@@ -38,6 +39,7 @@ test('Database can generate Vuex Module Tree from registered entities', (t) => {
   const expected = {
     namespaced: true,
     state: { name: 'entities' },
+    getters,
     actions,
     mutations,
 
