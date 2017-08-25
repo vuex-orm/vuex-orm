@@ -1,11 +1,15 @@
 import { normalize, Schema } from 'normalizr'
 
+export interface Record {
+  [key: string]: any
+}
+
 export interface Records {
-  [id: string]: any
+  [id: string]: Record
 }
 
 export interface NormalizedData {
-  [key: string]: Records
+  [entity: string]: Records
 }
 
 export default class Data {

@@ -41,9 +41,7 @@ test('Repo can get all data of the entity as class', (t) => {
   const users = Repo.all(state, 'users')
 
   if (users === null) {
-    t.fail('users is empty but its expected to have 2 records.')
-
-    return
+    return t.fail('users is empty but its expected to have 2 records.')
   }
 
   t.true(users[0] instanceof User)
@@ -63,6 +61,25 @@ test('Repo can get all data of the entity as plain object', (t) => {
   const expected = [{ id: 1 }, { id: 2 }]
 
   t.deepEqual(Repo.all(state, 'users', false), expected)
+})
+
+test('Repo can find a single item of entity by id', (t) => {
+  const state = {
+    name: 'entities',
+    users: { data: {
+      '1': { id: 1 },
+      '2': { id: 2 }
+    }}
+  }
+
+  const user = Repo.find(state, 'users', 2)
+
+  if (user === null) {
+    return t.fail('user is empty but its expected to have 1 record.')
+  }
+
+  t.true(user instanceof User)
+  t.is(user.id, 2)
 })
 
 test('Repo can create data in Vuex Store', (t) => {

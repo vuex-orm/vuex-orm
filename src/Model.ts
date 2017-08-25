@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 import { Schema as NormalizrSchema } from 'normalizr'
-import Data, { Records, NormalizedData } from './Data'
+import Data, { Record, NormalizedData } from './Data'
 import Attributes, { Type as AttrType, Attr, HasOne, BelongsTo } from './Attributes'
 import Schema from './Schema'
 
@@ -22,7 +22,7 @@ class Model {
   /**
    * Creates a model instance.
    */
-  constructor (data?: Records) {
+  constructor (data?: Record) {
     this.$initialize(data)
   }
 
@@ -90,7 +90,7 @@ class Model {
   /**
    * Initialize the model by attaching all of the fields to property.
    */
-  $initialize (data?: Records): void {
+  $initialize (data?: Record): void {
     const fields: Fields = this.$mergeFields(data)
 
     _.forEach(fields, (field, key) => {
@@ -115,7 +115,7 @@ class Model {
   /**
    * Merge given data into field's default value.
    */
-  $mergeFields (data?: Records): Fields {
+  $mergeFields (data?: Record): Fields {
     if (!data) {
       return this.$fields()
     }
