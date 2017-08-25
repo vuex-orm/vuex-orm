@@ -134,3 +134,80 @@ test('Model should set given field values as a property on instanciation', (t) =
   t.is(user.email, 'john@example.com')
   t.is(user.age, undefined)
 })
+
+test('Model can resolve has one relation', (t) => {
+  class Profile extends Model {
+    static entity = 'profiles'
+
+    static fields () {
+      return {
+        sex: this.attr('')
+      }
+    }
+  }
+
+  class User extends Model {
+    static entity = 'users'
+
+    static fields () {
+      return {
+        name: this.attr('John Doe'),
+        profile: this.hasOne(Profile, 'user_id')
+      }
+    }
+  }
+
+  const data = {
+    name: 'John Doe',
+    profile: {
+      sex: 'male'
+    }
+  }
+
+  const user = new User(data)
+
+  t.is(user.name, 'John Doe')
+
+  t.true(user.profile instanceof Profile)
+  t.is(user.profile.sex, 'male')
+})
+
+test('Model can resolve has one relation', (t) => {
+  class User extends Model {
+    static entity = 'users'
+
+    static fields () {
+      return {
+        name: this.attr('John Doe'),
+        email: this.attr('john@example.com')
+      }
+    }
+  }
+
+  class Post extends Model {
+    static entity = 'posts'
+
+    static fields () {
+      return {
+        title: this.attr(''),
+        author: this.belongsTo(User, 'user_id')
+      }
+    }
+  }
+
+  const data = {
+    title: 'Hello, world!',
+    author: {
+      name: 'Jane Doe',
+      email: 'jane@example.com'
+    }
+  }
+
+  const post = new Post(data)
+
+  t.is(post.title, 'Hello, world!')
+
+  t.true(post.author instanceof User)
+  t.is(post.author.name, 'Jane Doe')
+  t.is(post.author.email, 'jane@example.com')
+})

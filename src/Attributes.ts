@@ -2,11 +2,19 @@ import Model from './Model'
 
 export enum Type {
   Attr = 'Attr',
+  HasOne = 'HasOne',
   BelongsTo = 'BelongsTo'
 }
 
 export interface Attr {
   type: Type.Attr
+  value: any
+}
+
+export interface HasOne {
+  type: Type.HasOne
+  model: typeof Model
+  foreignKey: string
   value: any
 }
 
@@ -24,6 +32,13 @@ export default class Attributes {
    */
   static attr (value: any): Attr {
     return { type: Type.Attr, value }
+  }
+
+  /**
+   * The has one relationship.
+   */
+  static hasOne (model: typeof Model, foreignKey: string): HasOne {
+    return { type: Type.HasOne, model, foreignKey, value: null }
   }
 
   /**

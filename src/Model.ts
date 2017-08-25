@@ -1,14 +1,14 @@
 import * as _ from 'lodash'
 import { Schema as NormalizrSchema } from 'normalizr'
 import Data, { Records, NormalizedData } from './Data'
-import Attributes, { Type as AttrType, Attr, BelongsTo } from './Attributes'
+import Attributes, { Type as AttrType, Attr, HasOne, BelongsTo } from './Attributes'
 import Schema from './Schema'
 
 export interface Fields {
-  [field: string]: Attr | BelongsTo
+  [field: string]: Attr | HasOne | BelongsTo
 }
 
-abstract class Model {
+class Model {
   /**
    * The name that is going be used as module name in Vuex Store.
    */
@@ -39,6 +39,13 @@ abstract class Model {
    */
   static attr (value: any): Attr {
     return Attributes.attr(value)
+  }
+
+  /**
+   * Creates has one relationship.
+   */
+  static hasOne (model: typeof Model, foreignKey: string): HasOne {
+    return Attributes.hasOne(model, foreignKey)
   }
 
   /**
@@ -89,6 +96,18 @@ abstract class Model {
     _.forEach(fields, (field, key) => {
       if (field.type === AttrType.Attr) {
         this[key] = field.value
+
+        return
+      }
+
+      if (field.type === AttrType.HasOne) {
+        this[key] = new (field as HasOne).model(field.value)
+
+        return
+      }
+
+      if (field.type === AttrType.BelongsTo) {
+        this[key] = new (field as BelongsTo).model(field.value)
       }
     })
   }
@@ -110,9 +129,7 @@ abstract class Model {
         return
       }
 
-      if (newFields[key].type === AttrType.Attr) {
-        newFields[key].value = value
-      }
+      newFields[key].value = value
     })
 
     return newFields
