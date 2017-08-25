@@ -63,6 +63,49 @@ test('Repo can get all data of the entity as plain object', (t) => {
   t.deepEqual(Repo.all(state, 'users', false), expected)
 })
 
+test('Repo can get all data of the entity that matches the where query', (t) => {
+  const state = {
+    name: 'entities',
+    users: { data: {
+      '1': { id: 1, role: 'admin', sex: 'male' },
+      '2': { id: 2, role: 'user', sex: 'female' },
+      '3': { id: 3, role: 'admin', sex: 'male' }
+    }}
+  }
+
+  const expected = [
+    { id: 1, role: 'admin', sex: 'male' },
+    { id: 3, role: 'admin', sex: 'male' }
+  ]
+
+  const result = Repo.query(state, 'users', false)
+    .where('role', 'admin')
+    .where('sex', 'male')
+    .get()
+
+  t.deepEqual(result, expected)
+})
+
+test('Repo can get single data of the entity that matches the where query', (t) => {
+  const state = {
+    name: 'entities',
+    users: { data: {
+      '1': { id: 1, role: 'admin', sex: 'male' },
+      '2': { id: 2, role: 'user', sex: 'female' },
+      '3': { id: 3, role: 'admin', sex: 'male' }
+    }}
+  }
+
+  const expected = { id: 1, role: 'admin', sex: 'male' }
+
+  const result = Repo.query(state, 'users', false)
+    .where('role', 'admin')
+    .where('sex', 'male')
+    .first()
+
+  t.deepEqual(result, expected)
+})
+
 test('Repo can find a single item of entity by id', (t) => {
   const state = {
     name: 'entities',

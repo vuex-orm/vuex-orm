@@ -1,7 +1,7 @@
 import { normalize, Schema } from 'normalizr'
 
 export interface Record {
-  [key: string]: any
+  [field: string]: any
 }
 
 export interface Records {

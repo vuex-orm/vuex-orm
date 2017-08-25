@@ -4,6 +4,13 @@ import Repo, { Item, Collection } from '../Repo'
 
 export default {
   /**
+   * Create a new repo instance.
+   */
+  query: (state) => (entity: string, wrap: boolean = true): Repo => {
+    return Repo.query(state, entity, wrap)
+  },
+
+  /**
    * Get all data of given entity.
    */
   all: (state) => (entity: string, wrap: boolean = true): Collection => {
