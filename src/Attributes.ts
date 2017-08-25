@@ -11,9 +11,10 @@ export interface Attr {
 }
 
 export interface BelongsTo {
-  type: Type.BelongsTo,
-  model: typeof Model,
+  type: Type.BelongsTo
+  model: typeof Model
   foreignKey: string
+  value: any
 }
 
 export default class Attributes {
@@ -29,6 +30,6 @@ export default class Attributes {
    * The belongs to relationship.
    */
   static belongsTo (model: typeof Model, foreignKey: string): BelongsTo {
-    return { type: Type.BelongsTo, model, foreignKey }
+    return { type: Type.BelongsTo, model, foreignKey, value: null }
   }
 }

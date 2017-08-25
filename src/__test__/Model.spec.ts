@@ -115,3 +115,22 @@ test('Model should set default field values as a property on instanciation', (t)
   t.is(user.name, 'John Doe')
   t.is(user.email, 'john@example.com')
 })
+
+test('Model should set given field values as a property on instanciation', (t) => {
+  class User extends Model {
+    static entity = 'users'
+
+    static fields () {
+      return {
+        name: this.attr('John Doe'),
+        email: this.attr('john@example.com')
+      }
+    }
+  }
+
+  const user = new User({ name: 'Jane Doe', age: 32 })
+
+  t.is(user.name, 'Jane Doe')
+  t.is(user.email, 'john@example.com')
+  t.is(user.age, undefined)
+})
