@@ -1,19 +1,19 @@
 {
   "name": "vuex-orm",
   "version": "0.1.1",
-  "description": "ORM for Vuex",
+  "description": "The Vuex plugin to enable Object-Relational Mapping access to the Vuex Store.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
     "lib"
   ],
   "scripts": {
-    "dev": "tsc -p . -w",
+    "dev": "tsc -p . --watch",
     "build": "npm run clean && tsc -p .",
-    "clean": "rm -rf lib && rm -rf .nyc_output",
+    "clean": "rm -rf lib && rm -rf coverage && rm -rf .nyc_output",
     "lint": "tslint 'src/**/*.ts' -c tslint.json -p . --type-check --fix",
     "test": "npm run build && ava lib/**/__test__/**/*.spec.js",
-    "test:watch": "npm run build && tsc --watch & ava lib/**/__test__/**/*.spec.js --watch",
+    "test:watch": "npm run build && npm run dev & ava lib/**/__test__/**/*.spec.js --watch",
     "coverage": "npm run build && nyc ava lib/__test__/**/*.spec.js && nyc report --reporter=html",
     "prepare": "npm run lint && npm run test && rm -rf lib/__test__ && rm -rf rm -rf lib/**/__test__"
   },
@@ -48,7 +48,7 @@
     "ava": "^0.22.0",
     "nyc": "^11.1.0",
     "sinon": "^3.2.1",
-    "tslint": "^5.6.0",
+    "tslint": "^5.7.0",
     "tslint-config-standard": "^6.0.1",
     "typescript": "^2.4.2"
   }
