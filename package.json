@@ -9,12 +9,13 @@
   ],
   "scripts": {
     "dev": "tsc -p . -w",
-    "build": "rm -rf lib && tsc -p . && rm -rf lib/__test__ && rm -rf rm -rf lib/**/__test__",
+    "build": "npm run clean && tsc -p .",
+    "clean": "rm -rf lib && rm -rf .nyc_output",
     "lint": "tslint 'src/**/*.ts' -c tslint.json -p . --type-check --fix",
-    "test": "tsc -p . && ava lib/**/__test__/**/*.spec.js",
-    "test:watch": "tsc --watch & ava lib/**/__test__/**/*.spec.js --watch",
-    "coverage": "tsc -p . && nyc ava lib/__test__/**/*.spec.js && nyc report --reporter=html",
-    "prepare": "npm run lint && npm run test && npm run build"
+    "test": "npm run build && ava lib/**/__test__/**/*.spec.js",
+    "test:watch": "npm run build && tsc --watch & ava lib/**/__test__/**/*.spec.js --watch",
+    "coverage": "npm run build && nyc ava lib/__test__/**/*.spec.js && nyc report --reporter=html",
+    "prepare": "npm run lint && npm run test && rm -rf lib/__test__ && rm -rf rm -rf lib/**/__test__"
   },
   "nyc": {
     "exclude": [
