@@ -230,4 +230,4 @@ Run the test using [AVA](https://github.com/avajs/ava).
 
 ## License
 
-The Vuex ORM is open-sourced software licensed under the MIT license.
+The Vuex ORM is open-sourced software licensed under the [MIT license](LICENSE.md).
