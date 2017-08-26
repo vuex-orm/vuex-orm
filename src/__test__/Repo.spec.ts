@@ -1,33 +1,15 @@
 import test from 'ava'
-import Container from '../connections/Container'
-import Database from '../Database'
-import Model from '../Model'
+import { createApplication } from './support/Helpers'
+import User from './fixtures/models/User'
+import Profile from './fixtures/models/Profile'
+import Post from './fixtures/models/Post'
 import Repo from '../Repo'
 
-class User extends Model {
-  static entity = 'users'
-
-  static fields () {
-    return { id: this.attr(null) }
-  }
-}
-
-class Post extends Model {
-  static entity = 'posts'
-
-  static fields () {
-    return {
-      author: this.belongsTo(User, 'user_id')
-    }
-  }
-}
-
-const database = new Database()
-
-database.register(User, {})
-database.register(Post, {})
-
-Container.register('entities', database)
+createApplication('entities', [
+  { model: User },
+  { model: Profile },
+  { model: Post }
+])
 
 test('Repo can get all data of the entity as class', (t) => {
   const state = {
@@ -35,7 +17,9 @@ test('Repo can get all data of the entity as class', (t) => {
     users: { data: {
       '1': { id: 1 },
       '2': { id: 2 }
-    }}
+    }},
+    profiles: { data: {} },
+    posts: { data: {} }
   }
 
   const users = Repo.all(state, 'users')
@@ -55,7 +39,9 @@ test('Repo can get all data of the entity as plain object', (t) => {
     users: { data: {
       '1': { id: 1 },
       '2': { id: 2 }
-    }}
+    }},
+    profiles: { data: {} },
+    posts: { data: {} }
   }
 
   const expected = [{ id: 1 }, { id: 2 }]
@@ -125,6 +111,77 @@ test('Repo can find a single item of entity by id', (t) => {
   t.is(user.id, 2)
 })
 
+test('Repo can resolve has one relation by regitering `with` clause', (t) => {
+  const state = {
+    name: 'entities',
+    users: { data: {
+      '1': { id: 1, profile: 3 }
+    }},
+    profiles: { data: {
+      '3': { id: 3, user_id: 1, users: 1 }
+    }}
+  }
+
+  const expected = {
+    id: 1,
+    profile: {
+      id: 3,
+      user_id: 1,
+      users: 1
+    }
+  }
+
+  const result = Repo.query(state, 'users', false).with('profile').first()
+
+  t.deepEqual(result, expected)
+})
+
+test('Repo can resolve belongs to relation by regitering `with` clause', (t) => {
+  const state = {
+    name: 'entities',
+    users: { data: {
+      '1': { id: 1, name: 'John Doe' }
+    }},
+    posts: { data: {
+      '3': { id: 3, user_id: 1, author: 1 }
+    }}
+  }
+
+  const expected = {
+    id: 3,
+    user_id: 1,
+    author: {
+      id: 1,
+      name: 'John Doe'
+    }
+  }
+
+  const result = Repo.query(state, 'posts', false).with('author').first()
+
+  t.deepEqual(result, expected)
+})
+
+test('Repo can resolve belongs to relation by regitering `with` clause and instantiate the result record', (t) => {
+  const state = {
+    name: 'entities',
+    users: { data: {
+      '1': { id: 1, name: 'John Doe' }
+    }},
+    posts: { data: {
+      '3': { id: 3, user_id: 1, author: 1 }
+    }}
+  }
+
+  const result = Repo.query(state, 'posts').with('author').first()
+
+  if (result === null || result.author === null) {
+    return t.fail('The result is expected to be not null.')
+  }
+
+  t.true(result instanceof Post)
+  t.true(result.author instanceof User)
+})
+
 test('Repo can create data in Vuex Store', (t) => {
   const state = {
     name: 'entities',
@@ -136,19 +193,11 @@ test('Repo can create data in Vuex Store', (t) => {
     posts: [
       {
         id: 1,
-        title: 'Title 001',
-        author: {
-          id: 10,
-          name: 'John Doe'
-        }
+        author: { id: 10 }
       },
       {
         id: 2,
-        title: 'Title 002',
-        author: {
-          id: 11,
-          name: 'Jane Doe'
-        }
+        author: { id: 11 }
       }
     ]
   }
@@ -156,12 +205,12 @@ test('Repo can create data in Vuex Store', (t) => {
   const expected = {
     name: 'entities',
     users: { data: {
-      '10': { id: 10, name: 'John Doe' },
-      '11': { id: 11, name: 'Jane Doe' }
+      '10': { id: 10 },
+      '11': { id: 11 }
     }},
     posts: { data: {
-      '1': { id: 1, title: 'Title 001', author: 10 },
-      '2': { id: 2, title: 'Title 002', author: 11 }
+      '1': { id: 1, user_id: 10, author: 10 },
+      '2': { id: 2, user_id: 11, author: 11 }
     }}
   }
 

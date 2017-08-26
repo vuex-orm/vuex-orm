@@ -1,19 +1,27 @@
 import * as _ from 'lodash'
 import Container from './connections/Container'
 import { Record, NormalizedData } from './Data'
+import { Type as AttrType, HasOne, BelongsTo } from './Attributes'
+import Model, { Attrs, Fields } from './Model'
 import { State } from './Module'
-import Model from './Model'
 import Query, { Item as QueryItem, Collection as QueryCollection } from './Query'
 
 export type Item = Model | Record | null
 
 export type Collection = Model[] | Record[] | null
 
+export type Buildable = QueryItem | QueryCollection | null
+
 export default class Repo {
   /**
    * The base query builder instance.
    */
   protected query: Query
+
+  /**
+   * The Vuex Store State.
+   */
+  protected state: State
 
   /**
    * The entity being queried.
@@ -31,14 +39,17 @@ export default class Repo {
   protected wrap: boolean
 
   /**
+   * The relationships that should be loaded with the result.
+   */
+  protected load: string[] = []
+
+  /**
    * Create a new repo instance.
    */
   constructor (state: State, entity: string, wrap: boolean = true) {
-    const model: typeof Model = this.model(state, entity)
-
+    this.state = state
     this.query = new Query(state, entity)
-
-    this.entity = model
+    this.entity = this.model(entity)
     this.name = entity
     this.wrap = wrap
   }
@@ -102,8 +113,8 @@ export default class Repo {
   /**
    * Get model of given name from connections container.
    */
-  model (state: State, name: string): typeof Model {
-    return this.self().model(state, name)
+  model (name: string): typeof Model {
+    return this.self().model(this.state, name)
   }
 
   /**
@@ -130,11 +141,26 @@ export default class Repo {
   }
 
   /**
+   * Set the relationships that should be loaded.
+   */
+  with (relation: string): this {
+    this.load.push(relation)
+
+    return this
+  }
+
+  /**
    * Create a item from given record.
    */
-  item (item?: QueryItem): Item {
-    if (!item) {
+  item (queryItem: QueryItem): Item {
+    if (!queryItem) {
       return null
+    }
+
+    let item: Item = { ...queryItem }
+
+    if (!_.isEmpty(this.load)) {
+      item = this.loadRelations(item)
     }
 
     if (!this.wrap) {
@@ -157,5 +183,68 @@ export default class Repo {
     }
 
     return _.map(collection, data => new this.entity(data))
+  }
+
+  /**
+   * Load the relationships for the record.
+   */
+  loadRelations (record: Record): Record {
+    return _.reduce(this.load, (record, relation) => {
+      if (!record[relation]) {
+        return record
+      }
+
+      const fields: Fields = this.entity.fields()
+      const attr: Attrs = fields[relation]
+
+      if (attr.type === AttrType.Attr) {
+        return record
+      }
+
+      if (attr.type === AttrType.HasOne) {
+        record[relation] = this.loadHasOneRelation(record, attr as HasOne)
+
+        return record
+      }
+
+      if (attr.type === AttrType.BelongsTo) {
+        record[relation] = this.loadBelongsToRelation(record, attr as BelongsTo)
+
+        return record
+      }
+
+      return record
+    }, { ...record })
+  }
+
+  /**
+   * Load the has one relationship for the record.
+   */
+  loadHasOneRelation (record: Record, attr: HasOne): Record | null {
+    const relation: string = this.resolveRelation(attr).entity
+    const field: string = attr.foreignKey
+
+    return this.self().query(this.state, relation, this.wrap).where(field, record.id).first()
+  }
+
+  /**
+   * Load the belongs to relationship for the record.
+   */
+  loadBelongsToRelation (record: Record, attr: BelongsTo): Record | null {
+    const relation: string = this.resolveRelation(attr).entity
+    const id: number | string = record[attr.foreignKey]
+
+    return this.self().query(this.state, relation, this.wrap).first(id)
+  }
+
+  /**
+   * Resolve relation out of the container.
+   */
+  resolveRelation (attr: HasOne | BelongsTo): typeof Model {
+    if (!_.isString(attr.model)) {
+      return attr.model
+    }
+
+    return this.model(name)
   }
 }

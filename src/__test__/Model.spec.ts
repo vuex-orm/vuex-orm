@@ -1,4 +1,5 @@
 import test from 'ava'
+import { createApplication } from './support/Helpers'
 import { schema } from 'normalizr'
 import Model from '../Model'
 
@@ -26,8 +27,15 @@ test('Model can generate normalized data from single data', (t) => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () { return {} }
+    static fields () {
+      return {
+        id: this.attr(null),
+        name: this.attr('')
+      }
+    }
   }
+
+  createApplication('entities', [{ model: User }])
 
   const data = { id: 1, name: 'John Doe' }
 
@@ -44,8 +52,15 @@ test('Model can generate normalized data from list of data', (t) => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () { return {} }
+    static fields () {
+      return {
+        id: this.attr(null),
+        name: this.attr('')
+      }
+    }
   }
+
+  createApplication('entities', [{ model: User }])
 
   const data = [
     { id: 1, name: 'John Doe' },
@@ -66,7 +81,11 @@ test('Model can generate normalized data with belogns to relation', (t) => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () { return {} }
+    static fields () {
+      return {
+        id: this.attr(null)
+      }
+    }
   }
 
   class Post extends Model {
@@ -74,10 +93,13 @@ test('Model can generate normalized data with belogns to relation', (t) => {
 
     static fields () {
       return {
+        id: this.attr(null),
         author: this.belongsTo(User, 'user_id')
       }
     }
   }
+
+  createApplication('entities', [{ model: User }, { model: Post }])
 
   const data = {
     id: 1,
@@ -87,7 +109,7 @@ test('Model can generate normalized data with belogns to relation', (t) => {
 
   const expected = {
     posts: {
-      '1': { id: 1, title: 'Hello, world', author: 3 }
+      '1': { id: 1, title: 'Hello, world', user_id: 3, author: 3 }
     },
 
     users: {
@@ -141,6 +163,8 @@ test('Model can resolve has one relation', (t) => {
 
     static fields () {
       return {
+        id: this.attr(null),
+        user_id: this.attr(null),
         sex: this.attr('')
       }
     }
@@ -151,6 +175,7 @@ test('Model can resolve has one relation', (t) => {
 
     static fields () {
       return {
+        id: this.attr(null),
         name: this.attr('John Doe'),
         profile: this.hasOne(Profile, 'user_id')
       }
@@ -158,8 +183,11 @@ test('Model can resolve has one relation', (t) => {
   }
 
   const data = {
+    id: 1,
     name: 'John Doe',
     profile: {
+      id: 1,
+      user_id: 1,
       sex: 'male'
     }
   }
@@ -172,7 +200,7 @@ test('Model can resolve has one relation', (t) => {
   t.is(user.profile.sex, 'male')
 })
 
-test('Model can resolve has one relation', (t) => {
+test('Model can resolve belongs to relation', (t) => {
   class User extends Model {
     static entity = 'users'
 

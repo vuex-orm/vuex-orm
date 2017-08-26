@@ -13,14 +13,14 @@ export interface Attr {
 
 export interface HasOne {
   type: Type.HasOne
-  model: typeof Model
+  model: typeof Model | string
   foreignKey: string
   value: any
 }
 
 export interface BelongsTo {
   type: Type.BelongsTo
-  model: typeof Model
+  model: typeof Model | string
   foreignKey: string
   value: any
 }
@@ -37,14 +37,14 @@ export default class Attributes {
   /**
    * The has one relationship.
    */
-  static hasOne (model: typeof Model, foreignKey: string): HasOne {
+  static hasOne (model: typeof Model | string, foreignKey: string): HasOne {
     return { type: Type.HasOne, model, foreignKey, value: null }
   }
 
   /**
    * The belongs to relationship.
    */
-  static belongsTo (model: typeof Model, foreignKey: string): BelongsTo {
+  static belongsTo (model: typeof Model | string, foreignKey: string): BelongsTo {
     return { type: Type.BelongsTo, model, foreignKey, value: null }
   }
 }

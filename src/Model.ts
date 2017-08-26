@@ -1,14 +1,22 @@
 import * as _ from 'lodash'
 import { Schema as NormalizrSchema } from 'normalizr'
-import Data, { Record, NormalizedData } from './Data'
+import Container from './connections/Container'
+import Data, { Record, Records, NormalizedData } from './Data'
 import Attributes, { Type as AttrType, Attr, HasOne, BelongsTo } from './Attributes'
 import Schema from './Schema'
 
+export type Attrs = Attr | HasOne | BelongsTo
+
 export interface Fields {
-  [field: string]: Attr | HasOne | BelongsTo
+  [field: string]: Attrs
 }
 
-class Model {
+export default class Model {
+  /**
+   * Name of the connection that this model is registerd.
+   */
+  static connection: string
+
   /**
    * The name that is going be used as module name in Vuex Store.
    */
@@ -44,15 +52,29 @@ class Model {
   /**
    * Creates has one relationship.
    */
-  static hasOne (model: typeof Model, foreignKey: string): HasOne {
+  static hasOne (model: typeof Model | string, foreignKey: string): HasOne {
     return Attributes.hasOne(model, foreignKey)
   }
 
   /**
    * Creates belongs to relationship.
    */
-  static belongsTo (model: typeof Model, foreignKey: string): BelongsTo {
+  static belongsTo (model: typeof Model | string, foreignKey: string): BelongsTo {
     return Attributes.belongsTo(model, foreignKey)
+  }
+
+  /**
+   * Find relation model from the container.
+   */
+  static relation (name: string): typeof Model {
+    return Container.connection(this.connection).model(name)
+  }
+
+  /**
+   * Resolve relation out of the container.
+   */
+  static resolveRelation (attr: HasOne | BelongsTo): typeof Model {
+    return _.isString(attr.model) ? this.relation(attr.model) : attr.model
   }
 
   /**
@@ -70,7 +92,43 @@ class Model {
   static normalize (data: any | any[]): NormalizedData {
     const schema = this.schema(_.isArray(data))
 
-    return Data.normalize(data, schema)
+    const normalizedData = Data.normalize(data, schema)
+
+    // Check if all foreign keys exist in the data and if not, make them.
+    return _.mapValues(normalizedData, (records, entity) => {
+      return this.attachForeignKeys(records, this.relation(entity))
+    })
+  }
+
+  /**
+   * Check if the record has appropriate foreign key and if not, attach them.
+   */
+  static attachForeignKeys (records: Records, model: typeof Model): Records {
+    const fields: Fields = model.fields()
+
+    return _.mapValues(records, (record) => {
+      let newRecord: Record = { ...record }
+
+      _.forEach(record, (value, field) => {
+        const attr: Attrs = fields[field]
+
+        if (!attr) {
+          return value
+        }
+
+        if (attr.type === AttrType.Attr) {
+          return value
+        }
+
+        if (attr.type === AttrType.BelongsTo) {
+          const key: string = (attr as BelongsTo).foreignKey
+
+          newRecord[key] = value
+        }
+      })
+
+      return newRecord
+    })
   }
 
   /**
@@ -101,13 +159,17 @@ class Model {
       }
 
       if (field.type === AttrType.HasOne) {
-        this[key] = new (field as HasOne).model(field.value)
+        const model = this.$resolveRelation(field as HasOne)
+
+        this[key] = field.value ? new model(field.value) : null
 
         return
       }
 
       if (field.type === AttrType.BelongsTo) {
-        this[key] = new (field as BelongsTo).model(field.value)
+        const model = this.$resolveRelation(field as BelongsTo)
+
+        this[key] = field.value ? new model(field.value) : null
       }
     })
   }
@@ -134,6 +196,11 @@ class Model {
 
     return newFields
   }
-}
 
-export default Model
+  /**
+   * Resolve relation out of the container.
+   */
+  $resolveRelation (attr: HasOne | BelongsTo): typeof Model {
+    return this.$self().resolveRelation(attr)
+  }
+}

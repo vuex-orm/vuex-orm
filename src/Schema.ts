@@ -1,14 +1,14 @@
 import * as _ from 'lodash'
 import { schema, Schema as NormalizrSchema } from 'normalizr'
-import { Type as AttrType } from './Attributes'
-import Model, { Fields } from './Model'
+import { Type as AttrType, BelongsTo } from './Attributes'
+import Model from './Model'
 
 export default class Schema {
   /**
    * Create s schema of given model.
    */
   static one (model: typeof Model): schema.Entity {
-    const definition = this.definition(model.fields())
+    const definition = this.definition(model)
 
     return new schema.Entity(model.entity, definition)
   }
@@ -23,10 +23,10 @@ export default class Schema {
   /**
    * Create dfinition from given fields.
    */
-  static definition (fields: Fields): NormalizrSchema {
-    return _.reduce(fields, (definition, relation, key) => {
+  static definition (model: typeof Model): NormalizrSchema {
+    return _.reduce(model.fields(), (definition, relation, key) => {
       if (relation.type === AttrType.BelongsTo) {
-        definition[key] = this.one(relation.model)
+        definition[key] = this.one(model.resolveRelation(relation as BelongsTo))
       }
 
       return definition
