@@ -12,10 +12,10 @@
     "build": "npm run clean && tsc -p .",
     "clean": "rm -rf lib && rm -rf coverage && rm -rf .nyc_output",
     "lint": "tslint 'src/**/*.ts' -c tslint.json -p . --type-check --fix",
-    "test": "npm run build && ava lib/**/__test__/**/*.spec.js",
-    "test:watch": "npm run build && npm run dev & ava lib/**/__test__/**/*.spec.js --watch",
-    "coverage": "npm run build && nyc ava lib/__test__/**/*.spec.js && nyc report --reporter=html",
-    "prepare": "npm run lint && npm run test && rm -rf lib/__test__ && rm -rf rm -rf lib/**/__test__"
+    "test": "npm run build -- --target es2015 && ava lib/**/__test__/**/*.spec.js",
+    "test:watch": "npm run build -- --target es2015 && npm run dev & ava lib/**/__test__/**/*.spec.js --watch",
+    "coverage": "npm run build -- --target es2015 && nyc ava lib/__test__/**/*.spec.js && nyc report --reporter=html",
+    "prepare": "npm run lint && npm run test && npm run build && rm -rf lib/__test__ && rm -rf rm -rf lib/**/__test__"
   },
   "nyc": {
     "exclude": [
