@@ -1,6 +1,6 @@
 {
   "name": "vuex-orm",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "The Vuex plugin to enable Object-Relational Mapping access to the Vuex Store.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
