@@ -228,6 +228,12 @@ $ npm run test
 
 Run the test using [AVA](https://github.com/avajs/ava).
 
+```console
+$ npm run coverage
+```
+
+Generate test coverage.
+
 ## License
 
 The Vuex ORM is open-sourced software licensed under the [MIT license](LICENSE.md).
