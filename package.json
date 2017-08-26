@@ -14,7 +14,7 @@
     "lint": "tslint 'src/**/*.ts' -c tslint.json -p . --type-check --fix",
     "test": "npm run build -- --target es2015 && ava lib/**/__test__/**/*.spec.js",
     "test:watch": "npm run build -- --target es2015 && npm run dev & ava lib/**/__test__/**/*.spec.js --watch",
-    "coverage": "npm run build -- --target es2015 && nyc ava lib/__test__/**/*.spec.js && nyc report --reporter=html",
+    "coverage": "npm run build -- --target es2015 && nyc ava lib/**/__test__/**/*.spec.js && nyc report --reporter=html",
     "prepare": "npm run lint && npm run test && npm run build && rm -rf lib/__test__ && rm -rf rm -rf lib/**/__test__"
   },
   "nyc": {

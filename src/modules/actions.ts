@@ -1,5 +1,7 @@
 import Vuex from 'vuex'
 
 export default {
-  example () { return null }
+  create ({ commit }, { data }) {
+    commit('create', { data })
+  }
 } as Vuex.ActionTree<any, any>
