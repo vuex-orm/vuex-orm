@@ -157,7 +157,7 @@ export default class Repo {
       return null
     }
 
-    let item: Item = { ...queryItem }
+    let item: Item = queryItem
 
     if (!_.isEmpty(this.load)) {
       item = this.loadRelations(item)
@@ -178,11 +178,17 @@ export default class Repo {
       return null
     }
 
-    if (!this.wrap) {
-      return collection
+    let item: Collection = collection
+
+    if (!_.isEmpty(this.load)) {
+      item = _.map(item, data => this.loadRelations(data))
     }
 
-    return _.map(collection, data => new this.entity(data))
+    if (!this.wrap) {
+      return item
+    }
+
+    return _.map(item, data => new this.entity(data))
   }
 
   /**
