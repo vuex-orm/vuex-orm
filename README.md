@@ -7,6 +7,10 @@ This is a plugin for [Vuex](https://github.com/vuejs/vuex) to enable Object-Rela
 
 Vuex ORM lets you create "normalized" data schema within Vuex Store and provide fluent API to get, search and update Store state.
 
+## Documentation
+
+You can check out the full documentation for Vuex ORM at https://revolver-app.gitbooks.io/vuex-orm.
+
 ## Usage
 
 ### Create Your Models
