@@ -182,25 +182,51 @@ test('Repo can resolve belongs to relation by regitering `with` clause and insta
   t.true(result.author instanceof User)
 })
 
-test('Repo can create data in Vuex Store', (t) => {
+test('Repo can create a single data in Vuex Store', (t) => {
   const state = {
     name: 'entities',
-    users: { data: {} },
+    users: { data: {
+      '5': { id: 5 }
+    }},
     posts: { data: {} }
   }
 
-  const data = {
-    posts: [
-      {
-        id: 1,
-        author: { id: 10 }
-      },
-      {
-        id: 2,
-        author: { id: 11 }
-      }
-    ]
+  const data = { id: 1, author: { id: 10 } }
+
+  const expected = {
+    name: 'entities',
+    users: { data: {
+      '10': { id: 10 }
+    }},
+    posts: { data: {
+      '1': { id: 1, user_id: 10, author: 10 }
+    }}
   }
+
+  Repo.create(state, 'posts', data)
+
+  t.deepEqual<any>(state, expected)
+})
+
+test('Repo can create a list of data in Vuex Store', (t) => {
+  const state = {
+    name: 'entities',
+    users: { data: {
+      '5': { id: 5 }
+    }},
+    posts: { data: {} }
+  }
+
+  const data = [
+    {
+      id: 1,
+      author: { id: 10 }
+    },
+    {
+      id: 2,
+      author: { id: 11 }
+    }
+  ]
 
   const expected = {
     name: 'entities',
@@ -214,7 +240,60 @@ test('Repo can create data in Vuex Store', (t) => {
     }}
   }
 
-  Repo.create(state, data)
+  Repo.create(state, 'posts', data)
 
-  t.deepEqual(state, expected)
+  t.deepEqual<any>(state, expected)
+})
+
+test('Repo can insert single data to Vuex Store', (t) => {
+  const state = {
+    name: 'entities',
+    users: { data: {
+      '1': { id: 1, name: 'John' },
+      '2': { id: 2, name: 'Jane' }
+    }}
+  }
+
+  const data = { id: 3, name: 'Johnny' }
+
+  const expected = {
+    name: 'entities',
+    users: { data: {
+      '1': { id: 1, name: 'John' },
+      '2': { id: 2, name: 'Jane' },
+      '3': { id: 3, name: 'Johnny' }
+    }}
+  }
+
+  Repo.insert(state, 'users', data)
+
+  t.deepEqual<any>(state, expected)
+})
+
+test('Repo can insert a list of data to Vuex Store', (t) => {
+  const state = {
+    name: 'entities',
+    users: { data: {
+      '1': { id: 1, name: 'John' },
+      '2': { id: 2, name: 'Jane' }
+    }}
+  }
+
+  const data = [
+    { id: 1, name: 'Janie' },
+    { id: 3, name: 'Johnny' }
+  ]
+
+  const expected = {
+    name: 'entities',
+    users: { data: {
+      '1': { id: 1, name: 'Janie' },
+      '2': { id: 2, name: 'Jane' },
+      '3': { id: 3, name: 'Johnny' }
+    }}
+  }
+
+  Repo.insert(state, 'users', data)
+
+  t.deepEqual<any>(state, expected)
 })

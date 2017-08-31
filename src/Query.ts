@@ -31,9 +31,16 @@ export default class Query {
   /**
    * Create a new query instance.
    */
-  constructor (state: State, entity: string) {
+  constructor (state: State, name: string) {
     this.state = state
-    this.name = entity
+    this.name = name
+  }
+
+  /**
+   * Return entity's data state.
+   */
+  entity (): any {
+    return this.state[this.name].data
   }
 
   /**
@@ -67,7 +74,7 @@ export default class Query {
    */
   process (): Records | null {
     // First, fetch all records of the entity.
-    let records: Records = this.state[this.name].data
+    let records: Records = this.entity()
 
     // If the entity is empty, there's nothing we can do so lets return
     // null and exit immediately.
@@ -96,6 +103,23 @@ export default class Query {
     this.wheres.push({ field, value })
 
     return this
+  }
+
+  /**
+   * Save the given data to the state. This will replace any existing
+   * data in the state.
+   */
+  create (data: any): void {
+    this.state[this.name].data = data
+  }
+
+  /**
+   * Insert given data to the state. Unlike `create`, this method will not
+   * remove existing data within the state, but it will update the data
+   * with the same primary key.
+   */
+  insert (data: any): void {
+    this.state[this.name].data = { ...this.state[this.name].data, ...data }
   }
 
   /**

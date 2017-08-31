@@ -65,35 +65,31 @@ export default class Repo {
    * Get all data of the given entity from teh state.
    */
   static all (state: State, entity: string, wrap: boolean = true): Collection {
-    return new this(state, entity, wrap).get()
+    return (new this(state, entity, wrap)).get()
   }
 
   /**
    * Find a data of the given entity by given id from the given state.
    */
   static find (state: State, entity: string, id: string | number, wrap: boolean = true): Item {
-    return new this(state, entity, wrap).first(id)
+    return (new this(state, entity, wrap)).first(id)
   }
 
   /**
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  static create (state: State, data: any): void {
-    const normalizedData: NormalizedData = this.normalize(state, data)
-
-    _.forEach(normalizedData, (data, entity) => {
-      state[entity].data = data
-    })
+  static create (state: State, entity: string, data: any): void {
+    (new this(state, entity)).create(data)
   }
 
   /**
-   * Normalize the given data by given model.
+   * Insert given data to the state. Unlike `create`, this method will not
+   * remove existing data within the state, but it will update the data
+   * with the same primary key.
    */
-  static normalize (state: State, data: any): NormalizedData {
-    const name: string = _.keys(data)[0]
-
-    return this.model(state, name).normalize(data[name])
+  static insert (state: State, entity: string, data: any): void {
+    (new this(state, entity)).insert(data)
   }
 
   /**
@@ -147,6 +143,34 @@ export default class Repo {
     this.load.push(relation)
 
     return this
+  }
+
+  /**
+   * Save the given data to the state. This will replace any existing
+   * data in the state.
+   */
+  create (data: any): void {
+    this.save('create', data)
+  }
+
+  /**
+   * Insert given data to the state. Unlike `create`, this method will not
+   * remove existing data within the state, but it will update the data
+   * with the same primary key.
+   */
+  insert (data: any): void {
+    this.save('insert', data)
+  }
+
+  /**
+   * Save data into Vuex Store.
+   */
+  save (method: string, data: any): void {
+    const normalizedData: NormalizedData = this.normalize(data)
+
+    _.forEach(normalizedData, (data, entity) => {
+      entity === this.name ? (this.query as any)[method](data) : (new Query(this.state, entity) as any)[method](data)
+    })
   }
 
   /**
@@ -252,5 +276,12 @@ export default class Repo {
     }
 
     return this.model(name)
+  }
+
+  /**
+   * Normalize the given data by given model.
+   */
+  normalize (data: any): NormalizedData {
+    return this.model(this.name).normalize(data)
   }
 }

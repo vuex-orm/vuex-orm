@@ -8,8 +8,21 @@ test('action can create given data in to the store', (t) => {
   const context = actionContext({ commit })
 
   const data = {}
+  const entity = 'users'
 
-  actions.create(context, { data })
+  actions.create(context, { entity, data })
 
-  t.true(commit.calledWith('create', { data }))
+  t.true(commit.calledWith('create', { entity, data }))
+})
+
+test('action can insert given data in to the store', (t) => {
+  const commit = sinon.stub()
+  const context = actionContext({ commit })
+
+  const data = {}
+  const entity = 'users'
+
+  actions.insert(context, { entity, data })
+
+  t.true(commit.calledWith('insert', { entity, data }))
 })

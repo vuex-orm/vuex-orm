@@ -8,7 +8,17 @@ test('mutation can call create method on Repo', (t) => {
 
   const state = { name: '' }
 
-  mutations.create(state, { data: {} })
+  mutations.create(state, { entity: 'users', data: {} })
 
-  t.true(MockRepo.calledWith(state, {}))
+  t.true(MockRepo.calledWith(state, 'users', {}))
+})
+
+test('mutation can call insert method on Repo', (t) => {
+  const MockRepo = sinon.stub(Repo, 'insert')
+
+  const state = { name: '' }
+
+  mutations.insert(state, { entity: 'users', data: {} })
+
+  t.true(MockRepo.calledWith(state, 'users', {}))
 })

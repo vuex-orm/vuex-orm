@@ -7,7 +7,16 @@ export default {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  create (state, { data }) {
-    Repo.create(state, data)
+  create (state, { entity, data }) {
+    Repo.create(state, entity, data)
+  },
+
+  /**
+   * Insert given data to the state. Unlike `create`, this method will not
+   * remove existing data within the state, but it will update the data
+   * with the same primary key.
+   */
+  insert (state, { entity, data }) {
+    Repo.insert(state, entity, data)
   }
 } as Vuex.MutationTree<State>

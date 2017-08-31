@@ -104,22 +104,20 @@ You can use `create` mutation to create a new record in Vuex Store. Let's say we
 
 ```js
 // Assuming this data structure is the response from the API backend.
-const data = {
-  posts: [
-    {
+const posts = [
+  {
+    id: 1,
+    title: 'Hello, world!',
+    body: 'Some awesome body...',
+    author: {
       id: 1,
-      title: 'Hello, world!',
-      body: 'Some awesome body...',
-      author: {
-        id: 1,
-        name: 'John Doe',
-        email: 'john@example.com'
-      }
+      name: 'John Doe',
+      email: 'john@example.com'
     }
-  ]
+  }
 }
 
-store.commit('entities/create', { data })
+store.commit('entities/create', { entity: 'posts', data: posts })
 ```
 
 With above action, Vuex ORM will create the following schema at Vuex Store.
