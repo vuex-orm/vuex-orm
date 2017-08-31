@@ -1,5 +1,3 @@
 {
-  "structure": {
-    "summary": "docs/SUMMARY.md"
-  }
+  "root": "docs"
 }
