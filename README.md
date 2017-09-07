@@ -119,7 +119,7 @@ const posts = [
       email: 'john@example.com'
     }
   }
-}
+]
 
 store.commit('entities/create', { entity: 'posts', data: posts })
 ```
