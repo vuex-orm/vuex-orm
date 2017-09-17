@@ -94,7 +94,7 @@ database.register(User, users)
 database.register(Post, posts)
 
 const store = new Vuex.Store({
-  plugin: VuexORM(database)
+  plugins: [VuexORM(database)]
 })
 
 export default store
