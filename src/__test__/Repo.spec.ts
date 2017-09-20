@@ -245,6 +245,26 @@ test('Repo can create a list of data in Vuex Store', (t) => {
   t.deepEqual<any>(state, expected)
 })
 
+test('Repo can create with empty data', (t) => {
+  const state = {
+    name: 'entities',
+    users: { data: {
+      '10': { id: 10 },
+      '11': { id: 11 }
+    }}
+  }
+
+  const expected = {
+    name: 'entities',
+    users: { data: {
+    }}
+  }
+
+  Repo.create(state, 'users', [])
+
+  t.deepEqual<any>(state, expected)
+})
+
 test('Repo can insert single data to Vuex Store', (t) => {
   const state = {
     name: 'entities',
@@ -294,6 +314,28 @@ test('Repo can insert a list of data to Vuex Store', (t) => {
   }
 
   Repo.insert(state, 'users', data)
+
+  t.deepEqual<any>(state, expected)
+})
+
+test('Repo can insert with empty data', (t) => {
+  const state = {
+    name: 'entities',
+    users: { data: {
+      '10': { id: 10 },
+      '11': { id: 11 }
+    }}
+  }
+
+  const expected = {
+    name: 'entities',
+    users: { data: {
+      '10': { id: 10 },
+      '11': { id: 11 }
+    }}
+  }
+
+  Repo.insert(state, 'users', [])
 
   t.deepEqual<any>(state, expected)
 })
