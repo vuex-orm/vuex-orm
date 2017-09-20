@@ -168,6 +168,12 @@ export default class Repo {
   save (method: string, data: any): void {
     const normalizedData: NormalizedData = this.normalize(data)
 
+    // update with empty data
+    if (method === 'create' && _.isEmpty(normalizedData)) {
+      (this.query as any)[method](normalizedData)
+      return
+    }
+
     _.forEach(normalizedData, (data, entity) => {
       entity === this.name ? (this.query as any)[method](data) : (new Query(this.state, entity) as any)[method](data)
     })
