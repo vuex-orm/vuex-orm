@@ -137,6 +137,15 @@ export default class Repo {
   }
 
   /**
+   * Add an order to the query.
+   */
+  orderBy (field: string, desc: boolean = false): this {
+    this.query.orderBy(field, desc)
+
+    return this
+  }
+
+  /**
    * Set the relationships that should be loaded.
    */
   with (relation: string): this {
