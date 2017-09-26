@@ -11,6 +11,13 @@ export interface Wheres {
   value: any
 }
 
+export interface Orders {
+  field: string
+  direction: OrderDirection
+}
+
+export type OrderDirection = 'asc' | 'desc'
+
 export default class Query {
   /**
    * The Vuex Store State. This is the target where query will perform
@@ -27,6 +34,11 @@ export default class Query {
    * The where constraints for the query.
    */
   protected wheres: Wheres[] = []
+
+  /**
+   * The orders of the query result.
+   */
+  protected orders: Orders[] = []
 
   /**
    * Create a new query instance.
@@ -106,6 +118,15 @@ export default class Query {
   }
 
   /**
+   * Add an order to the query.
+   */
+  orderBy (field: string, direction: OrderDirection = 'asc'): this {
+    this.orders.push({ field, direction })
+
+    return this
+  }
+
+  /**
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
@@ -133,11 +154,11 @@ export default class Query {
    * Create a collection (array) from given records.
    */
   collect (records: Records | null): Collection {
-    if (_.isEmpty(records)) {
+    if (records === null || _.isEmpty(records)) {
       return null
     }
 
-    return _.map(records, record => record)
+    return this.sortByOrders(records)
   }
 
   /**
@@ -147,6 +168,15 @@ export default class Query {
     const predicate: { [field: string]: any } = this.matchPredicate()
 
     return _.pickBy<Records, Records>(records, _.matches(predicate))
+  }
+
+  /**
+   * Sort the given data by registered orders.
+   */
+  sortByOrders (records: Records): Collection {
+    const keys = _.map(this.orders, 'field')
+    const directions = _.map(this.orders, 'direction')
+    return _.orderBy(records, keys, directions)
   }
 
   /**

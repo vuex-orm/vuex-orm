@@ -339,3 +339,29 @@ test('Repo can insert with empty data', (t) => {
 
   t.deepEqual<any>(state, expected)
 })
+
+test('Repo can sort by model fields', (t) => {
+  const state = {
+    name: 'entities',
+    users: { data: {
+      '1': { id: 1, name: 'John' },
+      '2': { id: 2, name: 'Andy' },
+      '3': { id: 3, name: 'Roger' },
+      '4': { id: 4, name: 'Andy' }
+    }}
+  }
+
+  const expected = [
+    { id: 4, name: 'Andy' },
+    { id: 2, name: 'Andy' },
+    { id: 1, name: 'John' },
+    { id: 3, name: 'Roger' }
+  ]
+
+  const result = Repo.query(state, 'users', false)
+    .orderBy('name')
+    .orderBy('id', 'desc')
+    .get()
+
+  t.deepEqual(result, expected)
+})
