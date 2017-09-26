@@ -4,7 +4,7 @@ import { Record, NormalizedData } from './Data'
 import { Type as AttrType, HasOne, BelongsTo } from './Attributes'
 import Model, { Attrs, Fields } from './Model'
 import { State } from './Module'
-import Query, { Item as QueryItem, Collection as QueryCollection } from './Query'
+import Query, { Item as QueryItem, Collection as QueryCollection, OrderDirection } from './Query'
 
 export type Item = Model | Record | null
 
@@ -139,8 +139,8 @@ export default class Repo {
   /**
    * Add an order to the query.
    */
-  orderBy (field: string, desc: boolean = false): this {
-    this.query.orderBy(field, desc)
+  orderBy (field: string, direction: OrderDirection = 'asc'): this {
+    this.query.orderBy(field, direction)
 
     return this
   }

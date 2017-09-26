@@ -13,8 +13,10 @@ export interface Wheres {
 
 export interface Orders {
   field: string
-  desc: boolean
+  direction: OrderDirection
 }
+
+export type OrderDirection = 'asc' | 'desc'
 
 export default class Query {
   /**
@@ -118,8 +120,8 @@ export default class Query {
   /**
    * Add an order to the query.
    */
-  orderBy (field: string, desc: boolean = false): this {
-    this.orders.push({ field, desc })
+  orderBy (field: string, direction: OrderDirection = 'asc'): this {
+    this.orders.push({ field, direction })
 
     return this
   }
@@ -173,7 +175,7 @@ export default class Query {
    */
   sortByOrders (records: Records): Collection {
     const keys = _.map(this.orders, 'field')
-    const directions = _.map(this.orders, order => order.desc ? 'desc' : 'asc')
+    const directions = _.map(this.orders, 'direction')
     return _.orderBy(records, keys, directions)
   }
 

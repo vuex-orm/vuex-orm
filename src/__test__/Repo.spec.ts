@@ -360,7 +360,7 @@ test('Repo can sort by model fields', (t) => {
 
   const result = Repo.query(state, 'users', false)
     .orderBy('name')
-    .orderBy('id', true)
+    .orderBy('id', 'desc')
     .get()
 
   t.deepEqual(result, expected)
