@@ -235,7 +235,7 @@ export default class Repo {
    */
   loadRelations (record: Record): Record {
     return _.reduce(this.load, (record, relation) => {
-      if (!record[relation]) {
+      if (_.isNil(record[relation])) {
         return record
       }
 
