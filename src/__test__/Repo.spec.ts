@@ -161,6 +161,31 @@ test('Repo can resolve belongs to relation by regitering `with` clause', (t) => 
   t.deepEqual(result, expected)
 })
 
+test('Repo can resolve belongs to relation which its id is 0', (t) => {
+  const state = {
+    name: 'entities',
+    users: { data: {
+      '0': { id: 0, name: 'John Doe' }
+    }},
+    posts: { data: {
+      '3': { id: 3, user_id: 0, author: 0 }
+    }}
+  }
+
+  const expected = {
+    id: 3,
+    user_id: 0,
+    author: {
+      id: 0,
+      name: 'John Doe'
+    }
+  }
+
+  const result = Repo.query(state, 'posts', false).with('author').first()
+
+  t.deepEqual(result, expected)
+})
+
 test('Repo can resolve belongs to relation by regitering `with` clause and instantiate the result record', (t) => {
   const state = {
     name: 'entities',
