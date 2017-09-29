@@ -136,7 +136,7 @@ test('Repo can resolve has one relation by regitering `with` clause', (t) => {
   t.deepEqual(result, expected)
 })
 
-test.only('Repo can resolve belongs to relation by regitering `with` clause', (t) => {
+test('Repo can resolve belongs to relation by regitering `with` clause', (t) => {
   const state = {
     name: 'entities',
     users: { data: {
@@ -161,7 +161,7 @@ test.only('Repo can resolve belongs to relation by regitering `with` clause', (t
   t.deepEqual(result, expected)
 })
 
-test.only('Repo can resolve belongs to relation which its id is 0', (t) => {
+test('Repo can resolve belongs to relation which its id is 0', (t) => {
   const state = {
     name: 'entities',
     users: { data: {
