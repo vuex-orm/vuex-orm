@@ -218,4 +218,21 @@ export default class Model {
   $resolveRelation (attr: HasOne | BelongsTo | HasMany): typeof Model {
     return this.$self().resolveRelation(attr)
   }
+
+  /**
+   * Serialize field values into json.
+   */
+  $toJson (): any {
+    return _.mapValues(this.$self().fields(), (attr, key) => {
+      if (attr.type === AttrType.HasOne || attr.type === AttrType.BelongsTo) {
+        return this[key].$toJson()
+      }
+
+      if (attr.type === AttrType.HasMany) {
+        return this[key].map((model: Model) => model.$toJson())
+      }
+
+      return this[key]
+    })
+  }
 }

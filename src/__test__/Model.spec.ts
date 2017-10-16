@@ -284,3 +284,57 @@ test('Model can resolve has many relation', (t) => {
   t.is(post.comments[0].body, 'Comment 01')
   t.is(post.comments[1].body, 'Comment 02')
 })
+
+test('Model can serialize own fields into json', (t) => {
+  class User extends Model {
+    static entity = 'users'
+
+    static fields () {
+      return {
+        id: this.attr(null),
+        name: this.attr('John Doe')
+      }
+    }
+  }
+
+  class Comment extends Model {
+    static entity = 'comments'
+
+    static fields () {
+      return {
+        id: this.attr(null),
+        post_id: this.attr(null),
+        body: this.attr('')
+      }
+    }
+  }
+
+  class Post extends Model {
+    static entity = 'posts'
+
+    static fields () {
+      return {
+        id: this.attr(null),
+        user_id: this.attr(null),
+        title: this.attr(''),
+        author: this.belongsTo(User, 'user_id'),
+        comments: this.hasMany(Comment, 'post_id')
+      }
+    }
+  }
+
+  const data = {
+    id: 1,
+    title: 'Post Title',
+    user_id: 1,
+    author: { id:1, name: 'John' },
+    comments: [
+      { id: 1, post_id: 1, body: 'C1' },
+      { id: 2, post_id: 1, body: 'C2' }
+    ]
+  }
+
+  const post = new Post(data)
+
+  t.deepEqual(post.$toJson(), data)
+})
