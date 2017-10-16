@@ -1,6 +1,6 @@
 import * as sinon from 'sinon'
 import * as _ from 'lodash'
-import Vuex from 'vuex'
+import * as Vuex from 'vuex'
 import Container from '../../connections/Container'
 import Database from '../../Database'
 import Model from '../../Model'
@@ -39,7 +39,7 @@ export function createApplication (namespace: string, entities: Entity[]): Conta
 /**
  * Get action context that can be passed to action as arugument.
  */
-export function actionContext (context: ActionContext = {}) {
+export function actionContext (context: ActionContext = {}): Vuex.ActionContext<any, any> {
   return {
     state: context.state || {},
     rootState: context.rootState || {},

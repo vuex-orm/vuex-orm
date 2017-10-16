@@ -1,4 +1,4 @@
-import Vuex from 'vuex'
+import * as Vuex from 'vuex'
 import { State } from '../Module'
 import Repo, { Item, Collection } from '../Repo'
 

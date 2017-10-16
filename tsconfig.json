@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
+    "target": "es5",
+    "strict": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "es5",
     "rootDir": "src",
     "outDir": "lib",
     "declaration": true,
@@ -13,7 +14,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
-    "allowSyntheticDefaultImports": true,
 
     "lib": [
       "dom",
