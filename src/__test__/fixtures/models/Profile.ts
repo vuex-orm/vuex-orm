@@ -6,8 +6,8 @@ export default class Profile extends Model {
 
   static fields (): Fields {
     return {
-      user_id: this.attr(null),
       id: this.attr(null),
+      user_id: this.attr(null),
       user: this.belongsTo(User, 'user_id')
     }
   }

@@ -327,7 +327,7 @@ test('Model can serialize own fields into json', (t) => {
     id: 1,
     title: 'Post Title',
     user_id: 1,
-    author: { id:1, name: 'John' },
+    author: { id: 1, name: 'John' },
     comments: [
       { id: 1, post_id: 1, body: 'C1' },
       { id: 2, post_id: 1, body: 'C2' }
