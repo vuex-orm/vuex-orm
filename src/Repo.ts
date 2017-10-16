@@ -1,7 +1,7 @@
 import * as _ from 'lodash'
 import Container from './connections/Container'
 import { Record, NormalizedData } from './Data'
-import { Type as AttrType, HasOne, BelongsTo } from './Attributes'
+import { Type as AttrType, HasOne, BelongsTo, HasMany } from './Attributes'
 import Model, { Attrs, Fields } from './Model'
 import { State } from './Module'
 import Query, { Item as QueryItem, Collection as QueryCollection, OrderDirection } from './Query'
@@ -235,6 +235,7 @@ export default class Repo {
    */
   loadRelations (record: Record): Record {
     return _.reduce(this.load, (record, relation) => {
+
       if (_.isNil(record[relation])) {
         return record
       }
@@ -254,6 +255,12 @@ export default class Repo {
 
       if (attr.type === AttrType.BelongsTo) {
         record[relation] = this.loadBelongsToRelation(record, attr as BelongsTo)
+
+        return record
+      }
+
+      if (attr.type === AttrType.HasMany) {
+        record[relation] = this.loadHasManyRelation(record, attr as HasMany)
 
         return record
       }
@@ -283,9 +290,19 @@ export default class Repo {
   }
 
   /**
+   * Load the has many relationship for the record.
+   */
+  loadHasManyRelation (record: Record, attr: HasMany): Record[] | null {
+    const relation: string = this.resolveRelation(attr).entity
+    const field: string = attr.foreignKey
+
+    return this.self().query(this.state, relation, this.wrap).where(field, record.id).get()
+  }
+
+  /**
    * Resolve relation out of the container.
    */
-  resolveRelation (attr: HasOne | BelongsTo): typeof Model {
+  resolveRelation (attr: HasOne | BelongsTo | HasMany): typeof Model {
     if (!_.isString(attr.model)) {
       return attr.model
     }

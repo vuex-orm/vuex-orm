@@ -3,12 +3,14 @@ import { createApplication } from './support/Helpers'
 import User from './fixtures/models/User'
 import Profile from './fixtures/models/Profile'
 import Post from './fixtures/models/Post'
+import Comment from './fixtures/models/Comment'
 import Repo from '../Repo'
 
 createApplication('entities', [
   { model: User },
   { model: Profile },
-  { model: Post }
+  { model: Post },
+  { model: Comment }
 ])
 
 test('Repo can get all data of the entity as class', (t) => {
@@ -111,7 +113,7 @@ test('Repo can find a single item of entity by id', (t) => {
   t.is(user.id, 2)
 })
 
-test('Repo can resolve has one relation by regitering `with` clause', (t) => {
+test('Repo can resolve has one relation', (t) => {
   const state = {
     name: 'entities',
     users: { data: {
@@ -136,7 +138,7 @@ test('Repo can resolve has one relation by regitering `with` clause', (t) => {
   t.deepEqual(result, expected)
 })
 
-test('Repo can resolve belongs to relation by regitering `with` clause', (t) => {
+test('Repo can resolve belongs to relation', (t) => {
   const state = {
     name: 'entities',
     users: { data: {
@@ -186,7 +188,7 @@ test('Repo can resolve belongs to relation which its id is 0', (t) => {
   t.deepEqual(result, expected)
 })
 
-test('Repo can resolve belongs to relation by regitering `with` clause and instantiate the result record', (t) => {
+test('Repo can resolve belongs to relation and instantiate the result record', (t) => {
   const state = {
     name: 'entities',
     users: { data: {
@@ -205,6 +207,33 @@ test('Repo can resolve belongs to relation by regitering `with` clause and insta
 
   t.true(result instanceof Post)
   t.true(result.author instanceof User)
+})
+
+test('Repo can resolve has many relation', (t) => {
+  const state = {
+    name: 'entities',
+    posts: { data: {
+      '1': { id: 1, title: 'Post Title', comments: [] }
+    }},
+    comments: { data: {
+      '1': { id: 1, post_id: 1, body: 'Comment 01' },
+      '2': { id: 2, post_id: 2, body: 'Comment 02' },
+      '3': { id: 2, post_id: 1, body: 'Comment 03' }
+    }}
+  }
+
+  const expected = {
+    id: 1,
+    title: 'Post Title',
+    comments: [
+      { id: 1, post_id: 1, body: 'Comment 01' },
+      { id: 2, post_id: 1, body: 'Comment 03' }
+    ]
+  }
+
+  const result = Repo.query(state, 'posts', false).with('comments').first()
+
+  t.deepEqual(result, expected)
 })
 
 test('Repo can create a single data in Vuex Store', (t) => {
@@ -239,17 +268,20 @@ test('Repo can create a list of data in Vuex Store', (t) => {
     users: { data: {
       '5': { id: 5 }
     }},
-    posts: { data: {} }
+    posts: { data: {} },
+    comments: { data: {} }
   }
 
   const data = [
     {
       id: 1,
-      author: { id: 10 }
+      author: { id: 10 },
+      comments: [{ id: 1, post_id: 1, body: 'C1' }]
     },
     {
       id: 2,
-      author: { id: 11 }
+      author: { id: 11 },
+      comments: [{ id: 2, post_id: 2, body: 'C2' }, { id: 3, post_id: 2, body: 'C3' }]
     }
   ]
 
@@ -260,8 +292,13 @@ test('Repo can create a list of data in Vuex Store', (t) => {
       '11': { id: 11 }
     }},
     posts: { data: {
-      '1': { id: 1, user_id: 10, author: 10 },
-      '2': { id: 2, user_id: 11, author: 11 }
+      '1': { id: 1, user_id: 10, author: 10, comments: [1] },
+      '2': { id: 2, user_id: 11, author: 11, comments: [2, 3] }
+    }},
+    comments: { data: {
+      '1': { id: 1, post_id: 1, body: 'C1' },
+      '2': { id: 2, post_id: 2, body: 'C2' },
+      '3': { id: 3, post_id: 2, body: 'C3' }
     }}
   }
 

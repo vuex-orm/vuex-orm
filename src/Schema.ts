@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 import { schema, Schema as NormalizrSchema } from 'normalizr'
-import { Type as AttrType, BelongsTo } from './Attributes'
+import { Type as AttrType, BelongsTo, HasMany } from './Attributes'
 import Model from './Model'
 
 export default class Schema {
@@ -27,6 +27,14 @@ export default class Schema {
     return _.reduce(model.fields(), (definition, relation, key) => {
       if (relation.type === AttrType.BelongsTo) {
         definition[key] = this.one(model.resolveRelation(relation as BelongsTo))
+
+        return definition
+      }
+
+      if (relation.type === AttrType.HasMany) {
+        definition[key] = this.many(model.resolveRelation(relation as HasMany))
+
+        return definition
       }
 
       return definition
