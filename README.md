@@ -189,7 +189,7 @@ store.getters['entities/query']('posts').with('author').first()
 // }
 ```
 
-Cool right?
+Cool right? To get know more about Vuex ORM, please [see the documentation](https://revolver-app.gitbooks.io/vuex-orm)
 
 ## Currently Available Relationship
 
