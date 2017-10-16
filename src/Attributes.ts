@@ -3,7 +3,8 @@ import Model from './Model'
 export enum Type {
   Attr = 'Attr',
   HasOne = 'HasOne',
-  BelongsTo = 'BelongsTo'
+  BelongsTo = 'BelongsTo',
+  HasMany = 'HasMany'
 }
 
 export interface Attr {
@@ -20,6 +21,13 @@ export interface HasOne {
 
 export interface BelongsTo {
   type: Type.BelongsTo
+  model: typeof Model | string
+  foreignKey: string
+  value: any
+}
+
+export interface HasMany {
+  type: Type.HasMany
   model: typeof Model | string
   foreignKey: string
   value: any
@@ -46,5 +54,12 @@ export default class Attributes {
    */
   static belongsTo (model: typeof Model | string, foreignKey: string): BelongsTo {
     return { type: Type.BelongsTo, model, foreignKey, value: null }
+  }
+
+  /**
+   * The has many relationship.
+   */
+  static hasMany (model: typeof Model | string, foreignKey: string): HasMany {
+    return { type: Type.HasMany, model, foreignKey, value: null }
   }
 }

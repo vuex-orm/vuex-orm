@@ -239,3 +239,48 @@ test('Model can resolve belongs to relation', (t) => {
   t.is(post.author.name, 'Jane Doe')
   t.is(post.author.email, 'jane@example.com')
 })
+
+test('Model can resolve has many relation', (t) => {
+  class Comment extends Model {
+    static entity = 'comments'
+
+    static fields () {
+      return {
+        id: this.attr(null),
+        post_id: this.attr(null),
+        body: this.attr('')
+      }
+    }
+  }
+
+  class Post extends Model {
+    static entity = 'posts'
+
+    static fields () {
+      return {
+        id: this.attr(null),
+        title: this.attr(''),
+        comments: this.hasMany(Comment, 'post_id')
+      }
+    }
+  }
+
+  const data = {
+    id: 1,
+    title: 'Post title',
+    comments: [
+      { id: 1, post_id: 1, body: 'Comment 01' },
+      { id: 2, post_id: 2, body: 'Comment 02' }
+    ]
+  }
+
+  const post = new Post(data)
+
+  t.is(post.title, 'Post title')
+
+  t.is(post.comments.length, 2)
+  t.true(post.comments[0] instanceof Comment)
+  t.true(post.comments[1] instanceof Comment)
+  t.is(post.comments[0].body, 'Comment 01')
+  t.is(post.comments[1].body, 'Comment 02')
+})

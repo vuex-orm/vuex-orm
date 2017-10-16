@@ -2,10 +2,10 @@ import * as _ from 'lodash'
 import { Schema as NormalizrSchema } from 'normalizr'
 import Container from './connections/Container'
 import Data, { Record, Records, NormalizedData } from './Data'
-import Attributes, { Type as AttrType, Attr, HasOne, BelongsTo } from './Attributes'
+import Attributes, { Type as AttrType, Attr, HasOne, BelongsTo, HasMany } from './Attributes'
 import Schema from './Schema'
 
-export type Attrs = Attr | HasOne | BelongsTo
+export type Attrs = Attr | HasOne | BelongsTo | HasMany
 
 export interface Fields {
   [field: string]: Attrs
@@ -64,6 +64,13 @@ export default class Model {
   }
 
   /**
+   * Creates has many relationship.
+   */
+  static hasMany (model: typeof Model | string, foreignKey: string): HasMany {
+    return Attributes.hasMany(model, foreignKey)
+  }
+
+  /**
    * Find relation model from the container.
    */
   static relation (name: string): typeof Model {
@@ -73,7 +80,7 @@ export default class Model {
   /**
    * Resolve relation out of the container.
    */
-  static resolveRelation (attr: HasOne | BelongsTo): typeof Model {
+  static resolveRelation (attr: HasOne | BelongsTo | HasMany): typeof Model {
     return _.isString(attr.model) ? this.relation(attr.model) : attr.model
   }
 
@@ -170,6 +177,14 @@ export default class Model {
         const model = this.$resolveRelation(field as BelongsTo)
 
         this[key] = field.value ? new model(field.value) : null
+
+        return
+      }
+
+      if (field.type === AttrType.HasMany) {
+        const model = this.$resolveRelation(field as HasMany)
+
+        this[key] = field.value ? field.value.map((v: any) => new model(v)) : null
       }
     })
   }
@@ -200,7 +215,7 @@ export default class Model {
   /**
    * Resolve relation out of the container.
    */
-  $resolveRelation (attr: HasOne | BelongsTo): typeof Model {
+  $resolveRelation (attr: HasOne | BelongsTo | HasMany): typeof Model {
     return this.$self().resolveRelation(attr)
   }
 }
