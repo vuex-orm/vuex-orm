@@ -15,7 +15,7 @@ describe('Repo', () => {
     ])
   })
 
-  it('Repo can get all data of the entity as class', () => {
+  it('can get all data of the entity as class', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -37,7 +37,7 @@ describe('Repo', () => {
     expect(users[1].id).toBe(2)
   })
 
-  it('Repo can get all data of the entity as plain object', () => {
+  it('can get all data of the entity as plain object', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -53,7 +53,7 @@ describe('Repo', () => {
     expect(Repo.all(state, 'users', false)).toEqual(expected)
   })
 
-  it('Repo can get all data of the entity that matches the where query', () => {
+  it('can get all data of the entity that matches the where query', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -76,7 +76,7 @@ describe('Repo', () => {
     expect(result).toEqual(expected)
   })
 
-  it('Repo can get single data of the entity that matches the where query', () => {
+  it('can get single data of the entity that matches the where query', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -96,7 +96,7 @@ describe('Repo', () => {
     expect(result).toEqual(expected)
   })
 
-  it('Repo can find a single item of entity by id', () => {
+  it('can find a single item of entity by id', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -115,7 +115,7 @@ describe('Repo', () => {
     expect(user.id).toBe(2)
   })
 
-  it('Repo can resolve has one relation', () => {
+  it('can resolve has one relation', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -140,7 +140,7 @@ describe('Repo', () => {
     expect(result).toEqual(expected)
   })
 
-  it('Repo can resolve belongs to relation', () => {
+  it('can resolve belongs to relation', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -165,7 +165,7 @@ describe('Repo', () => {
     expect(result).toEqual(expected)
   })
 
-  it('Repo can resolve belongs to relation which its id is 0', () => {
+  it('can resolve belongs to relation which its id is 0', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -190,7 +190,7 @@ describe('Repo', () => {
     expect(result).toEqual(expected)
   })
 
-  it('Repo can resolve belongs to relation and instantiate the result record', () => {
+  it('can resolve belongs to relation and instantiate the result record', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -211,7 +211,7 @@ describe('Repo', () => {
     expect(result.author).toBeInstanceOf(User)
   })
 
-  it('Repo can resolve has many relation', () => {
+  it('can resolve has many relation', () => {
     const state = {
       name: 'entities',
       posts: { data: {
@@ -238,7 +238,7 @@ describe('Repo', () => {
     expect(result).toEqual(expected)
   })
 
-  it('Repo can create a single data in Vuex Store', () => {
+  it('can create a single data in Vuex Store', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -264,7 +264,7 @@ describe('Repo', () => {
     expect(state).toEqual(expected)
   })
 
-  it('Repo can create a list of data in Vuex Store', () => {
+  it('can create a list of data in Vuex Store', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -309,7 +309,7 @@ describe('Repo', () => {
     expect(state).toEqual(expected)
   })
 
-  it('Repo can create with empty data', () => {
+  it('can create with empty data', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -329,7 +329,7 @@ describe('Repo', () => {
     expect(state).toEqual(expected)
   })
 
-  it('Repo can insert single data to Vuex Store', () => {
+  it('can insert single data to Vuex Store', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -354,7 +354,7 @@ describe('Repo', () => {
     expect(state).toEqual(expected)
   })
 
-  it('Repo can insert a list of data to Vuex Store', () => {
+  it('can insert a list of data to Vuex Store', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -382,7 +382,7 @@ describe('Repo', () => {
     expect(state).toEqual(expected)
   })
 
-  it('Repo can insert with empty data', () => {
+  it('can insert with empty data', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -404,7 +404,7 @@ describe('Repo', () => {
     expect(state).toEqual(expected)
   })
 
-  it('Repo can sort by model fields', () => {
+  it('can sort by model fields', () => {
     const state = {
       name: 'entities',
       users: { data: {

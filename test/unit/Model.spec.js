@@ -3,7 +3,7 @@ import { schema } from 'normalizr'
 import Model from 'app/Model'
 
 describe('Model', () => {
-  it('Model can create a schema', () => {
+  it('can create a schema', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -13,7 +13,7 @@ describe('Model', () => {
     expect(User.schema()).toBeInstanceOf(schema.Entity)
   })
 
-  it('Model can create a list of schema', () => {
+  it('can create a list of schema', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -23,7 +23,7 @@ describe('Model', () => {
     expect(User.schema(true)).toBeInstanceOf(schema.Array)
   })
 
-  it('Model can generate normalized data from single data', () => {
+  it('can generate normalized data from single data', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -48,7 +48,7 @@ describe('Model', () => {
     expect(User.normalize(data)).toEqual(expected)
   })
 
-  it('Model can generate normalized data from list of data', () => {
+  it('can generate normalized data from list of data', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -77,7 +77,7 @@ describe('Model', () => {
     expect(User.normalize(data)).toEqual(expected)
   })
 
-  it('Model can generate normalized data with belogns to relation', () => {
+  it('can generate normalized data with belogns to relation', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -120,7 +120,7 @@ describe('Model', () => {
     expect(Post.normalize(data)).toEqual(expected)
   })
 
-  it('Model should set default field values as a property on instanciation', () => {
+  it('should set default field values as a property on instanciation', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -138,7 +138,7 @@ describe('Model', () => {
     expect(user.email).toBe('john@example.com')
   })
 
-  it('Model should set given field values as a property on instanciation', () => {
+  it('should set given field values as a property on instanciation', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -157,7 +157,7 @@ describe('Model', () => {
     expect(user.age).toBe(undefined)
   })
 
-  it('Model can resolve has one relation', () => {
+  it('can resolve has one relation', () => {
     class Profile extends Model {
       static entity = 'profiles'
 
@@ -200,7 +200,7 @@ describe('Model', () => {
     expect(user.profile.sex).toBe('male')
   })
 
-  it('Model can resolve belongs to relation', () => {
+  it('can resolve belongs to relation', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -240,7 +240,7 @@ describe('Model', () => {
     expect(post.author.email).toBe('jane@example.com')
   })
 
-  it('Model can resolve has many relation', () => {
+  it('can resolve has many relation', () => {
     class Comment extends Model {
       static entity = 'comments'
 
@@ -285,7 +285,7 @@ describe('Model', () => {
     expect(post.comments[1].body).toBe('Comment 02')
   })
 
-  it('Model can serialize own fields into json', () => {
+  it('can serialize own fields into json', () => {
     class User extends Model {
       static entity = 'users'
 
