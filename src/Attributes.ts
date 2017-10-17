@@ -2,6 +2,7 @@ import Model from './Model'
 
 export enum Type {
   Attr = 'Attr',
+  Date = 'Date',
   HasOne = 'HasOne',
   BelongsTo = 'BelongsTo',
   HasMany = 'HasMany'
@@ -9,6 +10,11 @@ export enum Type {
 
 export interface Attr {
   type: Type.Attr
+  value: any
+}
+
+export interface Date {
+  type: Type.Date
   value: any
 }
 
@@ -40,6 +46,13 @@ export default class Attributes {
    */
   static attr (value: any): Attr {
     return { type: Type.Attr, value }
+  }
+
+  /**
+   * The date attribute. This attribute will be converted to moment instance.
+   */
+  static date (value: any): Date {
+    return { type: Type.Date, value }
   }
 
   /**

@@ -1,11 +1,19 @@
 import * as _ from 'lodash'
+import * as moment from 'moment'
 import { Schema as NormalizrSchema } from 'normalizr'
 import Container from './connections/Container'
 import Data, { Record, Records, NormalizedData } from './Data'
-import Attributes, { Type as AttrType, Attr, HasOne, BelongsTo, HasMany } from './Attributes'
 import Schema from './Schema'
+import Attributes, {
+  Type as AttrType,
+  Attr,
+  Date,
+  HasOne,
+  BelongsTo,
+  HasMany
+} from './Attributes'
 
-export type Attrs = Attr | HasOne | BelongsTo | HasMany
+export type Attrs = Attr | Date | HasOne | BelongsTo | HasMany
 
 export interface Fields {
   [field: string]: Attrs
@@ -47,6 +55,13 @@ export default class Model {
    */
   static attr (value: any): Attr {
     return Attributes.attr(value)
+  }
+
+  /**
+   * The date attribute. This attribute will be converted to moment instance.
+   */
+  static date (value: any): Date {
+    return Attributes.date(value)
   }
 
   /**
@@ -165,6 +180,12 @@ export default class Model {
         return
       }
 
+      if (field.type === AttrType.Date) {
+        this[key] = moment(field.value)
+
+        return
+      }
+
       if (_.isNumber(field.value)) {
         this[key] = field.value
 
@@ -232,6 +253,10 @@ export default class Model {
     return _.mapValues(this.$self().fields(), (attr, key) => {
       if (!this[key]) {
         return this[key]
+      }
+
+      if (attr.type === AttrType.Date) {
+        return this[key].toISOString()
       }
 
       if (attr.type === AttrType.HasOne || attr.type === AttrType.BelongsTo) {
