@@ -128,10 +128,19 @@ export default class Repo {
   }
 
   /**
-   * Add a basic where clause to the query.
+   * Add a and where clause to the query.
    */
   where (field: string, value: any): this {
     this.query.where(field, value)
+
+    return this
+  }
+
+  /**
+   * Add a or where clause to the query.
+   */
+  orWhere (field: string, value: any): this {
+    this.query.orWhere(field, value)
 
     return this
   }

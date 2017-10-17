@@ -6,17 +6,20 @@ export type Item = Record | null
 
 export type Collection = Record[] | null
 
+export type WhereBoolean = 'and' | 'or'
+
+export type OrderDirection = 'asc' | 'desc'
+
 export interface Wheres {
   field: string
   value: any
+  boolean: WhereBoolean
 }
 
 export interface Orders {
   field: string
   direction: OrderDirection
 }
-
-export type OrderDirection = 'asc' | 'desc'
 
 export default class Query {
   /**
@@ -109,10 +112,19 @@ export default class Query {
   }
 
   /**
-   * Add a basic where clause to the query.
+   * Add a and where clause to the query.
    */
   where (field: string, value: any): this {
-    this.wheres.push({ field, value })
+    this.wheres.push({ field, value, boolean: 'and' })
+
+    return this
+  }
+
+  /**
+   * Add a or where clause to the query.
+   */
+  orWhere (field: string, value: any): this {
+    this.wheres.push({ field, value, boolean: 'or' })
 
     return this
   }
@@ -165,9 +177,12 @@ export default class Query {
    * Filter the given data by registered where clause.
    */
   selectByWheres (records: Records): Records {
-    const predicate: { [field: string]: any } = this.matchPredicate()
-
-    return _.pickBy<Records, Records>(records, _.matches(predicate))
+    // const predicate: { [field: string]: any } = this.matchPredicate()
+// console.log(this.whereClosure()('ki'))
+// console.log(this.wheres)
+// console.log(records)
+    // return _.pickBy<Records, Records>(records, _.matches(predicate))
+    return _.pickBy<Records, Records>(records, this.whereClosure() as (record: Record) => boolean)
   }
 
   /**
@@ -176,17 +191,50 @@ export default class Query {
   sortByOrders (records: Records): Collection {
     const keys = _.map(this.orders, 'field')
     const directions = _.map(this.orders, 'direction')
+
     return _.orderBy(records, keys, directions)
   }
 
   /**
    * Generate predicate from registered where clause.
    */
-  matchPredicate (): { [field: string]: any } {
-    return _.reduce(this.wheres, (predicate, clause) => {
-      predicate[clause.field] = clause.value
+  whereClosure (): Function {
+    const conditions: string = this.whereConditions()
 
-      return predicate
-    }, {} as { [field: string]: any })
+    return new Function('record', `
+      return ${conditions}
+    `)
+  }
+
+  /**
+   * Create where conditions to be used with `whereClosure`. The result
+   * would look something like;
+   *
+   *   record['name'] === 'John' && record['age'] === 20
+   */
+  whereConditions (): string {
+    let condition: string = ''
+
+    this.wheres.forEach((cond, index) => {
+      if (index > 0) {
+        condition = cond.boolean === 'and' ? `${condition} && ` : `${condition} || `
+      }
+
+      if (_.isFunction(cond.field)) {
+        condition = `${condition}(${cond.field.toString()})(record)`
+
+        return
+      }
+
+      if (_.isFunction(cond.value)) {
+        condition = `${condition}(${cond.value.toString()})(record['${cond.field}'])`
+
+        return
+      }
+
+      condition = `${condition}record['${cond.field}'] == '${cond.value}'`
+    })
+
+    return condition
   }
 }

@@ -7,4 +7,7 @@
     - [Relationship](model/relationship.md)
     - [Mutators](model/mutators.md)
     - [Serialization](model/serialization.md)
-- [Creating and Updating the Store](creating-and-updating-the-store.md)
+- Interacting With Store
+    - [Creating and Updating](creating-and-updating.md)
+    - [Retrieving Data](retrieving-data.md)
+
