@@ -2,5 +2,8 @@
 
 - [Installation](installation.md)
 - [Getting Started](getting-started.md)
-- [Defining Model](defining-model.md)
+- Model
+    - [Getting Started](model/getting-started.md)
+    - [Relationship](model/relationship.md)
+    - [Serialization](model/serialization.md)
 - [Creating and Updating the Store](creating-and-updating-the-store.md)
