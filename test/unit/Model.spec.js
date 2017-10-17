@@ -354,7 +354,7 @@ describe('Model', () => {
       ]
     }
 
-    const expected = { ...data, created_at: '1985-10-09T15:10:20.000Z' }
+    const expected = { ...data, created_at: moment('1985-10-10 00:10:20').toISOString() }
 
     const post = new Post(data)
 
