@@ -165,6 +165,12 @@ export default class Model {
         return
       }
 
+      if (_.isNumber(field.value)) {
+        this[key] = field.value
+
+        return
+      }
+
       if (field.type === AttrType.HasOne) {
         const model = this.$resolveRelation(field as HasOne)
 
@@ -224,6 +230,10 @@ export default class Model {
    */
   $toJson (): any {
     return _.mapValues(this.$self().fields(), (attr, key) => {
+      if (!this[key]) {
+        return this[key]
+      }
+
       if (attr.type === AttrType.HasOne || attr.type === AttrType.BelongsTo) {
         return this[key].$toJson()
       }

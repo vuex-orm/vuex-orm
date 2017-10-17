@@ -1,9 +1,11 @@
 import * as _ from 'lodash'
 import * as Vuex from 'vuex'
 import Model from './Model'
-import getters from './modules/getters'
-import actions from './modules/actions'
+import rootGetters from './modules/rootGetters'
+import rootActions from './modules/rootActions'
 import mutations from './modules/mutations'
+import subGetters from './modules/subGetters'
+import subActions from './modules/subActions'
 
 export interface Entity {
   model: typeof Model
@@ -16,7 +18,9 @@ export interface State {
 }
 
 export interface EntityState {
-  data: {}
+  $connection: string,
+  $name: string,
+  data: {},
   [key: string]: any
 }
 
@@ -26,6 +30,8 @@ export default class Module {
    * entity's state if it has any.
    */
   static state: EntityState = {
+    $connection: '',
+    $name: '',
     data: {}
   }
 
@@ -36,11 +42,11 @@ export default class Module {
     return {
       namespaced: true,
       state: { name: namespace },
-      getters,
-      actions,
+      getters: rootGetters,
+      actions: rootActions,
       mutations,
 
-      modules: this.createTree(entities)
+      modules: this.createTree(namespace, entities)
     }
   }
 
@@ -48,26 +54,31 @@ export default class Module {
    * Creates module tree to be registered under top level module
    * from the given entities.
    */
-  static createTree (entities: Entity[]): Vuex.ModuleTree<any> {
+  static createTree (namespace: string, entities: Entity[]): Vuex.ModuleTree<any> {
     let tree: Vuex.ModuleTree<any> = {}
 
     _.forEach(entities, (entity) => {
       tree[entity.model.entity] = {
         namespaced: true,
-        state: { ...entity.module.state, ...this.state }
+        state: {
+          ...entity.module.state,
+          ...this.state,
+          $connection: namespace,
+          $name: entity.model.entity,
+        }
       }
 
-      if (entity.module.getters) {
-        tree[entity.model.entity]['getters'] = entity.module.getters
-      }
+      tree[entity.model.entity]['getters'] = {
+        ...subGetters,
+        ...entity.module.getters
+      } as Vuex.GetterTree<any, any>
 
-      if (entity.module.actions) {
-        tree[entity.model.entity]['actions'] = entity.module.actions
-      }
+      tree[entity.model.entity]['actions'] = {
+        ...subActions,
+        ...entity.module.actions
+      } as Vuex.ActionTree<any, any>
 
-      if (entity.module.mutations) {
-        tree[entity.model.entity]['mutations'] = entity.module.mutations
-      }
+      tree[entity.model.entity]['mutations'] = entity.module.mutations || {}
     })
 
     return tree

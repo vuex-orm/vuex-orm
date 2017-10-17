@@ -1,7 +1,9 @@
 import test from 'ava'
-import getters from '../modules/getters'
-import actions from '../modules/actions'
+import getters from '../modules/rootGetters'
+import actions from '../modules/rootActions'
 import mutations from '../modules/mutations'
+import subActions from '../modules/subActions'
+import subGetters from '../modules/subGetters'
 import Model from '../Model'
 import Database from '../Database'
 
@@ -46,12 +48,16 @@ test('Database can generate Vuex Module Tree from registered entities', (t) => {
     modules: {
       users: {
         namespaced: true,
-        state: { data: {} },
-        actions: {}
+        state: { $connection: 'entities', $name: 'users', data: {} },
+        getters: subGetters,
+        actions: subActions,
+        mutations: {}
       },
       posts: {
         namespaced: true,
-        state: { data: {} },
+        state: { $connection: 'entities', $name: 'posts', data: {} },
+        getters: subGetters,
+        actions: subActions,
         mutations: {}
       }
     }

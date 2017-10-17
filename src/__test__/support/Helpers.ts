@@ -1,9 +1,16 @@
 import * as sinon from 'sinon'
 import * as _ from 'lodash'
 import * as Vuex from 'vuex'
+import VuexORM from '../..'
 import Container from '../../connections/Container'
 import Database from '../../Database'
 import Model from '../../Model'
+
+declare const require: any
+
+const Vue = require('vue')
+
+Vue.use(Vuex)
 
 export interface Entity {
   model: typeof Model
@@ -34,6 +41,21 @@ export function createApplication (namespace: string, entities: Entity[]): Conta
   Container.register(namespace, database)
 
   return Container
+}
+
+/**
+ * Create a new Vuex Store.
+ */
+export function createStore (entities: Entity[]): Vuex.Store<any> {
+  const database = new Database()
+
+  _.forEach(entities, (entity) => {
+    database.register(entity.model, entity.module || {})
+  })
+
+  return new Vuex.Store({
+    plugins: [VuexORM(database)]
+  })
 }
 
 /**
