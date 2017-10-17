@@ -228,7 +228,7 @@ Lint files using a rule of Standard JS.
 $ npm run test
 ```
 
-Run the test using [AVA](https://github.com/avajs/ava).
+Run the test using [Mocha Webpack](https://github.com/zinserjan/mocha-webpack).
 
 ```console
 $ npm run coverage

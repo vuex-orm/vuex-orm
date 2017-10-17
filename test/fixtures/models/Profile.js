@@ -1,10 +1,10 @@
-import Model, { Fields } from '../../../Model'
+import Model, { Fields } from 'app/Model'
 import User from './User'
 
 export default class Profile extends Model {
-  static entity: string = 'profiles'
+  static entity = 'profiles'
 
-  static fields (): Fields {
+  static fields () {
     return {
       id: this.attr(null),
       user_id: this.attr(null),

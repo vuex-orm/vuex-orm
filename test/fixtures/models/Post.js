@@ -1,11 +1,11 @@
-import Model, { Fields } from '../../../Model'
+import Model, { Fields } from 'app/Model'
 import User from './User'
 import Comment from './Comment'
 
 export default class Post extends Model {
   static entity = 'posts'
 
-  static fields (): Fields {
+  static fields () {
     return {
       id: this.attr(null),
       user_id: this.attr(null),

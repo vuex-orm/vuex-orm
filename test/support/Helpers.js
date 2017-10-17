@@ -1,35 +1,17 @@
-import * as sinon from 'sinon'
-import * as _ from 'lodash'
-import * as Vuex from 'vuex'
-import VuexORM from '../..'
-import Container from '../../connections/Container'
-import Database from '../../Database'
-import Model from '../../Model'
-
-declare const require: any
-
-const Vue = require('vue')
+import _ from 'lodash'
+import Vue from 'vue'
+import Vuex from 'vuex'
+import VuexORM from 'app'
+import Container from 'app/connections/Container'
+import Database from 'app/Database'
+import Model from 'app/Model'
 
 Vue.use(Vuex)
-
-export interface Entity {
-  model: typeof Model
-  module?: Vuex.Module<any, any>
-}
-
-export interface ActionContext {
-  state?: any
-  rootState?: any
-  getters?: any
-  rootGetters?: any
-  dispatch?: any
-  commit?: any
-}
 
 /**
  * Create whole application.
  */
-export function createApplication (namespace: string, entities: Entity[]): Container {
+export function createApplication (namespace, entities) {
   const database = new Database()
 
   _.forEach(entities, (entity) => {
@@ -46,7 +28,7 @@ export function createApplication (namespace: string, entities: Entity[]): Conta
 /**
  * Create a new Vuex Store.
  */
-export function createStore (entities: Entity[]): Vuex.Store<any> {
+export function createStore (entities) {
   const database = new Database()
 
   _.forEach(entities, (entity) => {
@@ -61,7 +43,7 @@ export function createStore (entities: Entity[]): Vuex.Store<any> {
 /**
  * Get action context that can be passed to action as arugument.
  */
-export function actionContext (context: ActionContext = {}): Vuex.ActionContext<any, any> {
+export function actionContext (context = {}) {
   return {
     state: context.state || {},
     rootState: context.rootState || {},

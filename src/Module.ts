@@ -64,7 +64,7 @@ export default class Module {
           ...entity.module.state,
           ...this.state,
           $connection: namespace,
-          $name: entity.model.entity,
+          $name: entity.model.entity
         }
       }
 

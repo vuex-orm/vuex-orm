@@ -1,9 +1,9 @@
-import Model, { Fields } from '../../../Model'
+import Model, { Fields } from 'app/Model'
 
 export default class Comment extends Model {
   static entity = 'comments'
 
-  static fields (): Fields {
+  static fields () {
     return {
       id: this.attr(null),
       post_id: this.attr(null),

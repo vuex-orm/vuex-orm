@@ -10,17 +10,12 @@
   "scripts": {
     "dev": "tsc -p . --watch",
     "build": "npm run clean && tsc -p .",
-    "clean": "rm -rf lib && rm -rf coverage && rm -rf .nyc_output",
+    "clean": "rm -rf lib && rm -rf coverage && rm -rf .nyc_output && rm -rf .tmp",
     "lint": "tslint 'src/**/*.ts' -c tslint.json -p . --type-check --fix",
-    "test": "npm run build -- --target es2015 && ava lib/**/__test__/**/*.spec.js",
-    "test:watch": "npm run build -- --target es2015 && npm run dev & ava lib/**/__test__/**/*.spec.js --watch",
-    "coverage": "npm run build -- --target es2015 && nyc ava lib/**/__test__/**/*.spec.js && nyc report --reporter=html",
-    "prepare": "npm run lint && npm run test && npm run build && rm -rf lib/__test__ && rm -rf rm -rf lib/**/__test__"
-  },
-  "nyc": {
-    "exclude": [
-      "**/__test__/**"
-    ]
+    "test": "mocha-webpack --webpack-config webpack.config.js --require test/bootstrap.js 'test/**/*.spec.js'",
+    "test:watch": "mocha-webpack --webpack-config webpack.config.js --watch --require test/bootstrap.js 'test/**/*.spec.js'",
+    "coverage": "NODE_ENV=coverage nyc --reporter=lcov --reporter=text npm run test",
+    "prepare": "npm run lint && npm run test && npm run build"
   },
   "repository": {
     "type": "git",
@@ -45,11 +40,33 @@
   },
   "devDependencies": {
     "@types/sinon": "^2.3.3",
-    "ava": "^0.22.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "expect": "^21.2.1",
+    "fork-ts-checker-webpack-plugin": "^0.2.8",
+    "istanbul-instrumenter-loader": "^3.0.0",
+    "mocha": "^4.0.1",
+    "mocha-webpack": "^0.7.0",
     "nyc": "^11.2.1",
     "sinon": "^4.0.1",
+    "ts-loader": "^3.0.2",
     "tslint": "^5.7.0",
     "tslint-config-standard": "^6.0.1",
-    "typescript": "^2.5.3"
+    "typescript": "^2.5.3",
+    "webpack": "^3.7.1",
+    "webpack-node-externals": "^1.6.0"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "**/__test__/**"
+    ],
+    "instrument": false,
+    "sourceMap": false
   }
 }
