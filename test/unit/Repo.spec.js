@@ -309,7 +309,7 @@ describe('Repo', () => {
     expect(state).toEqual(expected)
   })
 
-  it('can create with empty data', () => {
+  it('can create data with empty object', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -320,8 +320,7 @@ describe('Repo', () => {
 
     const expected = {
       name: 'entities',
-      users: { data: {
-      }}
+      users: { data: {} }
     }
 
     Repo.create(state, 'users', [])
