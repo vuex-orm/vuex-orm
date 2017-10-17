@@ -5,7 +5,8 @@ export enum Type {
   Date = 'Date',
   HasOne = 'HasOne',
   BelongsTo = 'BelongsTo',
-  HasMany = 'HasMany'
+  HasMany = 'HasMany',
+  HasManyBy = 'HasManyBy'
 }
 
 export interface Attr {
@@ -36,6 +37,14 @@ export interface HasMany {
   type: Type.HasMany
   model: typeof Model | string
   foreignKey: string
+  value: any
+}
+
+export interface HasManyBy {
+  type: Type.HasManyBy
+  model: typeof Model | string
+  foreignKey: string
+  otherKey: string
   value: any
 }
 
@@ -74,5 +83,12 @@ export default class Attributes {
    */
   static hasMany (model: typeof Model | string, foreignKey: string): HasMany {
     return { type: Type.HasMany, model, foreignKey, value: null }
+  }
+
+  /**
+   * The has many by relationship.
+   */
+  static hasManyBy (model: typeof Model | string, foreignKey: string, otherKey: string = 'id'): HasManyBy {
+    return { type: Type.HasManyBy, model, foreignKey, otherKey, value: null }
   }
 }

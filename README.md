@@ -196,8 +196,9 @@ Cool right? To get know more about Vuex ORM, please [see the documentation](http
 Since Vuex ORM is under development, currently supported relationships are below.
 
 - [x] hasOne
-- [x] hasMany
 - [x] belongsTo
+- [x] hasMany
+- [x] hasManyBy
 - [ ] hasAndBelongsToMany
 
 ## Contribution

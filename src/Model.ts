@@ -10,10 +10,11 @@ import Attributes, {
   Date,
   HasOne,
   BelongsTo,
-  HasMany
+  HasMany,
+  HasManyBy
 } from './Attributes'
 
-export type Attrs = Attr | Date | HasOne | BelongsTo | HasMany
+export type Attrs = Attr | Date | HasOne | BelongsTo | HasMany | HasManyBy
 
 export interface Fields {
   [field: string]: Attrs
@@ -91,6 +92,13 @@ export default class Model {
   }
 
   /**
+   * The has many by relationship.
+   */
+  static hasManyBy (model: typeof Model | string, foreignKey: string, otherKey: string): HasManyBy {
+    return Attributes.hasManyBy(model, foreignKey, otherKey)
+  }
+
+  /**
    * Find relation model from the container.
    */
   static relation (name: string): typeof Model {
@@ -100,7 +108,7 @@ export default class Model {
   /**
    * Resolve relation out of the container.
    */
-  static resolveRelation (attr: HasOne | BelongsTo | HasMany): typeof Model {
+  static resolveRelation (attr: HasOne | BelongsTo | HasMany | HasManyBy): typeof Model {
     return _.isString(attr.model) ? this.relation(attr.model) : attr.model
   }
 
@@ -217,6 +225,14 @@ export default class Model {
         const model = this.$resolveRelation(field as HasMany)
 
         this[key] = field.value ? field.value.map((v: any) => new model(v)) : null
+
+        return
+      }
+
+      if (field.type === AttrType.HasManyBy) {
+        const model = this.$resolveRelation(field as HasManyBy)
+
+        this[key] = field.value ? field.value.map((v: any) => new model(v)) : null
       }
     })
   }
@@ -247,7 +263,7 @@ export default class Model {
   /**
    * Resolve relation out of the container.
    */
-  $resolveRelation (attr: HasOne | BelongsTo | HasMany): typeof Model {
+  $resolveRelation (attr: HasOne | BelongsTo | HasMany | HasManyBy): typeof Model {
     return this.$self().resolveRelation(attr)
   }
 

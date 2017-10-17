@@ -286,6 +286,46 @@ describe('Model', () => {
     expect(post.comments[1].body).toBe('Comment 02')
   })
 
+  it('can resolve has many through relation', () => {
+    class Comment extends Model {
+      static entity = 'comments'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          body: this.attr('')
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          title: this.attr(''),
+          comments: this.hasManyBy(Comment, 'comments')
+        }
+      }
+    }
+
+    const data = {
+      id: 1,
+      title: 'Post title',
+      comments: [
+        { id: 1, post_id: 1, body: 'Comment 01' },
+        { id: 2, post_id: 2, body: 'Comment 02' }
+      ]
+    }
+
+    const post = new Post(data)
+
+    expect(post).toBeInstanceOf(Post)
+    expect(post.comments[0]).toBeInstanceOf(Comment)
+    expect(post.comments[1]).toBeInstanceOf(Comment)
+  })
+
   it('can cast date attributes to moment instance', () => {
     class User extends Model {
       static entity = 'users'

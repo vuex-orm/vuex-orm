@@ -140,3 +140,52 @@ class Post extends Model {
 ```
 
 For this example, Post has many Comments. The arguments for the `this.hasMany()` is again pretty much same as the others. The first argument is the model, and second is the 'foreign key' of the related model.
+
+### Has Many By
+
+In some case, the model it self has all the keys of the related model. Like below example.
+
+```js
+{
+  nodes: {
+    '1': { id: 1 },
+    '2': { id: 1 }
+  },
+  clusters: {
+    '1': {
+      id: 1,
+      nodes: [1, 2]
+    }
+  }
+}
+```
+
+As you can see, clusters wants to have has many relationship with nodes, but nodes doesn't have `cluster_id`. So you can't use `this.hasMany()` because there're no foreign key to look for. In such case you may use `this.hasManyBy()` relationship.
+
+```js
+import Model from 'vuex-orm/lib/Model'
+
+class Node extends Model {
+  static entities = 'nodes'
+
+  static field () {
+    return {
+      id: this.attr(null),
+      name: this.attr(null)
+    }
+  }
+}
+
+class Cluster extends Model {
+  static entities = 'clusters'
+
+  static field () {
+    return {
+      id: this.attr(null),
+      nodes: this.hasManyBy(Node, 'nodes')
+    }
+  }
+}
+```
+
+Now the cluster model will look for nodes by its own `nodes` attributes.

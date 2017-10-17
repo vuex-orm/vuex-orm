@@ -3,6 +3,7 @@ import User from 'test/fixtures/models/User'
 import Profile from 'test/fixtures/models/Profile'
 import Post from 'test/fixtures/models/Post'
 import Comment from 'test/fixtures/models/Comment'
+import Review from 'test/fixtures/models/Review'
 import CustomKey from 'test/fixtures/models/CustomKey'
 import Repo from 'app/Repo'
 
@@ -13,6 +14,7 @@ describe('Repo', () => {
       { model: Profile },
       { model: Post },
       { model: Comment },
+      { model: Review },
       { model: CustomKey }
     ])
   })
@@ -240,6 +242,31 @@ describe('Repo', () => {
     expect(result).toEqual(expected)
   })
 
+  it('can resolve has many by relation', () => {
+    const state = {
+      name: 'entities',
+      posts: { data: {
+        '1': { id: 1, title: 'Post Title', reviews: [1, 2] }
+      }},
+      reviews: { data: {
+        '1': { id: 1 },
+        '2': { id: 2 }
+      }}
+    }
+
+    const expected = {
+      id: 1,
+      title: 'Post Title',
+      reviews: [{ id: 1 }, { id: 2 }]
+    }
+
+    const post = Repo.query(state, 'posts').with('reviews').first()
+
+    expect(post).toBeInstanceOf(Post)
+    expect(post.reviews.length).toBe(2)
+    expect(post.reviews[0]).toBeInstanceOf(Review)
+  })
+
   it('can create a single data in Vuex Store', () => {
     const state = {
       name: 'entities',
@@ -273,19 +300,22 @@ describe('Repo', () => {
         '5': { id: 5 }
       }},
       posts: { data: {} },
-      comments: { data: {} }
+      comments: { data: {} },
+      reviews: { data: {} }
     }
 
-    const data = [
+    const posts = [
       {
         id: 1,
         author: { id: 10 },
-        comments: [{ id: 1, post_id: 1, body: 'C1' }]
+        comments: [{ id: 1, post_id: 1, body: 'C1' }],
+        reviews: [1, 2]
       },
       {
         id: 2,
         author: { id: 11 },
-        comments: [{ id: 2, post_id: 2, body: 'C2' }, { id: 3, post_id: 2, body: 'C3' }]
+        comments: [{ id: 2, post_id: 2, body: 'C2' }, { id: 3, post_id: 2, body: 'C3' }],
+        reviews: [3, 4]
       }
     ]
 
@@ -296,17 +326,18 @@ describe('Repo', () => {
         '11': { id: 11 }
       }},
       posts: { data: {
-        '1': { id: 1, user_id: 10, author: 10, comments: [1] },
-        '2': { id: 2, user_id: 11, author: 11, comments: [2, 3] }
+        '1': { id: 1, user_id: 10, author: 10, comments: [1], reviews: [1, 2] },
+        '2': { id: 2, user_id: 11, author: 11, comments: [2, 3], reviews: [3, 4] }
       }},
       comments: { data: {
         '1': { id: 1, post_id: 1, body: 'C1' },
         '2': { id: 2, post_id: 2, body: 'C2' },
         '3': { id: 3, post_id: 2, body: 'C3' }
-      }}
+      }},
+      reviews: { data: {} }
     }
 
-    Repo.create(state, 'posts', data)
+    Repo.create(state, 'posts', posts)
 
     expect(state).toEqual(expected)
   })
