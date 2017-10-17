@@ -31,6 +31,11 @@ export default class Model {
   static entity: string
 
   /**
+   * The primary key to be used for the model.
+   */
+  static primaryKey: string = 'id'
+
+  /**
    * Dynamic properties that field data should be assigned at instantiation.
    */
   ;[key: string]: any

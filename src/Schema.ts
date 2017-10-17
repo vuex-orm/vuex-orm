@@ -10,7 +10,9 @@ export default class Schema {
   static one (model: typeof Model): schema.Entity {
     const definition = this.definition(model)
 
-    return new schema.Entity(model.entity, definition)
+    return new schema.Entity(model.entity, definition, {
+      idAttribute: model.primaryKey
+    })
   }
 
   /**

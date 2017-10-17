@@ -3,6 +3,7 @@ import User from 'test/fixtures/models/User'
 import Profile from 'test/fixtures/models/Profile'
 import Post from 'test/fixtures/models/Post'
 import Comment from 'test/fixtures/models/Comment'
+import CustomKey from 'test/fixtures/models/CustomKey'
 import Repo from 'app/Repo'
 
 describe('Repo', () => {
@@ -11,7 +12,8 @@ describe('Repo', () => {
       { model: User },
       { model: Profile },
       { model: Post },
-      { model: Comment }
+      { model: Comment },
+      { model: CustomKey }
     ])
   })
 
@@ -324,6 +326,30 @@ describe('Repo', () => {
     }
 
     Repo.create(state, 'users', [])
+
+    expect(state).toEqual(expected)
+  })
+
+  it('can create data with custom primary key', () => {
+    const state = {
+      name: 'entities',
+      customKeys: { data: {} }
+    }
+
+    const data = [
+      { id: 1, my_id: 10 },
+      { id: 2, my_id: 20 }
+    ]
+
+    const expected = {
+      name: 'entities',
+      customKeys: { data: {
+        '10': { id: 1, my_id: 10 },
+        '20': { id: 2, my_id: 20 }
+      }}
+    }
+
+    Repo.create(state, 'customKeys', data)
 
     expect(state).toEqual(expected)
   })
