@@ -231,8 +231,8 @@ export default class Query {
 
         return
       }
-
-      condition = `${condition}record['${cond.field}'] == '${cond.value}'`
+      const valueText = typeof (cond.value) === 'string' ? `'${cond.value}'` : cond.value
+      condition = `${condition}record['${cond.field}'] == ${valueText}`
     })
 
     return condition
