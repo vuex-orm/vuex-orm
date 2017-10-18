@@ -61,20 +61,22 @@ describe('Repo', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, role: 'admin', sex: 'male' },
-        '2': { id: 2, role: 'user', sex: 'female' },
-        '3': { id: 3, role: 'admin', sex: 'male' }
+        '1': { id: 1, role: 'admin', sex: 'male', enabled: true },
+        '2': { id: 2, role: 'user', sex: 'female', enabled: true },
+        '3': { id: 3, role: 'admin', sex: 'male', enabled: true },
+        '4': { id: 4, role: 'admin', sex: 'male', enabled: false }
       }}
     }
 
     const expected = [
-      { id: 1, role: 'admin', sex: 'male' },
-      { id: 3, role: 'admin', sex: 'male' }
+      { id: 1, role: 'admin', sex: 'male', enabled: true },
+      { id: 3, role: 'admin', sex: 'male', enabled: true }
     ]
 
     const result = Repo.query(state, 'users', false)
       .where('role', 'admin')
       .where('sex', 'male')
+      .where('enabled', true)
       .get()
 
     expect(result).toEqual(expected)
