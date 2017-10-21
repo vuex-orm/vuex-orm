@@ -148,15 +148,19 @@ export default class Model {
         const attr: Attrs = fields[field]
 
         if (!attr) {
-          return value
+          return
         }
 
         if (attr.type === AttrType.Attr) {
-          return value
+          return
         }
 
         if (attr.type === AttrType.BelongsTo) {
-          const key: string = (attr as BelongsTo).foreignKey
+          const key: string = attr.foreignKey
+
+          if (newRecord[key]) {
+            return
+          }
 
           newRecord[key] = value
         }
