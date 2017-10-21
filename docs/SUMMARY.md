@@ -8,6 +8,5 @@
     - [Mutators](model/mutators.md)
     - [Serialization](model/serialization.md)
 - Interacting With Store
-    - [Creating and Updating](creating-and-updating.md)
-    - [Retrieving Data](retrieving-data.md)
-
+    - [Creating and Updating](store/creating-and-updating.md)
+    - [Retrieving Data](store/retrieving-data.md)

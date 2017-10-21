@@ -29,7 +29,7 @@ const users = store.getters['entities/users/query']().get()
 Use `first` method to fetch a single data for the entity.
 
 ```js
-const user = store.getters['entities/users/query']().first()
+const user = store.getters['entities/users/query']().first(1)
 
 // User { id: 1, name: 'John' }
 ```
@@ -73,4 +73,139 @@ const user = store.getters['entities/users/query']()
   .get()
 
 // [User { id: 1, name: 'John', role: 'user' }, User { id: 2, name: 'Jane', role: 'admin' }]
+```
+
+### Load Relationship
+
+You can use `with` method to load related model when querying data.
+
+```js
+const user = store.getters['entities/users/query']()
+  .with('profile')
+  .with('posts')
+  .first(1)
+
+/*
+  User {
+    id: 1,
+    name: 'john',
+    
+    profile: Profile {
+      id: 1,
+      user_id: 1,
+      age: 24
+    },
+
+    posts: [
+      Post: { id: 1, user_id: 1, body: '...' },
+      Post: { id: 2, user_id: 1, body: '...' }
+    ]
+  }
+*/
+```
+
+#### Load Nested Relation
+
+You can load nested relation with dot syntax.
+
+```js
+const user = store.getters['entities/users/query']()
+  .with('posts.comments')
+  .first(1)
+
+/*
+  User {
+    id: 1,
+    name: 'john',
+
+    posts: [
+      Post: {
+        id: 1,
+        user_id: 1,
+        body: '...',
+
+        comments: [
+          Comment: { id: 1, post_id: 1, body: '...' },
+          Comment: { id: 2, post_id: 1, body: '...' }
+        ]
+      },
+
+      Post: {
+        id: 2,
+        user_id: 1,
+        body: '...',
+
+        comments: [
+          Comment: { id: 3, post_id: 2, body: '...' },
+          Comment: { id: 4, post_id: 2, body: '...' }
+        ]
+      },
+    ]
+  }
+*/
+```
+
+#### Relation Constraint
+
+To filter the result of relation loaded with `with` method, you can do so by passing closure to the second argument.
+
+```js
+const user = store.getters['entities/users/query']().with('posts', (query) => {
+  query.where('published', true)
+}).first(1)
+
+/*
+  User {
+    id: 1,
+    name: 'john',
+
+    posts: [
+      Post: { id: 1, user_id: 1, body: '...', published: true },
+      Post: { id: 2, user_id: 1, body: '...', published: true }
+    ]
+  }
+*/
+```
+
+When you want to add constraint to the nested relation, use closure instead of dot syntax.
+
+```js
+const user = store.getters['entities/users/query']().with('posts', (query) => {
+  query.with('comments', (query) => {
+    query.where('type', 'review')
+  }).where('published', true)
+}).first(1)
+
+/*
+  User {
+    id: 1,
+    name: 'john',
+
+    posts: [
+      Post: {
+        id: 1,
+        user_id: 1,
+        body: '...',
+        published: true,
+
+        comments: [
+          Comment: { id: 1, post_id: 1, body: '...', type: 'review' },
+          Comment: { id: 2, post_id: 1, body: '...', type: 'review' }
+        ]
+      },
+
+      Post: {
+        id: 2,
+        user_id: 1,
+        body: '...',
+        published: true,
+
+        comments: [
+          Comment: { id: 3, post_id: 2, body: '...', type: 'review' },
+          Comment: { id: 4, post_id: 2, body: '...', type: 'review' }
+        ]
+      },
+    ]
+  }
+*/
 ```
