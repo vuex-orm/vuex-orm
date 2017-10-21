@@ -187,6 +187,12 @@ export default class Model {
     const fields: Fields = this.$mergeFields(data)
 
     _.forEach(fields, (field, key) => {
+      if (field.value === null) {
+        this[key] = null
+
+        return
+      }
+
       if (field.type === AttrType.Attr) {
         this[key] = field.value
 
@@ -199,8 +205,8 @@ export default class Model {
         return
       }
 
-      if (_.isNumber(field.value)) {
-        this[key] = field.value
+      if (_.isNumber(field.value) || _.isNumber(field.value[0])) {
+        this[key] = null
 
         return
       }

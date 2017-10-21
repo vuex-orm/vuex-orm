@@ -294,7 +294,7 @@ export default class Repo {
     const entity: string = this.resolveRelation(attr).entity
     const field: string = attr.foreignKey
 
-    const query = this.self().query(this.state, entity, this.wrap).where(field, record.id)
+    const query = this.self().query(this.state, entity, false).where(field, record.id)
 
     this.addConstraint(query, relation)
 
@@ -308,7 +308,7 @@ export default class Repo {
     const entity: string = this.resolveRelation(attr).entity
     const id: number | string = record[attr.foreignKey]
 
-    const query = this.self().query(this.state, entity, this.wrap)
+    const query = this.self().query(this.state, entity, false)
 
     this.addConstraint(query, relation)
 
@@ -322,7 +322,7 @@ export default class Repo {
     const entity: string = this.resolveRelation(attr).entity
     const field: string = attr.foreignKey
 
-    const query = this.self().query(this.state, entity, this.wrap).where(field, record.id)
+    const query = this.self().query(this.state, entity, false).where(field, record.id)
 
     this.addConstraint(query, relation)
 
@@ -337,7 +337,7 @@ export default class Repo {
     const field: string = attr.foreignKey
 
     return record[field].map((id: any) => {
-      const query = this.self().query(this.state, entity, this.wrap).where(attr.otherKey, id)
+      const query = this.self().query(this.state, entity, false).where(attr.otherKey, id)
 
       this.addConstraint(query, relation)
 
