@@ -337,6 +337,35 @@ describe('Repo', () => {
     expect(post.reviews[0]).toBeInstanceOf(Review)
   })
 
+  it('can resolve relation constraint', () => {
+    const state = {
+      name: 'entities',
+      posts: { data: {
+        '1': { id: 1, title: 'Post Title', comments: [1, 2, 3] }
+      }},
+      comments: { data: {
+        '1': { id: 1, post_id: 1, type: 'review' },
+        '2': { id: 2, post_id: 1, type: 'comment' },
+        '3': { id: 3, post_id: 1, type: 'review' }
+      }}
+    }
+
+    const expected = {
+      id: 1,
+      title: 'Post Title',
+      comments: [
+        { id: 1, post_id: 1, type: 'review' },
+        { id: 3, post_id: 1, type: 'review' }
+      ]
+    }
+
+    const post = Repo.query(state, 'posts', false).with('comments', (query) => {
+      query.where('type', 'review')
+    }).first()
+
+    expect(post).toEqual(expected)
+  })
+
   it('can create a single data in Vuex Store', () => {
     const state = {
       name: 'entities',
