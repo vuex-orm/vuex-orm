@@ -251,37 +251,34 @@ export default class Repo {
    */
   loadRelations (record: Record): Record {
     return _.reduce(this.load, (record, relation) => {
-      if (_.isNil(record[relation.name])) {
-        return record
-      }
-
       const fields: Fields = this.entity.fields()
-      const attr: Attrs = fields[relation.name]
+      const name = relation.name.split('.')[0]
+      const attr: Attrs = fields[name]
 
       if (attr.type === AttrType.Attr) {
         return record
       }
 
       if (attr.type === AttrType.HasOne) {
-        record[relation.name] = this.loadHasOneRelation(record, attr, relation.constraint)
+        record[name] = this.loadHasOneRelation(record, attr, relation)
 
         return record
       }
 
       if (attr.type === AttrType.BelongsTo) {
-        record[relation.name] = this.loadBelongsToRelation(record, attr, relation.constraint)
+        record[name] = this.loadBelongsToRelation(record, attr, relation)
 
         return record
       }
 
       if (attr.type === AttrType.HasMany) {
-        record[relation.name] = this.loadHasManyRelation(record, attr, relation.constraint)
+        record[name] = this.loadHasManyRelation(record, attr, relation)
 
         return record
       }
 
       if (attr.type === AttrType.HasManyBy) {
-        record[relation.name] = this.loadHasManyByRelation(record, attr, relation.constraint)
+        record[name] = this.loadHasManyByRelation(record, attr, relation)
 
         return record
       }
@@ -293,13 +290,13 @@ export default class Repo {
   /**
    * Load the has one relationship for the record.
    */
-  loadHasOneRelation (record: Record, attr: HasOne, constraint: Constraint | null = null): Record | null {
-    const relation: string = this.resolveRelation(attr).entity
+  loadHasOneRelation (record: Record, attr: HasOne, relation: Relation): Record | null {
+    const entity: string = this.resolveRelation(attr).entity
     const field: string = attr.foreignKey
 
-    const query = this.self().query(this.state, relation, this.wrap).where(field, record.id)
+    const query = this.self().query(this.state, entity, this.wrap).where(field, record.id)
 
-    constraint && constraint(query)
+    this.addConstraint(query, relation)
 
     return query.first()
   }
@@ -307,13 +304,13 @@ export default class Repo {
   /**
    * Load the belongs to relationship for the record.
    */
-  loadBelongsToRelation (record: Record, attr: BelongsTo, constraint: Constraint | null = null): Record | null {
-    const relation: string = this.resolveRelation(attr).entity
+  loadBelongsToRelation (record: Record, attr: BelongsTo, relation: Relation): Record | null {
+    const entity: string = this.resolveRelation(attr).entity
     const id: number | string = record[attr.foreignKey]
 
-    const query = this.self().query(this.state, relation, this.wrap)
+    const query = this.self().query(this.state, entity, this.wrap)
 
-    constraint && constraint(query)
+    this.addConstraint(query, relation)
 
     return query.first(id)
   }
@@ -321,13 +318,13 @@ export default class Repo {
   /**
    * Load the has many relationship for the record.
    */
-  loadHasManyRelation (record: Record, attr: HasMany, constraint: Constraint | null = null): Record[] | null {
-    const relation: string = this.resolveRelation(attr).entity
+  loadHasManyRelation (record: Record, attr: HasMany, relation: Relation): Record[] | null {
+    const entity: string = this.resolveRelation(attr).entity
     const field: string = attr.foreignKey
 
-    const query = this.self().query(this.state, relation, this.wrap).where(field, record.id)
+    const query = this.self().query(this.state, entity, this.wrap).where(field, record.id)
 
-    constraint && constraint(query)
+    this.addConstraint(query, relation)
 
     return query.get()
   }
@@ -335,14 +332,14 @@ export default class Repo {
   /**
    * Load the has many by relationship for the record.
    */
-  loadHasManyByRelation (record: Record, attr: HasManyBy, constraint: Constraint | null = null): Record[] | null {
-    const relation: string = this.resolveRelation(attr).entity
+  loadHasManyByRelation (record: Record, attr: HasManyBy, relation: Relation): Record[] | null {
+    const entity: string = this.resolveRelation(attr).entity
     const field: string = attr.foreignKey
 
     return record[field].map((id: any) => {
-      const query = this.self().query(this.state, relation, this.wrap).where(attr.otherKey, id)
+      const query = this.self().query(this.state, entity, this.wrap).where(attr.otherKey, id)
 
-      constraint && constraint(query)
+      this.addConstraint(query, relation)
 
       return query.first()
     })
@@ -357,6 +354,23 @@ export default class Repo {
     }
 
     return this.model(name)
+  }
+
+  /**
+   * Add constraint to the query.
+   */
+  addConstraint (query: Repo, relation: Relation): void {
+    const relations = relation.name.split('.')
+
+    if (relations.length === 1) {
+      relation.constraint && relation.constraint(query)
+
+      return
+    }
+
+    relations.shift()
+
+    query.with(relations.join('.'))
   }
 
   /**

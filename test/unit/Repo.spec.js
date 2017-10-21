@@ -4,6 +4,7 @@ import Profile from 'test/fixtures/models/Profile'
 import Post from 'test/fixtures/models/Post'
 import Comment from 'test/fixtures/models/Comment'
 import Review from 'test/fixtures/models/Review'
+import Like from 'test/fixtures/models/Like'
 import CustomKey from 'test/fixtures/models/CustomKey'
 import Repo from 'app/Repo'
 
@@ -15,6 +16,7 @@ describe('Repo', () => {
       { model: Post },
       { model: Comment },
       { model: Review },
+      { model: Like },
       { model: CustomKey }
     ])
   })
@@ -362,6 +364,39 @@ describe('Repo', () => {
     const post = Repo.query(state, 'posts', false).with('comments', (query) => {
       query.where('type', 'review')
     }).first()
+
+    expect(post).toEqual(expected)
+  })
+
+  it('can resolve nested relation', () => {
+    const state = {
+      name: 'entities',
+      posts: { data: {
+        '1': { id: 1, title: 'Post Title', comments: [1, 2, 3] }
+      }},
+      comments: { data: {
+        '1': { id: 1, post_id: 1 }
+      }},
+      likes: { data: {
+        '1': { id: 1, comment_id: 1 }
+      }}
+    }
+
+    const expected = {
+      id: 1,
+      title: 'Post Title',
+      comments: [
+        {
+          id: 1,
+          post_id: 1,
+          likes: [
+            { id: 1, comment_id: 1 }
+          ]
+        }
+      ]
+    }
+
+    const post = Repo.query(state, 'posts', false).with('comments.likes').first()
 
     expect(post).toEqual(expected)
   })
