@@ -9,6 +9,8 @@ export enum Type {
   HasManyBy = 'HasManyBy'
 }
 
+export type Types = Attr | Date | HasOne | BelongsTo | HasMany | HasManyBy
+
 export interface Attr {
   type: Type.Attr
   value: any
@@ -90,5 +92,12 @@ export default class Attributes {
    */
   static hasManyBy (model: typeof Model | string, foreignKey: string, otherKey: string = 'id'): HasManyBy {
     return { type: Type.HasManyBy, model, foreignKey, otherKey, value: null }
+  }
+
+  /**
+   * Determin if the given attribute is the type of relationship.
+   */
+  static isRelation (attr: Types): boolean {
+    return attr.type !== Type.Attr && attr.type !== Type.Date
   }
 }

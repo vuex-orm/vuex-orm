@@ -340,21 +340,26 @@ describe('Repo', () => {
   it('can create a single data in Vuex Store', () => {
     const state = {
       name: 'entities',
-      users: { data: {
-        '5': { id: 5 }
-      }},
-      posts: { data: {} }
+      posts: { data: {} },
+      comments: { data: {} }
     }
 
-    const data = { id: 1, author: { id: 10 } }
+    const data = {
+      id: 1,
+      comments: [
+        { id: 1, post_id: 1 },
+        { id: 2, post_id: 1 }
+      ]
+    }
 
     const expected = {
       name: 'entities',
-      users: { data: {
-        '10': { id: 10 }
-      }},
       posts: { data: {
-        '1': { id: 1, user_id: 10, author: 10 }
+        '1': { id: 1, comments: [1, 2] }
+      }},
+      comments: { data: {
+        '1': { id: 1, post_id: 1 },
+        '2': { id: 2, post_id: 1 }
       }}
     }
 
