@@ -15,7 +15,7 @@ You can check out the full documentation for Vuex ORM at https://revolver-app.gi
 
 ### Create Your Models
 
-First, let's declare your models extending Vuex ORM `Model`. Here we'll assume that there are Post model and User model. Post model has a relationship with User – the post "belongs to" a user by `author` key.
+First, let's declare your models extending Vuex ORM `Model`. Here we assume that there are Post model and User model. Post model has a relationship with User – the post "belongs to" a user by `author` key.
 
 ```js
 // User Model
@@ -74,7 +74,7 @@ export default {}
 
 ### Register Models and Modules to the Vuex Store
 
-Now it's time for you to register models and modules to the Vuex. To do so, you'll first have to register models to the Database and then register the database to Vuex Store as Vuex plugin.
+Now it is time for you to register models and modules to the Vuex. To do so, you first have to register models to the Database and then register the database to Vuex Store as Vuex plugin.
 
 ```js
 import Vue from 'vue'
@@ -100,7 +100,7 @@ const store = new Vuex.Store({
 export default store
 ```
 
-Now you're ready to go. This is going to create `entities` module in Vuex Store. Which means you can access Vuex Store by `store.state.entities`.
+Now you are ready to go. Vuex ORM is going to create `entities` module in Vuex Store. Which means you can access Vuex Store by `store.state.entities`.
 
 ### Creating Records to the Vuex Store
 
@@ -124,7 +124,7 @@ const posts = [
 store.commit('entities/posts/create', { data: posts })
 ```
 
-With above action, Vuex ORM will create the following schema at Vuex Store.
+With above action, Vuex ORM creates the following schema at Vuex Store.
 
 ```js
 // Inside `store.state.entities`.
@@ -153,7 +153,7 @@ With above action, Vuex ORM will create the following schema at Vuex Store.
 }
 ```
 
-See how posts and users are decoupled from each other. This is what it means for "normalizing" the data.
+See how `posts` and `users` are decoupled from each other. This is what it means for "normalizing" the data.
 
 ### Accessing the Data
 
@@ -203,7 +203,7 @@ Since Vuex ORM is under development, currently supported relationships are below
 
 ## Contribution
 
-We're really excited that you are interested in contributing to Vuex ORM! Anything from raising an issue, submitting an idea of a new feature, or making a pull request is welcome!
+We are really excited that you are interested in contributing to Vuex ORM! Anything from raising an issue, submitting an idea of a new feature, or making a pull request is welcome!
 
 ### Development
 
