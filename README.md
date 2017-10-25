@@ -104,7 +104,7 @@ Now you are ready to go. Vuex ORM is going to create `entities` module in Vuex S
 
 ### Creating Records to the Vuex Store
 
-You can use `create` mutation to create a new record in Vuex Store. Let's say we want to save a single post data to the store.
+You can use `create` action to create a new record in Vuex Store. Let's say we want to save a single post data to the store.
 
 ```js
 // Assuming this data structure is the response from the API backend.
@@ -121,7 +121,7 @@ const posts = [
   }
 ]
 
-store.commit('entities/posts/create', { data: posts })
+store.dispatch('entities/posts/create', { data: posts })
 ```
 
 With above action, Vuex ORM creates the following schema at Vuex Store.
@@ -160,8 +160,8 @@ See how `posts` and `users` are decoupled from each other. This is what it means
 To access data, you may just access the store state directly as usual.
 
 ```js
-store.state.entities.posts.data[1].title       // <- 'Hello, world!'
-store.state.entities.posts.data[1].author.name // <- 'John Doe'
+store.state.entities.posts.data[1].title // <- 'Hello, world!'
+store.state.entities.users.data[1].name  // <- 'John Doe'
 ```
 
 However, Vuex ORM provides a way to query, and fetch data in an organized way through Vuex Getters.
@@ -169,14 +169,16 @@ However, Vuex ORM provides a way to query, and fetch data in an organized way th
 ```js
 // Fetch all post records. The result will be wrapped with Post model!
 store.getters['entities/posts/all']()
-// -> [
+
+// [
 //   Post { id: 1, user_id: 1, title: 'Hello, world!', body: 'Some awesome body...', author: 1 },
 //   ...
 // ]
 
 // Fetch single record with relation.
 store.getters['entities/posts/query']().with('author').first()
-// -> Post {
+
+// Post {
 //   id: 1,
 //   user_id: 1,
 //   title: 'Hello, world!',
