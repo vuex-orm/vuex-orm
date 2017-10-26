@@ -1,4 +1,4 @@
-import * as _ from 'lodash'
+import _ from './support/lodash'
 import { Record, Records } from './Data'
 import { State } from './Module'
 
@@ -177,12 +177,7 @@ export default class Query {
    * Filter the given data by registered where clause.
    */
   selectByWheres (records: Records): Records {
-    // const predicate: { [field: string]: any } = this.matchPredicate()
-// console.log(this.whereClosure()('ki'))
-// console.log(this.wheres)
-// console.log(records)
-    // return _.pickBy<Records, Records>(records, _.matches(predicate))
-    return _.pickBy<Records, Records>(records, this.whereClosure() as (record: Record) => boolean)
+    return _.pickBy(records, this.whereClosure()) as any
   }
 
   /**

@@ -15,6 +15,8 @@
     "test": "mocha-webpack --webpack-config webpack.config.js --require test/bootstrap.js 'test/**/*.spec.js'",
     "test:watch": "mocha-webpack --webpack-config webpack.config.js --watch --require test/bootstrap.js 'test/**/*.spec.js'",
     "coverage": "NODE_ENV=coverage nyc --reporter=lcov --reporter=text npm run test",
+    "example": "npm run build && node examples/server.js",
+    "example:prod": "npm run build && NODE_ENV=production node examples/server.js",
     "prepare": "npm run lint && npm run test && npm run build"
   },
   "repository": {
@@ -32,8 +34,8 @@
     "url": "https://github.com/revolver-app/vuex-orm/issues"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.77",
-    "lodash": "^4.17.4",
+    "@types/lodash-es": "^4.17.0",
+    "lodash-es": "^4.17.4",
     "moment": "^2.19.1",
     "normalizr": "^3.2.4",
     "vue": "^2.5.2",
@@ -45,7 +47,7 @@
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.0",
-    "babel-preset-stage-0": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
     "expect": "^21.2.1",
     "fork-ts-checker-webpack-plugin": "^0.2.8",
     "istanbul-instrumenter-loader": "^3.0.0",
@@ -57,7 +59,7 @@
     "tslint": "^5.7.0",
     "tslint-config-standard": "^6.0.1",
     "typescript": "^2.5.3",
-    "webpack": "^3.7.1",
+    "webpack": "^3.8.1",
     "webpack-node-externals": "^1.6.0"
   },
   "nyc": {

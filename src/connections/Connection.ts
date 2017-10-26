@@ -1,4 +1,4 @@
-import * as _ from 'lodash'
+import _ from '../support/lodash'
 import Model from '../Model'
 import Database from '../Database'
 

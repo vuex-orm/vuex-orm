@@ -1,4 +1,4 @@
-import * as _ from 'lodash'
+import _ from './support/lodash'
 import Container from './connections/Container'
 import { Record, NormalizedData } from './Data'
 import { Type as AttrType, HasOne, BelongsTo, HasMany, HasManyBy } from './Attributes'

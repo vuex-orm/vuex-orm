@@ -1,5 +1,5 @@
-import * as _ from 'lodash'
 import * as Vuex from 'vuex'
+import _ from './support/lodash'
 import Model from './Model'
 import Module, { Entity } from './Module'
 

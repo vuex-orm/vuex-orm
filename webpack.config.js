@@ -11,7 +11,9 @@ module.exports = {
 
   devtool: 'inline-cheap-module-source-map',
 
-  externals: [nodeExternals()],
+  externals: [nodeExternals({
+    whitelist: [/lodash-es/]
+  })],
 
   module: {
     loaders: [].concat(
@@ -23,8 +25,10 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        include: `${rootDir}/test`,
-        exclude: /node_modules/,
+        include: [
+          `${rootDir}/src`,
+          `${rootDir}/test`,
+        ],
         options: {
           cacheDirectory: true
         }
@@ -33,7 +37,6 @@ module.exports = {
         test: /\.ts$/,
         loader: 'ts-loader',
         include: `${rootDir}/src`,
-        exclude: /node_modules/,
         options: {
           transpileOnly: true
         }
