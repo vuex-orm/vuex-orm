@@ -36,7 +36,7 @@ export function createStore (entities) {
   })
 
   return new Vuex.Store({
-    plugins: [VuexORM(database)]
+    plugins: [VuexORM.install(database)]
   })
 }
 

@@ -4,7 +4,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 
 const isCoverage = process.env.NODE_ENV === 'coverage';
 
-const rootDir = path.join(__dirname, '.')
+const rootDir = path.join(__dirname, '..')
 
 module.exports = {
   target: 'node',
@@ -12,7 +12,7 @@ module.exports = {
   devtool: 'inline-cheap-module-source-map',
 
   externals: [nodeExternals({
-    whitelist: [/lodash-es/]
+    whitelist: [/lodash-es/, /moment-es6/]
   })],
 
   module: {

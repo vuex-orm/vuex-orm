@@ -1,4 +1,4 @@
-import * as moment from 'moment'
+import moment from 'moment-es6'
 import { Schema as NormalizrSchema } from 'normalizr'
 import _ from './support/lodash'
 import Container from './connections/Container'

@@ -13,9 +13,3 @@ export default {
   Database,
   Model
 } as VuexORM
-
-export {
-  install,
-  Database,
-  Model
-}
