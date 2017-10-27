@@ -1,3 +1,5 @@
+# Model: Mutators
+
 Vuex ORM lets you define mutators which are going to modify the specific field when instantiating the Model. There are 2 ways to do this.
 
 ## Via Attribute
