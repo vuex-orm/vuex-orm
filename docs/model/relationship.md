@@ -8,7 +8,7 @@ The model can define the relationship in `static fields()`. Below example shows 
 import { Model } from 'vuex-orm'
 
 class Comment extends Model {
-  static entity = 'posts'
+  static entity = 'comments'
 
   static fields () {
     return {
