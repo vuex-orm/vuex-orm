@@ -20,7 +20,10 @@ module.exports = {
       isCoverage ? {
         test: /\.(js|ts)/,
         include: `${rootDir}/src`,
-        loader: 'istanbul-instrumenter-loader'
+        loader: 'istanbul-instrumenter-loader',
+        query: {
+          esModules: true
+        }
       } : [],
       {
         test: /\.js$/,
