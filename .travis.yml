@@ -8,3 +8,5 @@ cache:
 script:
   - npm run lint
   - npm run test
+  - npm run coverage
+  - cat ./coverage/lcov.info | ./node_modules/.bin/codecov
