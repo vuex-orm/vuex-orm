@@ -14,7 +14,7 @@
     "build": "npm run clean && npm run build:ts && npm run build:main && tsc -p . --module commonjs",
     "build:ts": "tsc -p .",
     "build:main": "node build/build.js",
-    "clean": "rm -rf lib && rm -rf dist && rm -rf coverage && rm -rf .nyc_output && rm -rf .tmp",
+    "clean": "rm -rf dist && rm -rf lib && rm -rf dist && rm -rf coverage && rm -rf .nyc_output && rm -rf .tmp",
     "lint": "tslint 'src/**/*.ts' -c tslint.json -p . --type-check --fix",
     "test": "mocha-webpack --webpack-config test/webpack.config.js --require test/bootstrap.js 'test/**/*.spec.js'",
     "test:watch": "mocha-webpack --webpack-config test/webpack.config.js --watch --require test/bootstrap.js 'test/**/*.spec.js'",
@@ -39,7 +39,6 @@
   "dependencies": {
     "@types/lodash-es": "^4.17.0",
     "lodash-es": "^4.17.4",
-    "moment-es6": "^1.0.0",
     "normalizr": "^3.2.4",
     "vue": "^2.5.2",
     "vuex": "^3.0.0"

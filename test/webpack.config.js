@@ -12,7 +12,7 @@ module.exports = {
   devtool: 'inline-cheap-module-source-map',
 
   externals: [nodeExternals({
-    whitelist: [/lodash-es/, /moment-es6/]
+    whitelist: [/lodash-es/]
   })],
 
   module: {

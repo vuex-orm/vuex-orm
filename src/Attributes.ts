@@ -2,23 +2,18 @@ import Model from './Model'
 
 export enum Type {
   Attr = 'Attr',
-  Date = 'Date',
   HasOne = 'HasOne',
   BelongsTo = 'BelongsTo',
   HasMany = 'HasMany',
   HasManyBy = 'HasManyBy'
 }
 
-export type Types = Attr | Date | HasOne | BelongsTo | HasMany | HasManyBy
+export type Types = Attr | HasOne | BelongsTo | HasMany | HasManyBy
 
 export interface Attr {
   type: Type.Attr
   value: any
-}
-
-export interface Date {
-  type: Type.Date
-  value: any
+  mutator?: Function
 }
 
 export interface HasOne {
@@ -55,15 +50,8 @@ export default class Attributes {
    * The generic attribute. The given value will be used as default value
    * of the property when instantiating a model.
    */
-  static attr (value: any): Attr {
-    return { type: Type.Attr, value }
-  }
-
-  /**
-   * The date attribute. This attribute will be converted to moment instance.
-   */
-  static date (value: any): Date {
-    return { type: Type.Date, value }
+  static attr (value: any, mutator?: Function): Attr {
+    return { type: Type.Attr, value, mutator }
   }
 
   /**
@@ -98,6 +86,6 @@ export default class Attributes {
    * Determin if the given attribute is the type of relationship.
    */
   static isRelation (attr: Types): boolean {
-    return attr.type !== Type.Attr && attr.type !== Type.Date
+    return attr.type !== Type.Attr
   }
 }

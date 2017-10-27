@@ -1,5 +1,4 @@
 import { createApplication } from 'test/support/Helpers'
-import moment from 'moment'
 import { schema } from 'normalizr'
 import Model from 'app/Model'
 
@@ -156,6 +155,70 @@ describe('Model', () => {
     expect(user.name).toBe('Jane Doe')
     expect(user.email).toBe('john@example.com')
     expect(user.age).toBe(undefined)
+  })
+
+  it('should mutate data if closure was given to the attr', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          name: this.attr('', value => value.toUpperCase())
+        }
+      }
+    }
+
+    const user = new User({ name: 'john doe' })
+
+    expect(user.name).toBe('JOHN DOE')
+  })
+
+  it('should mutate data if mutators are present', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          name: this.attr('')
+        }
+      }
+
+      static mutators () {
+        return {
+          name (value) {
+            return value.toUpperCase()
+          }
+        }
+      }
+    }
+
+    const user = new User({ name: 'john doe' })
+
+    expect(user.name).toBe('JOHN DOE')
+  })
+
+  it('attr mutator should take president over static mutators', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          name: this.attr('', value => value.toUpperCase())
+        }
+      }
+
+      static mutators () {
+        return {
+          name (value) {
+            return 'Not Expected'
+          }
+        }
+      }
+    }
+
+    const user = new User({ name: 'john doe' })
+
+    expect(user.name).toBe('JOHN DOE')
   })
 
   it('can resolve has one relation', () => {
@@ -326,23 +389,6 @@ describe('Model', () => {
     expect(post.comments[1]).toBeInstanceOf(Comment)
   })
 
-  it('can cast date attributes to moment instance', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          created_at: this.date(null)
-        }
-      }
-    }
-
-    const user = new User({ created_at: '1985-10-10 00:10:20' })
-
-    expect(moment.isMoment(user.created_at)).toBe(true)
-    expect(user.created_at.format('MMM D, YYYY')).toBe('Oct 10, 1985')
-  })
-
   it('can serialize own fields into json', () => {
     class User extends Model {
       static entity = 'users'
@@ -375,7 +421,6 @@ describe('Model', () => {
           id: this.attr(null),
           user_id: this.attr(null),
           title: this.attr(''),
-          created_at: this.date(null),
           author: this.belongsTo(User, 'user_id'),
           comments: this.hasMany(Comment, 'post_id')
         }
@@ -386,7 +431,6 @@ describe('Model', () => {
       id: 1,
       title: 'Post Title',
       user_id: 1,
-      created_at: '1985-10-10 00:10:20',
       author: { id: 1, name: 'John' },
       comments: [
         { id: 1, post_id: 1, body: 'C1' },
@@ -394,10 +438,8 @@ describe('Model', () => {
       ]
     }
 
-    const expected = { ...data, created_at: moment('1985-10-10 00:10:20').toISOString() }
-
     const post = new Post(data)
 
-    expect(post.$toJson()).toEqual(expected)
+    expect(post.$toJson()).toEqual(data)
   })
 })
