@@ -50,6 +50,7 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.0",
     "babel-preset-stage-2": "^6.24.1",
+    "codecov.io": "^0.1.6",
     "expect": "^21.2.1",
     "fork-ts-checker-webpack-plugin": "^0.2.8",
     "istanbul-instrumenter-loader": "^3.0.0",
