@@ -87,7 +87,7 @@ Now it is time for you to register models and modules to the Vuex. To do so, you
 ```js
 import Vue from 'vue'
 import Vuex from 'vuex'
-import VuexORM, { Database } from 'vuex-orm'
+import { install as VuexORMInstall, Database } from 'vuex-orm'
 import User from './User'
 import Post from './Post'
 import users from 'users'
@@ -101,7 +101,7 @@ database.register(User, users)
 database.register(Post, posts)
 
 const store = new Vuex.Store({
-  plugins: [VuexORM.install(database)]
+  plugins: [VuexORMInstall(database)]
 })
 
 export default store

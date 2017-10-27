@@ -77,12 +77,12 @@ export default {}
 
 Now it is time for you to register models and modules to the Vuex. To do so, register models to the new Database instance, and then register the database to Vuex Store as Vuex plugin.
 
-Use `VuexORM.install` when registering VuexORM as a plugin.
+Use `install` when registering VuexORM as a plugin.
 
 ```js
 import Vue from 'vue'
 import Vuex from 'vuex'
-import VuexORM, { Database } from 'vuex-orm'
+import { install as VuexORMInstall, Database } from 'vuex-orm'
 import User from './User'
 import Post from './Post'
 import users from 'users'
@@ -96,7 +96,7 @@ database.register(User, users)
 database.register(Post, posts)
 
 const store = new Vuex.Store({
-  plugin: [VuexORM.install(database)]
+  plugins: [VuexORMInstall(database)]
 })
 
 export default store
@@ -112,7 +112,7 @@ If you would like to change the module name, pass `namespace` option to the `ins
 
 ```js
 const store = Vuex.Store({
-  plugins: [VuexORM.install(database, { namespace: 'my_entities' })
+  plugins: [VuexORMInstall(database, { namespace: 'my_entities' })]
 })
 ```
 
