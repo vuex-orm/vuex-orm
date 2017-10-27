@@ -14,7 +14,7 @@ class Post extends Model {
 const users = {}
 const posts = {}
 
-describe('Vuex ORM', () => {
+describe('Vuex ORM Installation', () => {
   it('can register its database to Vuex Store', () => {
     const registerModule = sinon.stub()
     const store = { registerModule }
@@ -24,7 +24,7 @@ describe('Vuex ORM', () => {
     database.register(User, users)
     database.register(Post, posts)
 
-    VuexOrm(database)(store)
+    VuexOrm.install(database)(store)
 
     expect(registerModule.withArgs('entities', database.modules('entities')).calledOnce).toBe(true)
   })
@@ -40,7 +40,7 @@ describe('Vuex ORM', () => {
 
     const options = { namespace: 'myNameSpace' }
 
-    VuexOrm(database, options)(store)
+    VuexOrm.install(database, options)(store)
 
     expect(registerModule.withArgs('myNameSpace', database.modules('myNameSpace')).calledOnce).toBe(true)
   })

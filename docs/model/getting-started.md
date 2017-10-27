@@ -5,7 +5,7 @@
 Models are the definition of the data schema that will be handled by Vuex ORM. Every Model should extend `vuex-orm/lib/Model`.
 
 ```js
-import Model from 'vuex-orm/lib/Model'
+import { Model } from 'vuex-orm'
 
 class User extends Model {
   static entity = 'users'
@@ -28,7 +28,7 @@ There are 2 required properties when you define a model.
 `static entity` will be used as state name of Vuex Store.
 
 ```js
-import Model from 'vuex-orm/lib/Model'
+import { Model } from 'vuex-orm'
 
 class User extends Model {
   static entity = 'users'
@@ -55,7 +55,7 @@ Overall state structure will look like this.
 `static fields()` should return the schema of the data.
 
 ```js
-import Model from 'vuex-orm/lib/Model'
+import { Model } from 'vuex-orm'
 
 class User extends Model {
   static entity = 'users'
@@ -78,7 +78,7 @@ You can also define a relationship between deferent models. For that, please tak
 Vuex ORM will assume that each data has a primary key named id. You may define a `static primaryKey` property to override this convention.
 
 ```js
-import Model from 'vuex-orm/lib/Model'
+import { Model } from 'vuex-orm'
 
 class User extends Model {
   static entity = 'users'

@@ -1,0 +1,21 @@
+import * as Vuex from 'vuex'
+import Container from '../connections/Container'
+import Database from '../Database'
+
+export type Install = (database: Database, options?: Options) => Vuex.Plugin<any>
+
+export interface Options {
+  namespace?: string
+}
+
+export default (database: Database, options: Options = {}): Vuex.Plugin<any> => {
+  const namespace: string = options.namespace || 'entities'
+
+  return (store: Vuex.Store<any>): void => {
+    store.registerModule(namespace, database.modules(namespace))
+
+    database.registerNamespace(namespace)
+
+    Container.register(namespace, database)
+  }
+}

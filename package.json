@@ -1,22 +1,24 @@
 {
   "name": "vuex-orm",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "description": "The Vuex plugin to enable Object-Relational Mapping access to the Vuex Store.",
-  "main": "lib/index.js",
+  "main": "dist/vuex-orm.common.js",
+  "module": "dist/vuex-orm.esm.js",
+  "unpkg": "dist/vuex-orm.js",
   "typings": "lib/index.d.ts",
   "files": [
+    "dist",
     "lib"
   ],
   "scripts": {
-    "dev": "tsc -p . --watch",
-    "build": "npm run clean && tsc -p .",
-    "clean": "rm -rf lib && rm -rf coverage && rm -rf .nyc_output && rm -rf .tmp",
+    "build": "npm run clean && npm run build:ts && npm run build:main && tsc -p . --module commonjs",
+    "build:ts": "tsc -p .",
+    "build:main": "node build/build.js",
+    "clean": "rm -rf lib && rm -rf dist && rm -rf coverage && rm -rf .nyc_output && rm -rf .tmp",
     "lint": "tslint 'src/**/*.ts' -c tslint.json -p . --type-check --fix",
-    "test": "mocha-webpack --webpack-config webpack.config.js --require test/bootstrap.js 'test/**/*.spec.js'",
-    "test:watch": "mocha-webpack --webpack-config webpack.config.js --watch --require test/bootstrap.js 'test/**/*.spec.js'",
+    "test": "mocha-webpack --webpack-config test/webpack.config.js --require test/bootstrap.js 'test/**/*.spec.js'",
+    "test:watch": "mocha-webpack --webpack-config test/webpack.config.js --watch --require test/bootstrap.js 'test/**/*.spec.js'",
     "coverage": "NODE_ENV=coverage nyc --reporter=lcov --reporter=text npm run test",
-    "example": "npm run build && node examples/server.js",
-    "example:prod": "npm run build && NODE_ENV=production node examples/server.js",
     "prepare": "npm run lint && npm run test && npm run build"
   },
   "repository": {
@@ -26,6 +28,7 @@
   "keywords": [
     "vue",
     "vuex",
+    "vuex-plugin",
     "orm"
   ],
   "author": "Kia Ishii",
@@ -36,7 +39,7 @@
   "dependencies": {
     "@types/lodash-es": "^4.17.0",
     "lodash-es": "^4.17.4",
-    "moment": "^2.19.1",
+    "moment-es6": "^1.0.0",
     "normalizr": "^3.2.4",
     "vue": "^2.5.2",
     "vuex": "^3.0.0"
@@ -54,11 +57,15 @@
     "mocha": "^4.0.1",
     "mocha-webpack": "^0.7.0",
     "nyc": "^11.2.1",
+    "rollup": "^0.50.0",
+    "rollup-plugin-commonjs": "^8.2.5",
+    "rollup-plugin-node-resolve": "^3.0.0",
     "sinon": "^4.0.1",
     "ts-loader": "^3.0.2",
     "tslint": "^5.7.0",
     "tslint-config-standard": "^6.0.1",
     "typescript": "^2.5.3",
+    "uglify-js": "^3.1.5",
     "webpack": "^3.8.1",
     "webpack-node-externals": "^1.6.0"
   },

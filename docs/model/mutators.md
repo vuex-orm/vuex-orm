@@ -5,7 +5,7 @@
 By using `this.date()` attribute type, Vuex ORM will convert the field into [Moment](http://momentjs.com) instance, which provides great flexibility handling on date object.
 
 ```js
-import Model from 'vuex-orm/lib/Model'
+import { Model } from 'vuex-orm'
 
 class User extends Model {
   static entity = 'users'

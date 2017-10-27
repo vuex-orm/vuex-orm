@@ -5,7 +5,7 @@
 The model can define the relationship in `static fields()`. Below example shows that the Post has the relationship with Comment of `hasMany`.
 
 ```js
-import Model from 'vuex-orm/lib/Model'
+import { Model } from 'vuex-orm'
 
 class Comment extends Model {
   static entity = 'posts'
@@ -40,7 +40,7 @@ By defining relationship, Vuex ORM will use those relationship to construct data
 A one-to-one relationship is defined by `this.hasOne()` method. For example, User might have one profile information.
 
 ```js
-import Model from 'vuex-orm/lib/Model'
+import { Model } from 'vuex-orm'
 
 class Profile extends Model {
   static entity = 'profiles'
@@ -75,7 +75,7 @@ The first argument of `this.hasOne()` is the model it self of the relation. So i
 To define a inverse relationship of one-to-one, you can do so with `this.belongsTo()` attribute.
 
 ```js
-import Model from 'vuex-orm/lib/Model'
+import { Model } from 'vuex-orm'
 
 class Profile extends Model {
   static entity = 'profiles'
@@ -111,7 +111,7 @@ Now the above Profile model has belongs to relationship to the User model. The a
 A one-to-many relationship can be defined by `this.hasMany()`.
 
 ```js
-import Model from 'vuex-orm/lib/Model'
+import { Model } from 'vuex-orm'
 
 class Comment extends Model {
   static entity = 'comments'
@@ -163,7 +163,7 @@ In some case, the model it self has all the keys of the related model. Like belo
 As you can see, clusters wants to have has many relationship with nodes, but nodes doesn't have `cluster_id`. So you can't use `this.hasMany()` because there're no foreign key to look for. In such case you may use `this.hasManyBy()` relationship.
 
 ```js
-import Model from 'vuex-orm/lib/Model'
+import { Model } from 'vuex-orm'
 
 class Node extends Model {
   static entities = 'nodes'

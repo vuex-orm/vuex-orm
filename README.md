@@ -13,13 +13,21 @@ You can check out the full documentation for Vuex ORM at https://revolver-app.gi
 
 ## Quick Start
 
+### Install Vuex ORM
+
+You can install Vuex ORM via npm.
+
+```console
+$ npm install vuex-orm
+```
+
 ### Create Your Models
 
 First, let's declare your models extending Vuex ORM `Model`. Here we assume that there are Post model and User model. Post model has a relationship with User – the post "belongs to" a user by `author` key.
 
 ```js
 // User Model
-import Model from 'vuex-orm/lib/Model'
+import { Model } from 'vuex-orm'
 
 export default class User extends Model {
   // This is the name used as module name of the Vuex Store.
@@ -38,7 +46,7 @@ export default class User extends Model {
 
 
 // Post Model
-import Model from 'vuex-orm/lib/Model'
+import { Model } from 'vuex-orm'
 import User from './User'
 
 export default class Post extends Model {
@@ -79,8 +87,7 @@ Now it is time for you to register models and modules to the Vuex. To do so, you
 ```js
 import Vue from 'vue'
 import Vuex from 'vuex'
-import VuexORM from 'vuex-orm'
-import Database from 'vuex-orm/lib/Database'
+import VuexORM, { Database } from 'vuex-orm'
 import User from './User'
 import Post from './Post'
 import users from 'users'
@@ -94,7 +101,7 @@ database.register(User, users)
 database.register(Post, posts)
 
 const store = new Vuex.Store({
-  plugins: [VuexORM(database)]
+  plugins: [VuexORM.install(database)]
 })
 
 export default store
@@ -153,7 +160,7 @@ With above action, Vuex ORM creates the following schema at Vuex Store.
 }
 ```
 
-See how `posts` and `users` are decoupled from each other. This is what it means for "normalizing" the data.
+See how `posts` and `users` decoupled from each other. This is what it means for "normalizing" the data.
 
 ### Accessing the Data
 
@@ -191,7 +198,7 @@ store.getters['entities/posts/query']().with('author').first()
 // }
 ```
 
-Cool right? To get know more about Vuex ORM, please [see the documentation](https://revolver-app.gitbooks.io/vuex-orm)
+Cool right? To get t know more about Vuex ORM, please [see the documentation](https://revolver-app.gitbooks.io/vuex-orm)
 
 ## Currently Available Relationship
 
@@ -205,21 +212,15 @@ Since Vuex ORM is under development, currently supported relationships are below
 
 ## Contribution
 
-We are really excited that you are interested in contributing to Vuex ORM! Anything from raising an issue, submitting an idea of a new feature, or making a pull request is welcome!
+We are excited that you are interested in contributing to Vuex ORM! Anything from raising an issue, submitting an idea of a new feature, or making a pull request is welcome!
 
 ### Development
-
-```console
-$ npm run dev
-```
-
-Compile files without removing the compiled file first. This is useful when you are using `npm link` during development with other bundlers such as Webpack. Plus the watch mode is enabled.
 
 ```console
 $ npm run build
 ```
 
-Compile files into the lib directory.
+Compile files and generate bundles in `dist` directory.
 
 ```console
 $ npm run lint
@@ -237,7 +238,7 @@ Run the test using [Mocha Webpack](https://github.com/zinserjan/mocha-webpack).
 $ npm run coverage
 ```
 
-Generate test coverage.
+Generate test coverage in `coverage` directory.
 
 ## License
 
