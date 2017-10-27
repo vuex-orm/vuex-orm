@@ -1,6 +1,4 @@
-# Model: Getting Started
-
-## Defining Models
+# Model: Defining Models
 
 Models are the definition of the data schema that will be handled by Vuex ORM. Every Model should extend `vuex-orm/lib/Model`.
 
@@ -19,11 +17,11 @@ class User extends Model {
 }
 ```
 
-### Model Conventions
+## Model Conventions
 
 There are 2 required properties when you define a model.
 
-#### Entity Names
+### Entity Names
 
 `static entity` will be used as state name of Vuex Store.
 
@@ -50,7 +48,7 @@ Overall state structure will look like this.
 }
 ```
 
-#### Fields
+### Fields
 
 `static fields()` should return the schema of the data.
 
@@ -73,7 +71,18 @@ For this example, User model has `id` and `name` fields. The key represents the 
 
 You can also define a relationship between deferent models. For that, please take a look at [Relationship documentation]('relationship.md').
 
-#### Primary Keys
+These fields are going to be attached as instance property when instantiating the model.
+
+```js
+const user = new User({ id: 1, name: 'John Doe' })
+
+user.id   // 1
+user.name // 'John Doe'
+```
+
+## Other Optional Fields
+
+### Primary Key
 
 Vuex ORM will assume that each data has a primary key named id. You may define a `static primaryKey` property to override this convention.
 

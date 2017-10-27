@@ -1,6 +1,6 @@
 # Installation
 
-You can install Vuex ORM via NPM, Yarn download directly. Remember since Vuex ORM is a plugin of Vuex, you need to install Vuex alongside with Vuex ORM.
+You can install Vuex ORM via NPM, Yarn, or download directly. Remember since Vuex ORM is a plugin of [Vuex](https://vuex.vuejs.org), you need to install Vuex alongside with Vuex ORM.
 
 ## NPM
 

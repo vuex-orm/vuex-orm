@@ -5,7 +5,9 @@
 
 Vuex ORM is a plugin for [Vuex](https://github.com/vuejs/vuex) to enable Object-Relational Mapping like access to the Vuex Store. Heavily inspired by Redux recipe of ["Normalizing State Shape"](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) and ["Updating Normalized Data"](http://redux.js.org/docs/recipes/reducers/UpdatingNormalizedData.html).
 
-Vuex ORM lets you create "normalized" data schema within Vuex Store and provide fluent API to get, search and update Store state.
+Vuex ORM lets you create "normalized" data schema within Vuex Store with relationships like any other usual ORM library. It also provides fluent API to get, search and update Store state.
+
+Learn more about the concept and motivation of Vuex ORM at [What Is Vuex ORM?](https://revolver-app.gitbooks.io/vuex-orm/what-is-vuex-orm.html).
 
 ## Documentation
 
@@ -183,7 +185,7 @@ store.getters['entities/posts/all']()
 // ]
 
 // Fetch single record with relation.
-store.getters['entities/posts/query']().with('author').first()
+store.getters['entities/posts/query']().with('author').first(1)
 
 // Post {
 //   id: 1,
@@ -199,16 +201,6 @@ store.getters['entities/posts/query']().with('author').first()
 ```
 
 Cool right? To get t know more about Vuex ORM, please [see the documentation](https://revolver-app.gitbooks.io/vuex-orm)
-
-## Currently Available Relationship
-
-Since Vuex ORM is under development, currently supported relationships are below.
-
-- [x] hasOne
-- [x] belongsTo
-- [x] hasMany
-- [x] hasManyBy
-- [ ] hasAndBelongsToMany
 
 ## Contribution
 

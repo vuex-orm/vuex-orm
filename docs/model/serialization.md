@@ -1,8 +1,8 @@
 # Model: Serialization
 
-### Serializing To Json
+## Serializing To Json
 
-To convert a model to JSON, you can use `$toJson` method. The `$toJson` method is recursive, so all attributes and relations will be converted to JSON.
+To convert a model to JSON – Plain Object –, you can use `$toJson` method. The `$toJson` method is recursive, so all attributes and relations are going to be converted to JSON as well.
 
 ```js
 const json = user.$toJson()

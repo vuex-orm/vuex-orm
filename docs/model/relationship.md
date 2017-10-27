@@ -2,7 +2,7 @@
 
 ## Defining Relationship
 
-The model can define the relationship in `static fields()`. Below example shows that the Post has the relationship with Comment of `hasMany`.
+The model can define the relationship in `static fields`. Below example shows that the Post has the relationship with Comment of `hasMany`.
 
 ```js
 import { Model } from 'vuex-orm'
@@ -33,11 +33,11 @@ class Post extends Model {
 }
 ```
 
-By defining relationship, Vuex ORM will use those relationship to construct data when storing, modifing and fetching data from Vuex Store.
+By defining the relationship, Vuex ORM is going to use those relationships to construct data when storing, modifying and fetching data from Vuex Store.
 
 ### One To One
 
-A one-to-one relationship is defined by `this.hasOne()` method. For example, User might have one profile information.
+A one-to-one relationship is defined by `this.hasOne` method. For example, User might have one profile information.
 
 ```js
 import { Model } from 'vuex-orm'
@@ -68,11 +68,11 @@ class User extends Model {
 }
 ```
 
-The first argument of `this.hasOne()` is the model it self of the relation. So in this case, we're passing in Profile model. The second argument is the "foreign key" which holds the id of the model. For this exmaple, the foreign key will be the `user_id` in Profile model.
+The first argument of `this.hasOne` is the model itself of the relation. So in this case, we are passing in Profile model. The second argument is the "foreign key" which holds the id of the model. For this example, the foreign key is the `user_id` at Profile model.
 
 ### One To One Inverse
 
-To define a inverse relationship of one-to-one, you can do so with `this.belongsTo()` attribute.
+To define an inverse relationship of one-to-one, you can do so with `this.belongsTo()` attribute.
 
 ```js
 import { Model } from 'vuex-orm'
@@ -104,11 +104,11 @@ class User extends Model {
 }
 ```
 
-Now the above Profile model has belongs to relationship to the User model. The arguments are pretty much same with `this.hasOne()`. First argument is the related model, and second is the "foreign key" but of course this time the foreign key exists in the Profile model.
+Now the above Profile model has belongs to relationship to the User model. The arguments are pretty much same with `this.hasOne`. The first argument is the related model, and second is the "foreign key" but of course this time the foreign key exists in the Profile model.
 
 ### One To Many
 
-A one-to-many relationship can be defined by `this.hasMany()`.
+A one-to-many relationship can be defined by `this.hasMany`.
 
 ```js
 import { Model } from 'vuex-orm'
@@ -139,11 +139,11 @@ class Post extends Model {
 }
 ```
 
-For this example, Post has many Comments. The arguments for the `this.hasMany()` is again pretty much same as the others. The first argument is the model, and second is the 'foreign key' of the related model.
+For this example, Post has many Comments. The arguments for the `this.hasMany` is again pretty much same as the others. The first argument is the model, and second is the 'foreign key' of the related model.
 
 ### Has Many By
 
-In some case, the model it self has all the keys of the related model. Like below example.
+In some case, the model itself has all the keys of the related model. Like below example.
 
 ```js
 {
@@ -160,7 +160,7 @@ In some case, the model it self has all the keys of the related model. Like belo
 }
 ```
 
-As you can see, clusters wants to have has many relationship with nodes, but nodes doesn't have `cluster_id`. So you can't use `this.hasMany()` because there're no foreign key to look for. In such case you may use `this.hasManyBy()` relationship.
+As you can see, clusters want to have has many relationship with nodes, but nodes do not have `cluster_id`. You cannot use `this.hasMany` in this case because there is no foreign key to look for. In such case, you may use `this.hasManyBy` relationship.
 
 ```js
 import { Model } from 'vuex-orm'
@@ -188,4 +188,4 @@ class Cluster extends Model {
 }
 ```
 
-Now the cluster model will look for nodes by its own `nodes` attributes.
+Now the cluster model is going to look for nodes using ids at clusters own `nodes` attributes.
