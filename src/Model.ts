@@ -1,4 +1,3 @@
-import moment from 'moment-es6'
 import { Schema as NormalizrSchema } from 'normalizr'
 import _ from './support/lodash'
 import Container from './connections/Container'
@@ -7,17 +6,20 @@ import Schema from './Schema'
 import Attributes, {
   Type as AttrType,
   Attr,
-  Date,
   HasOne,
   BelongsTo,
   HasMany,
   HasManyBy
 } from './Attributes'
 
-export type Attrs = Attr | Date | HasOne | BelongsTo | HasMany | HasManyBy
+export type Attrs = Attr | HasOne | BelongsTo | HasMany | HasManyBy
 
 export interface Fields {
   [field: string]: Attrs
+}
+
+export interface Mutators {
+  [field: string]: Function
 }
 
 export default class Model {
@@ -59,15 +61,8 @@ export default class Model {
    * The generic attribute. The given value will be used as default value
    * of the property when instantiating a model.
    */
-  static attr (value: any): Attr {
-    return Attributes.attr(value)
-  }
-
-  /**
-   * The date attribute. This attribute will be converted to moment instance.
-   */
-  static date (value: any): Date {
-    return Attributes.date(value)
+  static attr (value: any, mutator?: Function): Attr {
+    return Attributes.attr(value, mutator)
   }
 
   /**
@@ -110,6 +105,13 @@ export default class Model {
    */
   static resolveRelation (attr: HasOne | BelongsTo | HasMany | HasManyBy): typeof Model {
     return _.isString(attr.model) ? this.relation(attr.model) : attr.model
+  }
+
+  /**
+   * Mutators to mutate matching fields when instantiating the model.
+   */
+  static mutators (): Mutators {
+    return {}
   }
 
   /**
@@ -198,13 +200,9 @@ export default class Model {
       }
 
       if (field.type === AttrType.Attr) {
-        this[key] = field.value
+        const mutator = field.mutator || this.$self().mutators()[key]
 
-        return
-      }
-
-      if (field.type === AttrType.Date) {
-        this[key] = moment(field.value)
+        this[key] = mutator ? mutator(field.value) : field.value
 
         return
       }
@@ -284,10 +282,6 @@ export default class Model {
     return _.mapValues(this.$self().fields(), (attr, key) => {
       if (!this[key]) {
         return this[key]
-      }
-
-      if (attr.type === AttrType.Date) {
-        return this[key].toISOString()
       }
 
       if (attr.type === AttrType.HasOne || attr.type === AttrType.BelongsTo) {
