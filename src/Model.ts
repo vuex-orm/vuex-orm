@@ -94,6 +94,13 @@ export default class Model {
   }
 
   /**
+   * Mutators to mutate matching fields when instantiating the model.
+   */
+  static mutators (): Mutators {
+    return {}
+  }
+
+  /**
    * Find relation model from the container.
    */
   static relation (name: string): typeof Model {
@@ -105,13 +112,6 @@ export default class Model {
    */
   static resolveRelation (attr: HasOne | BelongsTo | HasMany | HasManyBy): typeof Model {
     return _.isString(attr.model) ? this.relation(attr.model) : attr.model
-  }
-
-  /**
-   * Mutators to mutate matching fields when instantiating the model.
-   */
-  static mutators (): Mutators {
-    return {}
   }
 
   /**
