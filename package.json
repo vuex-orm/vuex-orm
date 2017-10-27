@@ -4,13 +4,13 @@
   "description": "The Vuex plugin to enable Object-Relational Mapping access to the Vuex Store.",
   "main": "dist/vuex-orm.common.js",
   "module": "dist/vuex-orm.esm.js",
+  "unpkg": "dist/vuex-orm.js",
   "typings": "lib/index.d.ts",
   "files": [
     "dist",
     "lib"
   ],
   "scripts": {
-    "dev": "tsc -p . --watch",
     "build": "npm run clean && npm run build:ts && npm run build:main && tsc -p . --module commonjs",
     "build:ts": "tsc -p .",
     "build:main": "node build/build.js",
@@ -28,6 +28,7 @@
   "keywords": [
     "vue",
     "vuex",
+    "vuex-plugin",
     "orm"
   ],
   "author": "Kia Ishii",
