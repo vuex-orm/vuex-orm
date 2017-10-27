@@ -197,7 +197,7 @@ describe('Model', () => {
     expect(user.name).toBe('JOHN DOE')
   })
 
-  it('attr mutator should take president over static mutators', () => {
+  it('attr mutator should take precedent over static mutators', () => {
     class User extends Model {
       static entity = 'users'
 

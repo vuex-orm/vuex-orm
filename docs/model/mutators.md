@@ -57,4 +57,4 @@ user.name
 // JOHN DOE
 ```
 
-Note that if you have mutator defined at the 2nd argument of the `attr`, and also have mutators method with the same field name, the mutator at `attr` takes the president.
+Note that if you have mutator defined at the 2nd argument of the `attr`, and also have mutators method with the same field name, the mutator at `attr` takes the precedent.
