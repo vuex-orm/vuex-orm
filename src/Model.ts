@@ -214,7 +214,7 @@ export default class Model {
       }
 
       if (field.type === AttrType.HasOne) {
-        const model = this.$resolveRelation(field as HasOne)
+        const model = this.$resolveRelation(field)
 
         this[key] = field.value ? new model(field.value) : null
 
@@ -222,7 +222,7 @@ export default class Model {
       }
 
       if (field.type === AttrType.BelongsTo) {
-        const model = this.$resolveRelation(field as BelongsTo)
+        const model = this.$resolveRelation(field)
 
         this[key] = field.value ? new model(field.value) : null
 
@@ -230,7 +230,7 @@ export default class Model {
       }
 
       if (field.type === AttrType.HasMany) {
-        const model = this.$resolveRelation(field as HasMany)
+        const model = this.$resolveRelation(field)
 
         this[key] = field.value ? field.value.map((v: any) => new model(v)) : null
 
@@ -238,7 +238,7 @@ export default class Model {
       }
 
       if (field.type === AttrType.HasManyBy) {
-        const model = this.$resolveRelation(field as HasManyBy)
+        const model = this.$resolveRelation(field)
 
         this[key] = field.value ? field.value.map((v: any) => new model(v)) : null
       }
