@@ -66,4 +66,3 @@ describe('Repo: Delete', () => {
     expect(state).toEqual(expected)
   })
 })
-
