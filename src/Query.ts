@@ -1,6 +1,6 @@
 import _ from './support/lodash'
 import { Record, Records } from './Data'
-import { State } from './Module'
+import { State, EntityState } from './Module'
 
 export type Item = Record | null
 
@@ -38,6 +38,11 @@ export default class Query {
   protected name: string
 
   /**
+   * The data of the entity.
+   */
+  protected entity: EntityState
+
+  /**
    * The where constraints for the query.
    */
   protected wheres: Wheres[] = []
@@ -53,13 +58,7 @@ export default class Query {
   constructor (state: State, name: string) {
     this.state = state
     this.name = name
-  }
-
-  /**
-   * Return entity's data state.
-   */
-  entity (): any {
-    return this.state[this.name].data
+    this.entity = state[name]
   }
 
   /**
@@ -89,11 +88,28 @@ export default class Query {
   }
 
   /**
+   * Save the given data to the state. This will replace any existing
+   * data in the state.
+   */
+  create (data: any): void {
+    this.entity.data = data
+  }
+
+  /**
+   * Insert given data to the state. Unlike `create`, this method will not
+   * remove existing data within the state, but it will update the data
+   * with the same primary key.
+   */
+  insert (data: any): void {
+    this.entity.data = { ...this.entity.data, ...data }
+  }
+
+  /**
    * Process the query and filter data.
    */
   process (): Records | null {
     // First, fetch all records of the entity.
-    let records: Records = this.entity()
+    let records: Records = this.entity.data
 
     // If the entity is empty, there's nothing we can do so lets return
     // null and exit immediately.
@@ -143,37 +159,18 @@ export default class Query {
   }
 
   /**
-   * Save the given data to the state. This will replace any existing
-   * data in the state.
-   */
-  create (data: any): void {
-    this.state[this.name].data = data
-  }
-
-  /**
-   * Insert given data to the state. Unlike `create`, this method will not
-   * remove existing data within the state, but it will update the data
-   * with the same primary key.
-   */
-  insert (data: any): void {
-    this.state[this.name].data = { ...this.state[this.name].data, ...data }
-  }
-
-  /**
    * Delete data from the state.
    */
   delete (condition: Condition): void {
     if (typeof condition === 'function') {
-      this.state[this.name].data = _.pickBy(this.state[this.name].data, (record) => {
-        return !condition(record)
-      })
+      this.entity.data = _.pickBy(this.entity.data, record => !condition(record))
 
       return
     }
 
     const id = typeof condition === 'number' ? condition.toString() : condition
 
-    this.state[this.name].data = _.pickBy(this.state[this.name].data, (_record, key) => key !== id)
+    this.entity.data = _.pickBy(this.entity.data, (_record, key) => key !== id)
   }
 
   /**
