@@ -18,6 +18,7 @@ Vuex ORM lets you create "normalized" data schema within Vuex Store with relatio
 - [Interacting With Store](interacting-with-store.md)
     - [Creating And Updating Data](store/creating-and-updating-data.md)
     - [Retrieving Data](store/retrieving-data.md)
+    - [Deleting Data](store/deleting-data.md)
 
 ## Resources
 
