@@ -4,7 +4,12 @@ import { Record, NormalizedData } from './Data'
 import { Type as AttrType, HasOne, BelongsTo, HasMany, HasManyBy } from './Attributes'
 import Model, { Attrs, Fields } from './Model'
 import { State } from './Module'
-import Query, { Item as QueryItem, Collection as QueryCollection, OrderDirection } from './Query'
+import Query, {
+  Item as QueryItem,
+  Collection as QueryCollection,
+  OrderDirection,
+  Condition
+} from './Query'
 
 export type Item = Model | Record | null
 
@@ -97,6 +102,13 @@ export default class Repo {
    */
   static insert (state: State, entity: string, data: any): void {
     (new this(state, entity)).insert(data)
+  }
+
+  /**
+   * Delete data from the state.
+   */
+  static delete (state: State, entity: string, condition: Condition): void {
+    (new this(state, entity)).delete(condition)
   }
 
   /**
@@ -202,6 +214,13 @@ export default class Repo {
     _.forEach(normalizedData, (data, entity) => {
       entity === this.name ? (this.query as any)[method](data) : (new Query(this.state, entity) as any)[method](data)
     })
+  }
+
+  /**
+   * Delete data from the state.
+   */
+  delete (condition: Condition): void {
+    this.query.delete(condition)
   }
 
   /**

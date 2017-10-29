@@ -17,5 +17,15 @@ export default {
    */
   insert ({ commit, state }, { data }) {
     commit(`${state.$connection}/insert`, { entity: state.$name, data }, { root: true })
+  },
+
+  /**
+   * Delete data from the store.
+   */
+  delete ({ commit, state }, condition) {
+    commit(`${state.$connection}/delete`, {
+      entity: state.$name,
+      where: typeof condition === 'object' ? condition.where : condition
+    }, { root: true })
   }
 } as Vuex.ActionTree<EntityState, any>

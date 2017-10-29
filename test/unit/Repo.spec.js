@@ -599,6 +599,51 @@ describe('Repo', () => {
     expect(state).toEqual(expected)
   })
 
+  it('can delete record by id', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1 },
+        '2': { id: 2 }
+      }}
+    }
+
+    const expected = {
+      name: 'entities',
+      users: { data: {
+        '2': { id: 2 }
+      }}
+    }
+
+    Repo.delete(state, 'users', 1)
+
+    expect(state).toEqual(expected)
+  })
+
+  it('can delete record by closure', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, name: 'John' },
+        '2': { id: 2, name: 'Jane' },
+        '3': { id: 3, name: 'George' }
+      }}
+    }
+
+    const expected = {
+      name: 'entities',
+      users: { data: {
+        '3': { id: 3, name: 'George' }
+      }}
+    }
+
+    Repo.delete(state, 'users', (record) => {
+      return record.id === 1 || record.name === 'Jane'
+    })
+
+    expect(state).toEqual(expected)
+  })
+
   it('can sort by model fields', () => {
     const state = {
       name: 'entities',

@@ -95,4 +95,36 @@ describe('Sub modules', () => {
     expect(profile.id).toBe(1)
     expect(profile.user.id).toBe(2)
   })
+
+  it('can delete data by action', async () => {
+    const store = createStore(entities)
+
+    const data = [
+      { id: 1 }, { id: 2 }, { id: 3 }
+    ]
+
+    await store.dispatch('entities/users/create', { data })
+
+    await store.dispatch('entities/users/delete', { where: 2 })
+
+    expect(store.getters['entities/users/all']().length).toBe(2)
+    expect(store.state.entities.users.data[1].id).toBe(1)
+    expect(store.state.entities.users.data[3].id).toBe(3)
+  })
+
+  it('can delete data by action with direct argument', async () => {
+    const store = createStore(entities)
+
+    const data = [
+      { id: 1 }, { id: 2 }, { id: 3 }
+    ]
+
+    await store.dispatch('entities/users/create', { data })
+
+    await store.dispatch('entities/users/delete', record => record.id === 2)
+
+    expect(store.getters['entities/users/all']().length).toBe(2)
+    expect(store.state.entities.users.data[1].id).toBe(1)
+    expect(store.state.entities.users.data[3].id).toBe(3)
+  })
 })

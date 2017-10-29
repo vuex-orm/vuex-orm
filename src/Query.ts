@@ -10,6 +10,10 @@ export type WhereBoolean = 'and' | 'or'
 
 export type OrderDirection = 'asc' | 'desc'
 
+export type Predicate = (item: Record) => boolean
+
+export type Condition = number | string | Predicate
+
 export interface Wheres {
   field: string
   value: any
@@ -153,6 +157,23 @@ export default class Query {
    */
   insert (data: any): void {
     this.state[this.name].data = { ...this.state[this.name].data, ...data }
+  }
+
+  /**
+   * Delete data from the state.
+   */
+  delete (condition: Condition): void {
+    if (typeof condition === 'function') {
+      this.state[this.name].data = _.pickBy(this.state[this.name].data, (record) => {
+        return !condition(record)
+      })
+
+      return
+    }
+
+    const id = typeof condition === 'number' ? condition.toString() : condition
+
+    this.state[this.name].data = _.pickBy(this.state[this.name].data, (_record, key) => key !== id)
   }
 
   /**
