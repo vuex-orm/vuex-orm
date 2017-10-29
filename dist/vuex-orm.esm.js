@@ -3962,13 +3962,8 @@ var Query = /** @class */ (function () {
         this.orders = [];
         this.state = state;
         this.name = name;
+        this.entity = state[name];
     }
-    /**
-     * Return entity's data state.
-     */
-    Query.prototype.entity = function () {
-        return this.state[this.name].data;
-    };
     /**
      * Returns single record of the query chain result.
      */
@@ -3990,11 +3985,40 @@ var Query = /** @class */ (function () {
         return this.item(records[Object.keys(records)[0]]);
     };
     /**
+     * Save the given data to the state. This will replace any existing
+     * data in the state.
+     */
+    Query.prototype.create = function (data) {
+        this.entity.data = data;
+    };
+    /**
+     * Insert given data to the state. Unlike `create`, this method will not
+     * remove existing data within the state, but it will update the data
+     * with the same primary key.
+     */
+    Query.prototype.insert = function (data) {
+        this.entity.data = __assign$2({}, this.entity.data, data);
+    };
+    /**
+     * Update data in the state.
+     */
+    Query.prototype.update = function (data, condition) {
+        if (typeof condition !== 'function') {
+            if (this.entity.data[condition]) {
+                this.entity.data[condition] = __assign$2({}, this.entity.data[condition], data);
+            }
+            return;
+        }
+        this.entity.data = _.mapValues(this.entity.data, function (record) {
+            return condition(record) ? __assign$2({}, record, data) : record;
+        });
+    };
+    /**
      * Process the query and filter data.
      */
     Query.prototype.process = function () {
         // First, fetch all records of the entity.
-        var records = this.entity();
+        var records = this.entity.data;
         // If the entity is empty, there's nothing we can do so lets return
         // null and exit immediately.
         if (_.isEmpty(records)) {
@@ -4034,19 +4058,15 @@ var Query = /** @class */ (function () {
         return this;
     };
     /**
-     * Save the given data to the state. This will replace any existing
-     * data in the state.
+     * Delete data from the state.
      */
-    Query.prototype.create = function (data) {
-        this.state[this.name].data = data;
-    };
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    Query.prototype.insert = function (data) {
-        this.state[this.name].data = __assign$2({}, this.state[this.name].data, data);
+    Query.prototype.delete = function (condition) {
+        if (typeof condition === 'function') {
+            this.entity.data = _.pickBy(this.entity.data, function (record) { return !condition(record); });
+            return;
+        }
+        var id = typeof condition === 'number' ? condition.toString() : condition;
+        this.entity.data = _.pickBy(this.entity.data, function (_record, key) { return key !== id; });
     };
     /**
      * Create a item from given record.
@@ -4173,6 +4193,18 @@ var Repo = /** @class */ (function () {
         (new this(state, entity)).insert(data);
     };
     /**
+     * Update data in the state.
+     */
+    Repo.update = function (state, entity, data, condition) {
+        (new this(state, entity)).update(data, condition);
+    };
+    /**
+     * Delete data from the state.
+     */
+    Repo.delete = function (state, entity, condition) {
+        (new this(state, entity)).delete(condition);
+    };
+    /**
      * Get model of given name from connections container.
      */
     Repo.model = function (state, name) {
@@ -4261,6 +4293,24 @@ var Repo = /** @class */ (function () {
         _.forEach(normalizedData, function (data, entity) {
             entity === _this.name ? _this.query[method](data) : new Query(_this.state, entity)[method](data);
         });
+    };
+    /**
+     * Update data in the state.
+     */
+    Repo.prototype.update = function (data, condition) {
+        // If there is no condition, check if data contains primary key. If it has,
+        // use it as a condition to update the data. Else, do nothing.
+        if (!condition) {
+            data[this.entity.primaryKey] && this.query.update(data, data[this.entity.primaryKey]);
+            return;
+        }
+        this.query.update(data, condition);
+    };
+    /**
+     * Delete data from the state.
+     */
+    Repo.prototype.delete = function (condition) {
+        this.query.delete(condition);
     };
     /**
      * Create a item from given record.
@@ -4442,6 +4492,22 @@ var rootActions = {
         var commit = _a.commit;
         var entity = _b.entity, data = _b.data;
         commit('insert', { entity: entity, data: data });
+    },
+    /**
+     * Update data in the store.
+     */
+    update: function (_a, _b) {
+        var commit = _a.commit;
+        var entity = _b.entity, where = _b.where, data = _b.data;
+        commit('update', { entity: entity, where: where, data: data });
+    },
+    /**
+     * Delete data from the store.
+     */
+    delete: function (_a, _b) {
+        var commit = _a.commit;
+        var entity = _b.entity, where = _b.where;
+        commit('delete', { entity: entity, where: where });
     }
 };
 
@@ -4462,6 +4528,20 @@ var mutations = {
     insert: function (state, _a) {
         var entity = _a.entity, data = _a.data;
         Repo.insert(state, entity, data);
+    },
+    /**
+     * Update data in the store.
+     */
+    update: function (state, _a) {
+        var entity = _a.entity, data = _a.data, _b = _a.where, where = _b === void 0 ? undefined : _b;
+        Repo.update(state, entity, data, where);
+    },
+    /**
+     * Delete data from the store.
+     */
+    delete: function (state, _a) {
+        var entity = _a.entity, where = _a.where;
+        Repo.delete(state, entity, where);
     }
 };
 
@@ -4508,6 +4588,33 @@ var subActions = {
         var commit = _a.commit, state = _a.state;
         var data = _b.data;
         commit(state.$connection + "/insert", { entity: state.$name, data: data }, { root: true });
+    },
+    /**
+     * Update data in the store.
+     */
+    update: function (_a, payload) {
+        var commit = _a.commit, state = _a.state;
+        var where = payload.where;
+        var data = payload.data;
+        if (where === undefined && data === undefined) {
+            commit(state.$connection + "/update", { entity: state.$name, data: payload }, { root: true });
+            return;
+        }
+        if (typeof data !== 'object') {
+            commit(state.$connection + "/update", { entity: state.$name, data: payload }, { root: true });
+            return;
+        }
+        commit(state.$connection + "/update", { entity: state.$name, where: where, data: data }, { root: true });
+    },
+    /**
+     * Delete data from the store.
+     */
+    delete: function (_a, condition) {
+        var commit = _a.commit, state = _a.state;
+        commit(state.$connection + "/delete", {
+            entity: state.$name,
+            where: typeof condition === 'object' ? condition.where : condition
+        }, { root: true });
     }
 };
 
@@ -5456,6 +5563,12 @@ var Model = /** @class */ (function () {
         return Attributes.hasManyBy(model, foreignKey, otherKey);
     };
     /**
+     * Mutators to mutate matching fields when instantiating the model.
+     */
+    Model.mutators = function () {
+        return {};
+    };
+    /**
      * Find relation model from the container.
      */
     Model.relation = function (name) {
@@ -5466,12 +5579,6 @@ var Model = /** @class */ (function () {
      */
     Model.resolveRelation = function (attr) {
         return _.isString(attr.model) ? this.relation(attr.model) : attr.model;
-    };
-    /**
-     * Mutators to mutate matching fields when instantiating the model.
-     */
-    Model.mutators = function () {
-        return {};
     };
     /**
      * Create normalizr schema that represents this model.
@@ -5525,6 +5632,12 @@ var Model = /** @class */ (function () {
      */
     Model.prototype.$self = function () {
         return this.constructor;
+    };
+    /**
+     * Get the value of the primary key.
+     */
+    Model.prototype.$id = function () {
+        return this[this.$self().primaryKey];
     };
     /**
      * The definition of the fields of the model and its relations.
