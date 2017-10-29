@@ -218,7 +218,7 @@ Not only fetching saved data, but Vuex ORM also lets you create Model Class for 
 // Define Model as class.
 import { Model } from 'vuex-orm'
 
-class User from extends Model {
+class User extends Model {
   fullName () {
     return this.first_name + ' ' + this.last_name
   }
