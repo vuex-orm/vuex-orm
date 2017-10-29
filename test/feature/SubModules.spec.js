@@ -12,7 +12,7 @@ const entities = [
 ]
 
 describe('Sub modules', () => {
-  it('Sub module can create data by action', async () => {
+  it('can create data by action', async () => {
     const store = createStore(entities)
 
     const data = {
@@ -27,7 +27,7 @@ describe('Sub modules', () => {
     expect(store.state.entities.users.data[2].id).toBe(2)
   })
 
-  it('Sub module can insert data by action', async () => {
+  it('can insert data by action', async () => {
     const store = createStore(entities)
 
     const data = {
@@ -42,7 +42,7 @@ describe('Sub modules', () => {
     expect(store.state.entities.users.data[2].id).toBe(2)
   })
 
-  it('Sub module can find a data by getter', async () => {
+  it('can find a data by getter', async () => {
     const store = createStore(entities)
 
     const data = {
@@ -59,7 +59,7 @@ describe('Sub modules', () => {
     expect(profile.id).toBe(1)
   })
 
-  it('Sub module can find all data by getter', async () => {
+  it('can find all data by getter', async () => {
     const store = createStore(entities)
 
     const data = [
@@ -77,7 +77,7 @@ describe('Sub modules', () => {
     expect(profiles[1].id).toBe(2)
   })
 
-  it('Sub module can create a query by getter', async () => {
+  it('can create a query by getter', async () => {
     const store = createStore(entities)
 
     const data = {
