@@ -21,6 +21,13 @@ export default {
   },
 
   /**
+   * Update data in the store.
+   */
+  update (state, { entity, data, where = undefined }) {
+    Repo.update(state, entity, data, where)
+  },
+
+  /**
    * Delete data from the store.
    */
   delete (state, { entity, where }) {

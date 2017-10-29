@@ -19,6 +19,13 @@ export default {
   },
 
   /**
+   * Update data in the store.
+   */
+  update ({ commit }, { entity, where, data }) {
+    commit('update', { entity, where, data })
+  },
+
+  /**
    * Delete data from the store.
    */
   delete ({ commit }, { entity, where }) {

@@ -42,6 +42,50 @@ describe('Root modules', () => {
     expect(store.state.entities.users.data[2].id).toBe(2)
   })
 
+  it('can update data by action with id', async () => {
+    const store = createStore(entities)
+
+    const data = [
+      { id: 1, name: 'John' },
+      { id: 2, name: 'Jane' },
+      { id: 3, name: 'Johnny' }
+    ]
+
+    await store.dispatch('entities/create', { entity: 'users', data })
+
+    await store.dispatch('entities/update', {
+      entity: 'users',
+      data: { name: 'Christina' },
+      where: 2
+    })
+
+    expect(store.state.entities.users.data[1].name).toBe('John')
+    expect(store.state.entities.users.data[2].name).toBe('Christina')
+  })
+
+  it('can update data by action with closure', async () => {
+    const store = createStore(entities)
+
+    const data = [
+      { id: 1, name: 'John' },
+      { id: 2, name: 'Jane' },
+      { id: 3, name: 'Johnny' }
+    ]
+
+    await store.dispatch('entities/create', { entity: 'users', data })
+
+    await store.dispatch('entities/update', {
+      entity: 'users',
+      data: { name: 'Christina' },
+      where (record) {
+        return record.name === 'Jane'
+      }
+    })
+
+    expect(store.state.entities.users.data[1].name).toBe('John')
+    expect(store.state.entities.users.data[2].name).toBe('Christina')
+  })
+
   it('can delete data by action', async () => {
     const store = createStore(entities)
 

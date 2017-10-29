@@ -105,6 +105,13 @@ export default class Repo {
   }
 
   /**
+   * Update data in the state.
+   */
+  static update (state: State, entity: string, data: any, condition?: Condition): void {
+    (new this(state, entity)).update(data, condition)
+  }
+
+  /**
    * Delete data from the state.
    */
   static delete (state: State, entity: string, condition: Condition): void {
@@ -214,6 +221,21 @@ export default class Repo {
     _.forEach(normalizedData, (data, entity) => {
       entity === this.name ? (this.query as any)[method](data) : (new Query(this.state, entity) as any)[method](data)
     })
+  }
+
+  /**
+   * Update data in the state.
+   */
+  update (data: any, condition?: Condition): void {
+    // If there is no condition, check if data contains primary key. If it has,
+    // use it as a condition to update the data. Else, do nothing.
+    if (!condition) {
+      data[this.entity.primaryKey] && this.query.update(data, data[this.entity.primaryKey])
+
+      return
+    }
+
+    this.query.update(data, condition)
   }
 
   /**

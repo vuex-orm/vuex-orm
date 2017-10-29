@@ -18,9 +18,9 @@ export interface State {
 }
 
 export interface EntityState {
-  $connection: string,
-  $name: string,
-  data: {},
+  $connection: string
+  $name: string
+  data: { [key: string]: any }
   [key: string]: any
 }
 

@@ -8,6 +8,7 @@ export default class User extends Model {
   static fields () {
     return {
       id: this.attr(null),
+      name: this.attr(''),
       posts: this.hasMany(Post, 'user_id'),
       profile: this.hasOne(Profile, 'user_id')
     }

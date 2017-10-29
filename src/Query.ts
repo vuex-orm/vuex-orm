@@ -105,6 +105,23 @@ export default class Query {
   }
 
   /**
+   * Update data in the state.
+   */
+  update (data: Record, condition: Condition): void {
+    if (typeof condition !== 'function') {
+      if (this.entity.data[condition]) {
+        this.entity.data[condition] = { ...this.entity.data[condition], ...data }
+      }
+
+      return
+    }
+
+    this.entity.data = _.mapValues(this.entity.data, (record) => {
+      return condition(record) ? { ...record, ...data } : record
+    })
+  }
+
+  /**
    * Process the query and filter data.
    */
   process (): Records | null {

@@ -180,6 +180,13 @@ export default class Model {
   }
 
   /**
+   * Get the value of the primary key.
+   */
+  $id (): any {
+    return this[this.$self().primaryKey]
+  }
+
+  /**
    * The definition of the fields of the model and its relations.
    */
   $fields (): Fields {
