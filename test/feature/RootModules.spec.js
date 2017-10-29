@@ -41,4 +41,20 @@ describe('Root modules', () => {
     expect(store.state.entities.profiles.data[1].id).toBe(1)
     expect(store.state.entities.users.data[2].id).toBe(2)
   })
+
+  it('can delete data by action', async () => {
+    const store = createStore(entities)
+
+    const data = [
+      { id: 1 }, { id: 2 }, { id: 3 }
+    ]
+
+    await store.dispatch('entities/create', { entity: 'users', data })
+
+    await store.dispatch('entities/delete', { entity: 'users', where: 2 })
+
+    expect(store.getters['entities/users/all']().length).toBe(2)
+    expect(store.state.entities.users.data[1].id).toBe(1)
+    expect(store.state.entities.users.data[3].id).toBe(3)
+  })
 })
