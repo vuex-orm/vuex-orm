@@ -1,5 +1,5 @@
 import { Schema as NormalizrSchema } from 'normalizr'
-import _ from './support/lodash'
+import * as _ from './support/lodash'
 import Container from './connections/Container'
 import Data, { Record, Records, NormalizedData } from './Data'
 import Schema from './Schema'

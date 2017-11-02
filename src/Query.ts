@@ -1,4 +1,4 @@
-import _ from './support/lodash'
+import * as _ from './support/lodash'
 import { Record, Records } from './Data'
 import { State, EntityState } from './Module'
 

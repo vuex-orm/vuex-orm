@@ -1,5 +1,5 @@
 import { schema, Schema as NormalizrSchema } from 'normalizr'
-import _ from './support/lodash'
+import * as _ from './support/lodash'
 import { Type as AttrType } from './Attributes'
 import Model from './Model'
 

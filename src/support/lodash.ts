@@ -12,7 +12,7 @@ import orderBy from 'lodash-es/orderBy'
 import pickBy from 'lodash-es/pickBy'
 import reduce from 'lodash-es/reduce'
 
-export default {
+export {
   forEach,
   includes,
   isArray,
