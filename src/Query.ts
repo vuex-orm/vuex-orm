@@ -228,7 +228,7 @@ export default class Query {
   /**
    * Generate predicate from registered where clause.
    */
-  whereClosure (): Function {
+  whereClosure (): any {
     const conditions: string = this.whereConditions()
 
     return new Function('record', `

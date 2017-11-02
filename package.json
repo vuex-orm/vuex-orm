@@ -42,7 +42,7 @@
     "lodash-es": "^4.17.4",
     "normalizr": "^3.2.4",
     "vue": "^2.5.2",
-    "vuex": "^3.0.0"
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@types/sinon": "^2.3.7",
@@ -57,16 +57,16 @@
     "istanbul-instrumenter-loader": "^3.0.0",
     "mocha": "^4.0.1",
     "mocha-webpack": "^1.0.1",
-    "nyc": "^11.2.1",
+    "nyc": "^11.3.0",
     "rollup": "^0.50.0",
-    "rollup-plugin-commonjs": "^8.2.5",
+    "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.0",
     "sinon": "^4.0.2",
-    "ts-loader": "^3.1.0",
+    "ts-loader": "^3.1.1",
     "tslint": "^5.8.0",
     "tslint-config-standard": "^7.0.0",
-    "typescript": "^2.5.3",
-    "uglify-js": "^3.1.5",
+    "typescript": "^2.6.1",
+    "uglify-js": "^3.1.6",
     "webpack": "^3.8.1",
     "webpack-node-externals": "^1.6.0"
   },
