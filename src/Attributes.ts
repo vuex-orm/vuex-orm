@@ -8,7 +8,13 @@ export enum Type {
   HasManyBy = 'HasManyBy'
 }
 
-export type Types = Attr | HasOne | BelongsTo | HasMany | HasManyBy
+export type Relations = Attrs | Attr | HasOne | BelongsTo | HasMany | HasManyBy
+
+export type Relation = Attr | HasOne | BelongsTo | HasMany | HasManyBy
+
+export interface Attrs {
+  [key: string]: Relations
+}
 
 export interface Attr {
   type: Type.Attr
@@ -83,9 +89,9 @@ export default class Attributes {
   }
 
   /**
-   * Determin if the given attribute is the type of relationship.
+   * Determine if given attr is relation.
    */
-  static isRelation (attr: Types): boolean {
-    return attr.type !== Type.Attr
+  static isRelation (attr: Relations): attr is Relation {
+    return (attr as any).type !== undefined
   }
 }

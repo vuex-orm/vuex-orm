@@ -1,8 +1,8 @@
 import * as _ from './support/lodash'
 import Container from './connections/Container'
 import { Record, NormalizedData } from './Data'
-import { Type as AttrType, HasOne, BelongsTo, HasMany, HasManyBy } from './Attributes'
-import Model, { Attrs, Fields } from './Model'
+import Attrs, { Type as AttrType, HasOne, BelongsTo, HasMany, HasManyBy } from './Attributes'
+import Model, { Fields } from './Model'
 import { State } from './Module'
 import Query, {
   Item as QueryItem,
@@ -294,7 +294,11 @@ export default class Repo {
     return _.reduce(this.load, (record, relation) => {
       const fields: Fields = this.entity.fields()
       const name = relation.name.split('.')[0]
-      const attr: Attrs = fields[name]
+      const attr = fields[name]
+
+      if (!Attrs.isRelation(attr)) {
+        return record
+      }
 
       if (attr.type === AttrType.Attr) {
         return record

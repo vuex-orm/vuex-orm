@@ -5,6 +5,8 @@ import Data, { Record, Records, NormalizedData } from './Data'
 import Schema from './Schema'
 import Attributes, {
   Type as AttrType,
+  Relations,
+  Relation,
   Attr,
   HasOne,
   BelongsTo,
@@ -12,10 +14,8 @@ import Attributes, {
   HasManyBy
 } from './Attributes'
 
-export type Attrs = Attr | HasOne | BelongsTo | HasMany | HasManyBy
-
 export interface Fields {
-  [field: string]: Attrs
+  [field: string]: Relations
 }
 
 export interface Mutators {
@@ -147,9 +147,13 @@ export default class Model {
       let newRecord: Record = { ...record }
 
       _.forEach(record, (value, field) => {
-        const attr: Attrs = fields[field]
+        const attr = fields[field]
 
         if (!attr) {
+          return
+        }
+
+        if (!Attributes.isRelation(attr)) {
           return
         }
 
@@ -200,6 +204,10 @@ export default class Model {
     const fields: Fields = this.$mergeFields(data)
 
     _.forEach(fields, (field, key) => {
+      if (!Attributes.isRelation(field)) {
+        return
+      }
+
       if (field.value === null) {
         this[key] = null
 
@@ -269,7 +277,11 @@ export default class Model {
         return
       }
 
-      newFields[key].value = value
+      if (!Attributes.isRelation(newFields[key])) {
+        return
+      }
+
+      (newFields[key] as Relation).value = value
     })
 
     return newFields
@@ -289,6 +301,10 @@ export default class Model {
     return _.mapValues(this.$self().fields(), (attr, key) => {
       if (!this[key]) {
         return this[key]
+      }
+
+      if (!Attributes.isRelation(attr)) {
+        return
       }
 
       if (attr.type === AttrType.HasOne || attr.type === AttrType.BelongsTo) {
