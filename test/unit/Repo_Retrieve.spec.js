@@ -149,6 +149,30 @@ describe('Repo: Retrieve', () => {
     expect(result).toEqual(expected)
   })
 
+  it('can get data of the entity that matches the where query with a function that accesses variables from outside the scope', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, role: 'admin', age: 20 },
+        '2': { id: 2, role: 'user', age: 30 },
+        '3': { id: 3, role: 'admin', age: 40 }
+      }}
+    }
+
+    const expected = [
+      { id: 1, role: 'admin', age: 20 },
+      { id: 2, role: 'user', age: 30 }
+    ]
+
+    const ageAsVariable = 40
+
+    const result = Repo.query(state, 'users', false)
+      .where(r => r.age < ageAsVariable)
+      .get()
+
+    expect(result).toEqual(expected)
+  })
+
   it('can get data of the entity that matches the orWhere query', () => {
     const state = {
       name: 'entities',

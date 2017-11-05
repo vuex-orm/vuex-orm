@@ -212,7 +212,7 @@ export default class Query {
    * Filter the given data by registered where clause.
    */
   selectByWheres (records: Records): Records {
-    return _.pickBy(records, this.whereClosure()) as any
+    return _.pickBy(records, record => this.whereOnRecord(record)) as any
   }
 
   /**
@@ -226,45 +226,30 @@ export default class Query {
   }
 
   /**
-   * Generate predicate from registered where clause.
+   * Checks if given Record matches the registered where clause.
    */
-  whereClosure (): any {
-    const conditions: string = this.whereConditions()
-
-    return new Function('record', `
-      return ${conditions}
-    `)
-  }
-
-  /**
-   * Create where conditions to be used with `whereClosure`. The result
-   * would look something like;
-   *
-   *   record['name'] === 'John' && record['age'] === 20
-   */
-  whereConditions (): string {
-    let condition: string = ''
-
-    this.wheres.forEach((cond, index) => {
-      if (index > 0) {
-        condition = cond.boolean === 'and' ? `${condition} && ` : `${condition} || `
+  whereOnRecord (record: Record): boolean {
+    let comparator: Function = (where: any) => {
+      if (_.isFunction(where.field)) {
+        return where.field(record)
+      } else if (_.isFunction(where.value)) {
+        return where.value(record[where.field])
+      } else {
+        return record[where.field] === where.value
       }
+    }
 
-      if (_.isFunction(cond.field)) {
-        condition = `${condition}(${cond.field.toString()})(record)`
+    let whereTypes: any = _.groupBy(this.wheres, where => where.boolean)
+    let whereResults: Array<boolean> = []
 
-        return
-      }
+    if (whereTypes.and) {
+      whereResults.push(_.every(whereTypes.and, comparator))
+    }
 
-      if (_.isFunction(cond.value)) {
-        condition = `${condition}(${cond.value.toString()})(record['${cond.field}'])`
+    if (whereTypes.or) {
+      whereResults.push(_.some(whereTypes.or, comparator))
+    }
 
-        return
-      }
-      const valueText = typeof (cond.value) === 'string' ? `'${cond.value}'` : cond.value
-      condition = `${condition}record['${cond.field}'] == ${valueText}`
-    })
-
-    return condition
+    return whereResults.indexOf(true) != -1
   }
 }

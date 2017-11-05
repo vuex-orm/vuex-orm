@@ -11,6 +11,9 @@ import mapValues from 'lodash-es/mapValues'
 import orderBy from 'lodash-es/orderBy'
 import pickBy from 'lodash-es/pickBy'
 import reduce from 'lodash-es/reduce'
+import every from 'lodash-es/every'
+import some from 'lodash-es/every'
+import groupBy from 'lodash-es/groupBy'
 
 export {
   forEach,
@@ -25,5 +28,8 @@ export {
   mapValues,
   orderBy,
   pickBy,
-  reduce
+  reduce,
+  every,
+  some,
+  groupBy
 }
