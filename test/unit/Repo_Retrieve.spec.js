@@ -84,6 +84,32 @@ describe('Repo: Retrieve', () => {
     expect(result).toEqual(expected)
   })
 
+  it('can get all data of the entity that matches the where query value as array', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, role: 'user', sex: 'male', enabled: true },
+        '2': { id: 2, role: 'user', sex: 'female', enabled: true },
+        '3': { id: 3, role: 'admin', sex: 'male', enabled: true },
+        '4': { id: 4, role: 'admin', sex: 'male', enabled: false },
+        '5': { id: 5, role: 'guest', sex: 'male', enabled: true }
+      }}
+    }
+
+    const expected = [
+      { id: 1, role: 'user', sex: 'male', enabled: true },
+      { id: 3, role: 'admin', sex: 'male', enabled: true }
+    ]
+
+    const result = Repo.query(state, 'users', false)
+      .where('role', ['admin', 'user'])
+      .where('sex', 'male')
+      .where('enabled', true)
+      .get()
+
+    expect(result).toEqual(expected)
+  })
+
   it('can get single data of the entity that matches the where query', () => {
     const state = {
       name: 'entities',

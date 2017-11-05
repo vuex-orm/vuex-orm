@@ -231,10 +231,16 @@ export default class Query {
   whereOnRecord (record: Record): boolean {
     let comparator: Function = (where: any) => {
       if (_.isFunction(where.field)) {
+        // Function with Record as argument
         return where.field(record)
       } else if (_.isFunction(where.value)) {
+        // Function with Record value as argument
         return where.value(record[where.field])
+      } else if (_.isArray(where.value)) {
+        // Check if field value is in given where Array
+        return where.value.indexOf(record[where.field]) != -1
       } else {
+        // Simple equal check
         return record[where.field] === where.value
       }
     }
