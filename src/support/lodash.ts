@@ -12,7 +12,7 @@ import orderBy from 'lodash-es/orderBy'
 import pickBy from 'lodash-es/pickBy'
 import reduce from 'lodash-es/reduce'
 import every from 'lodash-es/every'
-import some from 'lodash-es/every'
+import some from 'lodash-es/some'
 import groupBy from 'lodash-es/groupBy'
 
 export {
