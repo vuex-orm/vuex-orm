@@ -84,6 +84,32 @@ describe('Repo: Retrieve', () => {
     expect(result).toEqual(expected)
   })
 
+  it('can get all data of the entity that matches the where query value as array', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, role: 'user', sex: 'male', enabled: true },
+        '2': { id: 2, role: 'user', sex: 'female', enabled: true },
+        '3': { id: 3, role: 'admin', sex: 'male', enabled: true },
+        '4': { id: 4, role: 'admin', sex: 'male', enabled: false },
+        '5': { id: 5, role: 'guest', sex: 'male', enabled: true }
+      }}
+    }
+
+    const expected = [
+      { id: 1, role: 'user', sex: 'male', enabled: true },
+      { id: 3, role: 'admin', sex: 'male', enabled: true }
+    ]
+
+    const result = Repo.query(state, 'users', false)
+      .where('role', ['admin', 'user'])
+      .where('sex', 'male')
+      .where('enabled', true)
+      .get()
+
+    expect(result).toEqual(expected)
+  })
+
   it('can get single data of the entity that matches the where query', () => {
     const state = {
       name: 'entities',
@@ -144,6 +170,30 @@ describe('Repo: Retrieve', () => {
 
     const result = Repo.query(state, 'users', false)
       .where(r => r.age < 40)
+      .get()
+
+    expect(result).toEqual(expected)
+  })
+
+  it('can get data of the entity that matches the where query with a function that accesses variables from outside the scope', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, role: 'admin', age: 20 },
+        '2': { id: 2, role: 'user', age: 30 },
+        '3': { id: 3, role: 'admin', age: 40 }
+      }}
+    }
+
+    const expected = [
+      { id: 1, role: 'admin', age: 20 },
+      { id: 2, role: 'user', age: 30 }
+    ]
+
+    const ageAsVariable = 40
+
+    const result = Repo.query(state, 'users', false)
+      .where(r => r.age < ageAsVariable)
       .get()
 
     expect(result).toEqual(expected)
