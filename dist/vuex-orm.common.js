@@ -3815,21 +3815,274 @@ function reduce(collection, iteratee, accumulator) {
   return func(collection, baseIteratee(iteratee, 4), accumulator, initAccum, baseEach);
 }
 
-var _ = {
-    forEach: forEach,
-    includes: includes,
-    isArray: isArray,
-    isEmpty: isEmpty,
-    isFunction: isFunction,
-    isNumber: isNumber,
-    isString: isString,
-    keys: keys,
-    map: map,
-    mapValues: mapValues,
-    orderBy: orderBy,
-    pickBy: pickBy,
-    reduce: reduce
-};
+/**
+ * A specialized version of `_.every` for arrays without support for
+ * iteratee shorthands.
+ *
+ * @private
+ * @param {Array} [array] The array to iterate over.
+ * @param {Function} predicate The function invoked per iteration.
+ * @returns {boolean} Returns `true` if all elements pass the predicate check,
+ *  else `false`.
+ */
+function arrayEvery(array, predicate) {
+  var index = -1,
+      length = array == null ? 0 : array.length;
+
+  while (++index < length) {
+    if (!predicate(array[index], index, array)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * The base implementation of `_.every` without support for iteratee shorthands.
+ *
+ * @private
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} predicate The function invoked per iteration.
+ * @returns {boolean} Returns `true` if all elements pass the predicate check,
+ *  else `false`
+ */
+function baseEvery(collection, predicate) {
+  var result = true;
+  baseEach(collection, function(value, index, collection) {
+    result = !!predicate(value, index, collection);
+    return result;
+  });
+  return result;
+}
+
+/**
+ * Checks if the given arguments are from an iteratee call.
+ *
+ * @private
+ * @param {*} value The potential iteratee value argument.
+ * @param {*} index The potential iteratee index or key argument.
+ * @param {*} object The potential iteratee object argument.
+ * @returns {boolean} Returns `true` if the arguments are from an iteratee call,
+ *  else `false`.
+ */
+function isIterateeCall(value, index, object) {
+  if (!isObject(object)) {
+    return false;
+  }
+  var type = typeof index;
+  if (type == 'number'
+        ? (isArrayLike(object) && isIndex(index, object.length))
+        : (type == 'string' && index in object)
+      ) {
+    return eq(object[index], value);
+  }
+  return false;
+}
+
+/**
+ * Checks if `predicate` returns truthy for **all** elements of `collection`.
+ * Iteration is stopped once `predicate` returns falsey. The predicate is
+ * invoked with three arguments: (value, index|key, collection).
+ *
+ * **Note:** This method returns `true` for
+ * [empty collections](https://en.wikipedia.org/wiki/Empty_set) because
+ * [everything is true](https://en.wikipedia.org/wiki/Vacuous_truth) of
+ * elements of empty collections.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Collection
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} [predicate=_.identity] The function invoked per iteration.
+ * @param- {Object} [guard] Enables use as an iteratee for methods like `_.map`.
+ * @returns {boolean} Returns `true` if all elements pass the predicate check,
+ *  else `false`.
+ * @example
+ *
+ * _.every([true, 1, null, 'yes'], Boolean);
+ * // => false
+ *
+ * var users = [
+ *   { 'user': 'barney', 'age': 36, 'active': false },
+ *   { 'user': 'fred',   'age': 40, 'active': false }
+ * ];
+ *
+ * // The `_.matches` iteratee shorthand.
+ * _.every(users, { 'user': 'barney', 'active': false });
+ * // => false
+ *
+ * // The `_.matchesProperty` iteratee shorthand.
+ * _.every(users, ['active', false]);
+ * // => true
+ *
+ * // The `_.property` iteratee shorthand.
+ * _.every(users, 'active');
+ * // => false
+ */
+function every(collection, predicate, guard) {
+  var func = isArray(collection) ? arrayEvery : baseEvery;
+  if (guard && isIterateeCall(collection, predicate, guard)) {
+    predicate = undefined;
+  }
+  return func(collection, baseIteratee(predicate, 3));
+}
+
+/**
+ * The base implementation of `_.some` without support for iteratee shorthands.
+ *
+ * @private
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} predicate The function invoked per iteration.
+ * @returns {boolean} Returns `true` if any element passes the predicate check,
+ *  else `false`.
+ */
+function baseSome(collection, predicate) {
+  var result;
+
+  baseEach(collection, function(value, index, collection) {
+    result = predicate(value, index, collection);
+    return !result;
+  });
+  return !!result;
+}
+
+/**
+ * Checks if `predicate` returns truthy for **any** element of `collection`.
+ * Iteration is stopped once `predicate` returns truthy. The predicate is
+ * invoked with three arguments: (value, index|key, collection).
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Collection
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} [predicate=_.identity] The function invoked per iteration.
+ * @param- {Object} [guard] Enables use as an iteratee for methods like `_.map`.
+ * @returns {boolean} Returns `true` if any element passes the predicate check,
+ *  else `false`.
+ * @example
+ *
+ * _.some([null, 0, 'yes', false], Boolean);
+ * // => true
+ *
+ * var users = [
+ *   { 'user': 'barney', 'active': true },
+ *   { 'user': 'fred',   'active': false }
+ * ];
+ *
+ * // The `_.matches` iteratee shorthand.
+ * _.some(users, { 'user': 'barney', 'active': false });
+ * // => false
+ *
+ * // The `_.matchesProperty` iteratee shorthand.
+ * _.some(users, ['active', false]);
+ * // => true
+ *
+ * // The `_.property` iteratee shorthand.
+ * _.some(users, 'active');
+ * // => true
+ */
+function some(collection, predicate, guard) {
+  var func = isArray(collection) ? arraySome : baseSome;
+  if (guard && isIterateeCall(collection, predicate, guard)) {
+    predicate = undefined;
+  }
+  return func(collection, baseIteratee(predicate, 3));
+}
+
+/**
+ * A specialized version of `baseAggregator` for arrays.
+ *
+ * @private
+ * @param {Array} [array] The array to iterate over.
+ * @param {Function} setter The function to set `accumulator` values.
+ * @param {Function} iteratee The iteratee to transform keys.
+ * @param {Object} accumulator The initial aggregated object.
+ * @returns {Function} Returns `accumulator`.
+ */
+function arrayAggregator(array, setter, iteratee, accumulator) {
+  var index = -1,
+      length = array == null ? 0 : array.length;
+
+  while (++index < length) {
+    var value = array[index];
+    setter(accumulator, value, iteratee(value), array);
+  }
+  return accumulator;
+}
+
+/**
+ * Aggregates elements of `collection` on `accumulator` with keys transformed
+ * by `iteratee` and values set by `setter`.
+ *
+ * @private
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} setter The function to set `accumulator` values.
+ * @param {Function} iteratee The iteratee to transform keys.
+ * @param {Object} accumulator The initial aggregated object.
+ * @returns {Function} Returns `accumulator`.
+ */
+function baseAggregator(collection, setter, iteratee, accumulator) {
+  baseEach(collection, function(value, key, collection) {
+    setter(accumulator, value, iteratee(value), collection);
+  });
+  return accumulator;
+}
+
+/**
+ * Creates a function like `_.groupBy`.
+ *
+ * @private
+ * @param {Function} setter The function to set accumulator values.
+ * @param {Function} [initializer] The accumulator object initializer.
+ * @returns {Function} Returns the new aggregator function.
+ */
+function createAggregator(setter, initializer) {
+  return function(collection, iteratee) {
+    var func = isArray(collection) ? arrayAggregator : baseAggregator,
+        accumulator = initializer ? initializer() : {};
+
+    return func(collection, setter, baseIteratee(iteratee, 2), accumulator);
+  };
+}
+
+/** Used for built-in method references. */
+var objectProto$15 = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty$12 = objectProto$15.hasOwnProperty;
+
+/**
+ * Creates an object composed of keys generated from the results of running
+ * each element of `collection` thru `iteratee`. The order of grouped values
+ * is determined by the order they occur in `collection`. The corresponding
+ * value of each key is an array of elements responsible for generating the
+ * key. The iteratee is invoked with one argument: (value).
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Collection
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} [iteratee=_.identity] The iteratee to transform keys.
+ * @returns {Object} Returns the composed aggregate object.
+ * @example
+ *
+ * _.groupBy([6.1, 4.2, 6.3], Math.floor);
+ * // => { '4': [4.2], '6': [6.1, 6.3] }
+ *
+ * // The `_.property` iteratee shorthand.
+ * _.groupBy(['one', 'two', 'three'], 'length');
+ * // => { '3': ['one', 'two'], '5': ['three'] }
+ */
+var groupBy = createAggregator(function(result, value, key) {
+  if (hasOwnProperty$12.call(result, key)) {
+    result[key].push(value);
+  } else {
+    baseAssignValue(result, key, [value]);
+  }
+});
 
 var Connection = /** @class */ (function () {
     /**
@@ -3843,7 +4096,7 @@ var Connection = /** @class */ (function () {
      */
     Connection.prototype.models = function () {
         var models = {};
-        _.forEach(this.database.entities, function (entity) {
+        forEach(this.database.entities, function (entity) {
             models[entity.model.entity] = entity.model;
         });
         return models;
@@ -3978,7 +4231,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.first = function (id) {
         var records = this.process();
-        if (_.isEmpty(records) || records === null) {
+        if (isEmpty(records) || records === null) {
             return null;
         }
         if (id) {
@@ -4011,7 +4264,7 @@ var Query = /** @class */ (function () {
             }
             return;
         }
-        this.entity.data = _.mapValues(this.entity.data, function (record) {
+        this.entity.data = mapValues(this.entity.data, function (record) {
             return condition(record) ? __assign$2({}, record, data) : record;
         });
     };
@@ -4023,13 +4276,13 @@ var Query = /** @class */ (function () {
         var records = this.entity.data;
         // If the entity is empty, there's nothing we can do so lets return
         // null and exit immediately.
-        if (_.isEmpty(records)) {
+        if (isEmpty(records)) {
             return null;
         }
         // Now since we have the records, lets check if the where clause is
         // registered. If not, there is nothing we need to do so just
         // return all data.
-        if (_.isEmpty(this.wheres)) {
+        if (isEmpty(this.wheres)) {
             return records;
         }
         // OK so we do have where clause. Lets find specific data user wants.
@@ -4064,11 +4317,11 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.delete = function (condition) {
         if (typeof condition === 'function') {
-            this.entity.data = _.pickBy(this.entity.data, function (record) { return !condition(record); });
+            this.entity.data = pickBy(this.entity.data, function (record) { return !condition(record); });
             return;
         }
         var id = typeof condition === 'number' ? condition.toString() : condition;
-        this.entity.data = _.pickBy(this.entity.data, function (_record, key) { return key !== id; });
+        this.entity.data = pickBy(this.entity.data, function (_record, key) { return key !== id; });
     };
     /**
      * Create a item from given record.
@@ -4080,7 +4333,7 @@ var Query = /** @class */ (function () {
      * Create a collection (array) from given records.
      */
     Query.prototype.collect = function (records) {
-        if (records === null || _.isEmpty(records)) {
+        if (records === null || isEmpty(records)) {
             return null;
         }
         return this.sortByOrders(records);
@@ -4089,47 +4342,48 @@ var Query = /** @class */ (function () {
      * Filter the given data by registered where clause.
      */
     Query.prototype.selectByWheres = function (records) {
-        return _.pickBy(records, this.whereClosure());
+        var _this = this;
+        return pickBy(records, function (record) { return _this.whereOnRecord(record); });
     };
     /**
      * Sort the given data by registered orders.
      */
     Query.prototype.sortByOrders = function (records) {
-        var keys = _.map(this.orders, 'field');
-        var directions = _.map(this.orders, 'direction');
-        return _.orderBy(records, keys, directions);
+        var keys$$1 = map(this.orders, 'field');
+        var directions = map(this.orders, 'direction');
+        return orderBy(records, keys$$1, directions);
     };
     /**
-     * Generate predicate from registered where clause.
+     * Checks if given Record matches the registered where clause.
      */
-    Query.prototype.whereClosure = function () {
-        var conditions = this.whereConditions();
-        return new Function('record', "\n      return " + conditions + "\n    ");
-    };
-    /**
-     * Create where conditions to be used with `whereClosure`. The result
-     * would look something like;
-     *
-     *   record['name'] === 'John' && record['age'] === 20
-     */
-    Query.prototype.whereConditions = function () {
-        var condition = '';
-        this.wheres.forEach(function (cond, index) {
-            if (index > 0) {
-                condition = cond.boolean === 'and' ? condition + " && " : condition + " || ";
+    Query.prototype.whereOnRecord = function (record) {
+        var comparator = function (where) {
+            if (isFunction(where.field)) {
+                // Function with Record as argument
+                return where.field(record);
             }
-            if (_.isFunction(cond.field)) {
-                condition = condition + "(" + cond.field.toString() + ")(record)";
-                return;
+            else if (isFunction(where.value)) {
+                // Function with Record value as argument
+                return where.value(record[where.field]);
             }
-            if (_.isFunction(cond.value)) {
-                condition = condition + "(" + cond.value.toString() + ")(record['" + cond.field + "'])";
-                return;
+            else if (isArray(where.value)) {
+                // Check if field value is in given where Array
+                return where.value.indexOf(record[where.field]) !== -1;
             }
-            var valueText = typeof (cond.value) === 'string' ? "'" + cond.value + "'" : cond.value;
-            condition = condition + "record['" + cond.field + "'] == " + valueText;
-        });
-        return condition;
+            else {
+                // Simple equal check
+                return record[where.field] === where.value;
+            }
+        };
+        var whereTypes = groupBy(this.wheres, function (where) { return where.boolean; });
+        var whereResults = [];
+        if (whereTypes.and) {
+            whereResults.push(every(whereTypes.and, comparator));
+        }
+        if (whereTypes.or) {
+            whereResults.push(some(whereTypes.or, comparator));
+        }
+        return whereResults.indexOf(true) !== -1;
     };
     return Query;
 }());
@@ -4288,11 +4542,11 @@ var Repo = /** @class */ (function () {
         var _this = this;
         var normalizedData = this.normalize(data);
         // update with empty data
-        if (method === 'create' && _.isEmpty(normalizedData)) {
+        if (method === 'create' && isEmpty(normalizedData)) {
             this.query[method](normalizedData);
             return;
         }
-        _.forEach(normalizedData, function (data, entity) {
+        forEach(normalizedData, function (data, entity) {
             entity === _this.name ? _this.query[method](data) : new Query(_this.state, entity)[method](data);
         });
     };
@@ -4322,7 +4576,7 @@ var Repo = /** @class */ (function () {
             return null;
         }
         var item = queryItem;
-        if (!_.isEmpty(this.load)) {
+        if (!isEmpty(this.load)) {
             item = this.loadRelations(item);
         }
         if (!this.wrap) {
@@ -4335,24 +4589,24 @@ var Repo = /** @class */ (function () {
      */
     Repo.prototype.collect = function (collection) {
         var _this = this;
-        if (_.isEmpty(collection)) {
+        if (isEmpty(collection)) {
             return null;
         }
         var item = collection;
-        if (!_.isEmpty(this.load)) {
-            item = _.map(item, function (data) { return _this.loadRelations(data); });
+        if (!isEmpty(this.load)) {
+            item = map(item, function (data) { return _this.loadRelations(data); });
         }
         if (!this.wrap) {
             return item;
         }
-        return _.map(item, function (data) { return new _this.entity(data); });
+        return map(item, function (data) { return new _this.entity(data); });
     };
     /**
      * Load the relationships for the record.
      */
     Repo.prototype.loadRelations = function (record) {
         var _this = this;
-        return _.reduce(this.load, function (record, relation) {
+        return reduce(this.load, function (record, relation) {
             var fields = _this.entity.fields();
             var name = relation.name.split('.')[0];
             var attr = fields[name];
@@ -4425,7 +4679,7 @@ var Repo = /** @class */ (function () {
      * Resolve relation out of the container.
      */
     Repo.prototype.resolveRelation = function (attr) {
-        if (!_.isString(attr.model)) {
+        if (!isString(attr.model)) {
             return attr.model;
         }
         return this.model(name);
@@ -4651,7 +4905,7 @@ var Module = /** @class */ (function () {
     Module.createTree = function (namespace, entities) {
         var _this = this;
         var tree = {};
-        _.forEach(entities, function (entity) {
+        forEach(entities, function (entity) {
             tree[entity.model.entity] = {
                 namespaced: true,
                 state: __assign({}, entity.module.state, _this.state, { $connection: namespace, $name: entity.model.entity })
@@ -4697,7 +4951,7 @@ var Database = /** @class */ (function () {
      * Register namespace to the all regitsered model.
      */
     Database.prototype.registerNamespace = function (namespace) {
-        _.forEach(this.entities, function (entity) { entity.model.connection = namespace; });
+        forEach(this.entities, function (entity) { entity.model.connection = namespace; });
     };
     return Database;
 }());
@@ -5493,7 +5747,7 @@ var Schema = /** @class */ (function () {
     Schema.definition = function (model, schemas) {
         var _this = this;
         if (schemas === void 0) { schemas = {}; }
-        return _.reduce(model.fields(), function (definition, field, key) {
+        return reduce(model.fields(), function (definition, field, key) {
             if (field.type === Type.HasOne || field.type === Type.BelongsTo) {
                 var relation = model.resolveRelation(field);
                 var s = schemas[relation.entity];
@@ -5580,7 +5834,7 @@ var Model = /** @class */ (function () {
      * Resolve relation out of the container.
      */
     Model.resolveRelation = function (attr) {
-        return _.isString(attr.model) ? this.relation(attr.model) : attr.model;
+        return isString(attr.model) ? this.relation(attr.model) : attr.model;
     };
     /**
      * Create normalizr schema that represents this model.
@@ -5596,10 +5850,10 @@ var Model = /** @class */ (function () {
      */
     Model.normalize = function (data) {
         var _this = this;
-        var schema = this.schema(_.isArray(data));
+        var schema = this.schema(isArray(data));
         var normalizedData = Data.normalize(data, schema);
         // Check if all foreign keys exist in the data and if not, make them.
-        return _.mapValues(normalizedData, function (records, entity) {
+        return mapValues(normalizedData, function (records, entity) {
             return _this.attachForeignKeys(records, _this.relation(entity));
         });
     };
@@ -5608,9 +5862,9 @@ var Model = /** @class */ (function () {
      */
     Model.attachForeignKeys = function (records, model) {
         var fields = model.fields();
-        return _.mapValues(records, function (record) {
+        return mapValues(records, function (record) {
             var newRecord = __assign$3({}, record);
-            _.forEach(record, function (value, field) {
+            forEach(record, function (value, field) {
                 var attr = fields[field];
                 if (!attr) {
                     return;
@@ -5653,7 +5907,7 @@ var Model = /** @class */ (function () {
     Model.prototype.$initialize = function (data) {
         var _this = this;
         var fields = this.$mergeFields(data);
-        _.forEach(fields, function (field, key) {
+        forEach(fields, function (field, key) {
             if (field.value === null) {
                 _this[key] = null;
                 return;
@@ -5663,7 +5917,7 @@ var Model = /** @class */ (function () {
                 _this[key] = mutator ? mutator(field.value) : field.value;
                 return;
             }
-            if (_.isNumber(field.value) || _.isNumber(field.value[0])) {
+            if (isNumber(field.value) || isNumber(field.value[0])) {
                 _this[key] = null;
                 return;
             }
@@ -5696,9 +5950,9 @@ var Model = /** @class */ (function () {
             return this.$fields();
         }
         var newFields = __assign$3({}, this.$fields());
-        var fieldKeys = _.keys(newFields);
-        _.forEach(data, function (value, key) {
-            if (!_.includes(fieldKeys, key)) {
+        var fieldKeys = keys(newFields);
+        forEach(data, function (value, key) {
+            if (!includes(fieldKeys, key)) {
                 return;
             }
             newFields[key].value = value;
@@ -5716,7 +5970,7 @@ var Model = /** @class */ (function () {
      */
     Model.prototype.$toJson = function () {
         var _this = this;
-        return _.mapValues(this.$self().fields(), function (attr, key) {
+        return mapValues(this.$self().fields(), function (attr, key) {
             if (!_this[key]) {
                 return _this[key];
             }
