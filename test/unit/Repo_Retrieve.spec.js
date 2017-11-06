@@ -1,6 +1,7 @@
 import { createApplication } from 'test/support/Helpers'
 import User from 'test/fixtures/models/User'
 import Profile from 'test/fixtures/models/Profile'
+import Account from 'test/fixtures/models/Account'
 import Post from 'test/fixtures/models/Post'
 import Comment from 'test/fixtures/models/Comment'
 import Review from 'test/fixtures/models/Review'
@@ -13,6 +14,7 @@ describe('Repo: Retrieve', () => {
     createApplication('entities', [
       { model: User },
       { model: Profile },
+      { model: Account },
       { model: Post },
       { model: Comment },
       { model: Review },
@@ -447,32 +449,56 @@ describe('Repo: Retrieve', () => {
   it('can resolve nested relation', () => {
     const state = {
       name: 'entities',
-      posts: { data: {
-        '1': { id: 1, title: 'Post Title', comments: [1, 2, 3] }
+      users: { data: {
+        '1': { id: 1, settings: { accounts: [1, 2] } }
       }},
-      comments: { data: {
-        '1': { id: 1, post_id: 1 }
-      }},
-      likes: { data: {
-        '1': { id: 1, comment_id: 1 }
+      accounts: { data: {
+        '1': { id: 1, user_id: 1 },
+        '2': { id: 2, user_id: 1 },
+        '3': { id: 3, user_id: 2 }
       }}
     }
 
     const expected = {
       id: 1,
-      title: 'Post Title',
-      comments: [
-        {
-          id: 1,
-          post_id: 1,
-          likes: [
-            { id: 1, comment_id: 1 }
-          ]
-        }
-      ]
+      settings: {
+        accounts: [
+          { id: 1, user_id: 1 },
+          { id: 2, user_id: 1 }
+        ]
+      }
     }
 
-    const post = Repo.query(state, 'posts', false).with('comments.likes').first()
+    const post = Repo.query(state, 'users', false).with('accounts').first()
+
+    expect(post).toEqual(expected)
+  })
+
+  it('can resolve nested relation with where clouse', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, settings: { accounts: [1, 2] } }
+      }},
+      accounts: { data: {
+        '1': { id: 1, user_id: 1 },
+        '2': { id: 2, user_id: 1 },
+        '3': { id: 3, user_id: 2 }
+      }}
+    }
+
+    const expected = [{
+      id: 1,
+      settings: {
+        accounts: [
+          { id: 2, user_id: 1 }
+        ]
+      }
+    }]
+
+    const post = Repo.query(state, 'users', false)
+      .with('accounts', query => { query.where('id', 2) })
+      .get()
 
     expect(post).toEqual(expected)
   })
