@@ -94,4 +94,11 @@ export default class Attributes {
   static isRelation (attr: Relations): attr is Relation {
     return (attr as any).type !== undefined
   }
+
+  /**
+   * Determine if given attr is Attrs.
+   */
+  static isAttrs (attr: Relations): attr is Attrs {
+    return (attr as any).type === undefined
+  }
 }
