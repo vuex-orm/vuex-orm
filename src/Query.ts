@@ -238,7 +238,7 @@ export default class Query {
         return where.value(record[where.field])
       } else if (_.isArray(where.value)) {
         // Check if field value is in given where Array
-        return where.value.indexOf(record[where.field]) != -1
+        return where.value.indexOf(record[where.field]) !== -1
       } else {
         // Simple equal check
         return record[where.field] === where.value
@@ -256,6 +256,6 @@ export default class Query {
       whereResults.push(_.some(whereTypes.or, comparator))
     }
 
-    return whereResults.indexOf(true) != -1
+    return whereResults.indexOf(true) !== -1
   }
 }
