@@ -4190,10 +4190,23 @@ var Attributes = /** @class */ (function () {
         return { type: Type.HasManyBy, model: model, foreignKey: foreignKey, otherKey: otherKey, value: null };
     };
     /**
-     * Determin if the given attribute is the type of relationship.
+     * Determine if given attr is relation.
      */
     Attributes.isRelation = function (attr) {
-        return attr.type !== Type.Attr;
+        if (this.isAttrs(attr)) {
+            return false;
+        }
+        return attr.type === Type.Attr
+            || attr.type === Type.HasOne
+            || attr.type === Type.BelongsTo
+            || attr.type === Type.HasMany
+            || attr.type === Type.HasManyBy;
+    };
+    /**
+     * Determine if given attr is Attrs.
+     */
+    Attributes.isAttrs = function (attr) {
+        return attr.type === undefined;
     };
     return Attributes;
 }());
@@ -4608,33 +4621,43 @@ var Repo = /** @class */ (function () {
     /**
      * Load the relationships for the record.
      */
-    Repo.prototype.loadRelations = function (record) {
+    Repo.prototype.loadRelations = function (base, record, fields) {
         var _this = this;
+        var _record = record || __assign$1({}, base);
+        var _fields = fields || this.entity.fields();
         return reduce(this.load, function (record, relation) {
-            var fields = _this.entity.fields();
             var name = relation.name.split('.')[0];
-            var attr = fields[name];
+            var attr = _fields[name];
+            if (!attr || !Attributes.isRelation(attr)) {
+                forEach(_fields, function (f, key) {
+                    if (f[name]) {
+                        record[key] = _this.loadRelations(base, record[key], f);
+                        return;
+                    }
+                });
+                return record;
+            }
             if (attr.type === Type.Attr) {
                 return record;
             }
             if (attr.type === Type.HasOne) {
-                record[name] = _this.loadHasOneRelation(record, attr, relation);
+                record[name] = _this.loadHasOneRelation(base, attr, relation);
                 return record;
             }
             if (attr.type === Type.BelongsTo) {
-                record[name] = _this.loadBelongsToRelation(record, attr, relation);
+                record[name] = _this.loadBelongsToRelation(base, attr, relation);
                 return record;
             }
             if (attr.type === Type.HasMany) {
-                record[name] = _this.loadHasManyRelation(record, attr, relation);
+                record[name] = _this.loadHasManyRelation(base, attr, relation);
                 return record;
             }
             if (attr.type === Type.HasManyBy) {
-                record[name] = _this.loadHasManyByRelation(record, attr, relation);
+                record[name] = _this.loadHasManyByRelation(base, attr, relation);
                 return record;
             }
             return record;
-        }, __assign$1({}, record));
+        }, _record);
     };
     /**
      * Load the has one relationship for the record.
@@ -5749,9 +5772,20 @@ var Schema = /** @class */ (function () {
      * Create dfinition from given fields.
      */
     Schema.definition = function (model, schemas) {
+        if (schemas === void 0) { schemas = {}; }
+        return this.build(model, model.fields(), schemas);
+    };
+    /**
+     * Build definition schema.
+     */
+    Schema.build = function (model, fields, schemas) {
         var _this = this;
         if (schemas === void 0) { schemas = {}; }
-        return reduce(model.fields(), function (definition, field, key) {
+        return reduce(fields, function (definition, field, key) {
+            if (!Attributes.isRelation(field)) {
+                definition[key] = _this.build(model, field, schemas);
+                return definition;
+            }
             if (field.type === Type.HasOne || field.type === Type.BelongsTo) {
                 var relation = model.resolveRelation(field);
                 var s = schemas[relation.entity];
@@ -5873,6 +5907,9 @@ var Model = /** @class */ (function () {
                 if (!attr) {
                     return;
                 }
+                if (!Attributes.isRelation(attr)) {
+                    return;
+                }
                 if (attr.type === Type.Attr) {
                     return;
                 }
@@ -5909,59 +5946,81 @@ var Model = /** @class */ (function () {
      * Initialize the model by attaching all of the fields to property.
      */
     Model.prototype.$initialize = function (data) {
-        var _this = this;
-        var fields = this.$mergeFields(data);
-        forEach(fields, function (field, key) {
-            if (field.value === null) {
-                _this[key] = null;
-                return;
-            }
-            if (field.type === Type.Attr) {
-                var mutator = field.mutator || _this.$self().mutators()[key];
-                _this[key] = mutator ? mutator(field.value) : field.value;
-                return;
-            }
-            if (isNumber(field.value) || isNumber(field.value[0])) {
-                _this[key] = null;
-                return;
-            }
-            if (field.type === Type.HasOne) {
-                var model = _this.$resolveRelation(field);
-                _this[key] = field.value ? new model(field.value) : null;
-                return;
-            }
-            if (field.type === Type.BelongsTo) {
-                var model = _this.$resolveRelation(field);
-                _this[key] = field.value ? new model(field.value) : null;
-                return;
-            }
-            if (field.type === Type.HasMany) {
-                var model_1 = _this.$resolveRelation(field);
-                _this[key] = field.value ? field.value.map(function (v) { return new model_1(v); }) : null;
-                return;
-            }
-            if (field.type === Type.HasManyBy) {
-                var model_2 = _this.$resolveRelation(field);
-                _this[key] = field.value ? field.value.map(function (v) { return new model_2(v); }) : null;
-            }
-        });
+        var fields = this.$merge(data);
+        this.$build(this, fields);
     };
     /**
      * Merge given data into field's default value.
      */
-    Model.prototype.$mergeFields = function (data) {
+    Model.prototype.$merge = function (data) {
         if (!data) {
             return this.$fields();
         }
-        var newFields = __assign$3({}, this.$fields());
-        var fieldKeys = keys(newFields);
+        var fields = __assign$3({}, this.$fields());
+        return this.$mergeFields(fields, data);
+    };
+    /**
+     * Merge given data with fields and create a new fields.
+     */
+    Model.prototype.$mergeFields = function (fields, data) {
+        var _this = this;
+        var keys$$1 = keys(fields);
         forEach(data, function (value, key) {
-            if (!includes(fieldKeys, key)) {
+            if (!includes(keys$$1, key)) {
                 return;
             }
-            newFields[key].value = value;
+            if (Attributes.isRelation(fields[key])) {
+                fields[key].value = value;
+                return;
+            }
+            fields[key] = _this.$mergeFields(fields[key], value);
         });
-        return newFields;
+        return fields;
+    };
+    /**
+     * Build model by initializing given data.
+     */
+    Model.prototype.$build = function (self, data) {
+        var _this = this;
+        forEach(data, function (field, key) {
+            if (!Attributes.isRelation(field)) {
+                self[key] = {};
+                _this.$build(self[key], field);
+                return;
+            }
+            if (field.value === null) {
+                self[key] = null;
+                return;
+            }
+            if (field.type === Type.Attr) {
+                var mutator = field.mutator || _this.$self().mutators()[key];
+                self[key] = mutator ? mutator(field.value) : field.value;
+                return;
+            }
+            if (isNumber(field.value) || isNumber(field.value[0])) {
+                self[key] = null;
+                return;
+            }
+            if (field.type === Type.HasOne) {
+                var model = self.$resolveRelation(field);
+                self[key] = field.value ? new model(field.value) : null;
+                return;
+            }
+            if (field.type === Type.BelongsTo) {
+                var model = _this.$resolveRelation(field);
+                self[key] = field.value ? new model(field.value) : null;
+                return;
+            }
+            if (field.type === Type.HasMany) {
+                var model_1 = _this.$resolveRelation(field);
+                self[key] = field.value ? field.value.map(function (v) { return new model_1(v); }) : null;
+                return;
+            }
+            if (field.type === Type.HasManyBy) {
+                var model_2 = _this.$resolveRelation(field);
+                self[key] = field.value ? field.value.map(function (v) { return new model_2(v); }) : null;
+            }
+        });
     };
     /**
      * Resolve relation out of the container.
@@ -5977,6 +6036,9 @@ var Model = /** @class */ (function () {
         return mapValues(this.$self().fields(), function (attr, key) {
             if (!_this[key]) {
                 return _this[key];
+            }
+            if (!Attributes.isRelation(attr)) {
+                return;
             }
             if (attr.type === Type.HasOne || attr.type === Type.BelongsTo) {
                 return _this[key].$toJson();
