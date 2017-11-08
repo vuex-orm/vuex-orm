@@ -92,7 +92,15 @@ export default class Attributes {
    * Determine if given attr is relation.
    */
   static isRelation (attr: Relations): attr is Relation {
-    return (attr as any).type !== undefined
+    if (this.isAttrs(attr)) {
+      return false
+    }
+
+    return attr.type === Type.Attr
+           || attr.type === Type.HasOne
+           || attr.type === Type.BelongsTo
+           || attr.type === Type.HasMany
+           || attr.type === Type.HasManyBy
   }
 
   /**

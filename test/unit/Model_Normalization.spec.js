@@ -240,6 +240,7 @@ describe('Model: Normalization', () => {
         return {
           id: this.attr(null),
           settings: {
+            type: this.attr(0),
             account: this.hasOne(Account, 'user_id')
           }
         }
@@ -262,13 +263,17 @@ describe('Model: Normalization', () => {
     const data = {
       id: 1,
       settings: {
+        type: 1,
         account: { id: 2, user_id: 1 }
       }
     }
 
     const expected = {
       users: {
-        '1': { id: 1, settings: { account: 2 } }
+        '1': {
+          id: 1,
+          settings: { type: 1, account: 2 }
+        }
       },
       accounts: {
         '2': { id: 2, user_id: 1 }
