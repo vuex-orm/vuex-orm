@@ -1,8 +1,8 @@
 import * as _ from './support/lodash'
 import Container from './connections/Container'
 import { Record, NormalizedData } from './Data'
-import { Type as AttrType, HasOne, BelongsTo, HasMany, HasManyBy } from './Attributes'
-import Model, { Attrs, Fields } from './Model'
+import Attrs, { Type as AttrType, HasOne, BelongsTo, HasMany, HasManyBy } from './Attributes'
+import Model, { Fields } from './Model'
 import { State } from './Module'
 import Query, {
   Item as QueryItem,
@@ -290,42 +290,56 @@ export default class Repo {
   /**
    * Load the relationships for the record.
    */
-  loadRelations (record: Record): Record {
+  loadRelations (base: Record, record?: Record, fields?: Fields): Record {
+    const _record = record || { ...base }
+    const _fields = fields || this.entity.fields()
+
     return _.reduce(this.load, (record, relation) => {
-      const fields: Fields = this.entity.fields()
       const name = relation.name.split('.')[0]
-      const attr: Attrs = fields[name]
+      const attr = _fields[name]
+
+      if (!attr || !Attrs.isRelation(attr)) {
+        _.forEach(_fields, (f: any, key: string) => {
+          if (f[name]) {
+            record[key] = this.loadRelations(base, record[key], f)
+
+            return
+          }
+        })
+
+        return record
+      }
 
       if (attr.type === AttrType.Attr) {
         return record
       }
 
       if (attr.type === AttrType.HasOne) {
-        record[name] = this.loadHasOneRelation(record, attr, relation)
+        record[name] = this.loadHasOneRelation(base, attr, relation)
 
         return record
       }
 
       if (attr.type === AttrType.BelongsTo) {
-        record[name] = this.loadBelongsToRelation(record, attr, relation)
+        record[name] = this.loadBelongsToRelation(base, attr, relation)
 
         return record
       }
 
       if (attr.type === AttrType.HasMany) {
-        record[name] = this.loadHasManyRelation(record, attr, relation)
+        record[name] = this.loadHasManyRelation(base, attr, relation)
 
         return record
       }
 
       if (attr.type === AttrType.HasManyBy) {
-        record[name] = this.loadHasManyByRelation(record, attr, relation)
+        record[name] = this.loadHasManyByRelation(base, attr, relation)
 
         return record
       }
 
       return record
-    }, { ...record })
+    }, _record)
   }
 
   /**

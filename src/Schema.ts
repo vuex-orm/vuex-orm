@@ -1,7 +1,7 @@
 import { schema, Schema as NormalizrSchema } from 'normalizr'
 import * as _ from './support/lodash'
-import { Type as AttrType } from './Attributes'
-import Model from './Model'
+import Attrs, { Type as AttrType } from './Attributes'
+import Model, { Fields } from './Model'
 
 export interface Schemas {
   [entity: string]: schema.Entity
@@ -37,7 +37,20 @@ export default class Schema {
    * Create dfinition from given fields.
    */
   static definition (model: typeof Model, schemas: Schemas = {}): NormalizrSchema {
-    return _.reduce(model.fields(), (definition, field, key) => {
+    return this.build(model, model.fields(), schemas)
+  }
+
+  /**
+   * Build definition schema.
+   */
+  static build (model: typeof Model, fields: Fields, schemas: Schemas = {}): NormalizrSchema {
+    return _.reduce(fields, (definition, field, key) => {
+      if (!Attrs.isRelation(field)) {
+        definition[key] = this.build(model, field, schemas)
+
+        return definition
+      }
+
       if (field.type === AttrType.HasOne || field.type === AttrType.BelongsTo) {
         const relation = model.resolveRelation(field)
 

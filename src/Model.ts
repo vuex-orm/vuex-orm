@@ -5,6 +5,8 @@ import Data, { Record, Records, NormalizedData } from './Data'
 import Schema from './Schema'
 import Attributes, {
   Type as AttrType,
+  Relations,
+  Relation,
   Attr,
   HasOne,
   BelongsTo,
@@ -12,10 +14,8 @@ import Attributes, {
   HasManyBy
 } from './Attributes'
 
-export type Attrs = Attr | HasOne | BelongsTo | HasMany | HasManyBy
-
 export interface Fields {
-  [field: string]: Attrs
+  [field: string]: Relations
 }
 
 export interface Mutators {
@@ -147,9 +147,13 @@ export default class Model {
       let newRecord: Record = { ...record }
 
       _.forEach(record, (value, field) => {
-        const attr: Attrs = fields[field]
+        const attr = fields[field]
 
         if (!attr) {
+          return
+        }
+
+        if (!Attributes.isRelation(attr)) {
           return
         }
 
@@ -197,11 +201,62 @@ export default class Model {
    * Initialize the model by attaching all of the fields to property.
    */
   $initialize (data?: Record): void {
-    const fields: Fields = this.$mergeFields(data)
+    const fields: Fields = this.$merge(data)
 
-    _.forEach(fields, (field, key) => {
+    this.$build(this, fields)
+  }
+
+  /**
+   * Merge given data into field's default value.
+   */
+  $merge (data?: Record): Fields {
+    if (!data) {
+      return this.$fields()
+    }
+
+    const fields: Fields = { ...this.$fields() }
+
+    return this.$mergeFields(fields, data)
+  }
+
+  /**
+   * Merge given data with fields and create a new fields.
+   */
+  $mergeFields (fields: Fields, data?: Record): Fields {
+    const keys: string[] = _.keys(fields)
+
+    _.forEach(data, (value, key) => {
+      if (!_.includes(keys, key)) {
+        return
+      }
+
+      if (Attributes.isRelation(fields[key])) {
+        (fields[key] as Relation).value = value
+
+        return
+      }
+
+      fields[key] = this.$mergeFields((fields[key] as any), value)
+    })
+
+    return fields
+  }
+
+  /**
+   * Build model by initializing given data.
+   */
+  $build (self: any, data: Fields): void {
+    _.forEach(data, (field, key) => {
+      if (!Attributes.isRelation(field)) {
+        self[key] = {}
+
+        this.$build(self[key], field)
+
+        return
+      }
+
       if (field.value === null) {
-        this[key] = null
+        self[key] = null
 
         return
       }
@@ -209,21 +264,21 @@ export default class Model {
       if (field.type === AttrType.Attr) {
         const mutator = field.mutator || this.$self().mutators()[key]
 
-        this[key] = mutator ? mutator(field.value) : field.value
+        self[key] = mutator ? mutator(field.value) : field.value
 
         return
       }
 
       if (_.isNumber(field.value) || _.isNumber(field.value[0])) {
-        this[key] = null
+        self[key] = null
 
         return
       }
 
       if (field.type === AttrType.HasOne) {
-        const model = this.$resolveRelation(field)
+        const model = self.$resolveRelation(field)
 
-        this[key] = field.value ? new model(field.value) : null
+        self[key] = field.value ? new model(field.value) : null
 
         return
       }
@@ -231,7 +286,7 @@ export default class Model {
       if (field.type === AttrType.BelongsTo) {
         const model = this.$resolveRelation(field)
 
-        this[key] = field.value ? new model(field.value) : null
+        self[key] = field.value ? new model(field.value) : null
 
         return
       }
@@ -239,7 +294,7 @@ export default class Model {
       if (field.type === AttrType.HasMany) {
         const model = this.$resolveRelation(field)
 
-        this[key] = field.value ? field.value.map((v: any) => new model(v)) : null
+        self[key] = field.value ? field.value.map((v: any) => new model(v)) : null
 
         return
       }
@@ -247,32 +302,9 @@ export default class Model {
       if (field.type === AttrType.HasManyBy) {
         const model = this.$resolveRelation(field)
 
-        this[key] = field.value ? field.value.map((v: any) => new model(v)) : null
+        self[key] = field.value ? field.value.map((v: any) => new model(v)) : null
       }
     })
-  }
-
-  /**
-   * Merge given data into field's default value.
-   */
-  $mergeFields (data?: Record): Fields {
-    if (!data) {
-      return this.$fields()
-    }
-
-    let newFields: Fields = { ...this.$fields() }
-
-    const fieldKeys: string[] = _.keys(newFields)
-
-    _.forEach(data, (value, key) => {
-      if (!_.includes(fieldKeys, key)) {
-        return
-      }
-
-      newFields[key].value = value
-    })
-
-    return newFields
   }
 
   /**
@@ -289,6 +321,10 @@ export default class Model {
     return _.mapValues(this.$self().fields(), (attr, key) => {
       if (!this[key]) {
         return this[key]
+      }
+
+      if (!Attributes.isRelation(attr)) {
+        return
       }
 
       if (attr.type === AttrType.HasOne || attr.type === AttrType.BelongsTo) {

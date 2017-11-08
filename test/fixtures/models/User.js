@@ -1,6 +1,7 @@
 import Model, { Fields } from 'app/Model'
 import Profile from './Profile'
 import Post from './Post'
+import Account from './Account'
 
 export default class User extends Model {
   static entity = 'users'
@@ -9,6 +10,9 @@ export default class User extends Model {
     return {
       id: this.attr(null),
       name: this.attr(''),
+      settings: {
+        accounts: this.hasMany(Account, 'user_id')
+      },
       posts: this.hasMany(Post, 'user_id'),
       profile: this.hasOne(Profile, 'user_id')
     }

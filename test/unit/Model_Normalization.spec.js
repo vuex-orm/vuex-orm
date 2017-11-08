@@ -231,4 +231,55 @@ describe('Model: Normalization', () => {
 
     expect(User.normalize(data)).toEqual(expected)
   })
+
+  it('can generate normalized data with nested schema', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          settings: {
+            type: this.attr(0),
+            account: this.hasOne(Account, 'user_id')
+          }
+        }
+      }
+    }
+
+    class Account extends Model {
+      static entity = 'accounts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null)
+        }
+      }
+    }
+
+    createApplication('entities', [{ model: User }, { model: Account }])
+
+    const data = {
+      id: 1,
+      settings: {
+        type: 1,
+        account: { id: 2, user_id: 1 }
+      }
+    }
+
+    const expected = {
+      users: {
+        '1': {
+          id: 1,
+          settings: { type: 1, account: 2 }
+        }
+      },
+      accounts: {
+        '2': { id: 2, user_id: 1 }
+      }
+    }
+
+    expect(User.normalize(data)).toEqual(expected)
+  })
 })
