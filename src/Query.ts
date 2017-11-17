@@ -80,7 +80,7 @@ export default class Query {
       return null
     }
 
-    if (id) {
+    if (id !== undefined) {
       return records[id] ? this.item(records[id]) : null
     }
 

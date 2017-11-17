@@ -6,6 +6,8 @@ import Post from 'test/fixtures/models/Post'
 import Comment from 'test/fixtures/models/Comment'
 import Review from 'test/fixtures/models/Review'
 import Like from 'test/fixtures/models/Like'
+import Cluster from 'test/fixtures/models/Cluster'
+import Node from 'test/fixtures/models/Node'
 import CustomKey from 'test/fixtures/models/CustomKey'
 import Repo from 'app/Repo'
 
@@ -19,6 +21,8 @@ describe('Repo: Retrieve', () => {
       { model: Comment },
       { model: Review },
       { model: Like },
+      { model: Cluster },
+      { model: Node },
       { model: CustomKey }
     ])
   })
@@ -342,6 +346,28 @@ describe('Repo: Retrieve', () => {
     const result = Repo.query(state, 'posts', false).with('author').first()
 
     expect(result).toEqual(expected)
+  })
+
+  it('can resolve belongs to relation with custom foreign key', () => {
+    const state = {
+      name: 'entities',
+      clusters: { data: {
+       '1': { id: 1, name: 'tokyo', nodes: [1] }
+      }},
+      nodes: { data: {
+       '1': { id: 1, name: 'one', clusterId: 1 },
+       '2': { id: 2, name: 'two', clusterId: null }
+      }}
+    }
+
+    const nodes = Repo.query(state, 'nodes', false).with('cluster').get()
+
+    const expected = [
+      { id: 1, name: 'one', clusterId: 1, cluster: { id: 1, name: 'tokyo', nodes: [1] } },
+      { id: 2, name: 'two', clusterId: null, cluster: null },
+    ]
+
+    expect(nodes).toEqual(expected)
   })
 
   it('can resolve belongs to relation and instantiate the result record', () => {
