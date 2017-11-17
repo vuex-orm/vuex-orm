@@ -4251,7 +4251,7 @@ var Query = /** @class */ (function () {
         if (isEmpty(records) || records === null) {
             return null;
         }
-        if (id) {
+        if (id !== undefined) {
             return records[id] ? this.item(records[id]) : null;
         }
         return this.item(records[Object.keys(records)[0]]);
