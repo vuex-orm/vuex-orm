@@ -273,6 +273,26 @@ describe('Repo: Retrieve', () => {
     expect(result).toEqual(expected)
   })
 
+  it('can sort by model fields with first method', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, name: 'John' },
+        '2': { id: 2, name: 'Andy' },
+        '3': { id: 3, name: 'Roger' }
+      }}
+    }
+
+    const expected = { id: 2, name: 'Andy' }
+
+    const result = Repo.query(state, 'users', false)
+      .orderBy('name')
+      .orderBy('id', 'desc')
+      .first()
+
+    expect(result).toEqual(expected)
+  })
+
   it('can resolve has one relation', () => {
     const state = {
       name: 'entities',
