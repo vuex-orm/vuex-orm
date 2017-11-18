@@ -4254,7 +4254,8 @@ var Query = /** @class */ (function () {
         if (id !== undefined) {
             return records[id] ? this.item(records[id]) : null;
         }
-        return this.item(records[Object.keys(records)[0]]);
+        var sortedRecord = this.sortByOrders(records);
+        return this.item(sortedRecord[0]);
     };
     /**
      * Save the given data to the state. This will replace any existing
