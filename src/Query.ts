@@ -84,7 +84,9 @@ export default class Query {
       return records[id] ? this.item(records[id]) : null
     }
 
-    return this.item(records[Object.keys(records)[0]])
+    const sortedRecord = this.sortByOrders(records)
+
+    return this.item(sortedRecord[0])
   }
 
   /**
@@ -218,7 +220,7 @@ export default class Query {
   /**
    * Sort the given data by registered orders.
    */
-  sortByOrders (records: Records): Collection {
+  sortByOrders (records: Records): Record[] {
     const keys = _.map(this.orders, 'field')
     const directions = _.map(this.orders, 'direction')
 
