@@ -144,10 +144,7 @@ export default class Query {
     }
 
     // OK so we do have where clause. Lets find specific data user wants.
-    records = this.selectByWheres(records)
-
-    // Return here if the user wants records instead of collection.
-    return records
+    return this.selectByWheres(records)
   }
 
   /**
