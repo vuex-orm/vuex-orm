@@ -13,7 +13,7 @@ import Query, {
 
 export type Item = Model | Record | null
 
-export type Collection = Model[] | Record[] | null
+export type Collection = Model[] | Record[]
 
 export type Buildable = QueryItem | QueryCollection | null
 
@@ -271,7 +271,7 @@ export default class Repo {
    */
   collect (collection: QueryCollection): Collection {
     if (_.isEmpty(collection)) {
-      return null
+      return []
     }
 
     let item: Collection = collection

@@ -4,7 +4,7 @@ import { State, EntityState } from './Module'
 
 export type Item = Record | null
 
-export type Collection = Record[] | null
+export type Collection = Record[]
 
 export type WhereBoolean = 'and' | 'or'
 
@@ -65,7 +65,7 @@ export default class Query {
    * Returns single record of the query chain result.
    */
   get (): Collection {
-    const records: Records | null = this.process()
+    const records: Records = this.process()
 
     return this.collect(records)
   }
@@ -74,9 +74,9 @@ export default class Query {
    * Returns single record of the query chain result.
    */
   first (id?: number | string): Item {
-    const records: Records | null = this.process()
+    const records: Records = this.process()
 
-    if (_.isEmpty(records) || records === null) {
+    if (_.isEmpty(records)) {
       return null
     }
 
@@ -126,14 +126,14 @@ export default class Query {
   /**
    * Process the query and filter data.
    */
-  process (): Records | null {
+  process (): Records {
     // First, fetch all records of the entity.
     let records: Records = this.entity.data
 
     // If the entity is empty, there's nothing we can do so lets return
-    // null and exit immediately.
+    // data as is and exit immediately.
     if (_.isEmpty(records)) {
-      return null
+      return records
     }
 
     // Now since we have the records, lets check if the where clause is
@@ -202,12 +202,8 @@ export default class Query {
   /**
    * Create a collection (array) from given records.
    */
-  collect (records: Records | null): Collection {
-    if (records === null || _.isEmpty(records)) {
-      return null
-    }
-
-    return this.sortByOrders(records)
+  collect (records: Records): Collection {
+    return _.isEmpty(records) ? [] : this.sortByOrders(records)
   }
 
   /**
