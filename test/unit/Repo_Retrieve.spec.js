@@ -247,6 +247,33 @@ describe('Repo: Retrieve', () => {
     expect(user.id).toBe(2)
   })
 
+  it('returns null when single record can not be found', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1 }
+      }}
+    }
+
+    const user = Repo.find(state, 'users', 2)
+
+    expect(user).toBe(null)
+  })
+
+  it('returns empty array when multiple record can not be found', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1 },
+        '2': { id: 2 }
+      }}
+    }
+
+    const users = Repo.query(state, 'users').where('id', 3).get()
+
+    expect(users).toEqual([])
+  })
+
   it('can sort by model fields', () => {
     const state = {
       name: 'entities',
