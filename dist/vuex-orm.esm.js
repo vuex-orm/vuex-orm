@@ -4242,7 +4242,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.first = function (id) {
         var records = this.process();
-        if (isEmpty(records) || records === null) {
+        if (isEmpty(records)) {
             return null;
         }
         if (id !== undefined) {
@@ -4287,9 +4287,9 @@ var Query = /** @class */ (function () {
         // First, fetch all records of the entity.
         var records = this.entity.data;
         // If the entity is empty, there's nothing we can do so lets return
-        // null and exit immediately.
+        // data as is and exit immediately.
         if (isEmpty(records)) {
-            return null;
+            return records;
         }
         // Now since we have the records, lets check if the where clause is
         // registered. If not, there is nothing we need to do so just
@@ -4298,9 +4298,7 @@ var Query = /** @class */ (function () {
             return records;
         }
         // OK so we do have where clause. Lets find specific data user wants.
-        records = this.selectByWheres(records);
-        // Return here if the user wants records instead of collection.
-        return records;
+        return this.selectByWheres(records);
     };
     /**
      * Add a and where clause to the query.
@@ -4345,10 +4343,7 @@ var Query = /** @class */ (function () {
      * Create a collection (array) from given records.
      */
     Query.prototype.collect = function (records) {
-        if (records === null || isEmpty(records)) {
-            return null;
-        }
-        return this.sortByOrders(records);
+        return isEmpty(records) ? [] : this.sortByOrders(records);
     };
     /**
      * Filter the given data by registered where clause.
@@ -4602,7 +4597,7 @@ var Repo = /** @class */ (function () {
     Repo.prototype.collect = function (collection) {
         var _this = this;
         if (isEmpty(collection)) {
-            return null;
+            return [];
         }
         var item = collection;
         if (!isEmpty(this.load)) {
@@ -4987,8 +4982,6 @@ function createCommonjsModule(fn, module) {
 }
 
 var ImmutableUtils = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -5037,10 +5030,10 @@ function denormalizeImmutable(schema, input, unvisit) {
 });
 
 unwrapExports(ImmutableUtils);
+var ImmutableUtils_1 = ImmutableUtils.isImmutable;
+var ImmutableUtils_2 = ImmutableUtils.denormalizeImmutable;
 
 var Entity = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -5170,8 +5163,6 @@ exports.default = EntitySchema;
 unwrapExports(Entity);
 
 var Polymorphic = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -5251,8 +5242,6 @@ exports.default = PolymorphicSchema;
 unwrapExports(Polymorphic);
 
 var Union = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -5304,8 +5293,6 @@ exports.default = UnionSchema;
 unwrapExports(Union);
 
 var Values = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -5368,8 +5355,6 @@ exports.default = ValuesSchema;
 unwrapExports(Values);
 
 var _Array = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -5463,10 +5448,10 @@ exports.default = ArraySchema;
 });
 
 unwrapExports(_Array);
+var _Array_1 = _Array.denormalize;
+var _Array_2 = _Array.normalize;
 
 var _Object = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -5559,10 +5544,10 @@ exports.default = ObjectSchema;
 });
 
 unwrapExports(_Object);
+var _Object_1 = _Object.denormalize;
+var _Object_2 = _Object.normalize;
 
 var src = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -5717,6 +5702,7 @@ var denormalize = exports.denormalize = function denormalize(input, schema, enti
 });
 
 unwrapExports(src);
+var src_1 = src.denormalize;
 var src_2 = src.normalize;
 var src_3 = src.schema;
 
