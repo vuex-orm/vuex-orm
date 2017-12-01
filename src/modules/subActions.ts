@@ -49,5 +49,14 @@ export default {
       entity: state.$name,
       where: typeof condition === 'object' ? condition.where : condition
     }, { root: true })
+  },
+
+  /**
+   * Delete all data from the store.
+   */
+  deleteAll ({ commit, state }) {
+    commit(`${state.$connection}/deleteAll`, {
+      entity: state.$name
+    }, { root: true })
   }
 } as Vuex.ActionTree<EntityState, any>

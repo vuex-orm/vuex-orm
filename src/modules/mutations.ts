@@ -32,5 +32,12 @@ export default {
    */
   delete (state, { entity, where }) {
     Repo.delete(state, entity, where)
+  },
+
+  /**
+   * Delete all data from the store.
+   */
+  deleteAll (state, { entity }) {
+    Repo.deleteAll(state, entity)
   }
 } as Vuex.MutationTree<State>

@@ -45,7 +45,12 @@ store.dispatch('entities/users/delete', { where: 1 })
       '1': { id: 1, name: 'John' },
       '2': { id: 1, name: 'Jane' },
       '3': { id: 1, name: 'George' }
-    }
+    },
+    posts: {
+      '1': { id: 1, user_id: 1 },
+      '2': { id: 2, user_id: 2 },
+      '3': { id: 3, user_id: 3 },
+    },
   }
 }
 
@@ -66,7 +71,38 @@ store.dispatch('entities/users/delete', {
   entities: {
     users: {
       '3': { id: 1, name: 'George' }
+    },
+    posts: {
+      '1': { id: 1, user_id: 1 },
+      '2': { id: 2, user_id: 2 },
+      '3': { id: 3, user_id: 3 },
+    },
+  }
+}
+
+// Delete all data for an entity
+store.dispatch('entities/users/deleteAll')
+
+// State after `delete`
+{
+  entities: {
+    users: {},
+    posts: {
+      '1': { id: 1, user_id: 1 },
+      '2': { id: 2, user_id: 2 },
+      '3': { id: 3, user_id: 3 },
     }
+  }
+}
+
+// Delete all data for all entities
+store.dispatch('entities/deleteAll', {})
+
+// State after `delete`
+{
+  entities: {
+    users: {},
+    posts: {}
   }
 }
 ```

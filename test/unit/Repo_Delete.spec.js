@@ -65,4 +65,58 @@ describe('Repo: Delete', () => {
 
     expect(state).toEqual(expected)
   })
+
+  it('can delete all records for an entity', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, name: 'John' },
+        '2': { id: 2, name: 'Jane' },
+        '3': { id: 3, name: 'George' }
+      }}
+    }
+
+    const expected = {
+      name: 'entities',
+      users: {
+        data: {}
+      }
+    }
+
+    Repo.deleteAll(state, 'users')
+
+    expect(state).toEqual(expected)
+  })
+
+  it('can delete all records for all entities', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, name: 'John' },
+        '2': { id: 2, name: 'Jane' },
+        '3': { id: 3, name: 'George' }
+      }},
+      posts: {
+        data: {
+          '1': { id: 1, user_id: 1 },
+          '2': { id: 2, user_id: 2 },
+          '3': { id: 3, user_id: 3 },
+        }
+      }
+    }
+
+    const expected = {
+      name: 'entities',
+      users: {
+        data: {}
+      },
+      posts: {
+        data: {}
+      }
+    }
+
+    Repo.deleteAll(state)
+
+    expect(state).toEqual(expected)
+  })
 })
