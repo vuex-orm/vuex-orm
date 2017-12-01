@@ -4418,6 +4418,12 @@ var Query = /** @class */ (function () {
         this.entity.data = pickBy(this.entity.data, function (_record, key) { return key !== id; });
     };
     /**
+     * Delete all data from the state.
+     */
+    Query.prototype.deleteAll = function () {
+        this.entity.data = {};
+    };
+    /**
      * Create a item from given record.
      */
     Query.prototype.item = function (record) {
@@ -4552,10 +4558,32 @@ var Repo = /** @class */ (function () {
         (new this(state, entity)).delete(condition);
     };
     /**
+     * Delete all data from the state.
+     */
+    Repo.deleteAll = function (state, entity) {
+        if (isEmpty(entity)) {
+            var models_1 = this.models(state);
+            Object.keys(models_1).forEach(function (key) {
+                var entityName = models_1[key].entity;
+                if (state[entityName]) {
+                    state[entityName].data = {};
+                }
+            });
+            return;
+        }
+        (new this(state, entity)).deleteAll();
+    };
+    /**
      * Get model of given name from connections container.
      */
     Repo.model = function (state, name) {
         return Container.connection(state.name).model(name);
+    };
+    /**
+     * Get all models from connections container.
+     */
+    Repo.models = function (state) {
+        return Container.connection(state.name).models();
     };
     /**
      * Get Repo class.
@@ -4568,6 +4596,12 @@ var Repo = /** @class */ (function () {
      */
     Repo.prototype.model = function (name) {
         return this.self().model(this.state, name);
+    };
+    /**
+     * Get all models from connections container.
+     */
+    Repo.prototype.models = function () {
+        return this.self().models(this.state);
     };
     /**
      * Returns single record of the query chain result.
@@ -4672,6 +4706,12 @@ var Repo = /** @class */ (function () {
      */
     Repo.prototype.delete = function (condition) {
         this.query.delete(condition);
+    };
+    /**
+     * Delete all data from the state.
+     */
+    Repo.prototype.deleteAll = function () {
+        this.query.deleteAll();
     };
     /**
      * Create a item from given record.
@@ -4879,6 +4919,14 @@ var rootActions = {
         var commit = _a.commit;
         var entity = _b.entity, where = _b.where;
         commit('delete', { entity: entity, where: where });
+    },
+    /**
+     * Delete all data from the store.
+     */
+    deleteAll: function (_a, _b) {
+        var commit = _a.commit;
+        var entity = _b.entity;
+        commit('deleteAll', { entity: entity });
     }
 };
 
@@ -4913,6 +4961,13 @@ var mutations = {
     delete: function (state, _a) {
         var entity = _a.entity, where = _a.where;
         Repo.delete(state, entity, where);
+    },
+    /**
+     * Delete all data from the store.
+     */
+    deleteAll: function (state, _a) {
+        var entity = _a.entity;
+        Repo.deleteAll(state, entity);
     }
 };
 
@@ -4985,6 +5040,15 @@ var subActions = {
         commit(state.$connection + "/delete", {
             entity: state.$name,
             where: typeof condition === 'object' ? condition.where : condition
+        }, { root: true });
+    },
+    /**
+     * Delete all data from the store.
+     */
+    deleteAll: function (_a) {
+        var commit = _a.commit, state = _a.state;
+        commit(state.$connection + "/deleteAll", {
+            entity: state.$name
         }, { root: true });
     }
 };
