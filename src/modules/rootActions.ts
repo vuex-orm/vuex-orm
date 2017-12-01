@@ -35,7 +35,7 @@ export default {
   /**
    * Delete all data from the store.
    */
-  deleteAll ({ commit }, { entity}) {
+  deleteAll ({ commit }, { entity }) {
     commit('deleteAll', { entity })
   }
 } as Vuex.ActionTree<any, any>
