@@ -186,4 +186,18 @@ describe('Sub modules', () => {
     expect(store.state.entities.users.data[1].id).toBe(1)
     expect(store.state.entities.users.data[3].id).toBe(3)
   })
+
+  it('can delete all data', async () => {
+    const store = createStore(entities)
+
+    const data = [
+      { id: 1 }, { id: 2 }, { id: 3 }
+    ]
+
+    await store.dispatch('entities/users/create', { data })
+
+    await store.dispatch('entities/users/deleteAll')
+
+    expect(store.getters['entities/users/all']().length).toBe(0)
+  })
 })

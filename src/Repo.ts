@@ -118,6 +118,22 @@ export default class Repo {
     (new this(state, entity)).delete(condition)
   }
 
+  static deleteAll (state: State, entity: string): void {
+    if (_.isEmpty(entity)) {
+      const models = Container.connection(state.name).models()
+      Object.keys(models).forEach(key => {
+        const entityName = models[key].entity
+        if (state[entityName]) {
+          state[entityName].data = {}
+        }
+      })
+
+      return
+    }
+
+    (new this(state, entity)).deleteAll()
+  }
+
   /**
    * Get model of given name from connections container.
    */
@@ -261,6 +277,13 @@ export default class Repo {
    */
   delete (condition: Condition): void {
     this.query.delete(condition)
+  }
+
+  /**
+   * Delete all data from the state.
+   */
+  deleteAll (): void {
+    this.query.deleteAll()
   }
 
   /**

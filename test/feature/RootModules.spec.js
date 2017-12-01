@@ -101,4 +101,24 @@ describe('Root modules', () => {
     expect(store.state.entities.users.data[1].id).toBe(1)
     expect(store.state.entities.users.data[3].id).toBe(3)
   })
+
+  it('can delete all data', async () => {
+    const store = createStore(entities)
+
+    const users = [
+      { id: 1 }, { id: 2 }, { id: 3 }
+    ]
+
+    const posts = [
+      { id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 3 }
+    ]
+
+    await store.dispatch('entities/create', { entity: 'users', data: users })
+    await store.dispatch('entities/create', { entity: 'posts', data: posts })
+
+    await store.dispatch('entities/deleteAll', {})
+
+    expect(store.getters['entities/users/all']().length).toBe(0)
+    expect(store.getters['entities/posts/all']().length).toBe(0)
+  })
 })

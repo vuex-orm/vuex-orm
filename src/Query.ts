@@ -218,6 +218,13 @@ export default class Query {
   }
 
   /**
+   * Delete all data from the state.
+   */
+  deleteAll (): void {
+    this.entity.data = {}
+  }
+
+  /**
    * Create a item from given record.
    */
   item (record?: Record | null): Item {
