@@ -83,6 +83,38 @@ const user = store.getters['entities/users/query']().where(record => record.age 
 // [User { id: 1, age: 25 }, User { id: 2, age: 30 }]
 ```
 
+#### Or Statement
+
+You may chain where constraints together as well as add `or` condition to the query. The `orWhere` method accepts the same arguments as the where method.
+
+```js
+const user = store.getters['entities/users/query']()
+  .where('role', 'admin')
+  .orWhere('name', 'John')
+  .get()
+
+// [User { id: 1, name: 'John', role: 'user' }, User { id: 2, name: 'Jane', role: 'admin' }]
+```
+
+### Order By
+
+The `orderBy` method allows you to sort the result of the query by a given field. The first argument to the orderBy method should be the column you wish to sort by, while the second argument controls the direction of the sort and may be either `asc` or `desc`. If there is no 2nd argument, direction is going to be `asc`.
+
+```js
+// Order users by name.
+const user = store.getters['entities/users/query']().orderBy('name').get()
+
+// [User { id: 2, name: 'Andy' }, { id: 1, name: 'John' }]
+
+// You may also chain orderBy.
+const user = store.getters['entities/users/query']()
+    .orderBy('name')
+    .orderBy('age', 'desc')
+    .get()
+
+// [User { id: 4, name: 'Andy', age: 32 }, { id: 2, name: 'Andy', age: 27 }]
+```
+
 ### Offset & Limit
 
 Use `offset` method to set the offset for the data.
@@ -110,20 +142,6 @@ const user = store.getters['entities/users/query']()
   .get()
 
 // [User { id: 2, age: 30 }, User { id: 3, age: 35 }]
-```
-
-
-#### Or Statement
-
-You may chain where constraints together as well as add `or` condition to the query. The `orWhere` method accepts the same arguments as the where method.
-
-```js
-const user = store.getters['entities/users/query']()
-  .where('role', 'admin')
-  .orWhere('name', 'John')
-  .get()
-
-// [User { id: 1, name: 'John', role: 'user' }, User { id: 2, name: 'Jane', role: 'admin' }]
 ```
 
 ### Load Relationship
