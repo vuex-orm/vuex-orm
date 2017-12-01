@@ -320,6 +320,53 @@ describe('Repo: Retrieve', () => {
     expect(result).toEqual(expected)
   })
 
+  it('can limit number of records', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, name: 'John' },
+        '2': { id: 2, name: 'Andy' },
+        '3': { id: 3, name: 'Roger' },
+        '4': { id: 4, name: 'Andy' }
+      }}
+    }
+
+    const expected = [
+      { id: 1, name: 'John' },
+      { id: 2, name: 'Andy' }
+    ]
+
+    const result = Repo.query(state, 'users', false)
+      .limit(2)
+      .get()
+
+    expect(result).toEqual(expected)
+  })
+
+  it('can limit number of records from an offset', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, name: 'John' },
+        '2': { id: 2, name: 'Andy' },
+        '3': { id: 3, name: 'Roger' },
+        '4': { id: 4, name: 'Andy' }
+      }}
+    }
+
+    const expected = [
+      { id: 2, name: 'Andy' },
+      { id: 3, name: 'Roger' }
+    ]
+
+    const result = Repo.query(state, 'users', false)
+      .limit(2)
+      .offset(1)
+      .get()
+
+    expect(result).toEqual(expected)
+  })
+
   it('can resolve has one relation', () => {
     const state = {
       name: 'entities',

@@ -53,6 +53,16 @@ export default class Query {
   protected orders: Orders[] = []
 
   /**
+   * Number of results to skip.
+   */
+  protected _offset: number = 0
+
+  /**
+   * Maximum number of records to return.
+   */
+  protected _limit: number = Number.MAX_SAFE_INTEGER
+
+  /**
    * Create a new query instance.
    */
   constructor (state: State, name: string) {
@@ -175,6 +185,24 @@ export default class Query {
   }
 
   /**
+   * Add an offset to the query.
+   */
+  offset (offset: number): this {
+    this._offset = offset
+
+    return this
+  }
+
+  /**
+   * Add limit to the query.
+   */
+  limit (limit: number): this {
+    this._limit = limit
+
+    return this
+  }
+
+  /**
    * Delete data from the state.
    */
   delete (condition: Condition): void {
@@ -200,7 +228,7 @@ export default class Query {
    * Create a collection (array) from given records.
    */
   collect (records: Records): Collection {
-    return _.isEmpty(records) ? [] : this.sortByOrders(records)
+    return _.isEmpty(records) ? [] : _.slice(this.sortByOrders(records), this._offset, this._offset + this._limit)
   }
 
   /**

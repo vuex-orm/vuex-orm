@@ -181,6 +181,24 @@ export default class Repo {
   }
 
   /**
+   * Add an offset to the query.
+   */
+  offset (offset: number): this {
+    this.query.offset(offset)
+
+    return this
+  }
+
+  /**
+   * Add limit to the query.
+   */
+  limit (limit: number): this {
+    this.query.limit(limit)
+
+    return this
+  }
+
+  /**
    * Set the relationships that should be loaded.
    */
   with (name: string, constraint: Constraint | null = null): this {

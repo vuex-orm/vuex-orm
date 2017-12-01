@@ -4084,6 +4084,68 @@ var groupBy = createAggregator(function(result, value, key) {
   }
 });
 
+/**
+ * The base implementation of `_.slice` without an iteratee call guard.
+ *
+ * @private
+ * @param {Array} array The array to slice.
+ * @param {number} [start=0] The start position.
+ * @param {number} [end=array.length] The end position.
+ * @returns {Array} Returns the slice of `array`.
+ */
+function baseSlice(array, start, end) {
+  var index = -1,
+      length = array.length;
+
+  if (start < 0) {
+    start = -start > length ? 0 : (length + start);
+  }
+  end = end > length ? length : end;
+  if (end < 0) {
+    end += length;
+  }
+  length = start > end ? 0 : ((end - start) >>> 0);
+  start >>>= 0;
+
+  var result = Array(length);
+  while (++index < length) {
+    result[index] = array[index + start];
+  }
+  return result;
+}
+
+/**
+ * Creates a slice of `array` from `start` up to, but not including, `end`.
+ *
+ * **Note:** This method is used instead of
+ * [`Array#slice`](https://mdn.io/Array/slice) to ensure dense arrays are
+ * returned.
+ *
+ * @static
+ * @memberOf _
+ * @since 3.0.0
+ * @category Array
+ * @param {Array} array The array to slice.
+ * @param {number} [start=0] The start position.
+ * @param {number} [end=array.length] The end position.
+ * @returns {Array} Returns the slice of `array`.
+ */
+function slice(array, start, end) {
+  var length = array == null ? 0 : array.length;
+  if (!length) {
+    return [];
+  }
+  if (end && typeof end != 'number' && isIterateeCall(array, start, end)) {
+    start = 0;
+    end = length;
+  }
+  else {
+    start = start == null ? 0 : toInteger(start);
+    end = end === undefined ? length : toInteger(end);
+  }
+  return baseSlice(array, start, end);
+}
+
 var Connection = /** @class */ (function () {
     /**
      * Creates a connection instance.
@@ -4228,6 +4290,14 @@ var Query = /** @class */ (function () {
          * The orders of the query result.
          */
         this.orders = [];
+        /**
+         * Number of results to skip.
+         */
+        this._offset = 0;
+        /**
+         * Maximum number of records to return.
+         */
+        this._limit = Number.MAX_SAFE_INTEGER;
         this.state = state;
         this.name = name;
         this.entity = state[name];
@@ -4325,6 +4395,20 @@ var Query = /** @class */ (function () {
         return this;
     };
     /**
+     * Add an offset to the query.
+     */
+    Query.prototype.offset = function (offset) {
+        this._offset = offset;
+        return this;
+    };
+    /**
+     * Add limit to the query.
+     */
+    Query.prototype.limit = function (limit) {
+        this._limit = limit;
+        return this;
+    };
+    /**
      * Delete data from the state.
      */
     Query.prototype.delete = function (condition) {
@@ -4345,7 +4429,7 @@ var Query = /** @class */ (function () {
      * Create a collection (array) from given records.
      */
     Query.prototype.collect = function (records) {
-        return isEmpty(records) ? [] : this.sortByOrders(records);
+        return isEmpty(records) ? [] : slice(this.sortByOrders(records), this._offset, this._offset + this._limit);
     };
     /**
      * Filter the given data by registered where clause.
@@ -4519,6 +4603,20 @@ var Repo = /** @class */ (function () {
     Repo.prototype.orderBy = function (field, direction) {
         if (direction === void 0) { direction = 'asc'; }
         this.query.orderBy(field, direction);
+        return this;
+    };
+    /**
+     * Add an offset to the query.
+     */
+    Repo.prototype.offset = function (offset) {
+        this.query.offset(offset);
+        return this;
+    };
+    /**
+     * Add limit to the query.
+     */
+    Repo.prototype.limit = function (limit) {
+        this.query.limit(limit);
         return this;
     };
     /**

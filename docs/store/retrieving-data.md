@@ -83,6 +83,36 @@ const user = store.getters['entities/users/query']().where(record => record.age 
 // [User { id: 1, age: 25 }, User { id: 2, age: 30 }]
 ```
 
+### Offset & Limit
+
+Use `offset` method to set the offset for the data.
+
+```js
+const user = store.getters['entities/users/query']().offset(2).get()
+
+// [User { id: 3, age: 35 }, User { id: 4, age: 40 }]
+```
+
+Use `limit` method to set the maximum number of records to retrieve.
+
+```js
+const user = store.getters['entities/users/query']().limit(2).get()
+
+// [User { id: 1, age: 25 }, User { id: 2, age: 30 }]
+```
+
+Both `offset` and `limit` can be chained together to paginate through data.
+
+```js
+const user = store.getters['entities/users/query']()
+  .offset(1)
+  .limit(2)
+  .get()
+
+// [User { id: 2, age: 30 }, User { id: 3, age: 35 }]
+```
+
+
 #### Or Statement
 
 You may chain where constraints together as well as add `or` condition to the query. The `orWhere` method accepts the same arguments as the where method.
