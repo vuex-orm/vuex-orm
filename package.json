@@ -1,6 +1,6 @@
 {
   "name": "vuex-orm",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "The Vuex plugin to enable Object-Relational Mapping access to the Vuex Store.",
   "main": "dist/vuex-orm.common.js",
   "module": "dist/vuex-orm.esm.js",
