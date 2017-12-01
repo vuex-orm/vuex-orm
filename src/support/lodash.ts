@@ -14,6 +14,7 @@ import reduce from 'lodash-es/reduce'
 import every from 'lodash-es/every'
 import some from 'lodash-es/some'
 import groupBy from 'lodash-es/groupBy'
+import slice from 'lodash-es/slice'
 
 export {
   forEach,
@@ -31,5 +32,6 @@ export {
   reduce,
   every,
   some,
-  groupBy
+  groupBy,
+  slice
 }
