@@ -4567,7 +4567,7 @@ var Repo = /** @class */ (function () {
      * Delete all data from the state.
      */
     Repo.deleteAll = function (state, entity) {
-        if (isEmpty(entity)) {
+        if (!entity) {
             var models_1 = this.models(state);
             Object.keys(models_1).forEach(function (key) {
                 var entityName = models_1[key].entity;
@@ -4928,11 +4928,12 @@ var rootActions = {
     },
     /**
      * Delete all data from the store.
+     *
+     * @param {object} payload If exists, it should contain `entity`.
      */
-    deleteAll: function (_a, _b) {
+    deleteAll: function (_a, payload) {
         var commit = _a.commit;
-        var entity = _b.entity;
-        commit('deleteAll', { entity: entity });
+        commit('deleteAll', payload);
     }
 };
 
@@ -4970,10 +4971,15 @@ var mutations = {
     },
     /**
      * Delete all data from the store.
+     *
+     * @param {object} payload If exists, it should contain `entity`.
      */
-    deleteAll: function (state, _a) {
-        var entity = _a.entity;
-        Repo.deleteAll(state, entity);
+    deleteAll: function (state, payload) {
+        if (payload && payload.entity) {
+            Repo.deleteAll(state, payload.entity);
+            return;
+        }
+        Repo.deleteAll(state);
     }
 };
 
