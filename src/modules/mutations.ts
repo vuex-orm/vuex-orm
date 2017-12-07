@@ -36,8 +36,16 @@ export default {
 
   /**
    * Delete all data from the store.
+   *
+   * @param {object} payload If exists, it should contain `entity`.
    */
-  deleteAll (state, { entity }) {
-    Repo.deleteAll(state, entity)
+  deleteAll (state, payload?) {
+    if (payload && payload.entity) {
+      Repo.deleteAll(state, payload.entity)
+
+      return
+    }
+
+    Repo.deleteAll(state)
   }
 } as Vuex.MutationTree<State>

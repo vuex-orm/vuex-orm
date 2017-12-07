@@ -116,6 +116,26 @@ describe('Root modules', () => {
     await store.dispatch('entities/create', { entity: 'users', data: users })
     await store.dispatch('entities/create', { entity: 'posts', data: posts })
 
+    await store.dispatch('entities/deleteAll')
+
+    expect(store.getters['entities/users/all']().length).toBe(0)
+    expect(store.getters['entities/posts/all']().length).toBe(0)
+  })
+
+  it('can delete all data when passing empty object', async () => {
+    const store = createStore(entities)
+
+    const users = [
+      { id: 1 }, { id: 2 }, { id: 3 }
+    ]
+
+    const posts = [
+      { id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 3 }
+    ]
+
+    await store.dispatch('entities/create', { entity: 'users', data: users })
+    await store.dispatch('entities/create', { entity: 'posts', data: posts })
+
     await store.dispatch('entities/deleteAll', {})
 
     expect(store.getters['entities/users/all']().length).toBe(0)

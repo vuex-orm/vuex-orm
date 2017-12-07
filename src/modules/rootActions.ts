@@ -34,8 +34,10 @@ export default {
 
   /**
    * Delete all data from the store.
+   *
+   * @param {object} payload If exists, it should contain `entity`.
    */
-  deleteAll ({ commit }, { entity }) {
-    commit('deleteAll', { entity })
+  deleteAll ({ commit }, payload?) {
+    commit('deleteAll', payload)
   }
 } as Vuex.ActionTree<any, any>
