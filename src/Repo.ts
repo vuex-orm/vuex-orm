@@ -121,8 +121,8 @@ export default class Repo {
   /**
    * Delete all data from the state.
    */
-  static deleteAll (state: State, entity: string): void {
-    if (_.isEmpty(entity)) {
+  static deleteAll (state: State, entity?: string): void {
+    if (!entity) {
       const models = this.models(state)
 
       Object.keys(models).forEach((key) => {
