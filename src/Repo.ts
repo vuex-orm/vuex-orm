@@ -265,15 +265,69 @@ export default class Repo {
   save (method: string, data: any): void {
     const normalizedData: NormalizedData = this.normalize(data)
 
-    // update with empty data
+    // Update with empty data.
     if (method === 'create' && _.isEmpty(normalizedData)) {
-      (this.query as any)[method](normalizedData)
+      this.query[method](normalizedData)
+
       return
     }
 
     _.forEach(normalizedData, (data, entity) => {
-      entity === this.name ? (this.query as any)[method](data) : (new Query(this.state, entity) as any)[method](data)
+      const filledData = _.mapValues(data, record => this.fill(record, entity))
+
+      entity === this.name ? (this.query as any)[method](filledData) : (new Query(this.state, entity) as any)[method](filledData)
     })
+  }
+
+  /**
+   * Fill missing fields in given data with default value defined in
+   * corresponding model.
+   */
+  fill (data: Record, entity: string): Record {
+    return this.buildRecord(data, this.model(entity).fields())
+  }
+
+  /**
+   * Build record.
+   */
+  buildRecord (data: any, fields: Fields, record: Record = {}): Record {
+    const newRecord: Record = record
+
+    _.forEach(fields, (attr, name) => {
+      if (Attrs.isAttrs(attr)) {
+        const newData = data[name] ? data[name] : {}
+
+        newRecord[name] = this.buildRecord(newData, attr, newRecord[name])
+
+        return
+      }
+
+      if (data[name]) {
+        newRecord[name] = data[name]
+
+        return
+      }
+
+      if (attr.type === AttrType.Attr) {
+        newRecord[name] = attr.value
+
+        return
+      }
+
+      if (attr.type === AttrType.HasOne || attr.type === AttrType.BelongsTo) {
+        newRecord[name] = null
+
+        return
+      }
+
+      if (attr.type === AttrType.HasMany || attr.type === AttrType.HasManyBy) {
+        newRecord[name] = []
+
+        return
+      }
+    })
+
+    return newRecord
   }
 
   /**

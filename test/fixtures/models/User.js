@@ -11,6 +11,7 @@ export default class User extends Model {
       id: this.attr(null),
       name: this.attr(''),
       settings: {
+        role: this.attr(''),
         accounts: this.hasMany(Account, 'user_id')
       },
       posts: this.hasMany(Post, 'user_id'),
