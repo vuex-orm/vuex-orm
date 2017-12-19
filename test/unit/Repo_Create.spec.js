@@ -39,15 +39,55 @@ describe('Repo: Create', () => {
     const expected = {
       name: 'entities',
       posts: { data: {
-        '1': { id: 1, comments: [1, 2] }
+        '1': {
+          id: 1,
+          user_id: null,
+          author: null,
+          comments: [1, 2],
+          reviews: []
+        }
       }},
       comments: { data: {
-        '1': { id: 1, post_id: 1 },
-        '2': { id: 2, post_id: 1 }
+        '1': { id: 1, post_id: 1, body: '', post: null, likes: [] },
+        '2': { id: 2, post_id: 1, body: '', post: null, likes: [] }
       }}
     }
 
     Repo.create(state, 'posts', data)
+
+    expect(state).toEqual(expected)
+  })
+
+  it('can create a single data with nested object schema in Vuex Store', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {} }
+    }
+
+    const data = {
+      id: 1,
+      settings: {
+        role: 'admin'
+      }
+    }
+
+    const expected = {
+      name: 'entities',
+      users: { data: {
+        '1': {
+          id: 1,
+          name: '',
+          settings: {
+            role: 'admin',
+            accounts: []
+          },
+          posts: [],
+          profile: null
+        }
+      }}
+    }
+
+    Repo.create(state, 'users', data)
 
     expect(state).toEqual(expected)
   })
@@ -81,17 +121,17 @@ describe('Repo: Create', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '10': { id: 10 },
-        '11': { id: 11 }
+        '10': { id: 10, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null },
+        '11': { id: 11, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null }
       }},
       posts: { data: {
         '1': { id: 1, user_id: 10, author: 10, comments: [1], reviews: [1, 2] },
         '2': { id: 2, user_id: 11, author: 11, comments: [2, 3], reviews: [3, 4] }
       }},
       comments: { data: {
-        '1': { id: 1, post_id: 1, body: 'C1' },
-        '2': { id: 2, post_id: 2, body: 'C2' },
-        '3': { id: 3, post_id: 2, body: 'C3' }
+        '1': { id: 1, post_id: 1, body: 'C1', post: null, likes: [] },
+        '2': { id: 2, post_id: 2, body: 'C2', post: null, likes: [] },
+        '3': { id: 3, post_id: 2, body: 'C3', post: null, likes: [] }
       }},
       reviews: { data: {} }
     }
@@ -148,8 +188,8 @@ describe('Repo: Create', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John' },
-        '2': { id: 2, name: 'Jane' }
+        '1': { id: 1, name: 'John', settings: { accounts: [], role: '' }, posts: [], profile: null },
+        '2': { id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null }
       }}
     }
 
@@ -158,9 +198,9 @@ describe('Repo: Create', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John' },
-        '2': { id: 2, name: 'Jane' },
-        '3': { id: 3, name: 'Johnny' }
+        '1': { id: 1, name: 'John', settings: { accounts: [], role: '' }, posts: [], profile: null },
+        '2': { id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null },
+        '3': { id: 3, name: 'Johnny', settings: { accounts: [], role: '' }, posts: [], profile: null }
       }}
     }
 
@@ -173,8 +213,8 @@ describe('Repo: Create', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John' },
-        '2': { id: 2, name: 'Jane' }
+        '1': { id: 1, name: 'John', settings: { accounts: [], role: '' }, posts: [], profile: null },
+        '2': { id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null }
       }}
     }
 
@@ -186,9 +226,9 @@ describe('Repo: Create', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'Janie' },
-        '2': { id: 2, name: 'Jane' },
-        '3': { id: 3, name: 'Johnny' }
+        '1': { id: 1, name: 'Janie', settings: { accounts: [], role: '' }, posts: [], profile: null },
+        '2': { id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null },
+        '3': { id: 3, name: 'Johnny', settings: { accounts: [], role: '' }, posts: [], profile: null }
       }}
     }
 

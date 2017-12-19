@@ -318,24 +318,31 @@ export default class Model {
    * Serialize field values into json.
    */
   $toJson (): any {
-    return _.mapValues(this.$self().fields(), (attr, key) => {
-      if (!this[key]) {
-        return this[key]
+    return this.$buildJson(this.$self().fields(), this)
+  }
+
+  /**
+   * Build Json data.
+   */
+  $buildJson (data: Fields, field: { [key: string]: any }): any {
+    return _.mapValues(data, (attr, key) => {
+      if (!field[key]) {
+        return field[key]
       }
 
       if (!Attributes.isRelation(attr)) {
-        return
+        return field.$buildJson(attr, field[key])
       }
 
       if (attr.type === AttrType.HasOne || attr.type === AttrType.BelongsTo) {
-        return this[key].$toJson()
+        return field[key].$toJson()
       }
 
       if (attr.type === AttrType.HasMany) {
-        return this[key].map((model: Model) => model.$toJson())
+        return field[key].map((model: Model) => model.$toJson())
       }
 
-      return this[key]
+      return field[key]
     })
   }
 }
