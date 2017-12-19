@@ -4198,7 +4198,7 @@ var Container = /** @class */ (function () {
     return Container;
 }());
 
-var install = function (database, options) {
+function install (database, options) {
     if (options === void 0) { options = {}; }
     var namespace = options.namespace || 'entities';
     return function (store) {
@@ -4206,7 +4206,7 @@ var install = function (database, options) {
         database.registerNamespace(namespace);
         Container.register(namespace, database);
     };
-};
+}
 
 var Type;
 (function (Type) {
@@ -4686,14 +4686,54 @@ var Repo = /** @class */ (function () {
     Repo.prototype.save = function (method, data) {
         var _this = this;
         var normalizedData = this.normalize(data);
-        // update with empty data
+        // Update with empty data.
         if (method === 'create' && isEmpty(normalizedData)) {
             this.query[method](normalizedData);
             return;
         }
         forEach(normalizedData, function (data, entity) {
-            entity === _this.name ? _this.query[method](data) : new Query(_this.state, entity)[method](data);
+            var filledData = mapValues(data, function (record) { return _this.fill(record, entity); });
+            entity === _this.name ? _this.query[method](filledData) : new Query(_this.state, entity)[method](filledData);
         });
+    };
+    /**
+     * Fill missing fields in given data with default value defined in
+     * corresponding model.
+     */
+    Repo.prototype.fill = function (data, entity) {
+        return this.buildRecord(data, this.model(entity).fields());
+    };
+    /**
+     * Build record.
+     */
+    Repo.prototype.buildRecord = function (data, fields, record) {
+        var _this = this;
+        if (record === void 0) { record = {}; }
+        var newRecord = record;
+        forEach(fields, function (attr, name) {
+            if (Attributes.isAttrs(attr)) {
+                var newData = data[name] ? data[name] : {};
+                newRecord[name] = _this.buildRecord(newData, attr, newRecord[name]);
+                return;
+            }
+            if (data[name]) {
+                newRecord[name] = data[name];
+                return;
+            }
+            if (attr.type === Type.Attr) {
+                newRecord[name] = attr.value;
+                return;
+            }
+            if (attr.type === Type.HasOne || attr.type === Type.BelongsTo) {
+                newRecord[name] = null;
+                return;
+            }
+            if (attr.type === Type.HasMany || attr.type === Type.HasManyBy) {
+                newRecord[name] = [];
+                return;
+            }
+        });
+        return newRecord;
     };
     /**
      * Update data in the state.
@@ -6187,21 +6227,26 @@ var Model = /** @class */ (function () {
      * Serialize field values into json.
      */
     Model.prototype.$toJson = function () {
-        var _this = this;
-        return mapValues(this.$self().fields(), function (attr, key) {
-            if (!_this[key]) {
-                return _this[key];
+        return this.$buildJson(this.$self().fields(), this);
+    };
+    /**
+     * Build Json data.
+     */
+    Model.prototype.$buildJson = function (data, field) {
+        return mapValues(data, function (attr, key) {
+            if (!field[key]) {
+                return field[key];
             }
             if (!Attributes.isRelation(attr)) {
-                return;
+                return field.$buildJson(attr, field[key]);
             }
             if (attr.type === Type.HasOne || attr.type === Type.BelongsTo) {
-                return _this[key].$toJson();
+                return field[key].$toJson();
             }
             if (attr.type === Type.HasMany) {
-                return _this[key].map(function (model) { return model.$toJson(); });
+                return field[key].map(function (model) { return model.$toJson(); });
             }
-            return _this[key];
+            return field[key];
         });
     };
     /**
