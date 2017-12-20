@@ -29,27 +29,27 @@ describe('Repo: Create', () => {
     }
 
     const data = {
-      id: 1,
+      id: 0,
       comments: [
-        { id: 1, post_id: 1 },
-        { id: 2, post_id: 1 }
+        { id: 0, post_id: 0 },
+        { id: 1, post_id: 0 }
       ]
     }
 
     const expected = {
       name: 'entities',
       posts: { data: {
-        '1': {
-          id: 1,
+        '0': {
+          id: 0,
           user_id: null,
           author: null,
-          comments: [1, 2],
+          comments: [0, 1],
           reviews: []
         }
       }},
       comments: { data: {
-        '1': { id: 1, post_id: 1, body: '', post: null, likes: [] },
-        '2': { id: 2, post_id: 1, body: '', post: null, likes: [] }
+        '0': { id: 0, post_id: 0, body: '', post: null, likes: [] },
+        '1': { id: 1, post_id: 0, body: '', post: null, likes: [] }
       }}
     }
 

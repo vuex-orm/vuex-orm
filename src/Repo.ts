@@ -302,7 +302,7 @@ export default class Repo {
         return
       }
 
-      if (data[name]) {
+      if (data[name] !== undefined) {
         newRecord[name] = data[name]
 
         return
