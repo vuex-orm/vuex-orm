@@ -4716,7 +4716,7 @@ var Repo = /** @class */ (function () {
                 newRecord[name] = _this.buildRecord(newData, attr, newRecord[name]);
                 return;
             }
-            if (data[name]) {
+            if (data[name] !== undefined) {
                 newRecord[name] = data[name];
                 return;
             }
