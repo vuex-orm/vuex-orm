@@ -4198,7 +4198,7 @@ var Container = /** @class */ (function () {
     return Container;
 }());
 
-function install (database, options) {
+var install = function (database, options) {
     if (options === void 0) { options = {}; }
     var namespace = options.namespace || 'entities';
     return function (store) {
@@ -4206,7 +4206,7 @@ function install (database, options) {
         database.registerNamespace(namespace);
         Container.register(namespace, database);
     };
-}
+};
 
 var Type;
 (function (Type) {
@@ -4300,8 +4300,10 @@ var Query = /** @class */ (function () {
         this._offset = 0;
         /**
          * Maximum number of records to return.
+         *
+         * We use polyfill of `Number.MAX_SAFE_INTEGER` for IE11 here.
          */
-        this._limit = Number.MAX_SAFE_INTEGER;
+        this._limit = Math.pow(2, 53) - 1;
         this.state = state;
         this.name = name;
         this.entity = state[name];
