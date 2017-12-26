@@ -59,8 +59,10 @@ export default class Query {
 
   /**
    * Maximum number of records to return.
+   *
+   * We use polyfill of `Number.MAX_SAFE_INTEGER` for IE11 here.
    */
-  protected _limit: number = Number.MAX_SAFE_INTEGER
+  protected _limit: number = Math.pow(2, 53) - 1
 
   /**
    * Create a new query instance.
