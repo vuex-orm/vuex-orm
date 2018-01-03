@@ -60,10 +60,10 @@ export default class Repo {
    */
   constructor (state: State, entity: string, wrap: boolean = true) {
     this.state = state
-    this.query = new Query(state, entity)
-    this.entity = this.model(entity)
     this.name = entity
+    this.entity = this.model(entity)
     this.wrap = wrap
+    this.query = new Query(state, entity, this.primaryKey())
   }
 
   /**
@@ -161,6 +161,13 @@ export default class Repo {
   }
 
   /**
+   * Get the primary key for the record.
+   */
+  static primaryKey (state: State, name: string): string {
+    return this.model(state, name).primaryKey
+  }
+
+  /**
    * Get Repo class.
    */
   self (): typeof Repo {
@@ -179,6 +186,13 @@ export default class Repo {
    */
   models (): { [name: string]: typeof Model } {
     return this.self().models(this.state)
+  }
+
+  /**
+   * Get the primary key of the model.
+   */
+  primaryKey (): string {
+    return this.self().primaryKey(this.state, this.name)
   }
 
   /**
@@ -267,9 +281,9 @@ export default class Repo {
    * Add where constraints based on has or hasNot condition.
    */
   addHasConstraint (name: string, constraint: number | string | Constraint | null = null, count?: number, existence: boolean = true): this {
-    const items = (new Query(this.state, this.name)).get()
-    const id = this.model(this.name).primaryKey
+    const id = this.primaryKey()
     const ids: any[] = []
+    const items = (new Query(this.state, this.name, id)).get()
 
     _.forEach(items, (item) => {
       this.hasRelation(item, name, constraint, count) === existence && ids.push(item[id])
@@ -313,7 +327,7 @@ export default class Repo {
     _.forEach(normalizedData, (data, entity) => {
       const filledData = _.mapValues(data, record => this.fill(record, entity))
 
-      entity === this.name ? (this.query as any)[method](filledData) : (new Query(this.state, entity) as any)[method](filledData)
+      entity === this.name ? (this.query as any)[method](filledData) : (new Query(this.state, entity, this.primaryKey()) as any)[method](filledData)
     })
   }
 

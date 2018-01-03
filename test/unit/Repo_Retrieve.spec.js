@@ -181,28 +181,6 @@ describe('Repo: Retrieve', () => {
     expect(result).toEqual(expected)
   })
 
-  it('can get data of the entity that matches the mixed where query with callback as value', () => {
-    const state = {
-      name: 'entities',
-      users: { data: {
-        '1': { id: 1, name: 'John', role: 'user', age: 40 },
-        '2': { id: 2, name: 'Jane', role: 'user', age: 30 },
-        '3': { id: 3, name: 'Johnny', role: 'admin', age: 20 }
-      }}
-    }
-
-    const expected = [
-      { id: 1, name: 'John', role: 'user', age: 40 }
-    ]
-
-    const result = Repo.query(state, 'users', false)
-      .where('role', 'user')
-      .where('age', value => value > 30)
-      .get()
-
-    expect(result).toEqual(expected)
-  })
-
   it('can get data of the entity that matches the where query with a function that accesses variables from outside the scope', () => {
     const state = {
       name: 'entities',
@@ -222,6 +200,53 @@ describe('Repo: Retrieve', () => {
 
     const result = Repo.query(state, 'users', false)
       .where(r => r.age < ageAsVariable)
+      .get()
+
+    expect(result).toEqual(expected)
+  })
+
+  it('can get data of the entity that matches the where query with nested query builder', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, role: 'admin', age: 20 },
+        '2': { id: 2, role: 'user', age: 30 },
+        '3': { id: 3, role: 'admin', age: 40 }
+      }}
+    }
+
+    const expected = [
+      { id: 1, role: 'admin', age: 20 }
+    ]
+
+    const result = Repo.query(state, 'users', false)
+      .where((_user, query) => { query.where('age', 20) })
+      .get()
+
+    expect(result).toEqual(expected)
+  })
+
+  it('can get data of the entity that matches the where query with complex nested query builder', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, role: 'admin', age: 30 },
+        '2': { id: 2, role: 'user', age: 30 },
+        '3': { id: 3, role: 'admin', age: 40 },
+        '4': { id: 4, role: 'admin', age: 15 }
+      }}
+    }
+
+    const expected = [
+      { id: 1, role: 'admin', age: 30 },
+      { id: 4, role: 'admin', age: 15 }
+    ]
+
+    const result = Repo.query(state, 'users', false)
+      .where('id', 4)
+      .orWhere((_user, query) => {
+        query.where('age', value => value > 20).where('id', 1)
+      })
       .get()
 
     expect(result).toEqual(expected)
