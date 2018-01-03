@@ -181,6 +181,28 @@ describe('Repo: Retrieve', () => {
     expect(result).toEqual(expected)
   })
 
+  it('can get data of the entity that matches the mixed where query with callback as value', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, name: 'John', role: 'user', age: 40 },
+        '2': { id: 2, name: 'Jane', role: 'user', age: 30 },
+        '3': { id: 3, name: 'Johnny', role: 'admin', age: 20 }
+      }}
+    }
+
+    const expected = [
+      { id: 1, name: 'John', role: 'user', age: 40 }
+    ]
+
+    const result = Repo.query(state, 'users', false)
+      .where('role', 'user')
+      .where('age', value => value > 30)
+      .get()
+
+    expect(result).toEqual(expected)
+  })
+
   it('can get data of the entity that matches the where query with a function that accesses variables from outside the scope', () => {
     const state = {
       name: 'entities',
