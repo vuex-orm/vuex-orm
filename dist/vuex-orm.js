@@ -4198,7 +4198,7 @@ var Container = /** @class */ (function () {
     return Container;
 }());
 
-var install = function (database, options) {
+function install (database, options) {
     if (options === void 0) { options = {}; }
     var namespace = options.namespace || 'entities';
     return function (store) {
@@ -4206,7 +4206,7 @@ var install = function (database, options) {
         database.registerNamespace(namespace);
         Container.register(namespace, database);
     };
-};
+}
 
 var Type;
 (function (Type) {
@@ -4525,7 +4525,7 @@ var Repo = /** @class */ (function () {
         return new this(state, name, wrap);
     };
     /**
-     * Get all data of the given entity from teh state.
+     * Get all data of the given entity from the state.
      */
     Repo.all = function (state, entity, wrap) {
         if (wrap === void 0) { wrap = true; }
@@ -4537,6 +4537,13 @@ var Repo = /** @class */ (function () {
     Repo.find = function (state, entity, id, wrap) {
         if (wrap === void 0) { wrap = true; }
         return (new this(state, entity, wrap)).first(id);
+    };
+    /**
+     * Get the count of the retrieved data.
+     */
+    Repo.count = function (state, entity, wrap) {
+        if (wrap === void 0) { wrap = false; }
+        return (new this(state, entity, wrap)).count();
     };
     /**
      * Save the given data to the state. This will replace any existing
@@ -4668,6 +4675,36 @@ var Repo = /** @class */ (function () {
         return this;
     };
     /**
+     * Set where constraint based on relationship existence.
+     */
+    Repo.prototype.has = function (name, constraint, count) {
+        if (constraint === void 0) { constraint = null; }
+        return this.addHasConstraint(name, constraint, count, true);
+    };
+    /**
+     * Set where constraint based on relationship absence.
+     */
+    Repo.prototype.hasNot = function (name, constraint, count) {
+        if (constraint === void 0) { constraint = null; }
+        return this.addHasConstraint(name, constraint, count, false);
+    };
+    /**
+     * Add where constraints based on has or hasNot condition.
+     */
+    Repo.prototype.addHasConstraint = function (name, constraint, count, existence) {
+        var _this = this;
+        if (constraint === void 0) { constraint = null; }
+        if (existence === void 0) { existence = true; }
+        var items = (new Query(this.state, this.name)).get();
+        var id = this.model(this.name).primaryKey;
+        var ids = [];
+        forEach(items, function (item) {
+            _this.hasRelation(item, name, constraint, count) === existence && ids.push(item[id]);
+        });
+        this.where(id, function (key) { return includes(ids, key); });
+        return this;
+    };
+    /**
      * Save the given data to the state. This will replace any existing
      * data in the state.
      */
@@ -4697,6 +4734,14 @@ var Repo = /** @class */ (function () {
             var filledData = mapValues(data, function (record) { return _this.fill(record, entity); });
             entity === _this.name ? _this.query[method](filledData) : new Query(_this.state, entity)[method](filledData);
         });
+    };
+    /**
+     * Get the count of the retrieved data.
+     */
+    Repo.prototype.count = function () {
+        // Do not wrap result data with class because it's unnecessary.
+        this.wrap = false;
+        return this.get().length;
     };
     /**
      * Fill missing fields in given data with default value defined in
@@ -4797,17 +4842,18 @@ var Repo = /** @class */ (function () {
     /**
      * Load the relationships for the record.
      */
-    Repo.prototype.loadRelations = function (base, record, fields) {
+    Repo.prototype.loadRelations = function (base, load, record, fields) {
         var _this = this;
+        var _load = load || this.load;
         var _record = record || __assign$1({}, base);
         var _fields = fields || this.entity.fields();
-        return reduce(this.load, function (record, relation) {
+        return reduce(_load, function (record, relation) {
             var name = relation.name.split('.')[0];
             var attr = _fields[name];
             if (!attr || !Attributes.isRelation(attr)) {
                 forEach(_fields, function (f, key) {
                     if (f[name]) {
-                        record[key] = _this.loadRelations(base, record[key], f);
+                        record[key] = _this.loadRelations(base, _load, record[key], f);
                         return;
                     }
                 });
@@ -4888,16 +4934,43 @@ var Repo = /** @class */ (function () {
         return this.model(name);
     };
     /**
+     * Check if the given record has given relationship.
+     */
+    Repo.prototype.hasRelation = function (record, name, constraint, count) {
+        if (constraint === void 0) { constraint = null; }
+        var _constraint = constraint;
+        if (typeof constraint === 'number') {
+            _constraint = function (query) { return query.count() === constraint; };
+        }
+        else if (constraint === '>' && typeof count === 'number') {
+            _constraint = function (query) { return query.count() > count; };
+        }
+        else if (constraint === '>=' && typeof count === 'number') {
+            _constraint = function (query) { return query.count() >= count; };
+        }
+        else if (constraint === '<' && typeof count === 'number') {
+            _constraint = function (query) { return query.count() < count; };
+        }
+        else if (constraint === '<=' && typeof count === 'number') {
+            _constraint = function (query) { return query.count() <= count; };
+        }
+        var data = this.loadRelations(record, [{ name: name, constraint: _constraint }]);
+        return !isEmpty(data[name]);
+    };
+    /**
      * Add constraint to the query.
      */
     Repo.prototype.addConstraint = function (query, relation) {
         var relations = relation.name.split('.');
-        if (relations.length === 1) {
-            relation.constraint && relation.constraint(query);
+        if (relations.length !== 1) {
+            relations.shift();
+            query.with(relations.join('.'));
             return;
         }
-        relations.shift();
-        query.with(relations.join('.'));
+        var result = relation.constraint && relation.constraint(query);
+        if (typeof result === 'boolean') {
+            query.where(function () { return result; });
+        }
     };
     /**
      * Normalize the given data by given model.
