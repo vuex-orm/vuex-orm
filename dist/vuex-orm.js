@@ -4285,7 +4285,7 @@ var Query = /** @class */ (function () {
     /**
      * Create a new query instance.
      */
-    function Query(state, name) {
+    function Query(state, name, primaryKey) {
         /**
          * The where constraints for the query.
          */
@@ -4306,6 +4306,7 @@ var Query = /** @class */ (function () {
         this._limit = Math.pow(2, 53) - 1;
         this.state = state;
         this.name = name;
+        this.primaryKey = primaryKey;
         this.entity = state[name];
     }
     /**
@@ -4462,26 +4463,9 @@ var Query = /** @class */ (function () {
      * Checks if given Record matches the registered where clause.
      */
     Query.prototype.whereOnRecord = function (record) {
-        var comparator = function (where) {
-            if (isFunction(where.field)) {
-                // Function with Record as argument
-                return where.field(record);
-            }
-            else if (isFunction(where.value)) {
-                // Function with Record value as argument
-                return where.value(record[where.field]);
-            }
-            else if (isArray(where.value)) {
-                // Check if field value is in given where Array
-                return where.value.indexOf(record[where.field]) !== -1;
-            }
-            else {
-                // Simple equal check
-                return record[where.field] === where.value;
-            }
-        };
         var whereTypes = groupBy(this.wheres, function (where) { return where.boolean; });
         var whereResults = [];
+        var comparator = this.getComparator(record);
         if (whereTypes.and) {
             whereResults.push(every(whereTypes.and, comparator));
         }
@@ -4489,6 +4473,33 @@ var Query = /** @class */ (function () {
             whereResults.push(some(whereTypes.or, comparator));
         }
         return whereResults.indexOf(true) !== -1;
+    };
+    /**
+     * Get comparator for the where clause.
+     */
+    Query.prototype.getComparator = function (record) {
+        var _this = this;
+        return function (where) {
+            // Function with Record and Query as argument.
+            if (isFunction(where.field)) {
+                var query = new Query(_this.state, _this.name, _this.primaryKey);
+                var result = where.field(record, query);
+                if (typeof result === 'boolean') {
+                    return result;
+                }
+                return !isEmpty(query.where(_this.primaryKey, record[_this.primaryKey]).get());
+            }
+            // Function with Record value as argument.
+            if (isFunction(where.value)) {
+                return where.value(record[where.field]);
+            }
+            // Check if field value is in given where Array.
+            if (isArray(where.value)) {
+                return where.value.indexOf(record[where.field]) !== -1;
+            }
+            // Simple equal check.
+            return record[where.field] === where.value;
+        };
     };
     return Query;
 }());
@@ -4512,10 +4523,10 @@ var Repo = /** @class */ (function () {
          */
         this.load = [];
         this.state = state;
-        this.query = new Query(state, entity);
-        this.entity = this.model(entity);
         this.name = entity;
+        this.entity = this.model(entity);
         this.wrap = wrap;
+        this.query = new Query(state, entity, this.primaryKey());
     }
     /**
      * Create a new repo instance
@@ -4601,6 +4612,12 @@ var Repo = /** @class */ (function () {
         return Container.connection(state.name).models();
     };
     /**
+     * Get the primary key for the record.
+     */
+    Repo.primaryKey = function (state, name) {
+        return this.model(state, name).primaryKey;
+    };
+    /**
      * Get Repo class.
      */
     Repo.prototype.self = function () {
@@ -4617,6 +4634,12 @@ var Repo = /** @class */ (function () {
      */
     Repo.prototype.models = function () {
         return this.self().models(this.state);
+    };
+    /**
+     * Get the primary key of the model.
+     */
+    Repo.prototype.primaryKey = function () {
+        return this.self().primaryKey(this.state, this.name);
     };
     /**
      * Returns single record of the query chain result.
@@ -4695,9 +4718,9 @@ var Repo = /** @class */ (function () {
         var _this = this;
         if (constraint === void 0) { constraint = null; }
         if (existence === void 0) { existence = true; }
-        var items = (new Query(this.state, this.name)).get();
-        var id = this.model(this.name).primaryKey;
+        var id = this.primaryKey();
         var ids = [];
+        var items = (new Query(this.state, this.name, id)).get();
         forEach(items, function (item) {
             _this.hasRelation(item, name, constraint, count) === existence && ids.push(item[id]);
         });
@@ -4732,7 +4755,7 @@ var Repo = /** @class */ (function () {
         }
         forEach(normalizedData, function (data, entity) {
             var filledData = mapValues(data, function (record) { return _this.fill(record, entity); });
-            entity === _this.name ? _this.query[method](filledData) : new Query(_this.state, entity)[method](filledData);
+            entity === _this.name ? _this.query[method](filledData) : new Query(_this.state, entity, _this.primaryKey())[method](filledData);
         });
     };
     /**
