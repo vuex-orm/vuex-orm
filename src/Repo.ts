@@ -17,7 +17,7 @@ export type Collection = Model[] | Record[]
 
 export type Buildable = QueryItem | QueryCollection | null
 
-export type Constraint = (query: Repo) => void
+export type Constraint = (query: Repo) => void | boolean
 
 export interface Relation {
   name: string
@@ -198,7 +198,7 @@ export default class Repo {
   /**
    * Add a and where clause to the query.
    */
-  where (field: string, value: any): this {
+  where (field: any, value?: any): this {
     this.query.where(field, value)
 
     return this
@@ -207,7 +207,7 @@ export default class Repo {
   /**
    * Add a or where clause to the query.
    */
-  orWhere (field: string, value: any): this {
+  orWhere (field: any, value?: any): this {
     this.query.orWhere(field, value)
 
     return this
@@ -245,6 +245,37 @@ export default class Repo {
    */
   with (name: string, constraint: Constraint | null = null): this {
     this.load.push({ name, constraint })
+
+    return this
+  }
+
+  /**
+   * Set where constraint based on relationship existence.
+   */
+  has (name: string, constraint: number | string | Constraint | null = null, count?: number): this {
+    return this.addHasConstraint(name, constraint, count, true)
+  }
+
+  /**
+   * Set where constraint based on relationship absence.
+   */
+  hasNot (name: string, constraint: number | string | Constraint | null = null, count?: number): this {
+    return this.addHasConstraint(name, constraint, count, false)
+  }
+
+  /**
+   * Add where constraints based on has or hasNot condition.
+   */
+  addHasConstraint (name: string, constraint: number | string | Constraint | null = null, count?: number, existence: boolean = true): this {
+    const items = (new Query(this.state, this.name)).get()
+    const id = this.model(this.name).primaryKey
+    const ids: any[] = []
+
+    _.forEach(items, (item) => {
+      this.hasRelation(item, name, constraint, count) === existence && ids.push(item[id])
+    })
+
+    this.where(id, (key: any) => _.includes(ids, key))
 
     return this
   }
@@ -421,18 +452,19 @@ export default class Repo {
   /**
    * Load the relationships for the record.
    */
-  loadRelations (base: Record, record?: Record, fields?: Fields): Record {
+  loadRelations (base: Record, load?: Relation[], record?: Record, fields?: Fields): Record {
+    const _load = load || this.load
     const _record = record || { ...base }
     const _fields = fields || this.entity.fields()
 
-    return _.reduce(this.load, (record, relation) => {
+    return _.reduce(_load, (record, relation) => {
       const name = relation.name.split('.')[0]
       const attr = _fields[name]
 
       if (!attr || !Attrs.isRelation(attr)) {
         _.forEach(_fields, (f: any, key: string) => {
           if (f[name]) {
-            record[key] = this.loadRelations(base, record[key], f)
+            record[key] = this.loadRelations(base, _load, record[key], f)
 
             return
           }
@@ -543,20 +575,47 @@ export default class Repo {
   }
 
   /**
+   * Check if the given record has given relationship.
+   */
+  hasRelation (record: Record, name: string, constraint: number | string | Constraint | null = null, count?: number): boolean {
+    let _constraint = constraint
+
+    if (typeof constraint === 'number') {
+      _constraint = query => query.count() === constraint
+    } else if (constraint === '>' && typeof count === 'number') {
+      _constraint = query => query.count() > count
+    } else if (constraint === '>=' && typeof count === 'number') {
+      _constraint = query => query.count() >= count
+    } else if (constraint === '<' && typeof count === 'number') {
+      _constraint = query => query.count() < count
+    } else if (constraint === '<=' && typeof count === 'number') {
+      _constraint = query => query.count() <= count
+    }
+
+    const data = this.loadRelations(record, [{ name, constraint: (_constraint as Constraint) }])
+
+    return !_.isEmpty(data[name])
+  }
+
+  /**
    * Add constraint to the query.
    */
   addConstraint (query: Repo, relation: Relation): void {
     const relations = relation.name.split('.')
 
-    if (relations.length === 1) {
-      relation.constraint && relation.constraint(query)
+    if (relations.length !== 1) {
+      relations.shift()
+
+      query.with(relations.join('.'))
 
       return
     }
 
-    relations.shift()
+    const result = relation.constraint && relation.constraint(query)
 
-    query.with(relations.join('.'))
+    if (typeof result === 'boolean') {
+      query.where(() => result)
+    }
   }
 
   /**
