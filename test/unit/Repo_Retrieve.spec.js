@@ -739,7 +739,7 @@ describe('Repo: Retrieve', () => {
     expect(users).toEqual(expected)
   })
 
-  it.only('can query data depending on relationship absence with count', () => {
+  it('can query data depending on relationship absence with count', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -761,5 +761,91 @@ describe('Repo: Retrieve', () => {
       .get()
 
     expect(users).toEqual(expected)
+  })
+
+  it('can query data depending on relationship existence with number', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1 },
+        '2': { id: 2 },
+        '3': { id: 3 }
+      }},
+      posts: { data: {
+        '1': { id: 1, user_id: 1, type: 'news' },
+        '2': { id: 2, user_id: 2, type: 'event' },
+        '3': { id: 3, user_id: 2, type: 'news' }
+      }}
+    }
+
+    const expected = [{ id: 2 }]
+
+    const users = Repo.query(state, 'users', false).has('posts', 2).get()
+
+    expect(users).toEqual(expected)
+  })
+
+  it('can query data depending on relationship absence with number', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1 },
+        '2': { id: 2 },
+        '3': { id: 3 }
+      }},
+      posts: { data: {
+        '1': { id: 1, user_id: 1, type: 'news' },
+        '2': { id: 2, user_id: 2, type: 'event' },
+        '3': { id: 3, user_id: 2, type: 'news' }
+      }}
+    }
+
+    const expected = [{ id: 1 }, { id: 3 }]
+
+    const users = Repo.query(state, 'users', false).hasNot('posts', 2).get()
+
+    expect(users).toEqual(expected)
+  })
+
+  it('can query data depending on relationship existence with string conditions', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1 },
+        '2': { id: 2 },
+        '3': { id: 3 }
+      }},
+      posts: { data: {
+        '1': { id: 1, user_id: 1, type: 'news' },
+        '2': { id: 2, user_id: 2, type: 'event' },
+        '3': { id: 3, user_id: 2, type: 'news' }
+      }}
+    }
+
+    expect(Repo.query(state, 'users', false).has('posts', '>', 1).get()).toEqual([{ id: 2 }])
+    expect(Repo.query(state, 'users', false).has('posts', '>=', 1).get()).toEqual([{ id: 1 }, { id: 2 }])
+    expect(Repo.query(state, 'users', false).has('posts', '<', 2).get()).toEqual([{ id: 1 }])
+    expect(Repo.query(state, 'users', false).has('posts', '<=', 2).get()).toEqual([{ id: 1 }, { id: 2 }])
+  })
+
+  it('can query data depending on relationship absence with string conditions', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1 },
+        '2': { id: 2 },
+        '3': { id: 3 }
+      }},
+      posts: { data: {
+        '1': { id: 1, user_id: 1, type: 'news' },
+        '2': { id: 2, user_id: 2, type: 'event' },
+        '3': { id: 3, user_id: 2, type: 'news' }
+      }}
+    }
+
+    expect(Repo.query(state, 'users', false).hasNot('posts', '>', 1).get()).toEqual([{ id: 1 }, { id: 3 }])
+    expect(Repo.query(state, 'users', false).hasNot('posts', '>=', 1).get()).toEqual([{ id: 3 }])
+    expect(Repo.query(state, 'users', false).hasNot('posts', '<', 2).get()).toEqual([{ id: 2 }, { id: 3 }])
+    expect(Repo.query(state, 'users', false).hasNot('posts', '<=', 2).get()).toEqual([{ id: 3 }])
   })
 })

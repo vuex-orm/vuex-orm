@@ -252,27 +252,27 @@ export default class Repo {
   /**
    * Set where constraint based on relationship existence.
    */
-  has (name: string, constraint: null | Constraint = null): this {
-    return this.addHasConstraint(name, constraint, true)
+  has (name: string, constraint: number | string | Constraint | null = null, count?: number): this {
+    return this.addHasConstraint(name, constraint, count, true)
   }
 
   /**
    * Set where constraint based on relationship absence.
    */
-  hasNot (name: string, constraint: null | Constraint = null): this {
-    return this.addHasConstraint(name, constraint, false)
+  hasNot (name: string, constraint: number | string | Constraint | null = null, count?: number): this {
+    return this.addHasConstraint(name, constraint, count, false)
   }
 
   /**
    * Add where constraints based on has or hasNot condition.
    */
-  addHasConstraint (name: string, constraint: null | Constraint = null, existence: boolean = true): this {
+  addHasConstraint (name: string, constraint: number | string | Constraint | null = null, count?: number, existence: boolean = true): this {
     const items = (new Query(this.state, this.name)).get()
     const id = this.model(this.name).primaryKey
     const ids: any[] = []
 
     _.forEach(items, (item) => {
-      this.hasRelation(item, name, constraint) === existence && ids.push(item[id])
+      this.hasRelation(item, name, constraint, count) === existence && ids.push(item[id])
     })
 
     this.where(id, (key: any) => _.includes(ids, key))
@@ -577,8 +577,22 @@ export default class Repo {
   /**
    * Check if the given record has given relationship.
    */
-  hasRelation (record: Record, name: string, constraint: null | Constraint = null): boolean {
-    const data = this.loadRelations(record, [{ name, constraint }])
+  hasRelation (record: Record, name: string, constraint: number | string | Constraint | null = null, count?: number): boolean {
+    let _constraint = constraint
+
+    if (typeof constraint === 'number') {
+      _constraint = query => query.count() === constraint
+    } else if (constraint === '>' && typeof count === 'number') {
+      _constraint = query => query.count() > count
+    } else if (constraint === '>=' && typeof count === 'number') {
+      _constraint = query => query.count() >= count
+    } else if (constraint === '<' && typeof count === 'number') {
+      _constraint = query => query.count() < count
+    } else if (constraint === '<=' && typeof count === 'number') {
+      _constraint = query => query.count() <= count
+    }
+
+    const data = this.loadRelations(record, [{ name, constraint: (_constraint as Constraint) }])
 
     return !_.isEmpty(data[name])
   }
