@@ -15,7 +15,7 @@ export type Predicate = (item: Record) => boolean
 export type Condition = number | string | Predicate
 
 export interface Wheres {
-  field: string
+  field: any
   value: any
   boolean: WhereBoolean
 }
@@ -162,7 +162,7 @@ export default class Query {
   /**
    * Add a and where clause to the query.
    */
-  where (field: string, value: any): this {
+  where (field: any, value?: any): this {
     this.wheres.push({ field, value, boolean: 'and' })
 
     return this
@@ -171,7 +171,7 @@ export default class Query {
   /**
    * Add a or where clause to the query.
    */
-  orWhere (field: string, value: any): this {
+  orWhere (field: any, value?: any): this {
     this.wheres.push({ field, value, boolean: 'or' })
 
     return this
