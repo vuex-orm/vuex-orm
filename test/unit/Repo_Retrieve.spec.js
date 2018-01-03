@@ -205,6 +205,53 @@ describe('Repo: Retrieve', () => {
     expect(result).toEqual(expected)
   })
 
+  it('can get data of the entity that matches the where query with nested query builder', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, role: 'admin', age: 20 },
+        '2': { id: 2, role: 'user', age: 30 },
+        '3': { id: 3, role: 'admin', age: 40 }
+      }}
+    }
+
+    const expected = [
+      { id: 1, role: 'admin', age: 20 }
+    ]
+
+    const result = Repo.query(state, 'users', false)
+      .where((_user, query) => { query.where('age', 20) })
+      .get()
+
+    expect(result).toEqual(expected)
+  })
+
+  it('can get data of the entity that matches the where query with complex nested query builder', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, role: 'admin', age: 30 },
+        '2': { id: 2, role: 'user', age: 30 },
+        '3': { id: 3, role: 'admin', age: 40 },
+        '4': { id: 4, role: 'admin', age: 15 }
+      }}
+    }
+
+    const expected = [
+      { id: 1, role: 'admin', age: 30 },
+      { id: 4, role: 'admin', age: 15 }
+    ]
+
+    const result = Repo.query(state, 'users', false)
+      .where('id', 4)
+      .orWhere((_user, query) => {
+        query.where('age', value => value > 20).where('id', 1)
+      })
+      .get()
+
+    expect(result).toEqual(expected)
+  })
+
   it('can get data of the entity that matches the orWhere query', () => {
     const state = {
       name: 'entities',

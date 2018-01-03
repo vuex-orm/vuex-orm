@@ -83,6 +83,18 @@ const user = store.getters['entities/users/query']().where(record => record.age 
 // [User { id: 1, age: 25 }, User { id: 2, age: 30 }]
 ```
 
+When passing closure to the first argument, it will also receive query builder as second argument. By using the query builder, you may nest the where clause. This is useful when you want "group" the where clauses.
+
+```js
+// Retrieve all users with role of user, and age of 20 or id of 1.
+const user = store.getters['entities/users/query']()
+  .where('role', 'user')
+  .where((_record, query) => {
+    query.where('age', 20).orWhere('id', 1)
+  })
+  .get()
+```
+
 #### Or Statement
 
 You may chain where constraints together as well as add `or` condition to the query. The `orWhere` method accepts the same arguments as the where method.

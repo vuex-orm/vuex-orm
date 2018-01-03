@@ -38,6 +38,11 @@ export default class Query {
   protected name: string
 
   /**
+   * The primary key of the entity.
+   */
+  protected primaryKey: string
+
+  /**
    * The data of the entity.
    */
   protected entity: EntityState
@@ -67,9 +72,10 @@ export default class Query {
   /**
    * Create a new query instance.
    */
-  constructor (state: State, name: string) {
+  constructor (state: State, name: string, primaryKey: string) {
     this.state = state
     this.name = name
+    this.primaryKey = primaryKey
     this.entity = state[name]
   }
 
@@ -244,7 +250,7 @@ export default class Query {
    * Filter the given data by registered where clause.
    */
   selectByWheres (records: Records): Records {
-    return _.pickBy(records, record => this.whereOnRecord(record)) as any
+    return _.pickBy(records, (record) => this.whereOnRecord(record)) as any
   }
 
   /**
@@ -261,24 +267,9 @@ export default class Query {
    * Checks if given Record matches the registered where clause.
    */
   whereOnRecord (record: Record): boolean {
-    let comparator: Function = (where: any) => {
-      if (_.isFunction(where.field)) {
-        // Function with Record as argument
-        return where.field(record)
-      } else if (_.isFunction(where.value)) {
-        // Function with Record value as argument
-        return where.value(record[where.field])
-      } else if (_.isArray(where.value)) {
-        // Check if field value is in given where Array
-        return where.value.indexOf(record[where.field]) !== -1
-      } else {
-        // Simple equal check
-        return record[where.field] === where.value
-      }
-    }
-
     let whereTypes: any = _.groupBy(this.wheres, where => where.boolean)
-    let whereResults: Array<boolean> = []
+    let whereResults: boolean[] = []
+    let comparator: (where: any) => boolean = this.getComparator(record)
 
     if (whereTypes.and) {
       whereResults.push(_.every(whereTypes.and, comparator))
@@ -289,5 +280,37 @@ export default class Query {
     }
 
     return whereResults.indexOf(true) !== -1
+  }
+
+  /**
+   * Get comparator for the where clause.
+   */
+  getComparator (record: Record): (where: any) => boolean {
+    return (where: any) => {
+      // Function with Record and Query as argument.
+      if (_.isFunction(where.field)) {
+        const query = new Query(this.state, this.name, this.primaryKey)
+        const result = where.field(record, query)
+
+        if (typeof result === 'boolean') {
+          return result
+        }
+
+        return !_.isEmpty(query.where(this.primaryKey, record[this.primaryKey]).get())
+      }
+
+      // Function with Record value as argument.
+      if (_.isFunction(where.value)) {
+        return where.value(record[where.field])
+      }
+
+      // Check if field value is in given where Array.
+      if (_.isArray(where.value)) {
+        return where.value.indexOf(record[where.field]) !== -1
+      }
+
+      // Simple equal check.
+      return record[where.field] === where.value
+    }
   }
 }
