@@ -144,6 +144,18 @@ const user = store.getters['entities/users/query']()
 // [User { id: 2, age: 30 }, User { id: 3, age: 35 }]
 ```
 
+### Aggregates
+
+The query builder also provides a aggregate method. Currently available method is `count`. You may call this method after constructing your query.
+
+```js
+const user = store.getters['entities/users/query']()
+  .where('role', 'user')
+  .count()
+
+// 3
+```
+
 ### Load Relationship
 
 You can use `with` method to load related model when querying data.

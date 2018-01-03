@@ -74,7 +74,7 @@ export default class Repo {
   }
 
   /**
-   * Get all data of the given entity from teh state.
+   * Get all data of the given entity from the state.
    */
   static all (state: State, entity: string, wrap: boolean = true): Collection {
     return (new this(state, entity, wrap)).get()
@@ -85,6 +85,13 @@ export default class Repo {
    */
   static find (state: State, entity: string, id: string | number, wrap: boolean = true): Item {
     return (new this(state, entity, wrap)).first(id)
+  }
+
+  /**
+   * Get the count of the retrieved data.
+   */
+  static count (state: State, entity: string, wrap: boolean = false): number {
+    return (new this(state, entity, wrap)).count()
   }
 
   /**
@@ -277,6 +284,16 @@ export default class Repo {
 
       entity === this.name ? (this.query as any)[method](filledData) : (new Query(this.state, entity) as any)[method](filledData)
     })
+  }
+
+  /**
+   * Get the count of the retrieved data.
+   */
+  count (): number {
+    // Do not wrap result data with class because it's unnecessary.
+    this.wrap = false
+
+    return this.get().length
   }
 
   /**
