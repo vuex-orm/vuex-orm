@@ -4636,7 +4636,21 @@ var Repo = /** @class */ (function () {
         return this.self().primaryKey(this.state, this.name);
     };
     /**
-     * Returns single record of the query chain result.
+     * Returns all record of the query chain result. This method is alias
+     * of the `get` method.
+     */
+    Repo.prototype.all = function () {
+        return this.get();
+    };
+    /**
+     * Returns single record of the query chain result. This method is alias
+     * of the `first` method.
+     */
+    Repo.prototype.find = function (id) {
+        return this.first(id);
+    };
+    /**
+     * Returns all record of the query chain result.
      */
     Repo.prototype.get = function () {
         return this.collect(this.query.get());
@@ -5166,11 +5180,7 @@ var subActions = {
         var commit = _a.commit, state = _a.state;
         var where = payload.where;
         var data = payload.data;
-        if (where === undefined && data === undefined) {
-            commit(state.$connection + "/update", { entity: state.$name, data: payload }, { root: true });
-            return;
-        }
-        if (typeof data !== 'object') {
+        if (where === undefined || data === undefined) {
             commit(state.$connection + "/update", { entity: state.$name, data: payload }, { root: true });
             return;
         }
@@ -5212,30 +5222,34 @@ var Module = /** @class */ (function () {
      * Creates module from the given entities.
      */
     Module.create = function (namespace, entities) {
-        return {
+        var tree = {
             namespaced: true,
             state: { name: namespace },
             getters: rootGetters,
             actions: rootActions,
             mutations: mutations,
-            modules: this.createTree(namespace, entities)
+            modules: {}
         };
+        return this.createTree(tree, namespace, entities);
     };
     /**
      * Creates module tree to be registered under top level module
      * from the given entities.
      */
-    Module.createTree = function (namespace, entities) {
+    Module.createTree = function (tree, namespace, entities) {
         var _this = this;
-        var tree = {};
         forEach(entities, function (entity) {
-            tree[entity.model.entity] = {
+            tree.getters[entity.model.entity] = function (_state, getters) { return function (wrap) {
+                if (wrap === void 0) { wrap = true; }
+                return getters.query(entity.model.entity, wrap);
+            }; };
+            tree.modules[entity.model.entity] = {
                 namespaced: true,
                 state: __assign({}, entity.module.state, _this.state, { $connection: namespace, $name: entity.model.entity })
             };
-            tree[entity.model.entity]['getters'] = __assign({}, subGetters, entity.module.getters);
-            tree[entity.model.entity]['actions'] = __assign({}, subActions, entity.module.actions);
-            tree[entity.model.entity]['mutations'] = entity.module.mutations || {};
+            tree.modules[entity.model.entity]['getters'] = __assign({}, subGetters, entity.module.getters);
+            tree.modules[entity.model.entity]['actions'] = __assign({}, subActions, entity.module.actions);
+            tree.modules[entity.model.entity]['mutations'] = entity.module.mutations || {};
         });
         return tree;
     };
