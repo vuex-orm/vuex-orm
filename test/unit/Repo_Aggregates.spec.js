@@ -2,7 +2,7 @@ import { createApplication } from 'test/support/Helpers'
 import User from 'test/fixtures/models/User'
 import Repo from 'app/Repo'
 
-describe('Repo: Aggregates', () => {
+describe('Repo – Aggregates', () => {
   beforeEach(() => {
     createApplication('entities', [
       { model: User }

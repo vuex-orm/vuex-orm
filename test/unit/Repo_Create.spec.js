@@ -8,7 +8,7 @@ import Like from 'test/fixtures/models/Like'
 import CustomKey from 'test/fixtures/models/CustomKey'
 import Repo from 'app/Repo'
 
-describe('Repo: Create', () => {
+describe('Repo – Create', () => {
   beforeEach(() => {
     createApplication('entities', [
       { model: User },

@@ -2,7 +2,7 @@ import { createApplication } from 'test/support/Helpers'
 import { schema } from 'normalizr'
 import Model from 'app/Model'
 
-describe('Model: Normalization', () => {
+describe('Model – Normalization', () => {
   it('can create a schema', () => {
     class User extends Model {
       static entity = 'users'
