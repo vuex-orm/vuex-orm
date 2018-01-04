@@ -42,6 +42,26 @@ describe('Root modules', () => {
     expect(store.state.entities.users.data[2].id).toBe(2)
   })
 
+  it('can create a query by directly calling getter of the entity name', async () => {
+    const store = createStore(entities)
+
+    await store.dispatch('entities/users/create', {
+      data: [{ id: 1 }, { id: 2 }]
+    })
+
+    const users = store.getters['entities/users']().get()
+
+    expect(users.length).toBe(2)
+    expect(users[0]).toBeInstanceOf(User)
+    expect(users[1]).toBeInstanceOf(User)
+    expect(users[0].id).toBe(1)
+    expect(users[1].id).toBe(2)
+
+    const user = store.getters['entities/users']().first(1)
+
+    expect(user.id).toBe(1)
+  })
+
   it('can update data by action with id', async () => {
     const store = createStore(entities)
 

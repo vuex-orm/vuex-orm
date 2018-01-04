@@ -39,26 +39,29 @@ export default class Module {
    * Creates module from the given entities.
    */
   static create (namespace: string, entities: Entity[]): Vuex.Module<any, any> {
-    return {
+    const tree: Vuex.Module<any, any> = {
       namespaced: true,
       state: { name: namespace },
       getters: rootGetters,
       actions: rootActions,
       mutations,
-
-      modules: this.createTree(namespace, entities)
+      modules: {}
     }
+
+    return this.createTree(tree, namespace, entities)
   }
 
   /**
    * Creates module tree to be registered under top level module
    * from the given entities.
    */
-  static createTree (namespace: string, entities: Entity[]): Vuex.ModuleTree<any> {
-    let tree: Vuex.ModuleTree<any> = {}
-
+  static createTree (tree: any, namespace: string, entities: Entity[]): Vuex.Module<any, any> {
     _.forEach(entities, (entity) => {
-      tree[entity.model.entity] = {
+      tree.getters[entity.model.entity] = (_state: any, getters: any) => (wrap: boolean = true) => {
+        return getters.query(entity.model.entity, wrap)
+      }
+
+      tree.modules[entity.model.entity] = {
         namespaced: true,
         state: {
           ...entity.module.state,
@@ -68,17 +71,17 @@ export default class Module {
         }
       }
 
-      tree[entity.model.entity]['getters'] = {
+      tree.modules[entity.model.entity]['getters'] = {
         ...subGetters,
         ...entity.module.getters
-      } as Vuex.GetterTree<any, any>
+      }
 
-      tree[entity.model.entity]['actions'] = {
+      tree.modules[entity.model.entity]['actions'] = {
         ...subActions,
         ...entity.module.actions
-      } as Vuex.ActionTree<any, any>
+      }
 
-      tree[entity.model.entity]['mutations'] = entity.module.mutations || {}
+      tree.modules[entity.model.entity]['mutations'] = entity.module.mutations || {}
     })
 
     return tree
