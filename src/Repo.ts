@@ -196,7 +196,23 @@ export default class Repo {
   }
 
   /**
-   * Returns single record of the query chain result.
+   * Returns all record of the query chain result. This method is alias
+   * of the `get` method.
+   */
+  all (): Collection {
+    return this.get()
+  }
+
+  /**
+   * Returns single record of the query chain result. This method is alias
+   * of the `first` method.
+   */
+  find (id: number | string): Item {
+    return this.first(id)
+  }
+
+  /**
+   * Returns all record of the query chain result.
    */
   get (): Collection {
     return this.collect(this.query.get())

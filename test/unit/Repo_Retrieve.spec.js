@@ -65,6 +65,22 @@ describe('Repo – Retrieve', () => {
     expect(Repo.all(state, 'users', false)).toEqual(expected)
   })
 
+  it('can get all with all method chained with query', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1 },
+        '2': { id: 2 }
+      }},
+      profiles: { data: {} },
+      posts: { data: {} }
+    }
+
+    const expected = [{ id: 1 }, { id: 2 }]
+
+    expect(Repo.query(state, 'users', false).all()).toEqual(expected)
+  })
+
   it('can get all data of the entity that matches the where query', () => {
     const state = {
       name: 'entities',
@@ -292,6 +308,24 @@ describe('Repo – Retrieve', () => {
 
     expect(user).toBeInstanceOf(User)
     expect(user.id).toBe(2)
+  })
+
+  it('can find a single item by find method chained with query', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1 },
+        '2': { id: 2 }
+      }}
+    }
+
+    const user = Repo.query(state, 'users', false).find(2)
+
+    if (user === null) {
+      return t.fail('user is empty but its expected to have 1 record.')
+    }
+
+    expect(user).toEqual({ id: 2 })
   })
 
   it('returns null when single record can not be found', () => {
