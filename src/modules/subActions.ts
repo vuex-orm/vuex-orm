@@ -23,16 +23,10 @@ export default {
    * Update data in the store.
    */
   update ({ commit, state }, payload) {
-    let where = payload.where
-    let data = payload.data
+    const where = payload.where
+    const data = payload.data
 
-    if (where === undefined && data === undefined) {
-      commit(`${state.$connection}/update`, { entity: state.$name, data: payload }, { root: true })
-
-      return
-    }
-
-    if (typeof data !== 'object') {
+    if (where === undefined || data === undefined) {
       commit(`${state.$connection}/update`, { entity: state.$name, data: payload }, { root: true })
 
       return
