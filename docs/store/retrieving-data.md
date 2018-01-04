@@ -45,12 +45,21 @@ const users = store.getters['entities/users/query']().get()
 // [User { id: 1, name: 'John' }, User: { id: 2, name: 'Jane' }]
 ```
 
+You can also create query builder by directly calling module as a getter.
+
+```js
+const users = store.getters['entities/users']().get()
+
+// Above is equivalant to this.
+const users = store.getters['entities/users/query']().get()
+```
+
 ### Get A Single Data
 
 Use `first` method to fetch a single data for the entity.
 
 ```js
-const user = store.getters['entities/users/query']().first(1)
+const user = store.getters['entities/users/query']().first()
 
 // User { id: 1, name: 'John' }
 ```
