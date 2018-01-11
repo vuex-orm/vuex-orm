@@ -9,7 +9,7 @@ export interface Schemas {
 
 export default class Schema {
   /**
-   * Create s schema of given model.
+   * Create a schema of given model.
    */
   static one (model: typeof Model, schemas: Schemas = {}): schema.Entity {
     const thisSchema = new schema.Entity(model.entity, {}, {
@@ -34,14 +34,14 @@ export default class Schema {
   }
 
   /**
-   * Create dfinition from given fields.
+   * Create a dfinition from given fields.
    */
   static definition (model: typeof Model, schemas: Schemas = {}): NormalizrSchema {
     return this.build(model, model.fields(), schemas)
   }
 
   /**
-   * Build definition schema.
+   * Build a definition schema.
    */
   static build (model: typeof Model, fields: Fields, schemas: Schemas = {}): NormalizrSchema {
     return _.reduce(fields, (definition, field, key) => {

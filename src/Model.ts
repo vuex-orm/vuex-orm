@@ -101,14 +101,14 @@ export default class Model {
   }
 
   /**
-   * Find relation model from the container.
+   * Get a model from the container.
    */
   static relation (name: string): typeof Model {
     return Container.connection(this.connection).model(name)
   }
 
   /**
-   * Resolve relation out of the container.
+   * Resolve relation in the given attribute out of the container.
    */
   static resolveRelation (attr: HasOne | BelongsTo | HasMany | HasManyBy): typeof Model {
     return _.isString(attr.model) ? this.relation(attr.model) : attr.model
@@ -138,7 +138,8 @@ export default class Model {
   }
 
   /**
-   * Check if the record has appropriate foreign key and if not, attach them.
+   * Check if the given record has the appropriate foreign key and
+   * if not, attach them.
    */
   static attachForeignKeys (records: Records, model: typeof Model): Records {
     const fields: Fields = model.fields()
@@ -177,7 +178,7 @@ export default class Model {
   }
 
   /**
-   * Returns the static class of this model.
+   * Get the static class of this model.
    */
   $self (): typeof Model {
     return this.constructor as typeof Model
