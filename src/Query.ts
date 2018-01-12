@@ -27,6 +27,11 @@ export interface Orders {
 
 export default class Query {
   /**
+   * @protected records store query instance records for accessing and manipulation during query chain
+   */
+  protected records: Records
+
+  /**
    * The Vuex Store State. This is the target where query will perform
    * CRUD actions.
    */
@@ -77,13 +82,15 @@ export default class Query {
     this.name = name
     this.primaryKey = primaryKey
     this.entity = state[name]
+    this.records = state[name].data
   }
 
   /**
    * Returns single record of the query chain result.
    */
   get (): Collection {
-    const records: Records = this.process()
+    this.process()
+    const records: Records = this.records
 
     return this.collect(records)
   }
@@ -92,9 +99,10 @@ export default class Query {
    * Returns single record of the query chain result.
    */
   first (id?: number | string): Item {
-    const records: Records = this.process()
+    this.process()
+    let records: Records = this.records
 
-    if (_.isEmpty(records)) {
+    if (_.isEmpty(this.records)) {
       return null
     }
 
@@ -144,25 +152,25 @@ export default class Query {
   /**
    * Process the query and filter data.
    */
-  process (): Records {
+  process (): void {
     // First, fetch all records of the entity.
-    let records: Records = this.entity.data
+    let records: Records = this.records
 
     // If the entity is empty, there's nothing we can do so lets return
     // data as is and exit immediately.
     if (_.isEmpty(records)) {
-      return records
+      return
     }
 
     // Now since we have the records, lets check if the where clause is
     // registered. If not, there is nothing we need to do so just
     // return all data.
     if (_.isEmpty(this.wheres)) {
-      return records
+      return
     }
 
     // OK so we do have where clause. Lets find specific data user wants.
-    return this.selectByWheres(records)
+    this.selectByWheres()
   }
 
   /**
@@ -249,8 +257,8 @@ export default class Query {
   /**
    * Filter the given data by registered where clause.
    */
-  selectByWheres (records: Records): Records {
-    return _.pickBy(records, (record) => this.whereOnRecord(record)) as any
+  selectByWheres (): void {
+    this.records = _.pickBy(this.records, (record) => this.whereOnRecord(record)) as any
   }
 
   /**
