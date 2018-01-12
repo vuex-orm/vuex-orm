@@ -1,8 +1,10 @@
 import * as _ from './support/lodash'
 import Container from './connections/Container'
 import { Record, NormalizedData } from './Data'
-import Attrs, { Type as AttrType, HasOne, BelongsTo, HasMany, HasManyBy } from './Attributes'
-import Model, { Fields } from './Model'
+import AttrTypes from './Attributes/AttrTypes'
+import Attrs, { Fields } from './Attributes'
+import { HasOne, BelongsTo, HasMany, HasManyBy } from './Attributes/Relations'
+import Model from './Model'
 import { State } from './Module'
 import Query, {
   Item as QueryItem,
@@ -372,7 +374,7 @@ export default class Repo {
     const newRecord: Record = record
 
     _.forEach(fields, (attr, name) => {
-      if (Attrs.isAttrs(attr)) {
+      if (Attrs.isFields(attr)) {
         const newData = data[name] ? data[name] : {}
 
         newRecord[name] = this.buildRecord(newData, attr, newRecord[name])
@@ -386,19 +388,19 @@ export default class Repo {
         return
       }
 
-      if (attr.type === AttrType.Attr) {
+      if (attr.type === AttrTypes.Attr) {
         newRecord[name] = attr.value
 
         return
       }
 
-      if (attr.type === AttrType.HasOne || attr.type === AttrType.BelongsTo) {
+      if (attr.type === AttrTypes.HasOne || attr.type === AttrTypes.BelongsTo) {
         newRecord[name] = null
 
         return
       }
 
-      if (attr.type === AttrType.HasMany || attr.type === AttrType.HasManyBy) {
+      if (attr.type === AttrTypes.HasMany || attr.type === AttrTypes.HasManyBy) {
         newRecord[name] = []
 
         return
@@ -491,7 +493,7 @@ export default class Repo {
       const name = relation.name.split('.')[0]
       const attr = _fields[name]
 
-      if (!attr || !Attrs.isRelation(attr)) {
+      if (!attr || !Attrs.isAttribute(attr)) {
         _.forEach(_fields, (f: any, key: string) => {
           if (f[name]) {
             record[key] = this.loadRelations(base, _load, record[key], f)
@@ -503,29 +505,29 @@ export default class Repo {
         return record
       }
 
-      if (attr.type === AttrType.Attr) {
+      if (attr.type === AttrTypes.Attr) {
         return record
       }
 
-      if (attr.type === AttrType.HasOne) {
+      if (attr.type === AttrTypes.HasOne) {
         record[name] = this.loadHasOneRelation(base, attr, relation)
 
         return record
       }
 
-      if (attr.type === AttrType.BelongsTo) {
+      if (attr.type === AttrTypes.BelongsTo) {
         record[name] = this.loadBelongsToRelation(base, attr, relation)
 
         return record
       }
 
-      if (attr.type === AttrType.HasMany) {
+      if (attr.type === AttrTypes.HasMany) {
         record[name] = this.loadHasManyRelation(base, attr, relation)
 
         return record
       }
 
-      if (attr.type === AttrType.HasManyBy) {
+      if (attr.type === AttrTypes.HasManyBy) {
         record[name] = this.loadHasManyByRelation(base, attr, relation)
 
         return record

@@ -3,24 +3,10 @@ import * as _ from './support/lodash'
 import Container from './connections/Container'
 import Data, { Record, Records, NormalizedData } from './Data'
 import Schema from './Schema'
-import Attributes, {
-  Type as AttrType,
-  Relations,
-  Relation,
-  Attr,
-  HasOne,
-  BelongsTo,
-  HasMany,
-  HasManyBy
-} from './Attributes'
-
-export interface Fields {
-  [field: string]: Relations
-}
-
-export interface Mutators {
-  [field: string]: Function
-}
+import Attributes, { Fields, Attribute } from './Attributes'
+import AttrTypes from './Attributes/AttrTypes'
+import { Attr } from './Attributes/Types'
+import { HasOne, BelongsTo, HasMany, HasManyBy } from './Attributes/Relations'
 
 export default class Model {
   /**
@@ -61,7 +47,7 @@ export default class Model {
    * The generic attribute. The given value will be used as default value
    * of the property when instantiating a model.
    */
-  static attr (value: any, mutator?: Function): Attr {
+  static attr (value: any, mutator?: (value: any) => any): Attr {
     return Attributes.attr(value, mutator)
   }
 
@@ -96,7 +82,7 @@ export default class Model {
   /**
    * Mutators to mutate matching fields when instantiating the model.
    */
-  static mutators (): Mutators {
+  static mutators (): { [field: string]: (value: any) => any } {
     return {}
   }
 
@@ -154,15 +140,15 @@ export default class Model {
           return
         }
 
-        if (!Attributes.isRelation(attr)) {
+        if (!Attributes.isAttribute(attr)) {
           return
         }
 
-        if (attr.type === AttrType.Attr) {
+        if (attr.type === AttrTypes.Attr) {
           return
         }
 
-        if (attr.type === AttrType.BelongsTo) {
+        if (attr.type === AttrTypes.BelongsTo) {
           const key: string = attr.foreignKey
 
           if (newRecord[key]) {
@@ -231,8 +217,8 @@ export default class Model {
         return
       }
 
-      if (Attributes.isRelation(fields[key])) {
-        (fields[key] as Relation).value = value
+      if (Attributes.isAttribute(fields[key])) {
+        (fields[key] as Attribute).value = value
 
         return
       }
@@ -248,64 +234,43 @@ export default class Model {
    */
   $build (self: any, data: Fields): void {
     _.forEach(data, (field, key) => {
-      if (!Attributes.isRelation(field)) {
-        self[key] = {}
-
-        this.$build(self[key], field)
+      if (Attributes.isAttribute(field)) {
+        self[key] = this.$generateField(field, key)
 
         return
       }
 
-      if (field.value === null) {
-        self[key] = null
-
-        return
-      }
-
-      if (field.type === AttrType.Attr) {
-        const mutator = field.mutator || this.$self().mutators()[key]
-
-        self[key] = mutator ? mutator(field.value) : field.value
-
-        return
-      }
-
-      if (_.isNumber(field.value) || _.isNumber(field.value[0])) {
-        self[key] = null
-
-        return
-      }
-
-      if (field.type === AttrType.HasOne) {
-        const model = self.$resolveRelation(field)
-
-        self[key] = field.value ? new model(field.value) : null
-
-        return
-      }
-
-      if (field.type === AttrType.BelongsTo) {
-        const model = this.$resolveRelation(field)
-
-        self[key] = field.value ? new model(field.value) : null
-
-        return
-      }
-
-      if (field.type === AttrType.HasMany) {
-        const model = this.$resolveRelation(field)
-
-        self[key] = field.value ? field.value.map((v: any) => new model(v)) : null
-
-        return
-      }
-
-      if (field.type === AttrType.HasManyBy) {
-        const model = this.$resolveRelation(field)
-
-        self[key] = field.value ? field.value.map((v: any) => new model(v)) : null
-      }
+      this.$build(self[key] = {}, field)
     })
+  }
+
+  /**
+   * Generate appropreate field value for the given attribute.
+   */
+  $generateField (attr: Attribute, key: string): any {
+    if (attr.value === null) {
+      return null
+    }
+
+    if (attr.type === AttrTypes.Attr) {
+      const mutator = attr.mutator || this.$self().mutators()[key]
+
+      return mutator ? mutator(attr.value) : attr.value
+    }
+
+    if (_.isNumber(attr.value) || _.isNumber(attr.value[0])) {
+      return null
+    }
+
+    const model = this.$resolveRelation(attr)
+
+    if (attr.type === AttrTypes.HasOne || attr.type === AttrTypes.BelongsTo) {
+      return attr.value ? new model(attr.value) : null
+    }
+
+    if (attr.type === AttrTypes.HasMany || attr.type === AttrTypes.HasManyBy) {
+      return attr.value ? attr.value.map((v: any) => new model(v)) : null
+    }
   }
 
   /**
@@ -331,15 +296,15 @@ export default class Model {
         return field[key]
       }
 
-      if (!Attributes.isRelation(attr)) {
+      if (!Attributes.isAttribute(attr)) {
         return field.$buildJson(attr, field[key])
       }
 
-      if (attr.type === AttrType.HasOne || attr.type === AttrType.BelongsTo) {
+      if (attr.type === AttrTypes.HasOne || attr.type === AttrTypes.BelongsTo) {
         return field[key].$toJson()
       }
 
-      if (attr.type === AttrType.HasMany) {
+      if (attr.type === AttrTypes.HasMany) {
         return field[key].map((model: Model) => model.$toJson())
       }
 
