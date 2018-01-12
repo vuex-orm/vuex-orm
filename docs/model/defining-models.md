@@ -1,6 +1,6 @@
 # Model: Defining Models
 
-Models are the definition of the data schema that will be handled by Vuex ORM. Every Model should extend `vuex-orm/lib/Model`.
+Models are the definition of the data schema that will be handled by Vuex ORM. Every Model should extend Vuex ORM `Model`.
 
 ```js
 import { Model } from 'vuex-orm'
@@ -19,9 +19,7 @@ class User extends Model {
 
 ## Model Conventions
 
-There are 2 required properties when you define a model.
-
-### Entity Names
+There are 2 required properties you must set when defining a model.
 
 `static entity` will be used as state name of Vuex Store.
 
@@ -33,7 +31,7 @@ class User extends Model {
 }
 ```
 
-So in this case, state for the User model will be accessible by `store.state.entities.users`. Notice there is `entities` state. This state is created by Vuex ORM automatically and all of the Model data will be stored under this namespace.
+In above example, state for the User model will be accessible by `store.state.entities.users`. Notice there is `entities` state. This state is created by Vuex ORM automatically and all of the Model data will be stored under this namespace.
 
 Overall state structure will look like this.
 
@@ -47,8 +45,6 @@ Overall state structure will look like this.
   }
 }
 ```
-
-### Fields
 
 `static fields()` should return the schema of the data.
 
@@ -84,7 +80,7 @@ user.name // 'John Doe'
 
 ### Primary Key
 
-Vuex ORM will assume that each data has a primary key named id. You may define a `static primaryKey` property to override this convention.
+Vuex ORM will assume that each data has a primary key named `id`. You may define a `static primaryKey` property to override this convention.
 
 ```js
 import { Model } from 'vuex-orm'

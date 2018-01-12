@@ -47,9 +47,9 @@
     }
   }
 
-  const user = new User({ username: 'jd', name: 'John Doe' })
+  const user = new User({ username: 'john-doe', name: 'John Doe' })
 
   user.$id()
 
-  // 'jd'
+  // 'john-doe'
   ```

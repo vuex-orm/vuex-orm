@@ -1,6 +1,6 @@
 # Plugins
 
-You may add additional feature to the Vuex ORM through plugins. Plugins usually add global-level functionality to Vuex ORM. Vuex ORM plugin workd very similer to [Vue Plugin](https://vuex.vuejs.org/en/plugins.html).
+You may add additional features to the Vuex ORM through plugins. Plugins usually add global-level functionality to Vuex ORM. Vuex ORM plugin works very similar to [Vue Plugin](https://vuex.vuejs.org/en/plugins.html).
 
 ## Writing a Plugin
 
@@ -25,7 +25,7 @@ const plugin = {
 }
 ```
 
-### Components
+### Extendable Components
 
 Following components are included within `components` argument.
 

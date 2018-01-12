@@ -106,7 +106,7 @@ Use `install` when registering VuexORM as a plugin.
 ```js
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { install as VuexORMInstall, Database } from 'vuex-orm'
+import VuexORM from 'vuex-orm'
 import User from './User'
 import Post from './Post'
 import users from 'users'
@@ -115,7 +115,7 @@ import posts from 'posts'
 Vue.use(Vuex)
 
 // Create new instance of Database.
-const database = new Database()
+const database = new VuexORM.Database()
 
 // Register Model and Module. The First argument is the Model, and
 // second is the Module.
@@ -124,7 +124,7 @@ database.register(Post, posts)
 
 // Create Vuex Store and register database through Vuex ORM.
 const store = new Vuex.Store({
-  plugins: [VuexORMInstall(database)]
+  plugins: [VuexORM.install(database)]
 })
 
 export default store

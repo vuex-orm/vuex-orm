@@ -27,7 +27,7 @@ user.name
 // JOHN DOE
 ```
 
-## Vie Mutators Method
+## Via Mutators Method
 
 You can also define mutators in one place by creating `static mutators` method. The `mutators` method should return an object containing a function with the key of the corresponding field.
 

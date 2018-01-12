@@ -37,10 +37,14 @@ The `query` getter provides fluent API to search and fetch data from the store.
 
 ### Get All Data
 
-Use `get` method to fetch all data for the entity. The result is going to be an array containing a list of model instances.
+Use `get` or `all` method to fetch all data for the entity. The result is going to be an array containing a list of model instances.
 
 ```js
 const users = store.getters['entities/users/query']().get()
+
+// or
+
+const users = store.getters['entities/users/query']().all()
 
 // [User { id: 1, name: 'John' }, User: { id: 2, name: 'Jane' }]
 ```
@@ -56,10 +60,14 @@ const users = store.getters['entities/users/query']().get()
 
 ### Get A Single Data
 
-Use `first` method to fetch a single data for the entity.
+Use `first` or `find` method to fetch a single data for the entity.
 
 ```js
 const user = store.getters['entities/users/query']().first()
+
+// or
+
+const user = store.getters['entities/users/query']().find()
 
 // User { id: 1, name: 'John' }
 ```
@@ -185,7 +193,7 @@ You can use `with` method to load related model when querying data.
 const user = store.getters['entities/users/query']()
   .with('profile')
   .with('posts')
-  .first(1)
+  .find(1)
 
 /*
   User {
@@ -213,7 +221,7 @@ You can load nested relation with dot syntax.
 ```js
 const user = store.getters['entities/users/query']()
   .with('posts.comments')
-  .first(1)
+  .find(1)
 
 /*
   User {
@@ -254,7 +262,7 @@ To filter the result of relation loaded with `with` method, you can do so by pas
 ```js
 const user = store.getters['entities/users/query']().with('posts', (query) => {
   query.where('published', true)
-}).first(1)
+}).find(1)
 
 /*
   User {
@@ -276,7 +284,7 @@ const user = store.getters['entities/users/query']().with('posts', (query) => {
   query.with('comments', (query) => {
     query.where('type', 'review')
   }).where('published', true)
-}).first(1)
+}).find(1)
 
 /*
   User {

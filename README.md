@@ -74,24 +74,43 @@ With above example, you can see that the `author` field at `Post` model has a re
 
 ### Create Your Modules
 
-Next, you might want to create Vuex Module to register with models. However, the module could be an empty object.
+Next, you might want to create Vuex Module to register with models. Modules are just simple [Vuex Module](https://vuex.vuejs.org/en/modules.html) that correspond to the Models. Vuex ORM uses this module to interact with Vuex Store.
+
+Vuex ORM is going to add any necessary states, getters, actions, and mutations, so you do not have to add anything to the modules, but if you want you can. When you do, just treat them as standard Vuex Module.
 
 ```js
-// users module
+// The users module. If you do not need any specific features, you can
+// leave it as an empty object.
 export default {}
 
-// posts module
-export default {}
+// The posts module. You can add any additional things you want.
+export default {
+  state: {
+    fetched: false
+  },
+
+  actions: {
+    fetch ({ commit }) {
+      commit('fetch')
+    }
+  },
+
+  mutations: {
+    fetch (state) {
+      state.fetched = true
+    }
+  }
+}
 ```
 
 ### Register Models and Modules to the Vuex Store
 
-Now it is time for you to register models and modules to the Vuex. To do so, you first have to register models to the Database and then register the database to Vuex Store as Vuex plugin.
+Now it is time for you to register models and modules to the Vuex. To do so, you first have to register models to the Database and then register the database to Vuex Store as Vuex plugin using VuexORM's `install` method.
 
 ```js
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { install as VuexORMInstall, Database } from 'vuex-orm'
+import VuexORM from 'vuex-orm'
 import User from './User'
 import Post from './Post'
 import users from 'users'
@@ -99,13 +118,17 @@ import posts from 'posts'
 
 Vue.use(Vuex)
 
-const database = new Database()
+// Create new instance of Database.
+const database = new VuexORM.Database()
 
+// Register Model and Module. The First argument is the Model, and
+// second is the Module.
 database.register(User, users)
 database.register(Post, posts)
 
+// Create Vuex Store and register database through Vuex ORM.
 const store = new Vuex.Store({
-  plugins: [VuexORMInstall(database)]
+  plugins: [VuexORM.install(database)]
 })
 
 export default store
@@ -142,7 +165,7 @@ With above action, Vuex ORM creates the following schema at Vuex Store.
 {
   posts: {
     data: {
-      1: {
+      '1': {
         id: 1,
         user_id: 1,
         title: 'Hello, world!',
@@ -154,7 +177,7 @@ With above action, Vuex ORM creates the following schema at Vuex Store.
 
   users: {
     data: {
-      1: {
+      '1': {
         id: 1,
         name: 'John Doe',
         email: 'john@example.com'
@@ -178,7 +201,7 @@ store.state.entities.users.data[1].name  // <- 'John Doe'
 However, Vuex ORM provides a way to query, and fetch data in an organized way through Vuex Getters.
 
 ```js
-// Fetch all post records. The result will be wrapped with Post model!
+// Fetch all post records. The result will be the instance of Post model!
 store.getters['entities/posts/all']()
 
 // [
@@ -202,7 +225,7 @@ store.getters['entities/posts/query']().with('author').first(1)
 // }
 ```
 
-Cool right? To get t know more about Vuex ORM, please [see the documentation](https://revolver-app.gitbooks.io/vuex-orm)
+Cool right? To get to know more about Vuex ORM, please [see the documentation](https://revolver-app.gitbooks.io/vuex-orm)
 
 ## Contribution
 

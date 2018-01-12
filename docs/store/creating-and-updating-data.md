@@ -12,7 +12,7 @@ store.dispatch('entities/create', { entity: 'users', data: { ... } })
 
 ## Creating
 
-### Create
+You can use `create` and `insert` method to add data to Vuex ORM.
 
 The `create` method is going to replace all existing data in store and create fresh new data.
 
@@ -22,13 +22,13 @@ The `create` method is going to replace all existing data in store and create fr
   entities: {
     users: {
       data: {
-        "2": { id: 2, name: 'Jane' }
+        '2': { id: 2, name: 'Jane' }
       }
     }
   }
 }
 
-// `create` is going to replace all with new one.
+// `create` is going to replace all existing data with the new one.
 store.dispatch('entities/users/create', {
   data: { id: 1, name: 'John' }
 })
@@ -38,7 +38,7 @@ store.dispatch('entities/users/create', {
   entities: {
     users: {
       data: {
-        "1": { id: 1, name: 'John' }
+        '1': { id: 1, name: 'John' }
       }
     }
   }
@@ -57,7 +57,7 @@ The `insert` method is going to insert data to the store while keeping existing 
   entities: {
     users: {
       data: {
-        "2": { id: 2, name: 'Jane' }
+        '2': { id: 2, name: 'Jane' }
       }
     }
   }
@@ -76,8 +76,8 @@ store.dispatch('entities/users/insert', {
   entities: {
     users: {
       data: {
-        "1": { id: 1, name: 'John' },
-        "2": { id: 2, name: 'Jane' }
+        '1': { id: 1, name: 'John' },
+        '2': { id: 2, name: 'Jane' }
       }
     }
   }
@@ -99,8 +99,8 @@ The `update` action updates data in the Store. `update` action takes `where` con
 {
   entities: {
     users: {
-      "1": { id: 1, name: 'John', age: 20 },
-      "2": { id: 2, name: 'Jane', age: 30 }
+      '1': { id: 1, name: 'John', age: 20 },
+      '2': { id: 2, name: 'Jane', age: 30 }
     }
   }
 }
@@ -115,8 +115,8 @@ store.dispatch('entities/users/update', {
 {
   entities: {
     users: {
-      "1": { id: 1, name: 'John', age: 20 },
-      "2": { id: 2, name: 'Jane', age: 24 }
+      '1': { id: 1, name: 'John', age: 20 },
+      '2': { id: 2, name: 'Jane', age: 24 }
     }
   }
 }
@@ -139,7 +139,7 @@ store.dispatch('entities/users/update', {
 // And this is same too.
 store.dispatch('entities/users/update', {
   where (record) {
-    return record === 2
+    return record.id === 2
   },
 
   data: { age: 24 }
@@ -155,9 +155,9 @@ When specifying `where` condition by a closure, it is possible to update multipl
 {
   entities: {
     users: {
-      "1": { id: 1, role: 'user', active: true },
-      "2": { id: 2, role: 'user', active: true },
-      "3": { id: 3, role: 'admin', active: true }
+      '1': { id: 1, role: 'user', active: true },
+      '2': { id: 2, role: 'user', active: true },
+      '3': { id: 3, role: 'admin', active: true }
     }
   }
 }
@@ -175,9 +175,9 @@ store.dispatch('entities/users/update', {
 {
   entities: {
     users: {
-      "1": { id: 1, role: 'user', active: false },
-      "2": { id: 2, role: 'user', active: false },
-      "3": { id: 3, role: 'admin', active: true }
+      '1': { id: 1, role: 'user', active: false },
+      '2': { id: 2, role: 'user', active: false },
+      '3': { id: 3, role: 'admin', active: true }
     }
   }
 }

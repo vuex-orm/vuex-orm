@@ -59,6 +59,8 @@ const post = [
 ]
 ```
 
+See there are lots of `author` fields and some of them are the exact same authors. If you save this data to the store as is, it's going to be very hard to update those authors or comments.
+
 When you store above posts data using Vuex ORM, the look of the Vuex Store State is going to be as below.
 
 ```js
@@ -138,7 +140,7 @@ store.dispatch('entities/posts/create', { data: posts })
 }
 ```
 
-Then you can fetch these data using Vuex Getters.
+See how each data is decoupled and deduplicated. Then you can fetch these data using Vuex Getters. These getters are also built in by Vuex ORM.
 
 ```js
 // Fetch only posts.
