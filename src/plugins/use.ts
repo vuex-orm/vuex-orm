@@ -1,9 +1,11 @@
 import Model from '../Model'
 import Repo from '../Repo'
+import Query from '../Query'
 
 export interface Components {
   Model: typeof Model
   Repo: typeof Repo
+  Query: typeof Query
 }
 
 export interface Plugin {
@@ -14,5 +16,5 @@ export interface Plugin {
 export type Use = (plugin: Plugin) => void
 
 export default function (plugin: Plugin, options: { [key: string]: any } = {}): void {
-  plugin.install({ Model, Repo }, options)
+  plugin.install({ Model, Repo, Query }, options)
 }

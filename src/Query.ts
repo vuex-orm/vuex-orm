@@ -27,11 +27,6 @@ export interface Orders {
 
 export default class Query {
   /**
-   * @protected records store query instance records for accessing and manipulation during query chain
-   */
-  protected records: Records
-
-  /**
    * The Vuex Store State. This is the target where query will perform
    * CRUD actions.
    */
@@ -51,6 +46,11 @@ export default class Query {
    * The data of the entity.
    */
   protected entity: EntityState
+
+  /**
+   * The records that have been processed.
+   */
+  protected records: Records
 
   /**
    * The where constraints for the query.
@@ -90,9 +90,8 @@ export default class Query {
    */
   get (): Collection {
     this.process()
-    const records: Records = this.records
 
-    return this.collect(records)
+    return this.collect(this.records)
   }
 
   /**
@@ -100,17 +99,16 @@ export default class Query {
    */
   first (id?: number | string): Item {
     this.process()
-    let records: Records = this.records
 
     if (_.isEmpty(this.records)) {
       return null
     }
 
     if (id !== undefined) {
-      return records[id] ? this.item(records[id]) : null
+      return this.records[id] ? this.item(this.records[id]) : null
     }
 
-    const sortedRecord = this.sortByOrders(records)
+    const sortedRecord = this.sortByOrders(this.records)
 
     return this.item(sortedRecord[0])
   }
@@ -153,18 +151,14 @@ export default class Query {
    * Process the query and filter data.
    */
   process (): void {
-    // First, fetch all records of the entity.
-    let records: Records = this.records
-
-    // If the entity is empty, there's nothing we can do so lets return
-    // data as is and exit immediately.
-    if (_.isEmpty(records)) {
+    // If the records is empty, there's nothing we can do so lets
+    // return immediately.
+    if (_.isEmpty(this.records)) {
       return
     }
 
     // Now since we have the records, lets check if the where clause is
-    // registered. If not, there is nothing we need to do so just
-    // return all data.
+    // registered. If not, there is nothing we need to do so just exit.
     if (_.isEmpty(this.wheres)) {
       return
     }

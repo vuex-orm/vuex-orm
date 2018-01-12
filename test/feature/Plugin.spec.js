@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexORM from 'app'
 import Model from 'app/Model'
+import Query from 'app/Query'
 
 class User extends Model {
   static entity = 'users'
@@ -74,5 +75,31 @@ describe('Plugin', () => {
     const repo = store.getters['entities/users/query']()
 
     expect(repo.instanceMethod()).toBe('Hello, world!')
+  })
+
+  it('add additional feature to the Query', async () => {
+    const plugin = {
+      install (components) {
+        components.Repo.prototype.newQuery = function () {
+          return new Query(this.state, this.name, this.primaryKey)
+        }
+
+        components.Query.prototype.instanceMethod = function () {
+          return 'Hello, world!'
+        }
+      }
+    }
+
+    VuexORM.use(plugin)
+
+    const store = new Vuex.Store({
+      plugins: [VuexORM.install(database)]
+    })
+
+    await store.dispatch('entities/users/create', { data: { id: 1, name: 'John' } })
+
+    const repo = store.getters['entities/users/query']()
+
+    expect(repo.newQuery().instanceMethod()).toBe('Hello, world!')
   })
 })
