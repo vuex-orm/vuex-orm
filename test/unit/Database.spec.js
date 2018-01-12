@@ -12,6 +12,7 @@ class User extends Model {
 
 class Post extends Model {
   static entity = 'posts'
+  static primaryKey = 'customId'
 }
 
 const users = { actions: {} }
@@ -48,14 +49,14 @@ describe('Database', () => {
       modules: {
         users: {
           namespaced: true,
-          state: { $connection: 'entities', $name: 'users', data: {} },
+          state: { $connection: 'entities', $name: 'users', $primaryKey: 'id', data: {} },
           getters: subGetters,
           actions: subActions,
           mutations: {}
         },
         posts: {
           namespaced: true,
-          state: { $connection: 'entities', $name: 'posts', data: {} },
+          state: { $connection: 'entities', $name: 'posts', $primaryKey: 'customId', data: {} },
           getters: subGetters,
           actions: subActions,
           mutations: {}

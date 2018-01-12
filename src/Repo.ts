@@ -36,14 +36,14 @@ export default class Repo {
   protected state: State
 
   /**
-   * The entity being queried.
-   */
-  protected entity: typeof Model
-
-  /**
    * The name of the entity.
    */
   protected name: string
+
+  /**
+   * The model of the entity.
+   */
+  protected entity: typeof Model
 
   /**
    * Whether to wrap returing record with class or to return as plain object.
@@ -63,7 +63,7 @@ export default class Repo {
     this.name = entity
     this.entity = this.model(entity)
     this.wrap = wrap
-    this.query = new Query(state, entity, this.primaryKey())
+    this.query = new Query(state, entity)
   }
 
   /**
@@ -299,7 +299,7 @@ export default class Repo {
   addHasConstraint (name: string, constraint: number | string | Constraint | null = null, count?: number, existence: boolean = true): this {
     const id = this.primaryKey()
     const ids: any[] = []
-    const items = (new Query(this.state, this.name, id)).get()
+    const items = (new Query(this.state, this.name)).get()
 
     _.forEach(items, (item) => {
       this.hasRelation(item, name, constraint, count) === existence && ids.push(item[id])
@@ -343,7 +343,7 @@ export default class Repo {
     _.forEach(normalizedData, (data, entity) => {
       const filledData = _.mapValues(data, record => this.fill(record, entity))
 
-      entity === this.name ? (this.query as any)[method](filledData) : (new Query(this.state, entity, this.primaryKey()) as any)[method](filledData)
+      entity === this.name ? (this.query as any)[method](filledData) : (new Query(this.state, entity) as any)[method](filledData)
     })
   }
 

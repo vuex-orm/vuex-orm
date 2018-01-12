@@ -1,5 +1,5 @@
 import * as _ from './support/lodash'
-import { Record, Records } from './Data'
+import { Record } from './Data'
 import { State, EntityState } from './Module'
 
 export type Item = Record | null
@@ -43,14 +43,14 @@ export default class Query {
   protected primaryKey: string
 
   /**
-   * The data of the entity.
+   * The Vuex Store State for of the entity.
    */
   protected entity: EntityState
 
   /**
    * The records that have been processed.
    */
-  protected records: Records
+  protected records: Collection = []
 
   /**
    * The where constraints for the query.
@@ -77,12 +77,12 @@ export default class Query {
   /**
    * Create a new query instance.
    */
-  constructor (state: State, name: string, primaryKey: string) {
+  constructor (state: State, name: string) {
     this.state = state
     this.name = name
-    this.primaryKey = primaryKey
     this.entity = state[name]
-    this.records = state[name].data
+    this.primaryKey = state[name].$primaryKey || 'id'
+    this.records = _.map(state[name].data, (record: Record) => record)
   }
 
   /**
@@ -91,7 +91,7 @@ export default class Query {
   get (): Collection {
     this.process()
 
-    return this.collect(this.records)
+    return this.collect()
   }
 
   /**
@@ -105,12 +105,37 @@ export default class Query {
     }
 
     if (id !== undefined) {
-      return this.records[id] ? this.item(this.records[id]) : null
+      return this.item(_.find(this.records, [this.primaryKey, id]))
     }
 
-    const sortedRecord = this.sortByOrders(this.records)
+    return this.item(this.records[0])
+  }
 
-    return this.item(sortedRecord[0])
+  /**
+   * Process the query and filter data.
+   */
+  process (): void {
+    // If the where clause is registered, lets filter the records beased on it.
+    if (!_.isEmpty(this.wheres)) {
+      this.selectByWheres()
+    }
+
+    // Next, lets sort the data if orderBy is registred.
+    if (!_.isEmpty(this.orders)) {
+      this.sortByOrders()
+    }
+
+    // Finally, slice the record by limit and offset.
+    this.records = _.slice(this.records, this._offset, this._offset + this._limit)
+  }
+
+  /**
+   * Add a and where clause to the query.
+   */
+  where (field: any, value?: any): this {
+    this.wheres.push({ field, value, boolean: 'and' })
+
+    return this
   }
 
   /**
@@ -145,35 +170,6 @@ export default class Query {
     this.entity.data = _.mapValues(this.entity.data, (record) => {
       return condition(record) ? { ...record, ...data } : record
     })
-  }
-
-  /**
-   * Process the query and filter data.
-   */
-  process (): void {
-    // If the records is empty, there's nothing we can do so lets
-    // return immediately.
-    if (_.isEmpty(this.records)) {
-      return
-    }
-
-    // Now since we have the records, lets check if the where clause is
-    // registered. If not, there is nothing we need to do so just exit.
-    if (_.isEmpty(this.wheres)) {
-      return
-    }
-
-    // OK so we do have where clause. Lets find specific data user wants.
-    this.selectByWheres()
-  }
-
-  /**
-   * Add a and where clause to the query.
-   */
-  where (field: any, value?: any): this {
-    this.wheres.push({ field, value, boolean: 'and' })
-
-    return this
   }
 
   /**
@@ -244,25 +240,25 @@ export default class Query {
   /**
    * Create a collection (array) from given records.
    */
-  collect (records: Records): Collection {
-    return _.isEmpty(records) ? [] : _.slice(this.sortByOrders(records), this._offset, this._offset + this._limit)
+  collect (): Collection {
+    return !_.isEmpty(this.records) ? this.records : []
   }
 
   /**
    * Filter the given data by registered where clause.
    */
   selectByWheres (): void {
-    this.records = _.pickBy(this.records, (record) => this.whereOnRecord(record)) as any
+    this.records = this.records.filter(record => this.whereOnRecord(record))
   }
 
   /**
    * Sort the given data by registered orders.
    */
-  sortByOrders (records: Records): Record[] {
+  sortByOrders (): void {
     const keys = _.map(this.orders, 'field')
     const directions = _.map(this.orders, 'direction')
 
-    return _.orderBy(records, keys, directions)
+    this.records = _.orderBy(this.records, keys, directions)
   }
 
   /**
@@ -291,7 +287,7 @@ export default class Query {
     return (where: any) => {
       // Function with Record and Query as argument.
       if (_.isFunction(where.field)) {
-        const query = new Query(this.state, this.name, this.primaryKey)
+        const query = new Query(this.state, this.name)
         const result = where.field(record, query)
 
         if (typeof result === 'boolean') {
