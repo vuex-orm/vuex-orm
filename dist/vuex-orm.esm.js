@@ -1,22 +1,23 @@
 /**
- * A specialized version of `_.forEach` for arrays without support for
+ * A specialized version of `_.every` for arrays without support for
  * iteratee shorthands.
  *
  * @private
  * @param {Array} [array] The array to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array} Returns `array`.
+ * @param {Function} predicate The function invoked per iteration.
+ * @returns {boolean} Returns `true` if all elements pass the predicate check,
+ *  else `false`.
  */
-function arrayEach(array, iteratee) {
+function arrayEvery(array, predicate) {
   var index = -1,
       length = array == null ? 0 : array.length;
 
   while (++index < length) {
-    if (iteratee(array[index], index, array) === false) {
-      break;
+    if (!predicate(array[index], index, array)) {
+      return false;
     }
   }
-  return array;
+  return true;
 }
 
 /**
@@ -88,20 +89,20 @@ var root = freeGlobal || freeSelf || Function('return this')();
 var Symbol$1 = root.Symbol;
 
 /** Used for built-in method references. */
-var objectProto$2 = Object.prototype;
+var objectProto = Object.prototype;
 
 /** Used to check objects for own properties. */
-var hasOwnProperty$2 = objectProto$2.hasOwnProperty;
+var hasOwnProperty = objectProto.hasOwnProperty;
 
 /**
  * Used to resolve the
  * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
  * of values.
  */
-var nativeObjectToString = objectProto$2.toString;
+var nativeObjectToString = objectProto.toString;
 
 /** Built-in value references. */
-var symToStringTag$1 = Symbol$1 ? Symbol$1.toStringTag : undefined;
+var symToStringTag = Symbol$1 ? Symbol$1.toStringTag : undefined;
 
 /**
  * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
@@ -111,34 +112,34 @@ var symToStringTag$1 = Symbol$1 ? Symbol$1.toStringTag : undefined;
  * @returns {string} Returns the raw `toStringTag`.
  */
 function getRawTag(value) {
-  var isOwn = hasOwnProperty$2.call(value, symToStringTag$1),
-      tag = value[symToStringTag$1];
+  var isOwn = hasOwnProperty.call(value, symToStringTag),
+      tag = value[symToStringTag];
 
   try {
-    value[symToStringTag$1] = undefined;
+    value[symToStringTag] = undefined;
     var unmasked = true;
   } catch (e) {}
 
   var result = nativeObjectToString.call(value);
   if (unmasked) {
     if (isOwn) {
-      value[symToStringTag$1] = tag;
+      value[symToStringTag] = tag;
     } else {
-      delete value[symToStringTag$1];
+      delete value[symToStringTag];
     }
   }
   return result;
 }
 
 /** Used for built-in method references. */
-var objectProto$3 = Object.prototype;
+var objectProto$1 = Object.prototype;
 
 /**
  * Used to resolve the
  * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
  * of values.
  */
-var nativeObjectToString$1 = objectProto$3.toString;
+var nativeObjectToString$1 = objectProto$1.toString;
 
 /**
  * Converts `value` to a string using `Object.prototype.toString`.
@@ -156,7 +157,7 @@ var nullTag = '[object Null]';
 var undefinedTag = '[object Undefined]';
 
 /** Built-in value references. */
-var symToStringTag = Symbol$1 ? Symbol$1.toStringTag : undefined;
+var symToStringTag$1 = Symbol$1 ? Symbol$1.toStringTag : undefined;
 
 /**
  * The base implementation of `getTag` without fallbacks for buggy environments.
@@ -169,7 +170,7 @@ function baseGetTag(value) {
   if (value == null) {
     return value === undefined ? undefinedTag : nullTag;
   }
-  return (symToStringTag && symToStringTag in Object(value))
+  return (symToStringTag$1 && symToStringTag$1 in Object(value))
     ? getRawTag(value)
     : objectToString(value);
 }
@@ -217,13 +218,13 @@ function baseIsArguments(value) {
 }
 
 /** Used for built-in method references. */
-var objectProto$1 = Object.prototype;
+var objectProto$2 = Object.prototype;
 
 /** Used to check objects for own properties. */
-var hasOwnProperty$1 = objectProto$1.hasOwnProperty;
+var hasOwnProperty$1 = objectProto$2.hasOwnProperty;
 
 /** Built-in value references. */
-var propertyIsEnumerable = objectProto$1.propertyIsEnumerable;
+var propertyIsEnumerable = objectProto$2.propertyIsEnumerable;
 
 /**
  * Checks if `value` is likely an `arguments` object.
@@ -489,10 +490,10 @@ var nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray;
 var isTypedArray = nodeIsTypedArray ? baseUnary(nodeIsTypedArray) : baseIsTypedArray;
 
 /** Used for built-in method references. */
-var objectProto = Object.prototype;
+var objectProto$3 = Object.prototype;
 
 /** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
+var hasOwnProperty$2 = objectProto$3.hasOwnProperty;
 
 /**
  * Creates an array of the enumerable property names of the array-like `value`.
@@ -512,7 +513,7 @@ function arrayLikeKeys(value, inherited) {
       length = result.length;
 
   for (var key in value) {
-    if ((inherited || hasOwnProperty.call(value, key)) &&
+    if ((inherited || hasOwnProperty$2.call(value, key)) &&
         !(skipIndexes && (
            // Safari 9 has enumerable `arguments.length` in strict mode.
            key == 'length' ||
@@ -530,7 +531,7 @@ function arrayLikeKeys(value, inherited) {
 }
 
 /** Used for built-in method references. */
-var objectProto$5 = Object.prototype;
+var objectProto$4 = Object.prototype;
 
 /**
  * Checks if `value` is likely a prototype object.
@@ -541,7 +542,7 @@ var objectProto$5 = Object.prototype;
  */
 function isPrototype(value) {
   var Ctor = value && value.constructor,
-      proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto$5;
+      proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto$4;
 
   return value === proto;
 }
@@ -564,10 +565,10 @@ function overArg(func, transform) {
 var nativeKeys = overArg(Object.keys, Object);
 
 /** Used for built-in method references. */
-var objectProto$4 = Object.prototype;
+var objectProto$5 = Object.prototype;
 
 /** Used to check objects for own properties. */
-var hasOwnProperty$3 = objectProto$4.hasOwnProperty;
+var hasOwnProperty$3 = objectProto$5.hasOwnProperty;
 
 /**
  * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
@@ -765,714 +766,21 @@ function createBaseEach(eachFunc, fromRight) {
 var baseEach = createBaseEach(baseForOwn);
 
 /**
- * This method returns the first argument it receives.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Util
- * @param {*} value Any value.
- * @returns {*} Returns `value`.
- * @example
- *
- * var object = { 'a': 1 };
- *
- * console.log(_.identity(object) === object);
- * // => true
- */
-function identity(value) {
-  return value;
-}
-
-/**
- * Casts `value` to `identity` if it's not a function.
+ * The base implementation of `_.every` without support for iteratee shorthands.
  *
  * @private
- * @param {*} value The value to inspect.
- * @returns {Function} Returns cast function.
- */
-function castFunction(value) {
-  return typeof value == 'function' ? value : identity;
-}
-
-/**
- * Iterates over elements of `collection` and invokes `iteratee` for each element.
- * The iteratee is invoked with three arguments: (value, index|key, collection).
- * Iteratee functions may exit iteration early by explicitly returning `false`.
- *
- * **Note:** As with other "Collections" methods, objects with a "length"
- * property are iterated like arrays. To avoid this behavior use `_.forIn`
- * or `_.forOwn` for object iteration.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @alias each
- * @category Collection
  * @param {Array|Object} collection The collection to iterate over.
- * @param {Function} [iteratee=_.identity] The function invoked per iteration.
- * @returns {Array|Object} Returns `collection`.
- * @see _.forEachRight
- * @example
- *
- * _.forEach([1, 2], function(value) {
- *   console.log(value);
- * });
- * // => Logs `1` then `2`.
- *
- * _.forEach({ 'a': 1, 'b': 2 }, function(value, key) {
- *   console.log(key);
- * });
- * // => Logs 'a' then 'b' (iteration order is not guaranteed).
- */
-function forEach(collection, iteratee) {
-  var func = isArray(collection) ? arrayEach : baseEach;
-  return func(collection, castFunction(iteratee));
-}
-
-/**
- * The base implementation of `_.findIndex` and `_.findLastIndex` without
- * support for iteratee shorthands.
- *
- * @private
- * @param {Array} array The array to inspect.
  * @param {Function} predicate The function invoked per iteration.
- * @param {number} fromIndex The index to search from.
- * @param {boolean} [fromRight] Specify iterating from right to left.
- * @returns {number} Returns the index of the matched value, else `-1`.
+ * @returns {boolean} Returns `true` if all elements pass the predicate check,
+ *  else `false`
  */
-function baseFindIndex(array, predicate, fromIndex, fromRight) {
-  var length = array.length,
-      index = fromIndex + (fromRight ? 1 : -1);
-
-  while ((fromRight ? index-- : ++index < length)) {
-    if (predicate(array[index], index, array)) {
-      return index;
-    }
-  }
-  return -1;
-}
-
-/**
- * The base implementation of `_.isNaN` without support for number objects.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is `NaN`, else `false`.
- */
-function baseIsNaN(value) {
-  return value !== value;
-}
-
-/**
- * A specialized version of `_.indexOf` which performs strict equality
- * comparisons of values, i.e. `===`.
- *
- * @private
- * @param {Array} array The array to inspect.
- * @param {*} value The value to search for.
- * @param {number} fromIndex The index to search from.
- * @returns {number} Returns the index of the matched value, else `-1`.
- */
-function strictIndexOf(array, value, fromIndex) {
-  var index = fromIndex - 1,
-      length = array.length;
-
-  while (++index < length) {
-    if (array[index] === value) {
-      return index;
-    }
-  }
-  return -1;
-}
-
-/**
- * The base implementation of `_.indexOf` without `fromIndex` bounds checks.
- *
- * @private
- * @param {Array} array The array to inspect.
- * @param {*} value The value to search for.
- * @param {number} fromIndex The index to search from.
- * @returns {number} Returns the index of the matched value, else `-1`.
- */
-function baseIndexOf(array, value, fromIndex) {
-  return value === value
-    ? strictIndexOf(array, value, fromIndex)
-    : baseFindIndex(array, baseIsNaN, fromIndex);
-}
-
-/** `Object#toString` result references. */
-var stringTag$1 = '[object String]';
-
-/**
- * Checks if `value` is classified as a `String` primitive or object.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a string, else `false`.
- * @example
- *
- * _.isString('abc');
- * // => true
- *
- * _.isString(1);
- * // => false
- */
-function isString(value) {
-  return typeof value == 'string' ||
-    (!isArray(value) && isObjectLike(value) && baseGetTag(value) == stringTag$1);
-}
-
-/** `Object#toString` result references. */
-var symbolTag = '[object Symbol]';
-
-/**
- * Checks if `value` is classified as a `Symbol` primitive or object.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
- * @example
- *
- * _.isSymbol(Symbol.iterator);
- * // => true
- *
- * _.isSymbol('abc');
- * // => false
- */
-function isSymbol(value) {
-  return typeof value == 'symbol' ||
-    (isObjectLike(value) && baseGetTag(value) == symbolTag);
-}
-
-/** Used as references for various `Number` constants. */
-var NAN = 0 / 0;
-
-/** Used to match leading and trailing whitespace. */
-var reTrim = /^\s+|\s+$/g;
-
-/** Used to detect bad signed hexadecimal string values. */
-var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
-
-/** Used to detect binary string values. */
-var reIsBinary = /^0b[01]+$/i;
-
-/** Used to detect octal string values. */
-var reIsOctal = /^0o[0-7]+$/i;
-
-/** Built-in method references without a dependency on `root`. */
-var freeParseInt = parseInt;
-
-/**
- * Converts `value` to a number.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to process.
- * @returns {number} Returns the number.
- * @example
- *
- * _.toNumber(3.2);
- * // => 3.2
- *
- * _.toNumber(Number.MIN_VALUE);
- * // => 5e-324
- *
- * _.toNumber(Infinity);
- * // => Infinity
- *
- * _.toNumber('3.2');
- * // => 3.2
- */
-function toNumber(value) {
-  if (typeof value == 'number') {
-    return value;
-  }
-  if (isSymbol(value)) {
-    return NAN;
-  }
-  if (isObject(value)) {
-    var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
-    value = isObject(other) ? (other + '') : other;
-  }
-  if (typeof value != 'string') {
-    return value === 0 ? value : +value;
-  }
-  value = value.replace(reTrim, '');
-  var isBinary = reIsBinary.test(value);
-  return (isBinary || reIsOctal.test(value))
-    ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
-    : (reIsBadHex.test(value) ? NAN : +value);
-}
-
-/** Used as references for various `Number` constants. */
-var INFINITY = 1 / 0;
-var MAX_INTEGER = 1.7976931348623157e+308;
-
-/**
- * Converts `value` to a finite number.
- *
- * @static
- * @memberOf _
- * @since 4.12.0
- * @category Lang
- * @param {*} value The value to convert.
- * @returns {number} Returns the converted number.
- * @example
- *
- * _.toFinite(3.2);
- * // => 3.2
- *
- * _.toFinite(Number.MIN_VALUE);
- * // => 5e-324
- *
- * _.toFinite(Infinity);
- * // => 1.7976931348623157e+308
- *
- * _.toFinite('3.2');
- * // => 3.2
- */
-function toFinite(value) {
-  if (!value) {
-    return value === 0 ? value : 0;
-  }
-  value = toNumber(value);
-  if (value === INFINITY || value === -INFINITY) {
-    var sign = (value < 0 ? -1 : 1);
-    return sign * MAX_INTEGER;
-  }
-  return value === value ? value : 0;
-}
-
-/**
- * Converts `value` to an integer.
- *
- * **Note:** This method is loosely based on
- * [`ToInteger`](http://www.ecma-international.org/ecma-262/7.0/#sec-tointeger).
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to convert.
- * @returns {number} Returns the converted integer.
- * @example
- *
- * _.toInteger(3.2);
- * // => 3
- *
- * _.toInteger(Number.MIN_VALUE);
- * // => 0
- *
- * _.toInteger(Infinity);
- * // => 1.7976931348623157e+308
- *
- * _.toInteger('3.2');
- * // => 3
- */
-function toInteger(value) {
-  var result = toFinite(value),
-      remainder = result % 1;
-
-  return result === result ? (remainder ? result - remainder : result) : 0;
-}
-
-/**
- * A specialized version of `_.map` for arrays without support for iteratee
- * shorthands.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array} Returns the new mapped array.
- */
-function arrayMap(array, iteratee) {
-  var index = -1,
-      length = array == null ? 0 : array.length,
-      result = Array(length);
-
-  while (++index < length) {
-    result[index] = iteratee(array[index], index, array);
-  }
-  return result;
-}
-
-/**
- * The base implementation of `_.values` and `_.valuesIn` which creates an
- * array of `object` property values corresponding to the property names
- * of `props`.
- *
- * @private
- * @param {Object} object The object to query.
- * @param {Array} props The property names to get values for.
- * @returns {Object} Returns the array of property values.
- */
-function baseValues(object, props) {
-  return arrayMap(props, function(key) {
-    return object[key];
-  });
-}
-
-/**
- * Creates an array of the own enumerable string keyed property values of `object`.
- *
- * **Note:** Non-object values are coerced to objects.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Object
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property values.
- * @example
- *
- * function Foo() {
- *   this.a = 1;
- *   this.b = 2;
- * }
- *
- * Foo.prototype.c = 3;
- *
- * _.values(new Foo);
- * // => [1, 2] (iteration order is not guaranteed)
- *
- * _.values('hi');
- * // => ['h', 'i']
- */
-function values(object) {
-  return object == null ? [] : baseValues(object, keys(object));
-}
-
-/* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeMax = Math.max;
-
-/**
- * Checks if `value` is in `collection`. If `collection` is a string, it's
- * checked for a substring of `value`, otherwise
- * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
- * is used for equality comparisons. If `fromIndex` is negative, it's used as
- * the offset from the end of `collection`.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Collection
- * @param {Array|Object|string} collection The collection to inspect.
- * @param {*} value The value to search for.
- * @param {number} [fromIndex=0] The index to search from.
- * @param- {Object} [guard] Enables use as an iteratee for methods like `_.reduce`.
- * @returns {boolean} Returns `true` if `value` is found, else `false`.
- * @example
- *
- * _.includes([1, 2, 3], 1);
- * // => true
- *
- * _.includes([1, 2, 3], 1, 2);
- * // => false
- *
- * _.includes({ 'a': 1, 'b': 2 }, 1);
- * // => true
- *
- * _.includes('abcd', 'bc');
- * // => true
- */
-function includes(collection, value, fromIndex, guard) {
-  collection = isArrayLike(collection) ? collection : values(collection);
-  fromIndex = (fromIndex && !guard) ? toInteger(fromIndex) : 0;
-
-  var length = collection.length;
-  if (fromIndex < 0) {
-    fromIndex = nativeMax(length + fromIndex, 0);
-  }
-  return isString(collection)
-    ? (fromIndex <= length && collection.indexOf(value, fromIndex) > -1)
-    : (!!length && baseIndexOf(collection, value, fromIndex) > -1);
-}
-
-/** Used to detect overreaching core-js shims. */
-var coreJsData = root['__core-js_shared__'];
-
-/** Used to detect methods masquerading as native. */
-var maskSrcKey = (function() {
-  var uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || '');
-  return uid ? ('Symbol(src)_1.' + uid) : '';
-}());
-
-/**
- * Checks if `func` has its source masked.
- *
- * @private
- * @param {Function} func The function to check.
- * @returns {boolean} Returns `true` if `func` is masked, else `false`.
- */
-function isMasked(func) {
-  return !!maskSrcKey && (maskSrcKey in func);
-}
-
-/** Used for built-in method references. */
-var funcProto$1 = Function.prototype;
-
-/** Used to resolve the decompiled source of functions. */
-var funcToString$1 = funcProto$1.toString;
-
-/**
- * Converts `func` to its source code.
- *
- * @private
- * @param {Function} func The function to convert.
- * @returns {string} Returns the source code.
- */
-function toSource(func) {
-  if (func != null) {
-    try {
-      return funcToString$1.call(func);
-    } catch (e) {}
-    try {
-      return (func + '');
-    } catch (e) {}
-  }
-  return '';
-}
-
-/**
- * Used to match `RegExp`
- * [syntax characters](http://ecma-international.org/ecma-262/7.0/#sec-patterns).
- */
-var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
-
-/** Used to detect host constructors (Safari). */
-var reIsHostCtor = /^\[object .+?Constructor\]$/;
-
-/** Used for built-in method references. */
-var funcProto = Function.prototype;
-var objectProto$7 = Object.prototype;
-
-/** Used to resolve the decompiled source of functions. */
-var funcToString = funcProto.toString;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty$5 = objectProto$7.hasOwnProperty;
-
-/** Used to detect if a method is native. */
-var reIsNative = RegExp('^' +
-  funcToString.call(hasOwnProperty$5).replace(reRegExpChar, '\\$&')
-  .replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
-);
-
-/**
- * The base implementation of `_.isNative` without bad shim checks.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a native function,
- *  else `false`.
- */
-function baseIsNative(value) {
-  if (!isObject(value) || isMasked(value)) {
-    return false;
-  }
-  var pattern = isFunction(value) ? reIsNative : reIsHostCtor;
-  return pattern.test(toSource(value));
-}
-
-/**
- * Gets the value at `key` of `object`.
- *
- * @private
- * @param {Object} [object] The object to query.
- * @param {string} key The key of the property to get.
- * @returns {*} Returns the property value.
- */
-function getValue(object, key) {
-  return object == null ? undefined : object[key];
-}
-
-/**
- * Gets the native function at `key` of `object`.
- *
- * @private
- * @param {Object} object The object to query.
- * @param {string} key The key of the method to get.
- * @returns {*} Returns the function if it's native, else `undefined`.
- */
-function getNative(object, key) {
-  var value = getValue(object, key);
-  return baseIsNative(value) ? value : undefined;
-}
-
-/* Built-in method references that are verified to be native. */
-var DataView = getNative(root, 'DataView');
-
-/* Built-in method references that are verified to be native. */
-var Map = getNative(root, 'Map');
-
-/* Built-in method references that are verified to be native. */
-var Promise = getNative(root, 'Promise');
-
-/* Built-in method references that are verified to be native. */
-var Set = getNative(root, 'Set');
-
-/* Built-in method references that are verified to be native. */
-var WeakMap = getNative(root, 'WeakMap');
-
-/** `Object#toString` result references. */
-var mapTag$2 = '[object Map]';
-var objectTag$1 = '[object Object]';
-var promiseTag = '[object Promise]';
-var setTag$2 = '[object Set]';
-var weakMapTag$1 = '[object WeakMap]';
-
-var dataViewTag$1 = '[object DataView]';
-
-/** Used to detect maps, sets, and weakmaps. */
-var dataViewCtorString = toSource(DataView);
-var mapCtorString = toSource(Map);
-var promiseCtorString = toSource(Promise);
-var setCtorString = toSource(Set);
-var weakMapCtorString = toSource(WeakMap);
-
-/**
- * Gets the `toStringTag` of `value`.
- *
- * @private
- * @param {*} value The value to query.
- * @returns {string} Returns the `toStringTag`.
- */
-var getTag = baseGetTag;
-
-// Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
-if ((DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag$1) ||
-    (Map && getTag(new Map) != mapTag$2) ||
-    (Promise && getTag(Promise.resolve()) != promiseTag) ||
-    (Set && getTag(new Set) != setTag$2) ||
-    (WeakMap && getTag(new WeakMap) != weakMapTag$1)) {
-  getTag = function(value) {
-    var result = baseGetTag(value),
-        Ctor = result == objectTag$1 ? value.constructor : undefined,
-        ctorString = Ctor ? toSource(Ctor) : '';
-
-    if (ctorString) {
-      switch (ctorString) {
-        case dataViewCtorString: return dataViewTag$1;
-        case mapCtorString: return mapTag$2;
-        case promiseCtorString: return promiseTag;
-        case setCtorString: return setTag$2;
-        case weakMapCtorString: return weakMapTag$1;
-      }
-    }
+function baseEvery(collection, predicate) {
+  var result = true;
+  baseEach(collection, function(value, index, collection) {
+    result = !!predicate(value, index, collection);
     return result;
-  };
-}
-
-var getTag$1 = getTag;
-
-/** `Object#toString` result references. */
-var mapTag$1 = '[object Map]';
-var setTag$1 = '[object Set]';
-
-/** Used for built-in method references. */
-var objectProto$6 = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty$4 = objectProto$6.hasOwnProperty;
-
-/**
- * Checks if `value` is an empty object, collection, map, or set.
- *
- * Objects are considered empty if they have no own enumerable string keyed
- * properties.
- *
- * Array-like values such as `arguments` objects, arrays, buffers, strings, or
- * jQuery-like collections are considered empty if they have a `length` of `0`.
- * Similarly, maps and sets are considered empty if they have a `size` of `0`.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is empty, else `false`.
- * @example
- *
- * _.isEmpty(null);
- * // => true
- *
- * _.isEmpty(true);
- * // => true
- *
- * _.isEmpty(1);
- * // => true
- *
- * _.isEmpty([1, 2, 3]);
- * // => false
- *
- * _.isEmpty({ 'a': 1 });
- * // => false
- */
-function isEmpty(value) {
-  if (value == null) {
-    return true;
-  }
-  if (isArrayLike(value) &&
-      (isArray(value) || typeof value == 'string' || typeof value.splice == 'function' ||
-        isBuffer(value) || isTypedArray(value) || isArguments(value))) {
-    return !value.length;
-  }
-  var tag = getTag$1(value);
-  if (tag == mapTag$1 || tag == setTag$1) {
-    return !value.size;
-  }
-  if (isPrototype(value)) {
-    return !baseKeys(value).length;
-  }
-  for (var key in value) {
-    if (hasOwnProperty$4.call(value, key)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-/** `Object#toString` result references. */
-var numberTag$1 = '[object Number]';
-
-/**
- * Checks if `value` is classified as a `Number` primitive or object.
- *
- * **Note:** To exclude `Infinity`, `-Infinity`, and `NaN`, which are
- * classified as numbers, use the `_.isFinite` method.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a number, else `false`.
- * @example
- *
- * _.isNumber(3);
- * // => true
- *
- * _.isNumber(Number.MIN_VALUE);
- * // => true
- *
- * _.isNumber(Infinity);
- * // => true
- *
- * _.isNumber('3');
- * // => false
- */
-function isNumber(value) {
-  return typeof value == 'number' ||
-    (isObjectLike(value) && baseGetTag(value) == numberTag$1);
+  });
+  return result;
 }
 
 /**
@@ -1705,6 +1013,120 @@ function stackHas(key) {
   return this.__data__.has(key);
 }
 
+/** Used to detect overreaching core-js shims. */
+var coreJsData = root['__core-js_shared__'];
+
+/** Used to detect methods masquerading as native. */
+var maskSrcKey = (function() {
+  var uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || '');
+  return uid ? ('Symbol(src)_1.' + uid) : '';
+}());
+
+/**
+ * Checks if `func` has its source masked.
+ *
+ * @private
+ * @param {Function} func The function to check.
+ * @returns {boolean} Returns `true` if `func` is masked, else `false`.
+ */
+function isMasked(func) {
+  return !!maskSrcKey && (maskSrcKey in func);
+}
+
+/** Used for built-in method references. */
+var funcProto = Function.prototype;
+
+/** Used to resolve the decompiled source of functions. */
+var funcToString = funcProto.toString;
+
+/**
+ * Converts `func` to its source code.
+ *
+ * @private
+ * @param {Function} func The function to convert.
+ * @returns {string} Returns the source code.
+ */
+function toSource(func) {
+  if (func != null) {
+    try {
+      return funcToString.call(func);
+    } catch (e) {}
+    try {
+      return (func + '');
+    } catch (e) {}
+  }
+  return '';
+}
+
+/**
+ * Used to match `RegExp`
+ * [syntax characters](http://ecma-international.org/ecma-262/7.0/#sec-patterns).
+ */
+var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
+
+/** Used to detect host constructors (Safari). */
+var reIsHostCtor = /^\[object .+?Constructor\]$/;
+
+/** Used for built-in method references. */
+var funcProto$1 = Function.prototype;
+var objectProto$6 = Object.prototype;
+
+/** Used to resolve the decompiled source of functions. */
+var funcToString$1 = funcProto$1.toString;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty$4 = objectProto$6.hasOwnProperty;
+
+/** Used to detect if a method is native. */
+var reIsNative = RegExp('^' +
+  funcToString$1.call(hasOwnProperty$4).replace(reRegExpChar, '\\$&')
+  .replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
+);
+
+/**
+ * The base implementation of `_.isNative` without bad shim checks.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a native function,
+ *  else `false`.
+ */
+function baseIsNative(value) {
+  if (!isObject(value) || isMasked(value)) {
+    return false;
+  }
+  var pattern = isFunction(value) ? reIsNative : reIsHostCtor;
+  return pattern.test(toSource(value));
+}
+
+/**
+ * Gets the value at `key` of `object`.
+ *
+ * @private
+ * @param {Object} [object] The object to query.
+ * @param {string} key The key of the property to get.
+ * @returns {*} Returns the property value.
+ */
+function getValue(object, key) {
+  return object == null ? undefined : object[key];
+}
+
+/**
+ * Gets the native function at `key` of `object`.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @param {string} key The key of the method to get.
+ * @returns {*} Returns the function if it's native, else `undefined`.
+ */
+function getNative(object, key) {
+  var value = getValue(object, key);
+  return baseIsNative(value) ? value : undefined;
+}
+
+/* Built-in method references that are verified to be native. */
+var Map = getNative(root, 'Map');
+
 /* Built-in method references that are verified to be native. */
 var nativeCreate = getNative(Object, 'create');
 
@@ -1740,10 +1162,10 @@ function hashDelete(key) {
 var HASH_UNDEFINED = '__lodash_hash_undefined__';
 
 /** Used for built-in method references. */
-var objectProto$8 = Object.prototype;
+var objectProto$7 = Object.prototype;
 
 /** Used to check objects for own properties. */
-var hasOwnProperty$6 = objectProto$8.hasOwnProperty;
+var hasOwnProperty$5 = objectProto$7.hasOwnProperty;
 
 /**
  * Gets the hash value for `key`.
@@ -1760,14 +1182,14 @@ function hashGet(key) {
     var result = data[key];
     return result === HASH_UNDEFINED ? undefined : result;
   }
-  return hasOwnProperty$6.call(data, key) ? data[key] : undefined;
+  return hasOwnProperty$5.call(data, key) ? data[key] : undefined;
 }
 
 /** Used for built-in method references. */
-var objectProto$9 = Object.prototype;
+var objectProto$8 = Object.prototype;
 
 /** Used to check objects for own properties. */
-var hasOwnProperty$7 = objectProto$9.hasOwnProperty;
+var hasOwnProperty$6 = objectProto$8.hasOwnProperty;
 
 /**
  * Checks if a hash value for `key` exists.
@@ -1780,7 +1202,7 @@ var hasOwnProperty$7 = objectProto$9.hasOwnProperty;
  */
 function hashHas(key) {
   var data = this.__data__;
-  return nativeCreate ? (data[key] !== undefined) : hasOwnProperty$7.call(data, key);
+  return nativeCreate ? (data[key] !== undefined) : hasOwnProperty$6.call(data, key);
 }
 
 /** Used to stand-in for `undefined` hash values. */
@@ -2094,8 +1516,8 @@ function cacheHas(cache, key) {
 }
 
 /** Used to compose bitmasks for value comparisons. */
-var COMPARE_PARTIAL_FLAG$2 = 1;
-var COMPARE_UNORDERED_FLAG$1 = 2;
+var COMPARE_PARTIAL_FLAG = 1;
+var COMPARE_UNORDERED_FLAG = 2;
 
 /**
  * A specialized version of `baseIsEqualDeep` for arrays with support for
@@ -2111,7 +1533,7 @@ var COMPARE_UNORDERED_FLAG$1 = 2;
  * @returns {boolean} Returns `true` if the arrays are equivalent, else `false`.
  */
 function equalArrays(array, other, bitmask, customizer, equalFunc, stack) {
-  var isPartial = bitmask & COMPARE_PARTIAL_FLAG$2,
+  var isPartial = bitmask & COMPARE_PARTIAL_FLAG,
       arrLength = array.length,
       othLength = other.length;
 
@@ -2125,7 +1547,7 @@ function equalArrays(array, other, bitmask, customizer, equalFunc, stack) {
   }
   var index = -1,
       result = true,
-      seen = (bitmask & COMPARE_UNORDERED_FLAG$1) ? new SetCache : undefined;
+      seen = (bitmask & COMPARE_UNORDERED_FLAG) ? new SetCache : undefined;
 
   stack.set(array, other);
   stack.set(other, array);
@@ -2209,22 +1631,22 @@ function setToArray(set) {
 }
 
 /** Used to compose bitmasks for value comparisons. */
-var COMPARE_PARTIAL_FLAG$3 = 1;
-var COMPARE_UNORDERED_FLAG$2 = 2;
+var COMPARE_PARTIAL_FLAG$1 = 1;
+var COMPARE_UNORDERED_FLAG$1 = 2;
 
 /** `Object#toString` result references. */
 var boolTag$1 = '[object Boolean]';
 var dateTag$1 = '[object Date]';
 var errorTag$1 = '[object Error]';
-var mapTag$3 = '[object Map]';
-var numberTag$2 = '[object Number]';
+var mapTag$1 = '[object Map]';
+var numberTag$1 = '[object Number]';
 var regexpTag$1 = '[object RegExp]';
-var setTag$3 = '[object Set]';
-var stringTag$2 = '[object String]';
-var symbolTag$1 = '[object Symbol]';
+var setTag$1 = '[object Set]';
+var stringTag$1 = '[object String]';
+var symbolTag = '[object Symbol]';
 
 var arrayBufferTag$1 = '[object ArrayBuffer]';
-var dataViewTag$2 = '[object DataView]';
+var dataViewTag$1 = '[object DataView]';
 
 /** Used to convert symbols to primitives and strings. */
 var symbolProto = Symbol$1 ? Symbol$1.prototype : undefined;
@@ -2249,7 +1671,7 @@ var symbolValueOf = symbolProto ? symbolProto.valueOf : undefined;
  */
 function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack) {
   switch (tag) {
-    case dataViewTag$2:
+    case dataViewTag$1:
       if ((object.byteLength != other.byteLength) ||
           (object.byteOffset != other.byteOffset)) {
         return false;
@@ -2266,7 +1688,7 @@ function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack) {
 
     case boolTag$1:
     case dateTag$1:
-    case numberTag$2:
+    case numberTag$1:
       // Coerce booleans to `1` or `0` and dates to milliseconds.
       // Invalid dates are coerced to `NaN`.
       return eq(+object, +other);
@@ -2275,17 +1697,17 @@ function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack) {
       return object.name == other.name && object.message == other.message;
 
     case regexpTag$1:
-    case stringTag$2:
+    case stringTag$1:
       // Coerce regexes to strings and treat strings, primitives and objects,
       // as equal. See http://www.ecma-international.org/ecma-262/7.0/#sec-regexp.prototype.tostring
       // for more details.
       return object == (other + '');
 
-    case mapTag$3:
+    case mapTag$1:
       var convert = mapToArray;
 
-    case setTag$3:
-      var isPartial = bitmask & COMPARE_PARTIAL_FLAG$3;
+    case setTag$1:
+      var isPartial = bitmask & COMPARE_PARTIAL_FLAG$1;
       convert || (convert = setToArray);
 
       if (object.size != other.size && !isPartial) {
@@ -2296,7 +1718,7 @@ function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack) {
       if (stacked) {
         return stacked == other;
       }
-      bitmask |= COMPARE_UNORDERED_FLAG$2;
+      bitmask |= COMPARE_UNORDERED_FLAG$1;
 
       // Recursively compare objects (susceptible to call stack limits).
       stack.set(object, other);
@@ -2304,7 +1726,7 @@ function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack) {
       stack['delete'](object);
       return result;
 
-    case symbolTag$1:
+    case symbolTag:
       if (symbolValueOf) {
         return symbolValueOf.call(object) == symbolValueOf.call(other);
       }
@@ -2394,10 +1816,10 @@ function stubArray() {
 }
 
 /** Used for built-in method references. */
-var objectProto$12 = Object.prototype;
+var objectProto$9 = Object.prototype;
 
 /** Built-in value references. */
-var propertyIsEnumerable$1 = objectProto$12.propertyIsEnumerable;
+var propertyIsEnumerable$1 = objectProto$9.propertyIsEnumerable;
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeGetSymbols = Object.getOwnPropertySymbols;
@@ -2431,13 +1853,13 @@ function getAllKeys(object) {
 }
 
 /** Used to compose bitmasks for value comparisons. */
-var COMPARE_PARTIAL_FLAG$4 = 1;
+var COMPARE_PARTIAL_FLAG$2 = 1;
 
 /** Used for built-in method references. */
-var objectProto$11 = Object.prototype;
+var objectProto$10 = Object.prototype;
 
 /** Used to check objects for own properties. */
-var hasOwnProperty$9 = objectProto$11.hasOwnProperty;
+var hasOwnProperty$7 = objectProto$10.hasOwnProperty;
 
 /**
  * A specialized version of `baseIsEqualDeep` for objects with support for
@@ -2453,7 +1875,7 @@ var hasOwnProperty$9 = objectProto$11.hasOwnProperty;
  * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
  */
 function equalObjects(object, other, bitmask, customizer, equalFunc, stack) {
-  var isPartial = bitmask & COMPARE_PARTIAL_FLAG$4,
+  var isPartial = bitmask & COMPARE_PARTIAL_FLAG$2,
       objProps = getAllKeys(object),
       objLength = objProps.length,
       othProps = getAllKeys(other),
@@ -2465,7 +1887,7 @@ function equalObjects(object, other, bitmask, customizer, equalFunc, stack) {
   var index = objLength;
   while (index--) {
     var key = objProps[index];
-    if (!(isPartial ? key in other : hasOwnProperty$9.call(other, key))) {
+    if (!(isPartial ? key in other : hasOwnProperty$7.call(other, key))) {
       return false;
     }
   }
@@ -2516,8 +1938,71 @@ function equalObjects(object, other, bitmask, customizer, equalFunc, stack) {
   return result;
 }
 
+/* Built-in method references that are verified to be native. */
+var DataView = getNative(root, 'DataView');
+
+/* Built-in method references that are verified to be native. */
+var Promise = getNative(root, 'Promise');
+
+/* Built-in method references that are verified to be native. */
+var Set = getNative(root, 'Set');
+
+/* Built-in method references that are verified to be native. */
+var WeakMap = getNative(root, 'WeakMap');
+
+/** `Object#toString` result references. */
+var mapTag$2 = '[object Map]';
+var objectTag$1 = '[object Object]';
+var promiseTag = '[object Promise]';
+var setTag$2 = '[object Set]';
+var weakMapTag$1 = '[object WeakMap]';
+
+var dataViewTag$2 = '[object DataView]';
+
+/** Used to detect maps, sets, and weakmaps. */
+var dataViewCtorString = toSource(DataView);
+var mapCtorString = toSource(Map);
+var promiseCtorString = toSource(Promise);
+var setCtorString = toSource(Set);
+var weakMapCtorString = toSource(WeakMap);
+
+/**
+ * Gets the `toStringTag` of `value`.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @returns {string} Returns the `toStringTag`.
+ */
+var getTag = baseGetTag;
+
+// Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
+if ((DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag$2) ||
+    (Map && getTag(new Map) != mapTag$2) ||
+    (Promise && getTag(Promise.resolve()) != promiseTag) ||
+    (Set && getTag(new Set) != setTag$2) ||
+    (WeakMap && getTag(new WeakMap) != weakMapTag$1)) {
+  getTag = function(value) {
+    var result = baseGetTag(value),
+        Ctor = result == objectTag$1 ? value.constructor : undefined,
+        ctorString = Ctor ? toSource(Ctor) : '';
+
+    if (ctorString) {
+      switch (ctorString) {
+        case dataViewCtorString: return dataViewTag$2;
+        case mapCtorString: return mapTag$2;
+        case promiseCtorString: return promiseTag;
+        case setCtorString: return setTag$2;
+        case weakMapCtorString: return weakMapTag$1;
+      }
+    }
+    return result;
+  };
+}
+
+var getTag$1 = getTag;
+
 /** Used to compose bitmasks for value comparisons. */
-var COMPARE_PARTIAL_FLAG$1 = 1;
+var COMPARE_PARTIAL_FLAG$3 = 1;
 
 /** `Object#toString` result references. */
 var argsTag$2 = '[object Arguments]';
@@ -2525,10 +2010,10 @@ var arrayTag$1 = '[object Array]';
 var objectTag$2 = '[object Object]';
 
 /** Used for built-in method references. */
-var objectProto$10 = Object.prototype;
+var objectProto$11 = Object.prototype;
 
 /** Used to check objects for own properties. */
-var hasOwnProperty$8 = objectProto$10.hasOwnProperty;
+var hasOwnProperty$8 = objectProto$11.hasOwnProperty;
 
 /**
  * A specialized version of `baseIsEqual` for arrays and objects which performs
@@ -2570,7 +2055,7 @@ function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
       ? equalArrays(object, other, bitmask, customizer, equalFunc, stack)
       : equalByTag(object, other, objTag, bitmask, customizer, equalFunc, stack);
   }
-  if (!(bitmask & COMPARE_PARTIAL_FLAG$1)) {
+  if (!(bitmask & COMPARE_PARTIAL_FLAG$3)) {
     var objIsWrapped = objIsObj && hasOwnProperty$8.call(object, '__wrapped__'),
         othIsWrapped = othIsObj && hasOwnProperty$8.call(other, '__wrapped__');
 
@@ -2614,8 +2099,8 @@ function baseIsEqual(value, other, bitmask, customizer, stack) {
 }
 
 /** Used to compose bitmasks for value comparisons. */
-var COMPARE_PARTIAL_FLAG = 1;
-var COMPARE_UNORDERED_FLAG = 2;
+var COMPARE_PARTIAL_FLAG$4 = 1;
+var COMPARE_UNORDERED_FLAG$2 = 2;
 
 /**
  * The base implementation of `_.isMatch` without support for iteratee shorthands.
@@ -2661,7 +2146,7 @@ function baseIsMatch(object, source, matchData, customizer) {
         var result = customizer(objValue, srcValue, key, object, source, stack);
       }
       if (!(result === undefined
-            ? baseIsEqual(srcValue, objValue, COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG, customizer, stack)
+            ? baseIsEqual(srcValue, objValue, COMPARE_PARTIAL_FLAG$4 | COMPARE_UNORDERED_FLAG$2, customizer, stack)
             : result
           )) {
         return false;
@@ -2737,6 +2222,31 @@ function baseMatches(source) {
   return function(object) {
     return object === source || baseIsMatch(object, source, matchData);
   };
+}
+
+/** `Object#toString` result references. */
+var symbolTag$1 = '[object Symbol]';
+
+/**
+ * Checks if `value` is classified as a `Symbol` primitive or object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
+ * @example
+ *
+ * _.isSymbol(Symbol.iterator);
+ * // => true
+ *
+ * _.isSymbol('abc');
+ * // => false
+ */
+function isSymbol(value) {
+  return typeof value == 'symbol' ||
+    (isObjectLike(value) && baseGetTag(value) == symbolTag$1);
 }
 
 /** Used to match property names within property paths. */
@@ -2882,8 +2392,28 @@ var stringToPath = memoizeCapped(function(string) {
   return result;
 });
 
+/**
+ * A specialized version of `_.map` for arrays without support for iteratee
+ * shorthands.
+ *
+ * @private
+ * @param {Array} [array] The array to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array} Returns the new mapped array.
+ */
+function arrayMap(array, iteratee) {
+  var index = -1,
+      length = array == null ? 0 : array.length,
+      result = Array(length);
+
+  while (++index < length) {
+    result[index] = iteratee(array[index], index, array);
+  }
+  return result;
+}
+
 /** Used as references for various `Number` constants. */
-var INFINITY$1 = 1 / 0;
+var INFINITY = 1 / 0;
 
 /** Used to convert symbols to primitives and strings. */
 var symbolProto$1 = Symbol$1 ? Symbol$1.prototype : undefined;
@@ -2910,7 +2440,7 @@ function baseToString(value) {
     return symbolToString ? symbolToString.call(value) : '';
   }
   var result = (value + '');
-  return (result == '0' && (1 / value) == -INFINITY$1) ? '-0' : result;
+  return (result == '0' && (1 / value) == -INFINITY) ? '-0' : result;
 }
 
 /**
@@ -2954,7 +2484,7 @@ function castPath(value, object) {
 }
 
 /** Used as references for various `Number` constants. */
-var INFINITY$2 = 1 / 0;
+var INFINITY$1 = 1 / 0;
 
 /**
  * Converts `value` to a string key if it's not a string or symbol.
@@ -2968,7 +2498,7 @@ function toKey(value) {
     return value;
   }
   var result = (value + '');
-  return (result == '0' && (1 / value) == -INFINITY$2) ? '-0' : result;
+  return (result == '0' && (1 / value) == -INFINITY$1) ? '-0' : result;
 }
 
 /**
@@ -3119,6 +2649,26 @@ function baseMatchesProperty(path, srcValue) {
 }
 
 /**
+ * This method returns the first argument it receives.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Util
+ * @param {*} value Any value.
+ * @returns {*} Returns `value`.
+ * @example
+ *
+ * var object = { 'a': 1 };
+ *
+ * console.log(_.identity(object) === object);
+ * // => true
+ */
+function identity(value) {
+  return value;
+}
+
+/**
  * The base implementation of `_.property` without support for deep paths.
  *
  * @private
@@ -3195,6 +2745,800 @@ function baseIteratee(value) {
 }
 
 /**
+ * Checks if the given arguments are from an iteratee call.
+ *
+ * @private
+ * @param {*} value The potential iteratee value argument.
+ * @param {*} index The potential iteratee index or key argument.
+ * @param {*} object The potential iteratee object argument.
+ * @returns {boolean} Returns `true` if the arguments are from an iteratee call,
+ *  else `false`.
+ */
+function isIterateeCall(value, index, object) {
+  if (!isObject(object)) {
+    return false;
+  }
+  var type = typeof index;
+  if (type == 'number'
+        ? (isArrayLike(object) && isIndex(index, object.length))
+        : (type == 'string' && index in object)
+      ) {
+    return eq(object[index], value);
+  }
+  return false;
+}
+
+/**
+ * Checks if `predicate` returns truthy for **all** elements of `collection`.
+ * Iteration is stopped once `predicate` returns falsey. The predicate is
+ * invoked with three arguments: (value, index|key, collection).
+ *
+ * **Note:** This method returns `true` for
+ * [empty collections](https://en.wikipedia.org/wiki/Empty_set) because
+ * [everything is true](https://en.wikipedia.org/wiki/Vacuous_truth) of
+ * elements of empty collections.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Collection
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} [predicate=_.identity] The function invoked per iteration.
+ * @param- {Object} [guard] Enables use as an iteratee for methods like `_.map`.
+ * @returns {boolean} Returns `true` if all elements pass the predicate check,
+ *  else `false`.
+ * @example
+ *
+ * _.every([true, 1, null, 'yes'], Boolean);
+ * // => false
+ *
+ * var users = [
+ *   { 'user': 'barney', 'age': 36, 'active': false },
+ *   { 'user': 'fred',   'age': 40, 'active': false }
+ * ];
+ *
+ * // The `_.matches` iteratee shorthand.
+ * _.every(users, { 'user': 'barney', 'active': false });
+ * // => false
+ *
+ * // The `_.matchesProperty` iteratee shorthand.
+ * _.every(users, ['active', false]);
+ * // => true
+ *
+ * // The `_.property` iteratee shorthand.
+ * _.every(users, 'active');
+ * // => false
+ */
+function every(collection, predicate, guard) {
+  var func = isArray(collection) ? arrayEvery : baseEvery;
+  if (guard && isIterateeCall(collection, predicate, guard)) {
+    predicate = undefined;
+  }
+  return func(collection, baseIteratee(predicate, 3));
+}
+
+/**
+ * Creates a `_.find` or `_.findLast` function.
+ *
+ * @private
+ * @param {Function} findIndexFunc The function to find the collection index.
+ * @returns {Function} Returns the new find function.
+ */
+function createFind(findIndexFunc) {
+  return function(collection, predicate, fromIndex) {
+    var iterable = Object(collection);
+    if (!isArrayLike(collection)) {
+      var iteratee = baseIteratee(predicate, 3);
+      collection = keys(collection);
+      predicate = function(key) { return iteratee(iterable[key], key, iterable); };
+    }
+    var index = findIndexFunc(collection, predicate, fromIndex);
+    return index > -1 ? iterable[iteratee ? collection[index] : index] : undefined;
+  };
+}
+
+/**
+ * The base implementation of `_.findIndex` and `_.findLastIndex` without
+ * support for iteratee shorthands.
+ *
+ * @private
+ * @param {Array} array The array to inspect.
+ * @param {Function} predicate The function invoked per iteration.
+ * @param {number} fromIndex The index to search from.
+ * @param {boolean} [fromRight] Specify iterating from right to left.
+ * @returns {number} Returns the index of the matched value, else `-1`.
+ */
+function baseFindIndex(array, predicate, fromIndex, fromRight) {
+  var length = array.length,
+      index = fromIndex + (fromRight ? 1 : -1);
+
+  while ((fromRight ? index-- : ++index < length)) {
+    if (predicate(array[index], index, array)) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+/** Used as references for various `Number` constants. */
+var NAN = 0 / 0;
+
+/** Used to match leading and trailing whitespace. */
+var reTrim = /^\s+|\s+$/g;
+
+/** Used to detect bad signed hexadecimal string values. */
+var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+
+/** Used to detect binary string values. */
+var reIsBinary = /^0b[01]+$/i;
+
+/** Used to detect octal string values. */
+var reIsOctal = /^0o[0-7]+$/i;
+
+/** Built-in method references without a dependency on `root`. */
+var freeParseInt = parseInt;
+
+/**
+ * Converts `value` to a number.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to process.
+ * @returns {number} Returns the number.
+ * @example
+ *
+ * _.toNumber(3.2);
+ * // => 3.2
+ *
+ * _.toNumber(Number.MIN_VALUE);
+ * // => 5e-324
+ *
+ * _.toNumber(Infinity);
+ * // => Infinity
+ *
+ * _.toNumber('3.2');
+ * // => 3.2
+ */
+function toNumber(value) {
+  if (typeof value == 'number') {
+    return value;
+  }
+  if (isSymbol(value)) {
+    return NAN;
+  }
+  if (isObject(value)) {
+    var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
+    value = isObject(other) ? (other + '') : other;
+  }
+  if (typeof value != 'string') {
+    return value === 0 ? value : +value;
+  }
+  value = value.replace(reTrim, '');
+  var isBinary = reIsBinary.test(value);
+  return (isBinary || reIsOctal.test(value))
+    ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
+    : (reIsBadHex.test(value) ? NAN : +value);
+}
+
+/** Used as references for various `Number` constants. */
+var INFINITY$2 = 1 / 0;
+var MAX_INTEGER = 1.7976931348623157e+308;
+
+/**
+ * Converts `value` to a finite number.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.12.0
+ * @category Lang
+ * @param {*} value The value to convert.
+ * @returns {number} Returns the converted number.
+ * @example
+ *
+ * _.toFinite(3.2);
+ * // => 3.2
+ *
+ * _.toFinite(Number.MIN_VALUE);
+ * // => 5e-324
+ *
+ * _.toFinite(Infinity);
+ * // => 1.7976931348623157e+308
+ *
+ * _.toFinite('3.2');
+ * // => 3.2
+ */
+function toFinite(value) {
+  if (!value) {
+    return value === 0 ? value : 0;
+  }
+  value = toNumber(value);
+  if (value === INFINITY$2 || value === -INFINITY$2) {
+    var sign = (value < 0 ? -1 : 1);
+    return sign * MAX_INTEGER;
+  }
+  return value === value ? value : 0;
+}
+
+/**
+ * Converts `value` to an integer.
+ *
+ * **Note:** This method is loosely based on
+ * [`ToInteger`](http://www.ecma-international.org/ecma-262/7.0/#sec-tointeger).
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to convert.
+ * @returns {number} Returns the converted integer.
+ * @example
+ *
+ * _.toInteger(3.2);
+ * // => 3
+ *
+ * _.toInteger(Number.MIN_VALUE);
+ * // => 0
+ *
+ * _.toInteger(Infinity);
+ * // => 1.7976931348623157e+308
+ *
+ * _.toInteger('3.2');
+ * // => 3
+ */
+function toInteger(value) {
+  var result = toFinite(value),
+      remainder = result % 1;
+
+  return result === result ? (remainder ? result - remainder : result) : 0;
+}
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeMax = Math.max;
+
+/**
+ * This method is like `_.find` except that it returns the index of the first
+ * element `predicate` returns truthy for instead of the element itself.
+ *
+ * @static
+ * @memberOf _
+ * @since 1.1.0
+ * @category Array
+ * @param {Array} array The array to inspect.
+ * @param {Function} [predicate=_.identity] The function invoked per iteration.
+ * @param {number} [fromIndex=0] The index to search from.
+ * @returns {number} Returns the index of the found element, else `-1`.
+ * @example
+ *
+ * var users = [
+ *   { 'user': 'barney',  'active': false },
+ *   { 'user': 'fred',    'active': false },
+ *   { 'user': 'pebbles', 'active': true }
+ * ];
+ *
+ * _.findIndex(users, function(o) { return o.user == 'barney'; });
+ * // => 0
+ *
+ * // The `_.matches` iteratee shorthand.
+ * _.findIndex(users, { 'user': 'fred', 'active': false });
+ * // => 1
+ *
+ * // The `_.matchesProperty` iteratee shorthand.
+ * _.findIndex(users, ['active', false]);
+ * // => 0
+ *
+ * // The `_.property` iteratee shorthand.
+ * _.findIndex(users, 'active');
+ * // => 2
+ */
+function findIndex(array, predicate, fromIndex) {
+  var length = array == null ? 0 : array.length;
+  if (!length) {
+    return -1;
+  }
+  var index = fromIndex == null ? 0 : toInteger(fromIndex);
+  if (index < 0) {
+    index = nativeMax(length + index, 0);
+  }
+  return baseFindIndex(array, baseIteratee(predicate, 3), index);
+}
+
+/**
+ * Iterates over elements of `collection`, returning the first element
+ * `predicate` returns truthy for. The predicate is invoked with three
+ * arguments: (value, index|key, collection).
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Collection
+ * @param {Array|Object} collection The collection to inspect.
+ * @param {Function} [predicate=_.identity] The function invoked per iteration.
+ * @param {number} [fromIndex=0] The index to search from.
+ * @returns {*} Returns the matched element, else `undefined`.
+ * @example
+ *
+ * var users = [
+ *   { 'user': 'barney',  'age': 36, 'active': true },
+ *   { 'user': 'fred',    'age': 40, 'active': false },
+ *   { 'user': 'pebbles', 'age': 1,  'active': true }
+ * ];
+ *
+ * _.find(users, function(o) { return o.age < 40; });
+ * // => object for 'barney'
+ *
+ * // The `_.matches` iteratee shorthand.
+ * _.find(users, { 'age': 1, 'active': true });
+ * // => object for 'pebbles'
+ *
+ * // The `_.matchesProperty` iteratee shorthand.
+ * _.find(users, ['active', false]);
+ * // => object for 'fred'
+ *
+ * // The `_.property` iteratee shorthand.
+ * _.find(users, 'active');
+ * // => object for 'barney'
+ */
+var find = createFind(findIndex);
+
+/**
+ * A specialized version of `_.forEach` for arrays without support for
+ * iteratee shorthands.
+ *
+ * @private
+ * @param {Array} [array] The array to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array} Returns `array`.
+ */
+function arrayEach(array, iteratee) {
+  var index = -1,
+      length = array == null ? 0 : array.length;
+
+  while (++index < length) {
+    if (iteratee(array[index], index, array) === false) {
+      break;
+    }
+  }
+  return array;
+}
+
+/**
+ * Casts `value` to `identity` if it's not a function.
+ *
+ * @private
+ * @param {*} value The value to inspect.
+ * @returns {Function} Returns cast function.
+ */
+function castFunction(value) {
+  return typeof value == 'function' ? value : identity;
+}
+
+/**
+ * Iterates over elements of `collection` and invokes `iteratee` for each element.
+ * The iteratee is invoked with three arguments: (value, index|key, collection).
+ * Iteratee functions may exit iteration early by explicitly returning `false`.
+ *
+ * **Note:** As with other "Collections" methods, objects with a "length"
+ * property are iterated like arrays. To avoid this behavior use `_.forIn`
+ * or `_.forOwn` for object iteration.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @alias each
+ * @category Collection
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} [iteratee=_.identity] The function invoked per iteration.
+ * @returns {Array|Object} Returns `collection`.
+ * @see _.forEachRight
+ * @example
+ *
+ * _.forEach([1, 2], function(value) {
+ *   console.log(value);
+ * });
+ * // => Logs `1` then `2`.
+ *
+ * _.forEach({ 'a': 1, 'b': 2 }, function(value, key) {
+ *   console.log(key);
+ * });
+ * // => Logs 'a' then 'b' (iteration order is not guaranteed).
+ */
+function forEach(collection, iteratee) {
+  var func = isArray(collection) ? arrayEach : baseEach;
+  return func(collection, castFunction(iteratee));
+}
+
+var defineProperty = (function() {
+  try {
+    var func = getNative(Object, 'defineProperty');
+    func({}, '', {});
+    return func;
+  } catch (e) {}
+}());
+
+/**
+ * The base implementation of `assignValue` and `assignMergeValue` without
+ * value checks.
+ *
+ * @private
+ * @param {Object} object The object to modify.
+ * @param {string} key The key of the property to assign.
+ * @param {*} value The value to assign.
+ */
+function baseAssignValue(object, key, value) {
+  if (key == '__proto__' && defineProperty) {
+    defineProperty(object, key, {
+      'configurable': true,
+      'enumerable': true,
+      'value': value,
+      'writable': true
+    });
+  } else {
+    object[key] = value;
+  }
+}
+
+/**
+ * A specialized version of `baseAggregator` for arrays.
+ *
+ * @private
+ * @param {Array} [array] The array to iterate over.
+ * @param {Function} setter The function to set `accumulator` values.
+ * @param {Function} iteratee The iteratee to transform keys.
+ * @param {Object} accumulator The initial aggregated object.
+ * @returns {Function} Returns `accumulator`.
+ */
+function arrayAggregator(array, setter, iteratee, accumulator) {
+  var index = -1,
+      length = array == null ? 0 : array.length;
+
+  while (++index < length) {
+    var value = array[index];
+    setter(accumulator, value, iteratee(value), array);
+  }
+  return accumulator;
+}
+
+/**
+ * Aggregates elements of `collection` on `accumulator` with keys transformed
+ * by `iteratee` and values set by `setter`.
+ *
+ * @private
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} setter The function to set `accumulator` values.
+ * @param {Function} iteratee The iteratee to transform keys.
+ * @param {Object} accumulator The initial aggregated object.
+ * @returns {Function} Returns `accumulator`.
+ */
+function baseAggregator(collection, setter, iteratee, accumulator) {
+  baseEach(collection, function(value, key, collection) {
+    setter(accumulator, value, iteratee(value), collection);
+  });
+  return accumulator;
+}
+
+/**
+ * Creates a function like `_.groupBy`.
+ *
+ * @private
+ * @param {Function} setter The function to set accumulator values.
+ * @param {Function} [initializer] The accumulator object initializer.
+ * @returns {Function} Returns the new aggregator function.
+ */
+function createAggregator(setter, initializer) {
+  return function(collection, iteratee) {
+    var func = isArray(collection) ? arrayAggregator : baseAggregator,
+        accumulator = initializer ? initializer() : {};
+
+    return func(collection, setter, baseIteratee(iteratee, 2), accumulator);
+  };
+}
+
+/** Used for built-in method references. */
+var objectProto$12 = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty$9 = objectProto$12.hasOwnProperty;
+
+/**
+ * Creates an object composed of keys generated from the results of running
+ * each element of `collection` thru `iteratee`. The order of grouped values
+ * is determined by the order they occur in `collection`. The corresponding
+ * value of each key is an array of elements responsible for generating the
+ * key. The iteratee is invoked with one argument: (value).
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Collection
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} [iteratee=_.identity] The iteratee to transform keys.
+ * @returns {Object} Returns the composed aggregate object.
+ * @example
+ *
+ * _.groupBy([6.1, 4.2, 6.3], Math.floor);
+ * // => { '4': [4.2], '6': [6.1, 6.3] }
+ *
+ * // The `_.property` iteratee shorthand.
+ * _.groupBy(['one', 'two', 'three'], 'length');
+ * // => { '3': ['one', 'two'], '5': ['three'] }
+ */
+var groupBy = createAggregator(function(result, value, key) {
+  if (hasOwnProperty$9.call(result, key)) {
+    result[key].push(value);
+  } else {
+    baseAssignValue(result, key, [value]);
+  }
+});
+
+/**
+ * The base implementation of `_.isNaN` without support for number objects.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is `NaN`, else `false`.
+ */
+function baseIsNaN(value) {
+  return value !== value;
+}
+
+/**
+ * A specialized version of `_.indexOf` which performs strict equality
+ * comparisons of values, i.e. `===`.
+ *
+ * @private
+ * @param {Array} array The array to inspect.
+ * @param {*} value The value to search for.
+ * @param {number} fromIndex The index to search from.
+ * @returns {number} Returns the index of the matched value, else `-1`.
+ */
+function strictIndexOf(array, value, fromIndex) {
+  var index = fromIndex - 1,
+      length = array.length;
+
+  while (++index < length) {
+    if (array[index] === value) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+/**
+ * The base implementation of `_.indexOf` without `fromIndex` bounds checks.
+ *
+ * @private
+ * @param {Array} array The array to inspect.
+ * @param {*} value The value to search for.
+ * @param {number} fromIndex The index to search from.
+ * @returns {number} Returns the index of the matched value, else `-1`.
+ */
+function baseIndexOf(array, value, fromIndex) {
+  return value === value
+    ? strictIndexOf(array, value, fromIndex)
+    : baseFindIndex(array, baseIsNaN, fromIndex);
+}
+
+/** `Object#toString` result references. */
+var stringTag$2 = '[object String]';
+
+/**
+ * Checks if `value` is classified as a `String` primitive or object.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a string, else `false`.
+ * @example
+ *
+ * _.isString('abc');
+ * // => true
+ *
+ * _.isString(1);
+ * // => false
+ */
+function isString(value) {
+  return typeof value == 'string' ||
+    (!isArray(value) && isObjectLike(value) && baseGetTag(value) == stringTag$2);
+}
+
+/**
+ * The base implementation of `_.values` and `_.valuesIn` which creates an
+ * array of `object` property values corresponding to the property names
+ * of `props`.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @param {Array} props The property names to get values for.
+ * @returns {Object} Returns the array of property values.
+ */
+function baseValues(object, props) {
+  return arrayMap(props, function(key) {
+    return object[key];
+  });
+}
+
+/**
+ * Creates an array of the own enumerable string keyed property values of `object`.
+ *
+ * **Note:** Non-object values are coerced to objects.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Object
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property values.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ *   this.b = 2;
+ * }
+ *
+ * Foo.prototype.c = 3;
+ *
+ * _.values(new Foo);
+ * // => [1, 2] (iteration order is not guaranteed)
+ *
+ * _.values('hi');
+ * // => ['h', 'i']
+ */
+function values(object) {
+  return object == null ? [] : baseValues(object, keys(object));
+}
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeMax$1 = Math.max;
+
+/**
+ * Checks if `value` is in `collection`. If `collection` is a string, it's
+ * checked for a substring of `value`, otherwise
+ * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
+ * is used for equality comparisons. If `fromIndex` is negative, it's used as
+ * the offset from the end of `collection`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Collection
+ * @param {Array|Object|string} collection The collection to inspect.
+ * @param {*} value The value to search for.
+ * @param {number} [fromIndex=0] The index to search from.
+ * @param- {Object} [guard] Enables use as an iteratee for methods like `_.reduce`.
+ * @returns {boolean} Returns `true` if `value` is found, else `false`.
+ * @example
+ *
+ * _.includes([1, 2, 3], 1);
+ * // => true
+ *
+ * _.includes([1, 2, 3], 1, 2);
+ * // => false
+ *
+ * _.includes({ 'a': 1, 'b': 2 }, 1);
+ * // => true
+ *
+ * _.includes('abcd', 'bc');
+ * // => true
+ */
+function includes(collection, value, fromIndex, guard) {
+  collection = isArrayLike(collection) ? collection : values(collection);
+  fromIndex = (fromIndex && !guard) ? toInteger(fromIndex) : 0;
+
+  var length = collection.length;
+  if (fromIndex < 0) {
+    fromIndex = nativeMax$1(length + fromIndex, 0);
+  }
+  return isString(collection)
+    ? (fromIndex <= length && collection.indexOf(value, fromIndex) > -1)
+    : (!!length && baseIndexOf(collection, value, fromIndex) > -1);
+}
+
+/** `Object#toString` result references. */
+var mapTag$3 = '[object Map]';
+var setTag$3 = '[object Set]';
+
+/** Used for built-in method references. */
+var objectProto$13 = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty$10 = objectProto$13.hasOwnProperty;
+
+/**
+ * Checks if `value` is an empty object, collection, map, or set.
+ *
+ * Objects are considered empty if they have no own enumerable string keyed
+ * properties.
+ *
+ * Array-like values such as `arguments` objects, arrays, buffers, strings, or
+ * jQuery-like collections are considered empty if they have a `length` of `0`.
+ * Similarly, maps and sets are considered empty if they have a `size` of `0`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is empty, else `false`.
+ * @example
+ *
+ * _.isEmpty(null);
+ * // => true
+ *
+ * _.isEmpty(true);
+ * // => true
+ *
+ * _.isEmpty(1);
+ * // => true
+ *
+ * _.isEmpty([1, 2, 3]);
+ * // => false
+ *
+ * _.isEmpty({ 'a': 1 });
+ * // => false
+ */
+function isEmpty(value) {
+  if (value == null) {
+    return true;
+  }
+  if (isArrayLike(value) &&
+      (isArray(value) || typeof value == 'string' || typeof value.splice == 'function' ||
+        isBuffer(value) || isTypedArray(value) || isArguments(value))) {
+    return !value.length;
+  }
+  var tag = getTag$1(value);
+  if (tag == mapTag$3 || tag == setTag$3) {
+    return !value.size;
+  }
+  if (isPrototype(value)) {
+    return !baseKeys(value).length;
+  }
+  for (var key in value) {
+    if (hasOwnProperty$10.call(value, key)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/** `Object#toString` result references. */
+var numberTag$2 = '[object Number]';
+
+/**
+ * Checks if `value` is classified as a `Number` primitive or object.
+ *
+ * **Note:** To exclude `Infinity`, `-Infinity`, and `NaN`, which are
+ * classified as numbers, use the `_.isFinite` method.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a number, else `false`.
+ * @example
+ *
+ * _.isNumber(3);
+ * // => true
+ *
+ * _.isNumber(Number.MIN_VALUE);
+ * // => true
+ *
+ * _.isNumber(Infinity);
+ * // => true
+ *
+ * _.isNumber('3');
+ * // => false
+ */
+function isNumber(value) {
+  return typeof value == 'number' ||
+    (isObjectLike(value) && baseGetTag(value) == numberTag$2);
+}
+
+/**
  * The base implementation of `_.map` without support for iteratee shorthands.
  *
  * @private
@@ -3257,36 +3601,6 @@ function baseMap(collection, iteratee) {
 function map(collection, iteratee) {
   var func = isArray(collection) ? arrayMap : baseMap;
   return func(collection, baseIteratee(iteratee, 3));
-}
-
-var defineProperty = (function() {
-  try {
-    var func = getNative(Object, 'defineProperty');
-    func({}, '', {});
-    return func;
-  } catch (e) {}
-}());
-
-/**
- * The base implementation of `assignValue` and `assignMergeValue` without
- * value checks.
- *
- * @private
- * @param {Object} object The object to modify.
- * @param {string} key The key of the property to assign.
- * @param {*} value The value to assign.
- */
-function baseAssignValue(object, key, value) {
-  if (key == '__proto__' && defineProperty) {
-    defineProperty(object, key, {
-      'configurable': true,
-      'enumerable': true,
-      'value': value,
-      'writable': true
-    });
-  } else {
-    object[key] = value;
-  }
 }
 
 /**
@@ -3495,10 +3809,10 @@ function orderBy(collection, iteratees, orders, guard) {
 }
 
 /** Used for built-in method references. */
-var objectProto$13 = Object.prototype;
+var objectProto$14 = Object.prototype;
 
 /** Used to check objects for own properties. */
-var hasOwnProperty$10 = objectProto$13.hasOwnProperty;
+var hasOwnProperty$11 = objectProto$14.hasOwnProperty;
 
 /**
  * Assigns `value` to `key` of `object` if the existing value is not equivalent
@@ -3512,7 +3826,7 @@ var hasOwnProperty$10 = objectProto$13.hasOwnProperty;
  */
 function assignValue(object, key, value) {
   var objValue = object[key];
-  if (!(hasOwnProperty$10.call(object, key) && eq(objValue, value)) ||
+  if (!(hasOwnProperty$11.call(object, key) && eq(objValue, value)) ||
       (value === undefined && !(key in object))) {
     baseAssignValue(object, key, value);
   }
@@ -3625,10 +3939,10 @@ function nativeKeysIn(object) {
 }
 
 /** Used for built-in method references. */
-var objectProto$14 = Object.prototype;
+var objectProto$15 = Object.prototype;
 
 /** Used to check objects for own properties. */
-var hasOwnProperty$11 = objectProto$14.hasOwnProperty;
+var hasOwnProperty$12 = objectProto$15.hasOwnProperty;
 
 /**
  * The base implementation of `_.keysIn` which doesn't treat sparse arrays as dense.
@@ -3645,7 +3959,7 @@ function baseKeysIn(object) {
       result = [];
 
   for (var key in object) {
-    if (!(key == 'constructor' && (isProto || !hasOwnProperty$11.call(object, key)))) {
+    if (!(key == 'constructor' && (isProto || !hasOwnProperty$12.call(object, key)))) {
       result.push(key);
     }
   }
@@ -3814,116 +4128,65 @@ function reduce(collection, iteratee, accumulator) {
 }
 
 /**
- * A specialized version of `_.every` for arrays without support for
- * iteratee shorthands.
+ * The base implementation of `_.slice` without an iteratee call guard.
  *
  * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} predicate The function invoked per iteration.
- * @returns {boolean} Returns `true` if all elements pass the predicate check,
- *  else `false`.
+ * @param {Array} array The array to slice.
+ * @param {number} [start=0] The start position.
+ * @param {number} [end=array.length] The end position.
+ * @returns {Array} Returns the slice of `array`.
  */
-function arrayEvery(array, predicate) {
+function baseSlice(array, start, end) {
   var index = -1,
-      length = array == null ? 0 : array.length;
+      length = array.length;
 
-  while (++index < length) {
-    if (!predicate(array[index], index, array)) {
-      return false;
-    }
+  if (start < 0) {
+    start = -start > length ? 0 : (length + start);
   }
-  return true;
-}
+  end = end > length ? length : end;
+  if (end < 0) {
+    end += length;
+  }
+  length = start > end ? 0 : ((end - start) >>> 0);
+  start >>>= 0;
 
-/**
- * The base implementation of `_.every` without support for iteratee shorthands.
- *
- * @private
- * @param {Array|Object} collection The collection to iterate over.
- * @param {Function} predicate The function invoked per iteration.
- * @returns {boolean} Returns `true` if all elements pass the predicate check,
- *  else `false`
- */
-function baseEvery(collection, predicate) {
-  var result = true;
-  baseEach(collection, function(value, index, collection) {
-    result = !!predicate(value, index, collection);
-    return result;
-  });
+  var result = Array(length);
+  while (++index < length) {
+    result[index] = array[index + start];
+  }
   return result;
 }
 
 /**
- * Checks if the given arguments are from an iteratee call.
+ * Creates a slice of `array` from `start` up to, but not including, `end`.
  *
- * @private
- * @param {*} value The potential iteratee value argument.
- * @param {*} index The potential iteratee index or key argument.
- * @param {*} object The potential iteratee object argument.
- * @returns {boolean} Returns `true` if the arguments are from an iteratee call,
- *  else `false`.
- */
-function isIterateeCall(value, index, object) {
-  if (!isObject(object)) {
-    return false;
-  }
-  var type = typeof index;
-  if (type == 'number'
-        ? (isArrayLike(object) && isIndex(index, object.length))
-        : (type == 'string' && index in object)
-      ) {
-    return eq(object[index], value);
-  }
-  return false;
-}
-
-/**
- * Checks if `predicate` returns truthy for **all** elements of `collection`.
- * Iteration is stopped once `predicate` returns falsey. The predicate is
- * invoked with three arguments: (value, index|key, collection).
- *
- * **Note:** This method returns `true` for
- * [empty collections](https://en.wikipedia.org/wiki/Empty_set) because
- * [everything is true](https://en.wikipedia.org/wiki/Vacuous_truth) of
- * elements of empty collections.
+ * **Note:** This method is used instead of
+ * [`Array#slice`](https://mdn.io/Array/slice) to ensure dense arrays are
+ * returned.
  *
  * @static
  * @memberOf _
- * @since 0.1.0
- * @category Collection
- * @param {Array|Object} collection The collection to iterate over.
- * @param {Function} [predicate=_.identity] The function invoked per iteration.
- * @param- {Object} [guard] Enables use as an iteratee for methods like `_.map`.
- * @returns {boolean} Returns `true` if all elements pass the predicate check,
- *  else `false`.
- * @example
- *
- * _.every([true, 1, null, 'yes'], Boolean);
- * // => false
- *
- * var users = [
- *   { 'user': 'barney', 'age': 36, 'active': false },
- *   { 'user': 'fred',   'age': 40, 'active': false }
- * ];
- *
- * // The `_.matches` iteratee shorthand.
- * _.every(users, { 'user': 'barney', 'active': false });
- * // => false
- *
- * // The `_.matchesProperty` iteratee shorthand.
- * _.every(users, ['active', false]);
- * // => true
- *
- * // The `_.property` iteratee shorthand.
- * _.every(users, 'active');
- * // => false
+ * @since 3.0.0
+ * @category Array
+ * @param {Array} array The array to slice.
+ * @param {number} [start=0] The start position.
+ * @param {number} [end=array.length] The end position.
+ * @returns {Array} Returns the slice of `array`.
  */
-function every(collection, predicate, guard) {
-  var func = isArray(collection) ? arrayEvery : baseEvery;
-  if (guard && isIterateeCall(collection, predicate, guard)) {
-    predicate = undefined;
+function slice(array, start, end) {
+  var length = array == null ? 0 : array.length;
+  if (!length) {
+    return [];
   }
-  return func(collection, baseIteratee(predicate, 3));
+  if (end && typeof end != 'number' && isIterateeCall(array, start, end)) {
+    start = 0;
+    end = length;
+  }
+  else {
+    start = start == null ? 0 : toInteger(start);
+    end = end === undefined ? length : toInteger(end);
+  }
+  return baseSlice(array, start, end);
 }
 
 /**
@@ -3989,161 +4252,6 @@ function some(collection, predicate, guard) {
   return func(collection, baseIteratee(predicate, 3));
 }
 
-/**
- * A specialized version of `baseAggregator` for arrays.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} setter The function to set `accumulator` values.
- * @param {Function} iteratee The iteratee to transform keys.
- * @param {Object} accumulator The initial aggregated object.
- * @returns {Function} Returns `accumulator`.
- */
-function arrayAggregator(array, setter, iteratee, accumulator) {
-  var index = -1,
-      length = array == null ? 0 : array.length;
-
-  while (++index < length) {
-    var value = array[index];
-    setter(accumulator, value, iteratee(value), array);
-  }
-  return accumulator;
-}
-
-/**
- * Aggregates elements of `collection` on `accumulator` with keys transformed
- * by `iteratee` and values set by `setter`.
- *
- * @private
- * @param {Array|Object} collection The collection to iterate over.
- * @param {Function} setter The function to set `accumulator` values.
- * @param {Function} iteratee The iteratee to transform keys.
- * @param {Object} accumulator The initial aggregated object.
- * @returns {Function} Returns `accumulator`.
- */
-function baseAggregator(collection, setter, iteratee, accumulator) {
-  baseEach(collection, function(value, key, collection) {
-    setter(accumulator, value, iteratee(value), collection);
-  });
-  return accumulator;
-}
-
-/**
- * Creates a function like `_.groupBy`.
- *
- * @private
- * @param {Function} setter The function to set accumulator values.
- * @param {Function} [initializer] The accumulator object initializer.
- * @returns {Function} Returns the new aggregator function.
- */
-function createAggregator(setter, initializer) {
-  return function(collection, iteratee) {
-    var func = isArray(collection) ? arrayAggregator : baseAggregator,
-        accumulator = initializer ? initializer() : {};
-
-    return func(collection, setter, baseIteratee(iteratee, 2), accumulator);
-  };
-}
-
-/** Used for built-in method references. */
-var objectProto$15 = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty$12 = objectProto$15.hasOwnProperty;
-
-/**
- * Creates an object composed of keys generated from the results of running
- * each element of `collection` thru `iteratee`. The order of grouped values
- * is determined by the order they occur in `collection`. The corresponding
- * value of each key is an array of elements responsible for generating the
- * key. The iteratee is invoked with one argument: (value).
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Collection
- * @param {Array|Object} collection The collection to iterate over.
- * @param {Function} [iteratee=_.identity] The iteratee to transform keys.
- * @returns {Object} Returns the composed aggregate object.
- * @example
- *
- * _.groupBy([6.1, 4.2, 6.3], Math.floor);
- * // => { '4': [4.2], '6': [6.1, 6.3] }
- *
- * // The `_.property` iteratee shorthand.
- * _.groupBy(['one', 'two', 'three'], 'length');
- * // => { '3': ['one', 'two'], '5': ['three'] }
- */
-var groupBy = createAggregator(function(result, value, key) {
-  if (hasOwnProperty$12.call(result, key)) {
-    result[key].push(value);
-  } else {
-    baseAssignValue(result, key, [value]);
-  }
-});
-
-/**
- * The base implementation of `_.slice` without an iteratee call guard.
- *
- * @private
- * @param {Array} array The array to slice.
- * @param {number} [start=0] The start position.
- * @param {number} [end=array.length] The end position.
- * @returns {Array} Returns the slice of `array`.
- */
-function baseSlice(array, start, end) {
-  var index = -1,
-      length = array.length;
-
-  if (start < 0) {
-    start = -start > length ? 0 : (length + start);
-  }
-  end = end > length ? length : end;
-  if (end < 0) {
-    end += length;
-  }
-  length = start > end ? 0 : ((end - start) >>> 0);
-  start >>>= 0;
-
-  var result = Array(length);
-  while (++index < length) {
-    result[index] = array[index + start];
-  }
-  return result;
-}
-
-/**
- * Creates a slice of `array` from `start` up to, but not including, `end`.
- *
- * **Note:** This method is used instead of
- * [`Array#slice`](https://mdn.io/Array/slice) to ensure dense arrays are
- * returned.
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category Array
- * @param {Array} array The array to slice.
- * @param {number} [start=0] The start position.
- * @param {number} [end=array.length] The end position.
- * @returns {Array} Returns the slice of `array`.
- */
-function slice(array, start, end) {
-  var length = array == null ? 0 : array.length;
-  if (!length) {
-    return [];
-  }
-  if (end && typeof end != 'number' && isIterateeCall(array, start, end)) {
-    start = 0;
-    end = length;
-  }
-  else {
-    start = start == null ? 0 : toInteger(start);
-    end = end === undefined ? length : toInteger(end);
-  }
-  return baseSlice(array, start, end);
-}
-
 var Connection = /** @class */ (function () {
     /**
      * Creates a connection instance.
@@ -4201,1097 +4309,6 @@ function install (database, options) {
         Container.register(namespace, database);
     };
 }
-
-var Type;
-(function (Type) {
-    Type["Attr"] = "Attr";
-    Type["HasOne"] = "HasOne";
-    Type["BelongsTo"] = "BelongsTo";
-    Type["HasMany"] = "HasMany";
-    Type["HasManyBy"] = "HasManyBy";
-})(Type || (Type = {}));
-var Attributes = /** @class */ (function () {
-    function Attributes() {
-    }
-    /**
-     * The generic attribute. The given value will be used as default value
-     * of the property when instantiating a model.
-     */
-    Attributes.attr = function (value, mutator) {
-        return { type: Type.Attr, value: value, mutator: mutator };
-    };
-    /**
-     * The has one relationship.
-     */
-    Attributes.hasOne = function (model, foreignKey) {
-        return { type: Type.HasOne, model: model, foreignKey: foreignKey, value: null };
-    };
-    /**
-     * The belongs to relationship.
-     */
-    Attributes.belongsTo = function (model, foreignKey) {
-        return { type: Type.BelongsTo, model: model, foreignKey: foreignKey, value: null };
-    };
-    /**
-     * The has many relationship.
-     */
-    Attributes.hasMany = function (model, foreignKey) {
-        return { type: Type.HasMany, model: model, foreignKey: foreignKey, value: null };
-    };
-    /**
-     * The has many by relationship.
-     */
-    Attributes.hasManyBy = function (model, foreignKey, otherKey) {
-        if (otherKey === void 0) { otherKey = 'id'; }
-        return { type: Type.HasManyBy, model: model, foreignKey: foreignKey, otherKey: otherKey, value: null };
-    };
-    /**
-     * Determine if given attr is relation.
-     */
-    Attributes.isRelation = function (attr) {
-        if (this.isAttrs(attr)) {
-            return false;
-        }
-        return attr.type === Type.Attr
-            || attr.type === Type.HasOne
-            || attr.type === Type.BelongsTo
-            || attr.type === Type.HasMany
-            || attr.type === Type.HasManyBy;
-    };
-    /**
-     * Determine if given attr is Attrs.
-     */
-    Attributes.isAttrs = function (attr) {
-        return attr.type === undefined;
-    };
-    return Attributes;
-}());
-
-var __assign$2 = (undefined && undefined.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
-var Query = /** @class */ (function () {
-    /**
-     * Create a new query instance.
-     */
-    function Query(state, name, primaryKey) {
-        /**
-         * The where constraints for the query.
-         */
-        this.wheres = [];
-        /**
-         * The orders of the query result.
-         */
-        this.orders = [];
-        /**
-         * Number of results to skip.
-         */
-        this._offset = 0;
-        /**
-         * Maximum number of records to return.
-         *
-         * We use polyfill of `Number.MAX_SAFE_INTEGER` for IE11 here.
-         */
-        this._limit = Math.pow(2, 53) - 1;
-        this.state = state;
-        this.name = name;
-        this.primaryKey = primaryKey;
-        this.entity = state[name];
-    }
-    /**
-     * Returns single record of the query chain result.
-     */
-    Query.prototype.get = function () {
-        var records = this.process();
-        return this.collect(records);
-    };
-    /**
-     * Returns single record of the query chain result.
-     */
-    Query.prototype.first = function (id) {
-        var records = this.process();
-        if (isEmpty(records)) {
-            return null;
-        }
-        if (id !== undefined) {
-            return records[id] ? this.item(records[id]) : null;
-        }
-        var sortedRecord = this.sortByOrders(records);
-        return this.item(sortedRecord[0]);
-    };
-    /**
-     * Save the given data to the state. This will replace any existing
-     * data in the state.
-     */
-    Query.prototype.create = function (data) {
-        this.entity.data = data;
-    };
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    Query.prototype.insert = function (data) {
-        this.entity.data = __assign$2({}, this.entity.data, data);
-    };
-    /**
-     * Update data in the state.
-     */
-    Query.prototype.update = function (data, condition) {
-        if (typeof condition !== 'function') {
-            if (this.entity.data[condition]) {
-                this.entity.data[condition] = __assign$2({}, this.entity.data[condition], data);
-            }
-            return;
-        }
-        this.entity.data = mapValues(this.entity.data, function (record) {
-            return condition(record) ? __assign$2({}, record, data) : record;
-        });
-    };
-    /**
-     * Process the query and filter data.
-     */
-    Query.prototype.process = function () {
-        // First, fetch all records of the entity.
-        var records = this.entity.data;
-        // If the entity is empty, there's nothing we can do so lets return
-        // data as is and exit immediately.
-        if (isEmpty(records)) {
-            return records;
-        }
-        // Now since we have the records, lets check if the where clause is
-        // registered. If not, there is nothing we need to do so just
-        // return all data.
-        if (isEmpty(this.wheres)) {
-            return records;
-        }
-        // OK so we do have where clause. Lets find specific data user wants.
-        return this.selectByWheres(records);
-    };
-    /**
-     * Add a and where clause to the query.
-     */
-    Query.prototype.where = function (field, value) {
-        this.wheres.push({ field: field, value: value, boolean: 'and' });
-        return this;
-    };
-    /**
-     * Add a or where clause to the query.
-     */
-    Query.prototype.orWhere = function (field, value) {
-        this.wheres.push({ field: field, value: value, boolean: 'or' });
-        return this;
-    };
-    /**
-     * Add an order to the query.
-     */
-    Query.prototype.orderBy = function (field, direction) {
-        if (direction === void 0) { direction = 'asc'; }
-        this.orders.push({ field: field, direction: direction });
-        return this;
-    };
-    /**
-     * Add an offset to the query.
-     */
-    Query.prototype.offset = function (offset) {
-        this._offset = offset;
-        return this;
-    };
-    /**
-     * Add limit to the query.
-     */
-    Query.prototype.limit = function (limit) {
-        this._limit = limit;
-        return this;
-    };
-    /**
-     * Delete data from the state.
-     */
-    Query.prototype.delete = function (condition) {
-        if (typeof condition === 'function') {
-            this.entity.data = pickBy(this.entity.data, function (record) { return !condition(record); });
-            return;
-        }
-        var id = typeof condition === 'number' ? condition.toString() : condition;
-        this.entity.data = pickBy(this.entity.data, function (_record, key) { return key !== id; });
-    };
-    /**
-     * Delete all data from the state.
-     */
-    Query.prototype.deleteAll = function () {
-        this.entity.data = {};
-    };
-    /**
-     * Create a item from given record.
-     */
-    Query.prototype.item = function (record) {
-        return record ? record : null;
-    };
-    /**
-     * Create a collection (array) from given records.
-     */
-    Query.prototype.collect = function (records) {
-        return isEmpty(records) ? [] : slice(this.sortByOrders(records), this._offset, this._offset + this._limit);
-    };
-    /**
-     * Filter the given data by registered where clause.
-     */
-    Query.prototype.selectByWheres = function (records) {
-        var _this = this;
-        return pickBy(records, function (record) { return _this.whereOnRecord(record); });
-    };
-    /**
-     * Sort the given data by registered orders.
-     */
-    Query.prototype.sortByOrders = function (records) {
-        var keys$$1 = map(this.orders, 'field');
-        var directions = map(this.orders, 'direction');
-        return orderBy(records, keys$$1, directions);
-    };
-    /**
-     * Checks if given Record matches the registered where clause.
-     */
-    Query.prototype.whereOnRecord = function (record) {
-        var whereTypes = groupBy(this.wheres, function (where) { return where.boolean; });
-        var whereResults = [];
-        var comparator = this.getComparator(record);
-        if (whereTypes.and) {
-            whereResults.push(every(whereTypes.and, comparator));
-        }
-        if (whereTypes.or) {
-            whereResults.push(some(whereTypes.or, comparator));
-        }
-        return whereResults.indexOf(true) !== -1;
-    };
-    /**
-     * Get comparator for the where clause.
-     */
-    Query.prototype.getComparator = function (record) {
-        var _this = this;
-        return function (where) {
-            // Function with Record and Query as argument.
-            if (isFunction(where.field)) {
-                var query = new Query(_this.state, _this.name, _this.primaryKey);
-                var result = where.field(record, query);
-                if (typeof result === 'boolean') {
-                    return result;
-                }
-                return !isEmpty(query.where(_this.primaryKey, record[_this.primaryKey]).get());
-            }
-            // Function with Record value as argument.
-            if (isFunction(where.value)) {
-                return where.value(record[where.field]);
-            }
-            // Check if field value is in given where Array.
-            if (isArray(where.value)) {
-                return where.value.indexOf(record[where.field]) !== -1;
-            }
-            // Simple equal check.
-            return record[where.field] === where.value;
-        };
-    };
-    return Query;
-}());
-
-var __assign$1 = (undefined && undefined.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
-var Repo = /** @class */ (function () {
-    /**
-     * Create a new repo instance.
-     */
-    function Repo(state, entity, wrap) {
-        if (wrap === void 0) { wrap = true; }
-        /**
-         * The relationships that should be loaded with the result.
-         */
-        this.load = [];
-        this.state = state;
-        this.name = entity;
-        this.entity = this.model(entity);
-        this.wrap = wrap;
-        this.query = new Query(state, entity, this.primaryKey());
-    }
-    /**
-     * Create a new repo instance
-     */
-    Repo.query = function (state, name, wrap) {
-        if (wrap === void 0) { wrap = true; }
-        return new this(state, name, wrap);
-    };
-    /**
-     * Get all data of the given entity from the state.
-     */
-    Repo.all = function (state, entity, wrap) {
-        if (wrap === void 0) { wrap = true; }
-        return (new this(state, entity, wrap)).get();
-    };
-    /**
-     * Find a data of the given entity by given id from the given state.
-     */
-    Repo.find = function (state, entity, id, wrap) {
-        if (wrap === void 0) { wrap = true; }
-        return (new this(state, entity, wrap)).first(id);
-    };
-    /**
-     * Get the count of the retrieved data.
-     */
-    Repo.count = function (state, entity, wrap) {
-        if (wrap === void 0) { wrap = false; }
-        return (new this(state, entity, wrap)).count();
-    };
-    /**
-     * Save the given data to the state. This will replace any existing
-     * data in the state.
-     */
-    Repo.create = function (state, entity, data) {
-        (new this(state, entity)).create(data);
-    };
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    Repo.insert = function (state, entity, data) {
-        (new this(state, entity)).insert(data);
-    };
-    /**
-     * Update data in the state.
-     */
-    Repo.update = function (state, entity, data, condition) {
-        (new this(state, entity)).update(data, condition);
-    };
-    /**
-     * Delete data from the state.
-     */
-    Repo.delete = function (state, entity, condition) {
-        (new this(state, entity)).delete(condition);
-    };
-    /**
-     * Delete all data from the state.
-     */
-    Repo.deleteAll = function (state, entity) {
-        if (!entity) {
-            var models_1 = this.models(state);
-            Object.keys(models_1).forEach(function (key) {
-                var entityName = models_1[key].entity;
-                if (state[entityName]) {
-                    state[entityName].data = {};
-                }
-            });
-            return;
-        }
-        (new this(state, entity)).deleteAll();
-    };
-    /**
-     * Get model of given name from connections container.
-     */
-    Repo.model = function (state, name) {
-        return Container.connection(state.name).model(name);
-    };
-    /**
-     * Get all models from connections container.
-     */
-    Repo.models = function (state) {
-        return Container.connection(state.name).models();
-    };
-    /**
-     * Get the primary key for the record.
-     */
-    Repo.primaryKey = function (state, name) {
-        return this.model(state, name).primaryKey;
-    };
-    /**
-     * Get Repo class.
-     */
-    Repo.prototype.self = function () {
-        return this.constructor;
-    };
-    /**
-     * Get model of given name from connections container.
-     */
-    Repo.prototype.model = function (name) {
-        return this.self().model(this.state, name);
-    };
-    /**
-     * Get all models from connections container.
-     */
-    Repo.prototype.models = function () {
-        return this.self().models(this.state);
-    };
-    /**
-     * Get the primary key of the model.
-     */
-    Repo.prototype.primaryKey = function () {
-        return this.self().primaryKey(this.state, this.name);
-    };
-    /**
-     * Returns all record of the query chain result. This method is alias
-     * of the `get` method.
-     */
-    Repo.prototype.all = function () {
-        return this.get();
-    };
-    /**
-     * Returns single record of the query chain result. This method is alias
-     * of the `first` method.
-     */
-    Repo.prototype.find = function (id) {
-        return this.first(id);
-    };
-    /**
-     * Returns all record of the query chain result.
-     */
-    Repo.prototype.get = function () {
-        return this.collect(this.query.get());
-    };
-    /**
-     * Returns single record of the query chain result.
-     */
-    Repo.prototype.first = function (id) {
-        return this.item(this.query.first(id));
-    };
-    /**
-     * Add a and where clause to the query.
-     */
-    Repo.prototype.where = function (field, value) {
-        this.query.where(field, value);
-        return this;
-    };
-    /**
-     * Add a or where clause to the query.
-     */
-    Repo.prototype.orWhere = function (field, value) {
-        this.query.orWhere(field, value);
-        return this;
-    };
-    /**
-     * Add an order to the query.
-     */
-    Repo.prototype.orderBy = function (field, direction) {
-        if (direction === void 0) { direction = 'asc'; }
-        this.query.orderBy(field, direction);
-        return this;
-    };
-    /**
-     * Add an offset to the query.
-     */
-    Repo.prototype.offset = function (offset) {
-        this.query.offset(offset);
-        return this;
-    };
-    /**
-     * Add limit to the query.
-     */
-    Repo.prototype.limit = function (limit) {
-        this.query.limit(limit);
-        return this;
-    };
-    /**
-     * Set the relationships that should be loaded.
-     */
-    Repo.prototype.with = function (name, constraint) {
-        if (constraint === void 0) { constraint = null; }
-        this.load.push({ name: name, constraint: constraint });
-        return this;
-    };
-    /**
-     * Set where constraint based on relationship existence.
-     */
-    Repo.prototype.has = function (name, constraint, count) {
-        if (constraint === void 0) { constraint = null; }
-        return this.addHasConstraint(name, constraint, count, true);
-    };
-    /**
-     * Set where constraint based on relationship absence.
-     */
-    Repo.prototype.hasNot = function (name, constraint, count) {
-        if (constraint === void 0) { constraint = null; }
-        return this.addHasConstraint(name, constraint, count, false);
-    };
-    /**
-     * Add where constraints based on has or hasNot condition.
-     */
-    Repo.prototype.addHasConstraint = function (name, constraint, count, existence) {
-        var _this = this;
-        if (constraint === void 0) { constraint = null; }
-        if (existence === void 0) { existence = true; }
-        var id = this.primaryKey();
-        var ids = [];
-        var items = (new Query(this.state, this.name, id)).get();
-        forEach(items, function (item) {
-            _this.hasRelation(item, name, constraint, count) === existence && ids.push(item[id]);
-        });
-        this.where(id, function (key) { return includes(ids, key); });
-        return this;
-    };
-    /**
-     * Save the given data to the state. This will replace any existing
-     * data in the state.
-     */
-    Repo.prototype.create = function (data) {
-        this.save('create', data);
-    };
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    Repo.prototype.insert = function (data) {
-        this.save('insert', data);
-    };
-    /**
-     * Save data into Vuex Store.
-     */
-    Repo.prototype.save = function (method, data) {
-        var _this = this;
-        var normalizedData = this.normalize(data);
-        // Update with empty data.
-        if (method === 'create' && isEmpty(normalizedData)) {
-            this.query[method](normalizedData);
-            return;
-        }
-        forEach(normalizedData, function (data, entity) {
-            var filledData = mapValues(data, function (record) { return _this.fill(record, entity); });
-            entity === _this.name ? _this.query[method](filledData) : new Query(_this.state, entity, _this.primaryKey())[method](filledData);
-        });
-    };
-    /**
-     * Get the count of the retrieved data.
-     */
-    Repo.prototype.count = function () {
-        // Do not wrap result data with class because it's unnecessary.
-        this.wrap = false;
-        return this.get().length;
-    };
-    /**
-     * Fill missing fields in given data with default value defined in
-     * corresponding model.
-     */
-    Repo.prototype.fill = function (data, entity) {
-        return this.buildRecord(data, this.model(entity).fields());
-    };
-    /**
-     * Build record.
-     */
-    Repo.prototype.buildRecord = function (data, fields, record) {
-        var _this = this;
-        if (record === void 0) { record = {}; }
-        var newRecord = record;
-        forEach(fields, function (attr, name) {
-            if (Attributes.isAttrs(attr)) {
-                var newData = data[name] ? data[name] : {};
-                newRecord[name] = _this.buildRecord(newData, attr, newRecord[name]);
-                return;
-            }
-            if (data[name] !== undefined) {
-                newRecord[name] = data[name];
-                return;
-            }
-            if (attr.type === Type.Attr) {
-                newRecord[name] = attr.value;
-                return;
-            }
-            if (attr.type === Type.HasOne || attr.type === Type.BelongsTo) {
-                newRecord[name] = null;
-                return;
-            }
-            if (attr.type === Type.HasMany || attr.type === Type.HasManyBy) {
-                newRecord[name] = [];
-                return;
-            }
-        });
-        return newRecord;
-    };
-    /**
-     * Update data in the state.
-     */
-    Repo.prototype.update = function (data, condition) {
-        // If there is no condition, check if data contains primary key. If it has,
-        // use it as a condition to update the data. Else, do nothing.
-        if (!condition) {
-            data[this.entity.primaryKey] && this.query.update(data, data[this.entity.primaryKey]);
-            return;
-        }
-        this.query.update(data, condition);
-    };
-    /**
-     * Delete data from the state.
-     */
-    Repo.prototype.delete = function (condition) {
-        this.query.delete(condition);
-    };
-    /**
-     * Delete all data from the state.
-     */
-    Repo.prototype.deleteAll = function () {
-        this.query.deleteAll();
-    };
-    /**
-     * Create a item from given record.
-     */
-    Repo.prototype.item = function (queryItem) {
-        if (!queryItem) {
-            return null;
-        }
-        var item = queryItem;
-        if (!isEmpty(this.load)) {
-            item = this.loadRelations(item);
-        }
-        if (!this.wrap) {
-            return item;
-        }
-        return new this.entity(item);
-    };
-    /**
-     * Create a collection (array) from given records.
-     */
-    Repo.prototype.collect = function (collection) {
-        var _this = this;
-        if (isEmpty(collection)) {
-            return [];
-        }
-        var item = collection;
-        if (!isEmpty(this.load)) {
-            item = map(item, function (data) { return _this.loadRelations(data); });
-        }
-        if (!this.wrap) {
-            return item;
-        }
-        return map(item, function (data) { return new _this.entity(data); });
-    };
-    /**
-     * Load the relationships for the record.
-     */
-    Repo.prototype.loadRelations = function (base, load, record, fields) {
-        var _this = this;
-        var _load = load || this.load;
-        var _record = record || __assign$1({}, base);
-        var _fields = fields || this.entity.fields();
-        return reduce(_load, function (record, relation) {
-            var name = relation.name.split('.')[0];
-            var attr = _fields[name];
-            if (!attr || !Attributes.isRelation(attr)) {
-                forEach(_fields, function (f, key) {
-                    if (f[name]) {
-                        record[key] = _this.loadRelations(base, _load, record[key], f);
-                        return;
-                    }
-                });
-                return record;
-            }
-            if (attr.type === Type.Attr) {
-                return record;
-            }
-            if (attr.type === Type.HasOne) {
-                record[name] = _this.loadHasOneRelation(base, attr, relation);
-                return record;
-            }
-            if (attr.type === Type.BelongsTo) {
-                record[name] = _this.loadBelongsToRelation(base, attr, relation);
-                return record;
-            }
-            if (attr.type === Type.HasMany) {
-                record[name] = _this.loadHasManyRelation(base, attr, relation);
-                return record;
-            }
-            if (attr.type === Type.HasManyBy) {
-                record[name] = _this.loadHasManyByRelation(base, attr, relation);
-                return record;
-            }
-            return record;
-        }, _record);
-    };
-    /**
-     * Load the has one relationship for the record.
-     */
-    Repo.prototype.loadHasOneRelation = function (record, attr, relation) {
-        var entity = this.resolveRelation(attr).entity;
-        var field = attr.foreignKey;
-        var query = this.self().query(this.state, entity, false).where(field, record.id);
-        this.addConstraint(query, relation);
-        return query.first();
-    };
-    /**
-     * Load the belongs to relationship for the record.
-     */
-    Repo.prototype.loadBelongsToRelation = function (record, attr, relation) {
-        var entity = this.resolveRelation(attr).entity;
-        var id = record[attr.foreignKey];
-        var query = this.self().query(this.state, entity, false);
-        this.addConstraint(query, relation);
-        return query.first(id);
-    };
-    /**
-     * Load the has many relationship for the record.
-     */
-    Repo.prototype.loadHasManyRelation = function (record, attr, relation) {
-        var entity = this.resolveRelation(attr).entity;
-        var field = attr.foreignKey;
-        var query = this.self().query(this.state, entity, false).where(field, record.id);
-        this.addConstraint(query, relation);
-        return query.get();
-    };
-    /**
-     * Load the has many by relationship for the record.
-     */
-    Repo.prototype.loadHasManyByRelation = function (record, attr, relation) {
-        var _this = this;
-        var entity = this.resolveRelation(attr).entity;
-        var field = attr.foreignKey;
-        return record[field].map(function (id) {
-            var query = _this.self().query(_this.state, entity, false).where(attr.otherKey, id);
-            _this.addConstraint(query, relation);
-            return query.first();
-        });
-    };
-    /**
-     * Resolve relation out of the container.
-     */
-    Repo.prototype.resolveRelation = function (attr) {
-        if (!isString(attr.model)) {
-            return attr.model;
-        }
-        return this.model(name);
-    };
-    /**
-     * Check if the given record has given relationship.
-     */
-    Repo.prototype.hasRelation = function (record, name, constraint, count) {
-        if (constraint === void 0) { constraint = null; }
-        var _constraint = constraint;
-        if (typeof constraint === 'number') {
-            _constraint = function (query) { return query.count() === constraint; };
-        }
-        else if (constraint === '>' && typeof count === 'number') {
-            _constraint = function (query) { return query.count() > count; };
-        }
-        else if (constraint === '>=' && typeof count === 'number') {
-            _constraint = function (query) { return query.count() >= count; };
-        }
-        else if (constraint === '<' && typeof count === 'number') {
-            _constraint = function (query) { return query.count() < count; };
-        }
-        else if (constraint === '<=' && typeof count === 'number') {
-            _constraint = function (query) { return query.count() <= count; };
-        }
-        var data = this.loadRelations(record, [{ name: name, constraint: _constraint }]);
-        return !isEmpty(data[name]);
-    };
-    /**
-     * Add constraint to the query.
-     */
-    Repo.prototype.addConstraint = function (query, relation) {
-        var relations = relation.name.split('.');
-        if (relations.length !== 1) {
-            relations.shift();
-            query.with(relations.join('.'));
-            return;
-        }
-        var result = relation.constraint && relation.constraint(query);
-        if (typeof result === 'boolean') {
-            query.where(function () { return result; });
-        }
-    };
-    /**
-     * Normalize the given data by given model.
-     */
-    Repo.prototype.normalize = function (data) {
-        return this.model(this.name).normalize(data);
-    };
-    return Repo;
-}());
-
-var rootGetters = {
-    /**
-     * Create a new repo instance.
-     */
-    query: function (state) { return function (entity, wrap) {
-        if (wrap === void 0) { wrap = true; }
-        return Repo.query(state, entity, wrap);
-    }; },
-    /**
-     * Get all data of given entity.
-     */
-    all: function (state) { return function (entity, wrap) {
-        if (wrap === void 0) { wrap = true; }
-        return Repo.all(state, entity, wrap);
-    }; },
-    /**
-     * Find a data of the given entity by given id.
-     */
-    find: function (state) { return function (entity, id, wrap) {
-        if (wrap === void 0) { wrap = true; }
-        return Repo.find(state, entity, id, wrap);
-    }; }
-};
-
-var rootActions = {
-    /**
-     * Save the given data to the state. This will replace any existing
-     * data in the state.
-     */
-    create: function (_a, _b) {
-        var commit = _a.commit;
-        var entity = _b.entity, data = _b.data;
-        commit('create', { entity: entity, data: data });
-    },
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    insert: function (_a, _b) {
-        var commit = _a.commit;
-        var entity = _b.entity, data = _b.data;
-        commit('insert', { entity: entity, data: data });
-    },
-    /**
-     * Update data in the store.
-     */
-    update: function (_a, _b) {
-        var commit = _a.commit;
-        var entity = _b.entity, where = _b.where, data = _b.data;
-        commit('update', { entity: entity, where: where, data: data });
-    },
-    /**
-     * Delete data from the store.
-     */
-    delete: function (_a, _b) {
-        var commit = _a.commit;
-        var entity = _b.entity, where = _b.where;
-        commit('delete', { entity: entity, where: where });
-    },
-    /**
-     * Delete all data from the store.
-     *
-     * @param {object} payload If exists, it should contain `entity`.
-     */
-    deleteAll: function (_a, payload) {
-        var commit = _a.commit;
-        commit('deleteAll', payload);
-    }
-};
-
-var mutations = {
-    /**
-     * Save the given data to the state. This will replace any existing
-     * data in the state.
-     */
-    create: function (state, _a) {
-        var entity = _a.entity, data = _a.data;
-        Repo.create(state, entity, data);
-    },
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    insert: function (state, _a) {
-        var entity = _a.entity, data = _a.data;
-        Repo.insert(state, entity, data);
-    },
-    /**
-     * Update data in the store.
-     */
-    update: function (state, _a) {
-        var entity = _a.entity, data = _a.data, _b = _a.where, where = _b === void 0 ? undefined : _b;
-        Repo.update(state, entity, data, where);
-    },
-    /**
-     * Delete data from the store.
-     */
-    delete: function (state, _a) {
-        var entity = _a.entity, where = _a.where;
-        Repo.delete(state, entity, where);
-    },
-    /**
-     * Delete all data from the store.
-     *
-     * @param {object} payload If exists, it should contain `entity`.
-     */
-    deleteAll: function (state, payload) {
-        if (payload && payload.entity) {
-            Repo.deleteAll(state, payload.entity);
-            return;
-        }
-        Repo.deleteAll(state);
-    }
-};
-
-var subGetters = {
-    /**
-     * Create a new repo instance.
-     */
-    query: function (state, _getters, _rootState, rootGetters) { return function (wrap) {
-        if (wrap === void 0) { wrap = true; }
-        return rootGetters[state.$connection + "/query"](state.$name, wrap);
-    }; },
-    /**
-     * Get all data of given entity.
-     */
-    all: function (state, _getters, _rootState, rootGetters) { return function (wrap) {
-        if (wrap === void 0) { wrap = true; }
-        return rootGetters[state.$connection + "/all"](state.$name, wrap);
-    }; },
-    /**
-     * Find a data of the given entity by given id.
-     */
-    find: function (state, _getters, _rootState, rootGetters) { return function (id, wrap) {
-        if (wrap === void 0) { wrap = true; }
-        return rootGetters[state.$connection + "/find"](state.$name, id, wrap);
-    }; }
-};
-
-var subActions = {
-    /**
-     * Save the given data to the state. This will replace any existing
-     * data in the state.
-     */
-    create: function (_a, _b) {
-        var commit = _a.commit, state = _a.state;
-        var data = _b.data;
-        commit(state.$connection + "/create", { entity: state.$name, data: data }, { root: true });
-    },
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    insert: function (_a, _b) {
-        var commit = _a.commit, state = _a.state;
-        var data = _b.data;
-        commit(state.$connection + "/insert", { entity: state.$name, data: data }, { root: true });
-    },
-    /**
-     * Update data in the store.
-     */
-    update: function (_a, payload) {
-        var commit = _a.commit, state = _a.state;
-        var where = payload.where;
-        var data = payload.data;
-        if (where === undefined || data === undefined) {
-            commit(state.$connection + "/update", { entity: state.$name, data: payload }, { root: true });
-            return;
-        }
-        commit(state.$connection + "/update", { entity: state.$name, where: where, data: data }, { root: true });
-    },
-    /**
-     * Delete data from the store.
-     */
-    delete: function (_a, condition) {
-        var commit = _a.commit, state = _a.state;
-        commit(state.$connection + "/delete", {
-            entity: state.$name,
-            where: typeof condition === 'object' ? condition.where : condition
-        }, { root: true });
-    },
-    /**
-     * Delete all data from the store.
-     */
-    deleteAll: function (_a) {
-        var commit = _a.commit, state = _a.state;
-        commit(state.$connection + "/deleteAll", {
-            entity: state.$name
-        }, { root: true });
-    }
-};
-
-var __assign = (undefined && undefined.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
-var Module = /** @class */ (function () {
-    function Module() {
-    }
-    /**
-     * Creates module from the given entities.
-     */
-    Module.create = function (namespace, entities) {
-        var tree = {
-            namespaced: true,
-            state: { name: namespace },
-            getters: rootGetters,
-            actions: rootActions,
-            mutations: mutations,
-            modules: {}
-        };
-        return this.createTree(tree, namespace, entities);
-    };
-    /**
-     * Creates module tree to be registered under top level module
-     * from the given entities.
-     */
-    Module.createTree = function (tree, namespace, entities) {
-        var _this = this;
-        forEach(entities, function (entity) {
-            tree.getters[entity.model.entity] = function (_state, getters) { return function (wrap) {
-                if (wrap === void 0) { wrap = true; }
-                return getters.query(entity.model.entity, wrap);
-            }; };
-            tree.modules[entity.model.entity] = {
-                namespaced: true,
-                state: __assign({}, entity.module.state, _this.state, { $connection: namespace, $name: entity.model.entity })
-            };
-            tree.modules[entity.model.entity]['getters'] = __assign({}, subGetters, entity.module.getters);
-            tree.modules[entity.model.entity]['actions'] = __assign({}, subActions, entity.module.actions);
-            tree.modules[entity.model.entity]['mutations'] = entity.module.mutations || {};
-        });
-        return tree;
-    };
-    /**
-     * The default state. This state will be merged with additional
-     * entity's state if it has any.
-     */
-    Module.state = {
-        $connection: '',
-        $name: '',
-        data: {}
-    };
-    return Module;
-}());
-
-var Database = /** @class */ (function () {
-    function Database() {
-        /**
-         * The list of entities to be registered to Vuex Store.
-         */
-        this.entities = [];
-    }
-    /**
-     * Registers a model to the entity list.
-     */
-    Database.prototype.register = function (model, module) {
-        this.entities.push({ model: model, module: module });
-    };
-    /**
-     * Generate Vuex Module from registered entities.
-     */
-    Database.prototype.modules = function (namespace) {
-        return Module.create(namespace, this.entities);
-    };
-    /**
-     * Register namespace to the all regitsered model.
-     */
-    Database.prototype.registerNamespace = function (namespace) {
-        forEach(this.entities, function (entity) { entity.model.connection = namespace; });
-    };
-    return Database;
-}());
 
 function unwrapExports (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -6038,7 +5055,74 @@ var Data = /** @class */ (function () {
     return Data;
 }());
 
-var __assign$4 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var Types;
+(function (Types) {
+    Types["Attr"] = "Attr";
+    Types["HasOne"] = "HasOne";
+    Types["BelongsTo"] = "BelongsTo";
+    Types["HasMany"] = "HasMany";
+    Types["HasManyBy"] = "HasManyBy";
+})(Types || (Types = {}));
+var AttrTypes = Types;
+
+var Attributes = /** @class */ (function () {
+    function Attributes() {
+    }
+    /**
+     * The generic attribute. The given value will be used as default value
+     * of the property when instantiating a model.
+     */
+    Attributes.attr = function (value, mutator) {
+        return { type: AttrTypes.Attr, value: value, mutator: mutator };
+    };
+    /**
+     * The has one relationship.
+     */
+    Attributes.hasOne = function (model, foreignKey) {
+        return { type: AttrTypes.HasOne, model: model, foreignKey: foreignKey, value: null };
+    };
+    /**
+     * The belongs to relationship.
+     */
+    Attributes.belongsTo = function (model, foreignKey) {
+        return { type: AttrTypes.BelongsTo, model: model, foreignKey: foreignKey, value: null };
+    };
+    /**
+     * The has many relationship.
+     */
+    Attributes.hasMany = function (model, foreignKey) {
+        return { type: AttrTypes.HasMany, model: model, foreignKey: foreignKey, value: null };
+    };
+    /**
+     * The has many by relationship.
+     */
+    Attributes.hasManyBy = function (model, foreignKey, otherKey) {
+        if (otherKey === void 0) { otherKey = 'id'; }
+        return { type: AttrTypes.HasManyBy, model: model, foreignKey: foreignKey, otherKey: otherKey, value: null };
+    };
+    /**
+     * Determine if the given value is the type of field.
+     */
+    Attributes.isAttribute = function (attr) {
+        if (this.isFields(attr)) {
+            return false;
+        }
+        return attr.type === AttrTypes.Attr
+            || attr.type === AttrTypes.HasOne
+            || attr.type === AttrTypes.BelongsTo
+            || attr.type === AttrTypes.HasMany
+            || attr.type === AttrTypes.HasManyBy;
+    };
+    /**
+     * Determine if the given value is the type of fields.
+     */
+    Attributes.isFields = function (attr) {
+        return attr.type === undefined;
+    };
+    return Attributes;
+}());
+
+var __assign = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -6050,14 +5134,14 @@ var Schema = /** @class */ (function () {
     function Schema() {
     }
     /**
-     * Create s schema of given model.
+     * Create a schema of given model.
      */
     Schema.one = function (model, schemas) {
         if (schemas === void 0) { schemas = {}; }
         var thisSchema = new src_3.Entity(model.entity, {}, {
             idAttribute: model.primaryKey
         });
-        var definition = this.definition(model, __assign$4({}, schemas, (_a = {}, _a[model.entity] = thisSchema, _a)));
+        var definition = this.definition(model, __assign({}, schemas, (_a = {}, _a[model.entity] = thisSchema, _a)));
         thisSchema.define(definition);
         return thisSchema;
         var _a;
@@ -6070,30 +5154,30 @@ var Schema = /** @class */ (function () {
         return new src_3.Array(this.one(model, schemas));
     };
     /**
-     * Create dfinition from given fields.
+     * Create a dfinition from given fields.
      */
     Schema.definition = function (model, schemas) {
         if (schemas === void 0) { schemas = {}; }
         return this.build(model, model.fields(), schemas);
     };
     /**
-     * Build definition schema.
+     * Build a definition schema.
      */
     Schema.build = function (model, fields, schemas) {
         var _this = this;
         if (schemas === void 0) { schemas = {}; }
         return reduce(fields, function (definition, field, key) {
-            if (!Attributes.isRelation(field)) {
+            if (!Attributes.isAttribute(field)) {
                 definition[key] = _this.build(model, field, schemas);
                 return definition;
             }
-            if (field.type === Type.HasOne || field.type === Type.BelongsTo) {
+            if (field.type === AttrTypes.HasOne || field.type === AttrTypes.BelongsTo) {
                 var relation = model.resolveRelation(field);
                 var s = schemas[relation.entity];
                 definition[key] = s ? s : _this.one(relation, schemas);
                 return definition;
             }
-            if (field.type === Type.HasMany || field.type === Type.HasManyBy) {
+            if (field.type === AttrTypes.HasMany || field.type === AttrTypes.HasManyBy) {
                 var relation = model.resolveRelation(field);
                 var s = schemas[relation.entity];
                 definition[key] = s ? new src_3.Array(s) : _this.many(relation, schemas);
@@ -6105,7 +5189,7 @@ var Schema = /** @class */ (function () {
     return Schema;
 }());
 
-var __assign$3 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$1 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -6164,13 +5248,13 @@ var Model = /** @class */ (function () {
         return {};
     };
     /**
-     * Find relation model from the container.
+     * Get a model from the container.
      */
     Model.relation = function (name) {
         return Container.connection(this.connection).model(name);
     };
     /**
-     * Resolve relation out of the container.
+     * Resolve relation in the given attribute out of the container.
      */
     Model.resolveRelation = function (attr) {
         return isString(attr.model) ? this.relation(attr.model) : attr.model;
@@ -6197,24 +5281,25 @@ var Model = /** @class */ (function () {
         });
     };
     /**
-     * Check if the record has appropriate foreign key and if not, attach them.
+     * Check if the given record has the appropriate foreign key and
+     * if not, attach them.
      */
     Model.attachForeignKeys = function (records, model) {
         var fields = model.fields();
         return mapValues(records, function (record) {
-            var newRecord = __assign$3({}, record);
+            var newRecord = __assign$1({}, record);
             forEach(record, function (value, field) {
                 var attr = fields[field];
                 if (!attr) {
                     return;
                 }
-                if (!Attributes.isRelation(attr)) {
+                if (!Attributes.isAttribute(attr)) {
                     return;
                 }
-                if (attr.type === Type.Attr) {
+                if (attr.type === AttrTypes.Attr) {
                     return;
                 }
-                if (attr.type === Type.BelongsTo) {
+                if (attr.type === AttrTypes.BelongsTo) {
                     var key = attr.foreignKey;
                     if (newRecord[key]) {
                         return;
@@ -6226,7 +5311,7 @@ var Model = /** @class */ (function () {
         });
     };
     /**
-     * Returns the static class of this model.
+     * Get the static class of this model.
      */
     Model.prototype.$self = function () {
         return this.constructor;
@@ -6257,7 +5342,7 @@ var Model = /** @class */ (function () {
         if (!data) {
             return this.$fields();
         }
-        var fields = __assign$3({}, this.$fields());
+        var fields = __assign$1({}, this.$fields());
         return this.$mergeFields(fields, data);
     };
     /**
@@ -6270,7 +5355,7 @@ var Model = /** @class */ (function () {
             if (!includes(keys$$1, key)) {
                 return;
             }
-            if (Attributes.isRelation(fields[key])) {
+            if (Attributes.isAttribute(fields[key])) {
                 fields[key].value = value;
                 return;
             }
@@ -6284,44 +5369,34 @@ var Model = /** @class */ (function () {
     Model.prototype.$build = function (self, data) {
         var _this = this;
         forEach(data, function (field, key) {
-            if (!Attributes.isRelation(field)) {
-                self[key] = {};
-                _this.$build(self[key], field);
+            if (Attributes.isAttribute(field)) {
+                self[key] = _this.$generateField(field, key);
                 return;
             }
-            if (field.value === null) {
-                self[key] = null;
-                return;
-            }
-            if (field.type === Type.Attr) {
-                var mutator = field.mutator || _this.$self().mutators()[key];
-                self[key] = mutator ? mutator(field.value) : field.value;
-                return;
-            }
-            if (isNumber(field.value) || isNumber(field.value[0])) {
-                self[key] = null;
-                return;
-            }
-            if (field.type === Type.HasOne) {
-                var model = self.$resolveRelation(field);
-                self[key] = field.value ? new model(field.value) : null;
-                return;
-            }
-            if (field.type === Type.BelongsTo) {
-                var model = _this.$resolveRelation(field);
-                self[key] = field.value ? new model(field.value) : null;
-                return;
-            }
-            if (field.type === Type.HasMany) {
-                var model_1 = _this.$resolveRelation(field);
-                self[key] = field.value ? field.value.map(function (v) { return new model_1(v); }) : null;
-                return;
-            }
-            if (field.type === Type.HasManyBy) {
-                var model_2 = _this.$resolveRelation(field);
-                self[key] = field.value ? field.value.map(function (v) { return new model_2(v); }) : null;
-            }
+            _this.$build(self[key] = {}, field);
         });
+    };
+    /**
+     * Generate appropreate field value for the given attribute.
+     */
+    Model.prototype.$generateField = function (attr, key) {
+        if (attr.value === null) {
+            return null;
+        }
+        if (attr.type === AttrTypes.Attr) {
+            var mutator = attr.mutator || this.$self().mutators()[key];
+            return mutator ? mutator(attr.value) : attr.value;
+        }
+        if (isNumber(attr.value) || isNumber(attr.value[0])) {
+            return null;
+        }
+        var model = this.$resolveRelation(attr);
+        if (attr.type === AttrTypes.HasOne || attr.type === AttrTypes.BelongsTo) {
+            return attr.value ? new model(attr.value) : null;
+        }
+        if (attr.type === AttrTypes.HasMany || attr.type === AttrTypes.HasManyBy) {
+            return attr.value ? attr.value.map(function (v) { return new model(v); }) : null;
+        }
     };
     /**
      * Resolve relation out of the container.
@@ -6343,13 +5418,13 @@ var Model = /** @class */ (function () {
             if (!field[key]) {
                 return field[key];
             }
-            if (!Attributes.isRelation(attr)) {
+            if (!Attributes.isAttribute(attr)) {
                 return field.$buildJson(attr, field[key]);
             }
-            if (attr.type === Type.HasOne || attr.type === Type.BelongsTo) {
+            if (attr.type === AttrTypes.HasOne || attr.type === AttrTypes.BelongsTo) {
                 return field[key].$toJson();
             }
-            if (attr.type === Type.HasMany) {
+            if (attr.type === AttrTypes.HasMany) {
                 return field[key].map(function (model) { return model.$toJson(); });
             }
             return field[key];
@@ -6362,11 +5437,1045 @@ var Model = /** @class */ (function () {
     return Model;
 }());
 
-var index = {
-    install: install,
-    Database: Database,
-    Model: Model
+var __assign$2 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var Query = /** @class */ (function () {
+    /**
+     * Create a new query instance.
+     */
+    function Query(state, name) {
+        /**
+         * The records that have been processed.
+         */
+        this.records = [];
+        /**
+         * The where constraints for the query.
+         */
+        this.wheres = [];
+        /**
+         * The orders of the query result.
+         */
+        this.orders = [];
+        /**
+         * Number of results to skip.
+         */
+        this._offset = 0;
+        /**
+         * Maximum number of records to return.
+         *
+         * We use polyfill of `Number.MAX_SAFE_INTEGER` for IE11 here.
+         */
+        this._limit = Math.pow(2, 53) - 1;
+        this.state = state;
+        this.name = name;
+        this.entity = state[name];
+        this.primaryKey = state[name].$primaryKey || 'id';
+        this.records = map(state[name].data, function (record) { return record; });
+    }
+    /**
+     * Returns single record of the query chain result.
+     */
+    Query.prototype.get = function () {
+        this.process();
+        return this.collect();
+    };
+    /**
+     * Returns single record of the query chain result.
+     */
+    Query.prototype.first = function (id) {
+        this.process();
+        if (isEmpty(this.records)) {
+            return null;
+        }
+        if (id !== undefined) {
+            return this.item(find(this.records, [this.primaryKey, id]));
+        }
+        return this.item(this.records[0]);
+    };
+    /**
+     * Process the query and filter data.
+     */
+    Query.prototype.process = function () {
+        // If the where clause is registered, lets filter the records beased on it.
+        if (!isEmpty(this.wheres)) {
+            this.selectByWheres();
+        }
+        // Next, lets sort the data if orderBy is registred.
+        if (!isEmpty(this.orders)) {
+            this.sortByOrders();
+        }
+        // Finally, slice the record by limit and offset.
+        this.records = slice(this.records, this._offset, this._offset + this._limit);
+    };
+    /**
+     * Add a and where clause to the query.
+     */
+    Query.prototype.where = function (field, value) {
+        this.wheres.push({ field: field, value: value, boolean: 'and' });
+        return this;
+    };
+    /**
+     * Save the given data to the state. This will replace any existing
+     * data in the state.
+     */
+    Query.prototype.create = function (data) {
+        this.entity.data = data;
+    };
+    /**
+     * Insert given data to the state. Unlike `create`, this method will not
+     * remove existing data within the state, but it will update the data
+     * with the same primary key.
+     */
+    Query.prototype.insert = function (data) {
+        this.entity.data = __assign$2({}, this.entity.data, data);
+    };
+    /**
+     * Update data in the state.
+     */
+    Query.prototype.update = function (data, condition) {
+        if (typeof condition !== 'function') {
+            if (this.entity.data[condition]) {
+                this.entity.data[condition] = __assign$2({}, this.entity.data[condition], data);
+            }
+            return;
+        }
+        this.entity.data = mapValues(this.entity.data, function (record) {
+            return condition(record) ? __assign$2({}, record, data) : record;
+        });
+    };
+    /**
+     * Add a or where clause to the query.
+     */
+    Query.prototype.orWhere = function (field, value) {
+        this.wheres.push({ field: field, value: value, boolean: 'or' });
+        return this;
+    };
+    /**
+     * Add an order to the query.
+     */
+    Query.prototype.orderBy = function (field, direction) {
+        if (direction === void 0) { direction = 'asc'; }
+        this.orders.push({ field: field, direction: direction });
+        return this;
+    };
+    /**
+     * Add an offset to the query.
+     */
+    Query.prototype.offset = function (offset) {
+        this._offset = offset;
+        return this;
+    };
+    /**
+     * Add limit to the query.
+     */
+    Query.prototype.limit = function (limit) {
+        this._limit = limit;
+        return this;
+    };
+    /**
+     * Delete data from the state.
+     */
+    Query.prototype.delete = function (condition) {
+        if (typeof condition === 'function') {
+            this.entity.data = pickBy(this.entity.data, function (record) { return !condition(record); });
+            return;
+        }
+        var id = typeof condition === 'number' ? condition.toString() : condition;
+        this.entity.data = pickBy(this.entity.data, function (_record, key) { return key !== id; });
+    };
+    /**
+     * Delete all data from the state.
+     */
+    Query.prototype.deleteAll = function () {
+        this.entity.data = {};
+    };
+    /**
+     * Create a item from given record.
+     */
+    Query.prototype.item = function (record) {
+        return record ? record : null;
+    };
+    /**
+     * Create a collection (array) from given records.
+     */
+    Query.prototype.collect = function () {
+        return !isEmpty(this.records) ? this.records : [];
+    };
+    /**
+     * Filter the given data by registered where clause.
+     */
+    Query.prototype.selectByWheres = function () {
+        var _this = this;
+        this.records = this.records.filter(function (record) { return _this.whereOnRecord(record); });
+    };
+    /**
+     * Sort the given data by registered orders.
+     */
+    Query.prototype.sortByOrders = function () {
+        var keys$$1 = map(this.orders, 'field');
+        var directions = map(this.orders, 'direction');
+        this.records = orderBy(this.records, keys$$1, directions);
+    };
+    /**
+     * Checks if given Record matches the registered where clause.
+     */
+    Query.prototype.whereOnRecord = function (record) {
+        var whereTypes = groupBy(this.wheres, function (where) { return where.boolean; });
+        var whereResults = [];
+        var comparator = this.getComparator(record);
+        if (whereTypes.and) {
+            whereResults.push(every(whereTypes.and, comparator));
+        }
+        if (whereTypes.or) {
+            whereResults.push(some(whereTypes.or, comparator));
+        }
+        return whereResults.indexOf(true) !== -1;
+    };
+    /**
+     * Get comparator for the where clause.
+     */
+    Query.prototype.getComparator = function (record) {
+        var _this = this;
+        return function (where) {
+            // Function with Record and Query as argument.
+            if (isFunction(where.field)) {
+                var query = new Query(_this.state, _this.name);
+                var result = where.field(record, query);
+                if (typeof result === 'boolean') {
+                    return result;
+                }
+                return !isEmpty(query.where(_this.primaryKey, record[_this.primaryKey]).get());
+            }
+            // Function with Record value as argument.
+            if (isFunction(where.value)) {
+                return where.value(record[where.field]);
+            }
+            // Check if field value is in given where Array.
+            if (isArray(where.value)) {
+                return where.value.indexOf(record[where.field]) !== -1;
+            }
+            // Simple equal check.
+            return record[where.field] === where.value;
+        };
+    };
+    return Query;
+}());
+
+var __assign$3 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var Repo = /** @class */ (function () {
+    /**
+     * Create a new repo instance.
+     */
+    function Repo(state, entity, wrap) {
+        if (wrap === void 0) { wrap = true; }
+        /**
+         * The relationships that should be loaded with the result.
+         */
+        this.load = [];
+        this.state = state;
+        this.name = entity;
+        this.entity = this.model(entity);
+        this.wrap = wrap;
+        this.query = new Query(state, entity);
+    }
+    /**
+     * Create a new repo instance
+     */
+    Repo.query = function (state, name, wrap) {
+        if (wrap === void 0) { wrap = true; }
+        return new this(state, name, wrap);
+    };
+    /**
+     * Get all data of the given entity from the state.
+     */
+    Repo.all = function (state, entity, wrap) {
+        if (wrap === void 0) { wrap = true; }
+        return (new this(state, entity, wrap)).get();
+    };
+    /**
+     * Find a data of the given entity by given id from the given state.
+     */
+    Repo.find = function (state, entity, id, wrap) {
+        if (wrap === void 0) { wrap = true; }
+        return (new this(state, entity, wrap)).first(id);
+    };
+    /**
+     * Get the count of the retrieved data.
+     */
+    Repo.count = function (state, entity, wrap) {
+        if (wrap === void 0) { wrap = false; }
+        return (new this(state, entity, wrap)).count();
+    };
+    /**
+     * Save the given data to the state. This will replace any existing
+     * data in the state.
+     */
+    Repo.create = function (state, entity, data) {
+        (new this(state, entity)).create(data);
+    };
+    /**
+     * Insert given data to the state. Unlike `create`, this method will not
+     * remove existing data within the state, but it will update the data
+     * with the same primary key.
+     */
+    Repo.insert = function (state, entity, data) {
+        (new this(state, entity)).insert(data);
+    };
+    /**
+     * Update data in the state.
+     */
+    Repo.update = function (state, entity, data, condition) {
+        (new this(state, entity)).update(data, condition);
+    };
+    /**
+     * Delete data from the state.
+     */
+    Repo.delete = function (state, entity, condition) {
+        (new this(state, entity)).delete(condition);
+    };
+    /**
+     * Delete all data from the state.
+     */
+    Repo.deleteAll = function (state, entity) {
+        if (!entity) {
+            var models_1 = this.models(state);
+            Object.keys(models_1).forEach(function (key) {
+                var entityName = models_1[key].entity;
+                if (state[entityName]) {
+                    state[entityName].data = {};
+                }
+            });
+            return;
+        }
+        (new this(state, entity)).deleteAll();
+    };
+    /**
+     * Get model of given name from connections container.
+     */
+    Repo.model = function (state, name) {
+        return Container.connection(state.name).model(name);
+    };
+    /**
+     * Get all models from connections container.
+     */
+    Repo.models = function (state) {
+        return Container.connection(state.name).models();
+    };
+    /**
+     * Get the primary key for the record.
+     */
+    Repo.primaryKey = function (state, name) {
+        return this.model(state, name).primaryKey;
+    };
+    /**
+     * Get Repo class.
+     */
+    Repo.prototype.self = function () {
+        return this.constructor;
+    };
+    /**
+     * Get model of given name from connections container.
+     */
+    Repo.prototype.model = function (name) {
+        return this.self().model(this.state, name);
+    };
+    /**
+     * Get all models from connections container.
+     */
+    Repo.prototype.models = function () {
+        return this.self().models(this.state);
+    };
+    /**
+     * Get the primary key of the model.
+     */
+    Repo.prototype.primaryKey = function () {
+        return this.self().primaryKey(this.state, this.name);
+    };
+    /**
+     * Returns all record of the query chain result. This method is alias
+     * of the `get` method.
+     */
+    Repo.prototype.all = function () {
+        return this.get();
+    };
+    /**
+     * Returns single record of the query chain result. This method is alias
+     * of the `first` method.
+     */
+    Repo.prototype.find = function (id) {
+        return this.first(id);
+    };
+    /**
+     * Returns all record of the query chain result.
+     */
+    Repo.prototype.get = function () {
+        return this.collect(this.query.get());
+    };
+    /**
+     * Returns single record of the query chain result.
+     */
+    Repo.prototype.first = function (id) {
+        return this.item(this.query.first(id));
+    };
+    /**
+     * Add a and where clause to the query.
+     */
+    Repo.prototype.where = function (field, value) {
+        this.query.where(field, value);
+        return this;
+    };
+    /**
+     * Add a or where clause to the query.
+     */
+    Repo.prototype.orWhere = function (field, value) {
+        this.query.orWhere(field, value);
+        return this;
+    };
+    /**
+     * Add an order to the query.
+     */
+    Repo.prototype.orderBy = function (field, direction) {
+        if (direction === void 0) { direction = 'asc'; }
+        this.query.orderBy(field, direction);
+        return this;
+    };
+    /**
+     * Add an offset to the query.
+     */
+    Repo.prototype.offset = function (offset) {
+        this.query.offset(offset);
+        return this;
+    };
+    /**
+     * Add limit to the query.
+     */
+    Repo.prototype.limit = function (limit) {
+        this.query.limit(limit);
+        return this;
+    };
+    /**
+     * Set the relationships that should be loaded.
+     */
+    Repo.prototype.with = function (name, constraint) {
+        if (constraint === void 0) { constraint = null; }
+        this.load.push({ name: name, constraint: constraint });
+        return this;
+    };
+    /**
+     * Set where constraint based on relationship existence.
+     */
+    Repo.prototype.has = function (name, constraint, count) {
+        if (constraint === void 0) { constraint = null; }
+        return this.addHasConstraint(name, constraint, count, true);
+    };
+    /**
+     * Set where constraint based on relationship absence.
+     */
+    Repo.prototype.hasNot = function (name, constraint, count) {
+        if (constraint === void 0) { constraint = null; }
+        return this.addHasConstraint(name, constraint, count, false);
+    };
+    /**
+     * Add where constraints based on has or hasNot condition.
+     */
+    Repo.prototype.addHasConstraint = function (name, constraint, count, existence) {
+        var _this = this;
+        if (constraint === void 0) { constraint = null; }
+        if (existence === void 0) { existence = true; }
+        var id = this.primaryKey();
+        var ids = [];
+        var items = (new Query(this.state, this.name)).get();
+        forEach(items, function (item) {
+            _this.hasRelation(item, name, constraint, count) === existence && ids.push(item[id]);
+        });
+        this.where(id, function (key) { return includes(ids, key); });
+        return this;
+    };
+    /**
+     * Save the given data to the state. This will replace any existing
+     * data in the state.
+     */
+    Repo.prototype.create = function (data) {
+        this.save('create', data);
+    };
+    /**
+     * Insert given data to the state. Unlike `create`, this method will not
+     * remove existing data within the state, but it will update the data
+     * with the same primary key.
+     */
+    Repo.prototype.insert = function (data) {
+        this.save('insert', data);
+    };
+    /**
+     * Save data into Vuex Store.
+     */
+    Repo.prototype.save = function (method, data) {
+        var _this = this;
+        var normalizedData = this.normalize(data);
+        // Update with empty data.
+        if (method === 'create' && isEmpty(normalizedData)) {
+            this.query[method](normalizedData);
+            return;
+        }
+        forEach(normalizedData, function (data, entity) {
+            var filledData = mapValues(data, function (record) { return _this.fill(record, entity); });
+            entity === _this.name ? _this.query[method](filledData) : new Query(_this.state, entity)[method](filledData);
+        });
+    };
+    /**
+     * Get the count of the retrieved data.
+     */
+    Repo.prototype.count = function () {
+        // Do not wrap result data with class because it's unnecessary.
+        this.wrap = false;
+        return this.get().length;
+    };
+    /**
+     * Fill missing fields in given data with default value defined in
+     * corresponding model.
+     */
+    Repo.prototype.fill = function (data, entity) {
+        return this.buildRecord(data, this.model(entity).fields());
+    };
+    /**
+     * Build record.
+     */
+    Repo.prototype.buildRecord = function (data, fields, record) {
+        var _this = this;
+        if (record === void 0) { record = {}; }
+        var newRecord = record;
+        forEach(fields, function (attr, name) {
+            if (Attributes.isFields(attr)) {
+                var newData = data[name] ? data[name] : {};
+                newRecord[name] = _this.buildRecord(newData, attr, newRecord[name]);
+                return;
+            }
+            if (data[name] !== undefined) {
+                newRecord[name] = data[name];
+                return;
+            }
+            if (attr.type === AttrTypes.Attr) {
+                newRecord[name] = attr.value;
+                return;
+            }
+            if (attr.type === AttrTypes.HasOne || attr.type === AttrTypes.BelongsTo) {
+                newRecord[name] = null;
+                return;
+            }
+            if (attr.type === AttrTypes.HasMany || attr.type === AttrTypes.HasManyBy) {
+                newRecord[name] = [];
+                return;
+            }
+        });
+        return newRecord;
+    };
+    /**
+     * Update data in the state.
+     */
+    Repo.prototype.update = function (data, condition) {
+        // If there is no condition, check if data contains primary key. If it has,
+        // use it as a condition to update the data. Else, do nothing.
+        if (!condition) {
+            data[this.entity.primaryKey] && this.query.update(data, data[this.entity.primaryKey]);
+            return;
+        }
+        this.query.update(data, condition);
+    };
+    /**
+     * Delete data from the state.
+     */
+    Repo.prototype.delete = function (condition) {
+        this.query.delete(condition);
+    };
+    /**
+     * Delete all data from the state.
+     */
+    Repo.prototype.deleteAll = function () {
+        this.query.deleteAll();
+    };
+    /**
+     * Create a item from given record.
+     */
+    Repo.prototype.item = function (queryItem) {
+        if (!queryItem) {
+            return null;
+        }
+        var item = queryItem;
+        if (!isEmpty(this.load)) {
+            item = this.loadRelations(item);
+        }
+        if (!this.wrap) {
+            return item;
+        }
+        return new this.entity(item);
+    };
+    /**
+     * Create a collection (array) from given records.
+     */
+    Repo.prototype.collect = function (collection) {
+        var _this = this;
+        if (isEmpty(collection)) {
+            return [];
+        }
+        var item = collection;
+        if (!isEmpty(this.load)) {
+            item = map(item, function (data) { return _this.loadRelations(data); });
+        }
+        if (!this.wrap) {
+            return item;
+        }
+        return map(item, function (data) { return new _this.entity(data); });
+    };
+    /**
+     * Load the relationships for the record.
+     */
+    Repo.prototype.loadRelations = function (base, load, record, fields) {
+        var _this = this;
+        var _load = load || this.load;
+        var _record = record || __assign$3({}, base);
+        var _fields = fields || this.entity.fields();
+        return reduce(_load, function (record, relation) {
+            var name = relation.name.split('.')[0];
+            var attr = _fields[name];
+            if (!attr || !Attributes.isAttribute(attr)) {
+                forEach(_fields, function (f, key) {
+                    if (f[name]) {
+                        record[key] = _this.loadRelations(base, _load, record[key], f);
+                        return;
+                    }
+                });
+                return record;
+            }
+            if (attr.type === AttrTypes.Attr) {
+                return record;
+            }
+            if (attr.type === AttrTypes.HasOne) {
+                record[name] = _this.loadHasOneRelation(base, attr, relation);
+                return record;
+            }
+            if (attr.type === AttrTypes.BelongsTo) {
+                record[name] = _this.loadBelongsToRelation(base, attr, relation);
+                return record;
+            }
+            if (attr.type === AttrTypes.HasMany) {
+                record[name] = _this.loadHasManyRelation(base, attr, relation);
+                return record;
+            }
+            if (attr.type === AttrTypes.HasManyBy) {
+                record[name] = _this.loadHasManyByRelation(base, attr, relation);
+                return record;
+            }
+            return record;
+        }, _record);
+    };
+    /**
+     * Load the has one relationship for the record.
+     */
+    Repo.prototype.loadHasOneRelation = function (record, attr, relation) {
+        var entity = this.resolveRelation(attr).entity;
+        var field = attr.foreignKey;
+        var query = this.self().query(this.state, entity, false).where(field, record.id);
+        this.addConstraint(query, relation);
+        return query.first();
+    };
+    /**
+     * Load the belongs to relationship for the record.
+     */
+    Repo.prototype.loadBelongsToRelation = function (record, attr, relation) {
+        var entity = this.resolveRelation(attr).entity;
+        var id = record[attr.foreignKey];
+        var query = this.self().query(this.state, entity, false);
+        this.addConstraint(query, relation);
+        return query.first(id);
+    };
+    /**
+     * Load the has many relationship for the record.
+     */
+    Repo.prototype.loadHasManyRelation = function (record, attr, relation) {
+        var entity = this.resolveRelation(attr).entity;
+        var field = attr.foreignKey;
+        var query = this.self().query(this.state, entity, false).where(field, record.id);
+        this.addConstraint(query, relation);
+        return query.get();
+    };
+    /**
+     * Load the has many by relationship for the record.
+     */
+    Repo.prototype.loadHasManyByRelation = function (record, attr, relation) {
+        var _this = this;
+        var entity = this.resolveRelation(attr).entity;
+        var field = attr.foreignKey;
+        return record[field].map(function (id) {
+            var query = _this.self().query(_this.state, entity, false).where(attr.otherKey, id);
+            _this.addConstraint(query, relation);
+            return query.first();
+        });
+    };
+    /**
+     * Resolve relation out of the container.
+     */
+    Repo.prototype.resolveRelation = function (attr) {
+        if (!isString(attr.model)) {
+            return attr.model;
+        }
+        return this.model(name);
+    };
+    /**
+     * Check if the given record has given relationship.
+     */
+    Repo.prototype.hasRelation = function (record, name, constraint, count) {
+        if (constraint === void 0) { constraint = null; }
+        var _constraint = constraint;
+        if (typeof constraint === 'number') {
+            _constraint = function (query) { return query.count() === constraint; };
+        }
+        else if (constraint === '>' && typeof count === 'number') {
+            _constraint = function (query) { return query.count() > count; };
+        }
+        else if (constraint === '>=' && typeof count === 'number') {
+            _constraint = function (query) { return query.count() >= count; };
+        }
+        else if (constraint === '<' && typeof count === 'number') {
+            _constraint = function (query) { return query.count() < count; };
+        }
+        else if (constraint === '<=' && typeof count === 'number') {
+            _constraint = function (query) { return query.count() <= count; };
+        }
+        var data = this.loadRelations(record, [{ name: name, constraint: _constraint }]);
+        return !isEmpty(data[name]);
+    };
+    /**
+     * Add constraint to the query.
+     */
+    Repo.prototype.addConstraint = function (query, relation) {
+        var relations = relation.name.split('.');
+        if (relations.length !== 1) {
+            relations.shift();
+            query.with(relations.join('.'));
+            return;
+        }
+        var result = relation.constraint && relation.constraint(query);
+        if (typeof result === 'boolean') {
+            query.where(function () { return result; });
+        }
+    };
+    /**
+     * Normalize the given data by given model.
+     */
+    Repo.prototype.normalize = function (data) {
+        return this.model(this.name).normalize(data);
+    };
+    return Repo;
+}());
+
+function use (plugin, options) {
+    if (options === void 0) { options = {}; }
+    plugin.install({ Model: Model, Repo: Repo, Query: Query }, options);
+}
+
+var rootGetters = {
+    /**
+     * Create a new repo instance.
+     */
+    query: function (state) { return function (entity, wrap) {
+        if (wrap === void 0) { wrap = true; }
+        return Repo.query(state, entity, wrap);
+    }; },
+    /**
+     * Get all data of given entity.
+     */
+    all: function (state) { return function (entity, wrap) {
+        if (wrap === void 0) { wrap = true; }
+        return Repo.all(state, entity, wrap);
+    }; },
+    /**
+     * Find a data of the given entity by given id.
+     */
+    find: function (state) { return function (entity, id, wrap) {
+        if (wrap === void 0) { wrap = true; }
+        return Repo.find(state, entity, id, wrap);
+    }; }
 };
 
-export { install, Database, Model };
-export default index;
+var rootActions = {
+    /**
+     * Save the given data to the state. This will replace any existing
+     * data in the state.
+     */
+    create: function (_a, _b) {
+        var commit = _a.commit;
+        var entity = _b.entity, data = _b.data;
+        commit('create', { entity: entity, data: data });
+    },
+    /**
+     * Insert given data to the state. Unlike `create`, this method will not
+     * remove existing data within the state, but it will update the data
+     * with the same primary key.
+     */
+    insert: function (_a, _b) {
+        var commit = _a.commit;
+        var entity = _b.entity, data = _b.data;
+        commit('insert', { entity: entity, data: data });
+    },
+    /**
+     * Update data in the store.
+     */
+    update: function (_a, _b) {
+        var commit = _a.commit;
+        var entity = _b.entity, where = _b.where, data = _b.data;
+        commit('update', { entity: entity, where: where, data: data });
+    },
+    /**
+     * Delete data from the store.
+     */
+    delete: function (_a, _b) {
+        var commit = _a.commit;
+        var entity = _b.entity, where = _b.where;
+        commit('delete', { entity: entity, where: where });
+    },
+    /**
+     * Delete all data from the store.
+     *
+     * @param {object} payload If exists, it should contain `entity`.
+     */
+    deleteAll: function (_a, payload) {
+        var commit = _a.commit;
+        commit('deleteAll', payload);
+    }
+};
+
+var mutations = {
+    /**
+     * Save the given data to the state. This will replace any existing
+     * data in the state.
+     */
+    create: function (state, _a) {
+        var entity = _a.entity, data = _a.data;
+        Repo.create(state, entity, data);
+    },
+    /**
+     * Insert given data to the state. Unlike `create`, this method will not
+     * remove existing data within the state, but it will update the data
+     * with the same primary key.
+     */
+    insert: function (state, _a) {
+        var entity = _a.entity, data = _a.data;
+        Repo.insert(state, entity, data);
+    },
+    /**
+     * Update data in the store.
+     */
+    update: function (state, _a) {
+        var entity = _a.entity, data = _a.data, _b = _a.where, where = _b === void 0 ? undefined : _b;
+        Repo.update(state, entity, data, where);
+    },
+    /**
+     * Delete data from the store.
+     */
+    delete: function (state, _a) {
+        var entity = _a.entity, where = _a.where;
+        Repo.delete(state, entity, where);
+    },
+    /**
+     * Delete all data from the store.
+     *
+     * @param {object} payload If exists, it should contain `entity`.
+     */
+    deleteAll: function (state, payload) {
+        if (payload && payload.entity) {
+            Repo.deleteAll(state, payload.entity);
+            return;
+        }
+        Repo.deleteAll(state);
+    }
+};
+
+var subGetters = {
+    /**
+     * Create a new repo instance.
+     */
+    query: function (state, _getters, _rootState, rootGetters) { return function (wrap) {
+        if (wrap === void 0) { wrap = true; }
+        return rootGetters[state.$connection + "/query"](state.$name, wrap);
+    }; },
+    /**
+     * Get all data of given entity.
+     */
+    all: function (state, _getters, _rootState, rootGetters) { return function (wrap) {
+        if (wrap === void 0) { wrap = true; }
+        return rootGetters[state.$connection + "/all"](state.$name, wrap);
+    }; },
+    /**
+     * Find a data of the given entity by given id.
+     */
+    find: function (state, _getters, _rootState, rootGetters) { return function (id, wrap) {
+        if (wrap === void 0) { wrap = true; }
+        return rootGetters[state.$connection + "/find"](state.$name, id, wrap);
+    }; }
+};
+
+var subActions = {
+    /**
+     * Save the given data to the state. This will replace any existing
+     * data in the state.
+     */
+    create: function (_a, _b) {
+        var commit = _a.commit, state = _a.state;
+        var data = _b.data;
+        commit(state.$connection + "/create", { entity: state.$name, data: data }, { root: true });
+    },
+    /**
+     * Insert given data to the state. Unlike `create`, this method will not
+     * remove existing data within the state, but it will update the data
+     * with the same primary key.
+     */
+    insert: function (_a, _b) {
+        var commit = _a.commit, state = _a.state;
+        var data = _b.data;
+        commit(state.$connection + "/insert", { entity: state.$name, data: data }, { root: true });
+    },
+    /**
+     * Update data in the store.
+     */
+    update: function (_a, payload) {
+        var commit = _a.commit, state = _a.state;
+        var where = payload.where;
+        var data = payload.data;
+        if (where === undefined || data === undefined) {
+            commit(state.$connection + "/update", { entity: state.$name, data: payload }, { root: true });
+            return;
+        }
+        commit(state.$connection + "/update", { entity: state.$name, where: where, data: data }, { root: true });
+    },
+    /**
+     * Delete data from the store.
+     */
+    delete: function (_a, condition) {
+        var commit = _a.commit, state = _a.state;
+        commit(state.$connection + "/delete", {
+            entity: state.$name,
+            where: typeof condition === 'object' ? condition.where : condition
+        }, { root: true });
+    },
+    /**
+     * Delete all data from the store.
+     */
+    deleteAll: function (_a) {
+        var commit = _a.commit, state = _a.state;
+        commit(state.$connection + "/deleteAll", {
+            entity: state.$name
+        }, { root: true });
+    }
+};
+
+var __assign$4 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var Module = /** @class */ (function () {
+    function Module() {
+    }
+    /**
+     * Creates module from the given entities.
+     */
+    Module.create = function (namespace, entities) {
+        var tree = {
+            namespaced: true,
+            state: { name: namespace },
+            getters: rootGetters,
+            actions: rootActions,
+            mutations: mutations,
+            modules: {}
+        };
+        return this.createTree(tree, namespace, entities);
+    };
+    /**
+     * Creates module tree to be registered under top level module
+     * from the given entities.
+     */
+    Module.createTree = function (tree, namespace, entities) {
+        var _this = this;
+        forEach(entities, function (entity) {
+            tree.getters[entity.model.entity] = function (_state, getters) { return function (wrap) {
+                if (wrap === void 0) { wrap = true; }
+                return getters.query(entity.model.entity, wrap);
+            }; };
+            tree.modules[entity.model.entity] = {
+                namespaced: true,
+                state: __assign$4({}, entity.module.state, _this.state, { $connection: namespace, $name: entity.model.entity, $primaryKey: entity.model.primaryKey })
+            };
+            tree.modules[entity.model.entity]['getters'] = __assign$4({}, subGetters, entity.module.getters);
+            tree.modules[entity.model.entity]['actions'] = __assign$4({}, subActions, entity.module.actions);
+            tree.modules[entity.model.entity]['mutations'] = entity.module.mutations || {};
+        });
+        return tree;
+    };
+    /**
+     * The default state. This state will be merged with additional
+     * entity's state if it has any.
+     */
+    Module.state = {
+        $connection: '',
+        $name: '',
+        $primaryKey: '',
+        data: {}
+    };
+    return Module;
+}());
+
+var Database = /** @class */ (function () {
+    function Database() {
+        /**
+         * The list of entities to be registered to Vuex Store.
+         */
+        this.entities = [];
+    }
+    /**
+     * Registers a model to the entity list.
+     */
+    Database.prototype.register = function (model, module) {
+        this.entities.push({ model: model, module: module });
+    };
+    /**
+     * Generate Vuex Module from registered entities.
+     */
+    Database.prototype.modules = function (namespace) {
+        return Module.create(namespace, this.entities);
+    };
+    /**
+     * Register namespace to the all regitsered model.
+     */
+    Database.prototype.registerNamespace = function (namespace) {
+        forEach(this.entities, function (entity) { entity.model.connection = namespace; });
+    };
+    return Database;
+}());
+
+var index$1 = {
+    install: install,
+    use: use,
+    Database: Database,
+    Model: Model,
+    Repo: Repo,
+    Query: Query
+};
+
+export { install, use, Database, Model, Repo, Query };
+export default index$1;
