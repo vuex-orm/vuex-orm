@@ -15,6 +15,10 @@ Learn more about the concept and motivation of Vuex ORM at [What Is Vuex ORM?](h
 
 You can check out the full documentation for Vuex ORM at https://revolver-app.gitbooks.io/vuex-orm.
 
+## Examples
+
+You can find example application built with Vuex ORM [at here](https://github.com/revolver-app/vuex-orm-examples).
+
 ## Quick Start
 
 ### Install Vuex ORM

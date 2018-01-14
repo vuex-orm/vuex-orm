@@ -23,6 +23,10 @@ Vuex ORM lets you create "normalized" data schema within Vuex Store with relatio
 - [API Reference](api-reference.md)
     - [Model](api/model.md)
 
+## Examples
+
+You can find example application built with Vuex ORM [at here](https://github.com/revolver-app/vuex-orm-examples).
+
 ## Resources
 
 - [Vue](https://vuejs.org)
