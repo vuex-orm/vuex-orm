@@ -109,8 +109,8 @@ import Vuex from 'vuex'
 import VuexORM from 'vuex-orm'
 import User from './User'
 import Post from './Post'
-import users from 'users'
-import posts from 'posts'
+import users from './users'
+import posts from './posts'
 
 Vue.use(Vuex)
 
