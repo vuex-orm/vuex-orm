@@ -11,6 +11,8 @@ import isString from 'lodash-es/isString'
 import keys from 'lodash-es/keys'
 import map from 'lodash-es/map'
 import mapValues from 'lodash-es/mapValues'
+import maxBy from 'lodash-es/maxBy'
+import minBy from 'lodash-es/minBy'
 import orderBy from 'lodash-es/orderBy'
 import pickBy from 'lodash-es/pickBy'
 import reduce from 'lodash-es/reduce'
@@ -31,6 +33,8 @@ export {
   keys,
   map,
   mapValues,
+  maxBy,
+  minBy,
   orderBy,
   pickBy,
   reduce,

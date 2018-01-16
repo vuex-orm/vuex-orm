@@ -97,6 +97,20 @@ export default class Repo {
   }
 
   /**
+   * Get the max value of the specified filed.
+   */
+  static max (state: State, entity: string, field: string, wrap: boolean = false): number {
+    return (new this(state, entity, wrap)).max(field)
+  }
+
+  /**
+   * Get the min value of the specified filed.
+   */
+  static min (state: State, entity: string, field: string, wrap: boolean = false): number {
+    return (new this(state, entity, wrap)).min(field)
+  }
+
+  /**
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
@@ -357,6 +371,30 @@ export default class Repo {
     this.wrap = false
 
     return this.get().length
+  }
+
+  /**
+   * Get the max value of the specified filed.
+   */
+  max (field: string): number {
+    // Do not wrap result data with class because it's unnecessary.
+    this.wrap = false
+
+    const record = _.maxBy(this.get(), field)
+
+    return record ? record[field] : 0
+  }
+
+  /**
+   * Get the min value of the specified filed.
+   */
+  min (field: string): number {
+    // Do not wrap result data with class because it's unnecessary.
+    this.wrap = false
+
+    const record = _.minBy(this.get(), field)
+
+    return record ? record[field] : 0
   }
 
   /**
