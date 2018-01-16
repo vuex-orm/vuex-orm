@@ -178,11 +178,19 @@ const user = store.getters['entities/users/query']()
 The query builder also provides a aggregate method. Currently available method is `count`. You may call this method after constructing your query.
 
 ```js
-const user = store.getters['entities/users/query']()
+const users = store.getters['entities/users/query']().count()
+
+const mostLiked = store.getters['entities/posts/query']().max('like')
+
+const cheapest = store.getters['entities/orders/query']().min('price')
+```
+
+Of course, you may combine these methos with other clauses.
+
+```js
+const users = store.getters['entities/users/query']()
   .where('role', 'user')
   .count()
-
-// 3
 ```
 
 ### Load Relationship
