@@ -1,11 +1,12 @@
 import * as _ from './support/lodash'
 import Container from './connections/Container'
-import { Record, NormalizedData } from './Data'
+import { Record, Records, NormalizedData } from './Data'
 import AttrTypes from './Attributes/AttrTypes'
 import Attrs, { Fields } from './Attributes'
 import { HasOne, BelongsTo, HasMany, HasManyBy } from './Attributes/Relations'
 import Model from './Model'
 import { State } from './Module'
+import Incrementer from './repo/Incrementer'
 import Query, {
   Item as QueryItem,
   Collection as QueryCollection,
@@ -30,32 +31,32 @@ export default class Repo {
   /**
    * The base query builder instance.
    */
-  protected query: Query
+  query: Query
 
   /**
    * The Vuex Store State.
    */
-  protected state: State
+  state: State
 
   /**
    * The name of the entity.
    */
-  protected name: string
+  name: string
 
   /**
    * The model of the entity.
    */
-  protected entity: typeof Model
+  entity: typeof Model
 
   /**
    * Whether to wrap returing record with class or to return as plain object.
    */
-  protected wrap: boolean
+  wrap: boolean
 
   /**
    * The relationships that should be loaded with the result.
    */
-  protected load: Relation[] = []
+  load: Relation[] = []
 
   /**
    * Create a new repo instance.
@@ -193,8 +194,10 @@ export default class Repo {
   /**
    * Get model of given name from connections container.
    */
-  model (name: string): typeof Model {
-    return this.self().model(this.state, name)
+  model (name?: string): typeof Model {
+    const entity = name || this.name
+
+    return this.self().model(this.state, entity)
   }
 
   /**
@@ -357,7 +360,11 @@ export default class Repo {
     }
 
     _.forEach(normalizedData, (data, entity) => {
-      const filledData = _.mapValues(data, record => this.fill(record, entity))
+      const incrementedData = this.setIds(
+        (new Incrementer(this)).incrementFields(data, method === 'create')
+      )
+
+      const filledData = _.mapValues(incrementedData, record => this.fill(record, entity))
 
       entity === this.name ? (this.query as any)[method](filledData) : (new Query(this.state, entity) as any)[method](filledData)
     })
@@ -398,6 +405,40 @@ export default class Repo {
   }
 
   /**
+   * Set proper key to the records. When a record has `increment` attribute
+   * type for the primary key, it's possible for the record to have the
+   * key of `no_key_<count>`. This function will convert those keys into
+   * the proper value of the primary key.
+   */
+  setIds (data: Records): Records {
+    if (!this.entity.incrementFields()) {
+      return data
+    }
+
+    const records: Records = {}
+
+    _.forEach(data, (record, key) => {
+      if (!_.startsWith(key, '_no_key_')) {
+        records[key] = record
+
+        return
+      }
+
+      const value = record[this.primaryKey()]
+
+      if (value === undefined) {
+        records[key] = record
+
+        return
+      }
+
+      records[`${value}`] = record
+    })
+
+    return records
+  }
+
+  /**
    * Fill missing fields in given data with default value defined in
    * corresponding model.
    */
@@ -426,7 +467,7 @@ export default class Repo {
         return
       }
 
-      if (attr.type === AttrTypes.Attr) {
+      if (attr.type === AttrTypes.Attr || attr.type === AttrTypes.Increment) {
         newRecord[name] = attr.value
 
         return

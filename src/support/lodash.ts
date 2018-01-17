@@ -11,6 +11,7 @@ import isString from 'lodash-es/isString'
 import keys from 'lodash-es/keys'
 import map from 'lodash-es/map'
 import mapValues from 'lodash-es/mapValues'
+import max from 'lodash-es/max'
 import maxBy from 'lodash-es/maxBy'
 import minBy from 'lodash-es/minBy'
 import orderBy from 'lodash-es/orderBy'
@@ -18,6 +19,7 @@ import pickBy from 'lodash-es/pickBy'
 import reduce from 'lodash-es/reduce'
 import slice from 'lodash-es/slice'
 import some from 'lodash-es/some'
+import startsWith from 'lodash-es/startsWith'
 
 export {
   every,
@@ -33,11 +35,13 @@ export {
   keys,
   map,
   mapValues,
+  max,
   maxBy,
   minBy,
   orderBy,
   pickBy,
   reduce,
   some,
-  slice
+  slice,
+  startsWith
 }

@@ -23,6 +23,14 @@ export default class Attributes {
   }
 
   /**
+   * The auto-increment attribute. The field with this attribute will
+   * automatically increment its value creating a new record.
+   */
+  static increment (): Types.Increment {
+    return { type: AttrTypes.Increment, value: 1 }
+  }
+
+  /**
    * The has one relationship.
    */
   static hasOne (model: Entity, foreignKey: string): Relations.HasOne {
@@ -59,6 +67,7 @@ export default class Attributes {
     }
 
     return attr.type === AttrTypes.Attr
+           || attr.type === AttrTypes.Increment
            || attr.type === AttrTypes.HasOne
            || attr.type === AttrTypes.BelongsTo
            || attr.type === AttrTypes.HasMany

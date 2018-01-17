@@ -156,4 +156,30 @@ describe('Model', () => {
 
     expect(post.$toJson()).toEqual(data)
   })
+
+  it('can get a `increment` field from the schema', () => {
+    class User extends Model {
+      static fields () {
+        return {
+          id: this.increment()
+        }
+      }
+    }
+
+    expect(User.incrementFields()).toEqual([{
+      id: User.increment()
+    }])
+  })
+
+  it('can check if the fields has `increment` fields', () => {
+    class User extends Model {
+      static fields () {
+        return {
+          id: this.increment()
+        }
+      }
+    }
+
+    expect(User.hasIncrementFields()).toBe(true)
+  })
 })

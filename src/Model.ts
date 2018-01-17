@@ -5,7 +5,7 @@ import Data, { Record, Records, NormalizedData } from './Data'
 import Schema from './Schema'
 import Attributes, { Fields, Attribute } from './Attributes'
 import AttrTypes from './Attributes/AttrTypes'
-import { Attr } from './Attributes/Types'
+import { Attr, Increment } from './Attributes/Types'
 import { HasOne, BelongsTo, HasMany, HasManyBy } from './Attributes/Relations'
 
 export default class Model {
@@ -52,6 +52,14 @@ export default class Model {
   }
 
   /**
+   * The auto-increment attribute. The field with this attribute will
+   * automatically increment its value creating a new record.
+   */
+  static increment (): Increment {
+    return Attributes.increment()
+  }
+
+  /**
    * Creates has one relationship.
    */
   static hasOne (model: typeof Model | string, foreignKey: string): HasOne {
@@ -77,6 +85,32 @@ export default class Model {
    */
   static hasManyBy (model: typeof Model | string, foreignKey: string, otherKey: string): HasManyBy {
     return Attributes.hasManyBy(model, foreignKey, otherKey)
+  }
+
+  /**
+   * Get all `increment` fields from the schema.
+   */
+  static incrementFields (): { [key: string]: Increment }[] {
+    const fields: { [key: string]: Increment }[] = []
+
+    _.forEach(this.fields(), (field, key) => {
+      if (Attributes.isFields(field)) {
+        return
+      }
+
+      if (field.type === AttrTypes.Increment) {
+        fields.push({ [key]: field })
+      }
+    })
+
+    return fields
+  }
+
+  /**
+   * Check if fields contains the `increment` field type.
+   */
+  static hasIncrementFields (): boolean {
+    return this.incrementFields().length > 0
   }
 
   /**
@@ -256,6 +290,10 @@ export default class Model {
       const mutator = attr.mutator || this.$self().mutators()[key]
 
       return mutator ? mutator(attr.value) : attr.value
+    }
+
+    if (attr.type === AttrTypes.Increment) {
+      return attr.value
     }
 
     if (_.isNumber(attr.value) || _.isNumber(attr.value[0])) {
