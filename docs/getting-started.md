@@ -2,6 +2,8 @@
 
 This document is quick start guide to begin using Vuex ORM. It assumes you have a basic understanding of [Vuex](https://github.com/vuejs/vuex/). If you are not familiar with Vuex, please visit [Vuex Documentation](https://vuex.vuejs.org) to learn about Vuex.
 
+> **NOTE:** We will be using ES2015 syntax for code examples for the rest of the docs. Also, we use "Class Property" to define some property in the class. This syntax requires compilers such as [babel-preset-stage-2](https://babeljs.io/docs/plugins/preset-stage-2/) which is already included in Vue CLI template.
+
 ## Core Architecture
 
 To setup Vuex ORM, you must first create following components.
@@ -63,6 +65,28 @@ export default class Post extends Model {
 ```
 
 The above example shows that there are `User` Model and `Post` Model. `Post` Model has `belongsTo` relationship to User at `author` key.
+
+If you don't want use "Class Property" syntax such as `static entity`, you can define them differently too.
+
+```js
+class User extends Model {
+  // ...
+}
+
+User.entity = 'users'
+
+export default User
+
+// Or...
+
+class User extends Model {
+  static get entity () {
+    return 'users'
+  }
+
+  // ...
+}
+```
 
 You can learn more about Models at [Model: Defining Models](model/defining-models.md).
 
