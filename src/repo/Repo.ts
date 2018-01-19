@@ -1,12 +1,12 @@
-import * as _ from './support/lodash'
-import Container from './connections/Container'
-import { Record, Records, NormalizedData } from './Data'
-import AttrTypes from './Attributes/AttrTypes'
-import Attrs, { Fields } from './Attributes'
-import { HasOne, BelongsTo, HasMany, HasManyBy } from './Attributes/Relations'
-import Model from './Model'
-import { State } from './Module'
-import Incrementer from './repo/Incrementer'
+import * as _ from '../support/lodash'
+import Container from '../connections/Container'
+import { Record, Records, NormalizedData } from '../Data'
+import AttrTypes from '../Attributes/AttrTypes'
+import Attrs, { Fields } from '../Attributes'
+import { HasOne, BelongsTo, HasMany, HasManyBy } from '../Attributes/Relations'
+import Model from '../Model'
+import { State } from '../Module'
+import Incrementer from './Incrementer'
 import Query, {
   Item as QueryItem,
   Collection as QueryCollection,

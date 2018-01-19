@@ -2,8 +2,8 @@ import install, { Install } from './store/install'
 import use, { Use } from './plugins/use'
 import Database from './Database'
 import Model from './Model'
-import Repo from './Repo'
-import Query from './Query'
+import Repo from './repo/Repo'
+import Query from './repo/Query'
 
 export interface VuexORM {
   install: Install

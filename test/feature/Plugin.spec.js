@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexORM from 'app'
 import Model from 'app/Model'
-import Query from 'app/Query'
+import Query from 'app/repo/Query'
 
 class User extends Model {
   static entity = 'users'

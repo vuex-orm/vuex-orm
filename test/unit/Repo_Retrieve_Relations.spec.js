@@ -9,7 +9,7 @@ import Like from 'test/fixtures/models/Like'
 import Cluster from 'test/fixtures/models/Cluster'
 import Node from 'test/fixtures/models/Node'
 import CustomKey from 'test/fixtures/models/CustomKey'
-import Repo from 'app/Repo'
+import Repo from 'app/repo/Repo'
 
 describe('Repo – Retrieve – Relations', () => {
   beforeEach(() => {

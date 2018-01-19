@@ -1,6 +1,6 @@
 import * as Vuex from 'vuex'
 import { EntityState } from '../Module'
-import Repo, { Item, Collection } from '../Repo'
+import Repo, { Item, Collection } from '../repo/Repo'
 
 export default {
   /**

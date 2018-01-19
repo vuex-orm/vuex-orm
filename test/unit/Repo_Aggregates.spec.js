@@ -1,6 +1,6 @@
 import { createApplication } from 'test/support/Helpers'
 import User from 'test/fixtures/models/User'
-import Repo from 'app/Repo'
+import Repo from 'app/repo/Repo'
 
 describe('Repo – Aggregates', () => {
   beforeEach(() => {

@@ -1,6 +1,6 @@
-import * as _ from './support/lodash'
-import { Record } from './Data'
-import { State, EntityState } from './Module'
+import * as _ from '../support/lodash'
+import { Record } from '../Data'
+import { State, EntityState } from '../Module'
 
 export type Item = Record | null
 

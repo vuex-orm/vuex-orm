@@ -1,6 +1,6 @@
 import { createApplication } from 'test/support/Helpers'
 import Model from 'app/Model'
-import Repo from 'app/Repo'
+import Repo from 'app/repo/Repo'
 
 describe('Repo – Create – Attributes', () => {
   it('should increment the field value when creating a record if the field type is `increment`', () => {
