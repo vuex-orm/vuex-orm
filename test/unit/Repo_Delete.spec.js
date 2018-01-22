@@ -6,7 +6,7 @@ import Comment from 'test/fixtures/models/Comment'
 import Review from 'test/fixtures/models/Review'
 import Like from 'test/fixtures/models/Like'
 import CustomKey from 'test/fixtures/models/CustomKey'
-import Repo from 'app/Repo'
+import Repo from 'app/repo/Repo'
 
 describe('Repo – Delete', () => {
   beforeEach(() => {

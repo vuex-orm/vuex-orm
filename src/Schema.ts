@@ -4,17 +4,24 @@ import AttrTypes from './Attributes/AttrTypes'
 import Attrs, { Fields } from './Attributes'
 import Model from './Model'
 
+export type IdAttribute = (value: any, parent: any, key: string) => any
+
 export interface Schemas {
   [entity: string]: schema.Entity
 }
 
 export default class Schema {
   /**
+   * Count to create unique id for record that missing its primary key.
+   */
+  static count: number = 0
+
+  /**
    * Create a schema of given model.
    */
   static one (model: typeof Model, schemas: Schemas = {}): schema.Entity {
     const thisSchema = new schema.Entity(model.entity, {}, {
-      idAttribute: model.primaryKey
+      idAttribute: this.idAttribute(model)
     })
 
     const definition = this.definition(model, {
@@ -74,5 +81,18 @@ export default class Schema {
 
       return definition
     }, {} as { [key: string]: NormalizrSchema })
+  }
+
+  /**
+   * Create the merge strategy.
+   */
+  static idAttribute (model: typeof Model): IdAttribute {
+    return (value: any, _parent: any, _key: string) => {
+      if (value[model.primaryKey] !== undefined) {
+        return value[model.primaryKey]
+      }
+
+      return `_no_key_${this.count++}`
+    }
   }
 }
