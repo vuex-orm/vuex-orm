@@ -81,7 +81,7 @@ export default class Query {
     this.state = state
     this.name = name
     this.entity = state[name]
-    this.primaryKey = state[name].$primaryKey || 'id'
+    this.primaryKey = '$id'
     this.records = _.map(state[name].data, (record: Record) => record)
   }
 

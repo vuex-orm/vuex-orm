@@ -157,6 +157,45 @@ describe('Model', () => {
     expect(post.$toJson()).toEqual(data)
   })
 
+  it('can get a value of the primary key', () => {
+    class User extends Model {
+      static fields () {
+        return {
+          id: this.attr(null)
+        }
+      }
+    }
+
+    const data = { id: 1 }
+
+    expect(User.id(data)).toBe(1)
+
+    const user = new User(data)
+
+    expect(user.$id()).toBe(1)
+  })
+
+  it('can get a value of the composit primary key', () => {
+    class Vote extends Model {
+      static primaryKey = ['vote_id', 'user_id']
+
+      static fields () {
+        return {
+          vote_id: this.attr(null),
+          user_id: this.attr(null)
+        }
+      }
+    }
+
+    const data = { user_id: 1, vote_id: 2 }
+
+    expect(Vote.id(data)).toBe('2_1')
+
+    const vote = new Vote(data)
+
+    expect(vote.$id()).toBe('2_1')
+  })
+
   it('can get a `increment` field from the schema', () => {
     class User extends Model {
       static fields () {

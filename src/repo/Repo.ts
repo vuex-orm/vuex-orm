@@ -180,7 +180,7 @@ export default class Repo {
   /**
    * Get the primary key for the record.
    */
-  static primaryKey (state: State, name: string): string {
+  static primaryKey (state: State, name: string): string | string[] {
     return this.model(state, name).primaryKey
   }
 
@@ -210,7 +210,7 @@ export default class Repo {
   /**
    * Get the primary key of the model.
    */
-  primaryKey (): string {
+  primaryKey (): string | string[] {
     return this.self().primaryKey(this.state, this.name)
   }
 
@@ -316,15 +316,16 @@ export default class Repo {
    * Add where constraints based on has or hasNot condition.
    */
   addHasConstraint (name: string, constraint: number | string | Constraint | null = null, count?: number, existence: boolean = true): this {
-    const id = this.primaryKey()
     const ids: any[] = []
     const items = (new Query(this.state, this.name)).get()
 
     _.forEach(items, (item) => {
-      this.hasRelation(item, name, constraint, count) === existence && ids.push(item[id])
+      const id = this.entity.id(item)
+
+      this.hasRelation(item, name, constraint, count) === existence && ids.push(id)
     })
 
-    this.where(id, (key: any) => _.includes(ids, key))
+    this.where('$id', (key: any) => _.includes(ids, key))
 
     return this
   }
@@ -424,7 +425,7 @@ export default class Repo {
         return
       }
 
-      const value = record[this.primaryKey()]
+      const value = record.$id
 
       if (value === undefined) {
         records[key] = record
@@ -443,7 +444,7 @@ export default class Repo {
    * corresponding model.
    */
   fill (data: Record, entity: string): Record {
-    return this.buildRecord(data, this.model(entity).fields())
+    return this.buildRecord(data, this.model(entity).fields(), { $id: data.$id })
   }
 
   /**
@@ -493,15 +494,15 @@ export default class Repo {
    * Update data in the state.
    */
   update (data: any, condition?: Condition): void {
-    // If there is no condition, check if data contains primary key. If it has,
-    // use it as a condition to update the data. Else, do nothing.
-    if (!condition) {
-      data[this.entity.primaryKey] && this.query.update(data, data[this.entity.primaryKey])
+    if (condition) {
+      this.query.update(data, condition)
 
       return
     }
 
-    this.query.update(data, condition)
+    if (typeof this.entity.primaryKey === 'string') {
+      data[this.entity.primaryKey] && this.query.update(data, data[this.entity.primaryKey])
+    }
   }
 
   /**

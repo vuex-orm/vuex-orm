@@ -6,6 +6,8 @@ import Model from './Model'
 
 export type IdAttribute = (value: any, parent: any, key: string) => any
 
+export type ProcessStrategy = (value: any, parent: any, key: string) => any
+
 export interface Schemas {
   [entity: string]: schema.Entity
 }
@@ -21,7 +23,8 @@ export default class Schema {
    */
   static one (model: typeof Model, schemas: Schemas = {}): schema.Entity {
     const thisSchema = new schema.Entity(model.entity, {}, {
-      idAttribute: this.idAttribute(model)
+      idAttribute: this.idAttribute(model),
+      processStrategy: this.processStrategy(model)
     })
 
     const definition = this.definition(model, {
@@ -88,11 +91,15 @@ export default class Schema {
    */
   static idAttribute (model: typeof Model): IdAttribute {
     return (value: any, _parent: any, _key: string) => {
-      if (value[model.primaryKey] !== undefined) {
-        return value[model.primaryKey]
-      }
+      const id = model.id(value)
 
-      return `_no_key_${this.count++}`
+      return id !== undefined ? id : `_no_key_${this.count++}`
+    }
+  }
+
+  static processStrategy (model: typeof Model): ProcessStrategy {
+    return (value: any, _parent: any, _key: string) => {
+      return { ...value, $id: model.id(value) }
     }
   }
 }

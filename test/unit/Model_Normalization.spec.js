@@ -37,7 +37,7 @@ describe('Model – Normalization', () => {
 
     const expected = {
       users: {
-        '1': { id: 1, name: 'John Doe' }
+        '1': { $id: 1, id: 1, name: 'John Doe' }
       }
     }
 
@@ -65,8 +65,8 @@ describe('Model – Normalization', () => {
 
     const expected = {
       users: {
-        '1': { id: 1, name: 'John Doe' },
-        '2': { id: 2, name: 'Jane Doe' }
+        '1': { $id: 1, id: 1, name: 'John Doe' },
+        '2': { $id: 2, id: 2, name: 'Jane Doe' }
       }
     }
 
@@ -105,10 +105,10 @@ describe('Model – Normalization', () => {
 
     const expected = {
       users: {
-        '1': { id: 1, profile: 3 }
+        '1': { $id: 1, id: 1, profile: 3 }
       },
       profiles: {
-        '3': { id: 3 }
+        '3': { $id: 3, id: 3 }
       }
     }
 
@@ -147,10 +147,10 @@ describe('Model – Normalization', () => {
 
     const expected = {
       posts: {
-        '1': { id: 1, title: 'Hello, world', user_id: 3, author: 3 }
+        '1': { $id: 1, id: 1, title: 'Hello, world', user_id: 3, author: 3 }
       },
       users: {
-        '3': { id: 3, name: 'John Doe' }
+        '3': { $id: 3, id: 3, name: 'John Doe' }
       }
     }
 
@@ -186,11 +186,11 @@ describe('Model – Normalization', () => {
 
     const expected = {
       posts: {
-        '3': { id: 3, user_id: 1 },
-        '5': { id: 5, user_id: 1 }
+        '3': { $id: 3, id: 3, user_id: 1 },
+        '5': { $id: 5, id: 5, user_id: 1 }
       },
       users: {
-        '1': { id: 1, posts: [3, 5] }
+        '1': { $id: 1, id: 1, posts: [3, 5] }
       }
     }
 
@@ -225,7 +225,7 @@ describe('Model – Normalization', () => {
 
     const expected = {
       users: {
-        '1': { id: 1, posts: [3, 5] }
+        '1': { $id: 1, id: 1, posts: [3, 5] }
       }
     }
 
@@ -271,12 +271,13 @@ describe('Model – Normalization', () => {
     const expected = {
       users: {
         '1': {
+          $id: 1,
           id: 1,
           settings: { type: 1, account: 2 }
         }
       },
       accounts: {
-        '2': { id: 2, user_id: 1 }
+        '2': { $id: 2, id: 2, user_id: 1 }
       }
     }
 

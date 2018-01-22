@@ -225,14 +225,14 @@ describe('Repo – Retrieve', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, role: 'admin', age: 20 },
-        '2': { id: 2, role: 'user', age: 30 },
-        '3': { id: 3, role: 'admin', age: 40 }
+        '1': { $id: 1, id: 1, role: 'admin', age: 20 },
+        '2': { $id: 2, id: 2, role: 'user', age: 30 },
+        '3': { $id: 3, id: 3, role: 'admin', age: 40 }
       }}
     }
 
     const expected = [
-      { id: 1, role: 'admin', age: 20 }
+      { $id: 1, id: 1, role: 'admin', age: 20 }
     ]
 
     const result = Repo.query(state, 'users', false)
@@ -246,16 +246,16 @@ describe('Repo – Retrieve', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, role: 'admin', age: 30 },
-        '2': { id: 2, role: 'user', age: 30 },
-        '3': { id: 3, role: 'admin', age: 40 },
-        '4': { id: 4, role: 'admin', age: 15 }
+        '1': { $id: 1, id: 1, role: 'admin', age: 30 },
+        '2': { $id: 2, id: 2, role: 'user', age: 30 },
+        '3': { $id: 3, id: 3, role: 'admin', age: 40 },
+        '4': { $id: 4, id: 4, role: 'admin', age: 15 }
       }}
     }
 
     const expected = [
-      { id: 1, role: 'admin', age: 30 },
-      { id: 4, role: 'admin', age: 15 }
+      { $id: 1, id: 1, role: 'admin', age: 30 },
+      { $id: 4, id: 4, role: 'admin', age: 15 }
     ]
 
     const result = Repo.query(state, 'users', false)
@@ -295,8 +295,8 @@ describe('Repo – Retrieve', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1 },
-        '2': { id: 2 }
+        '1': { $id: 1, id: 1 },
+        '2': { $id: 2, id: 2 }
       }}
     }
 
@@ -314,8 +314,8 @@ describe('Repo – Retrieve', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1 },
-        '2': { id: 2 }
+        '1': { $id: 1, id: 1 },
+        '2': { $id: 2, id: 2 }
       }}
     }
 
@@ -325,7 +325,7 @@ describe('Repo – Retrieve', () => {
       return t.fail('user is empty but its expected to have 1 record.')
     }
 
-    expect(user).toEqual({ id: 2 })
+    expect(user).toEqual({ $id: 2, id: 2 })
   })
 
   it('returns null when single record can not be found', () => {

@@ -40,7 +40,7 @@ describe('Repo – Create', () => {
       name: 'entities',
       posts: { data: {
         '0': {
-          id: 0,
+          $id: 0, id: 0,
           user_id: null,
           author: null,
           comments: [0, 1],
@@ -48,8 +48,8 @@ describe('Repo – Create', () => {
         }
       }},
       comments: { data: {
-        '0': { id: 0, post_id: 0, body: '', post: null, likes: [] },
-        '1': { id: 1, post_id: 0, body: '', post: null, likes: [] }
+        '0': { $id: 0, id: 0, post_id: 0, body: '', post: null, likes: [] },
+        '1': { $id: 1, id: 1, post_id: 0, body: '', post: null, likes: [] }
       }}
     }
 
@@ -75,6 +75,7 @@ describe('Repo – Create', () => {
       name: 'entities',
       users: { data: {
         '1': {
+          $id: 1,
           id: 1,
           name: '',
           settings: {
@@ -121,17 +122,17 @@ describe('Repo – Create', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '10': { id: 10, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null },
-        '11': { id: 11, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null }
+        '10': { $id: 10, id: 10, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null },
+        '11': { $id: 11, id: 11, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null }
       }},
       posts: { data: {
-        '1': { id: 1, user_id: 10, author: 10, comments: [1], reviews: [1, 2] },
-        '2': { id: 2, user_id: 11, author: 11, comments: [2, 3], reviews: [3, 4] }
+        '1': { $id: 1, id: 1, user_id: 10, author: 10, comments: [1], reviews: [1, 2] },
+        '2': { $id: 2, id: 2, user_id: 11, author: 11, comments: [2, 3], reviews: [3, 4] }
       }},
       comments: { data: {
-        '1': { id: 1, post_id: 1, body: 'C1', post: null, likes: [] },
-        '2': { id: 2, post_id: 2, body: 'C2', post: null, likes: [] },
-        '3': { id: 3, post_id: 2, body: 'C3', post: null, likes: [] }
+        '1': { $id: 1, id: 1, post_id: 1, body: 'C1', post: null, likes: [] },
+        '2': { $id: 2, id: 2, post_id: 2, body: 'C2', post: null, likes: [] },
+        '3': { $id: 3, id: 3, post_id: 2, body: 'C3', post: null, likes: [] }
       }},
       reviews: { data: {} }
     }
@@ -174,8 +175,8 @@ describe('Repo – Create', () => {
     const expected = {
       name: 'entities',
       customKeys: { data: {
-        '10': { id: 1, my_id: 10 },
-        '20': { id: 2, my_id: 20 }
+        '10': { $id: 10, id: 1, my_id: 10 },
+        '20': { $id: 20, id: 2, my_id: 20 }
       }}
     }
 
@@ -188,8 +189,8 @@ describe('Repo – Create', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John', settings: { accounts: [], role: '' }, posts: [], profile: null },
-        '2': { id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null }
+        '1': { $id: 1, id: 1, name: 'John', settings: { accounts: [], role: '' }, posts: [], profile: null },
+        '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null }
       }}
     }
 
@@ -198,9 +199,9 @@ describe('Repo – Create', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John', settings: { accounts: [], role: '' }, posts: [], profile: null },
-        '2': { id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null },
-        '3': { id: 3, name: 'Johnny', settings: { accounts: [], role: '' }, posts: [], profile: null }
+        '1': { $id: 1, id: 1, name: 'John', settings: { accounts: [], role: '' }, posts: [], profile: null },
+        '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null },
+        '3': { $id: 3, id: 3, name: 'Johnny', settings: { accounts: [], role: '' }, posts: [], profile: null }
       }}
     }
 
@@ -213,8 +214,8 @@ describe('Repo – Create', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John', settings: { accounts: [], role: '' }, posts: [], profile: null },
-        '2': { id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null }
+        '1': { $id: 1, id: 1, name: 'John', settings: { accounts: [], role: '' }, posts: [], profile: null },
+        '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null }
       }}
     }
 
@@ -226,9 +227,9 @@ describe('Repo – Create', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'Janie', settings: { accounts: [], role: '' }, posts: [], profile: null },
-        '2': { id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null },
-        '3': { id: 3, name: 'Johnny', settings: { accounts: [], role: '' }, posts: [], profile: null }
+        '1': { $id: 1, id: 1, name: 'Janie', settings: { accounts: [], role: '' }, posts: [], profile: null },
+        '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null },
+        '3': { $id: 3, id: 3, name: 'Johnny', settings: { accounts: [], role: '' }, posts: [], profile: null }
       }}
     }
 
