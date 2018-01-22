@@ -65,7 +65,10 @@ class User extends Model {
 
 For this example, User model has `id` and `name` fields. The key represents the name of the field (as database's column) and value represents its type of the field. The User model uses `this.attr()` for both id and name. This is the most generic type of the field and the argument is the default value that will be used when instantiating the model class.
 
-You can also define a relationship between deferent models. For that, please take a look at [Relationship documentation]('relationship.md').
+You can also define special attributes or a relationship between deferent models. For that, please take a look at the corresponding section.
+
+- [Attributes](attributes.md)
+- [Relationship](relationship.md)
 
 These fields are going to be attached as instance property when instantiating the model.
 

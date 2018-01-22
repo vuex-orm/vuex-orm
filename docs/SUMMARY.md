@@ -5,6 +5,7 @@
 - [Getting Started](getting-started.md)
 - [Model](model.md)
     - [Getting Started](model/defining-models.md)
+    - [Attributes](model/attributes.md)
     - [Relationship](model/relationship.md)
     - [Mutators](model/mutators.md)
     - [Serialization](model/serialization.md)
