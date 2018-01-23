@@ -3,7 +3,7 @@
 [![Travis CI](https://travis-ci.org/vuex-orm/vuex-orm.svg?branch=master)](https://travis-ci.org/vuex-orm/vuex-orm)
 [![codecov](https://codecov.io/gh/vuex-orm/vuex-orm/branch/master/graph/badge.svg)](https://codecov.io/gh/vuex-orm/vuex-orm)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-[![License](https://img.shields.io/npm/l/vue.svg)](https://github.com/vuex-orm/vuex-orm/blob/master/LICENSE.md)
+[![License](https://img.shields.io/npm/l/@vuex-orm/core.svg)](https://github.com/vuex-orm/vuex-orm/blob/master/LICENSE.md)
 
 Vuex ORM is a plugin for [Vuex](https://github.com/vuejs/vuex) to enable Object-Relational Mapping like access to the Vuex Store. Heavily inspired by Redux recipe of ["Normalizing State Shape"](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) and ["Updating Normalized Data"](http://redux.js.org/docs/recipes/reducers/UpdatingNormalizedData.html).
 
