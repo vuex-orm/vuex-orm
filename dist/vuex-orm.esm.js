@@ -3642,6 +3642,143 @@ function mapValues(object, iteratee) {
 }
 
 /**
+ * The base implementation of methods like `_.max` and `_.min` which accepts a
+ * `comparator` to determine the extremum value.
+ *
+ * @private
+ * @param {Array} array The array to iterate over.
+ * @param {Function} iteratee The iteratee invoked per iteration.
+ * @param {Function} comparator The comparator used to compare values.
+ * @returns {*} Returns the extremum value.
+ */
+function baseExtremum(array, iteratee, comparator) {
+  var index = -1,
+      length = array.length;
+
+  while (++index < length) {
+    var value = array[index],
+        current = iteratee(value);
+
+    if (current != null && (computed === undefined
+          ? (current === current && !isSymbol(current))
+          : comparator(current, computed)
+        )) {
+      var computed = current,
+          result = value;
+    }
+  }
+  return result;
+}
+
+/**
+ * The base implementation of `_.gt` which doesn't coerce arguments.
+ *
+ * @private
+ * @param {*} value The value to compare.
+ * @param {*} other The other value to compare.
+ * @returns {boolean} Returns `true` if `value` is greater than `other`,
+ *  else `false`.
+ */
+function baseGt(value, other) {
+  return value > other;
+}
+
+/**
+ * Computes the maximum value of `array`. If `array` is empty or falsey,
+ * `undefined` is returned.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Math
+ * @param {Array} array The array to iterate over.
+ * @returns {*} Returns the maximum value.
+ * @example
+ *
+ * _.max([4, 2, 8, 6]);
+ * // => 8
+ *
+ * _.max([]);
+ * // => undefined
+ */
+function max(array) {
+  return (array && array.length)
+    ? baseExtremum(array, identity, baseGt)
+    : undefined;
+}
+
+/**
+ * This method is like `_.max` except that it accepts `iteratee` which is
+ * invoked for each element in `array` to generate the criterion by which
+ * the value is ranked. The iteratee is invoked with one argument: (value).
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Math
+ * @param {Array} array The array to iterate over.
+ * @param {Function} [iteratee=_.identity] The iteratee invoked per element.
+ * @returns {*} Returns the maximum value.
+ * @example
+ *
+ * var objects = [{ 'n': 1 }, { 'n': 2 }];
+ *
+ * _.maxBy(objects, function(o) { return o.n; });
+ * // => { 'n': 2 }
+ *
+ * // The `_.property` iteratee shorthand.
+ * _.maxBy(objects, 'n');
+ * // => { 'n': 2 }
+ */
+function maxBy(array, iteratee) {
+  return (array && array.length)
+    ? baseExtremum(array, baseIteratee(iteratee, 2), baseGt)
+    : undefined;
+}
+
+/**
+ * The base implementation of `_.lt` which doesn't coerce arguments.
+ *
+ * @private
+ * @param {*} value The value to compare.
+ * @param {*} other The other value to compare.
+ * @returns {boolean} Returns `true` if `value` is less than `other`,
+ *  else `false`.
+ */
+function baseLt(value, other) {
+  return value < other;
+}
+
+/**
+ * This method is like `_.min` except that it accepts `iteratee` which is
+ * invoked for each element in `array` to generate the criterion by which
+ * the value is ranked. The iteratee is invoked with one argument: (value).
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Math
+ * @param {Array} array The array to iterate over.
+ * @param {Function} [iteratee=_.identity] The iteratee invoked per element.
+ * @returns {*} Returns the minimum value.
+ * @example
+ *
+ * var objects = [{ 'n': 1 }, { 'n': 2 }];
+ *
+ * _.minBy(objects, function(o) { return o.n; });
+ * // => { 'n': 1 }
+ *
+ * // The `_.property` iteratee shorthand.
+ * _.minBy(objects, 'n');
+ * // => { 'n': 1 }
+ */
+function minBy(array, iteratee) {
+  return (array && array.length)
+    ? baseExtremum(array, baseIteratee(iteratee, 2), baseLt)
+    : undefined;
+}
+
+/**
  * The base implementation of `_.sortBy` which uses `comparer` to define the
  * sort order of `array` and replaces criteria objects with their corresponding
  * values.
@@ -4250,6 +4387,60 @@ function some(collection, predicate, guard) {
     predicate = undefined;
   }
   return func(collection, baseIteratee(predicate, 3));
+}
+
+/**
+ * The base implementation of `_.clamp` which doesn't coerce arguments.
+ *
+ * @private
+ * @param {number} number The number to clamp.
+ * @param {number} [lower] The lower bound.
+ * @param {number} upper The upper bound.
+ * @returns {number} Returns the clamped number.
+ */
+function baseClamp(number, lower, upper) {
+  if (number === number) {
+    if (upper !== undefined) {
+      number = number <= upper ? number : upper;
+    }
+    if (lower !== undefined) {
+      number = number >= lower ? number : lower;
+    }
+  }
+  return number;
+}
+
+/**
+ * Checks if `string` starts with the given target string.
+ *
+ * @static
+ * @memberOf _
+ * @since 3.0.0
+ * @category String
+ * @param {string} [string=''] The string to inspect.
+ * @param {string} [target] The string to search for.
+ * @param {number} [position=0] The position to search from.
+ * @returns {boolean} Returns `true` if `string` starts with `target`,
+ *  else `false`.
+ * @example
+ *
+ * _.startsWith('abc', 'a');
+ * // => true
+ *
+ * _.startsWith('abc', 'b');
+ * // => false
+ *
+ * _.startsWith('abc', 'b', 1);
+ * // => true
+ */
+function startsWith(string, target, position) {
+  string = toString(string);
+  position = position == null
+    ? 0
+    : baseClamp(toInteger(position), 0, string.length);
+
+  target = baseToString(target);
+  return string.slice(position, position + target.length) == target;
 }
 
 var Connection = /** @class */ (function () {
@@ -5058,6 +5249,7 @@ var Data = /** @class */ (function () {
 var Types;
 (function (Types) {
     Types["Attr"] = "Attr";
+    Types["Increment"] = "Increment";
     Types["HasOne"] = "HasOne";
     Types["BelongsTo"] = "BelongsTo";
     Types["HasMany"] = "HasMany";
@@ -5074,6 +5266,13 @@ var Attributes = /** @class */ (function () {
      */
     Attributes.attr = function (value, mutator) {
         return { type: AttrTypes.Attr, value: value, mutator: mutator };
+    };
+    /**
+     * The auto-increment attribute. The field with this attribute will
+     * automatically increment its value creating a new record.
+     */
+    Attributes.increment = function () {
+        return { type: AttrTypes.Increment, value: 1 };
     };
     /**
      * The has one relationship.
@@ -5108,6 +5307,7 @@ var Attributes = /** @class */ (function () {
             return false;
         }
         return attr.type === AttrTypes.Attr
+            || attr.type === AttrTypes.Increment
             || attr.type === AttrTypes.HasOne
             || attr.type === AttrTypes.BelongsTo
             || attr.type === AttrTypes.HasMany
@@ -5139,7 +5339,8 @@ var Schema = /** @class */ (function () {
     Schema.one = function (model, schemas) {
         if (schemas === void 0) { schemas = {}; }
         var thisSchema = new src_3.Entity(model.entity, {}, {
-            idAttribute: model.primaryKey
+            idAttribute: this.idAttribute(model),
+            processStrategy: this.processStrategy(model)
         });
         var definition = this.definition(model, __assign({}, schemas, (_a = {}, _a[model.entity] = thisSchema, _a)));
         thisSchema.define(definition);
@@ -5186,6 +5387,25 @@ var Schema = /** @class */ (function () {
             return definition;
         }, {});
     };
+    /**
+     * Create the merge strategy.
+     */
+    Schema.idAttribute = function (model) {
+        var _this = this;
+        return function (value, _parent, _key) {
+            var id = model.id(value);
+            return id !== undefined ? id : "_no_key_" + _this.count++;
+        };
+    };
+    Schema.processStrategy = function (model) {
+        return function (value, _parent, _key) {
+            return __assign({}, value, { $id: model.id(value) });
+        };
+    };
+    /**
+     * Count to create unique id for record that missing its primary key.
+     */
+    Schema.count = 0;
     return Schema;
 }());
 
@@ -5218,6 +5438,13 @@ var Model = /** @class */ (function () {
         return Attributes.attr(value, mutator);
     };
     /**
+     * The auto-increment attribute. The field with this attribute will
+     * automatically increment its value creating a new record.
+     */
+    Model.increment = function () {
+        return Attributes.increment();
+    };
+    /**
      * Creates has one relationship.
      */
     Model.hasOne = function (model, foreignKey) {
@@ -5240,6 +5467,38 @@ var Model = /** @class */ (function () {
      */
     Model.hasManyBy = function (model, foreignKey, otherKey) {
         return Attributes.hasManyBy(model, foreignKey, otherKey);
+    };
+    /**
+     * Gte the value of the primary key.
+     */
+    Model.id = function (record) {
+        var key = this.primaryKey;
+        if (typeof key === 'string') {
+            return record[key];
+        }
+        return key.map(function (k) { return record[k]; }).join('_');
+    };
+    /**
+     * Get all `increment` fields from the schema.
+     */
+    Model.incrementFields = function () {
+        var fields = [];
+        forEach(this.fields(), function (field, key) {
+            if (Attributes.isFields(field)) {
+                return;
+            }
+            if (field.type === AttrTypes.Increment) {
+                fields.push((_a = {}, _a[key] = field, _a));
+            }
+            var _a;
+        });
+        return fields;
+    };
+    /**
+     * Check if fields contains the `increment` field type.
+     */
+    Model.hasIncrementFields = function () {
+        return this.incrementFields().length > 0;
     };
     /**
      * Mutators to mutate matching fields when instantiating the model.
@@ -5320,7 +5579,7 @@ var Model = /** @class */ (function () {
      * Get the value of the primary key.
      */
     Model.prototype.$id = function () {
-        return this[this.$self().primaryKey];
+        return this.$self().id(this);
     };
     /**
      * The definition of the fields of the model and its relations.
@@ -5387,6 +5646,9 @@ var Model = /** @class */ (function () {
             var mutator = attr.mutator || this.$self().mutators()[key];
             return mutator ? mutator(attr.value) : attr.value;
         }
+        if (attr.type === AttrTypes.Increment) {
+            return attr.value;
+        }
         if (isNumber(attr.value) || isNumber(attr.value[0])) {
             return null;
         }
@@ -5445,6 +5707,71 @@ var __assign$2 = (undefined && undefined.__assign) || Object.assign || function(
     }
     return t;
 };
+var Incrementer = /** @class */ (function () {
+    /**
+     * Create a new incrementer instance.
+     */
+    function Incrementer(repo) {
+        this.repo = repo;
+    }
+    /**
+     * Increment all fields with `incremented` attribute type.
+     */
+    Incrementer.prototype.incrementFields = function (data, reset) {
+        if (reset === void 0) { reset = false; }
+        return this.repo.entity.hasIncrementFields ? this.process(data, reset) : data;
+    };
+    /**
+     * Process the incrementation.
+     */
+    Incrementer.prototype.process = function (data, reset) {
+        var _this = this;
+        if (reset === void 0) { reset = false; }
+        var newData = __assign$2({}, data);
+        forEach(this.repo.entity.incrementFields(), function (field) {
+            var incrementKey = _this.incrementKey(field);
+            var max$$1 = _this.max(data, incrementKey, reset);
+            forEach(data, function (_record, fieldKey) {
+                if (newData[fieldKey][incrementKey]) {
+                    return;
+                }
+                newData[fieldKey][incrementKey] = ++max$$1;
+                newData[fieldKey]['$id'] = _this.repo.entity.id(newData[fieldKey]);
+            });
+        });
+        return newData;
+    };
+    /**
+     * Get key of the increment field.
+     */
+    Incrementer.prototype.incrementKey = function (field) {
+        return Object.keys(field)[0];
+    };
+    /**
+     * Get the max value of the specified field with given data combined
+     * with existing records.
+     */
+    Incrementer.prototype.max = function (data, field, reset) {
+        if (reset === void 0) { reset = false; }
+        var max$$1 = reset ? 0 : this.repo.self().max(this.repo.state, this.repo.name, field);
+        var records = map(data, function (v) { return v; });
+        var maxRecord = maxBy(records, field);
+        if (maxRecord) {
+            max$$1 = max([max$$1, maxRecord[field]]);
+        }
+        return max$$1;
+    };
+    return Incrementer;
+}());
+
+var __assign$3 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 var Query = /** @class */ (function () {
     /**
      * Create a new query instance.
@@ -5475,7 +5802,7 @@ var Query = /** @class */ (function () {
         this.state = state;
         this.name = name;
         this.entity = state[name];
-        this.primaryKey = state[name].$primaryKey || 'id';
+        this.primaryKey = '$id';
         this.records = map(state[name].data, function (record) { return record; });
     }
     /**
@@ -5533,7 +5860,7 @@ var Query = /** @class */ (function () {
      * with the same primary key.
      */
     Query.prototype.insert = function (data) {
-        this.entity.data = __assign$2({}, this.entity.data, data);
+        this.entity.data = __assign$3({}, this.entity.data, data);
     };
     /**
      * Update data in the state.
@@ -5541,12 +5868,12 @@ var Query = /** @class */ (function () {
     Query.prototype.update = function (data, condition) {
         if (typeof condition !== 'function') {
             if (this.entity.data[condition]) {
-                this.entity.data[condition] = __assign$2({}, this.entity.data[condition], data);
+                this.entity.data[condition] = __assign$3({}, this.entity.data[condition], data);
             }
             return;
         }
         this.entity.data = mapValues(this.entity.data, function (record) {
-            return condition(record) ? __assign$2({}, record, data) : record;
+            return condition(record) ? __assign$3({}, record, data) : record;
         });
     };
     /**
@@ -5667,7 +5994,7 @@ var Query = /** @class */ (function () {
     return Query;
 }());
 
-var __assign$3 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$4 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -5718,6 +6045,20 @@ var Repo = /** @class */ (function () {
     Repo.count = function (state, entity, wrap) {
         if (wrap === void 0) { wrap = false; }
         return (new this(state, entity, wrap)).count();
+    };
+    /**
+     * Get the max value of the specified filed.
+     */
+    Repo.max = function (state, entity, field, wrap) {
+        if (wrap === void 0) { wrap = false; }
+        return (new this(state, entity, wrap)).max(field);
+    };
+    /**
+     * Get the min value of the specified filed.
+     */
+    Repo.min = function (state, entity, field, wrap) {
+        if (wrap === void 0) { wrap = false; }
+        return (new this(state, entity, wrap)).min(field);
     };
     /**
      * Save the given data to the state. This will replace any existing
@@ -5790,7 +6131,8 @@ var Repo = /** @class */ (function () {
      * Get model of given name from connections container.
      */
     Repo.prototype.model = function (name) {
-        return this.self().model(this.state, name);
+        var entity = name || this.name;
+        return this.self().model(this.state, entity);
     };
     /**
      * Get all models from connections container.
@@ -5895,13 +6237,13 @@ var Repo = /** @class */ (function () {
         var _this = this;
         if (constraint === void 0) { constraint = null; }
         if (existence === void 0) { existence = true; }
-        var id = this.primaryKey();
         var ids = [];
         var items = (new Query(this.state, this.name)).get();
         forEach(items, function (item) {
-            _this.hasRelation(item, name, constraint, count) === existence && ids.push(item[id]);
+            var id = _this.entity.id(item);
+            _this.hasRelation(item, name, constraint, count) === existence && ids.push(id);
         });
-        this.where(id, function (key) { return includes(ids, key); });
+        this.where('$id', function (key) { return includes(ids, key); });
         return this;
     };
     /**
@@ -5931,7 +6273,8 @@ var Repo = /** @class */ (function () {
             return;
         }
         forEach(normalizedData, function (data, entity) {
-            var filledData = mapValues(data, function (record) { return _this.fill(record, entity); });
+            var incrementedData = _this.setIds((new Incrementer(_this)).incrementFields(data, method === 'create'));
+            var filledData = mapValues(incrementedData, function (record) { return _this.fill(record, entity); });
             entity === _this.name ? _this.query[method](filledData) : new Query(_this.state, entity)[method](filledData);
         });
     };
@@ -5944,11 +6287,54 @@ var Repo = /** @class */ (function () {
         return this.get().length;
     };
     /**
+     * Get the max value of the specified filed.
+     */
+    Repo.prototype.max = function (field) {
+        // Do not wrap result data with class because it's unnecessary.
+        this.wrap = false;
+        var record = maxBy(this.get(), field);
+        return record ? record[field] : 0;
+    };
+    /**
+     * Get the min value of the specified filed.
+     */
+    Repo.prototype.min = function (field) {
+        // Do not wrap result data with class because it's unnecessary.
+        this.wrap = false;
+        var record = minBy(this.get(), field);
+        return record ? record[field] : 0;
+    };
+    /**
+     * Set proper key to the records. When a record has `increment` attribute
+     * type for the primary key, it's possible for the record to have the
+     * key of `no_key_<count>`. This function will convert those keys into
+     * the proper value of the primary key.
+     */
+    Repo.prototype.setIds = function (data) {
+        if (!this.entity.incrementFields()) {
+            return data;
+        }
+        var records = {};
+        forEach(data, function (record, key) {
+            if (!startsWith(key, '_no_key_')) {
+                records[key] = record;
+                return;
+            }
+            var value = record.$id;
+            if (value === undefined) {
+                records[key] = record;
+                return;
+            }
+            records["" + value] = record;
+        });
+        return records;
+    };
+    /**
      * Fill missing fields in given data with default value defined in
      * corresponding model.
      */
     Repo.prototype.fill = function (data, entity) {
-        return this.buildRecord(data, this.model(entity).fields());
+        return this.buildRecord(data, this.model(entity).fields(), { $id: data.$id });
     };
     /**
      * Build record.
@@ -5967,7 +6353,7 @@ var Repo = /** @class */ (function () {
                 newRecord[name] = data[name];
                 return;
             }
-            if (attr.type === AttrTypes.Attr) {
+            if (attr.type === AttrTypes.Attr || attr.type === AttrTypes.Increment) {
                 newRecord[name] = attr.value;
                 return;
             }
@@ -5986,13 +6372,13 @@ var Repo = /** @class */ (function () {
      * Update data in the state.
      */
     Repo.prototype.update = function (data, condition) {
-        // If there is no condition, check if data contains primary key. If it has,
-        // use it as a condition to update the data. Else, do nothing.
-        if (!condition) {
-            data[this.entity.primaryKey] && this.query.update(data, data[this.entity.primaryKey]);
+        if (condition) {
+            this.query.update(data, condition);
             return;
         }
-        this.query.update(data, condition);
+        if (typeof this.entity.primaryKey === 'string') {
+            data[this.entity.primaryKey] && this.query.update(data, data[this.entity.primaryKey]);
+        }
     };
     /**
      * Delete data from the state.
@@ -6045,7 +6431,7 @@ var Repo = /** @class */ (function () {
     Repo.prototype.loadRelations = function (base, load, record, fields) {
         var _this = this;
         var _load = load || this.load;
-        var _record = record || __assign$3({}, base);
+        var _record = record || __assign$4({}, base);
         var _fields = fields || this.entity.fields();
         return reduce(_load, function (record, relation) {
             var name = relation.name.split('.')[0];
@@ -6381,7 +6767,7 @@ var subActions = {
     }
 };
 
-var __assign$4 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$5 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -6419,10 +6805,10 @@ var Module = /** @class */ (function () {
             }; };
             tree.modules[entity.model.entity] = {
                 namespaced: true,
-                state: __assign$4({}, entity.module.state, _this.state, { $connection: namespace, $name: entity.model.entity, $primaryKey: entity.model.primaryKey })
+                state: __assign$5({}, entity.module.state, _this.state, { $connection: namespace, $name: entity.model.entity, $primaryKey: entity.model.primaryKey })
             };
-            tree.modules[entity.model.entity]['getters'] = __assign$4({}, subGetters, entity.module.getters);
-            tree.modules[entity.model.entity]['actions'] = __assign$4({}, subActions, entity.module.actions);
+            tree.modules[entity.model.entity]['getters'] = __assign$5({}, subGetters, entity.module.getters);
+            tree.modules[entity.model.entity]['actions'] = __assign$5({}, subActions, entity.module.actions);
             tree.modules[entity.model.entity]['mutations'] = entity.module.mutations || {};
         });
         return tree;
