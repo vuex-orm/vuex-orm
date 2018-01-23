@@ -31,16 +31,18 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, profile: 3 }
+        '1': { $id: 1, id: 1, profile: 3 }
       }},
       profiles: { data: {
-        '3': { id: 3, user_id: 1, users: 1 }
+        '3': { $id: 3, id: 3, user_id: 1, users: 1 }
       }}
     }
 
     const expected = {
+      $id: 1,
       id: 1,
       profile: {
+        $id: 3,
         id: 3,
         user_id: 1,
         users: 1
@@ -56,17 +58,19 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John Doe' }
+        '1': { $id: 1, id: 1, name: 'John Doe' }
       }},
       posts: { data: {
-        '3': { id: 3, user_id: 1, author: 1 }
+        '3': { $id: 3, id: 3, user_id: 1, author: 1 }
       }}
     }
 
     const expected = {
+      $id: 3,
       id: 3,
       user_id: 1,
       author: {
+        $id: 1,
         id: 1,
         name: 'John Doe'
       }
@@ -81,17 +85,19 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '0': { id: 0, name: 'John Doe' }
+        '0': { $id: 0, id: 0, name: 'John Doe' }
       }},
       posts: { data: {
-        '3': { id: 3, user_id: 0, author: 0 }
+        '3': { $id: 3, id: 3, user_id: 0, author: 0 }
       }}
     }
 
     const expected = {
+      $id: 3,
       id: 3,
       user_id: 0,
       author: {
+        $id: 0,
         id: 0,
         name: 'John Doe'
       }
@@ -106,19 +112,19 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       clusters: { data: {
-       '1': { id: 1, name: 'tokyo', nodes: [1] }
+       '1': { $id: 1, id: 1, name: 'tokyo', nodes: [1] }
       }},
       nodes: { data: {
-       '1': { id: 1, name: 'one', clusterId: 1 },
-       '2': { id: 2, name: 'two', clusterId: null }
+       '1': { $id: 1, id: 1, name: 'one', clusterId: 1 },
+       '2': { $id: 2, id: 2, name: 'two', clusterId: null }
       }}
     }
 
     const nodes = Repo.query(state, 'nodes', false).with('cluster').get()
 
     const expected = [
-      { id: 1, name: 'one', clusterId: 1, cluster: { id: 1, name: 'tokyo', nodes: [1] } },
-      { id: 2, name: 'two', clusterId: null, cluster: null },
+      { $id: 1, id: 1, name: 'one', clusterId: 1, cluster: { $id: 1, id: 1, name: 'tokyo', nodes: [1] } },
+      { $id: 2, id: 2, name: 'two', clusterId: null, cluster: null },
     ]
 
     expect(nodes).toEqual(expected)
@@ -128,10 +134,10 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John Doe' }
+        '1': { $id: 1, id: 1, name: 'John Doe' }
       }},
       posts: { data: {
-        '3': { id: 3, user_id: 1, author: 1 }
+        '3': { $id: 3, id: 3, user_id: 1, author: 1 }
       }}
     }
 
@@ -287,18 +293,18 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1 },
-        '2': { id: 2 },
-        '3': { id: 3 }
+        '1': { $id: 1, id: 1 },
+        '2': { $id: 2, id: 2 },
+        '3': { $id: 3, id: 3 }
       }},
       posts: { data: {
-        '1': { id: 1, user_id: 1 },
-        '2': { id: 2, user_id: 2 },
-        '3': { id: 3, user_id: 2 }
+        '1': { $id: 1, id: 1, user_id: 1 },
+        '2': { $id: 2, id: 2, user_id: 2 },
+        '3': { $id: 3, id: 3, user_id: 2 }
       }}
     }
 
-    const expected = [{ id: 1 }, { id: 2 }]
+    const expected = [{ $id: 1, id: 1 }, { $id: 2, id: 2 }]
 
     const users = Repo.query(state, 'users', false).has('posts').get()
 
@@ -309,18 +315,18 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1 },
-        '2': { id: 2 },
-        '3': { id: 3 }
+        '1': { $id: 1, id: 1 },
+        '2': { $id: 2, id: 2 },
+        '3': { $id: 3, id: 3 }
       }},
       posts: { data: {
-        '1': { id: 1, user_id: 1 },
-        '2': { id: 2, user_id: 2 },
-        '3': { id: 3, user_id: 2 }
+        '1': { $id: 1, id: 1, user_id: 1 },
+        '2': { $id: 2, id: 2, user_id: 2 },
+        '3': { $id: 3, id: 3, user_id: 2 }
       }}
     }
 
-    const expected = [{ id: 3 }]
+    const expected = [{ $id: 3, id: 3 }]
 
     const users = Repo.query(state, 'users', false).hasNot('posts').get()
 
@@ -331,18 +337,18 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1 },
-        '2': { id: 2 },
-        '3': { id: 3 }
+        '1': { $id: 1, id: 1 },
+        '2': { $id: 2, id: 2 },
+        '3': { $id: 3, id: 3 }
       }},
       posts: { data: {
-        '1': { id: 1, user_id: 1, type: 'news' },
-        '2': { id: 2, user_id: 2, type: 'event' },
-        '3': { id: 3, user_id: 2, type: 'news' }
+        '1': { $id: 1, id: 1, user_id: 1, type: 'news' },
+        '2': { $id: 2, id: 2, user_id: 2, type: 'event' },
+        '3': { $id: 3, id: 3, user_id: 2, type: 'news' }
       }}
     }
 
-    const expected = [{ id: 2 }]
+    const expected = [{ $id: 2, id: 2 }]
 
     const users = Repo.query(state, 'users', false)
       .has('posts', query => query.where('type', 'event'))
@@ -355,18 +361,18 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1 },
-        '2': { id: 2 },
-        '3': { id: 3 }
+        '1': { $id: 1, id: 1 },
+        '2': { $id: 2, id: 2 },
+        '3': { $id: 3, id: 3 }
       }},
       posts: { data: {
-        '1': { id: 1, user_id: 1, type: 'news' },
-        '2': { id: 2, user_id: 2, type: 'event' },
-        '3': { id: 3, user_id: 2, type: 'news' }
+        '1': { $id: 1, id: 1, user_id: 1, type: 'news' },
+        '2': { $id: 2, id: 2, user_id: 2, type: 'event' },
+        '3': { $id: 3, id: 3, user_id: 2, type: 'news' }
       }}
     }
 
-    const expected = [{ id: 1 }, { id: 3 }]
+    const expected = [{ $id: 1, id: 1 }, { $id: 3, id: 3 }]
 
     const users = Repo.query(state, 'users', false)
       .hasNot('posts', query => query.where('type', 'event'))
@@ -379,18 +385,18 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1 },
-        '2': { id: 2 },
-        '3': { id: 3 }
+        '1': { $id: 1, id: 1 },
+        '2': { $id: 2, id: 2 },
+        '3': { $id: 3, id: 3 }
       }},
       posts: { data: {
-        '1': { id: 1, user_id: 1, type: 'news' },
-        '2': { id: 2, user_id: 2, type: 'event' },
-        '3': { id: 3, user_id: 2, type: 'news' }
+        '1': { $id: 1, id: 1, user_id: 1, type: 'news' },
+        '2': { $id: 2, id: 2, user_id: 2, type: 'event' },
+        '3': { $id: 3, id: 3, user_id: 2, type: 'news' }
       }}
     }
 
-    const expected = [{ id: 2 }]
+    const expected = [{ $id: 2, id: 2 }]
 
     const users = Repo.query(state, 'users', false)
       .has('posts', query => query.count() > 1)
@@ -403,18 +409,18 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1 },
-        '2': { id: 2 },
-        '3': { id: 3 }
+        '1': { $id: 1, id: 1 },
+        '2': { $id: 2, id: 2 },
+        '3': { $id: 3, id: 3 }
       }},
       posts: { data: {
-        '1': { id: 1, user_id: 1, type: 'news' },
-        '2': { id: 2, user_id: 2, type: 'event' },
-        '3': { id: 3, user_id: 2, type: 'news' }
+        '1': { $id: 1, id: 1, user_id: 1, type: 'news' },
+        '2': { $id: 2, id: 2, user_id: 2, type: 'event' },
+        '3': { $id: 3, id: 3, user_id: 2, type: 'news' }
       }}
     }
 
-    const expected = [{ id: 1 }, { id: 3 }]
+    const expected = [{ $id: 1, id: 1 }, { $id: 3, id: 3 }]
 
     const users = Repo.query(state, 'users', false)
       .hasNot('posts', query => query.count() > 1)
@@ -427,18 +433,18 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1 },
-        '2': { id: 2 },
-        '3': { id: 3 }
+        '1': { $id: 1, id: 1 },
+        '2': { $id: 2, id: 2 },
+        '3': { $id: 3, id: 3 }
       }},
       posts: { data: {
-        '1': { id: 1, user_id: 1, type: 'news' },
-        '2': { id: 2, user_id: 2, type: 'event' },
-        '3': { id: 3, user_id: 2, type: 'news' }
+        '1': { $id: 1, id: 1, user_id: 1, type: 'news' },
+        '2': { $id: 2, id: 2, user_id: 2, type: 'event' },
+        '3': { $id: 3, id: 3, user_id: 2, type: 'news' }
       }}
     }
 
-    const expected = [{ id: 2 }]
+    const expected = [{ $id: 2, id: 2 }]
 
     const users = Repo.query(state, 'users', false).has('posts', 2).get()
 
@@ -449,18 +455,18 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1 },
-        '2': { id: 2 },
-        '3': { id: 3 }
+        '1': { $id: 1, id: 1 },
+        '2': { $id: 2, id: 2 },
+        '3': { $id: 3, id: 3 }
       }},
       posts: { data: {
-        '1': { id: 1, user_id: 1, type: 'news' },
-        '2': { id: 2, user_id: 2, type: 'event' },
-        '3': { id: 3, user_id: 2, type: 'news' }
+        '1': { $id: 1, id: 1, user_id: 1, type: 'news' },
+        '2': { $id: 2, id: 2, user_id: 2, type: 'event' },
+        '3': { $id: 3, id: 3, user_id: 2, type: 'news' }
       }}
     }
 
-    const expected = [{ id: 1 }, { id: 3 }]
+    const expected = [{ $id: 1, id: 1 }, { $id: 3, id: 3 }]
 
     const users = Repo.query(state, 'users', false).hasNot('posts', 2).get()
 
@@ -471,41 +477,41 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1 },
-        '2': { id: 2 },
-        '3': { id: 3 }
+        '1': { $id: 1, id: 1 },
+        '2': { $id: 2, id: 2 },
+        '3': { $id: 3, id: 3 }
       }},
       posts: { data: {
-        '1': { id: 1, user_id: 1, type: 'news' },
-        '2': { id: 2, user_id: 2, type: 'event' },
-        '3': { id: 3, user_id: 2, type: 'news' }
+        '1': { $id: 1, id: 1, user_id: 1, type: 'news' },
+        '2': { $id: 2, id: 2, user_id: 2, type: 'event' },
+        '3': { $id: 3, id: 3, user_id: 2, type: 'news' }
       }}
     }
 
-    expect(Repo.query(state, 'users', false).has('posts', '>', 1).get()).toEqual([{ id: 2 }])
-    expect(Repo.query(state, 'users', false).has('posts', '>=', 1).get()).toEqual([{ id: 1 }, { id: 2 }])
-    expect(Repo.query(state, 'users', false).has('posts', '<', 2).get()).toEqual([{ id: 1 }])
-    expect(Repo.query(state, 'users', false).has('posts', '<=', 2).get()).toEqual([{ id: 1 }, { id: 2 }])
+    expect(Repo.query(state, 'users', false).has('posts', '>', 1).get()).toEqual([{ $id: 2, id: 2 }])
+    expect(Repo.query(state, 'users', false).has('posts', '>=', 1).get()).toEqual([{ $id: 1, id: 1 }, { $id: 2, id: 2 }])
+    expect(Repo.query(state, 'users', false).has('posts', '<', 2).get()).toEqual([{ $id: 1, id: 1 }])
+    expect(Repo.query(state, 'users', false).has('posts', '<=', 2).get()).toEqual([{ $id: 1, id: 1 }, { $id: 2, id: 2 }])
   })
 
   it('can query data depending on relationship absence with string conditions', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1 },
-        '2': { id: 2 },
-        '3': { id: 3 }
+        '1': { $id: 1, id: 1 },
+        '2': { $id: 2, id: 2 },
+        '3': { $id: 3, id: 3 }
       }},
       posts: { data: {
-        '1': { id: 1, user_id: 1, type: 'news' },
-        '2': { id: 2, user_id: 2, type: 'event' },
-        '3': { id: 3, user_id: 2, type: 'news' }
+        '1': { $id: 1, id: 1, user_id: 1, type: 'news' },
+        '2': { $id: 2, id: 2, user_id: 2, type: 'event' },
+        '3': { $id: 3, id: 3, user_id: 2, type: 'news' }
       }}
     }
 
-    expect(Repo.query(state, 'users', false).hasNot('posts', '>', 1).get()).toEqual([{ id: 1 }, { id: 3 }])
-    expect(Repo.query(state, 'users', false).hasNot('posts', '>=', 1).get()).toEqual([{ id: 3 }])
-    expect(Repo.query(state, 'users', false).hasNot('posts', '<', 2).get()).toEqual([{ id: 2 }, { id: 3 }])
-    expect(Repo.query(state, 'users', false).hasNot('posts', '<=', 2).get()).toEqual([{ id: 3 }])
+    expect(Repo.query(state, 'users', false).hasNot('posts', '>', 1).get()).toEqual([{ $id: 1, id: 1 }, { $id: 3, id: 3 }])
+    expect(Repo.query(state, 'users', false).hasNot('posts', '>=', 1).get()).toEqual([{ $id: 3, id: 3 }])
+    expect(Repo.query(state, 'users', false).hasNot('posts', '<', 2).get()).toEqual([{ $id: 2, id: 2 }, { $id: 3, id: 3 }])
+    expect(Repo.query(state, 'users', false).hasNot('posts', '<=', 2).get()).toEqual([{ $id: 3, id: 3 }])
   })
 })

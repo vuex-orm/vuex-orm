@@ -22,7 +22,7 @@ export default class Model {
   /**
    * The primary key to be used for the model.
    */
-  static primaryKey: string = 'id'
+  static primaryKey: string | string[] = 'id'
 
   /**
    * Dynamic properties that field data should be assigned at instantiation.
@@ -85,6 +85,19 @@ export default class Model {
    */
   static hasManyBy (model: typeof Model | string, foreignKey: string, otherKey: string): HasManyBy {
     return Attributes.hasManyBy(model, foreignKey, otherKey)
+  }
+
+  /**
+   * Gte the value of the primary key.
+   */
+  static id (record: any): any {
+    const key = this.primaryKey
+
+    if (typeof key === 'string') {
+      return record[key]
+    }
+
+    return key.map(k => record[k]).join('_')
   }
 
   /**
@@ -208,7 +221,7 @@ export default class Model {
    * Get the value of the primary key.
    */
   $id (): any {
-    return this[this.$self().primaryKey]
+    return this.$self().id(this)
   }
 
   /**

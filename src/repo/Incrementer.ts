@@ -40,6 +40,8 @@ export default class Incrementer {
         }
 
         newData[fieldKey][incrementKey] = ++max
+
+        newData[fieldKey]['$id'] = this.repo.entity.id(newData[fieldKey])
       })
     })
 

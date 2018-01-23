@@ -27,7 +27,7 @@ describe('Repo – Create – Attributes', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John' }
+        '1': { $id: 1, id: 1, name: 'John' }
       }}
     }
 
@@ -53,7 +53,7 @@ describe('Repo – Create – Attributes', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '3': { id: 3, name: 'Jane' }
+        '3': { $id: 3, id: 3, name: 'Jane' }
       }}
     }
 
@@ -62,7 +62,7 @@ describe('Repo – Create – Attributes', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John' }
+        '1': { $id: 1, id: 1, name: 'John' }
       }}
     }
 
@@ -88,7 +88,7 @@ describe('Repo – Create – Attributes', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '3': { id: 3, name: 'Jane' }
+        '3': { $id: 3, id: 3, name: 'Jane' }
       }}
     }
 
@@ -97,8 +97,8 @@ describe('Repo – Create – Attributes', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John' },
-        '2': { id: 2, name: 'Jane' }
+        '1': { $id: 1, id: 1, name: 'John' },
+        '2': { $id: 2, id: 2, name: 'Jane' }
       }}
     }
 
@@ -124,7 +124,7 @@ describe('Repo – Create – Attributes', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '3': { id: 3, name: 'Jane' }
+        '3': { $id: 3, id: 3, name: 'Jane' }
       }}
     }
 
@@ -133,8 +133,8 @@ describe('Repo – Create – Attributes', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '8': { id: 8, name: 'Jane' },
-        '9': { id: 9, name: 'John' }
+        '8': { $id: 8, id: 8, name: 'Jane' },
+        '9': { $id: 9, id: 9, name: 'John' }
       }}
     }
 
@@ -160,8 +160,8 @@ describe('Repo – Create – Attributes', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John' },
-        '3': { id: 3, name: 'Jane' }
+        '1': { $id: 1, id: 1, name: 'John' },
+        '3': { $id: 3, id: 3, name: 'Jane' }
       }}
     }
 
@@ -170,9 +170,9 @@ describe('Repo – Create – Attributes', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John' },
-        '3': { id: 3, name: 'Jane' },
-        '4': { id: 4, name: 'Johnny' }
+        '1': { $id: 1, id: 1, name: 'John' },
+        '3': { $id: 3, id: 3, name: 'Jane' },
+        '4': { $id: 4, id: 4, name: 'Johnny' }
       }}
     }
 
@@ -198,8 +198,8 @@ describe('Repo – Create – Attributes', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John' },
-        '3': { id: 3, name: 'Jane' }
+        '1': { $id: 1, id: 1, name: 'John' },
+        '3': { $id: 3, id: 3, name: 'Jane' }
       }}
     }
 
@@ -208,10 +208,10 @@ describe('Repo – Create – Attributes', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John' },
-        '3': { id: 3, name: 'Jane' },
-        '4': { id: 4, name: 'Johnny' },
-        '5': { id: 5, name: 'Josh' }
+        '1': { $id: 1, id: 1, name: 'John' },
+        '3': { $id: 3, id: 3, name: 'Jane' },
+        '4': { $id: 4, id: 4, name: 'Johnny' },
+        '5': { $id: 5, id: 5, name: 'Josh' }
       }}
     }
 
@@ -237,8 +237,8 @@ describe('Repo – Create – Attributes', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John' },
-        '3': { id: 3, name: 'Jane' }
+        '1': { $id: 1, id: 1, name: 'John' },
+        '3': { $id: 3, id: 3, name: 'Jane' }
       }}
     }
 
@@ -247,10 +247,10 @@ describe('Repo – Create – Attributes', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John' },
-        '3': { id: 3, name: 'Jane' },
-        '8': { id: 8, name: 'Josh' },
-        '9': { id: 9, name: 'Johnny' }
+        '1': { $id: 1, id: 1, name: 'John' },
+        '3': { $id: 3, id: 3, name: 'Jane' },
+        '8': { $id: 8, id: 8, name: 'Josh' },
+        '9': { $id: 9, id: 9, name: 'Johnny' }
       }}
     }
 
@@ -277,7 +277,7 @@ describe('Repo – Create – Attributes', () => {
     const state = {
       name: 'entities',
       users: { data: {
-        '3': { id: 3, otherId: 5, name: 'Jane' }
+        '3': { $id: 3, id: 3, otherId: 5, name: 'Jane' }
       }}
     }
 
@@ -286,9 +286,9 @@ describe('Repo – Create – Attributes', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '3': { id: 3, otherId: 5, name: 'Jane' },
-        '4': { id: 4, otherId: 6, name: 'John' },
-        '5': { id: 5, otherId: 7, name: 'Johnny' }
+        '3': { $id: 3, id: 3, otherId: 5, name: 'Jane' },
+        '4': { $id: 4, id: 4, otherId: 6, name: 'John' },
+        '5': { $id: 5, id: 5, otherId: 7, name: 'Johnny' }
       }}
     }
 
@@ -341,11 +341,11 @@ describe('Repo – Create – Attributes', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '1': { id: 1, name: 'John', posts: ['_no_key_23', '_no_key_25'] }
+        '1': { $id: 1, id: 1, name: 'John', posts: ['_no_key_23', '_no_key_25'] }
       }},
       posts: { data: {
-        '1': { id: 1, user_id: 1, title: 'Title 01' },
-        '2': { id: 2, user_id: 2, title: 'Title 02' }
+        '1': { $id: 1, id: 1, user_id: 1, title: 'Title 01' },
+        '2': { $id: 2, id: 2, user_id: 2, title: 'Title 02' }
       }}
     }
 
