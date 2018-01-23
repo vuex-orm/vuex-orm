@@ -151,33 +151,6 @@ describe('Repo – Retrieve – Relations', () => {
     expect(result.author).toBeInstanceOf(User)
   })
 
-  it('can resolve has many relation', () => {
-    const state = {
-      name: 'entities',
-      posts: { data: {
-        '1': { id: 1, title: 'Post Title', comments: [] }
-      }},
-      comments: { data: {
-        '1': { id: 1, post_id: 1, body: 'Comment 01' },
-        '2': { id: 2, post_id: 2, body: 'Comment 02' },
-        '3': { id: 2, post_id: 1, body: 'Comment 03' }
-      }}
-    }
-
-    const expected = {
-      id: 1,
-      title: 'Post Title',
-      comments: [
-        { id: 1, post_id: 1, body: 'Comment 01' },
-        { id: 2, post_id: 1, body: 'Comment 03' }
-      ]
-    }
-
-    const result = Repo.query(state, 'posts', false).with('comments').first()
-
-    expect(result).toEqual(expected)
-  })
-
   it('can resolve has many by relation', () => {
     const state = {
       name: 'entities',
