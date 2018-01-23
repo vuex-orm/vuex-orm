@@ -26,7 +26,7 @@ Vuex ORM lets you create "normalized" data schema within Vuex Store with relatio
 
 ## Examples
 
-You can find example application built with Vuex ORM [at here](https://github.com/revolver-app/vuex-orm-examples).
+You can find example application built with Vuex ORM [at here](https://github.com/vuex-orm/vuex-orm-examples).
 
 ## Resources
 
