@@ -6479,7 +6479,7 @@ var Repo = /** @class */ (function () {
     Repo.prototype.loadHasOneRelation = function (record, attr, relation) {
         var entity = this.resolveRelation(attr).entity;
         var field = attr.foreignKey;
-        var query = this.self().query(this.state, entity, false).where(field, record.id);
+        var query = this.self().query(this.state, entity, false).where(field, this.entity.id(record));
         this.addConstraint(query, relation);
         return query.first();
     };
@@ -6499,7 +6499,7 @@ var Repo = /** @class */ (function () {
     Repo.prototype.loadHasManyRelation = function (record, attr, relation) {
         var entity = this.resolveRelation(attr).entity;
         var field = attr.foreignKey;
-        var query = this.self().query(this.state, entity, false).where(field, record.id);
+        var query = this.self().query(this.state, entity, false).where(field, this.entity.id(record));
         this.addConstraint(query, relation);
         return query.get();
     };
