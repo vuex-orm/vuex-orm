@@ -56,7 +56,7 @@ export default class User extends Model {
 
 
 // Post Model
-import { Model } from ''@vuex-orm/core'
+import { Model } from '@vuex-orm/core'
 import User from './User'
 
 export default class Post extends Model {
