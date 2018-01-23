@@ -101,3 +101,22 @@ class User extends Model {
   }
 }
 ```
+
+You can also define a composite primary key by passing array of keys.
+
+```js
+import { Model } from 'vuex-orm'
+
+class Vote extends Model {
+  static entity = 'users'
+
+  static primaryKey = ['user_id', 'vote_id']
+
+  static fields () {
+    return {
+      user_id: this.attr(''),
+      vote_id: this.attr('')
+    }
+  }
+}
+```
