@@ -3,10 +3,10 @@ import * as _ from './support/lodash'
 import Container from './connections/Container'
 import Data, { Record, Records, NormalizedData } from './Data'
 import Schema from './Schema'
-import Attributes, { Fields, Attribute } from './Attributes/Attributes'
-import AttrTypes from './Attributes/AttrTypes'
-import { Attr, Increment } from './Attributes/Types'
-import { HasOne, BelongsTo, HasMany, HasManyBy } from './Attributes/Relations'
+import Attributes, { Fields, Attribute } from './attributes/Attributes'
+import AttrTypes from './attributes/AttrTypes'
+import { Attr, Increment } from './attributes/Types'
+import { HasOne, BelongsTo, HasMany, HasManyBy } from './attributes/Relations'
 
 export default class Model {
   /**

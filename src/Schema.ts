@@ -1,7 +1,7 @@
 import { schema, Schema as NormalizrSchema } from 'normalizr'
 import * as _ from './support/lodash'
-import AttrTypes from './Attributes/AttrTypes'
-import Attrs, { Fields } from './Attributes/Attributes'
+import AttrTypes from './attributes/AttrTypes'
+import Attrs, { Fields } from './attributes/Attributes'
 import Model from './Model'
 
 export type IdAttribute = (value: any, parent: any, key: string) => any
