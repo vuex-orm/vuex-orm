@@ -38,7 +38,7 @@ Following components are included within `components` argument.
 Use plugins by calling the VuexORM.use() method.
 
 ```js
-import VuexORM from 'vuex-orm'
+import VuexORM from '@vuex-orm/core'
 import plugin from 'vuex-orm-plugin'
 
 VuexORM.use(plugin)

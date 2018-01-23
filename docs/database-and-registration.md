@@ -5,7 +5,7 @@ To register Models and Modules to the Vuex, you must first create Database, regi
 ```js
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { install as VuexORMInstall, Database } from 'vuex-orm'
+import { install as VuexORMInstall, Database } from '@vuex-orm/core'
 import User from './User'
 import Post from './Post'
 import users from 'users'

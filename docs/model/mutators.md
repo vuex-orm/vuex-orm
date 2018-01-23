@@ -7,7 +7,7 @@ Vuex ORM lets you define mutators which are going to modify the specific field w
 You can pass a closure to the 2nd argument of `attr` method. The closure takes the corresponding value as an argument, and you can modify the value however you want.
 
 ```js
-import { Model } from 'vuex-orm'
+import { Model } from '@vuex-orm/core'
 
 class User extends Model {
   static entity = 'users'
@@ -32,7 +32,7 @@ user.name
 You can also define mutators in one place by creating `static mutators` method. The `mutators` method should return an object containing a function with the key of the corresponding field.
 
 ```js
-import { Model } from 'vuex-orm'
+import { Model } from '@vuex-orm/core'
 
 class User extends Model {
   static entity = 'users'

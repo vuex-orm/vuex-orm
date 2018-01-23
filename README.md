@@ -11,6 +11,8 @@ Vuex ORM lets you create "normalized" data schema within Vuex Store with relatio
 
 Learn more about the concept and motivation of Vuex ORM at [What Is Vuex ORM?](https://vuex-orm.gitbooks.io/vuex-orm/what-is-vuex-orm.html).
 
+> **IMPORTANT NOTICE:** As of Vuex ORM 0.16.0, the package has moved to `@vuex-orm/core` from `vuex-orm`. If you were using Vuex ORM before 0.15.0, please update the package name of your `package.json` to `@vuex-orm/core`.
+
 ## Documentation
 
 You can check out the full documentation for Vuex ORM at https://vuex-orm.gitbooks.io/vuex-orm.
@@ -35,7 +37,7 @@ First, let's declare your models extending Vuex ORM `Model`. Here we assume that
 
 ```js
 // User Model
-import { Model } from 'vuex-orm'
+import { Model } from '@vuex-orm/core'
 
 export default class User extends Model {
   // This is the name used as module name of the Vuex Store.
@@ -54,7 +56,7 @@ export default class User extends Model {
 
 
 // Post Model
-import { Model } from 'vuex-orm'
+import { Model } from ''@vuex-orm/core'
 import User from './User'
 
 export default class Post extends Model {
@@ -114,7 +116,7 @@ Now it is time for you to register models and modules to the Vuex. To do so, you
 ```js
 import Vue from 'vue'
 import Vuex from 'vuex'
-import VuexORM from 'vuex-orm'
+import VuexORM from '@vuex-orm/core'
 import User from './User'
 import Post from './Post'
 import users from './users'

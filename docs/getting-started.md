@@ -24,7 +24,7 @@ Let's declare models by extending Vuex ORM `Model`.
 
 ```js
 // User Model
-import { Model } from 'vuex-orm'
+import { Model } from '@vuex-orm/core'
 
 export default class User extends Model {
   // This is the name used as module name of the Vuex Store.
@@ -43,7 +43,7 @@ export default class User extends Model {
 
 
 // Post Model
-import { Model } from 'vuex-orm'
+import { Model } from '@vuex-orm/core'
 import User from './User'
 
 export default class Post extends Model {
@@ -130,7 +130,7 @@ Use `install` when registering VuexORM as a plugin.
 ```js
 import Vue from 'vue'
 import Vuex from 'vuex'
-import VuexORM from 'vuex-orm'
+import VuexORM from '@vuex-orm/core'
 import User from './User'
 import Post from './Post'
 import users from './users'

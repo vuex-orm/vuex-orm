@@ -7,7 +7,7 @@
   Get the `fields` object of the model.
 
   ```js
-  import { Model } from 'vuex-orm'
+  import { Model } from '@vuex-orm/core'
 
   class User extends Model {
     static entity = 'users'
@@ -32,7 +32,7 @@
   Get the value of the primary key.
 
   ```js
-  import { Model } from 'vuex-orm'
+  import { Model } from '@vuex-orm/core'
 
   class User extends Model {
     static entity = 'users'
