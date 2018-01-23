@@ -28,7 +28,7 @@ You can find example application built with Vuex ORM [at here](https://github.co
 You can install Vuex ORM via npm.
 
 ```console
-$ npm install vuex-orm
+$ npm install @vuex-orm/core
 ```
 
 ### Create Your Models
