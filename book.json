@@ -1,3 +1,11 @@
 {
-  "root": "docs"
+  "root": "docs",
+
+  "plugins": ["github"],
+
+  "pluginsConfig": {
+    "github": {
+      "url": "https://github.com/vuex-orm/vuex-orm"
+    }
+  }
 }
