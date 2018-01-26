@@ -175,7 +175,7 @@ const user = store.getters['entities/users/query']()
 
 ### Aggregates
 
-The query builder also provides a aggregate method. Currently available method is `count`. You may call this method after constructing your query.
+The query builder also provides aggregate methods. Available methods are `count`, `max` and `min`.
 
 ```js
 const users = store.getters['entities/users/query']().count()
