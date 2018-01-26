@@ -4997,7 +4997,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 
-var ImmutableUtils$$2 = _interopRequireWildcard(ImmutableUtils);
+var ImmutableUtils$$1 = _interopRequireWildcard(ImmutableUtils);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -5021,8 +5021,8 @@ var _normalize = function _normalize(schema, input, parent, key, visit, addEntit
 
 exports.normalize = _normalize;
 var _denormalize = function _denormalize(schema, input, unvisit) {
-  if (ImmutableUtils$$2.isImmutable(input)) {
-    return ImmutableUtils$$2.denormalizeImmutable(schema, input, unvisit);
+  if (ImmutableUtils$$1.isImmutable(input)) {
+    return ImmutableUtils$$1.denormalizeImmutable(schema, input, unvisit);
   }
 
   var object = _extends({}, input);
@@ -5812,6 +5812,12 @@ var Query = /** @class */ (function () {
         this.records = map(state[name].data, function (record) { return record; });
     }
     /**
+     * Get the model for the query.
+     */
+    Query.prototype.model = function () {
+        return Container.connection(this.state.name).model(this.name);
+    };
+    /**
      * Returns single record of the query chain result.
      */
     Query.prototype.get = function () {
@@ -5979,7 +5985,7 @@ var Query = /** @class */ (function () {
             // Function with Record and Query as argument.
             if (isFunction(where.field)) {
                 var query = new Query(_this.state, _this.name);
-                var result = where.field(record, query);
+                var result = _this.executeWhereClosure(record, query, where.field);
                 if (typeof result === 'boolean') {
                     return result;
                 }
@@ -5996,6 +6002,16 @@ var Query = /** @class */ (function () {
             // Simple equal check.
             return record[where.field] === where.value;
         };
+    };
+    /**
+     * Execute where closure.
+     */
+    Query.prototype.executeWhereClosure = function (record, query, closure) {
+        if (closure.length !== 3) {
+            return closure(record, query);
+        }
+        var model = new (this.model())(record);
+        return closure(record, query, model);
     };
     return Query;
 }());
