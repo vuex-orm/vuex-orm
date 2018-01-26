@@ -1,5 +1,7 @@
 import * as _ from '../support/lodash'
+import Container from '../connections/Container'
 import { Record } from '../Data'
+import Model from '../Model'
 import { State, EntityState } from '../Module'
 
 export type Item = Record | null
@@ -8,6 +10,10 @@ export type Collection = Record[]
 
 export type WhereBoolean = 'and' | 'or'
 
+export type WherePrimaryClosure = (record: Record, query: Query, model?: Model) => boolean | void
+
+export type WhereSecondaryClosure = (value: any) => boolean
+
 export type OrderDirection = 'asc' | 'desc'
 
 export type Predicate = (item: Record) => boolean
@@ -15,8 +21,8 @@ export type Predicate = (item: Record) => boolean
 export type Condition = number | string | Predicate
 
 export interface Wheres {
-  field: any
-  value: any
+  field: string | number | WherePrimaryClosure
+  value: string | number | WhereSecondaryClosure
   boolean: WhereBoolean
 }
 
@@ -83,6 +89,13 @@ export default class Query {
     this.entity = state[name]
     this.primaryKey = '$id'
     this.records = _.map(state[name].data, (record: Record) => record)
+  }
+
+  /**
+   * Get the model for the query.
+   */
+  model (): typeof Model {
+    return Container.connection(this.state.name).model(this.name)
   }
 
   /**
@@ -288,7 +301,7 @@ export default class Query {
       // Function with Record and Query as argument.
       if (_.isFunction(where.field)) {
         const query = new Query(this.state, this.name)
-        const result = where.field(record, query)
+        const result = this.executeWhereClosure(record, query, where.field)
 
         if (typeof result === 'boolean') {
           return result
@@ -310,5 +323,18 @@ export default class Query {
       // Simple equal check.
       return record[where.field] === where.value
     }
+  }
+
+  /**
+   * Execute where closure.
+   */
+  executeWhereClosure (record: Record, query: Query, closure: WherePrimaryClosure): boolean | void {
+    if (closure.length !== 3) {
+      return closure(record, query)
+    }
+
+    const model = new (this.model())(record)
+
+    return closure(record, query, model)
   }
 }

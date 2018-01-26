@@ -112,6 +112,32 @@ const user = store.getters['entities/users/query']()
   .get()
 ```
 
+Finally, the model instance is passed as a 3rd argument. It's useful when you want to use a model method or [mutated](../model/mutators.md) property for the condition.
+
+```js
+class User extends Model {
+  static entity = 'entity'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      name: this.attr(''),
+      role: this.attr('')
+    }
+  }
+
+  isAdmin () {
+    return this.role === 'admin'
+  }
+}
+
+const user = store.getters['entities/users/query']()
+  .where((_record, _query, model) => {
+    return model.isAdmin()
+  })
+  .get()
+```
+
 #### Or Statement
 
 You may chain where constraints together as well as add `or` condition to the query. The `orWhere` method accepts the same arguments as the where method.

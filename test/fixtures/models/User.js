@@ -18,4 +18,8 @@ export default class User extends Model {
       profile: this.hasOne(Profile, 'user_id')
     }
   }
+
+  isAdmin () {
+    return this.settings.role === 'admin'
+  }
 }
