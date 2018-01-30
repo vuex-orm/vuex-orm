@@ -18,14 +18,14 @@ $ yarn add vue vuex @vuex-orm/core
 
 https://unpkg.com/@vuex-orm/core
 
-[Unpkg.com](https://unpkg.com) provides NPM-based CDN links. The above link always points to the latest release on NPM. You can also use a specific version/tag via URLs like `https://unpkg.com/@vuex-orm/core@0.16.0.`
+[Unpkg.com](https://unpkg.com) provides NPM-based CDN links. The above link always points to the latest release on NPM. You can also use a specific version/tag via URLs like `https://unpkg.com/@vuex-orm/core`.
 Include Vuex ORM from HTML script.
 
 ```html
 <script src="https://unpkg.com/@vuex-orm/core"></script>
 
 <!-- For the minified version -->
-<script src="https://unpkg.com/@vuex-orm/core@0.16.0/dist/vuex-orm.min.js"></script>
+<script src="https://unpkg.com/@vuex-orm/core/dist/vuex-orm.min.js"></script>
 ```
 
 ## Dev Build

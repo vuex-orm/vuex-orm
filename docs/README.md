@@ -13,7 +13,7 @@ Vuex ORM lets you create "normalized" data schema within Vuex Store with relatio
     - [Getting Started](model/defining-models.md)
     - [Attributes](model/attributes.md)
     - [Relationship](model/relationship.md)
-    - [Mutators](model/mutators.md)
+    - [Accessors & Mutators](model/accessors-and-mutators.md)
     - [Serialization](model/serialization.md)
 - [Database And Registration](database-and-registration.md)
 - [Interacting With Store](interacting-with-store.md)
