@@ -4,7 +4,7 @@ Accessors and mutators allow you to format attribute values of the data when ret
 
 ## Defining Accessors
 
-To define an accessor, just create a getter or a method in the model. In this example, we'll define `fullName` getter and `prefix` method to the User model.
+To define an accessor, just create a getter or a method in the model. In this example, we'll define `full_name` getter and `prefix` method to the User model.
 
 ```js
 class User extends Model {
