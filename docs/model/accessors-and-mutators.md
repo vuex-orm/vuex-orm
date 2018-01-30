@@ -42,7 +42,7 @@ As you can see, these are just ordinally JavaScript class definition. You are fr
 
 const user = store.getters['entities/users/find'](1)
 
-user.full_name       // <- 'John Doe'
+user.full_name // <- 'John Doe'
 
 user.prefix('Sir.') // <- 'Sir. John Doe'
 ```
@@ -71,9 +71,7 @@ class User extends Model {
 
 const user = new User({ name: 'john doe' })
 
-user.name
-
-// JOHN DOE
+user.name // <- JOHN DOE
 ```
 
 ### Via Mutators Method
@@ -103,9 +101,7 @@ class User extends Model {
 
 const user = new User({ name: 'john doe' })
 
-user.name
-
-// JOHN DOE
+user.name // <- JOHN DOE
 ```
 
 Note that if you have mutator defined at the 2nd argument of the `attr`, and also have mutators method with the same field name, the mutator at `attr` takes the precedent.
