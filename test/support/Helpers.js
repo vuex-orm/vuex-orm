@@ -41,6 +41,17 @@ export function createStore (entities) {
 }
 
 /**
+ * Create a new Vuex State.
+ */
+export function createState (namespace, state) {
+  return {
+    [namespace]: _.mapValues(state, data => {
+      return { data }
+    })
+  }
+}
+
+/**
  * Get action context that can be passed to action as arugument.
  */
 export function actionContext (context = {}) {

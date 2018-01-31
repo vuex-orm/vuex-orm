@@ -31,7 +31,17 @@ export interface Orders {
   direction: OrderDirection
 }
 
+export interface Hooks {
+  on: string
+  callback: Function
+}
+
 export default class Query {
+  /**
+   * Lifecycle hooks for the query.
+   */
+  static hooks: Hooks[] = []
+
   /**
    * The Vuex Store State. This is the target where query will perform
    * CRUD actions.
@@ -92,6 +102,20 @@ export default class Query {
   }
 
   /**
+   * Register a callback.
+   */
+  static on (on: string, callback: Function): void {
+    this.hooks.push({ on, callback })
+  }
+
+  /**
+   * Get static query.
+   */
+  self (): typeof Query {
+    return this.constructor as typeof Query
+  }
+
+  /**
    * Get the model for the query.
    */
   model (): typeof Model {
@@ -128,18 +152,30 @@ export default class Query {
    * Process the query and filter data.
    */
   process (): void {
+    // Process `beforeProcess` hook.
+    this.executeHooks('beforeProcess')
+
     // If the where clause is registered, lets filter the records beased on it.
     if (!_.isEmpty(this.wheres)) {
       this.selectByWheres()
     }
+
+    // Process `afterWhere` hook.
+    this.executeHooks('afterWhere')
 
     // Next, lets sort the data if orderBy is registred.
     if (!_.isEmpty(this.orders)) {
       this.sortByOrders()
     }
 
+    // Process `afterOrderBy` hook.
+    this.executeHooks('afterOrderBy')
+
     // Finally, slice the record by limit and offset.
     this.records = _.slice(this.records, this._offset, this._offset + this._limit)
+
+    // Process `afterLimit` hook.
+    this.executeHooks('afterLimit')
   }
 
   /**
@@ -336,5 +372,18 @@ export default class Query {
     const model = new (this.model())(record)
 
     return closure(record, query, model)
+  }
+
+  /**
+   * Execute the callback of the given hook.
+   */
+  executeHooks (on: string): void {
+    this.self().hooks.forEach((hook) => {
+      if (hook.on !== on) {
+        return
+      }
+
+      this.records = hook.callback(this.records, this.name)
+    })
   }
 }

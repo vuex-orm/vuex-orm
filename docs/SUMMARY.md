@@ -14,6 +14,8 @@
     - [Creating And Updating Data](store/creating-and-updating-data.md)
     - [Retrieving Data](store/retrieving-data.md)
     - [Deleting Data](store/deleting-data.md)
+- [Digging Deeper](digging-deeper.md)
+    - [Query Class](digging-deeper/query-class.md)
 - [Plugins](plugins.md)
 - [API Reference](api-reference.md)
     - [Model](api/model.md)
