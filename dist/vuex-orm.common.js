@@ -5808,6 +5808,18 @@ var Query = /** @class */ (function () {
         this.records = map(state[name].data, function (record) { return record; });
     }
     /**
+     * Register a callback.
+     */
+    Query.on = function (on, callback) {
+        this.hooks.push({ on: on, callback: callback });
+    };
+    /**
+     * Get static query.
+     */
+    Query.prototype.self = function () {
+        return this.constructor;
+    };
+    /**
      * Get the model for the query.
      */
     Query.prototype.model = function () {
@@ -5837,16 +5849,24 @@ var Query = /** @class */ (function () {
      * Process the query and filter data.
      */
     Query.prototype.process = function () {
+        // Process `beforeProcess` hook.
+        this.executeHooks('beforeProcess');
         // If the where clause is registered, lets filter the records beased on it.
         if (!isEmpty(this.wheres)) {
             this.selectByWheres();
         }
+        // Process `afterWhere` hook.
+        this.executeHooks('afterWhere');
         // Next, lets sort the data if orderBy is registred.
         if (!isEmpty(this.orders)) {
             this.sortByOrders();
         }
+        // Process `afterOrderBy` hook.
+        this.executeHooks('afterOrderBy');
         // Finally, slice the record by limit and offset.
         this.records = slice(this.records, this._offset, this._offset + this._limit);
+        // Process `afterLimit` hook.
+        this.executeHooks('afterLimit');
     };
     /**
      * Add a and where clause to the query.
@@ -6009,6 +6029,22 @@ var Query = /** @class */ (function () {
         var model = new (this.model())(record);
         return closure(record, query, model);
     };
+    /**
+     * Execute the callback of the given hook.
+     */
+    Query.prototype.executeHooks = function (on) {
+        var _this = this;
+        this.self().hooks.forEach(function (hook) {
+            if (hook.on !== on) {
+                return;
+            }
+            _this.records = hook.callback(_this.records, _this.name);
+        });
+    };
+    /**
+     * Lifecycle hooks for the query.
+     */
+    Query.hooks = [];
     return Query;
 }());
 
@@ -6585,11 +6621,6 @@ var Repo = /** @class */ (function () {
     return Repo;
 }());
 
-function use (plugin, options) {
-    if (options === void 0) { options = {}; }
-    plugin.install({ Model: Model, Repo: Repo, Query: Query }, options);
-}
-
 var rootGetters = {
     /**
      * Create a new repo instance.
@@ -6611,6 +6642,30 @@ var rootGetters = {
     find: function (state) { return function (entity, id, wrap) {
         if (wrap === void 0) { wrap = true; }
         return Repo.find(state, entity, id, wrap);
+    }; }
+};
+
+var subGetters = {
+    /**
+     * Create a new repo instance.
+     */
+    query: function (state, _getters, _rootState, rootGetters) { return function (wrap) {
+        if (wrap === void 0) { wrap = true; }
+        return rootGetters[state.$connection + "/query"](state.$name, wrap);
+    }; },
+    /**
+     * Get all data of given entity.
+     */
+    all: function (state, _getters, _rootState, rootGetters) { return function (wrap) {
+        if (wrap === void 0) { wrap = true; }
+        return rootGetters[state.$connection + "/all"](state.$name, wrap);
+    }; },
+    /**
+     * Find a data of the given entity by given id.
+     */
+    find: function (state, _getters, _rootState, rootGetters) { return function (id, wrap) {
+        if (wrap === void 0) { wrap = true; }
+        return rootGetters[state.$connection + "/find"](state.$name, id, wrap);
     }; }
 };
 
@@ -6659,76 +6714,6 @@ var rootActions = {
         var commit = _a.commit;
         commit('deleteAll', payload);
     }
-};
-
-var mutations = {
-    /**
-     * Save the given data to the state. This will replace any existing
-     * data in the state.
-     */
-    create: function (state, _a) {
-        var entity = _a.entity, data = _a.data;
-        Repo.create(state, entity, data);
-    },
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    insert: function (state, _a) {
-        var entity = _a.entity, data = _a.data;
-        Repo.insert(state, entity, data);
-    },
-    /**
-     * Update data in the store.
-     */
-    update: function (state, _a) {
-        var entity = _a.entity, data = _a.data, _b = _a.where, where = _b === void 0 ? undefined : _b;
-        Repo.update(state, entity, data, where);
-    },
-    /**
-     * Delete data from the store.
-     */
-    delete: function (state, _a) {
-        var entity = _a.entity, where = _a.where;
-        Repo.delete(state, entity, where);
-    },
-    /**
-     * Delete all data from the store.
-     *
-     * @param {object} payload If exists, it should contain `entity`.
-     */
-    deleteAll: function (state, payload) {
-        if (payload && payload.entity) {
-            Repo.deleteAll(state, payload.entity);
-            return;
-        }
-        Repo.deleteAll(state);
-    }
-};
-
-var subGetters = {
-    /**
-     * Create a new repo instance.
-     */
-    query: function (state, _getters, _rootState, rootGetters) { return function (wrap) {
-        if (wrap === void 0) { wrap = true; }
-        return rootGetters[state.$connection + "/query"](state.$name, wrap);
-    }; },
-    /**
-     * Get all data of given entity.
-     */
-    all: function (state, _getters, _rootState, rootGetters) { return function (wrap) {
-        if (wrap === void 0) { wrap = true; }
-        return rootGetters[state.$connection + "/all"](state.$name, wrap);
-    }; },
-    /**
-     * Find a data of the given entity by given id.
-     */
-    find: function (state, _getters, _rootState, rootGetters) { return function (id, wrap) {
-        if (wrap === void 0) { wrap = true; }
-        return rootGetters[state.$connection + "/find"](state.$name, id, wrap);
-    }; }
 };
 
 var subActions = {
@@ -6784,6 +6769,67 @@ var subActions = {
         }, { root: true });
     }
 };
+
+var mutations = {
+    /**
+     * Save the given data to the state. This will replace any existing
+     * data in the state.
+     */
+    create: function (state, _a) {
+        var entity = _a.entity, data = _a.data;
+        Repo.create(state, entity, data);
+    },
+    /**
+     * Insert given data to the state. Unlike `create`, this method will not
+     * remove existing data within the state, but it will update the data
+     * with the same primary key.
+     */
+    insert: function (state, _a) {
+        var entity = _a.entity, data = _a.data;
+        Repo.insert(state, entity, data);
+    },
+    /**
+     * Update data in the store.
+     */
+    update: function (state, _a) {
+        var entity = _a.entity, data = _a.data, _b = _a.where, where = _b === void 0 ? undefined : _b;
+        Repo.update(state, entity, data, where);
+    },
+    /**
+     * Delete data from the store.
+     */
+    delete: function (state, _a) {
+        var entity = _a.entity, where = _a.where;
+        Repo.delete(state, entity, where);
+    },
+    /**
+     * Delete all data from the store.
+     *
+     * @param {object} payload If exists, it should contain `entity`.
+     */
+    deleteAll: function (state, payload) {
+        if (payload && payload.entity) {
+            Repo.deleteAll(state, payload.entity);
+            return;
+        }
+        Repo.deleteAll(state);
+    }
+};
+
+function use (plugin, options) {
+    if (options === void 0) { options = {}; }
+    var components = {
+        Model: Model,
+        Repo: Repo,
+        Query: Query,
+        rootGetters: rootGetters,
+        subGetters: subGetters,
+        rootActions: rootActions,
+        subActions: subActions,
+        mutations: mutations
+    };
+    plugin.install(components, options);
+}
 
 var __assign$5 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -6878,7 +6924,12 @@ var index_cjs = {
     Database: Database,
     Model: Model,
     Repo: Repo,
-    Query: Query
+    Query: Query,
+    rootGetters: rootGetters,
+    subGetters: subGetters,
+    rootActions: rootActions,
+    subActions: subActions,
+    mutations: mutations
 };
 
 module.exports = index_cjs;
