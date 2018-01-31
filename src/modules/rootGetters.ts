@@ -2,7 +2,9 @@ import * as Vuex from 'vuex'
 import { State } from '../Module'
 import Repo, { Item, Collection } from '../repo/Repo'
 
-export default {
+export type RootGetters = Vuex.GetterTree<State, any>
+
+const rootGetters: RootGetters = {
   /**
    * Create a new repo instance.
    */
@@ -23,4 +25,6 @@ export default {
   find: (state) => (entity: string, id: string | number, wrap: boolean = true): Item => {
     return Repo.find(state, entity, id, wrap)
   }
-} as Vuex.GetterTree<State, any>
+}
+
+export default rootGetters

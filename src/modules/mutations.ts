@@ -2,7 +2,9 @@ import * as Vuex from 'vuex'
 import { State } from '../Module'
 import Repo from '../repo/Repo'
 
-export default {
+export type Mutations = Vuex.MutationTree<State>
+
+const mutations: Mutations = {
   /**
    * Save the given data to the state. This will replace any existing
    * data in the state.
@@ -48,4 +50,6 @@ export default {
 
     Repo.deleteAll(state)
   }
-} as Vuex.MutationTree<State>
+}
+
+export default mutations

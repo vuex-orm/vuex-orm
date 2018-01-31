@@ -1,6 +1,9 @@
 import * as Vuex from 'vuex'
+import { State } from '../Module'
 
-export default {
+export type RootActions = Vuex.ActionTree<State, any>
+
+const rootActions: RootActions = {
   /**
    * Save the given data to the state. This will replace any existing
    * data in the state.
@@ -40,4 +43,6 @@ export default {
   deleteAll ({ commit }, payload?) {
     commit('deleteAll', payload)
   }
-} as Vuex.ActionTree<any, any>
+}
+
+export default rootActions

@@ -1,7 +1,9 @@
 import * as Vuex from 'vuex'
 import { EntityState } from '../Module'
 
-export default {
+export type SubActions = Vuex.ActionTree<EntityState, any>
+
+const subActions: SubActions = {
   /**
    * Save the given data to the state. This will replace any existing
    * data in the state.
@@ -53,4 +55,6 @@ export default {
       entity: state.$name
     }, { root: true })
   }
-} as Vuex.ActionTree<EntityState, any>
+}
+
+export default subActions

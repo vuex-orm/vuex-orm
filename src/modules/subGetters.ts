@@ -2,7 +2,9 @@ import * as Vuex from 'vuex'
 import { EntityState } from '../Module'
 import Repo, { Item, Collection } from '../repo/Repo'
 
-export default {
+export type SubGetters = Vuex.GetterTree<any, EntityState>
+
+const subGetters: SubGetters = {
   /**
    * Create a new repo instance.
    */
@@ -23,4 +25,6 @@ export default {
   find: (state, _getters, _rootState, rootGetters) => (id: string | number, wrap: boolean = true): Item => {
     return rootGetters[`${state.$connection}/find`](state.$name, id, wrap)
   }
-} as Vuex.GetterTree<any, EntityState>
+}
+
+export default subGetters

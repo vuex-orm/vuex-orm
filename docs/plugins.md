@@ -32,6 +32,11 @@ Following components are included within `components` argument.
 - Model
 - Repo
 - Query
+- rootGetters
+- subGetters
+- rootActions
+- subActions
+- mutations
 
 ## Using a Plugin
 

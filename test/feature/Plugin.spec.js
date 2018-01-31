@@ -102,4 +102,96 @@ describe('Plugin', () => {
 
     expect(repo.newQuery().instanceMethod()).toBe('Hello, world!')
   })
+
+  it('add additional feature to the rootGetters', () => {
+    const plugin = {
+      install (components) {
+        components.rootGetters.getName = (state) => {
+          return state.name
+        }
+      }
+    }
+
+    VuexORM.use(plugin)
+
+    const store = new Vuex.Store({
+      plugins: [VuexORM.install(database)]
+    })
+
+    expect(store.getters['entities/getName']).toBe('entities')
+  })
+
+  it('add additional feature to the subGetters', () => {
+    const plugin = {
+      install (components) {
+        components.subGetters.getName = (state) => {
+          return state.$name
+        }
+      }
+    }
+
+    VuexORM.use(plugin)
+
+    const store = new Vuex.Store({
+      plugins: [VuexORM.install(database)]
+    })
+
+    expect(store.getters['entities/users/getName']).toBe('users')
+  })
+
+  it('add additional feature to the rootActions', async () => {
+    const plugin = {
+      install (components) {
+        components.rootActions.getName = () => {
+          return 'John Doe'
+        }
+      }
+    }
+
+    VuexORM.use(plugin)
+
+    const store = new Vuex.Store({
+      plugins: [VuexORM.install(database)]
+    })
+
+    expect(await store.dispatch('entities/getName')).toBe('John Doe')
+  })
+
+  it('add additional feature to the subActions', async () => {
+    const plugin = {
+      install (components) {
+        components.subActions.getName = () => {
+          return 'John Doe'
+        }
+      }
+    }
+
+    VuexORM.use(plugin)
+
+    const store = new Vuex.Store({
+      plugins: [VuexORM.install(database)]
+    })
+
+    expect(await store.dispatch('entities/users/getName')).toBe('John Doe')
+  })
+
+  it('add additional feature to the mutations', () => {
+    const plugin = {
+      install (components) {
+        components.mutations.setName = (state, name) => {
+          state.name = name
+        }
+      }
+    }
+
+    VuexORM.use(plugin)
+
+    const store = new Vuex.Store({
+      plugins: [VuexORM.install(database)]
+    })
+
+    store.commit('entities/setName', 'my_entities')
+
+    expect(store.state.entities.name).toBe('my_entities')
+  })
 })

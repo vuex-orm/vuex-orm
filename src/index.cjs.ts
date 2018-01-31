@@ -4,6 +4,11 @@ import Database from './Database'
 import Model from './Model'
 import Repo from './repo/Repo'
 import Query from './repo/Query'
+import rootGetters, { RootGetters } from './modules/rootGetters'
+import subGetters, { SubGetters } from './modules/subGetters'
+import rootActions, { RootActions } from './modules/rootActions'
+import subActions, { SubActions } from './modules/subActions'
+import mutations, { Mutations } from './modules/mutations'
 
 export interface VuexORM {
   install: Install
@@ -12,6 +17,11 @@ export interface VuexORM {
   Model: typeof Model
   Repo: typeof Repo
   Query: typeof Query
+  rootGetters: RootGetters
+  subGetters: SubGetters
+  rootActions: RootActions
+  subActions: SubActions
+  mutations: Mutations
 }
 
 export default {
@@ -20,5 +30,10 @@ export default {
   Database,
   Model,
   Repo,
-  Query
+  Query,
+  rootGetters,
+  subGetters,
+  rootActions,
+  subActions,
+  mutations
 } as VuexORM
