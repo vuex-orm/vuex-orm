@@ -75,8 +75,6 @@ class User extends Model {
 
 User.entity = 'users'
 
-export default User
-
 // Or...
 
 class User extends Model {
