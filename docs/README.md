@@ -30,6 +30,12 @@ Vuex ORM lets you create "normalized" data schema within Vuex Store with relatio
 
 You can find example application built with Vuex ORM [at here](https://github.com/vuex-orm/vuex-orm-examples).
 
+## Plugins
+
+Vuex ORM can be extended via a plugin to add additional features. Here is the list of available plugins.
+
+- [plugin-search](https://github.com/vuex-orm/plugin-search) – The plugin adds a `search()` method to the vuex-orm query methods to easily filter matched records using fuzzy search logic from the [Fuse.js](http://fusejs.io) library.
+
 ## Resources
 
 - [Vue](https://vuejs.org)

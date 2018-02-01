@@ -233,6 +233,12 @@ store.getters['entities/posts/query']().with('author').first(1)
 
 Cool right? To get to know more about Vuex ORM, please [see the documentation](https://vuex-orm.gitbooks.io/vuex-orm)
 
+## Plugins
+
+Vuex ORM can be extended via a plugin to add additional features. Here is the list of available plugins.
+
+- [plugin-search](https://github.com/vuex-orm/plugin-search) – The plugin adds a `search()` method to the vuex-orm query methods to easily filter matched records using fuzzy search logic from the [Fuse.js](http://fusejs.io) library.
+
 ## Contribution
 
 We are excited that you are interested in contributing to Vuex ORM! Anything from raising an issue, submitting an idea of a new feature, or making a pull request is welcome!
