@@ -1,8 +1,8 @@
 # Query Class
 
-Query class is responsible for fetching data from Vuex Store. When you fetch data through Vuex getters such as `store.getters['entities/users/find'](1)`, it's using the Query class to find and filter data.
+Query class is responsible for fetching data from Vuex Store. When you fetch data through Vuex getters such as `store.getters['entities/users/find'](1)`, it's using the Query class underneath to find and filter data.
 
-Usually, you wouldn't need to care about Query class as long as you keep using getters. However, when want to add global features when querying data, it might be useful to use lifecycle hook. This is especially useful when you want to create a plugin for the Vuex ORM.
+Usually, you wouldn't need to care about Query class as long as you keep using getters. However, when you would like to add global features when querying data, it might be useful to use lifecycle hook. This is especially useful when you want to create a plugin for the Vuex ORM.
 
 ## Lifecycle Hooks
 
@@ -33,8 +33,10 @@ Query.on('beforeProcess', (records, entity) => {
 
 store.getters['entities/users/all']()
 
-[
-  { id: 1, name: 'John Doe', hooked: true },
-  { id: 2, name: 'Jane Doe', hooked: true }
-]
+/*
+  [
+    { id: 1, name: 'John Doe', hooked: true },
+    { id: 2, name: 'Jane Doe', hooked: true }
+  ]
+*/
 ```
