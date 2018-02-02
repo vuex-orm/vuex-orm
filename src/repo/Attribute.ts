@@ -7,6 +7,7 @@ import HasOne from './relations/HasOne'
 import BelongsTo from './relations/BelongsTo'
 import HasMany from './relations/HasMany'
 import HasManyBy from './relations/HasManyBy'
+import BelongsToMany from './relations/BelongsToMany'
 
 export type Entity = typeof Model | string
 
@@ -64,6 +65,30 @@ export default class Attribute {
   }
 
   /**
+   * The has belongs to many relationship.
+   */
+  static belongsToMany (
+    related: Entity,
+    pivot: Entity,
+    foreignPivotKey: string,
+    relatedPivotKey: string,
+    parentKey: string,
+    relatedKey: string,
+    connection?: string
+  ): BelongsToMany {
+    return new BelongsToMany(
+      related,
+      pivot,
+      foreignPivotKey,
+      relatedPivotKey,
+      parentKey,
+      relatedKey,
+      [],
+      connection
+    )
+  }
+
+  /**
    * Determine if the given value is the type of fields.
    */
   static isFields (attr: Field): attr is Fields {
@@ -84,5 +109,6 @@ export default class Attribute {
            || attr instanceof BelongsTo
            || attr instanceof HasMany
            || attr instanceof HasManyBy
+           || attr instanceof BelongsToMany
   }
 }
