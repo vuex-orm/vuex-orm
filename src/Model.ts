@@ -3,10 +3,13 @@ import * as _ from './support/lodash'
 import Container from './connections/Container'
 import Data, { Record, Records, NormalizedData } from './Data'
 import Schema from './Schema'
-import Attributes, { Fields, Attribute } from './attributes/Attributes'
-import AttrTypes from './attributes/AttrTypes'
-import { Attr, Increment } from './attributes/Types'
-import { HasOne, BelongsTo, HasMany, HasManyBy } from './attributes/Relations'
+import Attribute, { Attributes, Fields } from './repo/Attribute'
+import Attr from './repo/types/Attr'
+import Increment from './repo/types/Increment'
+import HasOne from './repo/relations/HasOne'
+import BelongsTo from './repo/relations/BelongsTo'
+import HasMany from './repo/relations/HasMany'
+import HasManyBy from './repo/relations/HasManyBy'
 
 export default class Model {
   /**
@@ -48,7 +51,7 @@ export default class Model {
    * of the property when instantiating a model.
    */
   static attr (value: any, mutator?: (value: any) => any): Attr {
-    return Attributes.attr(value, mutator)
+    return Attribute.attr(value, mutator)
   }
 
   /**
@@ -56,35 +59,47 @@ export default class Model {
    * automatically increment its value creating a new record.
    */
   static increment (): Increment {
-    return Attributes.increment()
+    return Attribute.increment()
   }
 
   /**
    * Creates has one relationship.
    */
-  static hasOne (model: typeof Model | string, foreignKey: string): HasOne {
-    return Attributes.hasOne(model, foreignKey)
+  static hasOne (related: typeof Model | string, foreignKey: string, localKey?: string): HasOne {
+
+    return Attribute.hasOne(related, foreignKey, this.localKey(localKey), this.connection)
   }
 
   /**
    * Creates belongs to relationship.
    */
-  static belongsTo (model: typeof Model | string, foreignKey: string): BelongsTo {
-    return Attributes.belongsTo(model, foreignKey)
+  static belongsTo (parent: typeof Model | string, foreignKey: string, ownerKey?: string): BelongsTo {
+    return Attribute.belongsTo(parent, foreignKey, this.relation(parent).localKey(ownerKey), this.connection)
   }
 
   /**
    * Creates has many relationship.
    */
-  static hasMany (model: typeof Model | string, foreignKey: string): HasMany {
-    return Attributes.hasMany(model, foreignKey)
+  static hasMany (related: typeof Model | string, foreignKey: string, localKey?: string): HasMany {
+    return Attribute.hasMany(related, foreignKey, this.localKey(localKey), this.connection)
   }
 
   /**
    * The has many by relationship.
    */
-  static hasManyBy (model: typeof Model | string, foreignKey: string, otherKey: string): HasManyBy {
-    return Attributes.hasManyBy(model, foreignKey, otherKey)
+  static hasManyBy (parent: typeof Model | string, foreignKey: string, ownerKey: string): HasManyBy {
+    return Attribute.hasManyBy(parent, foreignKey, this.relation(parent).localKey(ownerKey), this.connection)
+  }
+
+  /**
+   * Get local key to pass to the attributes.
+   */
+  static localKey (key?: string): string {
+    if (key) {
+      return key
+    }
+
+    return typeof this.primaryKey === 'string' ? this.primaryKey : 'id'
   }
 
   /**
@@ -107,11 +122,7 @@ export default class Model {
     const fields: { [key: string]: Increment }[] = []
 
     _.forEach(this.fields(), (field, key) => {
-      if (Attributes.isFields(field)) {
-        return
-      }
-
-      if (field.type === AttrTypes.Increment) {
+      if (field instanceof Increment) {
         fields.push({ [key]: field })
       }
     })
@@ -136,15 +147,12 @@ export default class Model {
   /**
    * Get a model from the container.
    */
-  static relation (name: string): typeof Model {
-    return Container.connection(this.connection).model(name)
-  }
+  static relation (model: typeof Model | string): typeof Model {
+    if (typeof model !== 'string') {
+      return model
+    }
 
-  /**
-   * Resolve relation in the given attribute out of the container.
-   */
-  static resolveRelation (attr: HasOne | BelongsTo | HasMany | HasManyBy): typeof Model {
-    return _.isString(attr.model) ? this.relation(attr.model) : attr.model
+    return Container.connection(this.connection).model(model)
   }
 
   /**
@@ -183,19 +191,7 @@ export default class Model {
       _.forEach(record, (value, field) => {
         const attr = fields[field]
 
-        if (!attr) {
-          return
-        }
-
-        if (!Attributes.isAttribute(attr)) {
-          return
-        }
-
-        if (attr.type === AttrTypes.Attr) {
-          return
-        }
-
-        if (attr.type === AttrTypes.BelongsTo) {
+        if (attr instanceof BelongsTo) {
           const key: string = attr.foreignKey
 
           if (newRecord[key]) {
@@ -235,7 +231,7 @@ export default class Model {
    * Initialize the model by attaching all of the fields to property.
    */
   $initialize (data?: Record): void {
-    const fields: Fields = this.$merge(data)
+    const fields = this.$merge(data)
 
     this.$build(this, fields)
   }
@@ -248,7 +244,7 @@ export default class Model {
       return this.$fields()
     }
 
-    const fields: Fields = { ...this.$fields() }
+    const fields = { ...this.$fields() }
 
     return this.$mergeFields(fields, data)
   }
@@ -257,20 +253,32 @@ export default class Model {
    * Merge given data with fields and create a new fields.
    */
   $mergeFields (fields: Fields, data?: Record): Fields {
-    const keys: string[] = _.keys(fields)
+    const keys = _.keys(fields)
 
     _.forEach(data, (value, key) => {
       if (!_.includes(keys, key)) {
         return
       }
 
-      if (Attributes.isAttribute(fields[key])) {
-        (fields[key] as Attribute).value = value
+      if (Attribute.isFields(fields[key])) {
+        fields[key] = this.$mergeFields((fields[key] as any), value)
 
         return
       }
 
-      fields[key] = this.$mergeFields((fields[key] as any), value)
+      const field = fields[key]
+
+      if (field instanceof Attr || field instanceof Increment) {
+        field.value = value
+      }
+
+      if (field instanceof HasOne || field instanceof BelongsTo) {
+        field.record = value
+      }
+
+      if (field instanceof HasMany || field instanceof HasManyBy) {
+        field.records = value
+      }
     })
 
     return fields
@@ -281,7 +289,7 @@ export default class Model {
    */
   $build (self: any, data: Fields): void {
     _.forEach(data, (field, key) => {
-      if (Attributes.isAttribute(field)) {
+      if (Attribute.isAttribute(field)) {
         self[key] = this.$generateField(field, key)
 
         return
@@ -294,41 +302,18 @@ export default class Model {
   /**
    * Generate appropreate field value for the given attribute.
    */
-  $generateField (attr: Attribute, key: string): any {
-    if (attr.value === null) {
-      return null
-    }
-
-    if (attr.type === AttrTypes.Attr) {
+  $generateField (attr: Attributes, key: string): any {
+    if (attr instanceof Attr) {
       const mutator = attr.mutator || this.$self().mutators()[key]
 
       return mutator ? mutator(attr.value) : attr.value
     }
 
-    if (attr.type === AttrTypes.Increment) {
+    if (attr instanceof Increment) {
       return attr.value
     }
 
-    if (_.isNumber(attr.value) || _.isNumber(attr.value[0])) {
-      return null
-    }
-
-    const model = this.$resolveRelation(attr)
-
-    if (attr.type === AttrTypes.HasOne || attr.type === AttrTypes.BelongsTo) {
-      return attr.value ? new model(attr.value) : null
-    }
-
-    if (attr.type === AttrTypes.HasMany || attr.type === AttrTypes.HasManyBy) {
-      return attr.value ? attr.value.map((v: any) => new model(v)) : null
-    }
-  }
-
-  /**
-   * Resolve relation out of the container.
-   */
-  $resolveRelation (attr: HasOne | BelongsTo | HasMany | HasManyBy): typeof Model {
-    return this.$self().resolveRelation(attr)
+    return attr.make()
   }
 
   /**
@@ -347,15 +332,15 @@ export default class Model {
         return field[key]
       }
 
-      if (!Attributes.isAttribute(attr)) {
+      if (!Attribute.isAttribute(attr)) {
         return field.$buildJson(attr, field[key])
       }
 
-      if (attr.type === AttrTypes.HasOne || attr.type === AttrTypes.BelongsTo) {
+      if (attr instanceof HasOne || attr instanceof BelongsTo) {
         return field[key].$toJson()
       }
 
-      if (attr.type === AttrTypes.HasMany) {
+      if (attr instanceof HasMany) {
         return field[key].map((model: Model) => model.$toJson())
       }
 

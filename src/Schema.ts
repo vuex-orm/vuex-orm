@@ -1,7 +1,10 @@
 import { schema, Schema as NormalizrSchema } from 'normalizr'
 import * as _ from './support/lodash'
-import AttrTypes from './attributes/AttrTypes'
-import Attrs, { Fields } from './attributes/Attributes'
+import Attrs, { Fields } from './repo/Attribute'
+import HasOne from './repo/relations/HasOne'
+import BelongsTo from './repo/relations/BelongsTo'
+import HasMany from './repo/relations/HasMany'
+import HasManyBy from './repo/relations/HasManyBy'
 import Model from './Model'
 
 export type IdAttribute = (value: any, parent: any, key: string) => any
@@ -62,8 +65,8 @@ export default class Schema {
         return definition
       }
 
-      if (field.type === AttrTypes.HasOne || field.type === AttrTypes.BelongsTo) {
-        const relation = model.resolveRelation(field)
+      if (field instanceof HasOne) {
+        const relation = field.related
 
         const s = schemas[relation.entity]
 
@@ -72,8 +75,28 @@ export default class Schema {
         return definition
       }
 
-      if (field.type === AttrTypes.HasMany || field.type === AttrTypes.HasManyBy) {
-        const relation = model.resolveRelation(field)
+      if (field instanceof BelongsTo) {
+        const relation = field.parent
+
+        const s = schemas[relation.entity]
+
+        definition[key] = s ? s : this.one(relation, schemas)
+
+        return definition
+      }
+
+      if (field instanceof HasMany) {
+        const relation = field.related
+
+        const s = schemas[relation.entity]
+
+        definition[key] = s ? new schema.Array(s) : this.many(relation, schemas)
+
+        return definition
+      }
+
+      if (field instanceof HasManyBy) {
+        const relation = field.parent
 
         const s = schemas[relation.entity]
 
@@ -97,6 +120,9 @@ export default class Schema {
     }
   }
 
+  /**
+   * Create the process strategy.
+   */
   static processStrategy (model: typeof Model): ProcessStrategy {
     return (value: any, _parent: any, _key: string) => {
       return { ...value, $id: model.id(value) }

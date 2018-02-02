@@ -262,6 +262,75 @@ describe('Repo – Retrieve – Relations', () => {
     expect(post).toEqual(expected)
   })
 
+  it('can resolve child relation', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1 }
+      }},
+      posts: { data: {
+        '1': { id: 1, user_id: 1, title: 'Post Title', comments: [1, 2, 3] }
+      }},
+      comments: { data: {
+        '1': { id: 1, post_id: 1, type: 'review' },
+        '2': { id: 2, post_id: 1, type: 'comment' },
+        '3': { id: 3, post_id: 1, type: 'review' }
+      }}
+    }
+
+    const expected = {
+      id: 1,
+      posts: [{
+        id: 1,
+        user_id: 1,
+        title: 'Post Title',
+        comments: [
+          { id: 1, post_id: 1, type: 'review' },
+          { id: 2, post_id: 1, type: 'comment' },
+          { id: 3, post_id: 1, type: 'review' }
+        ]
+      }]
+    }
+
+    const post = Repo.query(state, 'users', false).with('posts.comments').first()
+
+    expect(post).toEqual(expected)
+  })
+
+  it('can resolve even deeper child relation', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1 }
+      }},
+      posts: { data: {
+        '1': { id: 1, user_id: 1, title: 'Post Title', comments: [1, 2, 3] }
+      }},
+      comments: { data: {
+        '1': { id: 1, post_id: 1, type: 'review' }
+      }},
+      likes: { data: {
+        '1': { id: 1, comment_id: 1 }
+      }}
+    }
+
+    const expected = {
+      id: 1,
+      posts: [{
+        id: 1,
+        user_id: 1,
+        title: 'Post Title',
+        comments: [
+          { id: 1, post_id: 1, type: 'review', likes: [{ id: 1, comment_id: 1 }] }
+        ]
+      }]
+    }
+
+    const post = Repo.query(state, 'users', false).with('posts.comments.likes').first()
+
+    expect(post).toEqual(expected)
+  })
+
   it('can query data depending on relationship existence', () => {
     const state = {
       name: 'entities',

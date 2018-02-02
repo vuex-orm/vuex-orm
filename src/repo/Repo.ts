@@ -1,12 +1,16 @@
 import * as _ from '../support/lodash'
 import Container from '../connections/Container'
 import { Record, Records, NormalizedData } from '../Data'
-import AttrTypes from '../attributes/AttrTypes'
-import Attrs, { Fields } from '../attributes/Attributes'
-import { HasOne, BelongsTo, HasMany, HasManyBy } from '../attributes/Relations'
+import Attrs, { Fields } from './Attribute'
 import Model from '../Model'
 import { State } from '../Module'
 import Incrementer from './Incrementer'
+import Attr from './types/Attr'
+import Increment from './types/Increment'
+import HasOne from './relations/HasOne'
+import BelongsTo from './relations/BelongsTo'
+import HasMany from './relations/HasMany'
+import HasManyBy from './relations/HasManyBy'
 import Query, {
   Item as QueryItem,
   Collection as QueryCollection,
@@ -468,19 +472,19 @@ export default class Repo {
         return
       }
 
-      if (attr.type === AttrTypes.Attr || attr.type === AttrTypes.Increment) {
+      if (attr instanceof Attr || attr instanceof Increment) {
         newRecord[name] = attr.value
 
         return
       }
 
-      if (attr.type === AttrTypes.HasOne || attr.type === AttrTypes.BelongsTo) {
+      if (attr instanceof HasOne || attr instanceof BelongsTo) {
         newRecord[name] = null
 
         return
       }
 
-      if (attr.type === AttrTypes.HasMany || attr.type === AttrTypes.HasManyBy) {
+      if (attr instanceof HasMany || attr instanceof HasManyBy) {
         newRecord[name] = []
 
         return
@@ -585,105 +589,14 @@ export default class Repo {
         return record
       }
 
-      if (attr.type === AttrTypes.Attr) {
-        return record
-      }
-
-      if (attr.type === AttrTypes.HasOne) {
-        record[name] = this.loadHasOneRelation(base, attr, relation)
-
-        return record
-      }
-
-      if (attr.type === AttrTypes.BelongsTo) {
-        record[name] = this.loadBelongsToRelation(base, attr, relation)
-
-        return record
-      }
-
-      if (attr.type === AttrTypes.HasMany) {
-        record[name] = this.loadHasManyRelation(base, attr, relation)
-
-        return record
-      }
-
-      if (attr.type === AttrTypes.HasManyBy) {
-        record[name] = this.loadHasManyByRelation(base, attr, relation)
+      if (Attrs.isRelation(attr)) {
+        record[name] = attr.load(this, base, relation)
 
         return record
       }
 
       return record
     }, _record)
-  }
-
-  /**
-   * Load the has one relationship for the record.
-   */
-  loadHasOneRelation (record: Record, attr: HasOne, relation: Relation): Record | null {
-    const entity: string = this.resolveRelation(attr).entity
-    const field: string = attr.foreignKey
-
-    const query = this.self().query(this.state, entity, false).where(field, this.entity.id(record))
-
-    this.addConstraint(query, relation)
-
-    return query.first()
-  }
-
-  /**
-   * Load the belongs to relationship for the record.
-   */
-  loadBelongsToRelation (record: Record, attr: BelongsTo, relation: Relation): Record | null {
-    const entity: string = this.resolveRelation(attr).entity
-    const id: number | string = record[attr.foreignKey]
-
-    const query = this.self().query(this.state, entity, false)
-
-    this.addConstraint(query, relation)
-
-    return query.first(id)
-  }
-
-  /**
-   * Load the has many relationship for the record.
-   */
-  loadHasManyRelation (record: Record, attr: HasMany, relation: Relation): Record[] | null {
-    const entity: string = this.resolveRelation(attr).entity
-    const field: string = attr.foreignKey
-
-    const query = this.self().query(this.state, entity, false).where(field, this.entity.id(record))
-
-    this.addConstraint(query, relation)
-
-    return query.get()
-  }
-
-  /**
-   * Load the has many by relationship for the record.
-   */
-  loadHasManyByRelation (record: Record, attr: HasManyBy, relation: Relation): Record[] | null {
-    const entity: string = this.resolveRelation(attr).entity
-    const field: string = attr.foreignKey
-
-    return record[field].map((id: any) => {
-      const query = this.self().query(this.state, entity, false).where(attr.otherKey, id)
-
-      this.addConstraint(query, relation)
-
-      return query.first()
-    })
-  }
-
-  /**
-   * Resolve relation out of the container.
-   */
-  resolveRelation (attr: HasOne | BelongsTo | HasMany | HasManyBy): typeof Model {
-    if (!_.isString(attr.model)) {
-      return attr.model
-    }
-
-    return this.model(name)
   }
 
   /**
@@ -707,27 +620,6 @@ export default class Repo {
     const data = this.loadRelations(record, [{ name, constraint: (_constraint as Constraint) }])
 
     return !_.isEmpty(data[name])
-  }
-
-  /**
-   * Add constraint to the query.
-   */
-  addConstraint (query: Repo, relation: Relation): void {
-    const relations = relation.name.split('.')
-
-    if (relations.length !== 1) {
-      relations.shift()
-
-      query.with(relations.join('.'))
-
-      return
-    }
-
-    const result = relation.constraint && relation.constraint(query)
-
-    if (typeof result === 'boolean') {
-      query.where(() => result)
-    }
   }
 
   /**

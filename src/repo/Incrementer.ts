@@ -1,6 +1,6 @@
 import * as _ from '../support/lodash'
 import { Records } from '../Data'
-import { Increment } from '../attributes/Types'
+import Increment from './types/Increment'
 import Repo from './Repo'
 
 export default class Incrementer {
