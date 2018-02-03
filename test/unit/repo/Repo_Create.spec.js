@@ -189,7 +189,7 @@ describe('Repo – Create', () => {
     }
 
     Repo.create(state, 'posts', posts1)
-    Repo.create(state, 'posts', posts2, [], ['comments', 'users'])
+    Repo.create(state, 'posts', posts2, ['comments', 'users'])
 
     expect(state).toEqual(expected)
   })
