@@ -20,7 +20,7 @@ export default class Incrementer {
    * Increment all fields with `incremented` attribute type.
    */
   incrementFields (data: Records, reset: boolean = false): Records {
-    return this.repo.entity.hasIncrementFields ? this.process(data, reset) : data
+    return this.repo.entity.hasIncrementFields() ? this.process(data, reset) : data
   }
 
   /**

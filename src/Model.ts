@@ -10,6 +10,7 @@ import HasOne from './repo/relations/HasOne'
 import BelongsTo from './repo/relations/BelongsTo'
 import HasMany from './repo/relations/HasMany'
 import HasManyBy from './repo/relations/HasManyBy'
+import BelongsToMany from './repo/relations/BelongsToMany'
 
 export default class Model {
   /**
@@ -66,7 +67,6 @@ export default class Model {
    * Creates has one relationship.
    */
   static hasOne (related: typeof Model | string, foreignKey: string, localKey?: string): HasOne {
-
     return Attribute.hasOne(related, foreignKey, this.localKey(localKey), this.connection)
   }
 
@@ -89,6 +89,28 @@ export default class Model {
    */
   static hasManyBy (parent: typeof Model | string, foreignKey: string, ownerKey: string): HasManyBy {
     return Attribute.hasManyBy(parent, foreignKey, this.relation(parent).localKey(ownerKey), this.connection)
+  }
+
+  /**
+   * The belongs to many relationship.
+   */
+  static belongsToMany (
+    related: typeof Model | string,
+    pivot: typeof Model | string,
+    foreignPivotKey: string,
+    relatedPivotKey: string,
+    parentKey?: string,
+    relatedKey?: string
+  ): BelongsToMany {
+    return Attribute.belongsToMany(
+      related,
+      pivot,
+      foreignPivotKey,
+      relatedPivotKey,
+      this.localKey(parentKey),
+      this.relation(related).localKey(relatedKey),
+      this.connection
+    )
   }
 
   /**
@@ -135,6 +157,28 @@ export default class Model {
    */
   static hasIncrementFields (): boolean {
     return this.incrementFields().length > 0
+  }
+
+  /**
+   * Get all `belongsToMany` fields from the schema.
+   */
+  static belongsToManyFields (): { [key: string]: BelongsToMany }[] {
+    const fields: { [key: string]: BelongsToMany }[] = []
+
+    _.forEach(this.fields(), (field, key) => {
+      if (field instanceof BelongsToMany) {
+        fields.push({ [key]: field })
+      }
+    })
+
+    return fields
+  }
+
+  /**
+   * Check if fields contains the `belongsToMany` field type.
+   */
+  static hasBelongsToManyFields (): boolean {
+    return this.belongsToManyFields().length > 0
   }
 
   /**
@@ -276,7 +320,7 @@ export default class Model {
         field.record = value
       }
 
-      if (field instanceof HasMany || field instanceof HasManyBy) {
+      if (field instanceof HasMany || field instanceof HasManyBy || field instanceof BelongsToMany) {
         field.records = value
       }
     })

@@ -1,4 +1,4 @@
-# Query Class
+# Digging Deeper: Query Class
 
 Query class is responsible for fetching data from Vuex Store. When you fetch data through Vuex getters such as `store.getters['entities/users/find'](1)`, it's using the Query class underneath to find and filter data.
 
