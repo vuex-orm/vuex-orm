@@ -4366,50 +4366,6 @@ function some(collection, predicate, guard) {
  * @param {number} upper The upper bound.
  * @returns {number} Returns the clamped number.
  */
-function baseClamp(number, lower, upper) {
-  if (number === number) {
-    if (upper !== undefined) {
-      number = number <= upper ? number : upper;
-    }
-    if (lower !== undefined) {
-      number = number >= lower ? number : lower;
-    }
-  }
-  return number;
-}
-
-/**
- * Checks if `string` starts with the given target string.
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category String
- * @param {string} [string=''] The string to inspect.
- * @param {string} [target] The string to search for.
- * @param {number} [position=0] The position to search from.
- * @returns {boolean} Returns `true` if `string` starts with `target`,
- *  else `false`.
- * @example
- *
- * _.startsWith('abc', 'a');
- * // => true
- *
- * _.startsWith('abc', 'b');
- * // => false
- *
- * _.startsWith('abc', 'b', 1);
- * // => true
- */
-function startsWith(string, target, position) {
-  string = toString(string);
-  position = position == null
-    ? 0
-    : baseClamp(toInteger(position), 0, string.length);
-
-  target = baseToString(target);
-  return string.slice(position, position + target.length) == target;
-}
 
 var Connection = /** @class */ (function () {
     /**
@@ -5256,7 +5212,7 @@ var Incrementer = /** @class */ (function () {
      */
     Incrementer.prototype.incrementFields = function (data, reset) {
         if (reset === void 0) { reset = false; }
-        return this.repo.entity.hasIncrementFields ? this.process(data, reset) : data;
+        return this.repo.entity.hasIncrementFields() ? this.process(data, reset) : data;
     };
     /**
      * Process the incrementation.
@@ -5466,7 +5422,99 @@ var HasManyBy = /** @class */ (function (_super) {
     return HasManyBy;
 }(Relation));
 
+var __extends$3 = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __assign$1 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var BelongsToMany = /** @class */ (function (_super) {
+    __extends$3(BelongsToMany, _super);
+    /**
+     * Create a new belongs to instance.
+     */
+    function BelongsToMany(related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey, record, connection) {
+        var _this = _super.call(this) || this;
+        _this.related = _this.model(related, connection);
+        _this.pivot = _this.model(pivot, connection);
+        _this.foreignPivotKey = foreignPivotKey;
+        _this.relatedPivotKey = relatedPivotKey;
+        _this.parentKey = parentKey;
+        _this.relatedKey = relatedKey;
+        _this.records = record;
+        return _this;
+    }
+    /**
+     * Load the belongs to relationship for the record.
+     */
+    BelongsToMany.prototype.load = function (repo, record, relation) {
+        var _this = this;
+        var pivotQuery = new Repo(repo.state, this.pivot.entity, false);
+        var relatedItems = pivotQuery.where(function (rec) {
+            return rec[_this.foreignPivotKey] === record[_this.parentKey];
+        }).get();
+        if (relatedItems.length === 0) {
+            return [];
+        }
+        var relatedIds = map(relatedItems, this.relatedPivotKey);
+        var relatedQuery = new Repo(repo.state, this.related.entity, false);
+        relatedQuery.where(this.relatedKey, function (v) { return includes(relatedIds, v); });
+        this.addConstraint(relatedQuery, relation);
+        return relatedQuery.get();
+    };
+    /**
+     * Make model instances of the relation.
+     */
+    BelongsToMany.prototype.make = function () {
+        var _this = this;
+        if (this.records.length === 0) {
+            return null;
+        }
+        return this.records.map(function (record) { return new _this.related(record); });
+    };
+    /**
+     * Create pivot records for the given records if needed.
+     */
+    BelongsToMany.prototype.createPivots = function (parent, data) {
+        var _this = this;
+        forEach(data[parent.entity], function (record) {
+            var related = record[_this.related.entity];
+            if (related.length === 0) {
+                return;
+            }
+            _this.createPivotRecord(data, record, related);
+        });
+        return data;
+    };
+    /**
+     * Create a pivot record.
+     */
+    BelongsToMany.prototype.createPivotRecord = function (data, record, related) {
+        var _this = this;
+        forEach(related, function (id) {
+            var pivotKey = record[_this.parentKey] + "_" + id;
+            data[_this.pivot.entity] = __assign$1({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
+                    $id: pivotKey
+                }, _b[_this.foreignPivotKey] = record[_this.parentKey], _b[_this.relatedPivotKey] = id, _b), _a));
+            var _a, _b;
+        });
+    };
+    return BelongsToMany;
+}(Relation));
+
+var __assign$2 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -5588,7 +5636,7 @@ var Query = /** @class */ (function () {
      * with the same primary key.
      */
     Query.prototype.insert = function (data) {
-        this.entity.data = __assign$1({}, this.entity.data, data);
+        this.entity.data = __assign$2({}, this.entity.data, data);
     };
     /**
      * Update data in the state.
@@ -5596,12 +5644,12 @@ var Query = /** @class */ (function () {
     Query.prototype.update = function (data, condition) {
         if (typeof condition !== 'function') {
             if (this.entity.data[condition]) {
-                this.entity.data[condition] = __assign$1({}, this.entity.data[condition], data);
+                this.entity.data[condition] = __assign$2({}, this.entity.data[condition], data);
             }
             return;
         }
         this.entity.data = mapValues(this.entity.data, function (record) {
-            return condition(record) ? __assign$1({}, record, data) : record;
+            return condition(record) ? __assign$2({}, record, data) : record;
         });
     };
     /**
@@ -5748,7 +5796,7 @@ var Query = /** @class */ (function () {
     return Query;
 }());
 
-var __assign$2 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$3 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -5818,20 +5866,18 @@ var Repo = /** @class */ (function () {
      * Save the given data to the state. This will replace any existing
      * data in the state.
      */
-    Repo.create = function (state, entity, data, createEntities, insertEntities) {
-        if (createEntities === void 0) { createEntities = []; }
-        if (insertEntities === void 0) { insertEntities = []; }
-        (new this(state, entity)).create(data, createEntities, insertEntities);
+    Repo.create = function (state, entity, data, insert) {
+        if (insert === void 0) { insert = []; }
+        (new this(state, entity)).create(data, insert);
     };
     /**
      * Insert given data to the state. Unlike `create`, this method will not
      * remove existing data within the state, but it will update the data
      * with the same primary key.
      */
-    Repo.insert = function (state, entity, data, createEntities, insertEntities) {
-        if (createEntities === void 0) { createEntities = []; }
-        if (insertEntities === void 0) { insertEntities = []; }
-        (new this(state, entity)).insert(data, createEntities, insertEntities);
+    Repo.insert = function (state, entity, data, create) {
+        if (create === void 0) { create = []; }
+        (new this(state, entity)).insert(data, create);
     };
     /**
      * Update data in the state.
@@ -6008,28 +6054,26 @@ var Repo = /** @class */ (function () {
      * Save the given data to the state. This will replace any existing
      * data in the state.
      */
-    Repo.prototype.create = function (data, createEntities, insertEntities) {
-        if (createEntities === void 0) { createEntities = []; }
-        if (insertEntities === void 0) { insertEntities = []; }
-        this.persist('create', data, createEntities, insertEntities);
+    Repo.prototype.create = function (data, insert) {
+        if (insert === void 0) { insert = []; }
+        this.persist('create', data, [], insert);
     };
     /**
      * Insert given data to the state. Unlike `create`, this method will not
      * remove existing data within the state, but it will update the data
      * with the same primary key.
      */
-    Repo.prototype.insert = function (data, createEntities, insertEntities) {
-        if (createEntities === void 0) { createEntities = []; }
-        if (insertEntities === void 0) { insertEntities = []; }
-        this.persist('insert', data, createEntities, insertEntities);
+    Repo.prototype.insert = function (data, create) {
+        if (create === void 0) { create = []; }
+        this.persist('insert', data, create, []);
     };
     /**
      * Save data into Vuex Store.
      */
-    Repo.prototype.persist = function (defaultMethod, data, createEntities, insertEntities) {
+    Repo.prototype.persist = function (defaultMethod, data, forceCreateFor, forceInsertFor) {
         var _this = this;
-        if (createEntities === void 0) { createEntities = []; }
-        if (insertEntities === void 0) { insertEntities = []; }
+        if (forceCreateFor === void 0) { forceCreateFor = []; }
+        if (forceInsertFor === void 0) { forceInsertFor = []; }
         var normalizedData = this.normalize(data);
         // Update with empty data.
         if (defaultMethod === 'create' && isEmpty(normalizedData)) {
@@ -6037,13 +6081,14 @@ var Repo = /** @class */ (function () {
             return;
         }
         forEach(normalizedData, function (data, entity) {
-            var incrementedData = _this.setIds((new Incrementer(_this)).incrementFields(data, defaultMethod === 'create'));
+            var incrementer = new Incrementer(new Repo(_this.state, entity));
+            var incrementedData = _this.setIds(incrementer.incrementFields(data, defaultMethod === 'create'));
             var filledData = mapValues(incrementedData, function (record) { return _this.fill(record, entity); });
             var method = defaultMethod;
-            if (includes(createEntities, entity)) {
+            if (includes(forceCreateFor, entity)) {
                 method = 'create';
             }
-            else if (includes(insertEntities, entity)) {
+            else if (includes(forceInsertFor, entity)) {
                 method = 'insert';
             }
             entity === _this.name ? _this.query[method](filledData) : new Query(_this.state, entity)[method](filledData);
@@ -6076,6 +6121,26 @@ var Repo = /** @class */ (function () {
         return record ? record[field] : 0;
     };
     /**
+     * Normalize the given data by given model.
+     */
+    Repo.prototype.normalize = function (data) {
+        var normalizedData = this.model(this.name).normalize(data);
+        return this.createPivots(normalizedData);
+    };
+    /**
+     * Create pivot records if needed.
+     */
+    Repo.prototype.createPivots = function (data) {
+        var _this = this;
+        if (!this.entity.hasBelongsToManyFields()) {
+            return data;
+        }
+        forEach(this.entity.belongsToManyFields(), function (field) {
+            forEach(field, function (attr) { attr.createPivots(_this.entity, data); });
+        });
+        return data;
+    };
+    /**
      * Set proper key to the records. When a record has `increment` attribute
      * type for the primary key, it's possible for the record to have the
      * key of `no_key_<count>`. This function will convert those keys into
@@ -6087,16 +6152,12 @@ var Repo = /** @class */ (function () {
         }
         var records = {};
         forEach(data, function (record, key) {
-            if (!startsWith(key, '_no_key_')) {
-                records[key] = record;
+            var value = record.$id ? "" + record.$id : null;
+            if (key !== value && value !== null) {
+                records[value] = record;
                 return;
             }
-            var value = record.$id;
-            if (value === undefined) {
-                records[key] = record;
-                return;
-            }
-            records["" + value] = record;
+            records[key] = record;
         });
         return records;
     };
@@ -6132,7 +6193,7 @@ var Repo = /** @class */ (function () {
                 newRecord[name] = null;
                 return;
             }
-            if (attr instanceof HasMany || attr instanceof HasManyBy) {
+            if (attr instanceof HasMany || attr instanceof HasManyBy || attr instanceof BelongsToMany) {
                 newRecord[name] = [];
                 return;
             }
@@ -6202,7 +6263,7 @@ var Repo = /** @class */ (function () {
     Repo.prototype.loadRelations = function (base, load, record, fields) {
         var _this = this;
         var _load = load || this.load;
-        var _record = record || __assign$2({}, base);
+        var _record = record || __assign$3({}, base);
         var _fields = fields || this.entity.fields();
         return reduce(_load, function (record, relation) {
             var name = relation.name.split('.')[0];
@@ -6247,16 +6308,10 @@ var Repo = /** @class */ (function () {
         var data = this.loadRelations(record, [{ name: name, constraint: _constraint }]);
         return !isEmpty(data[name]);
     };
-    /**
-     * Normalize the given data by given model.
-     */
-    Repo.prototype.normalize = function (data) {
-        return this.model(this.name).normalize(data);
-    };
     return Repo;
 }());
 
-var __extends$3 = (undefined && undefined.__extends) || (function () {
+var __extends$4 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -6267,7 +6322,7 @@ var __extends$3 = (undefined && undefined.__extends) || (function () {
     };
 })();
 var HasOne = /** @class */ (function (_super) {
-    __extends$3(HasOne, _super);
+    __extends$4(HasOne, _super);
     /**
      * Create a new has one instance.
      */
@@ -6339,6 +6394,12 @@ var Attribute = /** @class */ (function () {
         return new HasManyBy(parent, foreignKey, ownerKey, [], connection);
     };
     /**
+     * The has belongs to many relationship.
+     */
+    Attribute.belongsToMany = function (related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey, connection) {
+        return new BelongsToMany(related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey, [], connection);
+    };
+    /**
      * Determine if the given value is the type of fields.
      */
     Attribute.isFields = function (attr) {
@@ -6356,12 +6417,13 @@ var Attribute = /** @class */ (function () {
         return attr instanceof HasOne
             || attr instanceof BelongsTo
             || attr instanceof HasMany
-            || attr instanceof HasManyBy;
+            || attr instanceof HasManyBy
+            || attr instanceof BelongsToMany;
     };
     return Attribute;
 }());
 
-var __assign$3 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$4 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -6381,7 +6443,7 @@ var Schema = /** @class */ (function () {
             idAttribute: this.idAttribute(model),
             processStrategy: this.processStrategy(model)
         });
-        var definition = this.definition(model, __assign$3({}, schemas, (_a = {}, _a[model.entity] = thisSchema, _a)));
+        var definition = this.definition(model, __assign$4({}, schemas, (_a = {}, _a[model.entity] = thisSchema, _a)));
         thisSchema.define(definition);
         return thisSchema;
         var _a;
@@ -6435,6 +6497,12 @@ var Schema = /** @class */ (function () {
                 definition[key] = s ? new src_3.Array(s) : _this.many(relation, schemas);
                 return definition;
             }
+            if (field instanceof BelongsToMany) {
+                var relation = field.related;
+                var s = schemas[relation.entity];
+                definition[key] = s ? new src_3.Array(s) : _this.many(relation, schemas);
+                return definition;
+            }
             return definition;
         }, {});
     };
@@ -6453,7 +6521,7 @@ var Schema = /** @class */ (function () {
      */
     Schema.processStrategy = function (model) {
         return function (value, _parent, _key) {
-            return __assign$3({}, value, { $id: model.id(value) });
+            return __assign$4({}, value, { $id: model.id(value) });
         };
     };
     /**
@@ -6463,7 +6531,7 @@ var Schema = /** @class */ (function () {
     return Schema;
 }());
 
-var __assign$4 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$5 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -6523,6 +6591,12 @@ var Model = /** @class */ (function () {
         return Attribute.hasManyBy(parent, foreignKey, this.relation(parent).localKey(ownerKey), this.connection);
     };
     /**
+     * The belongs to many relationship.
+     */
+    Model.belongsToMany = function (related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey) {
+        return Attribute.belongsToMany(related, pivot, foreignPivotKey, relatedPivotKey, this.localKey(parentKey), this.relation(related).localKey(relatedKey), this.connection);
+    };
+    /**
      * Get local key to pass to the attributes.
      */
     Model.localKey = function (key) {
@@ -6559,6 +6633,25 @@ var Model = /** @class */ (function () {
      */
     Model.hasIncrementFields = function () {
         return this.incrementFields().length > 0;
+    };
+    /**
+     * Get all `belongsToMany` fields from the schema.
+     */
+    Model.belongsToManyFields = function () {
+        var fields = [];
+        forEach(this.fields(), function (field, key) {
+            if (field instanceof BelongsToMany) {
+                fields.push((_a = {}, _a[key] = field, _a));
+            }
+            var _a;
+        });
+        return fields;
+    };
+    /**
+     * Check if fields contains the `belongsToMany` field type.
+     */
+    Model.hasBelongsToManyFields = function () {
+        return this.belongsToManyFields().length > 0;
     };
     /**
      * Mutators to mutate matching fields when instantiating the model.
@@ -6603,7 +6696,7 @@ var Model = /** @class */ (function () {
     Model.attachForeignKeys = function (records, model) {
         var fields = model.fields();
         return mapValues(records, function (record) {
-            var newRecord = __assign$4({}, record);
+            var newRecord = __assign$5({}, record);
             forEach(record, function (value, field) {
                 var attr = fields[field];
                 if (attr instanceof BelongsTo) {
@@ -6649,7 +6742,7 @@ var Model = /** @class */ (function () {
         if (!data) {
             return this.$fields();
         }
-        var fields = __assign$4({}, this.$fields());
+        var fields = __assign$5({}, this.$fields());
         return this.$mergeFields(fields, data);
     };
     /**
@@ -6673,7 +6766,7 @@ var Model = /** @class */ (function () {
             if (field instanceof HasOne || field instanceof BelongsTo) {
                 field.record = value;
             }
-            if (field instanceof HasMany || field instanceof HasManyBy) {
+            if (field instanceof HasMany || field instanceof HasManyBy || field instanceof BelongsToMany) {
                 field.records = value;
             }
         });
@@ -6793,8 +6886,8 @@ var rootActions = {
      */
     create: function (_a, _b) {
         var commit = _a.commit;
-        var entity = _b.entity, data = _b.data, createEntities = _b.createEntities, insertEntities = _b.insertEntities;
-        commit('create', { entity: entity, data: data, createEntities: createEntities, insertEntities: insertEntities });
+        var entity = _b.entity, data = _b.data, _c = _b.insert, insert = _c === void 0 ? [] : _c;
+        commit('create', { entity: entity, data: data, insert: insert });
     },
     /**
      * Insert given data to the state. Unlike `create`, this method will not
@@ -6803,8 +6896,8 @@ var rootActions = {
      */
     insert: function (_a, _b) {
         var commit = _a.commit;
-        var entity = _b.entity, data = _b.data, createEntities = _b.createEntities, insertEntities = _b.insertEntities;
-        commit('insert', { entity: entity, data: data, createEntities: createEntities, insertEntities: insertEntities });
+        var entity = _b.entity, data = _b.data, _c = _b.create, create = _c === void 0 ? [] : _c;
+        commit('insert', { entity: entity, data: data, create: create });
     },
     /**
      * Update data in the store.
@@ -6840,8 +6933,8 @@ var subActions = {
      */
     create: function (_a, _b) {
         var commit = _a.commit, state = _a.state;
-        var data = _b.data, createEntities = _b.createEntities, insertEntities = _b.insertEntities;
-        commit(state.$connection + "/create", { entity: state.$name, data: data, createEntities: createEntities, insertEntities: insertEntities }, { root: true });
+        var data = _b.data, _c = _b.insert, insert = _c === void 0 ? [] : _c;
+        commit(state.$connection + "/create", { entity: state.$name, data: data, insert: insert }, { root: true });
     },
     /**
      * Insert given data to the state. Unlike `create`, this method will not
@@ -6850,8 +6943,8 @@ var subActions = {
      */
     insert: function (_a, _b) {
         var commit = _a.commit, state = _a.state;
-        var data = _b.data, createEntities = _b.createEntities, insertEntities = _b.insertEntities;
-        commit(state.$connection + "/insert", { entity: state.$name, data: data, createEntities: createEntities, insertEntities: insertEntities }, { root: true });
+        var data = _b.data, _c = _b.create, create = _c === void 0 ? [] : _c;
+        commit(state.$connection + "/insert", { entity: state.$name, data: data, create: create }, { root: true });
     },
     /**
      * Update data in the store.
@@ -6893,8 +6986,8 @@ var mutations = {
      * data in the state.
      */
     create: function (state, _a) {
-        var entity = _a.entity, data = _a.data, createEntities = _a.createEntities, insertEntities = _a.insertEntities;
-        Repo.create(state, entity, data, createEntities, insertEntities);
+        var entity = _a.entity, data = _a.data, _b = _a.insert, insert = _b === void 0 ? [] : _b;
+        Repo.create(state, entity, data, insert);
     },
     /**
      * Insert given data to the state. Unlike `create`, this method will not
@@ -6902,8 +6995,8 @@ var mutations = {
      * with the same primary key.
      */
     insert: function (state, _a) {
-        var entity = _a.entity, data = _a.data, createEntities = _a.createEntities, insertEntities = _a.insertEntities;
-        Repo.insert(state, entity, data, createEntities, insertEntities);
+        var entity = _a.entity, data = _a.data, _b = _a.create, create = _b === void 0 ? [] : _b;
+        Repo.insert(state, entity, data, create);
     },
     /**
      * Update data in the store.
@@ -6948,7 +7041,7 @@ function use (plugin, options) {
     plugin.install(components, options);
 }
 
-var __assign$5 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$6 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -6986,10 +7079,10 @@ var Module = /** @class */ (function () {
             }; };
             tree.modules[entity.model.entity] = {
                 namespaced: true,
-                state: __assign$5({}, entity.module.state, _this.state, { $connection: namespace, $name: entity.model.entity, $primaryKey: entity.model.primaryKey })
+                state: __assign$6({}, entity.module.state, _this.state, { $connection: namespace, $name: entity.model.entity, $primaryKey: entity.model.primaryKey })
             };
-            tree.modules[entity.model.entity]['getters'] = __assign$5({}, subGetters, entity.module.getters);
-            tree.modules[entity.model.entity]['actions'] = __assign$5({}, subActions, entity.module.actions);
+            tree.modules[entity.model.entity]['getters'] = __assign$6({}, subGetters, entity.module.getters);
+            tree.modules[entity.model.entity]['actions'] = __assign$6({}, subActions, entity.module.actions);
             tree.modules[entity.model.entity]['mutations'] = entity.module.mutations || {};
         });
         return tree;
