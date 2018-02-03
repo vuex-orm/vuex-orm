@@ -8,8 +8,8 @@ const rootActions: RootActions = {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  create ({ commit }, { entity, data }) {
-    commit('create', { entity, data })
+  create ({ commit }, { entity, data, createEntities, insertEntities }) {
+    commit('create', { entity, data, createEntities, insertEntities })
   },
 
   /**
@@ -17,8 +17,8 @@ const rootActions: RootActions = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert ({ commit }, { entity, data }) {
-    commit('insert', { entity, data })
+  insert ({ commit }, { entity, data, createEntities, insertEntities }) {
+    commit('insert', { entity, data, createEntities, insertEntities })
   },
 
   /**

@@ -119,8 +119,8 @@ export default class Repo {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  static create (state: State, entity: string, data: any): void {
-    (new this(state, entity)).create(data)
+  static create (state: State, entity: string, data: any, createEntities: string[] = [], insertEntities: string[] = []): void {
+    (new this(state, entity)).create(data, createEntities, insertEntities)
   }
 
   /**
@@ -128,8 +128,8 @@ export default class Repo {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  static insert (state: State, entity: string, data: any): void {
-    (new this(state, entity)).insert(data)
+  static insert (state: State, entity: string, data: any, createEntities: string[] = [], insertEntities: string[] = []): void {
+    (new this(state, entity)).insert(data, createEntities, insertEntities)
   }
 
   /**
@@ -338,8 +338,8 @@ export default class Repo {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  create (data: any): void {
-    this.save('create', data)
+  create (data: any, createEntities: string[] = [], insertEntities: string[] = []): void {
+    this.persist('create', data, createEntities, insertEntities)
   }
 
   /**
@@ -347,29 +347,36 @@ export default class Repo {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert (data: any): void {
-    this.save('insert', data)
+  insert (data: any, createEntities: string[] = [], insertEntities: string[] = []): void {
+    this.persist('insert', data, createEntities, insertEntities)
   }
 
   /**
    * Save data into Vuex Store.
    */
-  save (method: string, data: any): void {
+  persist (defaultMethod: string, data: any, createEntities: string[] = [], insertEntities: string[] = []): void {
     const normalizedData: NormalizedData = this.normalize(data)
 
     // Update with empty data.
-    if (method === 'create' && _.isEmpty(normalizedData)) {
-      this.query[method](normalizedData)
+    if (defaultMethod === 'create' && _.isEmpty(normalizedData)) {
+      this.query[defaultMethod](normalizedData)
 
       return
     }
 
     _.forEach(normalizedData, (data, entity) => {
       const incrementedData = this.setIds(
-        (new Incrementer(this)).incrementFields(data, method === 'create')
+        (new Incrementer(this)).incrementFields(data, defaultMethod === 'create')
       )
 
       const filledData = _.mapValues(incrementedData, record => this.fill(record, entity))
+
+      let method = defaultMethod
+      if (_.includes(createEntities, entity)) {
+        method = 'create'
+      } else if (_.includes(insertEntities, entity)) {
+        method = 'insert'
+      }
 
       entity === this.name ? (this.query as any)[method](filledData) : (new Query(this.state, entity) as any)[method](filledData)
     })
