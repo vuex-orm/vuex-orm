@@ -142,6 +142,58 @@ describe('Repo – Create', () => {
     expect(state).toEqual(expected)
   })
 
+  it('can create a list of data and insert specified related entities in Vuex Store', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+          '5': { id: 5 }
+        }},
+      posts: { data: {} },
+      comments: { data: {} },
+      reviews: { data: {} }
+    }
+
+    const posts1 = [
+      {
+        id: 1,
+        author: { id: 10 },
+        comments: [{ id: 1, post_id: 1, body: 'C1' }],
+        reviews: [1, 2]
+      }
+    ]
+
+    const posts2 = [
+      {
+        id: 2,
+        author: { id: 11 },
+        comments: [{ id: 2, post_id: 2, body: 'C2' }, { id: 3, post_id: 2, body: 'C3' }],
+        reviews: [3, 4]
+      }
+    ]
+
+    const expected = {
+      name: 'entities',
+      users: { data: {
+          '10': { $id: 10, id: 10, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null },
+          '11': { $id: 11, id: 11, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null }
+        }},
+      posts: { data: {
+          '2': { $id: 2, id: 2, user_id: 11, author: 11, comments: [2, 3], reviews: [3, 4] }
+        }},
+      comments: { data: {
+          '1': { $id: 1, id: 1, post_id: 1, body: 'C1', post: null, likes: [] },
+          '2': { $id: 2, id: 2, post_id: 2, body: 'C2', post: null, likes: [] },
+          '3': { $id: 3, id: 3, post_id: 2, body: 'C3', post: null, likes: [] }
+        }},
+      reviews: { data: {} }
+    }
+
+    Repo.create(state, 'posts', posts1)
+    Repo.create(state, 'posts', posts2, [], ['comments', 'users'])
+
+    expect(state).toEqual(expected)
+  })
+
   it('can create data with empty object', () => {
     const state = {
       name: 'entities',
