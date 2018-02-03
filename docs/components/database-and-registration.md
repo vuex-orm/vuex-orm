@@ -1,4 +1,4 @@
-# Database And Registration
+#Core Components: Database And Registration
 
 To register Models and Modules to the Vuex, you must first create Database, register Models along with Modules to the Database, and then register Database to the Vuex through Vuex ORM `install` method.
 

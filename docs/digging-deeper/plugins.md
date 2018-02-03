@@ -1,4 +1,4 @@
-# Plugins
+# Digging Deeper: Plugins
 
 You may add additional features to the Vuex ORM through plugins. Plugins usually add global-level functionality to Vuex ORM. Vuex ORM plugin works very similar to [Vue Plugin](https://vuex.vuejs.org/en/plugins.html).
 
