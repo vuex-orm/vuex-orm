@@ -8,7 +8,7 @@ const subActions: SubActions = {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  create ({ commit, state }, { data, createEntities, insertEntities }) {
+  create ({ commit, state }, { data, createEntities = [], insertEntities = [] }) {
     commit(`${state.$connection}/create`, { entity: state.$name, data, createEntities, insertEntities }, { root: true })
   },
 
@@ -17,7 +17,7 @@ const subActions: SubActions = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert ({ commit, state }, { data, createEntities, insertEntities }) {
+  insert ({ commit, state }, { data, createEntities = [], insertEntities = [] }) {
     commit(`${state.$connection}/insert`, { entity: state.$name, data, createEntities, insertEntities }, { root: true })
   },
 
