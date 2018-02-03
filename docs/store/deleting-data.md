@@ -79,7 +79,13 @@ store.dispatch('entities/users/delete', {
     },
   }
 }
+```
 
+## Delete All Data
+
+You can delete all data in once by `deleteAll` action.
+
+```js
 // Delete all data for an entity
 store.dispatch('entities/users/deleteAll')
 

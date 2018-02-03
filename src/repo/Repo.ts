@@ -11,6 +11,7 @@ import HasOne from './relations/HasOne'
 import BelongsTo from './relations/BelongsTo'
 import HasMany from './relations/HasMany'
 import HasManyBy from './relations/HasManyBy'
+import BelongsToMany from './relations/BelongsToMany'
 import Query, {
   Item as QueryItem,
   Collection as QueryCollection,
@@ -365,8 +366,10 @@ export default class Repo {
     }
 
     _.forEach(normalizedData, (data, entity) => {
+      const incrementer = new Incrementer(new Repo(this.state, entity))
+
       const incrementedData = this.setIds(
-        (new Incrementer(this)).incrementFields(data, defaultMethod === 'create')
+        incrementer.incrementFields(data, defaultMethod === 'create')
       )
 
       const filledData = _.mapValues(incrementedData, record => this.fill(record, entity))
@@ -417,6 +420,30 @@ export default class Repo {
   }
 
   /**
+   * Normalize the given data by given model.
+   */
+  normalize (data: any): NormalizedData {
+    const normalizedData = this.model(this.name).normalize(data)
+
+    return this.createPivots(normalizedData)
+  }
+
+  /**
+   * Create pivot records if needed.
+   */
+  createPivots (data: NormalizedData): NormalizedData {
+    if (!this.entity.hasBelongsToManyFields()) {
+      return data
+    }
+
+    _.forEach(this.entity.belongsToManyFields(), (field) => {
+      _.forEach(field, attr => { attr.createPivots(this.entity, data) })
+    })
+
+    return data
+  }
+
+  /**
    * Set proper key to the records. When a record has `increment` attribute
    * type for the primary key, it's possible for the record to have the
    * key of `no_key_<count>`. This function will convert those keys into
@@ -430,21 +457,15 @@ export default class Repo {
     const records: Records = {}
 
     _.forEach(data, (record, key) => {
-      if (!_.startsWith(key, '_no_key_')) {
-        records[key] = record
+      const value = record.$id ? `${record.$id}` : null
+
+      if (key !== value && value !== null) {
+        records[value] = record
 
         return
       }
 
-      const value = record.$id
-
-      if (value === undefined) {
-        records[key] = record
-
-        return
-      }
-
-      records[`${value}`] = record
+      records[key] = record
     })
 
     return records
@@ -491,7 +512,7 @@ export default class Repo {
         return
       }
 
-      if (attr instanceof HasMany || attr instanceof HasManyBy) {
+      if (attr instanceof HasMany || attr instanceof HasManyBy || attr instanceof BelongsToMany) {
         newRecord[name] = []
 
         return
@@ -627,12 +648,5 @@ export default class Repo {
     const data = this.loadRelations(record, [{ name, constraint: (_constraint as Constraint) }])
 
     return !_.isEmpty(data[name])
-  }
-
-  /**
-   * Normalize the given data by given model.
-   */
-  normalize (data: any): NormalizedData {
-    return this.model(this.name).normalize(data)
   }
 }
