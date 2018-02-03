@@ -55,9 +55,9 @@ export default class HasManyBy extends Relation {
   /**
    * Make model instances of the relation.
    */
-  make (): Model[] | null {
+  make (): Model[] {
     if (this.records.length === 0) {
-      return null
+      return []
     }
 
     return this.records.map(record => new this.parent(record))

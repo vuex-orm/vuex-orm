@@ -55,7 +55,7 @@ export default class HasMany extends Relation {
    */
   make (): Model[] | null {
     if (this.records.length === 0) {
-      return null
+      return []
     }
 
     return this.records.map(record => new this.related(record))
