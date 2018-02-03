@@ -1,4 +1,4 @@
-# Getting Started
+# Prologue: Getting Started
 
 This document is quick start guide to begin using Vuex ORM. It assumes you have a basic understanding of [Vuex](https://github.com/vuejs/vuex/). If you are not familiar with Vuex, please visit [Vuex Documentation](https://vuex.vuejs.org) to learn about Vuex.
 
@@ -12,7 +12,7 @@ To setup Vuex ORM, you must first create following components.
 - Modules
 - Database
 
-You usually first create models and modules, then register them to the database. Then install the database to the Vuex as a plugin. 
+You usually first create models and modules, then register them to the database. Finally, install the database to the Vuex as a plugin. 
 
 ## Create Models
 
@@ -86,7 +86,7 @@ class User extends Model {
 }
 ```
 
-You can learn more about Models at [Model: Defining Models](model/defining-models.md).
+You can learn more about Models at [Models](../components/models.md).
 
 ## Create Modules
 
@@ -118,6 +118,8 @@ export default {
   }
 }
 ```
+
+You may learn more about modules at [Modules And Store](../components/modules-and-store.md).
 
 ### Register Models and Modules to the Vuex Store
 
@@ -173,7 +175,7 @@ store.state.entities
 */
 ```
 
-Learn more about plugin registration at [Database And Registration](database-and-registration.md).
+Learn more about plugin registration at [Database And Registration](../components/database-and-registration.md).
 
 ## Creating Data To Vuex Store
 
@@ -234,7 +236,7 @@ To retrieve data, you may just access the store state directly as usual.
 
 ```js
 store.state.entities.posts.data[1].title // <- 'Hello, world!'
-store.state.entities.users.data[1].name  // <- 'John Doe'
+store.state.entities.users.data[1].name // <- 'John Doe'
 ```
 
 However, Vuex ORM provides a way to query, and fetch data in an organized way through Vuex Getters.
@@ -243,25 +245,30 @@ However, Vuex ORM provides a way to query, and fetch data in an organized way th
 // Fetch all post records. The result will be wrapped with Post model!
 store.getters['entities/posts/all']()
 
-// [
-//   Post { id: 1, user_id: 1, title: 'Hello, world!', body: 'Some awesome body...', author: 1 },
-//   ...
-// ]
+/*
+  [
+    Post { id: 1, user_id: 1, title: 'Hello, world!', body: 'Some awesome body...', author: 1 },
+    Post { id: 2, user_id: 2, title: 'Hello, another world!', body: 'Some another awesome body...', author: 2 },
+    ...
+  ]
+*/
 
 // Fetch single record with relation.
 store.getters['entities/posts/query']().with('author').first()
 
-// Post {
-//   id: 1,
-//   user_id: 1,
-//   title: 'Hello, world!',
-//   body: 'Some awesome body...',
-//   author: User {
-//     id: 1,
-//     name: 'John Doe',
-//     email: 'john@example.com'
-//   }
-// }
+/*
+  Post {
+    id: 1,
+    user_id: 1,
+    title: 'Hello, world!',
+    body: 'Some awesome body...',
+    author: User {
+      id: 1,
+      name: 'John Doe',
+      email: 'john@example.com'
+    }
+  }
+*/
 ```
 
-Learn more about retrieving data from the Store at [Store: Retrieving Data](store/retrieving-data.md)
+Learn more about retrieving data from the Store at [Store: Retrieving Data](../store/retrieving-data.md)

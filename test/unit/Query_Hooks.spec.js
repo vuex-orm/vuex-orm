@@ -13,7 +13,7 @@ describe('Query – Hooks', () => {
       return [{ name: 'John Doe' }]
     })
 
-    const query = new Query(state.entities, 'users')
+    const query = new Query(state, 'users')
 
     expect(query.get()).toEqual([{ name: 'John Doe' }])
   })
@@ -25,7 +25,7 @@ describe('Query – Hooks', () => {
       return [{ name: 'John Doe' }]
     })
 
-    const query = new Query(state.entities, 'users')
+    const query = new Query(state, 'users')
 
     expect(query.get()).toEqual([{ name: 'John Doe' }])
   })
@@ -37,7 +37,7 @@ describe('Query – Hooks', () => {
       return [{ name: 'John Doe' }]
     })
 
-    const query = new Query(state.entities, 'users')
+    const query = new Query(state, 'users')
 
     expect(query.get()).toEqual([{ name: 'John Doe' }])
   })
@@ -49,7 +49,7 @@ describe('Query – Hooks', () => {
       return [{ name: 'John Doe' }]
     })
 
-    const query = new Query(state.entities, 'users')
+    const query = new Query(state, 'users')
 
     expect(query.get()).toEqual([{ name: 'John Doe' }])
   })

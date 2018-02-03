@@ -1,7 +1,7 @@
 import { createApplication } from 'test/support/Helpers'
 import Model from 'app/Model'
 
-describe('Model – Relation', () => {
+describe('Model – Relations', () => {
   it('can resolve has one relation', () => {
     class User extends Model {
       static entity = 'users'

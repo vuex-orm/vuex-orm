@@ -5,6 +5,7 @@ import HasOne from './repo/relations/HasOne'
 import BelongsTo from './repo/relations/BelongsTo'
 import HasMany from './repo/relations/HasMany'
 import HasManyBy from './repo/relations/HasManyBy'
+import BelongsToMany from './repo/relations/BelongsToMany'
 import Model from './Model'
 
 export type IdAttribute = (value: any, parent: any, key: string) => any
@@ -97,6 +98,16 @@ export default class Schema {
 
       if (field instanceof HasManyBy) {
         const relation = field.parent
+
+        const s = schemas[relation.entity]
+
+        definition[key] = s ? new schema.Array(s) : this.many(relation, schemas)
+
+        return definition
+      }
+
+      if (field instanceof BelongsToMany) {
+        const relation = field.related
 
         const s = schemas[relation.entity]
 
