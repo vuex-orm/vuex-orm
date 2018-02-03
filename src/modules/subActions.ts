@@ -8,8 +8,8 @@ const subActions: SubActions = {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  create ({ commit, state }, { data }) {
-    commit(`${state.$connection}/create`, { entity: state.$name, data }, { root: true })
+  create ({ commit, state }, { data, subresourceMethod = 'create' }) {
+    commit(`${state.$connection}/create`, { entity: state.$name, data, subresourceMethod }, { root: true })
   },
 
   /**

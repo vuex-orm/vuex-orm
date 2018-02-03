@@ -8,8 +8,8 @@ const rootActions: RootActions = {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  create ({ commit }, { entity, data }) {
-    commit('create', { entity, data })
+  create ({ commit }, { entity, data, subresourceMethod = 'create' }) {
+    commit('create', { entity, data, subresourceMethod })
   },
 
   /**

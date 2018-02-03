@@ -9,8 +9,8 @@ const mutations: Mutations = {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  create (state, { entity, data }) {
-    Repo.create(state, entity, data)
+  create (state, { entity, data, subresourceMethod = 'create' }) {
+    Repo.create(state, entity, data, subresourceMethod)
   },
 
   /**
