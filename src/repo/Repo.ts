@@ -119,8 +119,8 @@ export default class Repo {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  static create (state: State, entity: string, data: any, createEntities: string[] = [], insertEntities: string[] = []): void {
-    (new this(state, entity)).create(data, createEntities, insertEntities)
+  static create (state: State, entity: string, data: any, insert: string[] = []): void {
+    (new this(state, entity)).create(data, insert)
   }
 
   /**
@@ -128,8 +128,8 @@ export default class Repo {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  static insert (state: State, entity: string, data: any, createEntities: string[] = [], insertEntities: string[] = []): void {
-    (new this(state, entity)).insert(data, createEntities, insertEntities)
+  static insert (state: State, entity: string, data: any, create: string[] = []): void {
+    (new this(state, entity)).insert(data, create)
   }
 
   /**
@@ -338,8 +338,8 @@ export default class Repo {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  create (data: any, createEntities: string[] = [], insertEntities: string[] = []): void {
-    this.persist('create', data, createEntities, insertEntities)
+  create (data: any, insert: string[] = []): void {
+    this.persist('create', data, [], insert)
   }
 
   /**
@@ -347,14 +347,14 @@ export default class Repo {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert (data: any, createEntities: string[] = [], insertEntities: string[] = []): void {
-    this.persist('insert', data, createEntities, insertEntities)
+  insert (data: any, create: string[] = []): void {
+    this.persist('insert', data, create, [])
   }
 
   /**
    * Save data into Vuex Store.
    */
-  persist (defaultMethod: string, data: any, createEntities: string[] = [], insertEntities: string[] = []): void {
+  persist (defaultMethod: string, data: any, forceCreateFor: string[] = [], forceInsertFor: string[] = []): void {
     const normalizedData: NormalizedData = this.normalize(data)
 
     // Update with empty data.
@@ -372,9 +372,9 @@ export default class Repo {
       const filledData = _.mapValues(incrementedData, record => this.fill(record, entity))
 
       let method = defaultMethod
-      if (_.includes(createEntities, entity)) {
+      if (_.includes(forceCreateFor, entity)) {
         method = 'create'
-      } else if (_.includes(insertEntities, entity)) {
+      } else if (_.includes(forceInsertFor, entity)) {
         method = 'insert'
       }
 
