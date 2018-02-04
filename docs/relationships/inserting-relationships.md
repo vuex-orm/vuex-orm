@@ -86,7 +86,7 @@ store.dispatch('entities/users/create', {
 })
 
 // `insert` users but `create` posts and `comments`.
-store.dispatch('entities/users/create', {
+store.dispatch('entities/users/insert', {
   data: [{ ... }],
   create: ['posts', 'comments']
 })
