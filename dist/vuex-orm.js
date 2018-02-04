@@ -5371,7 +5371,7 @@ var HasMany = /** @class */ (function (_super) {
     HasMany.prototype.make = function () {
         var _this = this;
         if (this.records.length === 0) {
-            return [];
+            return null;
         }
         return this.records.map(function (record) { return new _this.related(record); });
     };
@@ -5419,7 +5419,7 @@ var HasManyBy = /** @class */ (function (_super) {
     HasManyBy.prototype.make = function () {
         var _this = this;
         if (this.records.length === 0) {
-            return [];
+            return null;
         }
         return this.records.map(function (record) { return new _this.parent(record); });
     };
@@ -5870,16 +5870,18 @@ var Repo = /** @class */ (function () {
      * Save the given data to the state. This will replace any existing
      * data in the state.
      */
-    Repo.create = function (state, entity, data) {
-        (new this(state, entity)).create(data);
+    Repo.create = function (state, entity, data, insert) {
+        if (insert === void 0) { insert = []; }
+        (new this(state, entity)).create(data, insert);
     };
     /**
      * Insert given data to the state. Unlike `create`, this method will not
      * remove existing data within the state, but it will update the data
      * with the same primary key.
      */
-    Repo.insert = function (state, entity, data) {
-        (new this(state, entity)).insert(data);
+    Repo.insert = function (state, entity, data, create) {
+        if (create === void 0) { create = []; }
+        (new this(state, entity)).insert(data, create);
     };
     /**
      * Update data in the state.
@@ -6056,32 +6058,43 @@ var Repo = /** @class */ (function () {
      * Save the given data to the state. This will replace any existing
      * data in the state.
      */
-    Repo.prototype.create = function (data) {
-        this.save('create', data);
+    Repo.prototype.create = function (data, insert) {
+        if (insert === void 0) { insert = []; }
+        this.persist('create', data, [], insert);
     };
     /**
      * Insert given data to the state. Unlike `create`, this method will not
      * remove existing data within the state, but it will update the data
      * with the same primary key.
      */
-    Repo.prototype.insert = function (data) {
-        this.save('insert', data);
+    Repo.prototype.insert = function (data, create) {
+        if (create === void 0) { create = []; }
+        this.persist('insert', data, create, []);
     };
     /**
      * Save data into Vuex Store.
      */
-    Repo.prototype.save = function (method, data) {
+    Repo.prototype.persist = function (defaultMethod, data, forceCreateFor, forceInsertFor) {
         var _this = this;
+        if (forceCreateFor === void 0) { forceCreateFor = []; }
+        if (forceInsertFor === void 0) { forceInsertFor = []; }
         var normalizedData = this.normalize(data);
         // Update with empty data.
-        if (method === 'create' && isEmpty(normalizedData)) {
-            this.query[method](normalizedData);
+        if (defaultMethod === 'create' && isEmpty(normalizedData)) {
+            this.query[defaultMethod](normalizedData);
             return;
         }
         forEach(normalizedData, function (data, entity) {
             var incrementer = new Incrementer(new Repo(_this.state, entity));
-            var incrementedData = _this.setIds(incrementer.incrementFields(data, method === 'create'));
+            var incrementedData = _this.setIds(incrementer.incrementFields(data, defaultMethod === 'create'));
             var filledData = mapValues(incrementedData, function (record) { return _this.fill(record, entity); });
+            var method = defaultMethod;
+            if (includes(forceCreateFor, entity)) {
+                method = 'create';
+            }
+            else if (includes(forceInsertFor, entity)) {
+                method = 'insert';
+            }
             entity === _this.name ? _this.query[method](filledData) : new Query(_this.state, entity)[method](filledData);
         });
     };
@@ -6877,8 +6890,8 @@ var rootActions = {
      */
     create: function (_a, _b) {
         var commit = _a.commit;
-        var entity = _b.entity, data = _b.data;
-        commit('create', { entity: entity, data: data });
+        var entity = _b.entity, data = _b.data, _c = _b.insert, insert = _c === void 0 ? [] : _c;
+        commit('create', { entity: entity, data: data, insert: insert });
     },
     /**
      * Insert given data to the state. Unlike `create`, this method will not
@@ -6887,8 +6900,8 @@ var rootActions = {
      */
     insert: function (_a, _b) {
         var commit = _a.commit;
-        var entity = _b.entity, data = _b.data;
-        commit('insert', { entity: entity, data: data });
+        var entity = _b.entity, data = _b.data, _c = _b.create, create = _c === void 0 ? [] : _c;
+        commit('insert', { entity: entity, data: data, create: create });
     },
     /**
      * Update data in the store.
@@ -6924,8 +6937,8 @@ var subActions = {
      */
     create: function (_a, _b) {
         var commit = _a.commit, state = _a.state;
-        var data = _b.data;
-        commit(state.$connection + "/create", { entity: state.$name, data: data }, { root: true });
+        var data = _b.data, _c = _b.insert, insert = _c === void 0 ? [] : _c;
+        commit(state.$connection + "/create", { entity: state.$name, data: data, insert: insert }, { root: true });
     },
     /**
      * Insert given data to the state. Unlike `create`, this method will not
@@ -6934,8 +6947,8 @@ var subActions = {
      */
     insert: function (_a, _b) {
         var commit = _a.commit, state = _a.state;
-        var data = _b.data;
-        commit(state.$connection + "/insert", { entity: state.$name, data: data }, { root: true });
+        var data = _b.data, _c = _b.create, create = _c === void 0 ? [] : _c;
+        commit(state.$connection + "/insert", { entity: state.$name, data: data, create: create }, { root: true });
     },
     /**
      * Update data in the store.
@@ -6977,8 +6990,8 @@ var mutations = {
      * data in the state.
      */
     create: function (state, _a) {
-        var entity = _a.entity, data = _a.data;
-        Repo.create(state, entity, data);
+        var entity = _a.entity, data = _a.data, _b = _a.insert, insert = _b === void 0 ? [] : _b;
+        Repo.create(state, entity, data, insert);
     },
     /**
      * Insert given data to the state. Unlike `create`, this method will not
@@ -6986,8 +6999,8 @@ var mutations = {
      * with the same primary key.
      */
     insert: function (state, _a) {
-        var entity = _a.entity, data = _a.data;
-        Repo.insert(state, entity, data);
+        var entity = _a.entity, data = _a.data, _b = _a.create, create = _b === void 0 ? [] : _b;
+        Repo.insert(state, entity, data, create);
     },
     /**
      * Update data in the store.
