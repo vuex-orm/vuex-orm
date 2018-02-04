@@ -9,8 +9,8 @@ const mutations: Mutations = {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  create (state, { entity, data }) {
-    Repo.create(state, entity, data)
+  create (state, { entity, data, insert = [] }) {
+    Repo.create(state, entity, data, insert)
   },
 
   /**
@@ -18,8 +18,8 @@ const mutations: Mutations = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert (state, { entity, data }) {
-    Repo.insert(state, entity, data)
+  insert (state, { entity, data, create = [] }) {
+    Repo.insert(state, entity, data, create)
   },
 
   /**
