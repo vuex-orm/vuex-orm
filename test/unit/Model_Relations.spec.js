@@ -156,6 +156,79 @@ describe('Model – Relations', () => {
     expect(post.comments[1].id).toBe(2)
   })
 
+  it('can resolve empty has many relation', () => {
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          comments: this.hasMany(Comment, 'post_id')
+        }
+      }
+    }
+
+    class Comment extends Model {
+      static entity = 'comments'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          post_id: this.attr(null)
+        }
+      }
+    }
+
+    const data = {
+      id: 1,
+      comments: []
+    }
+
+    const post = new Post(data)
+
+    expect(post).toBeInstanceOf(Post)
+    expect(post.id).toBe(1)
+    expect(post.comments).not.toBeNull();
+    expect(post.comments).toBeInstanceOf(Array);
+    expect(post.comments.length).toBe(0);
+  })
+
+  it('can resolve empty has many by relation', () => {
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          comments: this.hasManyBy(Comment, 'comments')
+        }
+      }
+    }
+
+    class Comment extends Model {
+      static entity = 'comments'
+
+      static fields () {
+        return {
+          id: this.attr(null)
+        }
+      }
+    }
+
+    const data = {
+      id: 1,
+      comments: []
+    }
+
+    const post = new Post(data)
+
+    expect(post).toBeInstanceOf(Post)
+    expect(post.id).toBe(1)
+    expect(post.comments).not.toBeNull();
+    expect(post.comments).toBeInstanceOf(Array);
+    expect(post.comments.length).toBe(0);
+  })
+
   it('can resolve a nested relation', () => {
     class User extends Model {
       static entity = 'users'
