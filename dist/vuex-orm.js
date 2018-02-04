@@ -5371,7 +5371,7 @@ var HasMany = /** @class */ (function (_super) {
     HasMany.prototype.make = function () {
         var _this = this;
         if (this.records.length === 0) {
-            return null;
+            return [];
         }
         return this.records.map(function (record) { return new _this.related(record); });
     };
@@ -5419,7 +5419,7 @@ var HasManyBy = /** @class */ (function (_super) {
     HasManyBy.prototype.make = function () {
         var _this = this;
         if (this.records.length === 0) {
-            return null;
+            return [];
         }
         return this.records.map(function (record) { return new _this.parent(record); });
     };
