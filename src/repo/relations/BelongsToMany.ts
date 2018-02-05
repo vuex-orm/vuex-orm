@@ -109,7 +109,7 @@ export default class BelongsToMany extends Relation {
       return []
     }
 
-    if (typeof this.records[0] !== 'object') {
+    if (typeof (this.records[0] as any) !== 'object') {
       return []
     }
 
