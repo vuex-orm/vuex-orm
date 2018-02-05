@@ -11,7 +11,7 @@ const entities = [
   { model: Comment }
 ]
 
-describe('Root modules', () => {
+describe('Root Modules', () => {
   it('can create a query by directly calling getter of the entity name', async () => {
     const store = createStore(entities)
 
