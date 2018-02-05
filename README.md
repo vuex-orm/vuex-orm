@@ -5,7 +5,7 @@
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 [![License](https://img.shields.io/npm/l/@vuex-orm/core.svg)](https://github.com/vuex-orm/vuex-orm/blob/master/LICENSE.md)
 
-Vuex ORM is a plugin for [Vuex](https://github.com/vuejs/vuex) to enable Object-Relational Mapping like access to the Vuex Store. Heavily inspired by Redux recipe of ["Normalizing State Shape"](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) and ["Updating Normalized Data"](http://redux.js.org/docs/recipes/reducers/UpdatingNormalizedData.html).
+Vuex ORM is a plugin for [Vuex](https://github.com/vuejs/vuex) to enable Object-Relational Mapping access to the Vuex Store. Heavily inspired by Redux recipe of ["Normalizing State Shape"](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) and ["Updating Normalized Data"](http://redux.js.org/docs/recipes/reducers/UpdatingNormalizedData.html).
 
 Vuex ORM lets you create "normalized" data schema within Vuex Store with relationships like any other usual ORM library. It also provides fluent API to get, search and update Store state.
 
@@ -49,7 +49,7 @@ export default class User extends Model {
     return {
       id: this.attr(null),
       name: this.attr(''),
-      email: this.attr(''),
+      email: this.attr('')
     }
   }
 }
@@ -63,7 +63,7 @@ export default class Post extends Model {
   static entity = 'posts'
 
   static fields () {
-    // `this.belongsTo` is for belongs to relationship.
+    // `this.belongsTo` is for the belongs to relationship.
     return {
       id: this.attr(null),
       user_id: this.attr(null),
@@ -124,10 +124,10 @@ import posts from './posts'
 
 Vue.use(Vuex)
 
-// Create new instance of Database.
+// Create a new database instance.
 const database = new VuexORM.Database()
 
-// Register Model and Module. The First argument is the Model, and
+// Register Models and Modules. The First argument is the Model, and
 // second is the Module.
 database.register(User, users)
 database.register(Post, posts)
@@ -210,25 +210,29 @@ However, Vuex ORM provides a way to query, and fetch data in an organized way th
 // Fetch all post records. The result will be the instance of Post model!
 store.getters['entities/posts/all']()
 
-// [
-//   Post { id: 1, user_id: 1, title: 'Hello, world!', body: 'Some awesome body...', author: 1 },
-//   ...
-// ]
+/*
+  [
+    Post { id: 1, user_id: 1, title: 'Hello, world!', body: 'Some awesome body...', author: 1 },
+    ...
+]
+*/
 
 // Fetch single record with relation.
 store.getters['entities/posts/query']().with('author').first(1)
 
-// Post {
-//   id: 1,
-//   user_id: 1,
-//   title: 'Hello, world!',
-//   body: 'Some awesome body...',
-//   author: User {
-//     id: 1,
-//     name: 'John Doe',
-//     email: 'john@example.com'
-//   }
-// }
+/*
+  Post {
+    id: 1,
+    user_id: 1,
+    title: 'Hello, world!',
+    body: 'Some awesome body...',
+    author: User {
+      id: 1,
+      name: 'John Doe',
+      email: 'john@example.com'
+    }
+  }
+*/
 ```
 
 Cool right? To get to know more about Vuex ORM, please [see the documentation](https://vuex-orm.gitbooks.io/vuex-orm)

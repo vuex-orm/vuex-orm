@@ -40,7 +40,8 @@ describe('Repo – Create', () => {
       name: 'entities',
       posts: { data: {
         '0': {
-          $id: 0, id: 0,
+          $id: 0,
+          id: 0,
           user_id: null,
           author: null,
           comments: [0, 1],
@@ -146,8 +147,8 @@ describe('Repo – Create', () => {
     const state = {
       name: 'entities',
       users: { data: {
-          '5': { id: 5 }
-        }},
+        '5': { id: 5 }
+      }},
       posts: { data: {} },
       comments: { data: {} },
       reviews: { data: {} }
@@ -174,17 +175,17 @@ describe('Repo – Create', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-          '10': { $id: 10, id: 10, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null },
-          '11': { $id: 11, id: 11, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null }
-        }},
+        '10': { $id: 10, id: 10, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null },
+        '11': { $id: 11, id: 11, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null }
+      }},
       posts: { data: {
-          '2': { $id: 2, id: 2, user_id: 11, author: 11, comments: [2, 3], reviews: [3, 4] }
-        }},
+        '2': { $id: 2, id: 2, user_id: 11, author: 11, comments: [2, 3], reviews: [3, 4] }
+      }},
       comments: { data: {
-          '1': { $id: 1, id: 1, post_id: 1, body: 'C1', post: null, likes: [] },
-          '2': { $id: 2, id: 2, post_id: 2, body: 'C2', post: null, likes: [] },
-          '3': { $id: 3, id: 3, post_id: 2, body: 'C3', post: null, likes: [] }
-        }},
+        '1': { $id: 1, id: 1, post_id: 1, body: 'C1', post: null, likes: [] },
+        '2': { $id: 2, id: 2, post_id: 2, body: 'C2', post: null, likes: [] },
+        '3': { $id: 3, id: 3, post_id: 2, body: 'C3', post: null, likes: [] }
+      }},
       reviews: { data: {} }
     }
 
