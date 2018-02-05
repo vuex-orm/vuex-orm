@@ -2,6 +2,31 @@ import { createStore } from 'test/support/Helpers'
 import Model from 'app/Model'
 
 describe('Root Modules – Inserts', () => {
+  it('can create data by action', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('')
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    const data = {
+      id: 1,
+      name: 'John Doe'
+    }
+
+    await store.dispatch('entities/create', { entity: 'users', data })
+
+    expect(store.state.entities.users.data[1].id).toBe(1)
+    expect(store.state.entities.users.data[1].name).toBe('John Doe')
+  })
+
   it('returns a newly created object when creating data', async () => {
     class User extends Model {
       static entity = 'users'
@@ -88,6 +113,31 @@ describe('Root Modules – Inserts', () => {
 
     expect(user).toBeInstanceOf(User)
     expect(user.posts).toEqual([])
+  })
+
+  it('can insert data by action', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('')
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    const data = {
+      id: 1,
+      name: 'John Doe'
+    }
+
+    await store.dispatch('entities/insert', { entity: 'users', data })
+
+    expect(store.state.entities.users.data[1].id).toBe(1)
+    expect(store.state.entities.users.data[1].name).toBe('John Doe')
   })
 
   it('returns a newly created object when inserting data', async () => {
