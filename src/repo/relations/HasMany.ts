@@ -53,8 +53,12 @@ export default class HasMany extends Relation {
   /**
    * Make model instances of the relation.
    */
-  make (): Model[] | null {
+  make (): Model[] {
     if (this.records.length === 0) {
+      return []
+    }
+
+    if (typeof this.records[0] !== 'object') {
       return []
     }
 

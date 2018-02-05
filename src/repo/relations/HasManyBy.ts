@@ -60,6 +60,10 @@ export default class HasManyBy extends Relation {
       return []
     }
 
+    if (typeof this.records[0] !== 'object') {
+      return []
+    }
+
     return this.records.map(record => new this.parent(record))
   }
 }

@@ -9,7 +9,9 @@ const rootActions: RootActions = {
    * data in the state.
    */
   create ({ commit }, { entity, data, insert = [] }) {
-    commit('create', { entity, data, insert })
+    return new Promise((resolve) => {
+      commit('create', { entity, data, insert, done: resolve })
+    })
   },
 
   /**
@@ -18,7 +20,9 @@ const rootActions: RootActions = {
    * with the same primary key.
    */
   insert ({ commit }, { entity, data, create = [] }) {
-    commit('insert', { entity, data, create })
+    return new Promise((resolve) => {
+      commit('insert', { entity, data, create, done: resolve })
+    })
   },
 
   /**

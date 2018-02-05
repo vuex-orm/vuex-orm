@@ -104,9 +104,13 @@ export default class BelongsToMany extends Relation {
   /**
    * Make model instances of the relation.
    */
-  make (): Model[] | null {
+  make (): Model[] {
     if (this.records.length === 0) {
-      return null
+      return []
+    }
+
+    if (typeof this.records[0] !== 'object') {
+      return []
     }
 
     return this.records.map(record => new this.related(record))
