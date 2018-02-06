@@ -214,7 +214,7 @@ store.getters['entities/posts/all']()
   [
     Post { id: 1, user_id: 1, title: 'Hello, world!', body: 'Some awesome body...', author: 1 },
     ...
-]
+  ]
 */
 
 // Fetch single record with relation.
