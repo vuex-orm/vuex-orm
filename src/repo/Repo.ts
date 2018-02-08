@@ -250,6 +250,13 @@ export default class Repo {
   }
 
   /**
+   * Returns the last single record of the query chain result.
+   */
+  last (): Item {
+    return this.item(this.query.last())
+  }
+
+  /**
    * Add a and where clause to the query.
    */
   where (field: any, value?: any): this {

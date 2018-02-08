@@ -152,6 +152,25 @@ describe('Repo – Retrieve', () => {
     expect(result).toEqual(expected)
   })
 
+  it('can get the last data of the entity that matches the where query', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, role: 'admin', sex: 'male' },
+        '2': { id: 2, role: 'user', sex: 'female' },
+        '3': { id: 3, role: 'admin', sex: 'male' }
+      }}
+    }
+
+    const expected = { id: 3, role: 'admin', sex: 'male' }
+
+    const result = Repo.query(state, 'users', false)
+      .where('role', 'admin')
+      .where('sex', 'male')
+      .last()
+
+    expect(result).toEqual(expected)
+  })
 
   it('can get data of the entity that matches the where query with callback as value', () => {
     const state = {
