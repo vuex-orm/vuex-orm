@@ -80,6 +80,14 @@ const user = store.getters['entities/users/query']().find()
 // User { id: 1, name: 'John' }
 ```
 
+### Get The Last Matching Data
+
+As oppose to `first` method, the `last` method returns the last matching data.
+
+```js
+const user = store.getters['entities/users/query']().last()
+```
+
 ### Where Clauses
 
 #### Simple Where Clauses
