@@ -175,7 +175,7 @@ store.dispatch('entities/users/create', {
 If you prefer to use [async / await](https://tc39.github.io/ecmascript-asyncawait), then you can compose inserts like this.
 
 ```js
-const uset = await store.dispatch('entities/users/create', {
+const user = await store.dispatch('entities/users/create', {
   data: { id: 1, name: 'John Doe' }
 })
 
