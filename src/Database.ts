@@ -5,6 +5,11 @@ import Module, { Entity } from './Module'
 
 export default class Database {
   /**
+   * The Vuex Store instance.
+   */
+  store?: Vuex.Store<any>
+
+  /**
    * The list of entities to be registered to Vuex Store.
    */
   entities: Entity[] = []
@@ -21,6 +26,13 @@ export default class Database {
    */
   modules (namespace: string): Vuex.Module<any, any> {
     return Module.create(namespace, this.entities)
+  }
+
+  /**
+   * Register a Vuex Store instance.
+   */
+  registerStore (store: Vuex.Store<any>): void {
+    this.store = store
   }
 
   /**

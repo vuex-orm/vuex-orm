@@ -1,4 +1,5 @@
 import * as _ from '../support/lodash'
+import * as Vuex from 'vuex'
 import Model from '../Model'
 import Database from '../Database'
 
@@ -13,6 +14,17 @@ export default class Connection {
    */
   constructor (database: Database) {
     this.database = database
+  }
+
+  /**
+   * Get Vuex Store instance from the database.
+   */
+  store (): Vuex.Store<any> {
+    if (this.database.store === undefined) {
+      throw new Error('Store instance is not registered to the database.')
+    }
+
+    return this.database.store
   }
 
   /**

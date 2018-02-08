@@ -1,6 +1,8 @@
 import { Schema as NormalizrSchema } from 'normalizr'
+import * as Vuex from 'vuex'
 import * as _ from './support/lodash'
 import Container from './connections/Container'
+import Connection from './connections/Connection'
 import Data, { Record, Records, NormalizedData } from './Data'
 import Schema from './Schema'
 import Attribute, { Attributes, Fields } from './repo/Attribute'
@@ -114,6 +116,38 @@ export default class Model {
   }
 
   /**
+   * Get connection instance out of container.
+   */
+  static conn (): Connection {
+    return Container.connection(this.connection)
+  }
+
+  /**
+   * Get Vuex Store instance out of connection.
+   */
+  static store (): Vuex.Store<any> {
+    return this.conn().store()
+  }
+
+  /**
+   * Get module namespaced path for the model.
+   */
+  static namespace (method: string): string {
+    return `${this.connection}/${this.entity}/${method}`
+  }
+
+  /**
+   * Get a model from the container.
+   */
+  static relation (model: typeof Model | string): typeof Model {
+    if (typeof model !== 'string') {
+      return model
+    }
+
+    return this.conn().model(model)
+  }
+
+  /**
    * Get local key to pass to the attributes.
    */
   static localKey (key?: string): string {
@@ -189,17 +223,6 @@ export default class Model {
   }
 
   /**
-   * Get a model from the container.
-   */
-  static relation (model: typeof Model | string): typeof Model {
-    if (typeof model !== 'string') {
-      return model
-    }
-
-    return Container.connection(this.connection).model(model)
-  }
-
-  /**
    * Create normalizr schema that represents this model.
    *
    * @param {boolean} many If true, it'll return an array schema.
@@ -255,6 +278,27 @@ export default class Model {
    */
   $self (): typeof Model {
     return this.constructor as typeof Model
+  }
+
+  /**
+   * Get the connection instance.
+   */
+  $conn (): Connection {
+    return this.$self().conn()
+  }
+
+  /**
+   * Gte Vuex Store insatnce out of connection.
+   */
+  $store (): Vuex.Store<any> {
+    return this.$self().store()
+  }
+
+  /**
+   * Get module namespaced path for the model.
+   */
+  $namespace (method: string): string {
+    return this.$self().namespace(method)
   }
 
   /**
