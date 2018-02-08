@@ -137,6 +137,20 @@ export default class Model {
   }
 
   /**
+   * Dispatch an action.
+   */
+  static dispatch (method: string, payload: any): Promise<any> {
+    return this.store().dispatch(this.namespace(method), payload)
+  }
+
+  /**
+   * Call getetrs.
+   */
+  static getters (method: string): any {
+    return this.store().getters[this.namespace(method)]
+  }
+
+  /**
    * Get a model from the container.
    */
   static relation (model: typeof Model | string): typeof Model {
@@ -299,6 +313,20 @@ export default class Model {
    */
   $namespace (method: string): string {
     return this.$self().namespace(method)
+  }
+
+  /**
+   * Dispatch an action.
+   */
+  $dispatch (method: string, payload: any): Promise<any> {
+    return this.$self().dispatch(method, payload)
+  }
+
+  /**
+   * Call getetrs.
+   */
+  $getters (method: string): any {
+    return this.$self().getters(method)
   }
 
   /**
