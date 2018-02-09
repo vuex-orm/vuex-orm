@@ -149,6 +149,21 @@ export default class Query {
   }
 
   /**
+   * Returns the last record of the query chain result.
+   */
+  last (): Item {
+    this.process()
+
+    if (_.isEmpty(this.records)) {
+      return null
+    }
+
+    const last = this.records.length - 1
+
+    return this.item(this.records[last])
+  }
+
+  /**
    * Process the query and filter data.
    */
   process (): void {
