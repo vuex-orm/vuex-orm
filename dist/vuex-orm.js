@@ -346,10 +346,13 @@ var reIsUint = /^(?:0|[1-9]\d*)$/;
  * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
  */
 function isIndex(value, length) {
+  var type = typeof value;
   length = length == null ? MAX_SAFE_INTEGER : length;
+
   return !!length &&
-    (typeof value == 'number' || reIsUint.test(value)) &&
-    (value > -1 && value % 1 == 0 && value < length);
+    (type == 'number' ||
+      (type != 'symbol' && reIsUint.test(value))) &&
+        (value > -1 && value % 1 == 0 && value < length);
 }
 
 /** Used as references for various `Number` constants. */
@@ -1948,7 +1951,7 @@ function equalObjects(object, other, bitmask, customizer, equalFunc, stack) {
 var DataView = getNative(root, 'DataView');
 
 /* Built-in method references that are verified to be native. */
-var Promise = getNative(root, 'Promise');
+var Promise$1 = getNative(root, 'Promise');
 
 /* Built-in method references that are verified to be native. */
 var Set = getNative(root, 'Set');
@@ -1968,7 +1971,7 @@ var dataViewTag$2 = '[object DataView]';
 /** Used to detect maps, sets, and weakmaps. */
 var dataViewCtorString = toSource(DataView);
 var mapCtorString = toSource(Map);
-var promiseCtorString = toSource(Promise);
+var promiseCtorString = toSource(Promise$1);
 var setCtorString = toSource(Set);
 var weakMapCtorString = toSource(WeakMap);
 
@@ -1984,7 +1987,7 @@ var getTag = baseGetTag;
 // Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
 if ((DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag$2) ||
     (Map && getTag(new Map) != mapTag$2) ||
-    (Promise && getTag(Promise.resolve()) != promiseTag) ||
+    (Promise$1 && getTag(Promise$1.resolve()) != promiseTag) ||
     (Set && getTag(new Set) != setTag$2) ||
     (WeakMap && getTag(new WeakMap) != weakMapTag$1)) {
   getTag = function(value) {
@@ -2374,7 +2377,6 @@ function memoizeCapped(func) {
 }
 
 /** Used to match property names within property paths. */
-var reLeadingDot = /^\./;
 var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
 
 /** Used to match backslashes in property paths. */
@@ -2389,11 +2391,11 @@ var reEscapeChar = /\\(\\)?/g;
  */
 var stringToPath = memoizeCapped(function(string) {
   var result = [];
-  if (reLeadingDot.test(string)) {
+  if (string.charCodeAt(0) === 46 /* . */) {
     result.push('');
   }
-  string.replace(rePropName, function(match, number, quote, string) {
-    result.push(quote ? string.replace(reEscapeChar, '$1') : (number || match));
+  string.replace(rePropName, function(match, number, quote, subString) {
+    result.push(quote ? subString.replace(reEscapeChar, '$1') : (number || match));
   });
   return result;
 });
@@ -4379,6 +4381,15 @@ var Connection = /** @class */ (function () {
         this.database = database;
     }
     /**
+     * Get Vuex Store instance from the database.
+     */
+    Connection.prototype.store = function () {
+        if (this.database.store === undefined) {
+            throw new Error('Store instance is not registered to the database.');
+        }
+        return this.database.store;
+    };
+    /**
      * Returns models in database with name.
      */
     Connection.prototype.models = function () {
@@ -4424,6 +4435,7 @@ var install = (function (database, options) {
     var namespace = options.namespace || 'entities';
     return function (store) {
         store.registerModule(namespace, database.modules(namespace));
+        database.registerStore(store);
         database.registerNamespace(namespace);
         Container.register(namespace, database);
     };
@@ -5373,6 +5385,9 @@ var HasMany = /** @class */ (function (_super) {
         if (this.records.length === 0) {
             return [];
         }
+        if (typeof this.records[0] !== 'object') {
+            return [];
+        }
         return this.records.map(function (record) { return new _this.related(record); });
     };
     return HasMany;
@@ -5419,6 +5434,9 @@ var HasManyBy = /** @class */ (function (_super) {
     HasManyBy.prototype.make = function () {
         var _this = this;
         if (this.records.length === 0) {
+            return [];
+        }
+        if (typeof this.records[0] !== 'object') {
             return [];
         }
         return this.records.map(function (record) { return new _this.parent(record); });
@@ -5484,7 +5502,10 @@ var BelongsToMany = /** @class */ (function (_super) {
     BelongsToMany.prototype.make = function () {
         var _this = this;
         if (this.records.length === 0) {
-            return null;
+            return [];
+        }
+        if (typeof this.records[0] !== 'object') {
+            return [];
         }
         return this.records.map(function (record) { return new _this.related(record); });
     };
@@ -5596,6 +5617,17 @@ var Query = /** @class */ (function () {
             return this.item(find(this.records, [this.primaryKey, id]));
         }
         return this.item(this.records[0]);
+    };
+    /**
+     * Returns the last record of the query chain result.
+     */
+    Query.prototype.last = function () {
+        this.process();
+        if (isEmpty(this.records)) {
+            return null;
+        }
+        var last = this.records.length - 1;
+        return this.item(this.records[last]);
     };
     /**
      * Process the query and filter data.
@@ -5872,7 +5904,7 @@ var Repo = /** @class */ (function () {
      */
     Repo.create = function (state, entity, data, insert) {
         if (insert === void 0) { insert = []; }
-        (new this(state, entity)).create(data, insert);
+        return (new this(state, entity)).create(data, insert);
     };
     /**
      * Insert given data to the state. Unlike `create`, this method will not
@@ -5881,7 +5913,7 @@ var Repo = /** @class */ (function () {
      */
     Repo.insert = function (state, entity, data, create) {
         if (create === void 0) { create = []; }
-        (new this(state, entity)).insert(data, create);
+        return (new this(state, entity)).insert(data, create);
     };
     /**
      * Update data in the state.
@@ -5981,6 +6013,12 @@ var Repo = /** @class */ (function () {
         return this.item(this.query.first(id));
     };
     /**
+     * Returns the last single record of the query chain result.
+     */
+    Repo.prototype.last = function () {
+        return this.item(this.query.last());
+    };
+    /**
      * Add a and where clause to the query.
      */
     Repo.prototype.where = function (field, value) {
@@ -6060,7 +6098,7 @@ var Repo = /** @class */ (function () {
      */
     Repo.prototype.create = function (data, insert) {
         if (insert === void 0) { insert = []; }
-        this.persist('create', data, [], insert);
+        return this.persist('create', data, [], insert);
     };
     /**
      * Insert given data to the state. Unlike `create`, this method will not
@@ -6069,34 +6107,67 @@ var Repo = /** @class */ (function () {
      */
     Repo.prototype.insert = function (data, create) {
         if (create === void 0) { create = []; }
-        this.persist('insert', data, create, []);
+        return this.persist('insert', data, create, []);
     };
     /**
      * Save data into Vuex Store.
      */
     Repo.prototype.persist = function (defaultMethod, data, forceCreateFor, forceInsertFor) {
-        var _this = this;
         if (forceCreateFor === void 0) { forceCreateFor = []; }
         if (forceInsertFor === void 0) { forceInsertFor = []; }
         var normalizedData = this.normalize(data);
         // Update with empty data.
         if (defaultMethod === 'create' && isEmpty(normalizedData)) {
             this.query[defaultMethod](normalizedData);
-            return;
+            return [];
         }
-        forEach(normalizedData, function (data, entity) {
+        var items = this.processPersist(defaultMethod, normalizedData, forceCreateFor, forceInsertFor);
+        return this.getReturnData(items);
+    };
+    /**
+     * Persist given data into the store. It returns list of created ids.
+     */
+    Repo.prototype.processPersist = function (defaultMethod, data, forceCreateFor, forceInsertFor) {
+        var _this = this;
+        if (forceCreateFor === void 0) { forceCreateFor = []; }
+        if (forceInsertFor === void 0) { forceInsertFor = []; }
+        var items = [];
+        forEach(data, function (data, entity) {
             var incrementer = new Incrementer(new Repo(_this.state, entity));
             var incrementedData = _this.setIds(incrementer.incrementFields(data, defaultMethod === 'create'));
             var filledData = mapValues(incrementedData, function (record) { return _this.fill(record, entity); });
-            var method = defaultMethod;
-            if (includes(forceCreateFor, entity)) {
-                method = 'create';
+            var method = _this.getPersistMethod(defaultMethod, entity, forceCreateFor, forceInsertFor);
+            if (entity !== _this.name) {
+                new Query(_this.state, entity)[method](filledData);
+                return;
             }
-            else if (includes(forceInsertFor, entity)) {
-                method = 'insert';
-            }
-            entity === _this.name ? _this.query[method](filledData) : new Query(_this.state, entity)[method](filledData);
+            _this.query[method](filledData);
+            forEach(data, function (item) { items.push(item.$id); });
         });
+        return items;
+    };
+    /**
+     * Get method for persist.
+     */
+    Repo.prototype.getPersistMethod = function (defaultMethod, entity, forceCreateFor, forceInsertFor) {
+        if (forceCreateFor === void 0) { forceCreateFor = []; }
+        if (forceInsertFor === void 0) { forceInsertFor = []; }
+        if (includes(forceCreateFor, entity)) {
+            return 'create';
+        }
+        if (includes(forceInsertFor, entity)) {
+            return 'insert';
+        }
+        return defaultMethod;
+    };
+    /**
+     * Get all data that should be retunred.
+     */
+    Repo.prototype.getReturnData = function (items) {
+        var method = items.length > 1 ? 'get' : 'first';
+        return this.self().query(this.state, this.name).where('$id', function (value) {
+            return includes(items, value);
+        })[method]();
     };
     /**
      * Get the count of the retrieved data.
@@ -6601,6 +6672,45 @@ var Model = /** @class */ (function () {
         return Attribute.belongsToMany(related, pivot, foreignPivotKey, relatedPivotKey, this.localKey(parentKey), this.relation(related).localKey(relatedKey), this.connection);
     };
     /**
+     * Get connection instance out of container.
+     */
+    Model.conn = function () {
+        return Container.connection(this.connection);
+    };
+    /**
+     * Get Vuex Store instance out of connection.
+     */
+    Model.store = function () {
+        return this.conn().store();
+    };
+    /**
+     * Get module namespaced path for the model.
+     */
+    Model.namespace = function (method) {
+        return this.connection + "/" + this.entity + "/" + method;
+    };
+    /**
+     * Dispatch an action.
+     */
+    Model.dispatch = function (method, payload) {
+        return this.store().dispatch(this.namespace(method), payload);
+    };
+    /**
+     * Call getetrs.
+     */
+    Model.getters = function (method) {
+        return this.store().getters[this.namespace(method)];
+    };
+    /**
+     * Get a model from the container.
+     */
+    Model.relation = function (model) {
+        if (typeof model !== 'string') {
+            return model;
+        }
+        return this.conn().model(model);
+    };
+    /**
      * Get local key to pass to the attributes.
      */
     Model.localKey = function (key) {
@@ -6664,15 +6774,6 @@ var Model = /** @class */ (function () {
         return {};
     };
     /**
-     * Get a model from the container.
-     */
-    Model.relation = function (model) {
-        if (typeof model !== 'string') {
-            return model;
-        }
-        return Container.connection(this.connection).model(model);
-    };
-    /**
      * Create normalizr schema that represents this model.
      *
      * @param {boolean} many If true, it'll return an array schema.
@@ -6719,6 +6820,36 @@ var Model = /** @class */ (function () {
      */
     Model.prototype.$self = function () {
         return this.constructor;
+    };
+    /**
+     * Get the connection instance.
+     */
+    Model.prototype.$conn = function () {
+        return this.$self().conn();
+    };
+    /**
+     * Gte Vuex Store insatnce out of connection.
+     */
+    Model.prototype.$store = function () {
+        return this.$self().store();
+    };
+    /**
+     * Get module namespaced path for the model.
+     */
+    Model.prototype.$namespace = function (method) {
+        return this.$self().namespace(method);
+    };
+    /**
+     * Dispatch an action.
+     */
+    Model.prototype.$dispatch = function (method, payload) {
+        return this.$self().dispatch(method, payload);
+    };
+    /**
+     * Call getetrs.
+     */
+    Model.prototype.$getters = function (method) {
+        return this.$self().getters(method);
     };
     /**
      * Get the value of the primary key.
@@ -6891,7 +7022,9 @@ var rootActions = {
     create: function (_a, _b) {
         var commit = _a.commit;
         var entity = _b.entity, data = _b.data, _c = _b.insert, insert = _c === void 0 ? [] : _c;
-        commit('create', { entity: entity, data: data, insert: insert });
+        return new Promise(function (resolve) {
+            commit('create', { entity: entity, data: data, insert: insert, done: resolve });
+        });
     },
     /**
      * Insert given data to the state. Unlike `create`, this method will not
@@ -6901,7 +7034,9 @@ var rootActions = {
     insert: function (_a, _b) {
         var commit = _a.commit;
         var entity = _b.entity, data = _b.data, _c = _b.create, create = _c === void 0 ? [] : _c;
-        commit('insert', { entity: entity, data: data, create: create });
+        return new Promise(function (resolve) {
+            commit('insert', { entity: entity, data: data, create: create, done: resolve });
+        });
     },
     /**
      * Update data in the store.
@@ -6930,15 +7065,54 @@ var rootActions = {
     }
 };
 
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 var subActions = {
     /**
      * Save the given data to the state. This will replace any existing
      * data in the state.
      */
     create: function (_a, _b) {
-        var commit = _a.commit, state = _a.state;
+        var dispatch = _a.dispatch, state = _a.state;
         var data = _b.data, _c = _b.insert, insert = _c === void 0 ? [] : _c;
-        commit(state.$connection + "/create", { entity: state.$name, data: data, insert: insert }, { root: true });
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_d) {
+                return [2 /*return*/, dispatch(state.$connection + "/create", { entity: state.$name, data: data, insert: insert }, { root: true })];
+            });
+        });
     },
     /**
      * Insert given data to the state. Unlike `create`, this method will not
@@ -6946,9 +7120,13 @@ var subActions = {
      * with the same primary key.
      */
     insert: function (_a, _b) {
-        var commit = _a.commit, state = _a.state;
+        var dispatch = _a.dispatch, state = _a.state;
         var data = _b.data, _c = _b.create, create = _c === void 0 ? [] : _c;
-        commit(state.$connection + "/insert", { entity: state.$name, data: data, create: create }, { root: true });
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_d) {
+                return [2 /*return*/, dispatch(state.$connection + "/insert", { entity: state.$name, data: data, create: create }, { root: true })];
+            });
+        });
     },
     /**
      * Update data in the store.
@@ -6990,8 +7168,9 @@ var mutations = {
      * data in the state.
      */
     create: function (state, _a) {
-        var entity = _a.entity, data = _a.data, _b = _a.insert, insert = _b === void 0 ? [] : _b;
-        Repo.create(state, entity, data, insert);
+        var entity = _a.entity, data = _a.data, _b = _a.insert, insert = _b === void 0 ? [] : _b, _c = _a.done, done = _c === void 0 ? null : _c;
+        var result = Repo.create(state, entity, data, insert);
+        done && done(result);
     },
     /**
      * Insert given data to the state. Unlike `create`, this method will not
@@ -6999,8 +7178,9 @@ var mutations = {
      * with the same primary key.
      */
     insert: function (state, _a) {
-        var entity = _a.entity, data = _a.data, _b = _a.create, create = _b === void 0 ? [] : _b;
-        Repo.insert(state, entity, data, create);
+        var entity = _a.entity, data = _a.data, _b = _a.create, create = _b === void 0 ? [] : _b, _c = _a.done, done = _c === void 0 ? null : _c;
+        var result = Repo.insert(state, entity, data, create);
+        done && done(result);
     },
     /**
      * Update data in the store.
@@ -7122,6 +7302,12 @@ var Database = /** @class */ (function () {
      */
     Database.prototype.modules = function (namespace) {
         return Module.create(namespace, this.entities);
+    };
+    /**
+     * Register a Vuex Store instance.
+     */
+    Database.prototype.registerStore = function (store) {
+        this.store = store;
     };
     /**
      * Register namespace to the all regitsered model.
