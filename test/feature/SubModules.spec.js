@@ -11,37 +11,7 @@ const entities = [
   { model: Comment }
 ]
 
-describe('Sub modules', () => {
-  it('can create data by action', async () => {
-    const store = createStore(entities)
-
-    const data = {
-      id: 1,
-      user_id: 2,
-      user: { id: 2 }
-    }
-
-    await store.dispatch('entities/profiles/create', { data })
-
-    expect(store.state.entities.profiles.data[1].id).toBe(1)
-    expect(store.state.entities.users.data[2].id).toBe(2)
-  })
-
-  it('can insert data by action', async () => {
-    const store = createStore(entities)
-
-    const data = {
-      id: 1,
-      user_id: 2,
-      user: { id: 2 }
-    }
-
-    await store.dispatch('entities/profiles/insert', { data })
-
-    expect(store.state.entities.profiles.data[1].id).toBe(1)
-    expect(store.state.entities.users.data[2].id).toBe(2)
-  })
-
+describe('Sub Modules', () => {
   it('can find a data by getter', async () => {
     const store = createStore(entities)
 

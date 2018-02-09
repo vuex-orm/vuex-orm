@@ -8,8 +8,8 @@ const subActions: SubActions = {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  create ({ commit, state }, { data, insert = [] }) {
-    commit(`${state.$connection}/create`, { entity: state.$name, data, insert }, { root: true })
+  async create ({ dispatch, state }, { data, insert = [] }) {
+    return dispatch(`${state.$connection}/create`, { entity: state.$name, data, insert }, { root: true })
   },
 
   /**
@@ -17,8 +17,8 @@ const subActions: SubActions = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert ({ commit, state }, { data, create = [] }) {
-    commit(`${state.$connection}/insert`, { entity: state.$name, data, create }, { root: true })
+  async insert ({ dispatch, state }, { data, create = [] }) {
+    return dispatch(`${state.$connection}/insert`, { entity: state.$name, data, create }, { root: true })
   },
 
   /**

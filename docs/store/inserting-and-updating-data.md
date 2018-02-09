@@ -99,7 +99,7 @@ store.dispatch('entities/users/insert', {
 })
 ```
 
-## Default Values
+### Default Values
 
 If you pass an object that has missing fields defined in the model, that field will be automatically generated with the default value defined in the model.
 
@@ -136,6 +136,52 @@ store.dispatch('entities/users/create', {
     }
   }
 }
+```
+
+### Get Newly Inserted Data
+
+Both `create` and `insert` will return the created data as Promise so that you can get them as a return value.
+
+```js
+store.dispatch('entities/users/create', {
+  data: { id: 1, name: 'John Doe' }
+}).then((user) => {
+  console.log(user)
+})
+
+// User { id: 1, name: 'John Doe' }
+```
+
+If you insert an array of data, the returned object is going to be an array of data.
+
+```js
+store.dispatch('entities/users/create', {
+  data: [
+    { id: 1, name: 'John Doe' },
+    { id: 2, name: 'Jane Doe' }
+  ]
+}).then((users) => {
+  console.log(users)
+})
+
+/*
+  [
+    User { id: 1, name: 'John Doe' },
+    User { id: 2, name: 'Jane Doe' }
+  ]
+*/
+```
+
+If you prefer to use [async / await](https://tc39.github.io/ecmascript-asyncawait), then you can compose inserts like this.
+
+```js
+const user = await store.dispatch('entities/users/create', {
+  data: { id: 1, name: 'John Doe' }
+})
+
+console.log(user)
+
+// User { id: 1, name: 'John Doe' }
 ```
 
 ### Inserting Relationships

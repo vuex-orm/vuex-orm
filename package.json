@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/revolver-app/vuex-orm.git"
+    "url": "git+https://github.com/vuex-orm/vuex-orm.git"
   },
   "keywords": [
     "vue",
@@ -35,7 +35,7 @@
   "author": "Kia Ishii",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/revolver-app/vuex-orm/issues"
+    "url": "https://github.com/vuex-orm/vuex-orm/issues"
   },
   "dependencies": {
     "@types/lodash-es": "^4.17.0",
