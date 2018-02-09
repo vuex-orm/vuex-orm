@@ -18,6 +18,7 @@
     - [Inserting Relationships](relationships/inserting-relationships.md)
     - [Retrieving Relationships](relationships/retrieving-relationships.md)
 - [Advanced Usage](advanced-usage.md)
+    - [Interact With Store From Model](advanced/interact-with-store-from-model.md)
     - [Accessors & Mutators](advanced/accessors-and-mutators.md)
     - [Serialization](advanced/serialization.md)
 - [Digging Deeper](digging-deeper.md)
