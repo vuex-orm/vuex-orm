@@ -14,6 +14,8 @@ export default (database: Database, options: Options = {}): Vuex.Plugin<any> => 
   return (store: Vuex.Store<any>): void => {
     store.registerModule(namespace, database.modules(namespace))
 
+    database.registerStore(store)
+
     database.registerNamespace(namespace)
 
     Container.register(namespace, database)
