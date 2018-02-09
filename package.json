@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@types/lodash-es": "^4.17.0",
-    "lodash-es": "^4.17.4",
+    "lodash-es": "^4.17.5",
     "normalizr": "^3.2.4",
     "vue": "^2.5.13",
     "vuex": "^3.0.1"
@@ -52,7 +52,7 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-2": "^6.24.1",
     "codecov.io": "^0.1.6",
-    "expect": "^22.1.0",
+    "expect": "^22.2.2",
     "fork-ts-checker-webpack-plugin": "^0.3.0",
     "istanbul-instrumenter-loader": "^3.0.0",
     "mocha": "^4.1.0",
@@ -62,11 +62,11 @@
     "rollup-plugin-commonjs": "^8.3.0",
     "rollup-plugin-node-resolve": "^3.0.2",
     "sinon": "^4.2.2",
-    "ts-loader": "^3.4.0",
+    "ts-loader": "^3.5.0",
     "tslint": "^5.9.1",
     "tslint-config-standard": "^7.0.0",
     "typescript": "^2.7.1",
-    "uglify-js": "^3.3.9",
+    "uglify-js": "^3.3.10",
     "webpack": "^3.10.0",
     "webpack-node-externals": "^1.6.0"
   },
