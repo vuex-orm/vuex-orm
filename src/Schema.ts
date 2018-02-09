@@ -1,6 +1,6 @@
 import { schema, Schema as NormalizrSchema } from 'normalizr'
 import * as _ from './support/lodash'
-import Attrs, { Fields } from './repo/Attribute'
+import Attrs, { Field, Fields } from './repo/Attribute'
 import HasOne from './repo/relations/HasOne'
 import BelongsTo from './repo/relations/BelongsTo'
 import HasMany from './repo/relations/HasMany'
@@ -60,64 +60,63 @@ export default class Schema {
    */
   static build (model: typeof Model, fields: Fields, schemas: Schemas = {}): NormalizrSchema {
     return _.reduce(fields, (definition, field, key) => {
-      if (!Attrs.isAttribute(field)) {
-        definition[key] = this.build(model, field, schemas)
+      const def = this.buildRelations(model, field, schemas)
 
-        return definition
-      }
-
-      if (field instanceof HasOne) {
-        const relation = field.related
-
-        const s = schemas[relation.entity]
-
-        definition[key] = s ? s : this.one(relation, schemas)
-
-        return definition
-      }
-
-      if (field instanceof BelongsTo) {
-        const relation = field.parent
-
-        const s = schemas[relation.entity]
-
-        definition[key] = s ? s : this.one(relation, schemas)
-
-        return definition
-      }
-
-      if (field instanceof HasMany) {
-        const relation = field.related
-
-        const s = schemas[relation.entity]
-
-        definition[key] = s ? new schema.Array(s) : this.many(relation, schemas)
-
-        return definition
-      }
-
-      if (field instanceof HasManyBy) {
-        const relation = field.parent
-
-        const s = schemas[relation.entity]
-
-        definition[key] = s ? new schema.Array(s) : this.many(relation, schemas)
-
-        return definition
-      }
-
-      if (field instanceof BelongsToMany) {
-        const relation = field.related
-
-        const s = schemas[relation.entity]
-
-        definition[key] = s ? new schema.Array(s) : this.many(relation, schemas)
-
-        return definition
+      if (def) {
+        definition[key] = def
       }
 
       return definition
     }, {} as { [key: string]: NormalizrSchema })
+  }
+
+  /**
+   * Build normalizr schema definition from the given relation.
+   */
+  static buildRelations (model: typeof Model, field: Field, schemas: Schemas): NormalizrSchema | null {
+    if (!Attrs.isAttribute(field)) {
+      return this.build(model, field, schemas)
+    }
+
+    if (field instanceof HasOne) {
+      return this.buildOne(field.related, schemas)
+    }
+
+    if (field instanceof BelongsTo) {
+      return this.buildOne(field.parent, schemas)
+    }
+
+    if (field instanceof HasMany) {
+      return this.buildMany(field.related, schemas)
+    }
+
+    if (field instanceof HasManyBy) {
+      return this.buildMany(field.parent, schemas)
+    }
+
+    if (field instanceof BelongsToMany) {
+      return this.buildMany(field.related, schemas)
+    }
+
+    return null
+  }
+
+  /**
+   * Build a single entity schema definition.
+   */
+  static buildOne (related: typeof Model, schemas: Schemas): schema.Entity {
+    const s = schemas[related.entity]
+
+    return s || this.one(related, schemas)
+  }
+
+  /**
+   * Build a array entity schema definition.
+   */
+  static buildMany (related: typeof Model, schemas: Schemas): schema.Array {
+    const s = schemas[related.entity]
+
+    return s ? new schema.Array(s) : this.many(related, schemas)
   }
 
   /**
