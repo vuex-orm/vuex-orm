@@ -9,7 +9,7 @@ Vuex ORM is a plugin for [Vuex](https://github.com/vuejs/vuex) to enable Object-
 
 Vuex ORM lets you create "normalized" data schema within Vuex Store with relationships like any other usual ORM library. It also provides fluent API to get, search and update Store state.
 
-Learn more about the concept and motivation of Vuex ORM at [What Is Vuex ORM?](https://vuex-orm.gitbooks.io/vuex-orm/what-is-vuex-orm.html).
+Learn more about the concept and motivation of Vuex ORM at [What Is Vuex ORM?](https://vuex-orm.gitbooks.io/vuex-orm/prologue/what-is-vuex-orm.html).
 
 > **IMPORTANT NOTICE:** As of Vuex ORM 0.16.0, the package has moved to `@vuex-orm/core` from `vuex-orm`. If you were using Vuex ORM before 0.15.0, please update the package name of your `package.json` to `@vuex-orm/core`.
 
