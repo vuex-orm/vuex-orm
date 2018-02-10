@@ -5921,6 +5921,10 @@ var Repo = /** @class */ (function () {
     Repo.update = function (state, entity, data, condition) {
         (new this(state, entity)).update(data, condition);
     };
+    Repo.insertOrUpdate = function (state, entity, data, create) {
+        if (create === void 0) { create = []; }
+        return (new this(state, entity)).insertOrUpdate(data, create);
+    };
     /**
      * Delete data from the state.
      */
@@ -6108,6 +6112,44 @@ var Repo = /** @class */ (function () {
     Repo.prototype.insert = function (data, create) {
         if (create === void 0) { create = []; }
         return this.persist('insert', data, create, []);
+    };
+    /**
+     * Insert or update given data to the state. Unlike `insert`, this method
+     * will not replace existing data within the state, but it will update only
+     * the submitted data with the same primary key.
+     */
+    Repo.prototype.insertOrUpdate = function (data, create) {
+        var _this = this;
+        if (create === void 0) { create = []; }
+        var normalizedData = this.normalize(data);
+        var toBePersisted = {};
+        var updatedItems = [];
+        var persistedItems = [];
+        forEach(normalizedData, function (data, entity) {
+            forEach(data, function (item, id) {
+                // Find already existing entries and update them instead of overwriting
+                if (item.$id === undefined || _this.query.first(item.$id) === null) {
+                    if (!toBePersisted.hasOwnProperty(entity)) {
+                        toBePersisted[entity] = {};
+                    }
+                    toBePersisted[entity][id] = item;
+                }
+                else {
+                    _this.query.update(item, item.$id);
+                    updatedItems.push(item.$id);
+                }
+            });
+        });
+        if (Object.keys(toBePersisted).length > 0) {
+            persistedItems = this.processPersist('insert', toBePersisted, create, []);
+        }
+        if (updatedItems.length === 0) {
+            return this.getReturnData(persistedItems);
+        }
+        if (persistedItems.length === 0) {
+            return this.getReturnData(updatedItems);
+        }
+        return this.getReturnData(updatedItems.concat(persistedItems));
     };
     /**
      * Save data into Vuex Store.
@@ -6544,42 +6586,50 @@ var Schema = /** @class */ (function () {
         var _this = this;
         if (schemas === void 0) { schemas = {}; }
         return reduce(fields, function (definition, field, key) {
-            if (!Attribute.isAttribute(field)) {
-                definition[key] = _this.build(model, field, schemas);
-                return definition;
-            }
-            if (field instanceof HasOne) {
-                var relation = field.related;
-                var s = schemas[relation.entity];
-                definition[key] = s ? s : _this.one(relation, schemas);
-                return definition;
-            }
-            if (field instanceof BelongsTo) {
-                var relation = field.parent;
-                var s = schemas[relation.entity];
-                definition[key] = s ? s : _this.one(relation, schemas);
-                return definition;
-            }
-            if (field instanceof HasMany) {
-                var relation = field.related;
-                var s = schemas[relation.entity];
-                definition[key] = s ? new src_3.Array(s) : _this.many(relation, schemas);
-                return definition;
-            }
-            if (field instanceof HasManyBy) {
-                var relation = field.parent;
-                var s = schemas[relation.entity];
-                definition[key] = s ? new src_3.Array(s) : _this.many(relation, schemas);
-                return definition;
-            }
-            if (field instanceof BelongsToMany) {
-                var relation = field.related;
-                var s = schemas[relation.entity];
-                definition[key] = s ? new src_3.Array(s) : _this.many(relation, schemas);
-                return definition;
+            var def = _this.buildRelations(model, field, schemas);
+            if (def) {
+                definition[key] = def;
             }
             return definition;
         }, {});
+    };
+    /**
+     * Build normalizr schema definition from the given relation.
+     */
+    Schema.buildRelations = function (model, field, schemas) {
+        if (!Attribute.isAttribute(field)) {
+            return this.build(model, field, schemas);
+        }
+        if (field instanceof HasOne) {
+            return this.buildOne(field.related, schemas);
+        }
+        if (field instanceof BelongsTo) {
+            return this.buildOne(field.parent, schemas);
+        }
+        if (field instanceof HasMany) {
+            return this.buildMany(field.related, schemas);
+        }
+        if (field instanceof HasManyBy) {
+            return this.buildMany(field.parent, schemas);
+        }
+        if (field instanceof BelongsToMany) {
+            return this.buildMany(field.related, schemas);
+        }
+        return null;
+    };
+    /**
+     * Build a single entity schema definition.
+     */
+    Schema.buildOne = function (related, schemas) {
+        var s = schemas[related.entity];
+        return s || this.one(related, schemas);
+    };
+    /**
+     * Build a array entity schema definition.
+     */
+    Schema.buildMany = function (related, schemas) {
+        var s = schemas[related.entity];
+        return s ? new src_3.Array(s) : this.many(related, schemas);
     };
     /**
      * Create the merge strategy.
@@ -7047,6 +7097,18 @@ var rootActions = {
         commit('update', { entity: entity, where: where, data: data });
     },
     /**
+     * Insert or update given data to the state. Unlike `insert`, this method
+     * will not replace existing data within the state, but it will update only
+     * the submitted data with the same primary key.
+     */
+    insertOrUpdate: function (_a, _b) {
+        var commit = _a.commit;
+        var entity = _b.entity, data = _b.data, _c = _b.create, create = _c === void 0 ? [] : _c;
+        return new Promise(function (resolve) {
+            commit('insertOrUpdate', { entity: entity, data: data, create: create, done: resolve });
+        });
+    },
+    /**
      * Delete data from the store.
      */
     delete: function (_a, _b) {
@@ -7142,6 +7204,20 @@ var subActions = {
         commit(state.$connection + "/update", { entity: state.$name, where: where, data: data }, { root: true });
     },
     /**
+     * Insert or update given data to the state. Unlike `insert`, this method
+     * will not replace existing data within the state, but it will update only
+     * the submitted data with the same primary key.
+     */
+    insertOrUpdate: function (_a, _b) {
+        var dispatch = _a.dispatch, state = _a.state;
+        var data = _b.data, _c = _b.create, create = _c === void 0 ? [] : _c;
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_d) {
+                return [2 /*return*/, dispatch(state.$connection + "/insertOrUpdate", { entity: state.$name, data: data, create: create }, { root: true })];
+            });
+        });
+    },
+    /**
      * Delete data from the store.
      */
     delete: function (_a, condition) {
@@ -7188,6 +7264,16 @@ var mutations = {
     update: function (state, _a) {
         var entity = _a.entity, data = _a.data, _b = _a.where, where = _b === void 0 ? undefined : _b;
         Repo.update(state, entity, data, where);
+    },
+    /**
+     * Insert or update given data to the state. Unlike `insert`, this method
+     * will not replace existing data within the state, but it will update only
+     * the submitted data with the same primary key.
+     */
+    insertOrUpdate: function (state, _a) {
+        var entity = _a.entity, data = _a.data, _b = _a.create, create = _b === void 0 ? [] : _b, _c = _a.done, done = _c === void 0 ? null : _c;
+        var result = Repo.insertOrUpdate(state, entity, data, create);
+        done && done(result);
     },
     /**
      * Delete data from the store.

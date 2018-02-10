@@ -34,6 +34,17 @@ const mutations: Mutations = {
   },
 
   /**
+   * Insert or update given data to the state. Unlike `insert`, this method
+   * will not replace existing data within the state, but it will update only
+   * the submitted data with the same primary key.
+   */
+  insertOrUpdate (state, { entity, data, create = [], done = null }) {
+    const result = Repo.insertOrUpdate(state, entity, data, create)
+
+    done && done(result)
+  },
+
+  /**
    * Delete data from the store.
    */
   delete (state, { entity, where }) {

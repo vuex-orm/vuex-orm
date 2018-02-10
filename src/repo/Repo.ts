@@ -140,6 +140,10 @@ export default class Repo {
     (new this(state, entity)).update(data, condition)
   }
 
+  static insertOrUpdate (state: State, entity: string, data: any, create: string[] = []): Item | Collection {
+    return (new this(state, entity)).insertOrUpdate(data, create)
+  }
+
   /**
    * Delete data from the state.
    */
@@ -357,6 +361,48 @@ export default class Repo {
    */
   insert (data: any, create: string[] = []): Item | Collection {
     return this.persist('insert', data, create, [])
+  }
+
+  /**
+   * Insert or update given data to the state. Unlike `insert`, this method
+   * will not replace existing data within the state, but it will update only
+   * the submitted data with the same primary key.
+   */
+  insertOrUpdate (data: any, create: string[] = []): Item | Collection {
+    const normalizedData: NormalizedData = this.normalize(data)
+    const toBePersisted: NormalizedData = {}
+    const updatedItems: string[] = []
+    let persistedItems: string[] = []
+
+    _.forEach(normalizedData, (data, entity) => {
+      _.forEach(data, (item, id) => {
+        // Find already existing entries and update them instead of overwriting
+        if (item.$id === undefined || this.query.first(item.$id) === null) {
+          if (!toBePersisted.hasOwnProperty(entity)) {
+            toBePersisted[entity] = {}
+          }
+
+          toBePersisted[entity][id] = item
+        } else {
+          this.query.update(item, item.$id)
+          updatedItems.push(item.$id)
+        }
+      })
+    })
+
+    if (Object.keys(toBePersisted).length > 0) {
+      persistedItems = this.processPersist('insert', toBePersisted, create, [])
+    }
+
+    if (updatedItems.length === 0) {
+      return this.getReturnData(persistedItems)
+    }
+
+    if (persistedItems.length === 0) {
+      return this.getReturnData(updatedItems)
+    }
+
+    return this.getReturnData([...updatedItems, ...persistedItems])
   }
 
   /**
