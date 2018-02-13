@@ -51,14 +51,14 @@ export default class Schema {
   /**
    * Create a dfinition from given fields.
    */
-  static definition (model: typeof Model, schemas: Schemas = {}): NormalizrSchema {
+  static definition (model: typeof Model, schemas: Schemas): NormalizrSchema {
     return this.build(model, model.fields(), schemas)
   }
 
   /**
    * Build a definition schema.
    */
-  static build (model: typeof Model, fields: Fields, schemas: Schemas = {}): NormalizrSchema {
+  static build (model: typeof Model, fields: Fields, schemas: Schemas): NormalizrSchema {
     return _.reduce(fields, (definition, field, key) => {
       const def = this.buildRelations(model, field, schemas)
 
