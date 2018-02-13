@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexORM from 'app'
 import Model from 'app/Model'
+import Repo from 'app/repo/Repo'
 import Query from 'app/repo/Query'
 
 class User extends Model {
@@ -193,5 +194,23 @@ describe('Plugin', () => {
     store.commit('entities/setName', 'my_entities')
 
     expect(store.state.entities.name).toBe('my_entities')
+  })
+
+  it('can take extra options', () => {
+    const plugin = {
+      install (components, options) {
+        components.Repo.version = () => {
+          return options.version
+        }
+      }
+    }
+
+    VuexORM.use(plugin, { version: '1.0.0' })
+
+    const store = new Vuex.Store({
+      plugins: [VuexORM.install(database)]
+    })
+
+    expect(Repo.version()).toBe('1.0.0')
   })
 })

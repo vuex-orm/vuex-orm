@@ -248,7 +248,7 @@ export default class Query {
   /**
    * Add an order to the query.
    */
-  orderBy (field: string, direction: OrderDirection = 'asc'): this {
+  orderBy (field: string, direction: OrderDirection): this {
     this.orders.push({ field, direction })
 
     return this

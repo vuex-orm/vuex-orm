@@ -42,6 +42,27 @@ describe('Repo – Delete', () => {
     expect(state).toEqual(expected)
   })
 
+  it('can delete record by string key', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1 },
+        '2': { id: 2 }
+      }}
+    }
+
+    const expected = {
+      name: 'entities',
+      users: { data: {
+        '2': { id: 2 }
+      }}
+    }
+
+    Repo.delete(state, 'users', '1')
+
+    expect(state).toEqual(expected)
+  })
+
   it('can delete record by closure', () => {
     const state = {
       name: 'entities',

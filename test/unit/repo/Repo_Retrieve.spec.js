@@ -172,6 +172,21 @@ describe('Repo – Retrieve', () => {
     expect(result).toEqual(expected)
   })
 
+  it('returns null when calling the last method on empty state', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, role: 'admin', sex: 'male' }
+      }}
+    }
+
+    const expected = { id: 3, role: 'admin', sex: 'male' }
+
+    const result = Repo.query(state, 'users', false).where('id', 2).last()
+
+    expect(result).toBe(null)
+  })
+
   it('can get data of the entity that matches the where query with callback as value', () => {
     const state = {
       name: 'entities',
@@ -335,6 +350,23 @@ describe('Repo – Retrieve', () => {
     expect(result).toEqual(expected)
   })
 
+  it('can get data of the entity only with orWhere query', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, role: 'admin', age: 20 },
+        '2': { id: 2, role: 'user', age: 30 },
+        '3': { id: 3, role: 'admin', age: 40 }
+      }}
+    }
+
+    const expected = [{ id: 2, role: 'user', age: 30 }]
+
+    const result = Repo.query(state, 'users', false).orWhere('role', 'user').get()
+
+    expect(result).toEqual(expected)
+  })
+
   it('can find a single item of entity by id', () => {
     const state = {
       name: 'entities',
@@ -397,6 +429,33 @@ describe('Repo – Retrieve', () => {
     const users = Repo.query(state, 'users').where('id', 3).get()
 
     expect(users).toEqual([])
+  })
+
+  it('can sort by model fields in asc order', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { id: 1, name: 'John' },
+        '2': { id: 2, name: 'Andy' },
+        '3': { id: 3, name: 'Roger' },
+        '4': { id: 4, name: 'Andy' }
+      }}
+    }
+
+    const expected = [
+      { id: 1, name: 'John' },
+      { id: 2, name: 'Andy' },
+      { id: 3, name: 'Roger' },
+      { id: 4, name: 'Andy' }
+    ]
+
+    const result1 = Repo.query(state, 'users', false).orderBy('id').get()
+
+    expect(result1).toEqual(expected)
+
+    const result2 = Repo.query(state, 'users', false).orderBy('id', 'asc').get()
+
+    expect(result2).toEqual(expected)
   })
 
   it('can sort by model fields', () => {
