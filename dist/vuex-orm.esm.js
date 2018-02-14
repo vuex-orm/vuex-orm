@@ -5192,12 +5192,11 @@ var Attr = /** @class */ (function () {
 }());
 
 var Increment = /** @class */ (function () {
-    /**
-     * Create a new increment instance.
-     */
-    function Increment(value) {
-        if (value === void 0) { value = 1; }
-        this.value = value;
+    function Increment() {
+        /**
+         * The initial count to start incrementing.
+         */
+        this.value = 1;
     }
     return Increment;
 }());
@@ -5693,7 +5692,6 @@ var Query = /** @class */ (function () {
      * Add an order to the query.
      */
     Query.prototype.orderBy = function (field, direction) {
-        if (direction === void 0) { direction = 'asc'; }
         this.orders.push({ field: field, direction: direction });
         return this;
     };
@@ -6119,11 +6117,11 @@ var Repo = /** @class */ (function () {
         var toBePersisted = {};
         var updatedItems = [];
         var persistedItems = [];
-        // normalizedData contains the differenty entity types (e.g. `users`)
+        // `normalizedData` contains the differenty entity types (e.g. `users`),
         forEach(normalizedData, function (data, entity) {
-            // data contains the items of `entity`
+            // `data` contains the items of `entity`.
             forEach(data, function (item, id) {
-                // check if item does not already exist in store and mark it as new
+                // Check if item does not already exist in store and mark it as new.
                 if (item.$id === undefined || _this.query.first(item.$id) === null) {
                     if (!toBePersisted.hasOwnProperty(entity)) {
                         toBePersisted[entity] = {};
@@ -6139,7 +6137,7 @@ var Repo = /** @class */ (function () {
         if (Object.keys(toBePersisted).length > 0) {
             persistedItems = this.processPersist('insert', toBePersisted, create, []);
         }
-        // merging the ids of updated and persisted items to return all of them
+        // merging the ids of updated and persisted items to return all of them.
         return this.getReturnData(updatedItems.concat(persistedItems));
     };
     /**
@@ -6567,7 +6565,6 @@ var Schema = /** @class */ (function () {
      * Create a dfinition from given fields.
      */
     Schema.definition = function (model, schemas) {
-        if (schemas === void 0) { schemas = {}; }
         return this.build(model, model.fields(), schemas);
     };
     /**
@@ -6575,7 +6572,6 @@ var Schema = /** @class */ (function () {
      */
     Schema.build = function (model, fields, schemas) {
         var _this = this;
-        if (schemas === void 0) { schemas = {}; }
         return reduce(fields, function (definition, field, key) {
             var def = _this.buildRelations(model, field, schemas);
             if (def) {
