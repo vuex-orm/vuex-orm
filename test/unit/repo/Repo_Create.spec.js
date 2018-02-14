@@ -312,4 +312,103 @@ describe('Repo – Create', () => {
 
     expect(state).toEqual(expected)
   })
+
+  it('can update single data to Vuex Store via insertOrUpdate', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { $id: 1, id: 1, name: 'John', settings: { accounts: [], role: 'user' }, posts: [], profile: null },
+        '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: 'admin' }, posts: [], profile: null }
+      }}
+    }
+
+    const data = { id: 1, name: 'Johnny' }
+
+    const expected = {
+      name: 'entities',
+      users: { data: {
+        '1': { $id: 1, id: 1, name: 'Johnny', settings: { accounts: [], role: 'user' }, posts: [], profile: null },
+        '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: 'admin' }, posts: [], profile: null }
+      }}
+    }
+
+    Repo.insertOrUpdate(state, 'users', data)
+
+    expect(state).toEqual(expected)
+  })
+
+  it('can insert single data to Vuex Store via insertOrUpdate', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { $id: 1, id: 1, name: 'John', settings: { accounts: [], role: 'user' }, posts: [], profile: null },
+        '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: 'admin' }, posts: [], profile: null }
+      }}
+    }
+
+    const data = { id: 3, name: 'Peter' }
+
+    const expected = {
+      name: 'entities',
+      users: { data: {
+        '1': { $id: 1, id: 1, name: 'John', settings: { accounts: [], role: 'user' }, posts: [], profile: null },
+        '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: 'admin' }, posts: [], profile: null },
+        '3': { $id: 3, id: 3, name: 'Peter', settings: { accounts: [], role: '' }, posts: [], profile: null }
+      }}
+    }
+
+    Repo.insertOrUpdate(state, 'users', data)
+
+    expect(state).toEqual(expected)
+  })
+
+  it('can insertOrUpdate a list of data to Vuex Store', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '1': { $id: 1, id: 1, name: 'John', settings: { accounts: [], role: 'user' }, posts: [], profile: null },
+        '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: 'admin' }, posts: [], profile: null }
+      }}
+    }
+
+    const data = [
+      { id: 1, name: 'Janie' },
+      { id: 3, name: 'Johnny', settings: { role: 'user' } }
+    ]
+
+    const expected = {
+      name: 'entities',
+      users: { data: {
+        '1': { $id: 1, id: 1, name: 'Janie', settings: { accounts: [], role: 'user' }, posts: [], profile: null },
+        '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: 'admin' }, posts: [], profile: null },
+        '3': { $id: 3, id: 3, name: 'Johnny', settings: { accounts: [], role: 'user' }, posts: [], profile: null }
+      }}
+    }
+
+    Repo.insertOrUpdate(state, 'users', data)
+
+    expect(state).toEqual(expected)
+  })
+
+  it('can insertOrUpdate with empty data', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+        '10': { id: 10 },
+        '11': { id: 11 }
+      }}
+    }
+
+    const expected = {
+      name: 'entities',
+      users: { data: {
+        '10': { id: 10 },
+        '11': { id: 11 }
+      }}
+    }
+
+    Repo.insertOrUpdate(state, 'users', [])
+
+    expect(state).toEqual(expected)
+  })
 })

@@ -140,6 +140,10 @@ export default class Repo {
     (new this(state, entity)).update(data, condition)
   }
 
+  static insertOrUpdate (state: State, entity: string, data: any, create: string[] = []): Item | Collection {
+    return (new this(state, entity)).insertOrUpdate(data, create)
+  }
+
   /**
    * Delete data from the state.
    */
@@ -357,6 +361,43 @@ export default class Repo {
    */
   insert (data: any, create: string[] = []): Item | Collection {
     return this.persist('insert', data, create, [])
+  }
+
+  /**
+   * Insert or update given data to the state. Unlike `insert`, this method
+   * will not replace existing data within the state, but it will update only
+   * the submitted data with the same primary key.
+   */
+  insertOrUpdate (data: any, create: string[] = []): Item | Collection {
+    const normalizedData: NormalizedData = this.normalize(data)
+    const toBePersisted: NormalizedData = {}
+    const updatedItems: string[] = []
+    let persistedItems: string[] = []
+
+    // normalizedData contains the differenty entity types (e.g. `users`)
+    _.forEach(normalizedData, (data, entity) => {
+      // data contains the items of `entity`
+      _.forEach(data, (item, id) => {
+        // check if item does not already exist in store and mark it as new
+        if (item.$id === undefined || this.query.first(item.$id) === null) {
+          if (!toBePersisted.hasOwnProperty(entity)) {
+            toBePersisted[entity] = {}
+          }
+
+          toBePersisted[entity][id] = item
+        } else {
+          this.query.update(item, item.$id)
+          updatedItems.push(item.$id)
+        }
+      })
+    })
+
+    if (Object.keys(toBePersisted).length > 0) {
+      persistedItems = this.processPersist('insert', toBePersisted, create, [])
+    }
+
+    // merging the ids of updated and persisted items to return all of them
+    return this.getReturnData([...updatedItems, ...persistedItems])
   }
 
   /**

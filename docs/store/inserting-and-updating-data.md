@@ -306,6 +306,50 @@ store.dispatch('entities/users/update', {
 }
 ```
 
+## Insert or Update
+
+Sometimes you might want to insert a set of records which includes already existing and new records. When using the `insert` action you would replace the dataset of an already existing record. This can cause unexpected side effects.
+
+For example if an API supports dynamic embedding of relationships and doesn't always return all relationships, the relationships would be emptied when missing on `insert`.
+
+For those cases you can use the `insertOrUpdate` action:
+
+```js
+// Initial State
+{
+    entities: {
+        users: {
+            data: {
+                '1': { id: 1, name: 'John', roles: [3] }
+            }
+        }
+    }
+}
+
+// `insertOrUpdate` is going to add new records and update existing records (see `update`).
+// Also accepts a single item as data
+store.dispatch('entities/users/insertOrUpdate', {
+    data: [
+        { id: 1, name: 'Peter' }, 
+        { id: 2, name: 'Hank' },
+    ]
+})
+  
+// State after `insertOrUpdate`.
+// Roles for Peter won't be set to empty array
+// The new record is inserted with an empty relationship
+{
+    entities: {
+        users: {
+            data: {
+                '1': { id: 1, name: 'Peter', roles: [3] }, 
+                '2': { id: 2, name: 'Hank', roles: [] }
+            }
+        }
+    }
+}
+```
+
 ## Dispatching Actions from Root Module
 
 You can dispatch action from root module as well. With this syntax, you must specify the entity manually by passing `entity` field.

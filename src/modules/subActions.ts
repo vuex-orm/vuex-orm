@@ -38,6 +38,15 @@ const subActions: SubActions = {
   },
 
   /**
+   * Insert or update given data to the state. Unlike `insert`, this method
+   * will not replace existing data within the state, but it will update only
+   * the submitted data with the same primary key.
+   */
+  async insertOrUpdate ({ dispatch, state }, { data, create = [] }) {
+    return dispatch(`${state.$connection}/insertOrUpdate`, { entity: state.$name, data, create }, { root: true })
+  },
+
+  /**
    * Delete data from the store.
    */
   delete ({ commit, state }, condition) {
