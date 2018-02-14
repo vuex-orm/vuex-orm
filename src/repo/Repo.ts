@@ -374,9 +374,11 @@ export default class Repo {
     const updatedItems: string[] = []
     let persistedItems: string[] = []
 
+    // normalizedData contains the differenty entity types (e.g. `users`)
     _.forEach(normalizedData, (data, entity) => {
+      // data contains the items of `entity`
       _.forEach(data, (item, id) => {
-        // Find already existing entries and update them instead of overwriting
+        // check if item does not already exist in store and mark it as new
         if (item.$id === undefined || this.query.first(item.$id) === null) {
           if (!toBePersisted.hasOwnProperty(entity)) {
             toBePersisted[entity] = {}
@@ -394,14 +396,7 @@ export default class Repo {
       persistedItems = this.processPersist('insert', toBePersisted, create, [])
     }
 
-    if (updatedItems.length === 0) {
-      return this.getReturnData(persistedItems)
-    }
-
-    if (persistedItems.length === 0) {
-      return this.getReturnData(updatedItems)
-    }
-
+    // merging the ids of updated and persisted items to return all of them
     return this.getReturnData([...updatedItems, ...persistedItems])
   }
 
