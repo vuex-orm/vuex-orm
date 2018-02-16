@@ -622,8 +622,11 @@ export default class Repo {
       return
     }
 
-    if (typeof this.entity.primaryKey === 'string') {
-      data[this.entity.primaryKey] && this.query.update(data, data[this.entity.primaryKey])
+    // Use the entities primary key method to retrieve internal id (known as $id)
+    const $id = this.entity.id(data)
+
+    if ($id) {
+      this.query.update(data, $id)
     }
   }
 

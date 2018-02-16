@@ -173,7 +173,7 @@ export default class Model {
   }
 
   /**
-   * Gte the value of the primary key.
+   * Get the value of the primary key.
    */
   static id (record: any): any {
     const key = this.primaryKey
@@ -302,7 +302,7 @@ export default class Model {
   }
 
   /**
-   * Gte Vuex Store insatnce out of connection.
+   * Get Vuex Store insatnce out of connection.
    */
   $store (): Vuex.Store<any> {
     return this.$self().store()
