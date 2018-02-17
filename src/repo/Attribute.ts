@@ -8,6 +8,7 @@ import BelongsTo from './relations/BelongsTo'
 import HasMany from './relations/HasMany'
 import HasManyBy from './relations/HasManyBy'
 import BelongsToMany from './relations/BelongsToMany'
+import MorphTo from './relations/MorphTo'
 import MorphOne from './relations/MorphOne'
 import MorphMany from './relations/MorphMany'
 
@@ -91,6 +92,13 @@ export default class Attribute {
   }
 
   /**
+   * The morph to relationship.
+   */
+  static morphTo (id: string, type: string, connection?: string): MorphTo {
+    return new MorphTo(id, type, null, connection)
+  }
+
+  /**
    * The morph one relationship.
    */
   static morphOne (related: Entity, id: string, type: string, localKey: string, connection?: string): MorphOne {
@@ -129,6 +137,7 @@ export default class Attribute {
            || attr instanceof HasMany
            || attr instanceof HasManyBy
            || attr instanceof BelongsToMany
+           || attr instanceof MorphTo
            || attr instanceof MorphOne
            || attr instanceof MorphMany
   }

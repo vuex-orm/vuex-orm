@@ -1,6 +1,7 @@
 import { Record } from '../../Data'
 import Model from '../../Model'
 import { Collection } from '../Query'
+import { Fields } from '../Attribute'
 import Repo, { Relation as Load } from '../Repo'
 import Relation from './Relation'
 
@@ -53,7 +54,7 @@ export default class HasMany extends Relation {
   /**
    * Make model instances of the relation.
    */
-  make (): Model[] {
+  make (_parent: Fields): Model[] {
     if (this.records.length === 0) {
       return []
     }

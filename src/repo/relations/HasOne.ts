@@ -1,6 +1,7 @@
 import { Record } from '../../Data'
 import Model from '../../Model'
 import { Item } from '../Query'
+import { Fields } from '../Attribute'
 import Repo, { Relation as Load } from '../Repo'
 import Relation from './Relation'
 
@@ -53,7 +54,7 @@ export default class HasOne extends Relation {
   /**
    * Make model instances of the relation.
    */
-  make (): Model | null {
+  make (_parent: Fields): Model | null {
     return this.record ? new this.related(this.record) : null
   }
 }

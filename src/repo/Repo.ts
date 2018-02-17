@@ -12,6 +12,7 @@ import BelongsTo from './relations/BelongsTo'
 import HasMany from './relations/HasMany'
 import HasManyBy from './relations/HasManyBy'
 import BelongsToMany from './relations/BelongsToMany'
+import MorphTo from './relations/MorphTo'
 import MorphOne from './relations/MorphOne'
 import MorphMany from './relations/MorphMany'
 import Query, {
@@ -603,7 +604,7 @@ export default class Repo {
         return
       }
 
-      if (attr instanceof HasOne || attr instanceof BelongsTo || attr instanceof MorphOne) {
+      if (attr instanceof HasOne || attr instanceof BelongsTo || attr instanceof MorphTo || attr instanceof MorphOne) {
         newRecord[name] = null
 
         return

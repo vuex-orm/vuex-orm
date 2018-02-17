@@ -13,6 +13,7 @@ import BelongsTo from './repo/relations/BelongsTo'
 import HasMany from './repo/relations/HasMany'
 import HasManyBy from './repo/relations/HasManyBy'
 import BelongsToMany from './repo/relations/BelongsToMany'
+import MorphTo from './repo/relations/MorphTo'
 import MorphOne from './repo/relations/MorphOne'
 import MorphMany from './repo/relations/MorphMany'
 
@@ -115,6 +116,13 @@ export default class Model {
       this.relation(related).localKey(relatedKey),
       this.connection
     )
+  }
+
+  /**
+   * The morph one relationship.
+   */
+  static morphTo (id: string, type: string): MorphTo {
+    return Attribute.morphTo(id, type, this.connection)
   }
 
   /**
@@ -404,7 +412,7 @@ export default class Model {
         field.value = value
       }
 
-      if (field instanceof HasOne || field instanceof BelongsTo || field instanceof MorphOne) {
+      if (field instanceof HasOne || field instanceof BelongsTo || field instanceof MorphTo || field instanceof MorphOne) {
         field.record = value
       }
 
@@ -422,7 +430,7 @@ export default class Model {
   $build (self: any, data: Fields): void {
     _.forEach(data, (field, key) => {
       if (Attribute.isAttribute(field)) {
-        self[key] = this.$generateField(field, key)
+        self[key] = this.$generateField(data, field, key)
 
         return
       }
@@ -434,7 +442,7 @@ export default class Model {
   /**
    * Generate appropreate field value for the given attribute.
    */
-  $generateField (attr: Attributes, key: string): any {
+  $generateField (data: Fields, attr: Attributes, key: string): any {
     if (attr instanceof Attr) {
       const mutator = attr.mutator || this.$self().mutators()[key]
 
@@ -445,7 +453,7 @@ export default class Model {
       return attr.value
     }
 
-    return attr.make()
+    return attr.make(data)
   }
 
   /**

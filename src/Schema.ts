@@ -8,6 +8,7 @@ import BelongsTo from './repo/relations/BelongsTo'
 import HasMany from './repo/relations/HasMany'
 import HasManyBy from './repo/relations/HasManyBy'
 import BelongsToMany from './repo/relations/BelongsToMany'
+import MorphTo from './repo/relations/MorphTo'
 import MorphOne from './repo/relations/MorphOne'
 import MorphMany from './repo/relations/MorphMany'
 import Model from './Model'
@@ -102,6 +103,10 @@ export default class Schema {
       return this.buildMany(field.related, schemas, model, field)
     }
 
+    if (field instanceof MorphTo) {
+      return this.buildMorphOne(field, schemas, model)
+    }
+
     if (field instanceof MorphOne) {
       return this.buildOne(field.related, schemas, model, field)
     }
@@ -132,6 +137,17 @@ export default class Schema {
   }
 
   /**
+   * Build a morph schema definition.
+   */
+  static buildMorphOne (attr: MorphTo, schemas: Schemas, parent: typeof Model) {
+    const s = _.mapValues(parent.conn().models(), (model) => {
+      return this.buildOne(model, schemas, model, attr)
+    })
+
+    return new schema.Union(s, (_value, parentValue) => parentValue[attr.type])
+  }
+
+  /**
    * Create the merge strategy.
    */
   static idAttribute (model: typeof Model): IdAttribute {
@@ -149,7 +165,7 @@ export default class Schema {
     return (value: any, parentValue: any, _key: string) => {
       let record: Record = { ...value, $id: model.id(value) }
 
-      record = this.generateMorph(record, parentValue, parent, attr)
+      record = this.generateMorphFields(record, parentValue, parent, attr)
 
       return record
     }
@@ -159,7 +175,7 @@ export default class Schema {
    * Generate morph fields. This method will generate fileds needed for the
    * morph fields such as `commentable_id` and `commentable_type`.
    */
-  static generateMorph (record: Record, parentValue: any, parent?: typeof Model, attr?: Relations): Record {
+  static generateMorphFields (record: Record, parentValue: any, parent?: typeof Model, attr?: Relations): Record {
     if (attr === undefined) {
       return record
     }
