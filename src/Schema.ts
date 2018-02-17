@@ -12,6 +12,7 @@ import MorphTo from './repo/relations/MorphTo'
 import MorphOne from './repo/relations/MorphOne'
 import MorphMany from './repo/relations/MorphMany'
 import MorphToMany from './repo/relations/MorphToMany'
+import MorphedByMany from './repo/relations/MorphedByMany'
 import Model from './Model'
 
 export type IdAttribute = (value: any, parent: any, key: string) => any
@@ -117,6 +118,10 @@ export default class Schema {
     }
 
     if (field instanceof MorphToMany) {
+      return this.buildMany(field.related, schemas, model, field)
+    }
+
+    if (field instanceof MorphedByMany) {
       return this.buildMany(field.related, schemas, model, field)
     }
 

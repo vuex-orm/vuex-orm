@@ -12,6 +12,7 @@ import MorphTo from './relations/MorphTo'
 import MorphOne from './relations/MorphOne'
 import MorphMany from './relations/MorphMany'
 import MorphToMany from './relations/MorphToMany'
+import MorphedByMany from './relations/MorphedByMany'
 
 export type Entity = typeof Model | string
 
@@ -130,6 +131,22 @@ export default class Attribute {
   }
 
   /**
+   * The morph to many relationship.
+   */
+  static morphedByMany (
+    related: Entity,
+    pivot: Entity,
+    relatedId: string,
+    id: string,
+    type: string,
+    parentKey: string,
+    relatedKey: string,
+    connection?: string
+  ): MorphedByMany {
+    return new MorphedByMany(related, pivot, relatedId, id, type, parentKey, relatedKey, [], connection)
+  }
+
+  /**
    * Determine if the given value is the type of fields.
    */
   static isFields (attr: Field): attr is Fields {
@@ -158,6 +175,7 @@ export default class Attribute {
            || attr instanceof MorphOne
            || attr instanceof MorphMany
            || attr instanceof MorphToMany
+           || attr instanceof MorphedByMany
   }
 
   /**

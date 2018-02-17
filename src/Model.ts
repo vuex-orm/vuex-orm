@@ -17,6 +17,7 @@ import MorphTo from './repo/relations/MorphTo'
 import MorphOne from './repo/relations/MorphOne'
 import MorphMany from './repo/relations/MorphMany'
 import MorphToMany from './repo/relations/MorphToMany'
+import MorphedByMany from './repo/relations/MorphedByMany'
 
 export default class Model {
   /**
@@ -165,6 +166,30 @@ export default class Model {
   }
 
   /**
+   * The morph to many relationship.
+   */
+  static morphedByMany (
+    related: typeof Model | string,
+    pivot: typeof Model | string,
+    relatedId: string,
+    id: string,
+    type: string,
+    parentKey?: string,
+    relatedKey?: string
+  ): MorphedByMany {
+    return Attribute.morphedByMany(
+      related,
+      pivot,
+      relatedId,
+      id,
+      type,
+      this.localKey(parentKey),
+      this.relation(related).localKey(relatedKey),
+      this.connection
+    )
+  }
+
+  /**
    * Get connection instance out of container.
    */
   static conn (): Connection {
@@ -259,11 +284,11 @@ export default class Model {
   /**
    * Get all `belongsToMany` fields from the schema.
    */
-  static pivotFields (): { [key: string]: BelongsToMany | MorphToMany }[] {
-    const fields: { [key: string]: BelongsToMany | MorphToMany }[] = []
+  static pivotFields (): { [key: string]: BelongsToMany | MorphToMany | MorphedByMany }[] {
+    const fields: { [key: string]: BelongsToMany | MorphToMany | MorphedByMany }[] = []
 
     _.forEach(this.fields(), (field, key) => {
-      if (field instanceof BelongsToMany || field instanceof MorphToMany) {
+      if (field instanceof BelongsToMany || field instanceof MorphToMany || field instanceof MorphedByMany) {
         fields.push({ [key]: field })
       }
     })
@@ -441,7 +466,7 @@ export default class Model {
         field.record = value
       }
 
-      if (field instanceof HasMany || field instanceof HasManyBy || field instanceof BelongsToMany || field instanceof MorphMany || field instanceof MorphToMany) {
+      if (field instanceof HasMany || field instanceof HasManyBy || field instanceof BelongsToMany || field instanceof MorphMany || field instanceof MorphToMany || field instanceof MorphedByMany) {
         field.records = value
       }
     })

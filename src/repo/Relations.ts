@@ -7,6 +7,7 @@ import MorphTo from './relations/MorphTo'
 import MorphOne from './relations/MorphOne'
 import MorphMany from './relations/MorphMany'
 import MorphToMany from './relations/MorphToMany'
+import MorphedByMany from './relations/MorphedByMany'
 
 type Relations = HasOne
                  | BelongsTo
@@ -17,5 +18,6 @@ type Relations = HasOne
                  | MorphOne
                  | MorphMany
                  | MorphToMany
+                 | MorphedByMany
 
 export default Relations
