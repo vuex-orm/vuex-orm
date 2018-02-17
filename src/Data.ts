@@ -1,4 +1,6 @@
-import { normalize, Schema } from 'normalizr'
+import { normalize } from 'normalizr'
+import Schema from './Schema'
+import Model from './Model'
 
 export interface Record {
   [field: string]: any
@@ -14,9 +16,11 @@ export interface NormalizedData {
 
 export default class Data {
   /**
-   * Normalize the given data by given schema.
+   * Normalize the given data based on given model.
    */
-  static normalize (data: any, schema: Schema): NormalizedData {
+  static normalize (data: any, model: typeof Model): NormalizedData {
+    const schema = Array.isArray(data) ? Schema.many(model) : Schema.one(model)
+
     return normalize(data, schema).entities
   }
 }

@@ -108,12 +108,14 @@ describe('Repo – Create', () => {
     const posts = [
       {
         id: 1,
+        user_id: 10,
         author: { id: 10 },
         comments: [{ id: 1, post_id: 1, body: 'C1' }],
         reviews: [1, 2]
       },
       {
         id: 2,
+        user_id: 11,
         author: { id: 11 },
         comments: [{ id: 2, post_id: 2, body: 'C2' }, { id: 3, post_id: 2, body: 'C3' }],
         reviews: [3, 4]
@@ -157,6 +159,7 @@ describe('Repo – Create', () => {
     const posts1 = [
       {
         id: 1,
+        user_id: 10,
         author: { id: 10 },
         comments: [{ id: 1, post_id: 1, body: 'C1' }],
         reviews: [1, 2]
@@ -166,6 +169,7 @@ describe('Repo – Create', () => {
     const posts2 = [
       {
         id: 2,
+        user_id: 11,
         author: { id: 11 },
         comments: [{ id: 2, post_id: 2, body: 'C2' }, { id: 3, post_id: 2, body: 'C3' }],
         reviews: [3, 4]

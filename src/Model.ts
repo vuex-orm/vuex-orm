@@ -1,10 +1,8 @@
-import { Schema as NormalizrSchema } from 'normalizr'
 import * as Vuex from 'vuex'
 import * as _ from './support/lodash'
 import Container from './connections/Container'
 import Connection from './connections/Connection'
-import Data, { Record, Records, NormalizedData } from './Data'
-import Schema from './Schema'
+import Data, { Record, NormalizedData } from './Data'
 import Attribute, { Attributes, Fields } from './repo/Attribute'
 import Attr from './repo/types/Attr'
 import Increment from './repo/types/Increment'
@@ -311,54 +309,10 @@ export default class Model {
   }
 
   /**
-   * Create normalizr schema that represents this model.
-   *
-   * @param {boolean} many If true, it'll return an array schema.
+   * Normalize the given data.
    */
-  static schema (many: boolean = false): NormalizrSchema {
-    return many ? Schema.many(this) : Schema.one(this)
-  }
-
-  /**
-   * Generate normalized data from given data.
-   */
-  static normalize (data: any | any[]): NormalizedData {
-    const schema = this.schema(_.isArray(data))
-
-    const normalizedData = Data.normalize(data, schema)
-
-    // Check if all foreign keys exist in the data and if not, make them.
-    return _.mapValues(normalizedData, (records, entity) => {
-      return this.attachForeignKeys(records, this.relation(entity))
-    })
-  }
-
-  /**
-   * Check if the given record has the appropriate foreign key and
-   * if not, attach them.
-   */
-  static attachForeignKeys (records: Records, model: typeof Model): Records {
-    const fields: Fields = model.fields()
-
-    return _.mapValues(records, (record) => {
-      let newRecord: Record = { ...record }
-
-      _.forEach(record, (value, field) => {
-        const attr = fields[field]
-
-        if (attr instanceof BelongsTo) {
-          const key: string = attr.foreignKey
-
-          if (newRecord[key]) {
-            return
-          }
-
-          newRecord[key] = value
-        }
-      })
-
-      return newRecord
-    })
+  static normalize (data: any): NormalizedData {
+    return Data.normalize(data, this)
   }
 
   /**
