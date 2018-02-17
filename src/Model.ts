@@ -16,6 +16,7 @@ import BelongsToMany from './repo/relations/BelongsToMany'
 import MorphTo from './repo/relations/MorphTo'
 import MorphOne from './repo/relations/MorphOne'
 import MorphMany from './repo/relations/MorphMany'
+import MorphToMany from './repo/relations/MorphToMany'
 
 export default class Model {
   /**
@@ -140,6 +141,30 @@ export default class Model {
   }
 
   /**
+   * The morph to many relationship.
+   */
+  static morphToMany (
+    related: typeof Model | string,
+    pivot: typeof Model | string,
+    relatedId: string,
+    id: string,
+    type: string,
+    parentKey?: string,
+    relatedKey?: string
+  ): MorphToMany {
+    return Attribute.morphToMany(
+      related,
+      pivot,
+      relatedId,
+      id,
+      type,
+      this.localKey(parentKey),
+      this.relation(related).localKey(relatedKey),
+      this.connection
+    )
+  }
+
+  /**
    * Get connection instance out of container.
    */
   static conn (): Connection {
@@ -234,11 +259,11 @@ export default class Model {
   /**
    * Get all `belongsToMany` fields from the schema.
    */
-  static belongsToManyFields (): { [key: string]: BelongsToMany }[] {
-    const fields: { [key: string]: BelongsToMany }[] = []
+  static pivotFields (): { [key: string]: BelongsToMany | MorphToMany }[] {
+    const fields: { [key: string]: BelongsToMany | MorphToMany }[] = []
 
     _.forEach(this.fields(), (field, key) => {
-      if (field instanceof BelongsToMany) {
+      if (field instanceof BelongsToMany || field instanceof MorphToMany) {
         fields.push({ [key]: field })
       }
     })
@@ -249,8 +274,8 @@ export default class Model {
   /**
    * Check if fields contains the `belongsToMany` field type.
    */
-  static hasBelongsToManyFields (): boolean {
-    return this.belongsToManyFields().length > 0
+  static hasPivotFields (): boolean {
+    return this.pivotFields().length > 0
   }
 
   /**
@@ -416,7 +441,7 @@ export default class Model {
         field.record = value
       }
 
-      if (field instanceof HasMany || field instanceof HasManyBy || field instanceof BelongsToMany || field instanceof MorphMany) {
+      if (field instanceof HasMany || field instanceof HasManyBy || field instanceof BelongsToMany || field instanceof MorphMany || field instanceof MorphToMany) {
         field.records = value
       }
     })

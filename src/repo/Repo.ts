@@ -15,6 +15,7 @@ import BelongsToMany from './relations/BelongsToMany'
 import MorphTo from './relations/MorphTo'
 import MorphOne from './relations/MorphOne'
 import MorphMany from './relations/MorphMany'
+import MorphToMany from './relations/MorphToMany'
 import Query, {
   Item as QueryItem,
   Collection as QueryCollection,
@@ -530,11 +531,11 @@ export default class Repo {
    * Create pivot records if needed.
    */
   createPivots (data: NormalizedData): NormalizedData {
-    if (!this.entity.hasBelongsToManyFields()) {
+    if (!this.entity.hasPivotFields()) {
       return data
     }
 
-    _.forEach(this.entity.belongsToManyFields(), (field) => {
+    _.forEach(this.entity.pivotFields(), (field) => {
       _.forEach(field, attr => { attr.createPivots(this.entity, data) })
     })
 
@@ -610,7 +611,7 @@ export default class Repo {
         return
       }
 
-      if (attr instanceof HasMany || attr instanceof HasManyBy || attr instanceof BelongsToMany || attr instanceof MorphMany) {
+      if (attr instanceof HasMany || attr instanceof HasManyBy || attr instanceof BelongsToMany || attr instanceof MorphMany || attr instanceof MorphToMany) {
         newRecord[name] = []
 
         return

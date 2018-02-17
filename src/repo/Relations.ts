@@ -6,6 +6,7 @@ import BelongsToMany from './relations/BelongsToMany'
 import MorphTo from './relations/MorphTo'
 import MorphOne from './relations/MorphOne'
 import MorphMany from './relations/MorphMany'
+import MorphToMany from './relations/MorphToMany'
 
 type Relations = HasOne
                  | BelongsTo
@@ -15,5 +16,6 @@ type Relations = HasOne
                  | MorphTo
                  | MorphOne
                  | MorphMany
+                 | MorphToMany
 
 export default Relations
