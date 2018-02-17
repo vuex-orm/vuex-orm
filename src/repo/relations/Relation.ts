@@ -1,6 +1,7 @@
 import Container from '../../connections/Container'
 import { Record } from '../../Data'
 import Model from '../../Model'
+import { Fields } from '../Attribute'
 import { Item, Collection } from '../Query'
 import Repo, { Relation as Load } from '../Repo'
 
@@ -19,7 +20,7 @@ export default abstract class Relation {
   /**
    * Make model instances of the relation.
    */
-  abstract make (): Model | Model[] | null
+  abstract make (parent: Fields): Model | Model[] | null
 
   /**
    * Load relationship records.

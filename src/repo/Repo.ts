@@ -12,6 +12,10 @@ import BelongsTo from './relations/BelongsTo'
 import HasMany from './relations/HasMany'
 import HasManyBy from './relations/HasManyBy'
 import BelongsToMany from './relations/BelongsToMany'
+import MorphTo from './relations/MorphTo'
+import MorphOne from './relations/MorphOne'
+import MorphMany from './relations/MorphMany'
+import MorphToMany from './relations/MorphToMany'
 import Query, {
   Item as QueryItem,
   Collection as QueryCollection,
@@ -140,6 +144,11 @@ export default class Repo {
     (new this(state, entity)).update(data, condition)
   }
 
+  /**
+   * Insert or update given data to the state. Unlike `insert`, this method
+   * will not replace existing data within the state, but it will update only
+   * the submitted data with the same primary key.
+   */
   static insertOrUpdate (state: State, entity: string, data: any, create: string[] = []): Item | Collection {
     return (new this(state, entity)).insertOrUpdate(data, create)
   }
@@ -522,11 +531,11 @@ export default class Repo {
    * Create pivot records if needed.
    */
   createPivots (data: NormalizedData): NormalizedData {
-    if (!this.entity.hasBelongsToManyFields()) {
+    if (!this.entity.hasPivotFields()) {
       return data
     }
 
-    _.forEach(this.entity.belongsToManyFields(), (field) => {
+    _.forEach(this.entity.pivotFields(), (field) => {
       _.forEach(field, attr => { attr.createPivots(this.entity, data) })
     })
 
@@ -596,13 +605,13 @@ export default class Repo {
         return
       }
 
-      if (attr instanceof HasOne || attr instanceof BelongsTo) {
+      if (attr instanceof HasOne || attr instanceof BelongsTo || attr instanceof MorphTo || attr instanceof MorphOne) {
         newRecord[name] = null
 
         return
       }
 
-      if (attr instanceof HasMany || attr instanceof HasManyBy || attr instanceof BelongsToMany) {
+      if (attr instanceof HasMany || attr instanceof HasManyBy || attr instanceof BelongsToMany || attr instanceof MorphMany || attr instanceof MorphToMany) {
         newRecord[name] = []
 
         return

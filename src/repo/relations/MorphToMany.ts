@@ -8,16 +8,7 @@ import Relation from './Relation'
 
 export type Entity = typeof Model | string
 
-export interface PivotRecord {
-  [entity: string]: {
-    [id: string]: {
-      $id: string
-      [pivotKey: string]: any
-    }
-  }
-}
-
-export default class BelongsToMany extends Relation {
+export default class MorphToMany extends Relation {
   /**
    * The related model.
    */
@@ -29,14 +20,19 @@ export default class BelongsToMany extends Relation {
   pivot: typeof Model
 
   /**
-   * The foreign key of the parent model.
+   * The field name that conatins id of the related model.
    */
-  foreignPivotKey: string
+  relatedId: string
 
   /**
-   * The associated key of the relation.
+   * The field name that contains id of the parent model.
    */
-  relatedPivotKey: string
+  id: string
+
+  /**
+   * The field name fthat contains type of the parent model.
+   */
+  type: string
 
   /**
    * The key name of the parent model.
@@ -59,39 +55,41 @@ export default class BelongsToMany extends Relation {
   constructor (
     related: Entity,
     pivot: Entity,
-    foreignPivotKey: string,
-    relatedPivotKey: string,
+    relatedId: string,
+    id: string,
+    type: string,
     parentKey: string,
     relatedKey: string,
-    record: Collection,
+    records: Collection,
     connection?: string
   ) {
     super()
 
     this.related = this.model(related, connection)
     this.pivot = this.model(pivot, connection)
-    this.foreignPivotKey = foreignPivotKey
-    this.relatedPivotKey = relatedPivotKey
+    this.relatedId = relatedId
+    this.id = id
+    this.type = type
     this.parentKey = parentKey
     this.relatedKey = relatedKey
-    this.records = record
+    this.records = records
   }
 
   /**
-   * Load the belongs to relationship for the record.
+   * Load the morph many relationship for the record.
    */
   load (repo: Repo, record: Record, relation: Load): Collection {
     const pivotQuery = new Repo(repo.state, this.pivot.entity, false)
 
     const relatedItems = pivotQuery.where((rec: any) => {
-      return rec[this.foreignPivotKey] === record[this.parentKey]
+      return rec[this.id] === record[this.parentKey]
     }).get()
 
     if (relatedItems.length === 0) {
       return []
     }
 
-    const relatedIds = _.map(relatedItems, this.relatedPivotKey)
+    const relatedIds = _.map(relatedItems, this.relatedId)
 
     const relatedQuery = new Repo(repo.state, this.related.entity, false)
 
@@ -110,10 +108,6 @@ export default class BelongsToMany extends Relation {
       return []
     }
 
-    if (typeof (this.records[0] as any) !== 'object') {
-      return []
-    }
-
     return this.records.map(record => new this.related(record))
   }
 
@@ -128,7 +122,7 @@ export default class BelongsToMany extends Relation {
         return
       }
 
-      this.createPivotRecord(data, record, related)
+      this.createPivotRecord(parent, data, record, related)
     })
 
     return data
@@ -137,17 +131,19 @@ export default class BelongsToMany extends Relation {
   /**
    * Create a pivot record.
    */
-  createPivotRecord (data: NormalizedData, record: Record, related: any[]): void {
+  createPivotRecord (parent: typeof Model, data: NormalizedData, record: Record, related: any[]): void {
     _.forEach(related, (id) => {
-      const pivotKey = `${record[this.parentKey]}_${id}`
+      const parentId = record[this.parentKey]
+      const pivotKey = `${parentId}_${id}_${parent.entity}`
 
       data[this.pivot.entity] = {
         ...data[this.pivot.entity],
 
         [pivotKey]: {
           $id: pivotKey,
-          [this.foreignPivotKey]: record[this.parentKey],
-          [this.relatedPivotKey]: id
+          [this.relatedId]: id,
+          [this.id]: parentId,
+          [this.type]: parent.entity
         }
       }
     })

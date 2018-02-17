@@ -13,6 +13,11 @@ import BelongsTo from './repo/relations/BelongsTo'
 import HasMany from './repo/relations/HasMany'
 import HasManyBy from './repo/relations/HasManyBy'
 import BelongsToMany from './repo/relations/BelongsToMany'
+import MorphTo from './repo/relations/MorphTo'
+import MorphOne from './repo/relations/MorphOne'
+import MorphMany from './repo/relations/MorphMany'
+import MorphToMany from './repo/relations/MorphToMany'
+import MorphedByMany from './repo/relations/MorphedByMany'
 
 export default class Model {
   /**
@@ -116,6 +121,75 @@ export default class Model {
   }
 
   /**
+   * The morph one relationship.
+   */
+  static morphTo (id: string, type: string): MorphTo {
+    return Attribute.morphTo(id, type, this.connection)
+  }
+
+  /**
+   * The morph one relationship.
+   */
+  static morphOne (related: typeof Model | string, id: string, type: string, localKey?: string): MorphOne {
+    return Attribute.morphOne(related, id, type, this.localKey(localKey), this.connection)
+  }
+
+  /**
+   * The morph many relationship.
+   */
+  static morphMany (related: typeof Model | string, id: string, type: string, localKey?: string): MorphMany {
+    return Attribute.morphMany(related, id, type, this.localKey(localKey), this.connection)
+  }
+
+  /**
+   * The morph to many relationship.
+   */
+  static morphToMany (
+    related: typeof Model | string,
+    pivot: typeof Model | string,
+    relatedId: string,
+    id: string,
+    type: string,
+    parentKey?: string,
+    relatedKey?: string
+  ): MorphToMany {
+    return Attribute.morphToMany(
+      related,
+      pivot,
+      relatedId,
+      id,
+      type,
+      this.localKey(parentKey),
+      this.relation(related).localKey(relatedKey),
+      this.connection
+    )
+  }
+
+  /**
+   * The morph to many relationship.
+   */
+  static morphedByMany (
+    related: typeof Model | string,
+    pivot: typeof Model | string,
+    relatedId: string,
+    id: string,
+    type: string,
+    parentKey?: string,
+    relatedKey?: string
+  ): MorphedByMany {
+    return Attribute.morphedByMany(
+      related,
+      pivot,
+      relatedId,
+      id,
+      type,
+      this.localKey(parentKey),
+      this.relation(related).localKey(relatedKey),
+      this.connection
+    )
+  }
+
+  /**
    * Get connection instance out of container.
    */
   static conn (): Connection {
@@ -210,11 +284,11 @@ export default class Model {
   /**
    * Get all `belongsToMany` fields from the schema.
    */
-  static belongsToManyFields (): { [key: string]: BelongsToMany }[] {
-    const fields: { [key: string]: BelongsToMany }[] = []
+  static pivotFields (): { [key: string]: BelongsToMany | MorphToMany | MorphedByMany }[] {
+    const fields: { [key: string]: BelongsToMany | MorphToMany | MorphedByMany }[] = []
 
     _.forEach(this.fields(), (field, key) => {
-      if (field instanceof BelongsToMany) {
+      if (field instanceof BelongsToMany || field instanceof MorphToMany || field instanceof MorphedByMany) {
         fields.push({ [key]: field })
       }
     })
@@ -225,8 +299,8 @@ export default class Model {
   /**
    * Check if fields contains the `belongsToMany` field type.
    */
-  static hasBelongsToManyFields (): boolean {
-    return this.belongsToManyFields().length > 0
+  static hasPivotFields (): boolean {
+    return this.pivotFields().length > 0
   }
 
   /**
@@ -388,11 +462,11 @@ export default class Model {
         field.value = value
       }
 
-      if (field instanceof HasOne || field instanceof BelongsTo) {
+      if (field instanceof HasOne || field instanceof BelongsTo || field instanceof MorphTo || field instanceof MorphOne) {
         field.record = value
       }
 
-      if (field instanceof HasMany || field instanceof HasManyBy || field instanceof BelongsToMany) {
+      if (field instanceof HasMany || field instanceof HasManyBy || field instanceof BelongsToMany || field instanceof MorphMany || field instanceof MorphToMany || field instanceof MorphedByMany) {
         field.records = value
       }
     })
@@ -406,7 +480,7 @@ export default class Model {
   $build (self: any, data: Fields): void {
     _.forEach(data, (field, key) => {
       if (Attribute.isAttribute(field)) {
-        self[key] = this.$generateField(field, key)
+        self[key] = this.$generateField(data, field, key)
 
         return
       }
@@ -418,7 +492,7 @@ export default class Model {
   /**
    * Generate appropreate field value for the given attribute.
    */
-  $generateField (attr: Attributes, key: string): any {
+  $generateField (data: Fields, attr: Attributes, key: string): any {
     if (attr instanceof Attr) {
       const mutator = attr.mutator || this.$self().mutators()[key]
 
@@ -429,7 +503,7 @@ export default class Model {
       return attr.value
     }
 
-    return attr.make()
+    return attr.make(data)
   }
 
   /**

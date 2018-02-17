@@ -5,16 +5,23 @@ import { Fields } from '../Attribute'
 import Repo, { Relation as Load } from '../Repo'
 import Relation from './Relation'
 
-export default class HasOne extends Relation {
+export type Entity = typeof Model | string
+
+export default class MorphOne extends Relation {
   /**
    * The related model.
    */
   related: typeof Model
 
   /**
-   * The foregin key of the related model.
+   * The field name that contains id of the parent model.
    */
-  foreignKey: string
+  id: string
+
+  /**
+   * The field name fthat contains type of the parent model.
+   */
+  type: string
 
   /**
    * The local key of the model.
@@ -27,24 +34,25 @@ export default class HasOne extends Relation {
   record: Item
 
   /**
-   * Create a new has one instance.
+   * Create a new belongs to instance.
    */
-  constructor (related: typeof Model | string, foreignKey: string, localKey: string, record: Item, connection?: string) {
+  constructor (related: Entity, id: string, type: string, localKey: string, record: Item, connection?: string) {
     super()
 
     this.related = this.model(related, connection)
-    this.foreignKey = foreignKey
+    this.id = id
+    this.type = type
     this.localKey = localKey
     this.record = record
   }
 
   /**
-   * Load the has one relationship for the record.
+   * Load the morph many relationship for the record.
    */
   load (repo: Repo, record: Record, relation: Load): Item {
     const query = new Repo(repo.state, this.related.entity, false)
 
-    query.where(this.foreignKey, record[this.localKey])
+    query.where(this.id, record[this.localKey]).where(this.type, repo.name)
 
     this.addConstraint(query, relation)
 
