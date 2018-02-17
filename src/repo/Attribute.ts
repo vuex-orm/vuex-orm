@@ -8,6 +8,7 @@ import BelongsTo from './relations/BelongsTo'
 import HasMany from './relations/HasMany'
 import HasManyBy from './relations/HasManyBy'
 import BelongsToMany from './relations/BelongsToMany'
+import MorphOne from './relations/MorphOne'
 import MorphMany from './relations/MorphMany'
 
 export type Entity = typeof Model | string
@@ -90,6 +91,13 @@ export default class Attribute {
   }
 
   /**
+   * The morph one relationship.
+   */
+  static morphOne (related: Entity, id: string, type: string, localKey: string, connection?: string): MorphOne {
+    return new MorphOne(related, id, type, localKey, null, connection)
+  }
+
+  /**
    * The morph many relationship.
    */
   static morphMany (related: Entity, id: string, type: string, localKey: string, connection?: string): MorphMany {
@@ -112,12 +120,23 @@ export default class Attribute {
            || this.isRelation(attr)
   }
 
+  /**
+   * Determine if the given value is the type of relations.
+   */
   static isRelation (attr: Field): attr is Relations {
     return attr instanceof HasOne
            || attr instanceof BelongsTo
            || attr instanceof HasMany
            || attr instanceof HasManyBy
            || attr instanceof BelongsToMany
+           || attr instanceof MorphOne
            || attr instanceof MorphMany
+  }
+
+  /**
+   * Determine if the given value is the type of morph relations.
+   */
+  static isMorphRelation (attr: Relations): attr is MorphOne | MorphMany {
+    return attr instanceof MorphOne || attr instanceof MorphMany
   }
 }

@@ -8,6 +8,7 @@ import BelongsTo from './repo/relations/BelongsTo'
 import HasMany from './repo/relations/HasMany'
 import HasManyBy from './repo/relations/HasManyBy'
 import BelongsToMany from './repo/relations/BelongsToMany'
+import MorphOne from './repo/relations/MorphOne'
 import MorphMany from './repo/relations/MorphMany'
 import Model from './Model'
 
@@ -82,11 +83,11 @@ export default class Schema {
     }
 
     if (field instanceof HasOne) {
-      return this.buildOne(field.related, schemas)
+      return this.buildOne(field.related, schemas, model, field)
     }
 
     if (field instanceof BelongsTo) {
-      return this.buildOne(field.parent, schemas)
+      return this.buildOne(field.parent, schemas, model, field)
     }
 
     if (field instanceof HasMany) {
@@ -101,6 +102,10 @@ export default class Schema {
       return this.buildMany(field.related, schemas, model, field)
     }
 
+    if (field instanceof MorphOne) {
+      return this.buildOne(field.related, schemas, model, field)
+    }
+
     if (field instanceof MorphMany) {
       return this.buildMany(field.related, schemas, model, field)
     }
@@ -111,10 +116,10 @@ export default class Schema {
   /**
    * Build a single entity schema definition.
    */
-  static buildOne (related: typeof Model, schemas: Schemas): schema.Entity {
+  static buildOne (related: typeof Model, schemas: Schemas, parent: typeof Model, attr: Relations): schema.Entity {
     const s = schemas[related.entity]
 
-    return s || this.one(related, schemas)
+    return s || this.one(related, schemas, parent, attr)
   }
 
   /**
@@ -155,7 +160,11 @@ export default class Schema {
    * morph fields such as `commentable_id` and `commentable_type`.
    */
   static generateMorph (record: Record, parentValue: any, parent?: typeof Model, attr?: Relations): Record {
-    if (!(attr instanceof MorphMany)) {
+    if (attr === undefined) {
+      return record
+    }
+
+    if (!Attrs.isMorphRelation(attr)) {
       return record
     }
 

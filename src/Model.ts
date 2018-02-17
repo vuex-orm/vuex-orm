@@ -13,6 +13,7 @@ import BelongsTo from './repo/relations/BelongsTo'
 import HasMany from './repo/relations/HasMany'
 import HasManyBy from './repo/relations/HasManyBy'
 import BelongsToMany from './repo/relations/BelongsToMany'
+import MorphOne from './repo/relations/MorphOne'
 import MorphMany from './repo/relations/MorphMany'
 
 export default class Model {
@@ -114,6 +115,13 @@ export default class Model {
       this.relation(related).localKey(relatedKey),
       this.connection
     )
+  }
+
+  /**
+   * The morph one relationship.
+   */
+  static morphOne (related: typeof Model | string, id: string, type: string, localKey?: string): MorphOne {
+    return Attribute.morphOne(related, id, type, this.localKey(localKey), this.connection)
   }
 
   /**
@@ -396,7 +404,7 @@ export default class Model {
         field.value = value
       }
 
-      if (field instanceof HasOne || field instanceof BelongsTo) {
+      if (field instanceof HasOne || field instanceof BelongsTo || field instanceof MorphOne) {
         field.record = value
       }
 
