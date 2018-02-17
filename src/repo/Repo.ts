@@ -12,6 +12,7 @@ import BelongsTo from './relations/BelongsTo'
 import HasMany from './relations/HasMany'
 import HasManyBy from './relations/HasManyBy'
 import BelongsToMany from './relations/BelongsToMany'
+import MorphMany from './relations/MorphMany'
 import Query, {
   Item as QueryItem,
   Collection as QueryCollection,
@@ -140,6 +141,11 @@ export default class Repo {
     (new this(state, entity)).update(data, condition)
   }
 
+  /**
+   * Insert or update given data to the state. Unlike `insert`, this method
+   * will not replace existing data within the state, but it will update only
+   * the submitted data with the same primary key.
+   */
   static insertOrUpdate (state: State, entity: string, data: any, create: string[] = []): Item | Collection {
     return (new this(state, entity)).insertOrUpdate(data, create)
   }
@@ -602,7 +608,7 @@ export default class Repo {
         return
       }
 
-      if (attr instanceof HasMany || attr instanceof HasManyBy || attr instanceof BelongsToMany) {
+      if (attr instanceof HasMany || attr instanceof HasManyBy || attr instanceof BelongsToMany || attr instanceof MorphMany) {
         newRecord[name] = []
 
         return

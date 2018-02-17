@@ -13,6 +13,7 @@ import BelongsTo from './repo/relations/BelongsTo'
 import HasMany from './repo/relations/HasMany'
 import HasManyBy from './repo/relations/HasManyBy'
 import BelongsToMany from './repo/relations/BelongsToMany'
+import MorphMany from './repo/relations/MorphMany'
 
 export default class Model {
   /**
@@ -113,6 +114,13 @@ export default class Model {
       this.relation(related).localKey(relatedKey),
       this.connection
     )
+  }
+
+  /**
+   * The morph many relationship.
+   */
+  static morphMany (related: typeof Model | string, id: string, type: string, localKey?: string): MorphMany {
+    return Attribute.morphMany(related, id, type, this.localKey(localKey), this.connection)
   }
 
   /**
@@ -392,7 +400,7 @@ export default class Model {
         field.record = value
       }
 
-      if (field instanceof HasMany || field instanceof HasManyBy || field instanceof BelongsToMany) {
+      if (field instanceof HasMany || field instanceof HasManyBy || field instanceof BelongsToMany || field instanceof MorphMany) {
         field.records = value
       }
     })

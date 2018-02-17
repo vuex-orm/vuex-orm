@@ -8,6 +8,7 @@ import BelongsTo from './relations/BelongsTo'
 import HasMany from './relations/HasMany'
 import HasManyBy from './relations/HasManyBy'
 import BelongsToMany from './relations/BelongsToMany'
+import MorphMany from './relations/MorphMany'
 
 export type Entity = typeof Model | string
 
@@ -89,6 +90,13 @@ export default class Attribute {
   }
 
   /**
+   * The morph many relationship.
+   */
+  static morphMany (related: Entity, id: string, type: string, localKey: string, connection?: string): MorphMany {
+    return new MorphMany(related, id, type, localKey, [], connection)
+  }
+
+  /**
    * Determine if the given value is the type of fields.
    */
   static isFields (attr: Field): attr is Fields {
@@ -110,5 +118,6 @@ export default class Attribute {
            || attr instanceof HasMany
            || attr instanceof HasManyBy
            || attr instanceof BelongsToMany
+           || attr instanceof MorphMany
   }
 }
