@@ -30,9 +30,9 @@ export default class HasManyBy extends Relation {
    * Create a new has many by instance.
    */
   constructor (parent: typeof Model | string, foreignKey: string, ownerKey: string, records: Collection, connection?: string) {
-    super()
+    super(connection)
 
-    this.parent = this.model(parent, connection)
+    this.parent = this.model(parent)
     this.foreignKey = foreignKey
     this.ownerKey = ownerKey
     this.records = records

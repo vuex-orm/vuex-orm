@@ -63,10 +63,10 @@ export default class MorphToMany extends Relation {
     records: Collection,
     connection?: string
   ) {
-    super()
+    super(connection)
 
-    this.related = this.model(related, connection)
-    this.pivot = this.model(pivot, connection)
+    this.related = this.model(related)
+    this.pivot = this.model(pivot)
     this.relatedId = relatedId
     this.id = id
     this.type = type

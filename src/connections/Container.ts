@@ -7,7 +7,7 @@ export interface Connections {
 
 export default class Container {
   /**
-   * A list of connections that has been registered in Vuex ORM.
+   * A list of connections that have been registered to Vuex ORM.
    */
   static connections: Connections = {}
 

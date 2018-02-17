@@ -3,6 +3,10 @@ import * as Vuex from 'vuex'
 import Database from '../database/Database'
 import Model from '../model/Model'
 
+export interface Models {
+  [entity: string]: typeof Model
+}
+
 export default class Connection {
   /**
    * The database instance.
@@ -28,16 +32,15 @@ export default class Connection {
   }
 
   /**
-   * Returns models in database with name.
+   * Get models from the database.
    */
-  models (): { [name: string]: typeof Model } {
-    let models: { [name: string]: typeof Model } = {}
-
-    _.forEach(this.database.entities, (entity) => {
-      models[entity.model.entity] = entity.model
-    })
-
-    return models
+  models (): Models {
+    return _.reduce(this.database.entities, (models, entity) => {
+      return {
+        ...models,
+        [entity.model.entity]: entity.model
+      }
+    }, {} as Models)
   }
 
   /**

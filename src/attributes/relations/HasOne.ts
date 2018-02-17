@@ -30,9 +30,9 @@ export default class HasOne extends Relation {
    * Create a new has one instance.
    */
   constructor (related: typeof Model | string, foreignKey: string, localKey: string, record: Item, connection?: string) {
-    super()
+    super(connection)
 
-    this.related = this.model(related, connection)
+    this.related = this.model(related)
     this.foreignKey = foreignKey
     this.localKey = localKey
     this.record = record

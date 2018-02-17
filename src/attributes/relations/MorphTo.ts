@@ -25,27 +25,21 @@ export default class MorphTo extends Relation {
   record: Item
 
   /**
-   * The database connection.
-   */
-  connection?: string
-
-  /**
    * Create a new morph to instance.
    */
   constructor (id: string, type: string, record: Item, connection?: string) {
-    super()
+    super(connection)
 
     this.id = id
     this.type = type
     this.record = record
-    this.connection = connection
   }
 
   /**
    * Load the morph many relationship for the record.
    */
   load (repo: Repo, record: Record, relation: Load): Item {
-    const related = this.model(record[this.type], this.connection)
+    const related = this.model(record[this.type])
     const ownerKey = related.localKey()
     const query = new Repo(repo.state, related.entity, false)
 
@@ -61,7 +55,7 @@ export default class MorphTo extends Relation {
    */
   make (parent: Fields): Model | null {
     const related: string = (parent[this.type] as Attr).value
-    const model = this.model(related, this.connection)
+    const model = this.model(related)
 
     return this.record ? new model(this.record) : null
   }

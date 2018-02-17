@@ -158,7 +158,7 @@ export default class Schema {
   }
 
   /**
-   * Create the merge strategy.
+   * Create the id attribute.
    */
   static idAttribute (model: typeof Model): IdAttribute {
     return (value: any, _parent: any, _key: string) => {

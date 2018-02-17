@@ -30,9 +30,9 @@ export default class BelongsTo extends Relation {
    * Create a new belongs to instance.
    */
   constructor (parent: typeof Model | string, foreignKey: string, ownerKey: string, record: Item, connection?: string) {
-    super()
+    super(connection)
 
-    this.parent = this.model(parent, connection)
+    this.parent = this.model(parent)
     this.foreignKey = foreignKey
     this.ownerKey = ownerKey
     this.record = record

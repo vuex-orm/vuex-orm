@@ -37,9 +37,9 @@ export default class MorphMany extends Relation {
    * Create a new belongs to instance.
    */
   constructor (related: Entity, id: string, type: string, localKey: string, record: Collection, connection?: string) {
-    super()
+    super(connection)
 
-    this.related = this.model(related, connection)
+    this.related = this.model(related)
     this.id = id
     this.type = type
     this.localKey = localKey

@@ -7,14 +7,26 @@ import { Fields } from '../Attribute'
 
 export default abstract class Relation {
   /**
+   * The name of the connection.
+   */
+  connection: string
+
+  /**
+   * Create a relation instance.
+   */
+  constructor (connection: string = 'entities') {
+    this.connection = connection
+  }
+
+  /**
    * Resolve model out of container.
    */
-  model (model: typeof Model | string, connection: string = 'entities'): typeof Model {
+  model (model: typeof Model | string): typeof Model {
     if (typeof model !== 'string') {
       return model
     }
 
-    return Container.connection(connection).model(model)
+    return Container.connection(this.connection).model(model)
   }
 
   /**
