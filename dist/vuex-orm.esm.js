@@ -6314,8 +6314,10 @@ var Repo = /** @class */ (function () {
             this.query.update(data, condition);
             return;
         }
-        if (typeof this.entity.primaryKey === 'string') {
-            data[this.entity.primaryKey] && this.query.update(data, data[this.entity.primaryKey]);
+        // Use the entities primary key method to retrieve internal id (known as $id)
+        var $id = this.entity.id(data);
+        if ($id) {
+            this.query.update(data, $id);
         }
     };
     /**
@@ -6757,7 +6759,7 @@ var Model = /** @class */ (function () {
         return typeof this.primaryKey === 'string' ? this.primaryKey : 'id';
     };
     /**
-     * Gte the value of the primary key.
+     * Get the value of the primary key.
      */
     Model.id = function (record) {
         var key = this.primaryKey;
@@ -6865,7 +6867,7 @@ var Model = /** @class */ (function () {
         return this.$self().conn();
     };
     /**
-     * Gte Vuex Store insatnce out of connection.
+     * Get Vuex Store insatnce out of connection.
      */
     Model.prototype.$store = function () {
         return this.$self().store();
