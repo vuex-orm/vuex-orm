@@ -2,11 +2,11 @@
 
 Vuex ORM supports several different types of relationships:
 
-- Has One
-- Belongs To
-- Has Many
-- Has Many By
-- Has And Belongs To Many
+- [One To One](#one-to-one)
+- [One To Many](#one-to-many)
+- [Many To Many](#many-to-many)
+- [Polymorphic Relations](#polymorphic-relations)
+- [Many To Many Polymorphic Relations](#many-to-many-polymorphic-relations)
 
 The relationships are defined as attributes in model's `static fields`. The below example shows that the Post has the relationship with Comment of `hasMany`.
 
@@ -366,3 +366,197 @@ class RoleUser extends Model {
 ```
 
 As you can see, the relationship is defined the same as its User counterpart, except referencing the User model and the order of 3rd and 4th argument is inversed.
+
+## Polymorphic Relations
+
+Polymorphic relations allow a model to belong to more than one other model on a single association. For example, imagine users of your application can "comment" both posts and videos. Using polymorphic relationships, you can use a single comments entity for both of these scenarios.
+
+To build these relationships, you need to declare three models.
+
+```js
+class Post extends Model {
+  static entity = 'posts'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+    }
+  }
+}
+
+class Video extends Model {
+  static entity = 'videos'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+    }
+  }
+}
+
+class Comment extends Model {
+  static entity = 'comments'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      body: this.attr(''),
+      commentable_id: this.attr(null),
+      commentable_type: this.attr(null),
+    }
+  }
+}
+```
+
+Two important fields to note are the `commentable_id` and `commentable_type` on the Comment model. The `commentable_id` field will contain the ID value of the Post or Video, while the `commentable_type` field will contain the entity name of the owning model. The `commentable_type` field is how the Vuex ORM determines which "type" of owning model to return when accessing the commentable relation.
+
+`this.morphMany` method defined at both Post and Video model is the definition of the relationship. Now you may fetch comment for the model as usual.
+
+```js
+store.getters['entities/posts/query'].with('comments').find(1)
+
+/*
+  Post {
+    id: 1,
+    comments: [
+      Comment { id: 1, body: 'comment 1' },
+      Comment { id: 2, body: 'comment 2' }
+    ]
+  }
+*/
+```
+
+You may also retrieve the owner of a polymorphic relation from the polymorphic model by defining `morphTo` attribute.
+
+```js
+class Comment extends Model {
+  static entity = 'comments'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      body: this.attr(''),
+      commentable_id: this.attr(null),
+      commentable_type: this.attr(null),
+      commentable: this.morphTo('commentable_id', 'commentable_type')
+    }
+  }
+}
+
+store.getters['entities/comments/query'].with('commentable').get()
+
+/*
+  [
+    Comment {
+      id: 1,
+      body: 'comment 1',
+      commentable_id: 1,
+      commentable_type: 'posts',
+      commentable: Post {
+        id: 1
+      }
+    },
+    Comment {
+      id: 2,
+      body: 'comment 2',
+      commentable_id: 5,
+      commentable_type: 'videos'
+      commentable: Video {
+        id: 5
+      }
+    }
+  ]
+*/
+```
+
+### One To One Polimorphic Relation
+
+You can use `morphOne` method to define the one-to-one polymorphic relation.
+
+```js
+class Post extends Model {
+  static entity = 'posts'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      comments: this.morphOne(Comment, 'commentable_id', 'commentable_type')
+    }
+  }
+}
+```
+
+## Many To Many Polymorphic Relations
+
+In addition to traditional polymorphic relations, you may also define "many-to-many" polymorphic relations. For example, a blog Post and Video model could share a polymorphic relation to a Tag model. Using a many-to-many polymorphic relation allows you to have a single list of unique tags that are shared across blog posts and videos.
+
+You can define many-to-many polymorphic relations by using `this.morphToMany` attribute.
+
+```js
+class Post extends Model {
+  static entity = 'posts'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+    }
+  }
+}
+
+class Video extends Model {
+  static entity = 'videos'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+    }
+  }
+}
+
+class Tag extends Model {
+  static entity = 'tags'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      name: this.attr('')
+    }
+  }
+}
+
+class Taggable extends Model {
+  static entity = 'taggables'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      tag_id: this.attr(null),
+      taggable_id: this.attr(null),
+      taggable_type: this.attr(null)
+    }
+  }
+}
+```
+
+### Defining The Inverse Of The Relationship
+
+To define the inverse relation to fetch related record – for this example it's for Tag model – you can use `this.morphedByMany` attribute.
+
+```js
+class Tag extends Model {
+  static entity = 'tags'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      name: this.attr(''),
+      posts: this.morphedByMany(Post, Taggable, 'tag_id', 'taggable_id', 'taggable_type'),
+      videos: this.morphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+    }
+  }
+}
+```
