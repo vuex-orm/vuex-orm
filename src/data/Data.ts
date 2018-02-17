@@ -1,6 +1,6 @@
 import { normalize } from 'normalizr'
+import Model from '../model/Model'
 import Schema from './Schema'
-import Model from './Model'
 
 export interface Record {
   [field: string]: any

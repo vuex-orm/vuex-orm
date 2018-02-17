@@ -1,4 +1,4 @@
-import Model, { Fields } from 'app/Model'
+import Model, { Fields } from 'app/model/Model'
 import Profile from './Profile'
 import Post from './Post'
 import Account from './Account'

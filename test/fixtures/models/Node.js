@@ -1,4 +1,4 @@
-import Model, { Fields } from 'app/Model'
+import Model, { Fields } from 'app/model/Model'
 import Cluster from './Cluster'
 
 export default class Node extends Model {

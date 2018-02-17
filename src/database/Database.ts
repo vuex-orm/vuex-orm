@@ -1,7 +1,7 @@
 import * as Vuex from 'vuex'
-import * as _ from './support/lodash'
-import Model from './Model'
-import Module, { Entity } from './Module'
+import * as _ from '../support/lodash'
+import Model from '../model/Model'
+import Module, { Entity } from '../modules/Module'
 
 export default class Database {
   /**

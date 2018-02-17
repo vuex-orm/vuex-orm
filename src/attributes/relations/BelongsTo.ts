@@ -1,8 +1,8 @@
-import { Record } from '../../Data'
-import Model from '../../Model'
-import { Item } from '../Query'
+import { Record } from '../../data/Data'
+import Model from '../../model/Model'
+import { Item } from '../../repo/Query'
+import Repo, { Relation as Load } from '../../repo/Repo'
 import { Fields } from '../Attribute'
-import Repo, { Relation as Load } from '../Repo'
 import Relation from './Relation'
 
 export default class BelongsTo extends Relation {

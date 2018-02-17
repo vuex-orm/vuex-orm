@@ -1,8 +1,8 @@
 import * as _ from '../support/lodash'
 import Container from '../connections/Container'
-import { Record } from '../Data'
-import Model from '../Model'
-import { State, EntityState } from '../Module'
+import { Record } from '../data/Data'
+import Model from '../model/Model'
+import { State, EntityState } from '../modules/Module'
 
 export type Item = Record | null
 

@@ -1,4 +1,4 @@
-import Database from 'app/Database'
+import Database from 'app/database/Database'
 import Connection from 'app/connections/Connection'
 
 describe('Connection', () => {

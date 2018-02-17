@@ -1,6 +1,6 @@
-import Model from 'app/Model'
-import Database from 'app/Database'
 import Container from 'app/connections/Container'
+import Database from 'app/database/Database'
+import Model from 'app/model/Model'
 import VuexOrm from 'app'
 
 class User extends Model {

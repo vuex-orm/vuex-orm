@@ -1,5 +1,5 @@
 import { createStore } from 'test/support/Helpers'
-import Model from 'app/Model'
+import Model from 'app/model/Model'
 
 describe('Features – Relations – Morph To', () => {
   it('can retrieve all morph relations', async () => {

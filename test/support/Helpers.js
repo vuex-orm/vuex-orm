@@ -3,8 +3,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexORM from 'app'
 import Container from 'app/connections/Container'
-import Database from 'app/Database'
-import Model from 'app/Model'
+import Database from 'app/database/Database'
+import Model from 'app/model/Model'
 
 Vue.use(Vuex)
 

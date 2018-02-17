@@ -1,4 +1,4 @@
-import Model from '../Model'
+import Model from '../model/Model'
 import Repo from '../repo/Repo'
 import Query from '../repo/Query'
 import rootGetters, { RootGetters } from '../modules/rootGetters'

@@ -1,4 +1,4 @@
-import Model from '../Model'
+import Model from '../model/Model'
 import Types from './Types'
 import Relations from './Relations'
 import Attr from './types/Attr'

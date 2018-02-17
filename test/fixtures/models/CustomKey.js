@@ -1,4 +1,4 @@
-import Model, { Fields } from 'app/Model'
+import Model, { Fields } from 'app/model/Model'
 
 export default class CustomKey extends Model {
   static entity = 'customKeys'

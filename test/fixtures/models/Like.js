@@ -1,4 +1,4 @@
-import Model, { Fields } from 'app/Model'
+import Model, { Fields } from 'app/model/Model'
 import Comment from './Comment'
 
 export default class Like extends Model {

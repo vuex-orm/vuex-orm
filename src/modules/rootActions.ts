@@ -1,5 +1,5 @@
 import * as Vuex from 'vuex'
-import { State } from '../Module'
+import { State } from './Module'
 
 export type RootActions = Vuex.ActionTree<State, any>
 

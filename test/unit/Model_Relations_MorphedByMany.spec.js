@@ -1,5 +1,5 @@
 import { createApplication } from 'test/support/Helpers'
-import Model from 'app/Model'
+import Model from 'app/model/Model'
 
 describe('Model – Relations – Morphed By Many', () => {
   class Post extends Model {

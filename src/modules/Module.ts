@@ -1,11 +1,11 @@
 import * as Vuex from 'vuex'
-import * as _ from './support/lodash'
-import Model from './Model'
-import rootGetters from './modules/rootGetters'
-import rootActions from './modules/rootActions'
-import mutations from './modules/mutations'
-import subGetters from './modules/subGetters'
-import subActions from './modules/subActions'
+import * as _ from '../support/lodash'
+import Model from '../model/Model'
+import rootGetters from './rootGetters'
+import rootActions from './rootActions'
+import mutations from './mutations'
+import subGetters from './subGetters'
+import subActions from './subActions'
 
 export interface Entity {
   model: typeof Model

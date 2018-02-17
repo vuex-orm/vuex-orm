@@ -1,14 +1,14 @@
 import * as _ from '../../support/lodash'
-import { Record, NormalizedData } from '../../Data'
-import Model from '../../Model'
-import { Collection } from '../Query'
+import { Record, NormalizedData } from '../../data/Data'
+import Model from '../../model/Model'
+import { Collection } from '../../repo/Query'
+import Repo, { Relation as Load } from '../../repo/Repo'
 import { Fields } from '../Attribute'
-import Repo, { Relation as Load } from '../Repo'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
 
-export default class MorphedByMany extends Relation {
+export default class MorphToMany extends Relation {
   /**
    * The related model.
    */
@@ -82,14 +82,14 @@ export default class MorphedByMany extends Relation {
     const pivotQuery = new Repo(repo.state, this.pivot.entity, false)
 
     const relatedItems = pivotQuery.where((rec: any) => {
-      return rec[this.relatedId] === record[this.parentKey] && rec[this.type] === relation.name
+      return rec[this.id] === record[this.parentKey]
     }).get()
 
     if (relatedItems.length === 0) {
       return []
     }
 
-    const relatedIds = _.map(relatedItems, this.id)
+    const relatedIds = _.map(relatedItems, this.relatedId)
 
     const relatedQuery = new Repo(repo.state, this.related.entity, false)
 
@@ -122,7 +122,7 @@ export default class MorphedByMany extends Relation {
         return
       }
 
-      this.createPivotRecord(data, record, related)
+      this.createPivotRecord(parent, data, record, related)
     })
 
     return data
@@ -131,19 +131,19 @@ export default class MorphedByMany extends Relation {
   /**
    * Create a pivot record.
    */
-  createPivotRecord (data: NormalizedData, record: Record, related: any[]): void {
+  createPivotRecord (parent: typeof Model, data: NormalizedData, record: Record, related: any[]): void {
     _.forEach(related, (id) => {
       const parentId = record[this.parentKey]
-      const pivotKey = `${id}_${parentId}_${this.related.entity}`
+      const pivotKey = `${parentId}_${id}_${parent.entity}`
 
       data[this.pivot.entity] = {
         ...data[this.pivot.entity],
 
         [pivotKey]: {
           $id: pivotKey,
-          [this.relatedId]: parentId,
-          [this.id]: id,
-          [this.type]: this.related.entity
+          [this.relatedId]: id,
+          [this.id]: parentId,
+          [this.type]: parent.entity
         }
       }
     })

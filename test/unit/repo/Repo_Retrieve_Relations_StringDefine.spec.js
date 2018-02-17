@@ -1,5 +1,5 @@
 import { createApplication } from 'test/support/Helpers'
-import Model from 'app/Model'
+import Model from 'app/model/Model'
 import Repo from 'app/repo/Repo'
 
 describe('Repo – Retrieve – Relations - String Define', () => {

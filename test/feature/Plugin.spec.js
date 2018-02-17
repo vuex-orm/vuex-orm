@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexORM from 'app'
-import Model from 'app/Model'
+import Model from 'app/model/Model'
 import Repo from 'app/repo/Repo'
 import Query from 'app/repo/Query'
 

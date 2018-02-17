@@ -1,9 +1,9 @@
-import { Record } from '../../Data'
-import Model from '../../Model'
-import { Item } from '../Query'
-import { Fields } from '../Attribute'
+import { Record } from '../../data/Data'
+import Model from '../../model/Model'
+import { Item } from '../../repo/Query'
+import Repo, { Relation as Load } from '../../repo/Repo'
 import Attr from '../types/Attr'
-import Repo, { Relation as Load } from '../Repo'
+import { Fields } from '../Attribute'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string

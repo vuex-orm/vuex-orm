@@ -1,7 +1,7 @@
 import * as _ from '../support/lodash'
 import * as Vuex from 'vuex'
-import Model from '../Model'
-import Database from '../Database'
+import Database from '../database/Database'
+import Model from '../model/Model'
 
 export default class Connection {
   /**

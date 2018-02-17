@@ -1,5 +1,5 @@
 import { createApplication } from 'test/support/Helpers'
-import Model from 'app/Model'
+import Model from 'app/model/Model'
 
 describe('Model', () => {
   it('should set default field values as a property on instanciation', () => {

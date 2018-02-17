@@ -3,8 +3,8 @@ import actions from 'app/modules/rootActions'
 import mutations from 'app/modules/mutations'
 import subActions from 'app/modules/subActions'
 import subGetters from 'app/modules/subGetters'
-import Model from 'app/Model'
-import Database from 'app/Database'
+import Model from 'app/model/Model'
+import Database from 'app/database/Database'
 
 class User extends Model {
   static entity = 'users'

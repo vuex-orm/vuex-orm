@@ -1,14 +1,23 @@
 import * as _ from '../../support/lodash'
-import { Record, NormalizedData } from '../../Data'
-import Model from '../../Model'
-import { Collection } from '../Query'
+import { Record, NormalizedData } from '../../data/Data'
+import Model from '../../model/Model'
+import { Collection } from '../../repo/Query'
+import Repo, { Relation as Load } from '../../repo/Repo'
 import { Fields } from '../Attribute'
-import Repo, { Relation as Load } from '../Repo'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
 
-export default class MorphToMany extends Relation {
+export interface PivotRecord {
+  [entity: string]: {
+    [id: string]: {
+      $id: string
+      [pivotKey: string]: any
+    }
+  }
+}
+
+export default class BelongsToMany extends Relation {
   /**
    * The related model.
    */
@@ -20,19 +29,14 @@ export default class MorphToMany extends Relation {
   pivot: typeof Model
 
   /**
-   * The field name that conatins id of the related model.
+   * The foreign key of the parent model.
    */
-  relatedId: string
+  foreignPivotKey: string
 
   /**
-   * The field name that contains id of the parent model.
+   * The associated key of the relation.
    */
-  id: string
-
-  /**
-   * The field name fthat contains type of the parent model.
-   */
-  type: string
+  relatedPivotKey: string
 
   /**
    * The key name of the parent model.
@@ -55,41 +59,39 @@ export default class MorphToMany extends Relation {
   constructor (
     related: Entity,
     pivot: Entity,
-    relatedId: string,
-    id: string,
-    type: string,
+    foreignPivotKey: string,
+    relatedPivotKey: string,
     parentKey: string,
     relatedKey: string,
-    records: Collection,
+    record: Collection,
     connection?: string
   ) {
     super()
 
     this.related = this.model(related, connection)
     this.pivot = this.model(pivot, connection)
-    this.relatedId = relatedId
-    this.id = id
-    this.type = type
+    this.foreignPivotKey = foreignPivotKey
+    this.relatedPivotKey = relatedPivotKey
     this.parentKey = parentKey
     this.relatedKey = relatedKey
-    this.records = records
+    this.records = record
   }
 
   /**
-   * Load the morph many relationship for the record.
+   * Load the belongs to relationship for the record.
    */
   load (repo: Repo, record: Record, relation: Load): Collection {
     const pivotQuery = new Repo(repo.state, this.pivot.entity, false)
 
     const relatedItems = pivotQuery.where((rec: any) => {
-      return rec[this.id] === record[this.parentKey]
+      return rec[this.foreignPivotKey] === record[this.parentKey]
     }).get()
 
     if (relatedItems.length === 0) {
       return []
     }
 
-    const relatedIds = _.map(relatedItems, this.relatedId)
+    const relatedIds = _.map(relatedItems, this.relatedPivotKey)
 
     const relatedQuery = new Repo(repo.state, this.related.entity, false)
 
@@ -108,6 +110,10 @@ export default class MorphToMany extends Relation {
       return []
     }
 
+    if (typeof (this.records[0] as any) !== 'object') {
+      return []
+    }
+
     return this.records.map(record => new this.related(record))
   }
 
@@ -122,7 +128,7 @@ export default class MorphToMany extends Relation {
         return
       }
 
-      this.createPivotRecord(parent, data, record, related)
+      this.createPivotRecord(data, record, related)
     })
 
     return data
@@ -131,19 +137,17 @@ export default class MorphToMany extends Relation {
   /**
    * Create a pivot record.
    */
-  createPivotRecord (parent: typeof Model, data: NormalizedData, record: Record, related: any[]): void {
+  createPivotRecord (data: NormalizedData, record: Record, related: any[]): void {
     _.forEach(related, (id) => {
-      const parentId = record[this.parentKey]
-      const pivotKey = `${parentId}_${id}_${parent.entity}`
+      const pivotKey = `${record[this.parentKey]}_${id}`
 
       data[this.pivot.entity] = {
         ...data[this.pivot.entity],
 
         [pivotKey]: {
           $id: pivotKey,
-          [this.relatedId]: id,
-          [this.id]: parentId,
-          [this.type]: parent.entity
+          [this.foreignPivotKey]: record[this.parentKey],
+          [this.relatedPivotKey]: id
         }
       }
     })

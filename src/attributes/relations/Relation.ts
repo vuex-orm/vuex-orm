@@ -1,9 +1,9 @@
 import Container from '../../connections/Container'
-import { Record } from '../../Data'
-import Model from '../../Model'
+import { Record } from '../../data/Data'
+import Model from '../../model/Model'
+import { Item, Collection } from '../../repo/Query'
+import Repo, { Relation as Load } from '../../repo/Repo'
 import { Fields } from '../Attribute'
-import { Item, Collection } from '../Query'
-import Repo, { Relation as Load } from '../Repo'
 
 export default abstract class Relation {
   /**
