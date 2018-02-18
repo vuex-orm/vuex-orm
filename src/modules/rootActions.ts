@@ -8,7 +8,7 @@ const rootActions: RootActions = {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  create ({ commit }, { entity, data, insert = [] }) {
+  create ({ commit }, { entity, data, insert }) {
     return new Promise((resolve) => {
       commit('create', { entity, data, insert, done: resolve })
     })
@@ -19,7 +19,7 @@ const rootActions: RootActions = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert ({ commit }, { entity, data, create = [] }) {
+  insert ({ commit }, { entity, data, create }) {
     return new Promise((resolve) => {
       commit('insert', { entity, data, create, done: resolve })
     })
@@ -37,7 +37,7 @@ const rootActions: RootActions = {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  insertOrUpdate ({ commit }, { entity, data, create = [] }) {
+  insertOrUpdate ({ commit }, { entity, data, create }) {
     return new Promise((resolve) => {
       commit('insertOrUpdate', { entity, data, create, done: resolve })
     })

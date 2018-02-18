@@ -1,7 +1,7 @@
-import { Record } from '../../data/Data'
+import { Record } from '../../data/Contract'
 import Model from '../../model/Model'
 import { Collection } from '../../repo/Query'
-import { Fields } from '../Attribute'
+import { Fields } from '../contracts/Contract'
 import Repo, { Relation as Load } from '../../repo/Repo'
 import Relation from './Relation'
 
@@ -22,20 +22,26 @@ export default class HasMany extends Relation {
   localKey: string
 
   /**
-   * The related record.
+   * The related records.
    */
-  records: Collection
+  records: Collection = []
 
   /**
    * Create a new has many instance.
    */
-  constructor (related: typeof Model | string, foreignKey: string, localKey: string, records: Collection, connection?: string) {
+  constructor (related: typeof Model | string, foreignKey: string, localKey: string, connection?: string) {
     super(connection)
 
     this.related = this.model(related)
     this.foreignKey = foreignKey
     this.localKey = localKey
-    this.records = records
+  }
+
+  /**
+   * Return empty array if the value is not present.
+   */
+  fill (value: any): any {
+    return value || []
   }
 
   /**

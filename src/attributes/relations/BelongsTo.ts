@@ -1,8 +1,8 @@
-import { Record } from '../../data/Data'
+import { Record } from '../../data/Contract'
 import Model from '../../model/Model'
 import { Item } from '../../repo/Query'
 import Repo, { Relation as Load } from '../../repo/Repo'
-import { Fields } from '../Attribute'
+import { Fields } from '../contracts/Contract'
 import Relation from './Relation'
 
 export default class BelongsTo extends Relation {
@@ -24,18 +24,24 @@ export default class BelongsTo extends Relation {
   /**
    * The related record.
    */
-  record: Item
+  record: Item = null
 
   /**
    * Create a new belongs to instance.
    */
-  constructor (parent: typeof Model | string, foreignKey: string, ownerKey: string, record: Item, connection?: string) {
+  constructor (parent: typeof Model | string, foreignKey: string, ownerKey: string, connection?: string) {
     super(connection)
 
     this.parent = this.model(parent)
     this.foreignKey = foreignKey
     this.ownerKey = ownerKey
-    this.record = record
+  }
+
+  /**
+   * Return null if the value is not present.
+   */
+  fill (value: any): any {
+    return value || null
   }
 
   /**

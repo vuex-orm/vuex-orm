@@ -3,18 +3,18 @@ import Database from 'app/database/Database'
 import Model from 'app/model/Model'
 import VuexOrm from 'app'
 
-class User extends Model {
-  static entity = 'users'
-}
-
-class Post extends Model {
-  static entity = 'posts'
-}
-
-const users = {}
-const posts = {}
-
 describe('Vuex ORM Installation', () => {
+  class User extends Model {
+    static entity = 'users'
+  }
+
+  class Post extends Model {
+    static entity = 'posts'
+  }
+
+  const users = {}
+  const posts = {}
+
   it('can register its database to Vuex Store', () => {
     const registerModule = sinon.stub()
     const store = { registerModule }

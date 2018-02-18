@@ -1,6 +1,6 @@
 import * as _ from '../support/lodash'
 import Container from '../connections/Container'
-import { Record } from '../data/Data'
+import { Record } from '../data/Contract'
 import Model from '../model/Model'
 import { State, EntityState } from '../modules/Module'
 
@@ -225,14 +225,14 @@ export default class Query {
   update (data: Record, condition: Condition): void {
     if (typeof condition !== 'function') {
       if (this.entity.data[condition]) {
-        this.entity.data[condition] = { ...this.entity.data[condition], ...data }
+        this.entity.data[condition] = _.merge(this.entity.data[condition], data)
       }
 
       return
     }
 
     this.entity.data = _.mapValues(this.entity.data, (record) => {
-      return condition(record) ? { ...record, ...data } : record
+      return condition(record) ? _.merge(record, data) : record
     })
   }
 

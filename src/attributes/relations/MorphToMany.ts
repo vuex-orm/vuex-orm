@@ -1,9 +1,9 @@
 import * as _ from '../../support/lodash'
-import { Record, NormalizedData } from '../../data/Data'
+import { Record, NormalizedData } from '../../data/Contract'
 import Model from '../../model/Model'
 import { Collection } from '../../repo/Query'
 import Repo, { Relation as Load } from '../../repo/Repo'
-import { Fields } from '../Attribute'
+import { Fields } from '../contracts/Contract'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -47,7 +47,7 @@ export default class MorphToMany extends Relation {
   /**
    * The related record.
    */
-  records: Collection
+  records: Collection = []
 
   /**
    * Create a new belongs to instance.
@@ -60,7 +60,6 @@ export default class MorphToMany extends Relation {
     type: string,
     parentKey: string,
     relatedKey: string,
-    records: Collection,
     connection?: string
   ) {
     super(connection)
@@ -72,7 +71,13 @@ export default class MorphToMany extends Relation {
     this.type = type
     this.parentKey = parentKey
     this.relatedKey = relatedKey
-    this.records = records
+  }
+
+  /**
+   * Return empty array if the value is not present.
+   */
+  fill (value: any): any {
+    return value || []
   }
 
   /**

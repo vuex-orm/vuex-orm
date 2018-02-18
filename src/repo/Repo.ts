@@ -1,31 +1,16 @@
 import * as _ from '../support/lodash'
 import Container from '../connections/Container'
-import { Record, Records, NormalizedData } from '../data/Data'
-import Attrs, { Fields } from '../attributes/Attribute'
+import { Record, NormalizedData, Item, Collection } from '../data/Contract'
+import Data from '../data/Data'
+import Attrs, { Fields } from '../attributes/contracts/Contract'
 import Model from '../model/Model'
 import { State } from '../modules/Module'
-import Incrementer from './Incrementer'
-import Attr from '../attributes/types/Attr'
-import Increment from '../attributes/types/Increment'
-import HasOne from '../attributes/relations/HasOne'
-import BelongsTo from '../attributes/relations/BelongsTo'
-import HasMany from '../attributes/relations/HasMany'
-import HasManyBy from '../attributes/relations/HasManyBy'
-import BelongsToMany from '../attributes/relations/BelongsToMany'
-import MorphTo from '../attributes/relations/MorphTo'
-import MorphOne from '../attributes/relations/MorphOne'
-import MorphMany from '../attributes/relations/MorphMany'
-import MorphToMany from '../attributes/relations/MorphToMany'
 import Query, {
   Item as QueryItem,
   Collection as QueryCollection,
   OrderDirection,
   Condition
 } from './Query'
-
-export type Item = Model | Record | null
-
-export type Collection = Model[] | Record[]
 
 export type Buildable = QueryItem | QueryCollection | null
 
@@ -81,42 +66,42 @@ export default class Repo {
   /**
    * Create a new repo instance
    */
-  static query (state: State, name: string, wrap: boolean = true): Repo {
+  static query (state: State, name: string, wrap?: boolean): Repo {
     return new this(state, name, wrap)
   }
 
   /**
    * Get all data of the given entity from the state.
    */
-  static all (state: State, entity: string, wrap: boolean = true): Collection {
+  static all (state: State, entity: string, wrap?: boolean): Collection {
     return (new this(state, entity, wrap)).get()
   }
 
   /**
    * Find a data of the given entity by given id from the given state.
    */
-  static find (state: State, entity: string, id: string | number, wrap: boolean = true): Item {
+  static find (state: State, entity: string, id: string | number, wrap?: boolean): Item {
     return (new this(state, entity, wrap)).first(id)
   }
 
   /**
    * Get the count of the retrieved data.
    */
-  static count (state: State, entity: string, wrap: boolean = false): number {
+  static count (state: State, entity: string, wrap?: boolean): number {
     return (new this(state, entity, wrap)).count()
   }
 
   /**
    * Get the max value of the specified filed.
    */
-  static max (state: State, entity: string, field: string, wrap: boolean = false): number {
+  static max (state: State, entity: string, field: string, wrap?: boolean): number {
     return (new this(state, entity, wrap)).max(field)
   }
 
   /**
    * Get the min value of the specified filed.
    */
-  static min (state: State, entity: string, field: string, wrap: boolean = false): number {
+  static min (state: State, entity: string, field: string, wrap?: boolean): number {
     return (new this(state, entity, wrap)).min(field)
   }
 
@@ -385,18 +370,20 @@ export default class Repo {
 
     // `normalizedData` contains the differenty entity types (e.g. `users`),
     _.forEach(normalizedData, (data, entity) => {
+      const repo = new Repo(this.state, entity, false)
+
       // `data` contains the items of `entity`.
       _.forEach(data, (item, id) => {
         // Check if item does not already exist in store and mark it as new.
-        if (item.$id === undefined || this.query.first(item.$id) === null) {
+        if (repo.entity.id(item) === undefined || repo.find(repo.entity.id(item)) === null) {
           if (!toBePersisted.hasOwnProperty(entity)) {
             toBePersisted[entity] = {}
           }
 
           toBePersisted[entity][id] = item
         } else {
-          this.query.update(item, item.$id)
-          updatedItems.push(item.$id)
+          repo.query.update(item, repo.entity.id(item))
+          updatedItems.push(repo.entity.id(item))
         }
       })
     })
@@ -410,16 +397,15 @@ export default class Repo {
   }
 
   /**
-   * Save data into Vuex Store.
+   * Persist data into Vuex Store.
    */
   persist (defaultMethod: string, data: any, forceCreateFor: string[] = [], forceInsertFor: string[] = []): Item | Collection {
-    const normalizedData: NormalizedData = this.normalize(data)
+    const normalizedData = this.normalize(data)
 
-    // Update with empty data.
-    if (defaultMethod === 'create' && _.isEmpty(normalizedData)) {
-      this.query[defaultMethod](normalizedData)
+    if (_.isEmpty(normalizedData)) {
+      defaultMethod === 'create' && this.query[defaultMethod](normalizedData)
 
-      return []
+      return this.getReturnData([])
     }
 
     const items = this.processPersist(defaultMethod, normalizedData, forceCreateFor, forceInsertFor)
@@ -428,29 +414,23 @@ export default class Repo {
   }
 
   /**
-   * Persist given data into the store. It returns list of created ids.
+   * Persist data into the store. It returns list of created ids.
    */
   processPersist (defaultMethod: string, data: NormalizedData, forceCreateFor: string[] = [], forceInsertFor: string[] = []): string[] {
     const items: string[] = []
 
-    _.forEach(data, (data, entity) => {
-      const incrementer = new Incrementer(new Repo(this.state, entity))
+    const records = Data.fill(data, this, defaultMethod === 'create')
 
-      const incrementedData = this.setIds(
-        incrementer.incrementFields(data, defaultMethod === 'create')
-      )
-
-      const filledData = _.mapValues(incrementedData, record => this.fill(record, entity))
-
+    _.forEach(records, (data, entity) => {
       const method = this.getPersistMethod(defaultMethod, entity, forceCreateFor, forceInsertFor)
 
       if (entity !== this.name) {
-        (new Query(this.state, entity) as any)[method](filledData)
+        (new Query(this.state, entity) as any)[method](data)
 
         return
       }
 
-      (this.query as any)[method](filledData)
+      (this.query as any)[method](data)
 
       _.forEach(data, item => { items.push(item.$id) })
     })
@@ -477,9 +457,13 @@ export default class Repo {
    * Get all data that should be retunred.
    */
   getReturnData (items: string[]): Item | Collection {
+    if (items.length === 0) {
+      return null
+    }
+
     const method = items.length > 1 ? 'get' : 'first'
 
-    return this.self().query(this.state, this.name).where('$id', (value: any) => {
+    return new Repo(this.state, this.name).where('$id', (value: any) => {
       return _.includes(items, value)
     })[method]()
   }
@@ -519,106 +503,10 @@ export default class Repo {
   }
 
   /**
-   * Normalize the given data by given model.
+   * Normalize the given data.
    */
   normalize (data: any): NormalizedData {
-    const normalizedData = this.model(this.name).normalize(data)
-
-    return this.createPivots(normalizedData)
-  }
-
-  /**
-   * Create pivot records if needed.
-   */
-  createPivots (data: NormalizedData): NormalizedData {
-    if (!this.entity.hasPivotFields()) {
-      return data
-    }
-
-    _.forEach(this.entity.pivotFields(), (field) => {
-      _.forEach(field, attr => { attr.createPivots(this.entity, data) })
-    })
-
-    return data
-  }
-
-  /**
-   * Set proper key to the records. When a record has `increment` attribute
-   * type for the primary key, it's possible for the record to have the
-   * key of `no_key_<count>`. This function will convert those keys into
-   * the proper value of the primary key.
-   */
-  setIds (data: Records): Records {
-    if (!this.entity.incrementFields()) {
-      return data
-    }
-
-    const records: Records = {}
-
-    _.forEach(data, (record, key) => {
-      const value = record.$id ? `${record.$id}` : null
-
-      if (key !== value && value !== null) {
-        records[value] = record
-
-        return
-      }
-
-      records[key] = record
-    })
-
-    return records
-  }
-
-  /**
-   * Fill missing fields in given data with default value defined in
-   * corresponding model.
-   */
-  fill (data: Record, entity: string): Record {
-    return this.buildRecord(data, this.model(entity).fields(), { $id: data.$id })
-  }
-
-  /**
-   * Build record.
-   */
-  buildRecord (data: any, fields: Fields, record: Record = {}): Record {
-    const newRecord: Record = record
-
-    _.forEach(fields, (attr, name) => {
-      if (Attrs.isFields(attr)) {
-        const newData = data[name] ? data[name] : {}
-
-        newRecord[name] = this.buildRecord(newData, attr, newRecord[name])
-
-        return
-      }
-
-      if (data[name] !== undefined) {
-        newRecord[name] = data[name]
-
-        return
-      }
-
-      if (attr instanceof Attr || attr instanceof Increment) {
-        newRecord[name] = attr.value
-
-        return
-      }
-
-      if (attr instanceof HasOne || attr instanceof BelongsTo || attr instanceof MorphTo || attr instanceof MorphOne) {
-        newRecord[name] = null
-
-        return
-      }
-
-      if (attr instanceof HasMany || attr instanceof HasManyBy || attr instanceof BelongsToMany || attr instanceof MorphMany || attr instanceof MorphToMany) {
-        newRecord[name] = []
-
-        return
-      }
-    })
-
-    return newRecord
+    return Data.normalize(data, this)
   }
 
   /**

@@ -1,26 +1,37 @@
 import { normalize } from 'normalizr'
-import Model from '../model/Model'
+import * as _ from '../support/lodash'
+import Repo from '../repo/Repo'
+import { NormalizedData } from './Contract'
 import Schema from './Schema'
-
-export interface Record {
-  [field: string]: any
-}
-
-export interface Records {
-  [id: string]: Record
-}
-
-export interface NormalizedData {
-  [entity: string]: Records
-}
+import Builder from './Builder'
+import PivotCreator from './PivotCreator'
+import Incrementer from './Incrementer'
 
 export default class Data {
   /**
-   * Normalize the given data based on given model.
+   * Normalize the data.
    */
-  static normalize (data: any, model: typeof Model): NormalizedData {
-    const schema = Array.isArray(data) ? Schema.many(model) : Schema.one(model)
+  static normalize (data: any, repo: Repo): NormalizedData {
+    if (_.isEmpty(data)) {
+      return {}
+    }
 
-    return normalize(data, schema).entities
+    const schema = Array.isArray(data) ? Schema.many(repo.entity) : Schema.one(repo.entity)
+
+    const normalizedData = normalize(data, schema).entities
+
+    return PivotCreator.create(normalizedData, repo)
+  }
+
+  /**
+   * Fill missing records with default value based on model schema.
+   */
+  static fill (data: NormalizedData, repo: Repo, reset: boolean = false): NormalizedData {
+    let records: NormalizedData = {}
+
+    records = Builder.build(data, repo)
+    records = Incrementer.increment(records, repo, reset)
+
+    return records
   }
 }

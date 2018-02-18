@@ -1,4 +1,4 @@
-import { createApplication } from 'test/support/Helpers'
+import { createApplication, createState } from 'test/support/Helpers'
 import User from 'test/fixtures/models/User'
 import Profile from 'test/fixtures/models/Profile'
 import Post from 'test/fixtures/models/Post'
@@ -6,6 +6,7 @@ import Comment from 'test/fixtures/models/Comment'
 import Review from 'test/fixtures/models/Review'
 import Like from 'test/fixtures/models/Like'
 import CustomKey from 'test/fixtures/models/CustomKey'
+import Model from 'app/model/Model'
 import Repo from 'app/repo/Repo'
 
 describe('Repo – Create', () => {
@@ -22,39 +23,33 @@ describe('Repo – Create', () => {
   })
 
   it('can create a single data in Vuex Store', () => {
-    const state = {
-      name: 'entities',
-      posts: { data: {} },
-      comments: { data: {} }
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('John Doe')
+        }
+      }
     }
 
-    const data = {
-      id: 0,
-      comments: [
-        { id: 0, post_id: 0 },
-        { id: 1, post_id: 0 }
-      ]
-    }
+    createApplication('entities', [{ model: User }])
+
+    const state = createState('entities', {
+      users: {}
+    })
+
+    const data = { id: 0, name: 'John Doe' }
 
     const expected = {
       name: 'entities',
-      posts: { data: {
-        '0': {
-          $id: 0,
-          id: 0,
-          user_id: null,
-          author: null,
-          comments: [0, 1],
-          reviews: []
-        }
-      }},
-      comments: { data: {
-        '0': { $id: 0, id: 0, post_id: 0, body: '', post: null, likes: [] },
-        '1': { $id: 1, id: 1, post_id: 0, body: '', post: null, likes: [] }
+      users: { data: {
+        '0': { $id: 0, id: 0, name: 'John Doe' }
       }}
     }
 
-    Repo.create(state, 'posts', data)
+    Repo.create(state, 'users', data)
 
     expect(state).toEqual(expected)
   })

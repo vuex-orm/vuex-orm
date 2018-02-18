@@ -2,9 +2,9 @@ import * as Vuex from 'vuex'
 import * as _ from '../support/lodash'
 import Container from '../connections/Container'
 import Connection from '../connections/Connection'
-import Data, { Record, NormalizedData } from '../data/Data'
-import Attribute, { Attributes, Fields } from '../attributes/Attribute'
-import Attr from '../attributes/types/Attr'
+import { Record } from '../data/Contract'
+import AttrContract, { Attribute as AttrType, Fields } from '../attributes/contracts/Contract'
+import Attr, { Mutator } from '../attributes/types/Attr'
 import Increment from '../attributes/types/Increment'
 import HasOne from '../attributes/relations/HasOne'
 import BelongsTo from '../attributes/relations/BelongsTo'
@@ -39,7 +39,7 @@ export default class Model {
   ;[key: string]: any
 
   /**
-   * Creates a model instance.
+   * Create a model instance.
    */
   constructor (data?: Record) {
     this.$initialize(data)
@@ -53,47 +53,47 @@ export default class Model {
   }
 
   /**
-   * The generic attribute. The given value will be used as default value
-   * of the property when instantiating a model.
+   * Create an attr attribute. The given value will be used as a default
+   * value for the field.
    */
-  static attr (value: any, mutator?: (value: any) => any): Attr {
-    return Attribute.attr(value, mutator)
+  static attr (value: any, mutator?: Mutator): Attr {
+    return new Attr(value, mutator)
   }
 
   /**
-   * The auto-increment attribute. The field with this attribute will
-   * automatically increment its value creating a new record.
+   * Create an increment attribute. The field with this attribute will
+   * automatically increment its value when creating a new record.
    */
   static increment (): Increment {
-    return Attribute.increment()
+    return new Increment()
   }
 
   /**
-   * Creates has one relationship.
+   * Create a has one relationship.
    */
   static hasOne (related: typeof Model | string, foreignKey: string, localKey?: string): HasOne {
-    return Attribute.hasOne(related, foreignKey, this.localKey(localKey), this.connection)
+    return new HasOne(related, foreignKey, this.localKey(localKey), this.connection)
   }
 
   /**
-   * Creates belongs to relationship.
+   * Create a belongs to relationship.
    */
   static belongsTo (parent: typeof Model | string, foreignKey: string, ownerKey?: string): BelongsTo {
-    return Attribute.belongsTo(parent, foreignKey, this.relation(parent).localKey(ownerKey), this.connection)
+    return new BelongsTo(parent, foreignKey, this.relation(parent).localKey(ownerKey), this.connection)
   }
 
   /**
-   * Creates has many relationship.
+   * Create a has many relationship.
    */
   static hasMany (related: typeof Model | string, foreignKey: string, localKey?: string): HasMany {
-    return Attribute.hasMany(related, foreignKey, this.localKey(localKey), this.connection)
+    return new HasMany(related, foreignKey, this.localKey(localKey), this.connection)
   }
 
   /**
-   * The has many by relationship.
+   * Create a has many by relationship.
    */
-  static hasManyBy (parent: typeof Model | string, foreignKey: string, ownerKey: string): HasManyBy {
-    return Attribute.hasManyBy(parent, foreignKey, this.relation(parent).localKey(ownerKey), this.connection)
+  static hasManyBy (parent: typeof Model | string, foreignKey: string, ownerKey?: string): HasManyBy {
+    return new HasManyBy(parent, foreignKey, this.relation(parent).localKey(ownerKey), this.connection)
   }
 
   /**
@@ -107,7 +107,7 @@ export default class Model {
     parentKey?: string,
     relatedKey?: string
   ): BelongsToMany {
-    return Attribute.belongsToMany(
+    return new BelongsToMany(
       related,
       pivot,
       foreignPivotKey,
@@ -119,28 +119,28 @@ export default class Model {
   }
 
   /**
-   * The morph one relationship.
+   * Create a morph to relationship.
    */
   static morphTo (id: string, type: string): MorphTo {
-    return Attribute.morphTo(id, type, this.connection)
+    return new MorphTo(id, type, this.connection)
   }
 
   /**
-   * The morph one relationship.
+   * Create a morph one relationship.
    */
   static morphOne (related: typeof Model | string, id: string, type: string, localKey?: string): MorphOne {
-    return Attribute.morphOne(related, id, type, this.localKey(localKey), this.connection)
+    return new MorphOne(related, id, type, this.localKey(localKey), this.connection)
   }
 
   /**
-   * The morph many relationship.
+   * Create a morph many relationship.
    */
   static morphMany (related: typeof Model | string, id: string, type: string, localKey?: string): MorphMany {
-    return Attribute.morphMany(related, id, type, this.localKey(localKey), this.connection)
+    return new MorphMany(related, id, type, this.localKey(localKey), this.connection)
   }
 
   /**
-   * The morph to many relationship.
+   * Create a morph to many relationship.
    */
   static morphToMany (
     related: typeof Model | string,
@@ -151,7 +151,7 @@ export default class Model {
     parentKey?: string,
     relatedKey?: string
   ): MorphToMany {
-    return Attribute.morphToMany(
+    return new MorphToMany(
       related,
       pivot,
       relatedId,
@@ -164,7 +164,7 @@ export default class Model {
   }
 
   /**
-   * The morph to many relationship.
+   * Create a morphed by many relationship.
    */
   static morphedByMany (
     related: typeof Model | string,
@@ -175,7 +175,7 @@ export default class Model {
     parentKey?: string,
     relatedKey?: string
   ): MorphedByMany {
-    return Attribute.morphedByMany(
+    return new MorphedByMany(
       related,
       pivot,
       relatedId,
@@ -188,7 +188,7 @@ export default class Model {
   }
 
   /**
-   * Get connection instance out of container.
+   * Get connection instance out of the container.
    */
   static conn (): Connection {
     return Container.connection(this.connection)
@@ -309,13 +309,6 @@ export default class Model {
   }
 
   /**
-   * Normalize the given data.
-   */
-  static normalize (data: any): NormalizedData {
-    return Data.normalize(data, this)
-  }
-
-  /**
    * Get the static class of this model.
    */
   $self (): typeof Model {
@@ -323,7 +316,7 @@ export default class Model {
   }
 
   /**
-   * Get the connection instance.
+   * Get the connection instance out of the container.
    */
   $conn (): Connection {
     return this.$self().conn()
@@ -404,7 +397,7 @@ export default class Model {
         return
       }
 
-      if (Attribute.isFields(fields[key])) {
+      if (AttrContract.isFields(fields[key])) {
         fields[key] = this.$mergeFields((fields[key] as any), value)
 
         return
@@ -433,7 +426,7 @@ export default class Model {
    */
   $build (self: any, data: Fields): void {
     _.forEach(data, (field, key) => {
-      if (Attribute.isAttribute(field)) {
+      if (AttrContract.isAttribute(field)) {
         self[key] = this.$generateField(data, field, key)
 
         return
@@ -446,7 +439,7 @@ export default class Model {
   /**
    * Generate appropreate field value for the given attribute.
    */
-  $generateField (data: Fields, attr: Attributes, key: string): any {
+  $generateField (data: Fields, attr: AttrType, key: string): any {
     if (attr instanceof Attr) {
       const mutator = attr.mutator || this.$self().mutators()[key]
 
@@ -476,7 +469,7 @@ export default class Model {
         return field[key]
       }
 
-      if (!Attribute.isAttribute(attr)) {
+      if (!AttrContract.isAttribute(attr)) {
         return field.$buildJson(attr, field[key])
       }
 

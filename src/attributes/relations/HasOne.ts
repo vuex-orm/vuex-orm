@@ -1,8 +1,8 @@
-import { Record } from '../../data/Data'
+import { Record } from '../../data/Contract'
 import Model from '../../model/Model'
 import { Item } from '../../repo/Query'
 import Repo, { Relation as Load } from '../../repo/Repo'
-import { Fields } from '../Attribute'
+import { Fields } from '../contracts/Contract'
 import Relation from './Relation'
 
 export default class HasOne extends Relation {
@@ -24,18 +24,24 @@ export default class HasOne extends Relation {
   /**
    * The related record.
    */
-  record: Item
+  record: Item = null
 
   /**
    * Create a new has one instance.
    */
-  constructor (related: typeof Model | string, foreignKey: string, localKey: string, record: Item, connection?: string) {
+  constructor (related: typeof Model | string, foreignKey: string, localKey: string, connection?: string) {
     super(connection)
 
     this.related = this.model(related)
     this.foreignKey = foreignKey
     this.localKey = localKey
-    this.record = record
+  }
+
+  /**
+   * Return null if the value is not present.
+   */
+  fill (value: any): any {
+    return value || null
   }
 
   /**

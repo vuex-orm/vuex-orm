@@ -1,8 +1,8 @@
-import { Record } from '../../data/Data'
+import { Record } from '../../data/Contract'
 import Model from '../../model/Model'
 import { Collection } from '../../repo/Query'
 import Repo, { Relation as Load } from '../../repo/Repo'
-import { Fields } from '../Attribute'
+import { Fields } from '../contracts/Contract'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -31,19 +31,25 @@ export default class MorphMany extends Relation {
   /**
    * The related record.
    */
-  records: Collection
+  records: Collection = []
 
   /**
    * Create a new belongs to instance.
    */
-  constructor (related: Entity, id: string, type: string, localKey: string, record: Collection, connection?: string) {
+  constructor (related: Entity, id: string, type: string, localKey: string, connection?: string) {
     super(connection)
 
     this.related = this.model(related)
     this.id = id
     this.type = type
     this.localKey = localKey
-    this.records = record
+  }
+
+  /**
+   * Return empty array if the value is not present.
+   */
+  fill (value: any): any {
+    return value || []
   }
 
   /**
