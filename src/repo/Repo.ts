@@ -382,7 +382,7 @@ export default class Repo {
 
           toBePersisted[entity][id] = item
         } else {
-          this.query.update(item, repo.entity.id(item))
+          repo.query.update(item, repo.entity.id(item))
           updatedItems.push(repo.entity.id(item))
         }
       })
