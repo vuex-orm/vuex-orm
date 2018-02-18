@@ -1,10 +1,10 @@
 import * as _ from '../support/lodash'
 import Container from '../connections/Container'
-import { Record, Records, NormalizedData } from '../data/Data'
-import Attrs, { Fields } from '../attributes/Attribute'
+import { Record, Records, NormalizedData, Item, Collection } from '../data/Contract'
+import Data from '../data/Data'
+import Attrs, { Fields } from '../attributes/contracts/Contract'
 import Model from '../model/Model'
 import { State } from '../modules/Module'
-import Incrementer from './Incrementer'
 import Attr from '../attributes/types/Attr'
 import Increment from '../attributes/types/Increment'
 import HasOne from '../attributes/relations/HasOne'
@@ -22,10 +22,6 @@ import Query, {
   OrderDirection,
   Condition
 } from './Query'
-
-export type Item = Model | Record | null
-
-export type Collection = Model[] | Record[]
 
 export type Buildable = QueryItem | QueryCollection | null
 
@@ -385,18 +381,20 @@ export default class Repo {
 
     // `normalizedData` contains the differenty entity types (e.g. `users`),
     _.forEach(normalizedData, (data, entity) => {
+      const repo = new Repo(this.state, entity, false)
+
       // `data` contains the items of `entity`.
       _.forEach(data, (item, id) => {
         // Check if item does not already exist in store and mark it as new.
-        if (item.$id === undefined || this.query.first(item.$id) === null) {
+        if (repo.entity.id(item) === undefined || repo.find(repo.entity.id(item)) === null) {
           if (!toBePersisted.hasOwnProperty(entity)) {
             toBePersisted[entity] = {}
           }
 
           toBePersisted[entity][id] = item
         } else {
-          this.query.update(item, item.$id)
-          updatedItems.push(item.$id)
+          this.query.update(item, repo.entity.id(item))
+          updatedItems.push(repo.entity.id(item))
         }
       })
     })
@@ -410,7 +408,7 @@ export default class Repo {
   }
 
   /**
-   * Save data into Vuex Store.
+   * Persist data into Vuex Store.
    */
   persist (defaultMethod: string, data: any, forceCreateFor: string[] = [], forceInsertFor: string[] = []): Item | Collection {
     const normalizedData: NormalizedData = this.normalize(data)
@@ -433,24 +431,18 @@ export default class Repo {
   processPersist (defaultMethod: string, data: NormalizedData, forceCreateFor: string[] = [], forceInsertFor: string[] = []): string[] {
     const items: string[] = []
 
-    _.forEach(data, (data, entity) => {
-      const incrementer = new Incrementer(new Repo(this.state, entity))
+    const records = Data.fill(data, this, defaultMethod === 'create')
 
-      const incrementedData = this.setIds(
-        incrementer.incrementFields(data, defaultMethod === 'create')
-      )
-
-      const filledData = _.mapValues(incrementedData, record => this.fill(record, entity))
-
+    _.forEach(records, (data, entity) => {
       const method = this.getPersistMethod(defaultMethod, entity, forceCreateFor, forceInsertFor)
 
       if (entity !== this.name) {
-        (new Query(this.state, entity) as any)[method](filledData)
+        (new Query(this.state, entity) as any)[method](data)
 
         return
       }
 
-      (this.query as any)[method](filledData)
+      (this.query as any)[method](data)
 
       _.forEach(data, item => { items.push(item.$id) })
     })
@@ -519,10 +511,10 @@ export default class Repo {
   }
 
   /**
-   * Normalize the given data by given model.
+   * Normalize the given data.
    */
   normalize (data: any): NormalizedData {
-    const normalizedData = this.model(this.name).normalize(data)
+    const normalizedData = Data.normalize(data, this)
 
     return this.createPivots(normalizedData)
   }

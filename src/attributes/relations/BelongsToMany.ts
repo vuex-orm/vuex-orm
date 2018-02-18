@@ -1,9 +1,9 @@
 import * as _ from '../../support/lodash'
-import { Record, NormalizedData } from '../../data/Data'
+import { Record, NormalizedData } from '../../data/Contract'
 import Model from '../../model/Model'
 import { Collection } from '../../repo/Query'
 import Repo, { Relation as Load } from '../../repo/Repo'
-import { Fields } from '../Attribute'
+import { Fields } from '../contracts/Contract'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -51,7 +51,7 @@ export default class BelongsToMany extends Relation {
   /**
    * The related record.
    */
-  records: Collection
+  records: Collection = []
 
   /**
    * Create a new belongs to instance.
@@ -63,7 +63,6 @@ export default class BelongsToMany extends Relation {
     relatedPivotKey: string,
     parentKey: string,
     relatedKey: string,
-    record: Collection,
     connection?: string
   ) {
     super(connection)
@@ -74,7 +73,13 @@ export default class BelongsToMany extends Relation {
     this.relatedPivotKey = relatedPivotKey
     this.parentKey = parentKey
     this.relatedKey = relatedKey
-    this.records = record
+  }
+
+  /**
+   * Return empty array if the value is not present.
+   */
+  fill (value: any): any {
+    return value || []
   }
 
   /**

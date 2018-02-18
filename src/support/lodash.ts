@@ -13,6 +13,7 @@ import map from 'lodash-es/map'
 import mapValues from 'lodash-es/mapValues'
 import max from 'lodash-es/max'
 import maxBy from 'lodash-es/maxBy'
+import merge from 'lodash-es/merge'
 import minBy from 'lodash-es/minBy'
 import orderBy from 'lodash-es/orderBy'
 import pickBy from 'lodash-es/pickBy'
@@ -37,6 +38,7 @@ export {
   mapValues,
   max,
   maxBy,
+  merge,
   minBy,
   orderBy,
   pickBy,

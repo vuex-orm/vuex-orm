@@ -1,11 +1,12 @@
 import Container from '../../connections/Container'
-import { Record } from '../../data/Data'
+import { Record } from '../../data/Contract'
 import Model from '../../model/Model'
 import { Item, Collection } from '../../repo/Query'
 import Repo, { Relation as Load } from '../../repo/Repo'
-import { Fields } from '../Attribute'
+import { Fields } from '../contracts/Contract'
+import Attribute from '../Attribute'
 
-export default abstract class Relation {
+export default abstract class Relation extends Attribute {
   /**
    * The name of the connection.
    */
@@ -15,6 +16,8 @@ export default abstract class Relation {
    * Create a relation instance.
    */
   constructor (connection: string = 'entities') {
+    super()
+
     this.connection = connection
   }
 

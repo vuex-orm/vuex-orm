@@ -1,6 +1,7 @@
 import * as Vuex from 'vuex'
+import { Item, Collection } from '../data/Contract'
+import Repo from '../repo/Repo'
 import { EntityState } from './Module'
-import Repo, { Item, Collection } from '../repo/Repo'
 
 export type SubGetters = Vuex.GetterTree<any, EntityState>
 
