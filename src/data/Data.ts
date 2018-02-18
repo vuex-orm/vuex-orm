@@ -4,6 +4,7 @@ import Repo from '../repo/Repo'
 import { NormalizedData } from './Contract'
 import Schema from './Schema'
 import Builder from './Builder'
+import PivotCreator from './PivotCreator'
 import Incrementer from './Incrementer'
 
 export default class Data {
@@ -17,7 +18,9 @@ export default class Data {
 
     const schema = Array.isArray(data) ? Schema.many(repo.entity) : Schema.one(repo.entity)
 
-    return normalize(data, schema).entities
+    const normalizedData = normalize(data, schema).entities
+
+    return PivotCreator.create(normalizedData, repo)
   }
 
   /**

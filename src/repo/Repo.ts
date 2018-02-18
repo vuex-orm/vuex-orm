@@ -1,6 +1,6 @@
 import * as _ from '../support/lodash'
 import Container from '../connections/Container'
-import { Record, Records, NormalizedData, Item, Collection } from '../data/Contract'
+import { Record, NormalizedData, Item, Collection } from '../data/Contract'
 import Data from '../data/Data'
 import Attrs, { Fields } from '../attributes/contracts/Contract'
 import Model from '../model/Model'
@@ -506,52 +506,7 @@ export default class Repo {
    * Normalize the given data.
    */
   normalize (data: any): NormalizedData {
-    const normalizedData = Data.normalize(data, this)
-
-    return this.createPivots(normalizedData)
-  }
-
-  /**
-   * Create pivot records if needed.
-   */
-  createPivots (data: NormalizedData): NormalizedData {
-    if (!this.entity.hasPivotFields()) {
-      return data
-    }
-
-    _.forEach(this.entity.pivotFields(), (field) => {
-      _.forEach(field, attr => { attr.createPivots(this.entity, data) })
-    })
-
-    return data
-  }
-
-  /**
-   * Set proper key to the records. When a record has `increment` attribute
-   * type for the primary key, it's possible for the record to have the
-   * key of `no_key_<count>`. This function will convert those keys into
-   * the proper value of the primary key.
-   */
-  setIds (data: Records): Records {
-    if (!this.entity.incrementFields()) {
-      return data
-    }
-
-    const records: Records = {}
-
-    _.forEach(data, (record, key) => {
-      const value = record.$id ? `${record.$id}` : null
-
-      if (key !== value && value !== null) {
-        records[value] = record
-
-        return
-      }
-
-      records[key] = record
-    })
-
-    return records
+    return Data.normalize(data, this)
   }
 
   /**
