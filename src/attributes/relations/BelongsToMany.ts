@@ -129,7 +129,7 @@ export default class BelongsToMany extends Relation {
     _.forEach(data[parent.entity], (record) => {
       const related = record[this.related.entity]
 
-      if (related.length === 0) {
+      if (related === undefined || related.length === 0) {
         return
       }
 
