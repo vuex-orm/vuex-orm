@@ -6,19 +6,19 @@ import subGetters from 'app/modules/subGetters'
 import Model from 'app/model/Model'
 import Database from 'app/database/Database'
 
-class User extends Model {
-  static entity = 'users'
-}
-
-class Post extends Model {
-  static entity = 'posts'
-  static primaryKey = 'customId'
-}
-
-const users = { actions: {} }
-const posts = { mutations: {} }
-
 describe('Database', () => {
+  class User extends Model {
+    static entity = 'users'
+  }
+
+  class Post extends Model {
+    static entity = 'posts'
+    static primaryKey = 'customId'
+  }
+
+  const users = { actions: {} }
+  const posts = { mutations: {} }
+
   it('can register models', () => {
     const database = new Database()
 
@@ -49,14 +49,14 @@ describe('Database', () => {
       modules: {
         users: {
           namespaced: true,
-          state: { $connection: 'entities', $name: 'users', $primaryKey: 'id', data: {} },
+          state: { $connection: 'entities', $name: 'users', data: {} },
           getters: subGetters,
           actions: subActions,
           mutations: {}
         },
         posts: {
           namespaced: true,
-          state: { $connection: 'entities', $name: 'posts', $primaryKey: 'customId', data: {} },
+          state: { $connection: 'entities', $name: 'posts', data: {} },
           getters: subGetters,
           actions: subActions,
           mutations: {}

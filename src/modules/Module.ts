@@ -20,7 +20,6 @@ export interface State {
 export interface EntityState {
   $connection: string
   $name: string
-  $primaryKey: string
   data: { [key: string]: any }
   [key: string]: any
 }
@@ -33,7 +32,6 @@ export default class Module {
   static state: EntityState = {
     $connection: '',
     $name: '',
-    $primaryKey: '',
     data: {}
   }
 
@@ -69,8 +67,7 @@ export default class Module {
           ...entity.module.state,
           ...this.state,
           $connection: namespace,
-          $name: entity.model.entity,
-          $primaryKey: entity.model.primaryKey
+          $name: entity.model.entity
         }
       }
 

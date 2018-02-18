@@ -5,24 +5,24 @@ import Model from 'app/model/Model'
 import Repo from 'app/repo/Repo'
 import Query from 'app/repo/Query'
 
-class User extends Model {
-  static entity = 'users'
+describe('Plugin', () => {
+  class User extends Model {
+    static entity = 'users'
 
-  static fields () {
-    return {
-      id: this.attr(null),
-      name: this.attr('')
+    static fields () {
+      return {
+        id: this.attr(null),
+        name: this.attr('')
+      }
     }
   }
-}
 
-const database = new VuexORM.Database()
+  const database = new VuexORM.Database()
 
-database.register(User, {})
+  database.register(User, {})
 
-Vue.use(Vuex)
+  Vue.use(Vuex)
 
-describe('Plugin', () => {
   it('add additional feature to the Model', async () => {
     const plugin = {
       install (components) {
