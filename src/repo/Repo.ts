@@ -125,8 +125,8 @@ export default class Repo {
   /**
    * Update data in the state.
    */
-  static update (state: State, entity: string, data: any, condition?: Condition): void {
-    (new this(state, entity)).update(data, condition)
+  static update (state: State, entity: string, data: any, condition?: Condition): Item | Collection {
+    return (new this(state, entity)).update(data, condition)
   }
 
   /**
@@ -469,6 +469,20 @@ export default class Repo {
   }
 
   /**
+   * Get all data that should be retunred. This method will always return
+   * array of data even there's only a single item.
+   */
+  getManyReturnData (items: string[]): Item | Collection {
+    if (items.length === 0) {
+      return []
+    }
+
+    return new Repo(this.state, this.name).where('$id', (value: any) => {
+      return _.includes(items, value)
+    }).get()
+  }
+
+  /**
    * Get the count of the retrieved data.
    */
   count (): number {
@@ -512,19 +526,44 @@ export default class Repo {
   /**
    * Update data in the state.
    */
-  update (data: any, condition?: Condition): void {
-    if (condition) {
-      this.query.update(data, condition)
-
-      return
+  update (data: any, condition?: Condition): Item | Collection {
+    if (!condition) {
+      return this.processUpdateById(data, this.entity.id(data))
     }
 
-    // Use the entities primary key method to retrieve internal id (known as $id)
-    const $id = this.entity.id(data)
-
-    if ($id) {
-      this.query.update(data, $id)
+    if (typeof condition === 'number' || typeof condition === 'string') {
+      return this.processUpdateById(data, condition)
     }
+
+    return this.processUpdateByCondition(data, condition)
+  }
+
+  /**
+   * Update data by id.
+   */
+  processUpdateById (data: any, id?: any): Item | Collection {
+    const items: any[] = []
+
+    if (id) {
+      this.query.update(data, id)
+
+      items.push(id)
+    }
+
+    return this.getReturnData(items)
+  }
+
+  /**
+   * Update data by id.
+   */
+  processUpdateByCondition (data: any, condition: (record: Record) => boolean): Item | Collection {
+    const records = (new Repo(this.state, this.name, false)).where(condition).get()
+
+    const items = _.map(records, record => this.entity.id(record))
+
+    this.query.update(data, condition)
+
+    return this.getManyReturnData(items)
   }
 
   /**

@@ -1,4 +1,4 @@
-import { createApplication } from 'test/support/Helpers'
+import { createApplication, createState } from 'test/support/Helpers'
 import User from 'test/fixtures/models/User'
 import Profile from 'test/fixtures/models/Profile'
 import Post from 'test/fixtures/models/Post'
@@ -7,6 +7,7 @@ import Review from 'test/fixtures/models/Review'
 import Like from 'test/fixtures/models/Like'
 import CustomKey from 'test/fixtures/models/CustomKey'
 import CompositeKey from 'test/fixtures/models/CompositeKey'
+import Model from 'app/model/Model'
 import Repo from 'app/repo/Repo'
 
 describe('Repo – Update', () => {
@@ -136,5 +137,119 @@ describe('Repo – Update', () => {
     Repo.update(state, 'users', { age: 24 }, record => record.id === 3)
 
     expect(state).toEqual(expected)
+  })
+
+  it('returns a updated object by including primary key in the data', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+    }
+
+    createApplication('entities', [{ model: User }])
+
+    const state = createState('entities', {
+      users: {
+        '1': { $id: 1, id: 1, name: 'John', age: 20 }
+      }
+    })
+
+    const user = Repo.update(state, 'users', { id: 1, age: 24 })
+
+    expect(user).toBeInstanceOf(User)
+    expect(user.age).toBe(24)
+  })
+
+  it('returns a updated object by specifying condition', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+    }
+
+    createApplication('entities', [{ model: User }])
+
+    const state = createState('entities', {
+      users: {
+        '1': { $id: 1, id: 1, name: 'John', age: 20 }
+      }
+    })
+
+    const user = Repo.update(state, 'users', { age: 24 }, 1)
+
+    expect(user).toBeInstanceOf(User)
+    expect(user.age).toBe(24)
+  })
+
+  it('returns a updated object by specifying condition as closure', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+    }
+
+    createApplication('entities', [{ model: User }])
+
+    const state = createState('entities', {
+      users: {
+        '1': { $id: 1, id: 1, name: 'John', age: 20 }
+      }
+    })
+
+    const users = Repo.update(state, 'users', { age: 24 }, record => record.id === 1)
+
+    expect(users.length).toBe(1)
+    expect(users[0]).toBeInstanceOf(User)
+    expect(users[0].age).toBe(24)
+  })
+
+  it('returns all updated object by specifying condition as closure', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+    }
+
+    createApplication('entities', [{ model: User }])
+
+    const state = createState('entities', {
+      users: {
+        '1': { $id: 1, id: 1, name: 'JD', age: 20 },
+        '2': { $id: 2, id: 2, name: 'JD', age: 20 },
+        '3': { $id: 3, id: 3, name: 'Johnny', age: 30 }
+      }
+    })
+
+    const users = Repo.update(state, 'users', { age: 24 }, record => record.name === 'JD')
+
+    expect(users.length).toBe(2)
+    expect(users[0]).toBeInstanceOf(User)
+    expect(users[0].age).toBe(24)
+    expect(users[1]).toBeInstanceOf(User)
+    expect(users[1].age).toBe(24)
   })
 })
