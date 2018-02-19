@@ -159,8 +159,8 @@ function objectToString(value) {
 }
 
 /** `Object#toString` result references. */
-var nullTag = '[object Null]';
-var undefinedTag = '[object Undefined]';
+var nullTag = '[object Null]',
+    undefinedTag = '[object Undefined]';
 
 /** Built-in value references. */
 var symToStringTag$1 = Symbol$1 ? Symbol$1.toStringTag : undefined;
@@ -390,31 +390,31 @@ function isLength(value) {
 }
 
 /** `Object#toString` result references. */
-var argsTag$1 = '[object Arguments]';
-var arrayTag = '[object Array]';
-var boolTag = '[object Boolean]';
-var dateTag = '[object Date]';
-var errorTag = '[object Error]';
-var funcTag = '[object Function]';
-var mapTag = '[object Map]';
-var numberTag = '[object Number]';
-var objectTag = '[object Object]';
-var regexpTag = '[object RegExp]';
-var setTag = '[object Set]';
-var stringTag = '[object String]';
-var weakMapTag = '[object WeakMap]';
+var argsTag$1 = '[object Arguments]',
+    arrayTag = '[object Array]',
+    boolTag = '[object Boolean]',
+    dateTag = '[object Date]',
+    errorTag = '[object Error]',
+    funcTag = '[object Function]',
+    mapTag = '[object Map]',
+    numberTag = '[object Number]',
+    objectTag = '[object Object]',
+    regexpTag = '[object RegExp]',
+    setTag = '[object Set]',
+    stringTag = '[object String]',
+    weakMapTag = '[object WeakMap]';
 
-var arrayBufferTag = '[object ArrayBuffer]';
-var dataViewTag = '[object DataView]';
-var float32Tag = '[object Float32Array]';
-var float64Tag = '[object Float64Array]';
-var int8Tag = '[object Int8Array]';
-var int16Tag = '[object Int16Array]';
-var int32Tag = '[object Int32Array]';
-var uint8Tag = '[object Uint8Array]';
-var uint8ClampedTag = '[object Uint8ClampedArray]';
-var uint16Tag = '[object Uint16Array]';
-var uint32Tag = '[object Uint32Array]';
+var arrayBufferTag = '[object ArrayBuffer]',
+    dataViewTag = '[object DataView]',
+    float32Tag = '[object Float32Array]',
+    float64Tag = '[object Float64Array]',
+    int8Tag = '[object Int8Array]',
+    int16Tag = '[object Int16Array]',
+    int32Tag = '[object Int32Array]',
+    uint8Tag = '[object Uint8Array]',
+    uint8ClampedTag = '[object Uint8ClampedArray]',
+    uint16Tag = '[object Uint16Array]',
+    uint32Tag = '[object Uint32Array]';
 
 /** Used to identify `toStringTag` values of typed arrays. */
 var typedArrayTags = {};
@@ -630,10 +630,10 @@ function isObject(value) {
 }
 
 /** `Object#toString` result references. */
-var asyncTag = '[object AsyncFunction]';
-var funcTag$1 = '[object Function]';
-var genTag = '[object GeneratorFunction]';
-var proxyTag = '[object Proxy]';
+var asyncTag = '[object AsyncFunction]',
+    funcTag$1 = '[object Function]',
+    genTag = '[object GeneratorFunction]',
+    proxyTag = '[object Proxy]';
 
 /**
  * Checks if `value` is classified as a `Function` object.
@@ -1077,8 +1077,8 @@ var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
 var reIsHostCtor = /^\[object .+?Constructor\]$/;
 
 /** Used for built-in method references. */
-var funcProto$1 = Function.prototype;
-var objectProto$6 = Object.prototype;
+var funcProto$1 = Function.prototype,
+    objectProto$6 = Object.prototype;
 
 /** Used to resolve the decompiled source of functions. */
 var funcToString$1 = funcProto$1.toString;
@@ -1525,8 +1525,8 @@ function cacheHas(cache, key) {
 }
 
 /** Used to compose bitmasks for value comparisons. */
-var COMPARE_PARTIAL_FLAG = 1;
-var COMPARE_UNORDERED_FLAG = 2;
+var COMPARE_PARTIAL_FLAG = 1,
+    COMPARE_UNORDERED_FLAG = 2;
 
 /**
  * A specialized version of `baseIsEqualDeep` for arrays with support for
@@ -1640,26 +1640,26 @@ function setToArray(set) {
 }
 
 /** Used to compose bitmasks for value comparisons. */
-var COMPARE_PARTIAL_FLAG$1 = 1;
-var COMPARE_UNORDERED_FLAG$1 = 2;
+var COMPARE_PARTIAL_FLAG$1 = 1,
+    COMPARE_UNORDERED_FLAG$1 = 2;
 
 /** `Object#toString` result references. */
-var boolTag$1 = '[object Boolean]';
-var dateTag$1 = '[object Date]';
-var errorTag$1 = '[object Error]';
-var mapTag$1 = '[object Map]';
-var numberTag$1 = '[object Number]';
-var regexpTag$1 = '[object RegExp]';
-var setTag$1 = '[object Set]';
-var stringTag$1 = '[object String]';
-var symbolTag = '[object Symbol]';
+var boolTag$1 = '[object Boolean]',
+    dateTag$1 = '[object Date]',
+    errorTag$1 = '[object Error]',
+    mapTag$1 = '[object Map]',
+    numberTag$1 = '[object Number]',
+    regexpTag$1 = '[object RegExp]',
+    setTag$1 = '[object Set]',
+    stringTag$1 = '[object String]',
+    symbolTag = '[object Symbol]';
 
-var arrayBufferTag$1 = '[object ArrayBuffer]';
-var dataViewTag$1 = '[object DataView]';
+var arrayBufferTag$1 = '[object ArrayBuffer]',
+    dataViewTag$1 = '[object DataView]';
 
 /** Used to convert symbols to primitives and strings. */
-var symbolProto = Symbol$1 ? Symbol$1.prototype : undefined;
-var symbolValueOf = symbolProto ? symbolProto.valueOf : undefined;
+var symbolProto = Symbol$1 ? Symbol$1.prototype : undefined,
+    symbolValueOf = symbolProto ? symbolProto.valueOf : undefined;
 
 /**
  * A specialized version of `baseIsEqualDeep` for comparing objects of
@@ -1960,20 +1960,20 @@ var Set = getNative(root, 'Set');
 var WeakMap = getNative(root, 'WeakMap');
 
 /** `Object#toString` result references. */
-var mapTag$2 = '[object Map]';
-var objectTag$1 = '[object Object]';
-var promiseTag = '[object Promise]';
-var setTag$2 = '[object Set]';
-var weakMapTag$1 = '[object WeakMap]';
+var mapTag$2 = '[object Map]',
+    objectTag$1 = '[object Object]',
+    promiseTag = '[object Promise]',
+    setTag$2 = '[object Set]',
+    weakMapTag$1 = '[object WeakMap]';
 
 var dataViewTag$2 = '[object DataView]';
 
 /** Used to detect maps, sets, and weakmaps. */
-var dataViewCtorString = toSource(DataView);
-var mapCtorString = toSource(Map);
-var promiseCtorString = toSource(Promise$1);
-var setCtorString = toSource(Set);
-var weakMapCtorString = toSource(WeakMap);
+var dataViewCtorString = toSource(DataView),
+    mapCtorString = toSource(Map),
+    promiseCtorString = toSource(Promise$1),
+    setCtorString = toSource(Set),
+    weakMapCtorString = toSource(WeakMap);
 
 /**
  * Gets the `toStringTag` of `value`.
@@ -2014,9 +2014,9 @@ var getTag$1 = getTag;
 var COMPARE_PARTIAL_FLAG$3 = 1;
 
 /** `Object#toString` result references. */
-var argsTag$2 = '[object Arguments]';
-var arrayTag$1 = '[object Array]';
-var objectTag$2 = '[object Object]';
+var argsTag$2 = '[object Arguments]',
+    arrayTag$1 = '[object Array]',
+    objectTag$2 = '[object Object]';
 
 /** Used for built-in method references. */
 var objectProto$11 = Object.prototype;
@@ -2108,8 +2108,8 @@ function baseIsEqual(value, other, bitmask, customizer, stack) {
 }
 
 /** Used to compose bitmasks for value comparisons. */
-var COMPARE_PARTIAL_FLAG$4 = 1;
-var COMPARE_UNORDERED_FLAG$2 = 2;
+var COMPARE_PARTIAL_FLAG$4 = 1,
+    COMPARE_UNORDERED_FLAG$2 = 2;
 
 /**
  * The base implementation of `_.isMatch` without support for iteratee shorthands.
@@ -2259,8 +2259,8 @@ function isSymbol(value) {
 }
 
 /** Used to match property names within property paths. */
-var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/;
-var reIsPlainProp = /^\w*$/;
+var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,
+    reIsPlainProp = /^\w*$/;
 
 /**
  * Checks if `value` is a property name and not a property path.
@@ -2424,8 +2424,8 @@ function arrayMap(array, iteratee) {
 var INFINITY = 1 / 0;
 
 /** Used to convert symbols to primitives and strings. */
-var symbolProto$1 = Symbol$1 ? Symbol$1.prototype : undefined;
-var symbolToString = symbolProto$1 ? symbolProto$1.toString : undefined;
+var symbolProto$1 = Symbol$1 ? Symbol$1.prototype : undefined,
+    symbolToString = symbolProto$1 ? symbolProto$1.toString : undefined;
 
 /**
  * The base implementation of `_.toString` which doesn't convert nullish
@@ -2633,8 +2633,8 @@ function hasIn(object, path) {
 }
 
 /** Used to compose bitmasks for value comparisons. */
-var COMPARE_PARTIAL_FLAG$5 = 1;
-var COMPARE_UNORDERED_FLAG$3 = 2;
+var COMPARE_PARTIAL_FLAG$5 = 1,
+    COMPARE_UNORDERED_FLAG$3 = 2;
 
 /**
  * The base implementation of `_.matchesProperty` which doesn't clone `srcValue`.
@@ -2931,8 +2931,8 @@ function toNumber(value) {
 }
 
 /** Used as references for various `Number` constants. */
-var INFINITY$2 = 1 / 0;
-var MAX_INTEGER = 1.7976931348623157e+308;
+var INFINITY$2 = 1 / 0,
+    MAX_INTEGER = 1.7976931348623157e+308;
 
 /**
  * Converts `value` to a finite number.
@@ -3446,8 +3446,8 @@ function includes(collection, value, fromIndex, guard) {
 }
 
 /** `Object#toString` result references. */
-var mapTag$3 = '[object Map]';
-var setTag$3 = '[object Set]';
+var mapTag$3 = '[object Map]',
+    setTag$3 = '[object Set]';
 
 /** Used for built-in method references. */
 var objectProto$13 = Object.prototype;
@@ -3711,6 +3711,735 @@ function maxBy(array, iteratee) {
 }
 
 /**
+ * This function is like `assignValue` except that it doesn't assign
+ * `undefined` values.
+ *
+ * @private
+ * @param {Object} object The object to modify.
+ * @param {string} key The key of the property to assign.
+ * @param {*} value The value to assign.
+ */
+function assignMergeValue(object, key, value) {
+  if ((value !== undefined && !eq(object[key], value)) ||
+      (value === undefined && !(key in object))) {
+    baseAssignValue(object, key, value);
+  }
+}
+
+/** Detect free variable `exports`. */
+var freeExports$2 = typeof exports == 'object' && exports && !exports.nodeType && exports;
+
+/** Detect free variable `module`. */
+var freeModule$2 = freeExports$2 && typeof module == 'object' && module && !module.nodeType && module;
+
+/** Detect the popular CommonJS extension `module.exports`. */
+var moduleExports$2 = freeModule$2 && freeModule$2.exports === freeExports$2;
+
+/** Built-in value references. */
+var Buffer$1 = moduleExports$2 ? root.Buffer : undefined,
+    allocUnsafe = Buffer$1 ? Buffer$1.allocUnsafe : undefined;
+
+/**
+ * Creates a clone of  `buffer`.
+ *
+ * @private
+ * @param {Buffer} buffer The buffer to clone.
+ * @param {boolean} [isDeep] Specify a deep clone.
+ * @returns {Buffer} Returns the cloned buffer.
+ */
+function cloneBuffer(buffer, isDeep) {
+  if (isDeep) {
+    return buffer.slice();
+  }
+  var length = buffer.length,
+      result = allocUnsafe ? allocUnsafe(length) : new buffer.constructor(length);
+
+  buffer.copy(result);
+  return result;
+}
+
+/**
+ * Creates a clone of `arrayBuffer`.
+ *
+ * @private
+ * @param {ArrayBuffer} arrayBuffer The array buffer to clone.
+ * @returns {ArrayBuffer} Returns the cloned array buffer.
+ */
+function cloneArrayBuffer(arrayBuffer) {
+  var result = new arrayBuffer.constructor(arrayBuffer.byteLength);
+  new Uint8Array(result).set(new Uint8Array(arrayBuffer));
+  return result;
+}
+
+/**
+ * Creates a clone of `typedArray`.
+ *
+ * @private
+ * @param {Object} typedArray The typed array to clone.
+ * @param {boolean} [isDeep] Specify a deep clone.
+ * @returns {Object} Returns the cloned typed array.
+ */
+function cloneTypedArray(typedArray, isDeep) {
+  var buffer = isDeep ? cloneArrayBuffer(typedArray.buffer) : typedArray.buffer;
+  return new typedArray.constructor(buffer, typedArray.byteOffset, typedArray.length);
+}
+
+/**
+ * Copies the values of `source` to `array`.
+ *
+ * @private
+ * @param {Array} source The array to copy values from.
+ * @param {Array} [array=[]] The array to copy values to.
+ * @returns {Array} Returns `array`.
+ */
+function copyArray(source, array) {
+  var index = -1,
+      length = source.length;
+
+  array || (array = Array(length));
+  while (++index < length) {
+    array[index] = source[index];
+  }
+  return array;
+}
+
+/** Built-in value references. */
+var objectCreate = Object.create;
+
+/**
+ * The base implementation of `_.create` without support for assigning
+ * properties to the created object.
+ *
+ * @private
+ * @param {Object} proto The object to inherit from.
+ * @returns {Object} Returns the new object.
+ */
+var baseCreate = (function() {
+  function object() {}
+  return function(proto) {
+    if (!isObject(proto)) {
+      return {};
+    }
+    if (objectCreate) {
+      return objectCreate(proto);
+    }
+    object.prototype = proto;
+    var result = new object;
+    object.prototype = undefined;
+    return result;
+  };
+}());
+
+/** Built-in value references. */
+var getPrototype = overArg(Object.getPrototypeOf, Object);
+
+/**
+ * Initializes an object clone.
+ *
+ * @private
+ * @param {Object} object The object to clone.
+ * @returns {Object} Returns the initialized clone.
+ */
+function initCloneObject(object) {
+  return (typeof object.constructor == 'function' && !isPrototype(object))
+    ? baseCreate(getPrototype(object))
+    : {};
+}
+
+/**
+ * This method is like `_.isArrayLike` except that it also checks if `value`
+ * is an object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array-like object,
+ *  else `false`.
+ * @example
+ *
+ * _.isArrayLikeObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isArrayLikeObject(document.body.children);
+ * // => true
+ *
+ * _.isArrayLikeObject('abc');
+ * // => false
+ *
+ * _.isArrayLikeObject(_.noop);
+ * // => false
+ */
+function isArrayLikeObject(value) {
+  return isObjectLike(value) && isArrayLike(value);
+}
+
+/** `Object#toString` result references. */
+var objectTag$3 = '[object Object]';
+
+/** Used for built-in method references. */
+var funcProto$2 = Function.prototype,
+    objectProto$14 = Object.prototype;
+
+/** Used to resolve the decompiled source of functions. */
+var funcToString$2 = funcProto$2.toString;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty$11 = objectProto$14.hasOwnProperty;
+
+/** Used to infer the `Object` constructor. */
+var objectCtorString = funcToString$2.call(Object);
+
+/**
+ * Checks if `value` is a plain object, that is, an object created by the
+ * `Object` constructor or one with a `[[Prototype]]` of `null`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.8.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a plain object, else `false`.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ * }
+ *
+ * _.isPlainObject(new Foo);
+ * // => false
+ *
+ * _.isPlainObject([1, 2, 3]);
+ * // => false
+ *
+ * _.isPlainObject({ 'x': 0, 'y': 0 });
+ * // => true
+ *
+ * _.isPlainObject(Object.create(null));
+ * // => true
+ */
+function isPlainObject(value) {
+  if (!isObjectLike(value) || baseGetTag(value) != objectTag$3) {
+    return false;
+  }
+  var proto = getPrototype(value);
+  if (proto === null) {
+    return true;
+  }
+  var Ctor = hasOwnProperty$11.call(proto, 'constructor') && proto.constructor;
+  return typeof Ctor == 'function' && Ctor instanceof Ctor &&
+    funcToString$2.call(Ctor) == objectCtorString;
+}
+
+/**
+ * Gets the value at `key`, unless `key` is "__proto__".
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @param {string} key The key of the property to get.
+ * @returns {*} Returns the property value.
+ */
+function safeGet(object, key) {
+  return key == '__proto__'
+    ? undefined
+    : object[key];
+}
+
+/** Used for built-in method references. */
+var objectProto$15 = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty$12 = objectProto$15.hasOwnProperty;
+
+/**
+ * Assigns `value` to `key` of `object` if the existing value is not equivalent
+ * using [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
+ * for equality comparisons.
+ *
+ * @private
+ * @param {Object} object The object to modify.
+ * @param {string} key The key of the property to assign.
+ * @param {*} value The value to assign.
+ */
+function assignValue(object, key, value) {
+  var objValue = object[key];
+  if (!(hasOwnProperty$12.call(object, key) && eq(objValue, value)) ||
+      (value === undefined && !(key in object))) {
+    baseAssignValue(object, key, value);
+  }
+}
+
+/**
+ * Copies properties of `source` to `object`.
+ *
+ * @private
+ * @param {Object} source The object to copy properties from.
+ * @param {Array} props The property identifiers to copy.
+ * @param {Object} [object={}] The object to copy properties to.
+ * @param {Function} [customizer] The function to customize copied values.
+ * @returns {Object} Returns `object`.
+ */
+function copyObject(source, props, object, customizer) {
+  var isNew = !object;
+  object || (object = {});
+
+  var index = -1,
+      length = props.length;
+
+  while (++index < length) {
+    var key = props[index];
+
+    var newValue = customizer
+      ? customizer(object[key], source[key], key, object, source)
+      : undefined;
+
+    if (newValue === undefined) {
+      newValue = source[key];
+    }
+    if (isNew) {
+      baseAssignValue(object, key, newValue);
+    } else {
+      assignValue(object, key, newValue);
+    }
+  }
+  return object;
+}
+
+/**
+ * This function is like
+ * [`Object.keys`](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
+ * except that it includes inherited enumerable properties.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names.
+ */
+function nativeKeysIn(object) {
+  var result = [];
+  if (object != null) {
+    for (var key in Object(object)) {
+      result.push(key);
+    }
+  }
+  return result;
+}
+
+/** Used for built-in method references. */
+var objectProto$16 = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty$13 = objectProto$16.hasOwnProperty;
+
+/**
+ * The base implementation of `_.keysIn` which doesn't treat sparse arrays as dense.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names.
+ */
+function baseKeysIn(object) {
+  if (!isObject(object)) {
+    return nativeKeysIn(object);
+  }
+  var isProto = isPrototype(object),
+      result = [];
+
+  for (var key in object) {
+    if (!(key == 'constructor' && (isProto || !hasOwnProperty$13.call(object, key)))) {
+      result.push(key);
+    }
+  }
+  return result;
+}
+
+/**
+ * Creates an array of the own and inherited enumerable property names of `object`.
+ *
+ * **Note:** Non-object values are coerced to objects.
+ *
+ * @static
+ * @memberOf _
+ * @since 3.0.0
+ * @category Object
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ *   this.b = 2;
+ * }
+ *
+ * Foo.prototype.c = 3;
+ *
+ * _.keysIn(new Foo);
+ * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
+ */
+function keysIn(object) {
+  return isArrayLike(object) ? arrayLikeKeys(object, true) : baseKeysIn(object);
+}
+
+/**
+ * Converts `value` to a plain object flattening inherited enumerable string
+ * keyed properties of `value` to own properties of the plain object.
+ *
+ * @static
+ * @memberOf _
+ * @since 3.0.0
+ * @category Lang
+ * @param {*} value The value to convert.
+ * @returns {Object} Returns the converted plain object.
+ * @example
+ *
+ * function Foo() {
+ *   this.b = 2;
+ * }
+ *
+ * Foo.prototype.c = 3;
+ *
+ * _.assign({ 'a': 1 }, new Foo);
+ * // => { 'a': 1, 'b': 2 }
+ *
+ * _.assign({ 'a': 1 }, _.toPlainObject(new Foo));
+ * // => { 'a': 1, 'b': 2, 'c': 3 }
+ */
+function toPlainObject(value) {
+  return copyObject(value, keysIn(value));
+}
+
+/**
+ * A specialized version of `baseMerge` for arrays and objects which performs
+ * deep merges and tracks traversed objects enabling objects with circular
+ * references to be merged.
+ *
+ * @private
+ * @param {Object} object The destination object.
+ * @param {Object} source The source object.
+ * @param {string} key The key of the value to merge.
+ * @param {number} srcIndex The index of `source`.
+ * @param {Function} mergeFunc The function to merge values.
+ * @param {Function} [customizer] The function to customize assigned values.
+ * @param {Object} [stack] Tracks traversed source values and their merged
+ *  counterparts.
+ */
+function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, stack) {
+  var objValue = safeGet(object, key),
+      srcValue = safeGet(source, key),
+      stacked = stack.get(srcValue);
+
+  if (stacked) {
+    assignMergeValue(object, key, stacked);
+    return;
+  }
+  var newValue = customizer
+    ? customizer(objValue, srcValue, (key + ''), object, source, stack)
+    : undefined;
+
+  var isCommon = newValue === undefined;
+
+  if (isCommon) {
+    var isArr = isArray(srcValue),
+        isBuff = !isArr && isBuffer(srcValue),
+        isTyped = !isArr && !isBuff && isTypedArray(srcValue);
+
+    newValue = srcValue;
+    if (isArr || isBuff || isTyped) {
+      if (isArray(objValue)) {
+        newValue = objValue;
+      }
+      else if (isArrayLikeObject(objValue)) {
+        newValue = copyArray(objValue);
+      }
+      else if (isBuff) {
+        isCommon = false;
+        newValue = cloneBuffer(srcValue, true);
+      }
+      else if (isTyped) {
+        isCommon = false;
+        newValue = cloneTypedArray(srcValue, true);
+      }
+      else {
+        newValue = [];
+      }
+    }
+    else if (isPlainObject(srcValue) || isArguments(srcValue)) {
+      newValue = objValue;
+      if (isArguments(objValue)) {
+        newValue = toPlainObject(objValue);
+      }
+      else if (!isObject(objValue) || (srcIndex && isFunction(objValue))) {
+        newValue = initCloneObject(srcValue);
+      }
+    }
+    else {
+      isCommon = false;
+    }
+  }
+  if (isCommon) {
+    // Recursively merge objects and arrays (susceptible to call stack limits).
+    stack.set(srcValue, newValue);
+    mergeFunc(newValue, srcValue, srcIndex, customizer, stack);
+    stack['delete'](srcValue);
+  }
+  assignMergeValue(object, key, newValue);
+}
+
+/**
+ * The base implementation of `_.merge` without support for multiple sources.
+ *
+ * @private
+ * @param {Object} object The destination object.
+ * @param {Object} source The source object.
+ * @param {number} srcIndex The index of `source`.
+ * @param {Function} [customizer] The function to customize merged values.
+ * @param {Object} [stack] Tracks traversed source values and their merged
+ *  counterparts.
+ */
+function baseMerge(object, source, srcIndex, customizer, stack) {
+  if (object === source) {
+    return;
+  }
+  baseFor(source, function(srcValue, key) {
+    if (isObject(srcValue)) {
+      stack || (stack = new Stack);
+      baseMergeDeep(object, source, key, srcIndex, baseMerge, customizer, stack);
+    }
+    else {
+      var newValue = customizer
+        ? customizer(safeGet(object, key), srcValue, (key + ''), object, source, stack)
+        : undefined;
+
+      if (newValue === undefined) {
+        newValue = srcValue;
+      }
+      assignMergeValue(object, key, newValue);
+    }
+  }, keysIn);
+}
+
+/**
+ * A faster alternative to `Function#apply`, this function invokes `func`
+ * with the `this` binding of `thisArg` and the arguments of `args`.
+ *
+ * @private
+ * @param {Function} func The function to invoke.
+ * @param {*} thisArg The `this` binding of `func`.
+ * @param {Array} args The arguments to invoke `func` with.
+ * @returns {*} Returns the result of `func`.
+ */
+function apply(func, thisArg, args) {
+  switch (args.length) {
+    case 0: return func.call(thisArg);
+    case 1: return func.call(thisArg, args[0]);
+    case 2: return func.call(thisArg, args[0], args[1]);
+    case 3: return func.call(thisArg, args[0], args[1], args[2]);
+  }
+  return func.apply(thisArg, args);
+}
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeMax$2 = Math.max;
+
+/**
+ * A specialized version of `baseRest` which transforms the rest array.
+ *
+ * @private
+ * @param {Function} func The function to apply a rest parameter to.
+ * @param {number} [start=func.length-1] The start position of the rest parameter.
+ * @param {Function} transform The rest array transform.
+ * @returns {Function} Returns the new function.
+ */
+function overRest(func, start, transform) {
+  start = nativeMax$2(start === undefined ? (func.length - 1) : start, 0);
+  return function() {
+    var args = arguments,
+        index = -1,
+        length = nativeMax$2(args.length - start, 0),
+        array = Array(length);
+
+    while (++index < length) {
+      array[index] = args[start + index];
+    }
+    index = -1;
+    var otherArgs = Array(start + 1);
+    while (++index < start) {
+      otherArgs[index] = args[index];
+    }
+    otherArgs[start] = transform(array);
+    return apply(func, this, otherArgs);
+  };
+}
+
+/**
+ * Creates a function that returns `value`.
+ *
+ * @static
+ * @memberOf _
+ * @since 2.4.0
+ * @category Util
+ * @param {*} value The value to return from the new function.
+ * @returns {Function} Returns the new constant function.
+ * @example
+ *
+ * var objects = _.times(2, _.constant({ 'a': 1 }));
+ *
+ * console.log(objects);
+ * // => [{ 'a': 1 }, { 'a': 1 }]
+ *
+ * console.log(objects[0] === objects[1]);
+ * // => true
+ */
+function constant(value) {
+  return function() {
+    return value;
+  };
+}
+
+/**
+ * The base implementation of `setToString` without support for hot loop shorting.
+ *
+ * @private
+ * @param {Function} func The function to modify.
+ * @param {Function} string The `toString` result.
+ * @returns {Function} Returns `func`.
+ */
+var baseSetToString = !defineProperty ? identity : function(func, string) {
+  return defineProperty(func, 'toString', {
+    'configurable': true,
+    'enumerable': false,
+    'value': constant(string),
+    'writable': true
+  });
+};
+
+/** Used to detect hot functions by number of calls within a span of milliseconds. */
+var HOT_COUNT = 800,
+    HOT_SPAN = 16;
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeNow = Date.now;
+
+/**
+ * Creates a function that'll short out and invoke `identity` instead
+ * of `func` when it's called `HOT_COUNT` or more times in `HOT_SPAN`
+ * milliseconds.
+ *
+ * @private
+ * @param {Function} func The function to restrict.
+ * @returns {Function} Returns the new shortable function.
+ */
+function shortOut(func) {
+  var count = 0,
+      lastCalled = 0;
+
+  return function() {
+    var stamp = nativeNow(),
+        remaining = HOT_SPAN - (stamp - lastCalled);
+
+    lastCalled = stamp;
+    if (remaining > 0) {
+      if (++count >= HOT_COUNT) {
+        return arguments[0];
+      }
+    } else {
+      count = 0;
+    }
+    return func.apply(undefined, arguments);
+  };
+}
+
+/**
+ * Sets the `toString` method of `func` to return `string`.
+ *
+ * @private
+ * @param {Function} func The function to modify.
+ * @param {Function} string The `toString` result.
+ * @returns {Function} Returns `func`.
+ */
+var setToString = shortOut(baseSetToString);
+
+/**
+ * The base implementation of `_.rest` which doesn't validate or coerce arguments.
+ *
+ * @private
+ * @param {Function} func The function to apply a rest parameter to.
+ * @param {number} [start=func.length-1] The start position of the rest parameter.
+ * @returns {Function} Returns the new function.
+ */
+function baseRest(func, start) {
+  return setToString(overRest(func, start, identity), func + '');
+}
+
+/**
+ * Creates a function like `_.assign`.
+ *
+ * @private
+ * @param {Function} assigner The function to assign values.
+ * @returns {Function} Returns the new assigner function.
+ */
+function createAssigner(assigner) {
+  return baseRest(function(object, sources) {
+    var index = -1,
+        length = sources.length,
+        customizer = length > 1 ? sources[length - 1] : undefined,
+        guard = length > 2 ? sources[2] : undefined;
+
+    customizer = (assigner.length > 3 && typeof customizer == 'function')
+      ? (length--, customizer)
+      : undefined;
+
+    if (guard && isIterateeCall(sources[0], sources[1], guard)) {
+      customizer = length < 3 ? undefined : customizer;
+      length = 1;
+    }
+    object = Object(object);
+    while (++index < length) {
+      var source = sources[index];
+      if (source) {
+        assigner(object, source, index, customizer);
+      }
+    }
+    return object;
+  });
+}
+
+/**
+ * This method is like `_.assign` except that it recursively merges own and
+ * inherited enumerable string keyed properties of source objects into the
+ * destination object. Source properties that resolve to `undefined` are
+ * skipped if a destination value exists. Array and plain object properties
+ * are merged recursively. Other objects and value types are overridden by
+ * assignment. Source objects are applied from left to right. Subsequent
+ * sources overwrite property assignments of previous sources.
+ *
+ * **Note:** This method mutates `object`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.5.0
+ * @category Object
+ * @param {Object} object The destination object.
+ * @param {...Object} [sources] The source objects.
+ * @returns {Object} Returns `object`.
+ * @example
+ *
+ * var object = {
+ *   'a': [{ 'b': 2 }, { 'd': 4 }]
+ * };
+ *
+ * var other = {
+ *   'a': [{ 'c': 3 }, { 'e': 5 }]
+ * };
+ *
+ * _.merge(object, other);
+ * // => { 'a': [{ 'b': 2, 'c': 3 }, { 'd': 4, 'e': 5 }] }
+ */
+var merge = createAssigner(function(object, source, srcIndex) {
+  baseMerge(object, source, srcIndex);
+});
+
+/**
  * The base implementation of `_.lt` which doesn't coerce arguments.
  *
  * @private
@@ -3919,30 +4648,6 @@ function orderBy(collection, iteratees, orders, guard) {
   return baseOrderBy(collection, iteratees, orders);
 }
 
-/** Used for built-in method references. */
-var objectProto$14 = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty$11 = objectProto$14.hasOwnProperty;
-
-/**
- * Assigns `value` to `key` of `object` if the existing value is not equivalent
- * using [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
- * for equality comparisons.
- *
- * @private
- * @param {Object} object The object to modify.
- * @param {string} key The key of the property to assign.
- * @param {*} value The value to assign.
- */
-function assignValue(object, key, value) {
-  var objValue = object[key];
-  if (!(hasOwnProperty$11.call(object, key) && eq(objValue, value)) ||
-      (value === undefined && !(key in object))) {
-    baseAssignValue(object, key, value);
-  }
-}
-
 /**
  * The base implementation of `_.set`.
  *
@@ -4008,9 +4713,6 @@ function basePickBy(object, paths, predicate) {
   return result;
 }
 
-/** Built-in value references. */
-var getPrototype = overArg(Object.getPrototypeOf, Object);
-
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeGetSymbols$1 = Object.getOwnPropertySymbols;
 
@@ -4029,80 +4731,6 @@ var getSymbolsIn = !nativeGetSymbols$1 ? stubArray : function(object) {
   }
   return result;
 };
-
-/**
- * This function is like
- * [`Object.keys`](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
- * except that it includes inherited enumerable properties.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- */
-function nativeKeysIn(object) {
-  var result = [];
-  if (object != null) {
-    for (var key in Object(object)) {
-      result.push(key);
-    }
-  }
-  return result;
-}
-
-/** Used for built-in method references. */
-var objectProto$15 = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty$12 = objectProto$15.hasOwnProperty;
-
-/**
- * The base implementation of `_.keysIn` which doesn't treat sparse arrays as dense.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- */
-function baseKeysIn(object) {
-  if (!isObject(object)) {
-    return nativeKeysIn(object);
-  }
-  var isProto = isPrototype(object),
-      result = [];
-
-  for (var key in object) {
-    if (!(key == 'constructor' && (isProto || !hasOwnProperty$12.call(object, key)))) {
-      result.push(key);
-    }
-  }
-  return result;
-}
-
-/**
- * Creates an array of the own and inherited enumerable property names of `object`.
- *
- * **Note:** Non-object values are coerced to objects.
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category Object
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- * @example
- *
- * function Foo() {
- *   this.a = 1;
- *   this.b = 2;
- * }
- *
- * Foo.prototype.c = 3;
- *
- * _.keysIn(new Foo);
- * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
- */
-function keysIn(object) {
-  return isArrayLike(object) ? arrayLikeKeys(object, true) : baseKeysIn(object);
-}
 
 /**
  * Creates an array of own and inherited enumerable property names and
@@ -4373,6 +5001,14 @@ function some(collection, predicate, guard) {
  * @returns {number} Returns the clamped number.
  */
 
+var __assign = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 var Connection = /** @class */ (function () {
     /**
      * Creates a connection instance.
@@ -4390,14 +5026,13 @@ var Connection = /** @class */ (function () {
         return this.database.store;
     };
     /**
-     * Returns models in database with name.
+     * Get models from the database.
      */
     Connection.prototype.models = function () {
-        var models = {};
-        forEach(this.database.entities, function (entity) {
-            models[entity.model.entity] = entity.model;
-        });
-        return models;
+        return reduce(this.database.entities, function (models, entity) {
+            return __assign({}, models, (_a = {}, _a[entity.model.entity] = entity.model, _a));
+            var _a;
+        }, {});
     };
     /**
      * Find model in database by given name
@@ -4424,7 +5059,7 @@ var Container = /** @class */ (function () {
         return this.connections[name];
     };
     /**
-     * A list of connections that has been registered in Vuex ORM.
+     * A list of connections that have been registered to Vuex ORM.
      */
     Container.connections = {};
     return Container;
@@ -4441,6 +5076,90 @@ var install = (function (database, options) {
     };
 });
 
+var Attribute = /** @class */ (function () {
+    function Attribute() {
+    }
+    return Attribute;
+}());
+
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Type = /** @class */ (function (_super) {
+    __extends(Type, _super);
+    function Type() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Type;
+}(Attribute));
+
+var __extends$1 = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Attr = /** @class */ (function (_super) {
+    __extends$1(Attr, _super);
+    /**
+     * Create a new attr instance.
+     */
+    function Attr(value, mutator) {
+        var _this = _super.call(this) || this;
+        _this.value = value;
+        _this.mutator = mutator;
+        return _this;
+    }
+    /**
+     * Return the default value if the given value is empty.
+     */
+    Attr.prototype.fill = function (value) {
+        return value !== undefined ? value : this.value;
+    };
+    return Attr;
+}(Type));
+
+var __extends$2 = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Increment = /** @class */ (function (_super) {
+    __extends$2(Increment, _super);
+    function Increment() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        /**
+         * The initial count to start incrementing.
+         */
+        _this.value = 1;
+        return _this;
+    }
+    /**
+     * Return null if the value is not present. Auto incrementation should
+     * be done after the normalization completed.
+     */
+    Increment.prototype.fill = function (value) {
+        return value || null;
+    };
+    return Increment;
+}(Type));
+
 function unwrapExports (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
@@ -4450,6 +5169,7 @@ function createCommonjsModule(fn, module) {
 }
 
 var ImmutableUtils = createCommonjsModule(function (module, exports) {
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -4502,6 +5222,7 @@ var ImmutableUtils_1 = ImmutableUtils.isImmutable;
 var ImmutableUtils_2 = ImmutableUtils.denormalizeImmutable;
 
 var Entity = createCommonjsModule(function (module, exports) {
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -4631,6 +5352,7 @@ exports.default = EntitySchema;
 unwrapExports(Entity);
 
 var Polymorphic = createCommonjsModule(function (module, exports) {
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -4710,6 +5432,7 @@ exports.default = PolymorphicSchema;
 unwrapExports(Polymorphic);
 
 var Union = createCommonjsModule(function (module, exports) {
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -4761,6 +5484,7 @@ exports.default = UnionSchema;
 unwrapExports(Union);
 
 var Values = createCommonjsModule(function (module, exports) {
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -4823,6 +5547,7 @@ exports.default = ValuesSchema;
 unwrapExports(Values);
 
 var _Array = createCommonjsModule(function (module, exports) {
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -4920,6 +5645,7 @@ var _Array_1 = _Array.denormalize;
 var _Array_2 = _Array.normalize;
 
 var _Object = createCommonjsModule(function (module, exports) {
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -5016,6 +5742,7 @@ var _Object_1 = _Object.denormalize;
 var _Object_2 = _Object.normalize;
 
 var src = createCommonjsModule(function (module, exports) {
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -5174,116 +5901,35 @@ var src_1 = src.denormalize;
 var src_2 = src.normalize;
 var src_3 = src.schema;
 
-var Data = /** @class */ (function () {
-    function Data() {
-    }
-    /**
-     * Normalize the given data by given schema.
-     */
-    Data.normalize = function (data, schema) {
-        return src_2(data, schema).entities;
+var __extends$3 = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
-    return Data;
-}());
-
-var Attr = /** @class */ (function () {
+})();
+var Relation = /** @class */ (function (_super) {
+    __extends$3(Relation, _super);
     /**
-     * Create a new attr instance.
+     * Create a relation instance.
      */
-    function Attr(value, mutator) {
-        this.value = value;
-        this.mutator = mutator;
-    }
-    return Attr;
-}());
-
-var Increment = /** @class */ (function () {
-    function Increment() {
-        /**
-         * The initial count to start incrementing.
-         */
-        this.value = 1;
-    }
-    return Increment;
-}());
-
-var __assign = (undefined && undefined.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
-var Incrementer = /** @class */ (function () {
-    /**
-     * Create a new incrementer instance.
-     */
-    function Incrementer(repo) {
-        this.repo = repo;
-    }
-    /**
-     * Increment all fields with `incremented` attribute type.
-     */
-    Incrementer.prototype.incrementFields = function (data, reset) {
-        if (reset === void 0) { reset = false; }
-        return this.repo.entity.hasIncrementFields() ? this.process(data, reset) : data;
-    };
-    /**
-     * Process the incrementation.
-     */
-    Incrementer.prototype.process = function (data, reset) {
-        var _this = this;
-        if (reset === void 0) { reset = false; }
-        var newData = __assign({}, data);
-        forEach(this.repo.entity.incrementFields(), function (field) {
-            var incrementKey = _this.incrementKey(field);
-            var max$$1 = _this.max(data, incrementKey, reset);
-            forEach(data, function (_record, fieldKey) {
-                if (newData[fieldKey][incrementKey]) {
-                    return;
-                }
-                newData[fieldKey][incrementKey] = ++max$$1;
-                newData[fieldKey]['$id'] = _this.repo.entity.id(newData[fieldKey]);
-            });
-        });
-        return newData;
-    };
-    /**
-     * Get key of the increment field.
-     */
-    Incrementer.prototype.incrementKey = function (field) {
-        return Object.keys(field)[0];
-    };
-    /**
-     * Get the max value of the specified field with given data combined
-     * with existing records.
-     */
-    Incrementer.prototype.max = function (data, field, reset) {
-        if (reset === void 0) { reset = false; }
-        var max$$1 = reset ? 0 : this.repo.self().max(this.repo.state, this.repo.name, field);
-        var records = map(data, function (v) { return v; });
-        var maxRecord = maxBy(records, field);
-        if (maxRecord) {
-            max$$1 = max([max$$1, maxRecord[field]]);
-        }
-        return max$$1;
-    };
-    return Incrementer;
-}());
-
-var Relation = /** @class */ (function () {
-    function Relation() {
+    function Relation(connection) {
+        if (connection === void 0) { connection = 'entities'; }
+        var _this = _super.call(this) || this;
+        _this.connection = connection;
+        return _this;
     }
     /**
      * Resolve model out of container.
      */
-    Relation.prototype.model = function (model, connection) {
-        if (connection === void 0) { connection = 'entities'; }
+    Relation.prototype.model = function (model) {
         if (typeof model !== 'string') {
             return model;
         }
-        return Container.connection(connection).model(model);
+        return Container.connection(this.connection).model(model);
     };
     /**
      * Add constraint to the query.
@@ -5301,9 +5947,9 @@ var Relation = /** @class */ (function () {
         }
     };
     return Relation;
-}());
+}(Attribute));
 
-var __extends = (undefined && undefined.__extends) || (function () {
+var __extends$4 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -5314,18 +5960,27 @@ var __extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 var BelongsTo = /** @class */ (function (_super) {
-    __extends(BelongsTo, _super);
+    __extends$4(BelongsTo, _super);
     /**
      * Create a new belongs to instance.
      */
-    function BelongsTo(parent, foreignKey, ownerKey, record, connection) {
-        var _this = _super.call(this) || this;
-        _this.parent = _this.model(parent, connection);
+    function BelongsTo(parent, foreignKey, ownerKey, connection) {
+        var _this = _super.call(this, connection) || this;
+        /**
+         * The related record.
+         */
+        _this.record = null;
+        _this.parent = _this.model(parent);
         _this.foreignKey = foreignKey;
         _this.ownerKey = ownerKey;
-        _this.record = record;
         return _this;
     }
+    /**
+     * Return null if the value is not present.
+     */
+    BelongsTo.prototype.fill = function (value) {
+        return value || null;
+    };
     /**
      * Load the belongs to relationship for the record.
      */
@@ -5338,13 +5993,13 @@ var BelongsTo = /** @class */ (function (_super) {
     /**
      * Make model instances of the relation.
      */
-    BelongsTo.prototype.make = function () {
+    BelongsTo.prototype.make = function (_parent) {
         return this.record ? new this.parent(this.record) : null;
     };
     return BelongsTo;
 }(Relation));
 
-var __extends$1 = (undefined && undefined.__extends) || (function () {
+var __extends$5 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -5355,18 +6010,27 @@ var __extends$1 = (undefined && undefined.__extends) || (function () {
     };
 })();
 var HasMany = /** @class */ (function (_super) {
-    __extends$1(HasMany, _super);
+    __extends$5(HasMany, _super);
     /**
      * Create a new has many instance.
      */
-    function HasMany(related, foreignKey, localKey, records, connection) {
-        var _this = _super.call(this) || this;
-        _this.related = _this.model(related, connection);
+    function HasMany(related, foreignKey, localKey, connection) {
+        var _this = _super.call(this, connection) || this;
+        /**
+         * The related records.
+         */
+        _this.records = [];
+        _this.related = _this.model(related);
         _this.foreignKey = foreignKey;
         _this.localKey = localKey;
-        _this.records = records;
         return _this;
     }
+    /**
+     * Return empty array if the value is not present.
+     */
+    HasMany.prototype.fill = function (value) {
+        return value || [];
+    };
     /**
      * Load the has many relationship for the record.
      */
@@ -5379,7 +6043,7 @@ var HasMany = /** @class */ (function (_super) {
     /**
      * Make model instances of the relation.
      */
-    HasMany.prototype.make = function () {
+    HasMany.prototype.make = function (_parent) {
         var _this = this;
         if (this.records.length === 0) {
             return [];
@@ -5392,7 +6056,7 @@ var HasMany = /** @class */ (function (_super) {
     return HasMany;
 }(Relation));
 
-var __extends$2 = (undefined && undefined.__extends) || (function () {
+var __extends$6 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -5403,18 +6067,27 @@ var __extends$2 = (undefined && undefined.__extends) || (function () {
     };
 })();
 var HasManyBy = /** @class */ (function (_super) {
-    __extends$2(HasManyBy, _super);
+    __extends$6(HasManyBy, _super);
     /**
      * Create a new has many by instance.
      */
-    function HasManyBy(parent, foreignKey, ownerKey, records, connection) {
-        var _this = _super.call(this) || this;
-        _this.parent = _this.model(parent, connection);
+    function HasManyBy(parent, foreignKey, ownerKey, connection) {
+        var _this = _super.call(this, connection) || this;
+        /**
+         * The related record.
+         */
+        _this.records = [];
+        _this.parent = _this.model(parent);
         _this.foreignKey = foreignKey;
         _this.ownerKey = ownerKey;
-        _this.records = records;
         return _this;
     }
+    /**
+     * Return empty array if the value is not present.
+     */
+    HasManyBy.prototype.fill = function (value) {
+        return value || [];
+    };
     /**
      * Load the has many by relationship for the record.
      */
@@ -5430,7 +6103,7 @@ var HasManyBy = /** @class */ (function (_super) {
     /**
      * Make model instances of the relation.
      */
-    HasManyBy.prototype.make = function () {
+    HasManyBy.prototype.make = function (_parent) {
         var _this = this;
         if (this.records.length === 0) {
             return [];
@@ -5443,7 +6116,7 @@ var HasManyBy = /** @class */ (function (_super) {
     return HasManyBy;
 }(Relation));
 
-var __extends$3 = (undefined && undefined.__extends) || (function () {
+var __extends$7 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -5462,21 +6135,30 @@ var __assign$1 = (undefined && undefined.__assign) || Object.assign || function(
     return t;
 };
 var BelongsToMany = /** @class */ (function (_super) {
-    __extends$3(BelongsToMany, _super);
+    __extends$7(BelongsToMany, _super);
     /**
      * Create a new belongs to instance.
      */
-    function BelongsToMany(related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey, record, connection) {
-        var _this = _super.call(this) || this;
-        _this.related = _this.model(related, connection);
-        _this.pivot = _this.model(pivot, connection);
+    function BelongsToMany(related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey, connection) {
+        var _this = _super.call(this, connection) || this;
+        /**
+         * The related record.
+         */
+        _this.records = [];
+        _this.related = _this.model(related);
+        _this.pivot = _this.model(pivot);
         _this.foreignPivotKey = foreignPivotKey;
         _this.relatedPivotKey = relatedPivotKey;
         _this.parentKey = parentKey;
         _this.relatedKey = relatedKey;
-        _this.records = record;
         return _this;
     }
+    /**
+     * Return empty array if the value is not present.
+     */
+    BelongsToMany.prototype.fill = function (value) {
+        return value || [];
+    };
     /**
      * Load the belongs to relationship for the record.
      */
@@ -5498,7 +6180,7 @@ var BelongsToMany = /** @class */ (function (_super) {
     /**
      * Make model instances of the relation.
      */
-    BelongsToMany.prototype.make = function () {
+    BelongsToMany.prototype.make = function (_parent) {
         var _this = this;
         if (this.records.length === 0) {
             return [];
@@ -5515,7 +6197,7 @@ var BelongsToMany = /** @class */ (function (_super) {
         var _this = this;
         forEach(data[parent.entity], function (record) {
             var related = record[_this.related.entity];
-            if (related.length === 0) {
+            if (related === undefined || related.length === 0) {
                 return;
             }
             _this.createPivotRecord(data, record, related);
@@ -5538,7 +6220,739 @@ var BelongsToMany = /** @class */ (function (_super) {
     return BelongsToMany;
 }(Relation));
 
+var __extends$8 = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var MorphTo = /** @class */ (function (_super) {
+    __extends$8(MorphTo, _super);
+    /**
+     * Create a new morph to instance.
+     */
+    function MorphTo(id, type, connection) {
+        var _this = _super.call(this, connection) || this;
+        /**
+         * The related record.
+         */
+        _this.record = null;
+        _this.id = id;
+        _this.type = type;
+        return _this;
+    }
+    /**
+     * Return null if the value is not present.
+     */
+    MorphTo.prototype.fill = function (value) {
+        return value || null;
+    };
+    /**
+     * Load the morph many relationship for the record.
+     */
+    MorphTo.prototype.load = function (repo, record, relation) {
+        var related = this.model(record[this.type]);
+        var ownerKey = related.localKey();
+        var query = new Repo(repo.state, related.entity, false);
+        query.where(ownerKey, record[this.id]);
+        this.addConstraint(query, relation);
+        return query.first();
+    };
+    /**
+     * Make model instances of the relation.
+     */
+    MorphTo.prototype.make = function (parent) {
+        var related = parent[this.type].value;
+        var model = this.model(related);
+        return this.record ? new model(this.record) : null;
+    };
+    return MorphTo;
+}(Relation));
+
+var __extends$9 = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var MorphOne = /** @class */ (function (_super) {
+    __extends$9(MorphOne, _super);
+    /**
+     * Create a new belongs to instance.
+     */
+    function MorphOne(related, id, type, localKey, connection) {
+        var _this = _super.call(this, connection) || this;
+        /**
+         * The related record.
+         */
+        _this.record = null;
+        _this.related = _this.model(related);
+        _this.id = id;
+        _this.type = type;
+        _this.localKey = localKey;
+        return _this;
+    }
+    /**
+     * Return null if the value is not present.
+     */
+    MorphOne.prototype.fill = function (value) {
+        return value || null;
+    };
+    /**
+     * Load the morph many relationship for the record.
+     */
+    MorphOne.prototype.load = function (repo, record, relation) {
+        var query = new Repo(repo.state, this.related.entity, false);
+        query.where(this.id, record[this.localKey]).where(this.type, repo.name);
+        this.addConstraint(query, relation);
+        return query.first();
+    };
+    /**
+     * Make model instances of the relation.
+     */
+    MorphOne.prototype.make = function (_parent) {
+        return this.record ? new this.related(this.record) : null;
+    };
+    return MorphOne;
+}(Relation));
+
+var __extends$10 = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var MorphMany = /** @class */ (function (_super) {
+    __extends$10(MorphMany, _super);
+    /**
+     * Create a new belongs to instance.
+     */
+    function MorphMany(related, id, type, localKey, connection) {
+        var _this = _super.call(this, connection) || this;
+        /**
+         * The related record.
+         */
+        _this.records = [];
+        _this.related = _this.model(related);
+        _this.id = id;
+        _this.type = type;
+        _this.localKey = localKey;
+        return _this;
+    }
+    /**
+     * Return empty array if the value is not present.
+     */
+    MorphMany.prototype.fill = function (value) {
+        return value || [];
+    };
+    /**
+     * Load the morph many relationship for the record.
+     */
+    MorphMany.prototype.load = function (repo, record, relation) {
+        var query = new Repo(repo.state, this.related.entity, false);
+        query.where(this.id, record[this.localKey]).where(this.type, repo.name);
+        this.addConstraint(query, relation);
+        return query.get();
+    };
+    /**
+     * Make model instances of the relation.
+     */
+    MorphMany.prototype.make = function (_parent) {
+        var _this = this;
+        if (this.records.length === 0) {
+            return [];
+        }
+        return this.records.map(function (record) { return new _this.related(record); });
+    };
+    return MorphMany;
+}(Relation));
+
+var __extends$11 = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __assign$2 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var MorphToMany = /** @class */ (function (_super) {
+    __extends$11(MorphToMany, _super);
+    /**
+     * Create a new belongs to instance.
+     */
+    function MorphToMany(related, pivot, relatedId, id, type, parentKey, relatedKey, connection) {
+        var _this = _super.call(this, connection) || this;
+        /**
+         * The related record.
+         */
+        _this.records = [];
+        _this.related = _this.model(related);
+        _this.pivot = _this.model(pivot);
+        _this.relatedId = relatedId;
+        _this.id = id;
+        _this.type = type;
+        _this.parentKey = parentKey;
+        _this.relatedKey = relatedKey;
+        return _this;
+    }
+    /**
+     * Return empty array if the value is not present.
+     */
+    MorphToMany.prototype.fill = function (value) {
+        return value || [];
+    };
+    /**
+     * Load the morph many relationship for the record.
+     */
+    MorphToMany.prototype.load = function (repo, record, relation) {
+        var _this = this;
+        var pivotQuery = new Repo(repo.state, this.pivot.entity, false);
+        var relatedItems = pivotQuery.where(function (rec) {
+            return rec[_this.id] === record[_this.parentKey];
+        }).get();
+        if (relatedItems.length === 0) {
+            return [];
+        }
+        var relatedIds = map(relatedItems, this.relatedId);
+        var relatedQuery = new Repo(repo.state, this.related.entity, false);
+        relatedQuery.where(this.relatedKey, function (v) { return includes(relatedIds, v); });
+        this.addConstraint(relatedQuery, relation);
+        return relatedQuery.get();
+    };
+    /**
+     * Make model instances of the relation.
+     */
+    MorphToMany.prototype.make = function (_parent) {
+        var _this = this;
+        if (this.records.length === 0) {
+            return [];
+        }
+        return this.records.map(function (record) { return new _this.related(record); });
+    };
+    /**
+     * Create pivot records for the given records if needed.
+     */
+    MorphToMany.prototype.createPivots = function (parent, data) {
+        var _this = this;
+        forEach(data[parent.entity], function (record) {
+            var related = record[_this.related.entity];
+            if (related.length === 0) {
+                return;
+            }
+            _this.createPivotRecord(parent, data, record, related);
+        });
+        return data;
+    };
+    /**
+     * Create a pivot record.
+     */
+    MorphToMany.prototype.createPivotRecord = function (parent, data, record, related) {
+        var _this = this;
+        forEach(related, function (id) {
+            var parentId = record[_this.parentKey];
+            var pivotKey = parentId + "_" + id + "_" + parent.entity;
+            data[_this.pivot.entity] = __assign$2({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
+                    $id: pivotKey
+                }, _b[_this.relatedId] = id, _b[_this.id] = parentId, _b[_this.type] = parent.entity, _b), _a));
+            var _a, _b;
+        });
+    };
+    return MorphToMany;
+}(Relation));
+
+var __extends$12 = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __assign$3 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var MorphedByMany = /** @class */ (function (_super) {
+    __extends$12(MorphedByMany, _super);
+    /**
+     * Create a new belongs to instance.
+     */
+    function MorphedByMany(related, pivot, relatedId, id, type, parentKey, relatedKey, connection) {
+        var _this = _super.call(this, connection) || this;
+        /**
+         * The related record.
+         */
+        _this.records = [];
+        _this.related = _this.model(related);
+        _this.pivot = _this.model(pivot);
+        _this.relatedId = relatedId;
+        _this.id = id;
+        _this.type = type;
+        _this.parentKey = parentKey;
+        _this.relatedKey = relatedKey;
+        return _this;
+    }
+    /**
+     * Return empty array if the value is not present.
+     */
+    MorphedByMany.prototype.fill = function (value) {
+        return value || [];
+    };
+    /**
+     * Load the morph many relationship for the record.
+     */
+    MorphedByMany.prototype.load = function (repo, record, relation) {
+        var _this = this;
+        var pivotQuery = new Repo(repo.state, this.pivot.entity, false);
+        var relatedItems = pivotQuery.where(function (rec) {
+            return rec[_this.relatedId] === record[_this.parentKey] && rec[_this.type] === relation.name;
+        }).get();
+        if (relatedItems.length === 0) {
+            return [];
+        }
+        var relatedIds = map(relatedItems, this.id);
+        var relatedQuery = new Repo(repo.state, this.related.entity, false);
+        relatedQuery.where(this.relatedKey, function (v) { return includes(relatedIds, v); });
+        this.addConstraint(relatedQuery, relation);
+        return relatedQuery.get();
+    };
+    /**
+     * Make model instances of the relation.
+     */
+    MorphedByMany.prototype.make = function (_parent) {
+        var _this = this;
+        if (this.records.length === 0) {
+            return [];
+        }
+        return this.records.map(function (record) { return new _this.related(record); });
+    };
+    /**
+     * Create pivot records for the given records if needed.
+     */
+    MorphedByMany.prototype.createPivots = function (parent, data) {
+        var _this = this;
+        forEach(data[parent.entity], function (record) {
+            var related = record[_this.related.entity];
+            if (related.length === 0) {
+                return;
+            }
+            _this.createPivotRecord(data, record, related);
+        });
+        return data;
+    };
+    /**
+     * Create a pivot record.
+     */
+    MorphedByMany.prototype.createPivotRecord = function (data, record, related) {
+        var _this = this;
+        forEach(related, function (id) {
+            var parentId = record[_this.parentKey];
+            var pivotKey = id + "_" + parentId + "_" + _this.related.entity;
+            data[_this.pivot.entity] = __assign$3({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
+                    $id: pivotKey
+                }, _b[_this.relatedId] = parentId, _b[_this.id] = id, _b[_this.type] = _this.related.entity, _b), _a));
+            var _a, _b;
+        });
+    };
+    return MorphedByMany;
+}(Relation));
+
+var __assign$4 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var ProcessStrategy = /** @class */ (function () {
+    function ProcessStrategy() {
+    }
+    /**
+     * Create the process strategy.
+     */
+    ProcessStrategy.create = function (model, parent, attr) {
+        var _this = this;
+        return function (value, parentValue, _key) {
+            var record = __assign$4({}, value);
+            record = _this.setId(record, model);
+            record = _this.generateMorphFields(record, parentValue, parent, attr);
+            return record;
+        };
+    };
+    /**
+     * Set id field to the record.
+     */
+    ProcessStrategy.setId = function (record, model) {
+        var id = model.id(record);
+        return __assign$4({}, record, { $id: id === undefined ? this.noKey(true) : id });
+    };
+    /**
+     * Get string to be used for undefined primary key/
+     */
+    ProcessStrategy.noKey = function (increment) {
+        if (increment === void 0) { increment = false; }
+        if (increment) {
+            this.count++;
+        }
+        return "_no_key_" + this.count;
+    };
+    /**
+     * Generate morph fields. This method will generate fileds needed for the
+     * morph fields such as `commentable_id` and `commentable_type`.
+     */
+    ProcessStrategy.generateMorphFields = function (record, parentValue, parent, attr) {
+        if (attr === undefined) {
+            return record;
+        }
+        if (!Contract.isMorphRelation(attr)) {
+            return record;
+        }
+        if (parent === undefined) {
+            return record;
+        }
+        return __assign$4((_a = {}, _a[attr.id] = parentValue.$id, _a[attr.type] = parent.entity, _a), record);
+        var _a;
+    };
+    /**
+     * Count to create a unique id for the record that missing its primary key.
+     */
+    ProcessStrategy.count = 0;
+    /**
+     * Prefix string to be used for undefined primary key value.
+     */
+    ProcessStrategy.prefix = '_no_key_';
+    return ProcessStrategy;
+}());
+
+var IdAttribute = /** @class */ (function () {
+    function IdAttribute() {
+    }
+    /**
+     * Create the id attribute.
+     */
+    IdAttribute.create = function (model) {
+        return function (value, _parent, _key) {
+            var id = model.id(value);
+            return id !== undefined ? id : ProcessStrategy.noKey();
+        };
+    };
+    return IdAttribute;
+}());
+
+var __assign$5 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var Schema = /** @class */ (function () {
+    function Schema() {
+    }
+    /**
+     * Create a schema of given model.
+     */
+    Schema.one = function (model, schemas, parent, attr) {
+        if (schemas === void 0) { schemas = {}; }
+        var thisSchema = new src_3.Entity(model.entity, {}, {
+            idAttribute: IdAttribute.create(model),
+            processStrategy: ProcessStrategy.create(model, parent, attr)
+        });
+        var definition = this.definition(model, __assign$5({}, schemas, (_a = {}, _a[model.entity] = thisSchema, _a)));
+        thisSchema.define(definition);
+        return thisSchema;
+        var _a;
+    };
+    /**
+     * Create a array schema of givene model.
+     */
+    Schema.many = function (model, schemas, parent, attr) {
+        if (schemas === void 0) { schemas = {}; }
+        return new src_3.Array(this.one(model, schemas, parent, attr));
+    };
+    /**
+     * Create a dfinition from given fields.
+     */
+    Schema.definition = function (model, schemas) {
+        return this.build(model, model.fields(), schemas);
+    };
+    /**
+     * Build a definition schema.
+     */
+    Schema.build = function (model, fields, schemas) {
+        var _this = this;
+        return reduce(fields, function (definition, field, key) {
+            var def = _this.buildRelations(model, field, schemas);
+            if (def) {
+                definition[key] = def;
+            }
+            return definition;
+        }, {});
+    };
+    /**
+     * Build normalizr schema definition from the given relation.
+     */
+    Schema.buildRelations = function (model, field, schemas) {
+        if (!Contract.isAttribute(field)) {
+            return this.build(model, field, schemas);
+        }
+        if (field instanceof HasOne) {
+            return this.buildOne(field.related, schemas, model, field);
+        }
+        if (field instanceof BelongsTo) {
+            return this.buildOne(field.parent, schemas, model, field);
+        }
+        if (field instanceof HasMany) {
+            return this.buildMany(field.related, schemas, model, field);
+        }
+        if (field instanceof HasManyBy) {
+            return this.buildMany(field.parent, schemas, model, field);
+        }
+        if (field instanceof BelongsToMany) {
+            return this.buildMany(field.related, schemas, model, field);
+        }
+        if (field instanceof MorphTo) {
+            return this.buildMorphOne(field, schemas, model);
+        }
+        if (field instanceof MorphOne) {
+            return this.buildOne(field.related, schemas, model, field);
+        }
+        if (field instanceof MorphMany) {
+            return this.buildMany(field.related, schemas, model, field);
+        }
+        if (field instanceof MorphToMany) {
+            return this.buildMany(field.related, schemas, model, field);
+        }
+        if (field instanceof MorphedByMany) {
+            return this.buildMany(field.related, schemas, model, field);
+        }
+        return null;
+    };
+    /**
+     * Build a single entity schema definition.
+     */
+    Schema.buildOne = function (related, schemas, parent, attr) {
+        var s = schemas[related.entity];
+        return s || this.one(related, schemas, parent, attr);
+    };
+    /**
+     * Build a array entity schema definition.
+     */
+    Schema.buildMany = function (related, schemas, parent, attr) {
+        var s = schemas[related.entity];
+        return s ? new src_3.Array(s) : this.many(related, schemas, parent, attr);
+    };
+    /**
+     * Build a morph schema definition.
+     */
+    Schema.buildMorphOne = function (attr, schemas, parent) {
+        var _this = this;
+        var s = mapValues(parent.conn().models(), function (model) {
+            return _this.buildOne(model, schemas, model, attr);
+        });
+        return new src_3.Union(s, function (_value, parentValue) { return parentValue[attr.type]; });
+    };
+    return Schema;
+}());
+
+var __assign$6 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var Builder = /** @class */ (function () {
+    function Builder() {
+    }
+    /**
+     * Build missing records with default value based on model schema.
+     */
+    Builder.build = function (data, repo) {
+        var _this = this;
+        return mapValues(data, function (records, entity) {
+            var model = repo.model(entity);
+            return mapValues(records, function (record) {
+                return __assign$6({}, _this.buildFields(record, model.fields()), { $id: record.$id });
+            });
+        });
+    };
+    /**
+     * Build missing fields with the default value based on the model schema.
+     * This method is for circuler filling.
+     */
+    Builder.buildFields = function (record, fields) {
+        var _this = this;
+        return mapValues(fields, function (field, key) {
+            if (field instanceof Attribute) {
+                return field.fill(record[key], record);
+            }
+            return _this.buildFields(record[key] || {}, field);
+        });
+    };
+    return Builder;
+}());
+
+var PivotCreator = /** @class */ (function () {
+    function PivotCreator() {
+    }
+    PivotCreator.create = function (data, repo) {
+        if (!repo.entity.hasPivotFields()) {
+            return data;
+        }
+        forEach(repo.entity.pivotFields(), function (field) {
+            forEach(field, function (attr) { attr.createPivots(repo.entity, data); });
+        });
+        return data;
+    };
+    return PivotCreator;
+}());
+
+var __assign$7 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var Incrementer = /** @class */ (function () {
+    /**
+     * Create a new incrementer instance.
+     */
+    function Incrementer(repo, reset) {
+        if (reset === void 0) { reset = false; }
+        this.repo = repo;
+        this.reset = reset;
+    }
+    /**
+     * Increment fields that have increment attribute.
+     */
+    Incrementer.increment = function (data, repo, reset) {
+        return (new this(repo, reset)).increment(data);
+    };
+    /**
+     * Increment fields that have increment attribute.
+     */
+    Incrementer.prototype.increment = function (data) {
+        var _this = this;
+        return mapValues(data, function (record, entity) {
+            var repo = new Repo(_this.repo.state, entity, false);
+            // If the entity doesn't have increment attribute, do nothing and
+            // just return immediately.
+            if (!repo.entity.hasIncrementFields()) {
+                return record;
+            }
+            return _this.process(record, repo);
+        });
+    };
+    /**
+     * Process the incrementation.
+     */
+    Incrementer.prototype.process = function (records, repo) {
+        var _this = this;
+        var newRecords = __assign$7({}, records);
+        forEach(repo.entity.incrementFields(), function (field) {
+            var incrementKey = _this.incrementKey(field);
+            var max$$1 = _this.max(records, repo, incrementKey);
+            forEach(records, function (_record, key) {
+                if (newRecords[key][incrementKey]) {
+                    return;
+                }
+                newRecords[key][incrementKey] = ++max$$1;
+                newRecords[key]['$id'] = repo.entity.id(newRecords[key]);
+            });
+        });
+        return this.setId(newRecords, repo);
+    };
+    /**
+     * Get key of the field that should be incremented.
+     */
+    Incrementer.prototype.incrementKey = function (field) {
+        return Object.keys(field)[0];
+    };
+    /**
+     * Get the max value of the specified field with given data combined
+     * with existing records.
+     */
+    Incrementer.prototype.max = function (data, repo, field) {
+        var max$$1 = this.reset ? 0 : repo.max(field);
+        var records = map(data, function (value) { return value; });
+        var maxRecord = maxBy(records, field);
+        return maxRecord ? max([max$$1, maxRecord[field]]) : max$$1;
+    };
+    /**
+     * Update the key of the records.
+     */
+    Incrementer.prototype.setId = function (records, repo) {
+        var newRecords = {};
+        forEach(records, function (record) {
+            newRecords[repo.entity.id(record)] = record;
+        });
+        return newRecords;
+    };
+    return Incrementer;
+}());
+
+var Data = /** @class */ (function () {
+    function Data() {
+    }
+    /**
+     * Normalize the data.
+     */
+    Data.normalize = function (data, repo) {
+        if (isEmpty(data)) {
+            return {};
+        }
+        var schema = Array.isArray(data) ? Schema.many(repo.entity) : Schema.one(repo.entity);
+        var normalizedData = src_2(data, schema).entities;
+        return PivotCreator.create(normalizedData, repo);
+    };
+    /**
+     * Fill missing records with default value based on model schema.
+     */
+    Data.fill = function (data, repo, reset) {
+        if (reset === void 0) { reset = false; }
+        var records = {};
+        records = Builder.build(data, repo);
+        records = Incrementer.increment(records, repo, reset);
+        return records;
+    };
+    return Data;
+}());
+
+var __assign$8 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -5671,7 +7085,7 @@ var Query = /** @class */ (function () {
      * with the same primary key.
      */
     Query.prototype.insert = function (data) {
-        this.entity.data = __assign$2({}, this.entity.data, data);
+        this.entity.data = __assign$8({}, this.entity.data, data);
     };
     /**
      * Update data in the state.
@@ -5679,12 +7093,12 @@ var Query = /** @class */ (function () {
     Query.prototype.update = function (data, condition) {
         if (typeof condition !== 'function') {
             if (this.entity.data[condition]) {
-                this.entity.data[condition] = __assign$2({}, this.entity.data[condition], data);
+                this.entity.data[condition] = merge(this.entity.data[condition], data);
             }
             return;
         }
         this.entity.data = mapValues(this.entity.data, function (record) {
-            return condition(record) ? __assign$2({}, record, data) : record;
+            return condition(record) ? merge(record, data) : record;
         });
     };
     /**
@@ -5830,7 +7244,7 @@ var Query = /** @class */ (function () {
     return Query;
 }());
 
-var __assign$3 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$9 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -5858,42 +7272,36 @@ var Repo = /** @class */ (function () {
      * Create a new repo instance
      */
     Repo.query = function (state, name, wrap) {
-        if (wrap === void 0) { wrap = true; }
         return new this(state, name, wrap);
     };
     /**
      * Get all data of the given entity from the state.
      */
     Repo.all = function (state, entity, wrap) {
-        if (wrap === void 0) { wrap = true; }
         return (new this(state, entity, wrap)).get();
     };
     /**
      * Find a data of the given entity by given id from the given state.
      */
     Repo.find = function (state, entity, id, wrap) {
-        if (wrap === void 0) { wrap = true; }
         return (new this(state, entity, wrap)).first(id);
     };
     /**
      * Get the count of the retrieved data.
      */
     Repo.count = function (state, entity, wrap) {
-        if (wrap === void 0) { wrap = false; }
         return (new this(state, entity, wrap)).count();
     };
     /**
      * Get the max value of the specified filed.
      */
     Repo.max = function (state, entity, field, wrap) {
-        if (wrap === void 0) { wrap = false; }
         return (new this(state, entity, wrap)).max(field);
     };
     /**
      * Get the min value of the specified filed.
      */
     Repo.min = function (state, entity, field, wrap) {
-        if (wrap === void 0) { wrap = false; }
         return (new this(state, entity, wrap)).min(field);
     };
     /**
@@ -5917,8 +7325,13 @@ var Repo = /** @class */ (function () {
      * Update data in the state.
      */
     Repo.update = function (state, entity, data, condition) {
-        (new this(state, entity)).update(data, condition);
+        return (new this(state, entity)).update(data, condition);
     };
+    /**
+     * Insert or update given data to the state. Unlike `insert`, this method
+     * will not replace existing data within the state, but it will update only
+     * the submitted data with the same primary key.
+     */
     Repo.insertOrUpdate = function (state, entity, data, create) {
         if (create === void 0) { create = []; }
         return (new this(state, entity)).insertOrUpdate(data, create);
@@ -6125,18 +7538,19 @@ var Repo = /** @class */ (function () {
         var persistedItems = [];
         // `normalizedData` contains the differenty entity types (e.g. `users`),
         forEach(normalizedData, function (data, entity) {
+            var repo = new Repo(_this.state, entity, false);
             // `data` contains the items of `entity`.
             forEach(data, function (item, id) {
                 // Check if item does not already exist in store and mark it as new.
-                if (item.$id === undefined || _this.query.first(item.$id) === null) {
+                if (repo.entity.id(item) === undefined || repo.find(repo.entity.id(item)) === null) {
                     if (!toBePersisted.hasOwnProperty(entity)) {
                         toBePersisted[entity] = {};
                     }
                     toBePersisted[entity][id] = item;
                 }
                 else {
-                    _this.query.update(item, item.$id);
-                    updatedItems.push(item.$id);
+                    repo.query.update(item, repo.entity.id(item));
+                    updatedItems.push(repo.entity.id(item));
                 }
             });
         });
@@ -6147,38 +7561,35 @@ var Repo = /** @class */ (function () {
         return this.getReturnData(updatedItems.concat(persistedItems));
     };
     /**
-     * Save data into Vuex Store.
+     * Persist data into Vuex Store.
      */
     Repo.prototype.persist = function (defaultMethod, data, forceCreateFor, forceInsertFor) {
         if (forceCreateFor === void 0) { forceCreateFor = []; }
         if (forceInsertFor === void 0) { forceInsertFor = []; }
         var normalizedData = this.normalize(data);
-        // Update with empty data.
-        if (defaultMethod === 'create' && isEmpty(normalizedData)) {
-            this.query[defaultMethod](normalizedData);
-            return [];
+        if (isEmpty(normalizedData)) {
+            defaultMethod === 'create' && this.query[defaultMethod](normalizedData);
+            return this.getReturnData([]);
         }
         var items = this.processPersist(defaultMethod, normalizedData, forceCreateFor, forceInsertFor);
         return this.getReturnData(items);
     };
     /**
-     * Persist given data into the store. It returns list of created ids.
+     * Persist data into the store. It returns list of created ids.
      */
     Repo.prototype.processPersist = function (defaultMethod, data, forceCreateFor, forceInsertFor) {
         var _this = this;
         if (forceCreateFor === void 0) { forceCreateFor = []; }
         if (forceInsertFor === void 0) { forceInsertFor = []; }
         var items = [];
-        forEach(data, function (data, entity) {
-            var incrementer = new Incrementer(new Repo(_this.state, entity));
-            var incrementedData = _this.setIds(incrementer.incrementFields(data, defaultMethod === 'create'));
-            var filledData = mapValues(incrementedData, function (record) { return _this.fill(record, entity); });
+        var records = Data.fill(data, this, defaultMethod === 'create');
+        forEach(records, function (data, entity) {
             var method = _this.getPersistMethod(defaultMethod, entity, forceCreateFor, forceInsertFor);
             if (entity !== _this.name) {
-                new Query(_this.state, entity)[method](filledData);
+                new Query(_this.state, entity)[method](data);
                 return;
             }
-            _this.query[method](filledData);
+            _this.query[method](data);
             forEach(data, function (item) { items.push(item.$id); });
         });
         return items;
@@ -6201,10 +7612,25 @@ var Repo = /** @class */ (function () {
      * Get all data that should be retunred.
      */
     Repo.prototype.getReturnData = function (items) {
+        if (items.length === 0) {
+            return null;
+        }
         var method = items.length > 1 ? 'get' : 'first';
-        return this.self().query(this.state, this.name).where('$id', function (value) {
+        return new Repo(this.state, this.name).where('$id', function (value) {
             return includes(items, value);
         })[method]();
+    };
+    /**
+     * Get all data that should be retunred. This method will always return
+     * array of data even there's only a single item.
+     */
+    Repo.prototype.getManyReturnData = function (items) {
+        if (items.length === 0) {
+            return [];
+        }
+        return new Repo(this.state, this.name).where('$id', function (value) {
+            return includes(items, value);
+        }).get();
     };
     /**
      * Get the count of the retrieved data.
@@ -6233,98 +7659,43 @@ var Repo = /** @class */ (function () {
         return record ? record[field] : 0;
     };
     /**
-     * Normalize the given data by given model.
+     * Normalize the given data.
      */
     Repo.prototype.normalize = function (data) {
-        var normalizedData = this.model(this.name).normalize(data);
-        return this.createPivots(normalizedData);
-    };
-    /**
-     * Create pivot records if needed.
-     */
-    Repo.prototype.createPivots = function (data) {
-        var _this = this;
-        if (!this.entity.hasBelongsToManyFields()) {
-            return data;
-        }
-        forEach(this.entity.belongsToManyFields(), function (field) {
-            forEach(field, function (attr) { attr.createPivots(_this.entity, data); });
-        });
-        return data;
-    };
-    /**
-     * Set proper key to the records. When a record has `increment` attribute
-     * type for the primary key, it's possible for the record to have the
-     * key of `no_key_<count>`. This function will convert those keys into
-     * the proper value of the primary key.
-     */
-    Repo.prototype.setIds = function (data) {
-        if (!this.entity.incrementFields()) {
-            return data;
-        }
-        var records = {};
-        forEach(data, function (record, key) {
-            var value = record.$id ? "" + record.$id : null;
-            if (key !== value && value !== null) {
-                records[value] = record;
-                return;
-            }
-            records[key] = record;
-        });
-        return records;
-    };
-    /**
-     * Fill missing fields in given data with default value defined in
-     * corresponding model.
-     */
-    Repo.prototype.fill = function (data, entity) {
-        return this.buildRecord(data, this.model(entity).fields(), { $id: data.$id });
-    };
-    /**
-     * Build record.
-     */
-    Repo.prototype.buildRecord = function (data, fields, record) {
-        var _this = this;
-        if (record === void 0) { record = {}; }
-        var newRecord = record;
-        forEach(fields, function (attr, name) {
-            if (Attribute.isFields(attr)) {
-                var newData = data[name] ? data[name] : {};
-                newRecord[name] = _this.buildRecord(newData, attr, newRecord[name]);
-                return;
-            }
-            if (data[name] !== undefined) {
-                newRecord[name] = data[name];
-                return;
-            }
-            if (attr instanceof Attr || attr instanceof Increment) {
-                newRecord[name] = attr.value;
-                return;
-            }
-            if (attr instanceof HasOne || attr instanceof BelongsTo) {
-                newRecord[name] = null;
-                return;
-            }
-            if (attr instanceof HasMany || attr instanceof HasManyBy || attr instanceof BelongsToMany) {
-                newRecord[name] = [];
-                return;
-            }
-        });
-        return newRecord;
+        return Data.normalize(data, this);
     };
     /**
      * Update data in the state.
      */
     Repo.prototype.update = function (data, condition) {
-        if (condition) {
-            this.query.update(data, condition);
-            return;
+        if (!condition) {
+            return this.processUpdateById(data, this.entity.id(data));
         }
-        // Use the entities primary key method to retrieve internal id (known as $id)
-        var $id = this.entity.id(data);
-        if ($id) {
-            this.query.update(data, $id);
+        if (typeof condition === 'number' || typeof condition === 'string') {
+            return this.processUpdateById(data, condition);
         }
+        return this.processUpdateByCondition(data, condition);
+    };
+    /**
+     * Update data by id.
+     */
+    Repo.prototype.processUpdateById = function (data, id) {
+        var items = [];
+        if (id) {
+            this.query.update(data, id);
+            items.push(id);
+        }
+        return this.getReturnData(items);
+    };
+    /**
+     * Update data by id.
+     */
+    Repo.prototype.processUpdateByCondition = function (data, condition) {
+        var _this = this;
+        var records = (new Repo(this.state, this.name, false)).where(condition).get();
+        var items = map(records, function (record) { return _this.entity.id(record); });
+        this.query.update(data, condition);
+        return this.getManyReturnData(items);
     };
     /**
      * Delete data from the state.
@@ -6377,12 +7748,12 @@ var Repo = /** @class */ (function () {
     Repo.prototype.loadRelations = function (base, load, record, fields) {
         var _this = this;
         var _load = load || this.load;
-        var _record = record || __assign$3({}, base);
+        var _record = record || __assign$9({}, base);
         var _fields = fields || this.entity.fields();
         return reduce(_load, function (record, relation) {
             var name = relation.name.split('.')[0];
             var attr = _fields[name];
-            if (!attr || !Attribute.isAttribute(attr)) {
+            if (!attr || !Contract.isAttribute(attr)) {
                 forEach(_fields, function (f, key) {
                     if (f[name]) {
                         record[key] = _this.loadRelations(base, _load, record[key], f);
@@ -6391,7 +7762,7 @@ var Repo = /** @class */ (function () {
                 });
                 return record;
             }
-            if (Attribute.isRelation(attr)) {
+            if (Contract.isRelation(attr)) {
                 record[name] = attr.load(_this, base, relation);
                 return record;
             }
@@ -6425,7 +7796,7 @@ var Repo = /** @class */ (function () {
     return Repo;
 }());
 
-var __extends$4 = (undefined && undefined.__extends) || (function () {
+var __extends$13 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -6436,18 +7807,27 @@ var __extends$4 = (undefined && undefined.__extends) || (function () {
     };
 })();
 var HasOne = /** @class */ (function (_super) {
-    __extends$4(HasOne, _super);
+    __extends$13(HasOne, _super);
     /**
      * Create a new has one instance.
      */
-    function HasOne(related, foreignKey, localKey, record, connection) {
-        var _this = _super.call(this) || this;
-        _this.related = _this.model(related, connection);
+    function HasOne(related, foreignKey, localKey, connection) {
+        var _this = _super.call(this, connection) || this;
+        /**
+         * The related record.
+         */
+        _this.record = null;
+        _this.related = _this.model(related);
         _this.foreignKey = foreignKey;
         _this.localKey = localKey;
-        _this.record = record;
         return _this;
     }
+    /**
+     * Return null if the value is not present.
+     */
+    HasOne.prototype.fill = function (value) {
+        return value || null;
+    };
     /**
      * Load the has one relationship for the record.
      */
@@ -6460,198 +7840,54 @@ var HasOne = /** @class */ (function (_super) {
     /**
      * Make model instances of the relation.
      */
-    HasOne.prototype.make = function () {
+    HasOne.prototype.make = function (_parent) {
         return this.record ? new this.related(this.record) : null;
     };
     return HasOne;
 }(Relation));
 
-var Attribute = /** @class */ (function () {
-    function Attribute() {
+var Contract = /** @class */ (function () {
+    function Contract() {
     }
-    /**
-     * The generic attribute. The given value will be used as default value
-     * of the property when instantiating a model.
-     */
-    Attribute.attr = function (value, mutator) {
-        return new Attr(value, mutator);
-    };
-    /**
-     * The auto-increment attribute. The field with this attribute will
-     * automatically increment its value creating a new record.
-     */
-    Attribute.increment = function () {
-        return new Increment();
-    };
-    /**
-     * The has one relationship.
-     */
-    Attribute.hasOne = function (related, foreignKey, localKey, connection) {
-        return new HasOne(related, foreignKey, localKey, null, connection);
-    };
-    /**
-     * The belongs to relationship.
-     */
-    Attribute.belongsTo = function (parent, foreignKey, ownerKey, connection) {
-        return new BelongsTo(parent, foreignKey, ownerKey, null, connection);
-    };
-    /**
-     * The has many relationship.
-     */
-    Attribute.hasMany = function (related, foreignKey, localKey, connection) {
-        return new HasMany(related, foreignKey, localKey, [], connection);
-    };
-    /**
-     * The has many by relationship.
-     */
-    Attribute.hasManyBy = function (parent, foreignKey, ownerKey, connection) {
-        return new HasManyBy(parent, foreignKey, ownerKey, [], connection);
-    };
-    /**
-     * The has belongs to many relationship.
-     */
-    Attribute.belongsToMany = function (related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey, connection) {
-        return new BelongsToMany(related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey, [], connection);
-    };
     /**
      * Determine if the given value is the type of fields.
      */
-    Attribute.isFields = function (attr) {
+    Contract.isFields = function (attr) {
         return !this.isAttribute(attr);
     };
     /**
      * Determine if the given value is the type of field.
      */
-    Attribute.isAttribute = function (attr) {
+    Contract.isAttribute = function (attr) {
         return attr instanceof Attr
             || attr instanceof Increment
             || this.isRelation(attr);
     };
-    Attribute.isRelation = function (attr) {
+    /**
+     * Determine if the given value is the type of relations.
+     */
+    Contract.isRelation = function (attr) {
         return attr instanceof HasOne
             || attr instanceof BelongsTo
             || attr instanceof HasMany
             || attr instanceof HasManyBy
-            || attr instanceof BelongsToMany;
+            || attr instanceof BelongsToMany
+            || attr instanceof MorphTo
+            || attr instanceof MorphOne
+            || attr instanceof MorphMany
+            || attr instanceof MorphToMany
+            || attr instanceof MorphedByMany;
     };
-    return Attribute;
+    /**
+     * Determine if the given value is the type of morph relations.
+     */
+    Contract.isMorphRelation = function (attr) {
+        return attr instanceof MorphOne || attr instanceof MorphMany;
+    };
+    return Contract;
 }());
 
-var __assign$4 = (undefined && undefined.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
-var Schema = /** @class */ (function () {
-    function Schema() {
-    }
-    /**
-     * Create a schema of given model.
-     */
-    Schema.one = function (model, schemas) {
-        if (schemas === void 0) { schemas = {}; }
-        var thisSchema = new src_3.Entity(model.entity, {}, {
-            idAttribute: this.idAttribute(model),
-            processStrategy: this.processStrategy(model)
-        });
-        var definition = this.definition(model, __assign$4({}, schemas, (_a = {}, _a[model.entity] = thisSchema, _a)));
-        thisSchema.define(definition);
-        return thisSchema;
-        var _a;
-    };
-    /**
-     * Create a array schema of givene model.
-     */
-    Schema.many = function (model, schemas) {
-        if (schemas === void 0) { schemas = {}; }
-        return new src_3.Array(this.one(model, schemas));
-    };
-    /**
-     * Create a dfinition from given fields.
-     */
-    Schema.definition = function (model, schemas) {
-        return this.build(model, model.fields(), schemas);
-    };
-    /**
-     * Build a definition schema.
-     */
-    Schema.build = function (model, fields, schemas) {
-        var _this = this;
-        return reduce(fields, function (definition, field, key) {
-            var def = _this.buildRelations(model, field, schemas);
-            if (def) {
-                definition[key] = def;
-            }
-            return definition;
-        }, {});
-    };
-    /**
-     * Build normalizr schema definition from the given relation.
-     */
-    Schema.buildRelations = function (model, field, schemas) {
-        if (!Attribute.isAttribute(field)) {
-            return this.build(model, field, schemas);
-        }
-        if (field instanceof HasOne) {
-            return this.buildOne(field.related, schemas);
-        }
-        if (field instanceof BelongsTo) {
-            return this.buildOne(field.parent, schemas);
-        }
-        if (field instanceof HasMany) {
-            return this.buildMany(field.related, schemas);
-        }
-        if (field instanceof HasManyBy) {
-            return this.buildMany(field.parent, schemas);
-        }
-        if (field instanceof BelongsToMany) {
-            return this.buildMany(field.related, schemas);
-        }
-        return null;
-    };
-    /**
-     * Build a single entity schema definition.
-     */
-    Schema.buildOne = function (related, schemas) {
-        var s = schemas[related.entity];
-        return s || this.one(related, schemas);
-    };
-    /**
-     * Build a array entity schema definition.
-     */
-    Schema.buildMany = function (related, schemas) {
-        var s = schemas[related.entity];
-        return s ? new src_3.Array(s) : this.many(related, schemas);
-    };
-    /**
-     * Create the merge strategy.
-     */
-    Schema.idAttribute = function (model) {
-        var _this = this;
-        return function (value, _parent, _key) {
-            var id = model.id(value);
-            return id !== undefined ? id : "_no_key_" + _this.count++;
-        };
-    };
-    /**
-     * Create the process strategy.
-     */
-    Schema.processStrategy = function (model) {
-        return function (value, _parent, _key) {
-            return __assign$4({}, value, { $id: model.id(value) });
-        };
-    };
-    /**
-     * Count to create unique id for record that missing its primary key.
-     */
-    Schema.count = 0;
-    return Schema;
-}());
-
-var __assign$5 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$10 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -6661,7 +7897,7 @@ var __assign$5 = (undefined && undefined.__assign) || Object.assign || function(
 };
 var Model = /** @class */ (function () {
     /**
-     * Creates a model instance.
+     * Create a model instance.
      */
     function Model(data) {
         this.$initialize(data);
@@ -6673,51 +7909,81 @@ var Model = /** @class */ (function () {
         return {};
     };
     /**
-     * The generic attribute. The given value will be used as default value
-     * of the property when instantiating a model.
+     * Create an attr attribute. The given value will be used as a default
+     * value for the field.
      */
     Model.attr = function (value, mutator) {
-        return Attribute.attr(value, mutator);
+        return new Attr(value, mutator);
     };
     /**
-     * The auto-increment attribute. The field with this attribute will
-     * automatically increment its value creating a new record.
+     * Create an increment attribute. The field with this attribute will
+     * automatically increment its value when creating a new record.
      */
     Model.increment = function () {
-        return Attribute.increment();
+        return new Increment();
     };
     /**
-     * Creates has one relationship.
+     * Create a has one relationship.
      */
     Model.hasOne = function (related, foreignKey, localKey) {
-        return Attribute.hasOne(related, foreignKey, this.localKey(localKey), this.connection);
+        return new HasOne(related, foreignKey, this.localKey(localKey), this.connection);
     };
     /**
-     * Creates belongs to relationship.
+     * Create a belongs to relationship.
      */
     Model.belongsTo = function (parent, foreignKey, ownerKey) {
-        return Attribute.belongsTo(parent, foreignKey, this.relation(parent).localKey(ownerKey), this.connection);
+        return new BelongsTo(parent, foreignKey, this.relation(parent).localKey(ownerKey), this.connection);
     };
     /**
-     * Creates has many relationship.
+     * Create a has many relationship.
      */
     Model.hasMany = function (related, foreignKey, localKey) {
-        return Attribute.hasMany(related, foreignKey, this.localKey(localKey), this.connection);
+        return new HasMany(related, foreignKey, this.localKey(localKey), this.connection);
     };
     /**
-     * The has many by relationship.
+     * Create a has many by relationship.
      */
     Model.hasManyBy = function (parent, foreignKey, ownerKey) {
-        return Attribute.hasManyBy(parent, foreignKey, this.relation(parent).localKey(ownerKey), this.connection);
+        return new HasManyBy(parent, foreignKey, this.relation(parent).localKey(ownerKey), this.connection);
     };
     /**
      * The belongs to many relationship.
      */
     Model.belongsToMany = function (related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey) {
-        return Attribute.belongsToMany(related, pivot, foreignPivotKey, relatedPivotKey, this.localKey(parentKey), this.relation(related).localKey(relatedKey), this.connection);
+        return new BelongsToMany(related, pivot, foreignPivotKey, relatedPivotKey, this.localKey(parentKey), this.relation(related).localKey(relatedKey), this.connection);
     };
     /**
-     * Get connection instance out of container.
+     * Create a morph to relationship.
+     */
+    Model.morphTo = function (id, type) {
+        return new MorphTo(id, type, this.connection);
+    };
+    /**
+     * Create a morph one relationship.
+     */
+    Model.morphOne = function (related, id, type, localKey) {
+        return new MorphOne(related, id, type, this.localKey(localKey), this.connection);
+    };
+    /**
+     * Create a morph many relationship.
+     */
+    Model.morphMany = function (related, id, type, localKey) {
+        return new MorphMany(related, id, type, this.localKey(localKey), this.connection);
+    };
+    /**
+     * Create a morph to many relationship.
+     */
+    Model.morphToMany = function (related, pivot, relatedId, id, type, parentKey, relatedKey) {
+        return new MorphToMany(related, pivot, relatedId, id, type, this.localKey(parentKey), this.relation(related).localKey(relatedKey), this.connection);
+    };
+    /**
+     * Create a morphed by many relationship.
+     */
+    Model.morphedByMany = function (related, pivot, relatedId, id, type, parentKey, relatedKey) {
+        return new MorphedByMany(related, pivot, relatedId, id, type, this.localKey(parentKey), this.relation(related).localKey(relatedKey), this.connection);
+    };
+    /**
+     * Get connection instance out of the container.
      */
     Model.conn = function () {
         return Container.connection(this.connection);
@@ -6796,10 +8062,10 @@ var Model = /** @class */ (function () {
     /**
      * Get all `belongsToMany` fields from the schema.
      */
-    Model.belongsToManyFields = function () {
+    Model.pivotFields = function () {
         var fields = [];
         forEach(this.fields(), function (field, key) {
-            if (field instanceof BelongsToMany) {
+            if (field instanceof BelongsToMany || field instanceof MorphToMany || field instanceof MorphedByMany) {
                 fields.push((_a = {}, _a[key] = field, _a));
             }
             var _a;
@@ -6809,8 +8075,8 @@ var Model = /** @class */ (function () {
     /**
      * Check if fields contains the `belongsToMany` field type.
      */
-    Model.hasBelongsToManyFields = function () {
-        return this.belongsToManyFields().length > 0;
+    Model.hasPivotFields = function () {
+        return this.pivotFields().length > 0;
     };
     /**
      * Mutators to mutate matching fields when instantiating the model.
@@ -6819,55 +8085,13 @@ var Model = /** @class */ (function () {
         return {};
     };
     /**
-     * Create normalizr schema that represents this model.
-     *
-     * @param {boolean} many If true, it'll return an array schema.
-     */
-    Model.schema = function (many) {
-        if (many === void 0) { many = false; }
-        return many ? Schema.many(this) : Schema.one(this);
-    };
-    /**
-     * Generate normalized data from given data.
-     */
-    Model.normalize = function (data) {
-        var _this = this;
-        var schema = this.schema(isArray(data));
-        var normalizedData = Data.normalize(data, schema);
-        // Check if all foreign keys exist in the data and if not, make them.
-        return mapValues(normalizedData, function (records, entity) {
-            return _this.attachForeignKeys(records, _this.relation(entity));
-        });
-    };
-    /**
-     * Check if the given record has the appropriate foreign key and
-     * if not, attach them.
-     */
-    Model.attachForeignKeys = function (records, model) {
-        var fields = model.fields();
-        return mapValues(records, function (record) {
-            var newRecord = __assign$5({}, record);
-            forEach(record, function (value, field) {
-                var attr = fields[field];
-                if (attr instanceof BelongsTo) {
-                    var key = attr.foreignKey;
-                    if (newRecord[key]) {
-                        return;
-                    }
-                    newRecord[key] = value;
-                }
-            });
-            return newRecord;
-        });
-    };
-    /**
      * Get the static class of this model.
      */
     Model.prototype.$self = function () {
         return this.constructor;
     };
     /**
-     * Get the connection instance.
+     * Get the connection instance out of the container.
      */
     Model.prototype.$conn = function () {
         return this.$self().conn();
@@ -6922,7 +8146,7 @@ var Model = /** @class */ (function () {
         if (!data) {
             return this.$fields();
         }
-        var fields = __assign$5({}, this.$fields());
+        var fields = __assign$10({}, this.$fields());
         return this.$mergeFields(fields, data);
     };
     /**
@@ -6935,7 +8159,7 @@ var Model = /** @class */ (function () {
             if (!includes(keys$$1, key)) {
                 return;
             }
-            if (Attribute.isFields(fields[key])) {
+            if (Contract.isFields(fields[key])) {
                 fields[key] = _this.$mergeFields(fields[key], value);
                 return;
             }
@@ -6943,10 +8167,10 @@ var Model = /** @class */ (function () {
             if (field instanceof Attr || field instanceof Increment) {
                 field.value = value;
             }
-            if (field instanceof HasOne || field instanceof BelongsTo) {
+            if (field instanceof HasOne || field instanceof BelongsTo || field instanceof MorphTo || field instanceof MorphOne) {
                 field.record = value;
             }
-            if (field instanceof HasMany || field instanceof HasManyBy || field instanceof BelongsToMany) {
+            if (field instanceof HasMany || field instanceof HasManyBy || field instanceof BelongsToMany || field instanceof MorphMany || field instanceof MorphToMany || field instanceof MorphedByMany) {
                 field.records = value;
             }
         });
@@ -6958,8 +8182,8 @@ var Model = /** @class */ (function () {
     Model.prototype.$build = function (self, data) {
         var _this = this;
         forEach(data, function (field, key) {
-            if (Attribute.isAttribute(field)) {
-                self[key] = _this.$generateField(field, key);
+            if (Contract.isAttribute(field)) {
+                self[key] = _this.$generateField(data, field, key);
                 return;
             }
             _this.$build(self[key] = {}, field);
@@ -6968,7 +8192,7 @@ var Model = /** @class */ (function () {
     /**
      * Generate appropreate field value for the given attribute.
      */
-    Model.prototype.$generateField = function (attr, key) {
+    Model.prototype.$generateField = function (data, attr, key) {
         if (attr instanceof Attr) {
             var mutator = attr.mutator || this.$self().mutators()[key];
             return mutator ? mutator(attr.value) : attr.value;
@@ -6976,7 +8200,7 @@ var Model = /** @class */ (function () {
         if (attr instanceof Increment) {
             return attr.value;
         }
-        return attr.make();
+        return attr.make(data);
     };
     /**
      * Serialize field values into json.
@@ -6992,7 +8216,7 @@ var Model = /** @class */ (function () {
             if (!field[key]) {
                 return field[key];
             }
-            if (!Attribute.isAttribute(attr)) {
+            if (!Contract.isAttribute(attr)) {
                 return field.$buildJson(attr, field[key]);
             }
             if (attr instanceof HasOne || attr instanceof BelongsTo) {
@@ -7016,21 +8240,18 @@ var rootGetters = {
      * Create a new repo instance.
      */
     query: function (state) { return function (entity, wrap) {
-        if (wrap === void 0) { wrap = true; }
         return Repo.query(state, entity, wrap);
     }; },
     /**
      * Get all data of given entity.
      */
     all: function (state) { return function (entity, wrap) {
-        if (wrap === void 0) { wrap = true; }
         return Repo.all(state, entity, wrap);
     }; },
     /**
      * Find a data of the given entity by given id.
      */
     find: function (state) { return function (entity, id, wrap) {
-        if (wrap === void 0) { wrap = true; }
         return Repo.find(state, entity, id, wrap);
     }; }
 };
@@ -7040,21 +8261,18 @@ var subGetters = {
      * Create a new repo instance.
      */
     query: function (state, _getters, _rootState, rootGetters) { return function (wrap) {
-        if (wrap === void 0) { wrap = true; }
         return rootGetters[state.$connection + "/query"](state.$name, wrap);
     }; },
     /**
      * Get all data of given entity.
      */
     all: function (state, _getters, _rootState, rootGetters) { return function (wrap) {
-        if (wrap === void 0) { wrap = true; }
         return rootGetters[state.$connection + "/all"](state.$name, wrap);
     }; },
     /**
      * Find a data of the given entity by given id.
      */
     find: function (state, _getters, _rootState, rootGetters) { return function (id, wrap) {
-        if (wrap === void 0) { wrap = true; }
         return rootGetters[state.$connection + "/find"](state.$name, id, wrap);
     }; }
 };
@@ -7066,7 +8284,7 @@ var rootActions = {
      */
     create: function (_a, _b) {
         var commit = _a.commit;
-        var entity = _b.entity, data = _b.data, _c = _b.insert, insert = _c === void 0 ? [] : _c;
+        var entity = _b.entity, data = _b.data, insert = _b.insert;
         return new Promise(function (resolve) {
             commit('create', { entity: entity, data: data, insert: insert, done: resolve });
         });
@@ -7078,7 +8296,7 @@ var rootActions = {
      */
     insert: function (_a, _b) {
         var commit = _a.commit;
-        var entity = _b.entity, data = _b.data, _c = _b.create, create = _c === void 0 ? [] : _c;
+        var entity = _b.entity, data = _b.data, create = _b.create;
         return new Promise(function (resolve) {
             commit('insert', { entity: entity, data: data, create: create, done: resolve });
         });
@@ -7089,7 +8307,9 @@ var rootActions = {
     update: function (_a, _b) {
         var commit = _a.commit;
         var entity = _b.entity, where = _b.where, data = _b.data;
-        commit('update', { entity: entity, where: where, data: data });
+        return new Promise(function (resolve) {
+            commit('update', { entity: entity, where: where, data: data, done: resolve });
+        });
     },
     /**
      * Insert or update given data to the state. Unlike `insert`, this method
@@ -7098,7 +8318,7 @@ var rootActions = {
      */
     insertOrUpdate: function (_a, _b) {
         var commit = _a.commit;
-        var entity = _b.entity, data = _b.data, _c = _b.create, create = _c === void 0 ? [] : _c;
+        var entity = _b.entity, data = _b.data, create = _b.create;
         return new Promise(function (resolve) {
             commit('insertOrUpdate', { entity: entity, data: data, create: create, done: resolve });
         });
@@ -7164,12 +8384,8 @@ var subActions = {
      */
     create: function (_a, _b) {
         var dispatch = _a.dispatch, state = _a.state;
-        var data = _b.data, _c = _b.insert, insert = _c === void 0 ? [] : _c;
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_d) {
-                return [2 /*return*/, dispatch(state.$connection + "/create", { entity: state.$name, data: data, insert: insert }, { root: true })];
-            });
-        });
+        var data = _b.data, insert = _b.insert;
+        return dispatch(state.$connection + "/create", { entity: state.$name, data: data, insert: insert }, { root: true });
     },
     /**
      * Insert given data to the state. Unlike `create`, this method will not
@@ -7178,25 +8394,20 @@ var subActions = {
      */
     insert: function (_a, _b) {
         var dispatch = _a.dispatch, state = _a.state;
-        var data = _b.data, _c = _b.create, create = _c === void 0 ? [] : _c;
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_d) {
-                return [2 /*return*/, dispatch(state.$connection + "/insert", { entity: state.$name, data: data, create: create }, { root: true })];
-            });
-        });
+        var data = _b.data, create = _b.create;
+        return dispatch(state.$connection + "/insert", { entity: state.$name, data: data, create: create }, { root: true });
     },
     /**
      * Update data in the store.
      */
     update: function (_a, payload) {
-        var commit = _a.commit, state = _a.state;
+        var dispatch = _a.dispatch, state = _a.state;
         var where = payload.where;
         var data = payload.data;
         if (where === undefined || data === undefined) {
-            commit(state.$connection + "/update", { entity: state.$name, data: payload }, { root: true });
-            return;
+            return dispatch(state.$connection + "/update", { entity: state.$name, data: payload }, { root: true });
         }
-        commit(state.$connection + "/update", { entity: state.$name, where: where, data: data }, { root: true });
+        return dispatch(state.$connection + "/update", { entity: state.$name, where: where, data: data }, { root: true });
     },
     /**
      * Insert or update given data to the state. Unlike `insert`, this method
@@ -7205,9 +8416,9 @@ var subActions = {
      */
     insertOrUpdate: function (_a, _b) {
         var dispatch = _a.dispatch, state = _a.state;
-        var data = _b.data, _c = _b.create, create = _c === void 0 ? [] : _c;
+        var data = _b.data, create = _b.create;
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_d) {
+            return __generator(this, function (_c) {
                 return [2 /*return*/, dispatch(state.$connection + "/insertOrUpdate", { entity: state.$name, data: data, create: create }, { root: true })];
             });
         });
@@ -7239,7 +8450,7 @@ var mutations = {
      * data in the state.
      */
     create: function (state, _a) {
-        var entity = _a.entity, data = _a.data, _b = _a.insert, insert = _b === void 0 ? [] : _b, _c = _a.done, done = _c === void 0 ? null : _c;
+        var entity = _a.entity, data = _a.data, insert = _a.insert, done = _a.done;
         var result = Repo.create(state, entity, data, insert);
         done && done(result);
     },
@@ -7249,7 +8460,7 @@ var mutations = {
      * with the same primary key.
      */
     insert: function (state, _a) {
-        var entity = _a.entity, data = _a.data, _b = _a.create, create = _b === void 0 ? [] : _b, _c = _a.done, done = _c === void 0 ? null : _c;
+        var entity = _a.entity, data = _a.data, create = _a.create, done = _a.done;
         var result = Repo.insert(state, entity, data, create);
         done && done(result);
     },
@@ -7257,8 +8468,9 @@ var mutations = {
      * Update data in the store.
      */
     update: function (state, _a) {
-        var entity = _a.entity, data = _a.data, _b = _a.where, where = _b === void 0 ? undefined : _b;
-        Repo.update(state, entity, data, where);
+        var entity = _a.entity, where = _a.where, data = _a.data, done = _a.done;
+        var result = Repo.update(state, entity, data, where);
+        done && done(result);
     },
     /**
      * Insert or update given data to the state. Unlike `insert`, this method
@@ -7266,7 +8478,7 @@ var mutations = {
      * the submitted data with the same primary key.
      */
     insertOrUpdate: function (state, _a) {
-        var entity = _a.entity, data = _a.data, _b = _a.create, create = _b === void 0 ? [] : _b, _c = _a.done, done = _c === void 0 ? null : _c;
+        var entity = _a.entity, data = _a.data, create = _a.create, done = _a.done;
         var result = Repo.insertOrUpdate(state, entity, data, create);
         done && done(result);
     },
@@ -7306,7 +8518,7 @@ function use (plugin, options) {
     plugin.install(components, options);
 }
 
-var __assign$6 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$11 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -7344,10 +8556,10 @@ var Module = /** @class */ (function () {
             }; };
             tree.modules[entity.model.entity] = {
                 namespaced: true,
-                state: __assign$6({}, entity.module.state, _this.state, { $connection: namespace, $name: entity.model.entity, $primaryKey: entity.model.primaryKey })
+                state: __assign$11({}, entity.module.state, _this.state, { $connection: namespace, $name: entity.model.entity })
             };
-            tree.modules[entity.model.entity]['getters'] = __assign$6({}, subGetters, entity.module.getters);
-            tree.modules[entity.model.entity]['actions'] = __assign$6({}, subActions, entity.module.actions);
+            tree.modules[entity.model.entity]['getters'] = __assign$11({}, subGetters, entity.module.getters);
+            tree.modules[entity.model.entity]['actions'] = __assign$11({}, subActions, entity.module.actions);
             tree.modules[entity.model.entity]['mutations'] = entity.module.mutations || {};
         });
         return tree;
@@ -7359,7 +8571,6 @@ var Module = /** @class */ (function () {
     Module.state = {
         $connection: '',
         $name: '',
-        $primaryKey: '',
         data: {}
     };
     return Module;
