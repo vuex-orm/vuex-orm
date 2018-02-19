@@ -306,6 +306,37 @@ store.dispatch('entities/users/update', {
 }
 ```
 
+### Get Updated Data
+
+As same as `insert` or `create`, the `update` action also returns updated data as a Promise.
+
+```js
+store.dispatch('entities/users/update', { id: 1, age: 24 })
+  .then((user) => {
+    console.log(user)
+  })
+
+// User { id: 1, name: 'John Doe', age: 24 }
+```
+
+When updating many records by specifying closure to the `where` property, the returned data will always be an array containing all updated data.
+
+```js
+store.dispatch('entities/users/update', {
+  where: record => record.age === 30,
+  data { age: 24 }
+).then((users) => {
+  console.log(users)
+})
+
+/*
+  [
+    User { id: 1, name: 'John Doe', age: 24 },
+    User { id: 2, name: 'Jane Doe', age: 24 }
+  ]
+*/
+```
+
 ## Insert or Update
 
 Sometimes you might want to insert a set of records which includes already existing and new records. When using the `insert` action you would replace the dataset of an already existing record. This can cause unexpected side effects.
