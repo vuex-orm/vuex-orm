@@ -24,17 +24,15 @@ const subActions: SubActions = {
   /**
    * Update data in the store.
    */
-  update ({ commit, state }, payload) {
+  update ({ dispatch, state }, payload) {
     const where = payload.where
     const data = payload.data
 
     if (where === undefined || data === undefined) {
-      commit(`${state.$connection}/update`, { entity: state.$name, data: payload }, { root: true })
-
-      return
+      return dispatch(`${state.$connection}/update`, { entity: state.$name, data: payload }, { root: true })
     }
 
-    commit(`${state.$connection}/update`, { entity: state.$name, where, data }, { root: true })
+    return dispatch(`${state.$connection}/update`, { entity: state.$name, where, data }, { root: true })
   },
 
   /**

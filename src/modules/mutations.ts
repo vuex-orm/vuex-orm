@@ -29,8 +29,10 @@ const mutations: Mutations = {
   /**
    * Update data in the store.
    */
-  update (state, { entity, data, where = undefined }) {
-    Repo.update(state, entity, data, where)
+  update (state, { entity, data, where = undefined, done }) {
+    const result = Repo.update(state, entity, data, where)
+
+    done && done(result)
   },
 
   /**

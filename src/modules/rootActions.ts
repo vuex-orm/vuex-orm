@@ -29,7 +29,9 @@ const rootActions: RootActions = {
    * Update data in the store.
    */
   update ({ commit }, { entity, where, data }) {
-    commit('update', { entity, where, data })
+    return new Promise((resolve) => {
+      commit('update', { entity, where, data, done: resolve })
+    })
   },
 
   /**

@@ -208,7 +208,7 @@ describe('Features – Update', () => {
       data: { id: 1, name: 'John Doe', age: 30 }
     })
 
-    store.dispatch('entities/users/update', { id: 2, age: 24 })
+    store.dispatch('entities/users/update', { user_id: 2, age: 24 })
 
     const user = store.getters['entities/users/find'](1)
 
@@ -237,7 +237,35 @@ describe('Features – Update', () => {
 
     const user = await store.dispatch('entities/users/update', { id: 1, age: 24 })
 
-    expect(user.name).toBeInstanceOf(User)
+    expect(user).toBeInstanceOf(User)
+    expect(user.age).toBe(24)
+  })
+
+  it('returns a updated object with specifying where condition', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: { id: 1, name: 'John Doe', age: 30 }
+    })
+
+    const user = await store.dispatch('entities/users/update', {
+      where: 1,
+      data: { age: 24 }
+    })
+
+    expect(user).toBeInstanceOf(User)
     expect(user.age).toBe(24)
   })
 })
