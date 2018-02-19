@@ -44,6 +44,10 @@ function genConfig (opts) {
           return
         }
 
+        if (warning.code === 'CIRCULAR_DEPENDENCY') {
+          return
+        }
+
         console.error(warning.message)
       }
     },
