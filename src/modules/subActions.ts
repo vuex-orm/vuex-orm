@@ -8,7 +8,7 @@ const subActions: SubActions = {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  async create ({ dispatch, state }, { data, insert }) {
+  create ({ dispatch, state }, { data, insert }): Promise<any> {
     return dispatch(`${state.$connection}/create`, { entity: state.$name, data, insert }, { root: true })
   },
 
@@ -17,14 +17,14 @@ const subActions: SubActions = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  async insert ({ dispatch, state }, { data, create }) {
+  insert ({ dispatch, state }, { data, create }): Promise<any> {
     return dispatch(`${state.$connection}/insert`, { entity: state.$name, data, create }, { root: true })
   },
 
   /**
    * Update data in the store.
    */
-  update ({ dispatch, state }, payload) {
+  update ({ dispatch, state }, payload): Promise<any> {
     const where = payload.where
     const data = payload.data
 
@@ -40,14 +40,14 @@ const subActions: SubActions = {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  async insertOrUpdate ({ dispatch, state }, { data, create }) {
+  async insertOrUpdate ({ dispatch, state }, { data, create }): Promise<any> {
     return dispatch(`${state.$connection}/insertOrUpdate`, { entity: state.$name, data, create }, { root: true })
   },
 
   /**
    * Delete data from the store.
    */
-  delete ({ commit, state }, condition) {
+  delete ({ commit, state }, condition): void {
     commit(`${state.$connection}/delete`, {
       entity: state.$name,
       where: typeof condition === 'object' ? condition.where : condition
@@ -57,7 +57,7 @@ const subActions: SubActions = {
   /**
    * Delete all data from the store.
    */
-  deleteAll ({ commit, state }) {
+  deleteAll ({ commit, state }): void {
     commit(`${state.$connection}/deleteAll`, {
       entity: state.$name
     }, { root: true })

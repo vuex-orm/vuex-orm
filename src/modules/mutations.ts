@@ -9,7 +9,7 @@ const mutations: Mutations = {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  create (state, { entity, data, insert, done = null }) {
+  create (state, { entity, data, insert, done }) {
     const result = Repo.create(state, entity, data, insert)
 
     done && done(result)
@@ -20,7 +20,7 @@ const mutations: Mutations = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert (state, { entity, data, create, done = null }) {
+  insert (state, { entity, data, create, done }) {
     const result = Repo.insert(state, entity, data, create)
 
     done && done(result)
@@ -29,7 +29,7 @@ const mutations: Mutations = {
   /**
    * Update data in the store.
    */
-  update (state, { entity, data, where = undefined, done }) {
+  update (state, { entity, where, data, done }) {
     const result = Repo.update(state, entity, data, where)
 
     done && done(result)
@@ -40,7 +40,7 @@ const mutations: Mutations = {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  insertOrUpdate (state, { entity, data, create, done = null }) {
+  insertOrUpdate (state, { entity, data, create, done }) {
     const result = Repo.insertOrUpdate(state, entity, data, create)
 
     done && done(result)
