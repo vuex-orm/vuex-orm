@@ -1,6 +1,5 @@
-import { Record } from '../../data/Contract'
+import { Record, PlainItem } from '../../data/Contract'
 import Model from '../../model/Model'
-import { Item } from '../../repo/Query'
 import Repo, { Relation as Load } from '../../repo/Repo'
 import Attr from '../types/Attr'
 import { Fields } from '../contracts/Contract'
@@ -22,7 +21,7 @@ export default class MorphTo extends Relation {
   /**
    * The related record.
    */
-  record: Item = null
+  record: PlainItem = null
 
   /**
    * Create a new morph to instance.
@@ -44,7 +43,7 @@ export default class MorphTo extends Relation {
   /**
    * Load the morph many relationship for the record.
    */
-  load (repo: Repo, record: Record, relation: Load): Item {
+  load (repo: Repo, record: Record, relation: Load): PlainItem {
     const related = this.model(record[this.type])
     const ownerKey = related.localKey()
     const query = new Repo(repo.state, related.entity, false)

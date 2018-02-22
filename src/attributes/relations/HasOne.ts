@@ -1,6 +1,5 @@
-import { Record } from '../../data/Contract'
+import { Record, PlainItem } from '../../data/Contract'
 import Model from '../../model/Model'
-import { Item } from '../../repo/Query'
 import Repo, { Relation as Load } from '../../repo/Repo'
 import { Fields } from '../contracts/Contract'
 import Relation from './Relation'
@@ -24,7 +23,7 @@ export default class HasOne extends Relation {
   /**
    * The related record.
    */
-  record: Item = null
+  record: PlainItem = null
 
   /**
    * Create a new has one instance.
@@ -47,7 +46,7 @@ export default class HasOne extends Relation {
   /**
    * Load the has one relationship for the record.
    */
-  load (repo: Repo, record: Record, relation: Load): Item {
+  load (repo: Repo, record: Record, relation: Load): PlainItem {
     const query = new Repo(repo.state, this.related.entity, false)
 
     query.where(this.foreignKey, record[this.localKey])

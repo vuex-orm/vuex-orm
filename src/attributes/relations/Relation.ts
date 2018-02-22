@@ -1,7 +1,6 @@
 import Container from '../../connections/Container'
-import { Record } from '../../data/Contract'
+import { Record, PlainItem, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
-import { Item, Collection } from '../../repo/Query'
 import Repo, { Relation as Load } from '../../repo/Repo'
 import { Fields } from '../contracts/Contract'
 import Attribute from '../Attribute'
@@ -40,7 +39,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Load relationship records.
    */
-  abstract load (repo: Repo, record: Record, relation: Load): Item | Collection
+  abstract load (repo: Repo, record: Record, relation: Load): PlainItem | PlainCollection
 
   /**
    * Add constraint to the query.

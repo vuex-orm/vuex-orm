@@ -1,7 +1,6 @@
 import * as _ from '../../support/lodash'
-import { Record, NormalizedData } from '../../data/Contract'
+import { Record, NormalizedData, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
-import { Collection } from '../../repo/Query'
 import Repo, { Relation as Load } from '../../repo/Repo'
 import { Fields } from '../contracts/Contract'
 import Relation from './Relation'
@@ -51,7 +50,7 @@ export default class BelongsToMany extends Relation {
   /**
    * The related record.
    */
-  records: Collection = []
+  records: PlainCollection = []
 
   /**
    * Create a new belongs to instance.
@@ -85,7 +84,7 @@ export default class BelongsToMany extends Relation {
   /**
    * Load the belongs to relationship for the record.
    */
-  load (repo: Repo, record: Record, relation: Load): Collection {
+  load (repo: Repo, record: Record, relation: Load): PlainCollection {
     const pivotQuery = new Repo(repo.state, this.pivot.entity, false)
 
     const relatedItems = pivotQuery.where((rec: any) => {

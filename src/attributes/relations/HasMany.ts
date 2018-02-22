@@ -1,6 +1,5 @@
-import { Record } from '../../data/Contract'
+import { Record, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
-import { Collection } from '../../repo/Query'
 import { Fields } from '../contracts/Contract'
 import Repo, { Relation as Load } from '../../repo/Repo'
 import Relation from './Relation'
@@ -24,7 +23,7 @@ export default class HasMany extends Relation {
   /**
    * The related records.
    */
-  records: Collection = []
+  records: PlainCollection = []
 
   /**
    * Create a new has many instance.
@@ -47,7 +46,7 @@ export default class HasMany extends Relation {
   /**
    * Load the has many relationship for the record.
    */
-  load (repo: Repo, record: Record, relation: Load): Record[] | null {
+  load (repo: Repo, record: Record, relation: Load): PlainCollection {
     const query = new Repo(repo.state, this.related.entity, false)
 
     query.where(this.foreignKey, record[this.localKey])

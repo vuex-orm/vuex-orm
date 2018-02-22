@@ -1,6 +1,5 @@
-import { Record } from '../../data/Contract'
+import { Record, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
-import { Collection } from '../../repo/Query'
 import Repo, { Relation as Load } from '../../repo/Repo'
 import { Fields } from '../contracts/Contract'
 import Relation from './Relation'
@@ -31,7 +30,7 @@ export default class MorphMany extends Relation {
   /**
    * The related record.
    */
-  records: Collection = []
+  records: PlainCollection = []
 
   /**
    * Create a new belongs to instance.
@@ -55,7 +54,7 @@ export default class MorphMany extends Relation {
   /**
    * Load the morph many relationship for the record.
    */
-  load (repo: Repo, record: Record, relation: Load): Collection {
+  load (repo: Repo, record: Record, relation: Load): PlainCollection {
     const query = new Repo(repo.state, this.related.entity, false)
 
     query.where(this.id, record[this.localKey]).where(this.type, repo.name)

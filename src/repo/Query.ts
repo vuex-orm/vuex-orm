@@ -1,12 +1,8 @@
 import * as _ from '../support/lodash'
 import Container from '../connections/Container'
-import { Record } from '../data/Contract'
+import { Record, PlainItem, PlainCollection } from '../data/Contract'
 import Model from '../model/Model'
 import { State, EntityState } from '../modules/Module'
-
-export type Item = Record | null
-
-export type Collection = Record[]
 
 export type WhereBoolean = 'and' | 'or'
 
@@ -46,49 +42,49 @@ export default class Query {
    * The Vuex Store State. This is the target where query will perform
    * CRUD actions.
    */
-  protected state: State
+  state: State
 
   /**
    * The name of the entity.
    */
-  protected name: string
+  name: string
 
   /**
    * The primary key of the entity.
    */
-  protected primaryKey: string
+  primaryKey: string
 
   /**
    * The Vuex Store State for of the entity.
    */
-  protected entity: EntityState
+  entity: EntityState
 
   /**
    * The records that have been processed.
    */
-  protected records: Collection = []
+  records: PlainCollection = []
 
   /**
    * The where constraints for the query.
    */
-  protected wheres: Wheres[] = []
+  wheres: Wheres[] = []
 
   /**
    * The orders of the query result.
    */
-  protected orders: Orders[] = []
+  orders: Orders[] = []
 
   /**
    * Number of results to skip.
    */
-  protected _offset: number = 0
+  _offset: number = 0
 
   /**
    * Maximum number of records to return.
    *
    * We use polyfill of `Number.MAX_SAFE_INTEGER` for IE11 here.
    */
-  protected _limit: number = Math.pow(2, 53) - 1
+  _limit: number = Math.pow(2, 53) - 1
 
   /**
    * Create a new query instance.
@@ -125,7 +121,7 @@ export default class Query {
   /**
    * Returns single record of the query chain result.
    */
-  get (): Collection {
+  get (): PlainCollection {
     this.process()
 
     return this.collect()
@@ -134,7 +130,7 @@ export default class Query {
   /**
    * Returns single record of the query chain result.
    */
-  first (id?: number | string): Item {
+  first (id?: number | string): PlainItem {
     this.process()
 
     if (_.isEmpty(this.records)) {
@@ -151,7 +147,7 @@ export default class Query {
   /**
    * Returns the last record of the query chain result.
    */
-  last (): Item {
+  last (): PlainItem {
     this.process()
 
     if (_.isEmpty(this.records)) {
@@ -297,14 +293,14 @@ export default class Query {
   /**
    * Create a item from given record.
    */
-  item (record?: Record | null): Item {
+  item (record?: Record | null): PlainItem {
     return record ? record : null
   }
 
   /**
    * Create a collection (array) from given records.
    */
-  collect (): Collection {
+  collect (): PlainCollection {
     return !_.isEmpty(this.records) ? this.records : []
   }
 

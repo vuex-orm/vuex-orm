@@ -1,18 +1,13 @@
 import * as _ from '../support/lodash'
 import Container from '../connections/Container'
-import { Record, NormalizedData, Item, Collection } from '../data/Contract'
+import { Record, NormalizedData, PlainItem, PlainCollection, Item, Collection } from '../data/Contract'
 import Data from '../data/Data'
 import Attrs, { Fields } from '../attributes/contracts/Contract'
 import Model from '../model/Model'
 import { State } from '../modules/Module'
-import Query, {
-  Item as QueryItem,
-  Collection as QueryCollection,
-  OrderDirection,
-  Condition
-} from './Query'
+import Query, { OrderDirection, Condition } from './Query'
 
-export type Buildable = QueryItem | QueryCollection | null
+export type Buildable = PlainItem | PlainCollection | null
 
 export type Constraint = (query: Repo) => void | boolean
 
@@ -583,7 +578,7 @@ export default class Repo {
   /**
    * Create a item from given record.
    */
-  item (queryItem: QueryItem): Item {
+  item (queryItem: PlainItem): Item {
     if (!queryItem) {
       return null
     }
@@ -604,7 +599,7 @@ export default class Repo {
   /**
    * Create a collection (array) from given records.
    */
-  collect (collection: QueryCollection): Collection {
+  collect (collection: PlainCollection): Collection {
     if (_.isEmpty(collection)) {
       return []
     }
