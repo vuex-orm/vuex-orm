@@ -18,11 +18,6 @@ export interface Relation {
 
 export default class Repo {
   /**
-   * The base query builder instance.
-   */
-  query: Query
-
-  /**
    * The Vuex Store State.
    */
   state: State
@@ -36,6 +31,11 @@ export default class Repo {
    * The model of the entity.
    */
   entity: typeof Model
+
+  /**
+   * The base query builder instance.
+   */
+  query: Query
 
   /**
    * Whether to wrap returing record with class or to return as plain object.
@@ -63,6 +63,53 @@ export default class Repo {
    */
   static query (state: State, name: string, wrap?: boolean): Repo {
     return new this(state, name, wrap)
+  }
+
+  /**
+   * Get model of given name from connections container.
+   */
+  static model (state: State, name: string): typeof Model {
+    return Container.connection(state.name).model(name)
+  }
+
+  /**
+   * Get all models from connections container.
+   */
+  static models (state: State): { [name: string]: typeof Model } {
+    return Container.connection(state.name).models()
+  }
+
+  /**
+   * Save the given data to the state. This will replace any existing
+   * data in the state.
+   */
+  static create (state: State, entity: string, data: any, insert: string[] = []): Item | Collection {
+    return (new this(state, entity)).create(data, insert)
+  }
+
+  /**
+   * Insert given data to the state. Unlike `create`, this method will not
+   * remove existing data within the state, but it will update the data
+   * with the same primary key.
+   */
+  static insert (state: State, entity: string, data: any, create: string[] = []): Item | Collection {
+    return (new this(state, entity)).insert(data, create)
+  }
+
+  /**
+   * Update data in the state.
+   */
+  static update (state: State, entity: string, data: any, condition?: Condition): Item | Collection {
+    return (new this(state, entity)).update(data, condition)
+  }
+
+  /**
+   * Insert or update given data to the state. Unlike `insert`, this method
+   * will not replace existing data within the state, but it will update only
+   * the submitted data with the same primary key.
+   */
+  static insertOrUpdate (state: State, entity: string, data: any, create: string[] = []): Item | Collection {
+    return (new this(state, entity)).insertOrUpdate(data, create)
   }
 
   /**
@@ -101,39 +148,6 @@ export default class Repo {
   }
 
   /**
-   * Save the given data to the state. This will replace any existing
-   * data in the state.
-   */
-  static create (state: State, entity: string, data: any, insert: string[] = []): Item | Collection {
-    return (new this(state, entity)).create(data, insert)
-  }
-
-  /**
-   * Insert given data to the state. Unlike `create`, this method will not
-   * remove existing data within the state, but it will update the data
-   * with the same primary key.
-   */
-  static insert (state: State, entity: string, data: any, create: string[] = []): Item | Collection {
-    return (new this(state, entity)).insert(data, create)
-  }
-
-  /**
-   * Update data in the state.
-   */
-  static update (state: State, entity: string, data: any, condition?: Condition): Item | Collection {
-    return (new this(state, entity)).update(data, condition)
-  }
-
-  /**
-   * Insert or update given data to the state. Unlike `insert`, this method
-   * will not replace existing data within the state, but it will update only
-   * the submitted data with the same primary key.
-   */
-  static insertOrUpdate (state: State, entity: string, data: any, create: string[] = []): Item | Collection {
-    return (new this(state, entity)).insertOrUpdate(data, create)
-  }
-
-  /**
    * Delete data from the state.
    */
   static delete (state: State, entity: string, condition: Condition): void {
@@ -144,42 +158,15 @@ export default class Repo {
    * Delete all data from the state.
    */
   static deleteAll (state: State, entity?: string): void {
-    if (!entity) {
-      const models = this.models(state)
-
-      Object.keys(models).forEach((key) => {
-        const entityName = models[key].entity
-
-        if (state[entityName]) {
-          state[entityName].data = {}
-        }
-      })
-
-      return
+    if (entity) {
+      (new this(state, entity)).deleteAll()
     }
 
-    (new this(state, entity)).deleteAll()
-  }
+    const models = this.models(state)
 
-  /**
-   * Get model of given name from connections container.
-   */
-  static model (state: State, name: string): typeof Model {
-    return Container.connection(state.name).model(name)
-  }
-
-  /**
-   * Get all models from connections container.
-   */
-  static models (state: State): { [name: string]: typeof Model } {
-    return Container.connection(state.name).models()
-  }
-
-  /**
-   * Get the primary key for the record.
-   */
-  static primaryKey (state: State, name: string): string | string[] {
-    return this.model(state, name).primaryKey
+    _.forEach(models, (_model, name) => {
+      state[name] && (new Query(state, name)).deleteAll()
+    })
   }
 
   /**
@@ -206,10 +193,195 @@ export default class Repo {
   }
 
   /**
-   * Get the primary key of the model.
+   * Save the given data to the state. This will replace any existing
+   * data in the state.
    */
-  primaryKey (): string | string[] {
-    return this.self().primaryKey(this.state, this.name)
+  create (data: any, insert: string[] = []): Item | Collection {
+    return this.persist('create', data, [], insert)
+  }
+
+  /**
+   * Insert given data to the state. Unlike `create`, this method will not
+   * remove existing data within the state, but it will update the data
+   * with the same primary key.
+   */
+  insert (data: any, create: string[] = []): Item | Collection {
+    return this.persist('insert', data, create, [])
+  }
+
+  /**
+   * Insert or update given data to the state. Unlike `insert`, this method
+   * will not replace existing data within the state, but it will update only
+   * the submitted data with the same primary key.
+   */
+  insertOrUpdate (data: any, create: string[] = []): Item | Collection {
+    const normalizedData: NormalizedData = this.normalize(data)
+    const toBePersisted: NormalizedData = {}
+    const updatedItems: string[] = []
+    let persistedItems: string[] = []
+
+    // `normalizedData` contains the differenty entity types (e.g. `users`),
+    _.forEach(normalizedData, (data, entity) => {
+      const repo = new Repo(this.state, entity, false)
+
+      // `data` contains the items of `entity`.
+      _.forEach(data, (item, id) => {
+        // Check if item does not already exist in store and mark it as new.
+        if (repo.entity.id(item) === undefined || repo.find(repo.entity.id(item)) === null) {
+          if (!toBePersisted.hasOwnProperty(entity)) {
+            toBePersisted[entity] = {}
+          }
+
+          toBePersisted[entity][id] = item
+        } else {
+          repo.query.update(item, repo.entity.id(item))
+          updatedItems.push(repo.entity.id(item))
+        }
+      })
+    })
+
+    if (Object.keys(toBePersisted).length > 0) {
+      persistedItems = this.processPersist('insert', toBePersisted, create, [])
+    }
+
+    // merging the ids of updated and persisted items to return all of them.
+    return this.getReturnData([...updatedItems, ...persistedItems])
+  }
+
+  /**
+   * Persist data into Vuex Store.
+   */
+  persist (defaultMethod: string, data: any, forceCreateFor: string[] = [], forceInsertFor: string[] = []): Item | Collection {
+    const normalizedData = this.normalize(data)
+
+    if (_.isEmpty(normalizedData)) {
+      defaultMethod === 'create' && this.query[defaultMethod](normalizedData)
+
+      return this.getReturnData([])
+    }
+
+    const items = this.processPersist(defaultMethod, normalizedData, forceCreateFor, forceInsertFor)
+
+    return this.getReturnData(items)
+  }
+
+  /**
+   * Persist data into the store. It returns list of created ids.
+   */
+  processPersist (defaultMethod: string, data: NormalizedData, forceCreateFor: string[] = [], forceInsertFor: string[] = []): string[] {
+    const items: string[] = []
+
+    const records = Data.fill(data, this, defaultMethod === 'create')
+
+    _.forEach(records, (data, entity) => {
+      const method = this.getPersistMethod(defaultMethod, entity, forceCreateFor, forceInsertFor)
+
+      if (entity !== this.name) {
+        (new Query(this.state, entity) as any)[method](data)
+
+        return
+      }
+
+      (this.query as any)[method](data)
+
+      _.forEach(data, item => { items.push(item.$id) })
+    })
+
+    return items
+  }
+
+  /**
+   * Normalize the given data.
+   */
+  normalize (data: any): NormalizedData {
+    return Data.normalize(data, this)
+  }
+
+  /**
+   * Get method for persist.
+   */
+  getPersistMethod (defaultMethod: string, entity: string, forceCreateFor: string[] = [], forceInsertFor: string[] = []): string {
+    if (_.includes(forceCreateFor, entity)) {
+      return 'create'
+    }
+
+    if (_.includes(forceInsertFor, entity)) {
+      return 'insert'
+    }
+
+    return defaultMethod
+  }
+
+  /**
+   * Get all data that should be retunred.
+   */
+  getReturnData (items: string[]): Item | Collection {
+    if (items.length === 0) {
+      return null
+    }
+
+    const method = items.length > 1 ? 'get' : 'first'
+
+    return new Repo(this.state, this.name).where('$id', (value: any) => {
+      return _.includes(items, value)
+    })[method]()
+  }
+
+  /**
+   * Get all data that should be retunred. This method will always return
+   * array of data even there's only a single item.
+   */
+  getManyReturnData (items: string[]): Item | Collection {
+    if (items.length === 0) {
+      return []
+    }
+
+    return new Repo(this.state, this.name).where('$id', (value: any) => {
+      return _.includes(items, value)
+    }).get()
+  }
+
+  /**
+   * Update data in the state.
+   */
+  update (data: any, condition?: Condition): Item | Collection {
+    if (!condition) {
+      return this.processUpdateById(data, this.entity.id(data))
+    }
+
+    if (typeof condition === 'number' || typeof condition === 'string') {
+      return this.processUpdateById(data, condition)
+    }
+
+    return this.processUpdateByCondition(data, condition)
+  }
+
+  /**
+   * Update data by id.
+   */
+  processUpdateById (data: any, id?: any): Item | Collection {
+    const items: any[] = []
+
+    if (id) {
+      this.query.update(data, id)
+
+      items.push(id)
+    }
+
+    return this.getReturnData(items)
+  }
+
+  /**
+   * Update data by id.
+   */
+  processUpdateByCondition (data: any, condition: (record: Record) => boolean): Item | Collection {
+    const records = (new Repo(this.state, this.name, false)).where(condition).get()
+
+    const items = _.map(records, record => this.entity.id(record))
+
+    this.query.update(data, condition)
+
+    return this.getManyReturnData(items)
   }
 
   /**
@@ -336,148 +508,6 @@ export default class Repo {
   }
 
   /**
-   * Save the given data to the state. This will replace any existing
-   * data in the state.
-   */
-  create (data: any, insert: string[] = []): Item | Collection {
-    return this.persist('create', data, [], insert)
-  }
-
-  /**
-   * Insert given data to the state. Unlike `create`, this method will not
-   * remove existing data within the state, but it will update the data
-   * with the same primary key.
-   */
-  insert (data: any, create: string[] = []): Item | Collection {
-    return this.persist('insert', data, create, [])
-  }
-
-  /**
-   * Insert or update given data to the state. Unlike `insert`, this method
-   * will not replace existing data within the state, but it will update only
-   * the submitted data with the same primary key.
-   */
-  insertOrUpdate (data: any, create: string[] = []): Item | Collection {
-    const normalizedData: NormalizedData = this.normalize(data)
-    const toBePersisted: NormalizedData = {}
-    const updatedItems: string[] = []
-    let persistedItems: string[] = []
-
-    // `normalizedData` contains the differenty entity types (e.g. `users`),
-    _.forEach(normalizedData, (data, entity) => {
-      const repo = new Repo(this.state, entity, false)
-
-      // `data` contains the items of `entity`.
-      _.forEach(data, (item, id) => {
-        // Check if item does not already exist in store and mark it as new.
-        if (repo.entity.id(item) === undefined || repo.find(repo.entity.id(item)) === null) {
-          if (!toBePersisted.hasOwnProperty(entity)) {
-            toBePersisted[entity] = {}
-          }
-
-          toBePersisted[entity][id] = item
-        } else {
-          repo.query.update(item, repo.entity.id(item))
-          updatedItems.push(repo.entity.id(item))
-        }
-      })
-    })
-
-    if (Object.keys(toBePersisted).length > 0) {
-      persistedItems = this.processPersist('insert', toBePersisted, create, [])
-    }
-
-    // merging the ids of updated and persisted items to return all of them.
-    return this.getReturnData([...updatedItems, ...persistedItems])
-  }
-
-  /**
-   * Persist data into Vuex Store.
-   */
-  persist (defaultMethod: string, data: any, forceCreateFor: string[] = [], forceInsertFor: string[] = []): Item | Collection {
-    const normalizedData = this.normalize(data)
-
-    if (_.isEmpty(normalizedData)) {
-      defaultMethod === 'create' && this.query[defaultMethod](normalizedData)
-
-      return this.getReturnData([])
-    }
-
-    const items = this.processPersist(defaultMethod, normalizedData, forceCreateFor, forceInsertFor)
-
-    return this.getReturnData(items)
-  }
-
-  /**
-   * Persist data into the store. It returns list of created ids.
-   */
-  processPersist (defaultMethod: string, data: NormalizedData, forceCreateFor: string[] = [], forceInsertFor: string[] = []): string[] {
-    const items: string[] = []
-
-    const records = Data.fill(data, this, defaultMethod === 'create')
-
-    _.forEach(records, (data, entity) => {
-      const method = this.getPersistMethod(defaultMethod, entity, forceCreateFor, forceInsertFor)
-
-      if (entity !== this.name) {
-        (new Query(this.state, entity) as any)[method](data)
-
-        return
-      }
-
-      (this.query as any)[method](data)
-
-      _.forEach(data, item => { items.push(item.$id) })
-    })
-
-    return items
-  }
-
-  /**
-   * Get method for persist.
-   */
-  getPersistMethod (defaultMethod: string, entity: string, forceCreateFor: string[] = [], forceInsertFor: string[] = []): string {
-    if (_.includes(forceCreateFor, entity)) {
-      return 'create'
-    }
-
-    if (_.includes(forceInsertFor, entity)) {
-      return 'insert'
-    }
-
-    return defaultMethod
-  }
-
-  /**
-   * Get all data that should be retunred.
-   */
-  getReturnData (items: string[]): Item | Collection {
-    if (items.length === 0) {
-      return null
-    }
-
-    const method = items.length > 1 ? 'get' : 'first'
-
-    return new Repo(this.state, this.name).where('$id', (value: any) => {
-      return _.includes(items, value)
-    })[method]()
-  }
-
-  /**
-   * Get all data that should be retunred. This method will always return
-   * array of data even there's only a single item.
-   */
-  getManyReturnData (items: string[]): Item | Collection {
-    if (items.length === 0) {
-      return []
-    }
-
-    return new Repo(this.state, this.name).where('$id', (value: any) => {
-      return _.includes(items, value)
-    }).get()
-  }
-
-  /**
    * Get the count of the retrieved data.
    */
   count (): number {
@@ -509,70 +539,6 @@ export default class Repo {
     const record = _.minBy(this.get(), field)
 
     return record ? record[field] : 0
-  }
-
-  /**
-   * Normalize the given data.
-   */
-  normalize (data: any): NormalizedData {
-    return Data.normalize(data, this)
-  }
-
-  /**
-   * Update data in the state.
-   */
-  update (data: any, condition?: Condition): Item | Collection {
-    if (!condition) {
-      return this.processUpdateById(data, this.entity.id(data))
-    }
-
-    if (typeof condition === 'number' || typeof condition === 'string') {
-      return this.processUpdateById(data, condition)
-    }
-
-    return this.processUpdateByCondition(data, condition)
-  }
-
-  /**
-   * Update data by id.
-   */
-  processUpdateById (data: any, id?: any): Item | Collection {
-    const items: any[] = []
-
-    if (id) {
-      this.query.update(data, id)
-
-      items.push(id)
-    }
-
-    return this.getReturnData(items)
-  }
-
-  /**
-   * Update data by id.
-   */
-  processUpdateByCondition (data: any, condition: (record: Record) => boolean): Item | Collection {
-    const records = (new Repo(this.state, this.name, false)).where(condition).get()
-
-    const items = _.map(records, record => this.entity.id(record))
-
-    this.query.update(data, condition)
-
-    return this.getManyReturnData(items)
-  }
-
-  /**
-   * Delete data from the state.
-   */
-  delete (condition: Condition): void {
-    this.query.delete(condition)
-  }
-
-  /**
-   * Delete all data from the state.
-   */
-  deleteAll (): void {
-    this.query.deleteAll()
   }
 
   /**
@@ -672,5 +638,19 @@ export default class Repo {
     const data = this.loadRelations(record, [{ name, constraint: (_constraint as Constraint) }])
 
     return !_.isEmpty(data[name])
+  }
+
+  /**
+   * Delete data from the state.
+   */
+  delete (condition: Condition): void {
+    this.query.delete(condition)
+  }
+
+  /**
+   * Delete all data from the state.
+   */
+  deleteAll (): void {
+    this.query.deleteAll()
   }
 }
