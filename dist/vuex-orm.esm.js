@@ -6984,7 +6984,6 @@ var Query = /** @class */ (function () {
         this.state = state;
         this.name = name;
         this.entity = state[name];
-        this.primaryKey = '$id';
         this.records = map(state[name].data, function (record) { return record; });
     }
     /**
@@ -7006,6 +7005,35 @@ var Query = /** @class */ (function () {
         return Container.connection(this.state.name).model(this.name);
     };
     /**
+     * Save the given data to the state. This will replace any existing
+     * data in the state.
+     */
+    Query.prototype.create = function (data) {
+        this.entity.data = data;
+    };
+    /**
+     * Insert given data to the state. Unlike `create`, this method will not
+     * remove existing data within the state, but it will update the data
+     * with the same primary key.
+     */
+    Query.prototype.insert = function (data) {
+        this.entity.data = __assign$8({}, this.entity.data, data);
+    };
+    /**
+     * Update data in the state.
+     */
+    Query.prototype.update = function (data, condition) {
+        if (typeof condition !== 'function') {
+            if (this.entity.data[condition]) {
+                this.entity.data[condition] = merge(this.entity.data[condition], data);
+            }
+            return;
+        }
+        this.entity.data = mapValues(this.entity.data, function (record) {
+            return condition(record) ? merge(record, data) : record;
+        });
+    };
+    /**
      * Returns single record of the query chain result.
      */
     Query.prototype.get = function () {
@@ -7021,7 +7049,7 @@ var Query = /** @class */ (function () {
             return null;
         }
         if (id !== undefined) {
-            return this.item(find(this.records, [this.primaryKey, id]));
+            return this.item(find(this.records, ['$id', id]));
         }
         return this.item(this.records[0]);
     };
@@ -7060,40 +7088,23 @@ var Query = /** @class */ (function () {
         this.executeHooks('afterLimit');
     };
     /**
+     * Create a item from given record.
+     */
+    Query.prototype.item = function (record) {
+        return record ? record : null;
+    };
+    /**
+     * Create a collection (array) from given records.
+     */
+    Query.prototype.collect = function () {
+        return !isEmpty(this.records) ? this.records : [];
+    };
+    /**
      * Add a and where clause to the query.
      */
     Query.prototype.where = function (field, value) {
         this.wheres.push({ field: field, value: value, boolean: 'and' });
         return this;
-    };
-    /**
-     * Save the given data to the state. This will replace any existing
-     * data in the state.
-     */
-    Query.prototype.create = function (data) {
-        this.entity.data = data;
-    };
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    Query.prototype.insert = function (data) {
-        this.entity.data = __assign$8({}, this.entity.data, data);
-    };
-    /**
-     * Update data in the state.
-     */
-    Query.prototype.update = function (data, condition) {
-        if (typeof condition !== 'function') {
-            if (this.entity.data[condition]) {
-                this.entity.data[condition] = merge(this.entity.data[condition], data);
-            }
-            return;
-        }
-        this.entity.data = mapValues(this.entity.data, function (record) {
-            return condition(record) ? merge(record, data) : record;
-        });
     };
     /**
      * Add a or where clause to the query.
@@ -7122,35 +7133,6 @@ var Query = /** @class */ (function () {
     Query.prototype.limit = function (limit) {
         this._limit = limit;
         return this;
-    };
-    /**
-     * Delete data from the state.
-     */
-    Query.prototype.delete = function (condition) {
-        if (typeof condition === 'function') {
-            this.entity.data = pickBy(this.entity.data, function (record) { return !condition(record); });
-            return;
-        }
-        var id = typeof condition === 'number' ? condition.toString() : condition;
-        this.entity.data = pickBy(this.entity.data, function (_record, key) { return key !== id; });
-    };
-    /**
-     * Delete all data from the state.
-     */
-    Query.prototype.deleteAll = function () {
-        this.entity.data = {};
-    };
-    /**
-     * Create a item from given record.
-     */
-    Query.prototype.item = function (record) {
-        return record ? record : null;
-    };
-    /**
-     * Create a collection (array) from given records.
-     */
-    Query.prototype.collect = function () {
-        return !isEmpty(this.records) ? this.records : [];
     };
     /**
      * Filter the given data by registered where clause.
@@ -7195,7 +7177,7 @@ var Query = /** @class */ (function () {
                 if (typeof result === 'boolean') {
                     return result;
                 }
-                return !isEmpty(query.where(_this.primaryKey, record[_this.primaryKey]).get());
+                return !isEmpty(query.where('$id', record['$id']).get());
             }
             // Function with Record value as argument.
             if (isFunction(where.value)) {
@@ -7218,6 +7200,23 @@ var Query = /** @class */ (function () {
         }
         var model = new (this.model())(record);
         return closure(record, query, model);
+    };
+    /**
+     * Delete data from the state.
+     */
+    Query.prototype.delete = function (condition) {
+        if (typeof condition === 'function') {
+            this.entity.data = pickBy(this.entity.data, function (record) { return !condition(record); });
+            return;
+        }
+        var id = typeof condition === 'number' ? condition.toString() : condition;
+        this.entity.data = pickBy(this.entity.data, function (_record, key) { return key !== id; });
+    };
+    /**
+     * Delete all data from the state.
+     */
+    Query.prototype.deleteAll = function () {
+        this.entity.data = {};
     };
     /**
      * Execute the callback of the given hook.
@@ -7269,34 +7268,16 @@ var Repo = /** @class */ (function () {
         return new this(state, name, wrap);
     };
     /**
-     * Get all data of the given entity from the state.
+     * Get model of given name from connections container.
      */
-    Repo.all = function (state, entity, wrap) {
-        return (new this(state, entity, wrap)).get();
+    Repo.model = function (state, name) {
+        return Container.connection(state.name).model(name);
     };
     /**
-     * Find a data of the given entity by given id from the given state.
+     * Get all models from connections container.
      */
-    Repo.find = function (state, entity, id, wrap) {
-        return (new this(state, entity, wrap)).first(id);
-    };
-    /**
-     * Get the count of the retrieved data.
-     */
-    Repo.count = function (state, entity, wrap) {
-        return (new this(state, entity, wrap)).count();
-    };
-    /**
-     * Get the max value of the specified filed.
-     */
-    Repo.max = function (state, entity, field, wrap) {
-        return (new this(state, entity, wrap)).max(field);
-    };
-    /**
-     * Get the min value of the specified filed.
-     */
-    Repo.min = function (state, entity, field, wrap) {
-        return (new this(state, entity, wrap)).min(field);
+    Repo.models = function (state) {
+        return Container.connection(state.name).models();
     };
     /**
      * Save the given data to the state. This will replace any existing
@@ -7331,6 +7312,36 @@ var Repo = /** @class */ (function () {
         return (new this(state, entity)).insertOrUpdate(data, create);
     };
     /**
+     * Get all data of the given entity from the state.
+     */
+    Repo.all = function (state, entity, wrap) {
+        return (new this(state, entity, wrap)).get();
+    };
+    /**
+     * Find a data of the given entity by given id from the given state.
+     */
+    Repo.find = function (state, entity, id, wrap) {
+        return (new this(state, entity, wrap)).first(id);
+    };
+    /**
+     * Get the count of the retrieved data.
+     */
+    Repo.count = function (state, entity, wrap) {
+        return (new this(state, entity, wrap)).count();
+    };
+    /**
+     * Get the max value of the specified filed.
+     */
+    Repo.max = function (state, entity, field, wrap) {
+        return (new this(state, entity, wrap)).max(field);
+    };
+    /**
+     * Get the min value of the specified filed.
+     */
+    Repo.min = function (state, entity, field, wrap) {
+        return (new this(state, entity, wrap)).min(field);
+    };
+    /**
      * Delete data from the state.
      */
     Repo.delete = function (state, entity, condition) {
@@ -7340,35 +7351,13 @@ var Repo = /** @class */ (function () {
      * Delete all data from the state.
      */
     Repo.deleteAll = function (state, entity) {
-        if (!entity) {
-            var models_1 = this.models(state);
-            Object.keys(models_1).forEach(function (key) {
-                var entityName = models_1[key].entity;
-                if (state[entityName]) {
-                    state[entityName].data = {};
-                }
-            });
-            return;
+        if (entity) {
+            (new this(state, entity)).deleteAll();
         }
-        (new this(state, entity)).deleteAll();
-    };
-    /**
-     * Get model of given name from connections container.
-     */
-    Repo.model = function (state, name) {
-        return Container.connection(state.name).model(name);
-    };
-    /**
-     * Get all models from connections container.
-     */
-    Repo.models = function (state) {
-        return Container.connection(state.name).models();
-    };
-    /**
-     * Get the primary key for the record.
-     */
-    Repo.primaryKey = function (state, name) {
-        return this.model(state, name).primaryKey;
+        var models = this.models(state);
+        forEach(models, function (_model, name) {
+            state[name] && (new Query(state, name)).deleteAll();
+        });
     };
     /**
      * Get Repo class.
@@ -7390,10 +7379,168 @@ var Repo = /** @class */ (function () {
         return this.self().models(this.state);
     };
     /**
-     * Get the primary key of the model.
+     * Save the given data to the state. This will replace any existing
+     * data in the state.
      */
-    Repo.prototype.primaryKey = function () {
-        return this.self().primaryKey(this.state, this.name);
+    Repo.prototype.create = function (data, insert) {
+        if (insert === void 0) { insert = []; }
+        return this.persist('create', data, [], insert);
+    };
+    /**
+     * Insert given data to the state. Unlike `create`, this method will not
+     * remove existing data within the state, but it will update the data
+     * with the same primary key.
+     */
+    Repo.prototype.insert = function (data, create) {
+        if (create === void 0) { create = []; }
+        return this.persist('insert', data, create, []);
+    };
+    /**
+     * Insert or update given data to the state. Unlike `insert`, this method
+     * will not replace existing data within the state, but it will update only
+     * the submitted data with the same primary key.
+     */
+    Repo.prototype.insertOrUpdate = function (data, create) {
+        var _this = this;
+        if (create === void 0) { create = []; }
+        var normalizedData = this.normalize(data);
+        var toBePersisted = {};
+        var updatedItems = [];
+        var persistedItems = [];
+        // `normalizedData` contains the differenty entity types (e.g. `users`),
+        forEach(normalizedData, function (data, entity) {
+            var repo = new Repo(_this.state, entity, false);
+            // `data` contains the items of `entity`.
+            forEach(data, function (item, id) {
+                // Check if item does not already exist in store and mark it as new.
+                if (repo.entity.id(item) === undefined || repo.find(repo.entity.id(item)) === null) {
+                    if (!toBePersisted.hasOwnProperty(entity)) {
+                        toBePersisted[entity] = {};
+                    }
+                    toBePersisted[entity][id] = item;
+                }
+                else {
+                    repo.query.update(item, repo.entity.id(item));
+                    updatedItems.push(repo.entity.id(item));
+                }
+            });
+        });
+        if (Object.keys(toBePersisted).length > 0) {
+            persistedItems = this.processPersist('insert', toBePersisted, create, []);
+        }
+        // merging the ids of updated and persisted items to return all of them.
+        return this.getReturnData(updatedItems.concat(persistedItems));
+    };
+    /**
+     * Persist data into Vuex Store.
+     */
+    Repo.prototype.persist = function (defaultMethod, data, forceCreateFor, forceInsertFor) {
+        if (forceCreateFor === void 0) { forceCreateFor = []; }
+        if (forceInsertFor === void 0) { forceInsertFor = []; }
+        var normalizedData = this.normalize(data);
+        if (isEmpty(normalizedData)) {
+            defaultMethod === 'create' && this.query[defaultMethod](normalizedData);
+            return this.getReturnData([]);
+        }
+        var items = this.processPersist(defaultMethod, normalizedData, forceCreateFor, forceInsertFor);
+        return this.getReturnData(items);
+    };
+    /**
+     * Persist data into the store. It returns list of created ids.
+     */
+    Repo.prototype.processPersist = function (defaultMethod, data, forceCreateFor, forceInsertFor) {
+        var _this = this;
+        if (forceCreateFor === void 0) { forceCreateFor = []; }
+        if (forceInsertFor === void 0) { forceInsertFor = []; }
+        var items = [];
+        var records = Data.fill(data, this, defaultMethod === 'create');
+        forEach(records, function (data, entity) {
+            var method = _this.getPersistMethod(defaultMethod, entity, forceCreateFor, forceInsertFor);
+            if (entity !== _this.name) {
+                new Query(_this.state, entity)[method](data);
+                return;
+            }
+            _this.query[method](data);
+            forEach(data, function (item) { items.push(item.$id); });
+        });
+        return items;
+    };
+    /**
+     * Normalize the given data.
+     */
+    Repo.prototype.normalize = function (data) {
+        return Data.normalize(data, this);
+    };
+    /**
+     * Get method for persist.
+     */
+    Repo.prototype.getPersistMethod = function (defaultMethod, entity, forceCreateFor, forceInsertFor) {
+        if (forceCreateFor === void 0) { forceCreateFor = []; }
+        if (forceInsertFor === void 0) { forceInsertFor = []; }
+        if (includes(forceCreateFor, entity)) {
+            return 'create';
+        }
+        if (includes(forceInsertFor, entity)) {
+            return 'insert';
+        }
+        return defaultMethod;
+    };
+    /**
+     * Get all data that should be retunred.
+     */
+    Repo.prototype.getReturnData = function (items) {
+        if (items.length === 0) {
+            return null;
+        }
+        var method = items.length > 1 ? 'get' : 'first';
+        return new Repo(this.state, this.name).where('$id', function (value) {
+            return includes(items, value);
+        })[method]();
+    };
+    /**
+     * Get all data that should be retunred. This method will always return
+     * array of data even there's only a single item.
+     */
+    Repo.prototype.getManyReturnData = function (items) {
+        if (items.length === 0) {
+            return [];
+        }
+        return new Repo(this.state, this.name).where('$id', function (value) {
+            return includes(items, value);
+        }).get();
+    };
+    /**
+     * Update data in the state.
+     */
+    Repo.prototype.update = function (data, condition) {
+        if (!condition) {
+            return this.processUpdateById(data, this.entity.id(data));
+        }
+        if (typeof condition === 'number' || typeof condition === 'string') {
+            return this.processUpdateById(data, condition);
+        }
+        return this.processUpdateByCondition(data, condition);
+    };
+    /**
+     * Update data by id.
+     */
+    Repo.prototype.processUpdateById = function (data, id) {
+        var items = [];
+        if (id) {
+            this.query.update(data, id);
+            items.push(id);
+        }
+        return this.getReturnData(items);
+    };
+    /**
+     * Update data by id.
+     */
+    Repo.prototype.processUpdateByCondition = function (data, condition) {
+        var _this = this;
+        var records = (new Repo(this.state, this.name, false)).where(condition).get();
+        var items = map(records, function (record) { return _this.entity.id(record); });
+        this.query.update(data, condition);
+        return this.getManyReturnData(items);
     };
     /**
      * Returns all record of the query chain result. This method is alias
@@ -7502,131 +7649,6 @@ var Repo = /** @class */ (function () {
         return this;
     };
     /**
-     * Save the given data to the state. This will replace any existing
-     * data in the state.
-     */
-    Repo.prototype.create = function (data, insert) {
-        if (insert === void 0) { insert = []; }
-        return this.persist('create', data, [], insert);
-    };
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    Repo.prototype.insert = function (data, create) {
-        if (create === void 0) { create = []; }
-        return this.persist('insert', data, create, []);
-    };
-    /**
-     * Insert or update given data to the state. Unlike `insert`, this method
-     * will not replace existing data within the state, but it will update only
-     * the submitted data with the same primary key.
-     */
-    Repo.prototype.insertOrUpdate = function (data, create) {
-        var _this = this;
-        if (create === void 0) { create = []; }
-        var normalizedData = this.normalize(data);
-        var toBePersisted = {};
-        var updatedItems = [];
-        var persistedItems = [];
-        // `normalizedData` contains the differenty entity types (e.g. `users`),
-        forEach(normalizedData, function (data, entity) {
-            var repo = new Repo(_this.state, entity, false);
-            // `data` contains the items of `entity`.
-            forEach(data, function (item, id) {
-                // Check if item does not already exist in store and mark it as new.
-                if (repo.entity.id(item) === undefined || repo.find(repo.entity.id(item)) === null) {
-                    if (!toBePersisted.hasOwnProperty(entity)) {
-                        toBePersisted[entity] = {};
-                    }
-                    toBePersisted[entity][id] = item;
-                }
-                else {
-                    repo.query.update(item, repo.entity.id(item));
-                    updatedItems.push(repo.entity.id(item));
-                }
-            });
-        });
-        if (Object.keys(toBePersisted).length > 0) {
-            persistedItems = this.processPersist('insert', toBePersisted, create, []);
-        }
-        // merging the ids of updated and persisted items to return all of them.
-        return this.getReturnData(updatedItems.concat(persistedItems));
-    };
-    /**
-     * Persist data into Vuex Store.
-     */
-    Repo.prototype.persist = function (defaultMethod, data, forceCreateFor, forceInsertFor) {
-        if (forceCreateFor === void 0) { forceCreateFor = []; }
-        if (forceInsertFor === void 0) { forceInsertFor = []; }
-        var normalizedData = this.normalize(data);
-        if (isEmpty(normalizedData)) {
-            defaultMethod === 'create' && this.query[defaultMethod](normalizedData);
-            return this.getReturnData([]);
-        }
-        var items = this.processPersist(defaultMethod, normalizedData, forceCreateFor, forceInsertFor);
-        return this.getReturnData(items);
-    };
-    /**
-     * Persist data into the store. It returns list of created ids.
-     */
-    Repo.prototype.processPersist = function (defaultMethod, data, forceCreateFor, forceInsertFor) {
-        var _this = this;
-        if (forceCreateFor === void 0) { forceCreateFor = []; }
-        if (forceInsertFor === void 0) { forceInsertFor = []; }
-        var items = [];
-        var records = Data.fill(data, this, defaultMethod === 'create');
-        forEach(records, function (data, entity) {
-            var method = _this.getPersistMethod(defaultMethod, entity, forceCreateFor, forceInsertFor);
-            if (entity !== _this.name) {
-                new Query(_this.state, entity)[method](data);
-                return;
-            }
-            _this.query[method](data);
-            forEach(data, function (item) { items.push(item.$id); });
-        });
-        return items;
-    };
-    /**
-     * Get method for persist.
-     */
-    Repo.prototype.getPersistMethod = function (defaultMethod, entity, forceCreateFor, forceInsertFor) {
-        if (forceCreateFor === void 0) { forceCreateFor = []; }
-        if (forceInsertFor === void 0) { forceInsertFor = []; }
-        if (includes(forceCreateFor, entity)) {
-            return 'create';
-        }
-        if (includes(forceInsertFor, entity)) {
-            return 'insert';
-        }
-        return defaultMethod;
-    };
-    /**
-     * Get all data that should be retunred.
-     */
-    Repo.prototype.getReturnData = function (items) {
-        if (items.length === 0) {
-            return null;
-        }
-        var method = items.length > 1 ? 'get' : 'first';
-        return new Repo(this.state, this.name).where('$id', function (value) {
-            return includes(items, value);
-        })[method]();
-    };
-    /**
-     * Get all data that should be retunred. This method will always return
-     * array of data even there's only a single item.
-     */
-    Repo.prototype.getManyReturnData = function (items) {
-        if (items.length === 0) {
-            return [];
-        }
-        return new Repo(this.state, this.name).where('$id', function (value) {
-            return includes(items, value);
-        }).get();
-    };
-    /**
      * Get the count of the retrieved data.
      */
     Repo.prototype.count = function () {
@@ -7651,57 +7673,6 @@ var Repo = /** @class */ (function () {
         this.wrap = false;
         var record = minBy(this.get(), field);
         return record ? record[field] : 0;
-    };
-    /**
-     * Normalize the given data.
-     */
-    Repo.prototype.normalize = function (data) {
-        return Data.normalize(data, this);
-    };
-    /**
-     * Update data in the state.
-     */
-    Repo.prototype.update = function (data, condition) {
-        if (!condition) {
-            return this.processUpdateById(data, this.entity.id(data));
-        }
-        if (typeof condition === 'number' || typeof condition === 'string') {
-            return this.processUpdateById(data, condition);
-        }
-        return this.processUpdateByCondition(data, condition);
-    };
-    /**
-     * Update data by id.
-     */
-    Repo.prototype.processUpdateById = function (data, id) {
-        var items = [];
-        if (id) {
-            this.query.update(data, id);
-            items.push(id);
-        }
-        return this.getReturnData(items);
-    };
-    /**
-     * Update data by id.
-     */
-    Repo.prototype.processUpdateByCondition = function (data, condition) {
-        var _this = this;
-        var records = (new Repo(this.state, this.name, false)).where(condition).get();
-        var items = map(records, function (record) { return _this.entity.id(record); });
-        this.query.update(data, condition);
-        return this.getManyReturnData(items);
-    };
-    /**
-     * Delete data from the state.
-     */
-    Repo.prototype.delete = function (condition) {
-        this.query.delete(condition);
-    };
-    /**
-     * Delete all data from the state.
-     */
-    Repo.prototype.deleteAll = function () {
-        this.query.deleteAll();
     };
     /**
      * Create a item from given record.
@@ -7786,6 +7757,18 @@ var Repo = /** @class */ (function () {
         }
         var data = this.loadRelations(record, [{ name: name, constraint: _constraint }]);
         return !isEmpty(data[name]);
+    };
+    /**
+     * Delete data from the state.
+     */
+    Repo.prototype.delete = function (condition) {
+        this.query.delete(condition);
+    };
+    /**
+     * Delete all data from the state.
+     */
+    Repo.prototype.deleteAll = function () {
+        this.query.deleteAll();
     };
     return Repo;
 }());
