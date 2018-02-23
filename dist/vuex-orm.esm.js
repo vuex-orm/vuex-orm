@@ -5070,6 +5070,18 @@ var install = (function (database, options) {
     };
 });
 
+/**
+ * Iterates over own enumerable string keyed properties of an object and
+ * invokes `iteratee` for each property.
+ */
+function forOwn(object, iteretee) {
+    object = Object(object);
+    Object.keys(object).forEach(function (key) { return iteretee(object[key], key, object); });
+}
+var Utils = {
+    forOwn: forOwn
+};
+
 var Attribute = /** @class */ (function () {
     function Attribute() {
     }
@@ -8132,7 +8144,7 @@ var Model = /** @class */ (function () {
     Model.prototype.$mergeFields = function (fields, data) {
         var _this = this;
         var keys$$1 = keys(fields);
-        forEach(data, function (value, key) {
+        Utils.forOwn(data, function (value, key) {
             if (!includes(keys$$1, key)) {
                 return;
             }
