@@ -4,7 +4,8 @@ import Utils from '../support/Utils'
 import Container from '../connections/Container'
 import Connection from '../connections/Connection'
 import { Record } from '../data/Contract'
-import AttrContract, { Attribute as AttrType, Fields } from '../attributes/contracts/Contract'
+import AttrContract, { Fields } from '../attributes/contracts/Contract'
+import Attribute from '../attributes/Attribute'
 import Attr, { Mutator } from '../attributes/types/Attr'
 import Increment from '../attributes/types/Increment'
 import HasOne from '../attributes/relations/HasOne'
@@ -58,7 +59,7 @@ export default class Model {
    * value for the field.
    */
   static attr (value: any, mutator?: Mutator): Attr {
-    return new Attr(value, mutator)
+    return new Attr(this, value, mutator)
   }
 
   /**
@@ -66,35 +67,35 @@ export default class Model {
    * automatically increment its value when creating a new record.
    */
   static increment (): Increment {
-    return new Increment()
+    return new Increment(this)
   }
 
   /**
    * Create a has one relationship.
    */
   static hasOne (related: typeof Model | string, foreignKey: string, localKey?: string): HasOne {
-    return new HasOne(related, foreignKey, this.localKey(localKey), this.connection)
+    return new HasOne(this, related, foreignKey, this.localKey(localKey))
   }
 
   /**
    * Create a belongs to relationship.
    */
   static belongsTo (parent: typeof Model | string, foreignKey: string, ownerKey?: string): BelongsTo {
-    return new BelongsTo(parent, foreignKey, this.relation(parent).localKey(ownerKey), this.connection)
+    return new BelongsTo(this, parent, foreignKey, this.relation(parent).localKey(ownerKey))
   }
 
   /**
    * Create a has many relationship.
    */
   static hasMany (related: typeof Model | string, foreignKey: string, localKey?: string): HasMany {
-    return new HasMany(related, foreignKey, this.localKey(localKey), this.connection)
+    return new HasMany(this, related, foreignKey, this.localKey(localKey))
   }
 
   /**
    * Create a has many by relationship.
    */
   static hasManyBy (parent: typeof Model | string, foreignKey: string, ownerKey?: string): HasManyBy {
-    return new HasManyBy(parent, foreignKey, this.relation(parent).localKey(ownerKey), this.connection)
+    return new HasManyBy(this, parent, foreignKey, this.relation(parent).localKey(ownerKey))
   }
 
   /**
@@ -109,13 +110,13 @@ export default class Model {
     relatedKey?: string
   ): BelongsToMany {
     return new BelongsToMany(
+      this,
       related,
       pivot,
       foreignPivotKey,
       relatedPivotKey,
       this.localKey(parentKey),
-      this.relation(related).localKey(relatedKey),
-      this.connection
+      this.relation(related).localKey(relatedKey)
     )
   }
 
@@ -123,21 +124,21 @@ export default class Model {
    * Create a morph to relationship.
    */
   static morphTo (id: string, type: string): MorphTo {
-    return new MorphTo(id, type, this.connection)
+    return new MorphTo(this, id, type)
   }
 
   /**
    * Create a morph one relationship.
    */
   static morphOne (related: typeof Model | string, id: string, type: string, localKey?: string): MorphOne {
-    return new MorphOne(related, id, type, this.localKey(localKey), this.connection)
+    return new MorphOne(this, related, id, type, this.localKey(localKey))
   }
 
   /**
    * Create a morph many relationship.
    */
   static morphMany (related: typeof Model | string, id: string, type: string, localKey?: string): MorphMany {
-    return new MorphMany(related, id, type, this.localKey(localKey), this.connection)
+    return new MorphMany(this, related, id, type, this.localKey(localKey))
   }
 
   /**
@@ -153,14 +154,14 @@ export default class Model {
     relatedKey?: string
   ): MorphToMany {
     return new MorphToMany(
+      this,
       related,
       pivot,
       relatedId,
       id,
       type,
       this.localKey(parentKey),
-      this.relation(related).localKey(relatedKey),
-      this.connection
+      this.relation(related).localKey(relatedKey)
     )
   }
 
@@ -177,14 +178,14 @@ export default class Model {
     relatedKey?: string
   ): MorphedByMany {
     return new MorphedByMany(
+      this,
       related,
       pivot,
       relatedId,
       id,
       type,
       this.localKey(parentKey),
-      this.relation(related).localKey(relatedKey),
-      this.connection
+      this.relation(related).localKey(relatedKey)
     )
   }
 
@@ -366,7 +367,7 @@ export default class Model {
   }
 
   /**
-   * Initialize the model by attaching all of the fields to property.
+   * Initialize the model by attaching all of the fields to its property.
    */
   $initialize (data?: Record): void {
     const fields = this.$merge(data)
@@ -382,41 +383,25 @@ export default class Model {
       return this.$fields()
     }
 
-    const fields = { ...this.$fields() }
-
-    return this.$mergeFields(fields, data)
+    return this.$mergeFields({ ...this.$fields() }, data)
   }
 
   /**
-   * Merge given data with fields and create a new fields.
+   * Merge given data with fields and create new fields.
    */
   $mergeFields (fields: Fields, data: Record): Fields {
-    const keys = _.keys(fields)
-
-    Utils.forOwn(data, (value, key) => {
-      if (!_.includes(keys, key)) {
+    Utils.forOwn(fields, (attr, key) => {
+      if (data[key] === undefined) {
         return
       }
 
-      if (AttrContract.isFields(fields[key])) {
-        fields[key] = this.$mergeFields((fields[key] as any), value)
+      if (attr instanceof Attribute) {
+        attr.set(data[key])
 
         return
       }
 
-      const field = fields[key]
-
-      if (field instanceof Attr || field instanceof Increment) {
-        field.value = value
-      }
-
-      if (field instanceof HasOne || field instanceof BelongsTo || field instanceof MorphTo || field instanceof MorphOne) {
-        field.record = value
-      }
-
-      if (field instanceof HasMany || field instanceof HasManyBy || field instanceof BelongsToMany || field instanceof MorphMany || field instanceof MorphToMany || field instanceof MorphedByMany) {
-        field.records = value
-      }
+      this.$mergeFields(attr, data[key])
     })
 
     return fields
@@ -425,33 +410,16 @@ export default class Model {
   /**
    * Build model by initializing given data.
    */
-  $build (self: any, data: Fields): void {
-    _.forEach(data, (field, key) => {
-      if (AttrContract.isAttribute(field)) {
-        self[key] = this.$generateField(data, field, key)
+  $build (self: any, fields: Fields): void {
+    _.forEach(fields, (field, key) => {
+      if (field instanceof Attribute) {
+        self[key] = field.make(fields, key)
 
         return
       }
 
       this.$build(self[key] = {}, field)
     })
-  }
-
-  /**
-   * Generate appropreate field value for the given attribute.
-   */
-  $generateField (data: Fields, attr: AttrType, key: string): any {
-    if (attr instanceof Attr) {
-      const mutator = attr.mutator || this.$self().mutators()[key]
-
-      return mutator ? mutator(attr.value) : attr.value
-    }
-
-    if (attr instanceof Increment) {
-      return attr.value
-    }
-
-    return attr.make(data)
   }
 
   /**

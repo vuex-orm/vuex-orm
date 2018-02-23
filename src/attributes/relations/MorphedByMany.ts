@@ -52,24 +52,32 @@ export default class MorphedByMany extends Relation {
    * Create a new belongs to instance.
    */
   constructor (
+    model: typeof Model,
     related: Entity,
     pivot: Entity,
     relatedId: string,
     id: string,
     type: string,
     parentKey: string,
-    relatedKey: string,
-    connection?: string
+    relatedKey: string
   ) {
-    super(connection)
+    super(model)
 
-    this.related = this.model(related)
-    this.pivot = this.model(pivot)
+    this.related = this.model.relation(related)
+    this.pivot = this.model.relation(pivot)
     this.relatedId = relatedId
     this.id = id
     this.type = type
     this.parentKey = parentKey
     this.relatedKey = relatedKey
+  }
+
+  /**
+   * Set given value to the value field. This method is used when
+   * instantiating model to fill the attribute value.
+   */
+  set (value: any): void {
+    this.records = value
   }
 
   /**
@@ -107,7 +115,7 @@ export default class MorphedByMany extends Relation {
   /**
    * Make model instances of the relation.
    */
-  make (_parent: Fields): Model[] {
+  make (_parent: Fields, _key: string): Model[] {
     if (this.records.length === 0) {
       return []
     }

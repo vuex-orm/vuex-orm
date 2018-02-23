@@ -1,41 +1,8 @@
-import Container from '../../connections/Container'
 import { Record, PlainItem, PlainCollection } from '../../data/Contract'
-import Model from '../../model/Model'
 import Repo, { Relation as Load } from '../../repo/Repo'
-import { Fields } from '../contracts/Contract'
 import Attribute from '../Attribute'
 
 export default abstract class Relation extends Attribute {
-  /**
-   * The name of the connection.
-   */
-  connection: string
-
-  /**
-   * Create a relation instance.
-   */
-  constructor (connection: string = 'entities') {
-    super()
-
-    this.connection = connection
-  }
-
-  /**
-   * Resolve model out of container.
-   */
-  model (model: typeof Model | string): typeof Model {
-    if (typeof model !== 'string') {
-      return model
-    }
-
-    return Container.connection(this.connection).model(model)
-  }
-
-  /**
-   * Make model instances of the relation.
-   */
-  abstract make (parent: Fields): Model | Model[] | null
-
   /**
    * Load relationship records.
    */

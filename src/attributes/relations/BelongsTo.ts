@@ -28,12 +28,20 @@ export default class BelongsTo extends Relation {
   /**
    * Create a new belongs to instance.
    */
-  constructor (parent: typeof Model | string, foreignKey: string, ownerKey: string, connection?: string) {
-    super(connection)
+  constructor (model: typeof Model, parent: typeof Model | string, foreignKey: string, ownerKey: string) {
+    super(model)
 
-    this.parent = this.model(parent)
+    this.parent = this.model.relation(parent)
     this.foreignKey = foreignKey
     this.ownerKey = ownerKey
+  }
+
+  /**
+   * Set given value to the value field. This method is used when
+   * instantiating model to fill the attribute value.
+   */
+  set (value: any): void {
+    this.record = value
   }
 
   /**
@@ -59,7 +67,7 @@ export default class BelongsTo extends Relation {
   /**
    * Make model instances of the relation.
    */
-  make (_parent: Fields): Model | null {
+  make (_parent: Fields, _key: string): Model | null {
     return this.record ? new this.parent(this.record) : null
   }
 }

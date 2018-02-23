@@ -35,13 +35,21 @@ export default class MorphMany extends Relation {
   /**
    * Create a new belongs to instance.
    */
-  constructor (related: Entity, id: string, type: string, localKey: string, connection?: string) {
-    super(connection)
+  constructor (model: typeof Model, related: Entity, id: string, type: string, localKey: string) {
+    super(model)
 
-    this.related = this.model(related)
+    this.related = this.model.relation(related)
     this.id = id
     this.type = type
     this.localKey = localKey
+  }
+
+  /**
+   * Set given value to the value field. This method is used when
+   * instantiating model to fill the attribute value.
+   */
+  set (value: any): void {
+    this.records = value
   }
 
   /**
@@ -67,7 +75,7 @@ export default class MorphMany extends Relation {
   /**
    * Make model instances of the relation.
    */
-  make (_parent: Fields): Model[] {
+  make (_parent: Fields, _key: string): Model[] {
     if (this.records.length === 0) {
       return []
     }

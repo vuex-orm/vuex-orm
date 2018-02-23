@@ -26,11 +26,19 @@ export default class MorphTo extends Relation {
   /**
    * Create a new morph to instance.
    */
-  constructor (id: string, type: string, connection?: string) {
-    super(connection)
+  constructor (model: typeof Model, id: string, type: string) {
+    super(model)
 
     this.id = id
     this.type = type
+  }
+
+  /**
+   * Set given value to the value field. This method is used when
+   * instantiating model to fill the attribute value.
+   */
+  set (value: any): void {
+    this.record = value
   }
 
   /**
@@ -44,7 +52,7 @@ export default class MorphTo extends Relation {
    * Load the morph many relationship for the record.
    */
   load (repo: Repo, record: Record, relation: Load): PlainItem {
-    const related = this.model(record[this.type])
+    const related = this.model.relation(record[this.type])
     const ownerKey = related.localKey()
     const query = new Repo(repo.state, related.entity, false)
 
@@ -58,9 +66,9 @@ export default class MorphTo extends Relation {
   /**
    * Make model instances of the relation.
    */
-  make (parent: Fields): Model | null {
+  make (parent: Fields, _key: string): Model | null {
     const related: string = (parent[this.type] as Attr).value
-    const model = this.model(related)
+    const model = this.model.relation(related)
 
     return this.record ? new model(this.record) : null
   }
