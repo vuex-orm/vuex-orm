@@ -1,4 +1,4 @@
-import { Record, PlainItem } from '../../data/Contract'
+import { Record, NormalizedData, PlainItem } from '../../data/Contract'
 import Model from '../../model/Model'
 import Repo, { Relation as Load } from '../../repo/Repo'
 import { Fields } from '../contracts/Contract'
@@ -49,6 +49,17 @@ export default class BelongsTo extends Relation {
    */
   fill (value: any): any {
     return value || null
+  }
+
+  /**
+   * Attach the relational key to the given record.
+   */
+  attach (key: any, record: Record, _data: NormalizedData): void {
+    if (record[this.foreignKey] !== undefined) {
+      return
+    }
+
+    record[this.foreignKey] = key
   }
 
   /**

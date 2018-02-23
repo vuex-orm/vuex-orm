@@ -3,8 +3,9 @@ import * as _ from '../support/lodash'
 import Repo from '../repo/Repo'
 import { NormalizedData } from './Contract'
 import Schema from './Schema'
-import Builder from './Builder'
 import PivotCreator from './PivotCreator'
+import Attacher from './Attacher'
+import Builder from './Builder'
 import Incrementer from './Incrementer'
 
 export default class Data {
@@ -27,9 +28,10 @@ export default class Data {
    * Fill missing records with default value based on model schema.
    */
   static fill (data: NormalizedData, repo: Repo, reset: boolean = false): NormalizedData {
-    let records: NormalizedData = {}
+    let records: NormalizedData = { ...data }
 
-    records = Builder.build(data, repo)
+    records = Attacher.attach(records, repo)
+    records = Builder.build(records, repo)
     records = Incrementer.increment(records, repo, reset)
 
     return records

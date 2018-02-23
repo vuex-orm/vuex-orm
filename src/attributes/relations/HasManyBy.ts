@@ -1,4 +1,4 @@
-import { Record, PlainCollection } from '../../data/Contract'
+import { Record, NormalizedData, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
 import Repo, { Relation as Load } from '../../repo/Repo'
 import { Fields } from '../contracts/Contract'
@@ -49,6 +49,20 @@ export default class HasManyBy extends Relation {
    */
   fill (value: any): any {
     return value || []
+  }
+
+  /**
+   * Attach the relational key to the given record.
+   */
+  attach (key: any, record: Record, _data: NormalizedData): void {
+    if (key.length === 0) {
+      return
+    }
+    if (record[this.foreignKey] !== undefined) {
+      return
+    }
+
+    record[this.foreignKey] = key
   }
 
   /**

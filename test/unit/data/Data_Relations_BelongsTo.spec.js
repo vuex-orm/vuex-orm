@@ -102,4 +102,50 @@ describe('Data – Relations – Belongs To', () => {
 
     expect(Data.normalize(data, repo)).toEqual(expected)
   })
+
+  it('can generate relation field', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null)
+        }
+      }
+    }
+
+    class Phone extends Model {
+      static entity = 'phones'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null),
+          user: this.belongsTo(User, 'user_id')
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }, { model: Phone }])
+
+    const repo = new Repo(store.state.entities, 'phones')
+
+    const data = {
+      id: 1,
+      user: { id: 1 }
+    }
+
+    const expected = {
+      users: {
+        '1': { $id: 1, id: 1 }
+      },
+      phones: {
+        '1': { $id: 1, id: 1, user_id: 1, user: 1 }
+      }
+    }
+
+    const normalizedData = Data.normalize(data, repo)
+
+    expect(Data.fill(normalizedData, repo)).toEqual(expected)
+  })
 })

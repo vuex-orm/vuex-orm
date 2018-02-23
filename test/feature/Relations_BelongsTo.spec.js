@@ -1,51 +1,41 @@
-import Model         from 'app/model/Model';
-import {createStore} from 'test/support/Helpers';
+import { createStore } from 'test/support/Helpers'
+import Model from 'app/model/Model'
 
 describe('Features – Relations – Belongs To', () => {
-  it('can insert and fetch nestes belongsTo relations', async () => {
+  it('can generate relation field', async () => {
     class User extends Model {
-      static entity = "users"
+      static entity = 'users'
 
-      static fields() {
+      static fields () {
         return {
-          id: this.attr(null),
+          id: this.attr(null)
         }
       }
     }
 
-    class Message extends Model {
-      static entity = 'messages'
+    class Phone extends Model {
+      static entity = 'phones'
 
-      static fields() {
+      static fields () {
         return {
           id: this.attr(null),
-          author: this.belongsTo(User, 'author_id'),
-          author_id: this.attr(null)
+          user_id: this.attr(null),
+          user: this.belongsTo(User, 'user_id')
         }
       }
     }
 
-    const store = createStore([{ model: User }, { model: Message }])
+    const store = createStore([{ model: User }, { model: Phone }])
 
-    const data = {
-      id: 1,
-      author: {
-        id: 2
+    await store.dispatch('entities/phones/create', {
+      data: {
+        id: 1,
+        user: { id: 1 }
       }
-    }
+    })
 
-    await store.dispatch('entities/messages/create', { data })
+    const phone = store.getters['entities/phones/query']().with('user').find(1)
 
-    const users = store.getters['entities/users/all']()
-    const messages = store.getters['entities/messages/query']().with('author').get()
-
-    expect(users.length).toBe(1)
-    expect(users[0]).toBeInstanceOf(User)
-    expect(users[0].id).toBe(2)
-    expect(messages.length).toBe(1)
-    expect(messages[0]).toBeInstanceOf(Message)
-    expect(messages[0].id).toBe(1)
-    expect(messages[0].author).toBeInstanceOf(User)
-    expect(messages[0].author.id).toBe(2)
+    expect(phone.user).toBeInstanceOf(User)
   })
 })
