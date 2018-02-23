@@ -1,10 +1,10 @@
 # Summary
 
 - [Prologue](prologue.md)
+    - [Release Notes](https://github.com/vuex-orm/vuex-orm/releases)
     - [What Is Vuex ORM](prologue/what-is-vuex-orm.md)
     - [Installation](prologue/installation.md)
     - [Getting Started](prologue/getting-started.md)
-    - [Release Notes](https://github.com/vuex-orm/vuex-orm/releases)
 - [Core Components](core-components.md)
     - [Models](components/models.md)
     - [Modules And Store](components/modules-and-store.md)
