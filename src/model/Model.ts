@@ -1,5 +1,6 @@
 import * as Vuex from 'vuex'
 import * as _ from '../support/lodash'
+import Utils from '../support/Utils'
 import Container from '../connections/Container'
 import Connection from '../connections/Connection'
 import { Record } from '../data/Contract'
@@ -389,10 +390,10 @@ export default class Model {
   /**
    * Merge given data with fields and create a new fields.
    */
-  $mergeFields (fields: Fields, data?: Record): Fields {
+  $mergeFields (fields: Fields, data: Record): Fields {
     const keys = _.keys(fields)
 
-    _.forEach(data, (value, key) => {
+    Utils.forOwn(data, (value, key) => {
       if (!_.includes(keys, key)) {
         return
       }
