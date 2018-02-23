@@ -1,11 +1,11 @@
 import { createApplication } from 'test/support/Helpers'
-import Data from 'app/data/Data'
+import ProcessStrategy from 'app/data/ProcessStrategy'
 import Model from 'app/model/Model'
 import Repo from 'app/repo/Repo'
 
 describe('Repo – Create – Attributes', () => {
   afterEach(() => {
-    Data.count = 0
+    ProcessStrategy.count = 0
   })
 
   it('should increment the field value when creating a record if the field type is `increment`', () => {
@@ -346,7 +346,7 @@ describe('Repo – Create – Attributes', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '1': { $id: 1, id: 1, name: 'John', posts: ['_no_key_15', '_no_key_16'] }
+        '1': { $id: 1, id: 1, name: 'John', posts: ['_no_key_2', '_no_key_3'] }
       }},
       posts: { data: {
         '1': { $id: 1, id: 1, user_id: 1, title: 'Title 01' },
@@ -557,7 +557,7 @@ describe('Repo – Create – Attributes', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '1': { $id: 1, id: 1, name: 'John', posts: ['_no_key_24', '_no_key_25'] }
+        '1': { $id: 1, id: 1, name: 'John', posts: ['_no_key_2', '_no_key_3'] }
       }},
       posts: { data: {
         '1': { $id: 1, id: 1, user_id: 1, title: 'Title 01' },

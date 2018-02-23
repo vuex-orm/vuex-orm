@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import * as _ from 'lodash-es'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexORM from 'app'
@@ -53,21 +53,8 @@ export function createState (namespace, state) {
   }
 }
 
-/**
- * Get action context that can be passed to action as arugument.
- */
-export function actionContext (context = {}) {
-  return {
-    state: context.state || {},
-    rootState: context.rootState || {},
-    getters: context.getters || sinon.spy(),
-    rootGetters: context.rootGetters || sinon.spy(),
-    dispatch: context.dispatch || sinon.spy(),
-    commit: context.commit || sinon.spy()
-  }
-}
-
 export default {
   createApplication,
-  actionContext
+  createStore,
+  createState
 }
