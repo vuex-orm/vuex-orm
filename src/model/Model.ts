@@ -12,6 +12,7 @@ import HasOne from '../attributes/relations/HasOne'
 import BelongsTo from '../attributes/relations/BelongsTo'
 import HasMany from '../attributes/relations/HasMany'
 import HasManyBy from '../attributes/relations/HasManyBy'
+import HasManyThrough from '../attributes/relations/HasManyThrough'
 import BelongsToMany from '../attributes/relations/BelongsToMany'
 import MorphTo from '../attributes/relations/MorphTo'
 import MorphOne from '../attributes/relations/MorphOne'
@@ -96,6 +97,28 @@ export default class Model {
    */
   static hasManyBy (parent: typeof Model | string, foreignKey: string, ownerKey?: string): HasManyBy {
     return new HasManyBy(this, parent, foreignKey, this.relation(parent).localKey(ownerKey))
+  }
+
+  /**
+   * Create a has many through relationship.
+   */
+  static hasManyThrough (
+    related: typeof Model | string,
+    through: typeof Model | string,
+    firstKey: string,
+    secondKey: string,
+    localKey?: string,
+    secondLocalKey?: string
+  ): HasManyThrough {
+    return new HasManyThrough(
+      this,
+      related,
+      through,
+      firstKey,
+      secondKey,
+      this.localKey(localKey),
+      this.relation(through).localKey(secondLocalKey)
+    )
   }
 
   /**

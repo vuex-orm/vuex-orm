@@ -4,6 +4,7 @@ import HasOne from '../relations/HasOne'
 import BelongsTo from '../relations/BelongsTo'
 import HasMany from '../relations/HasMany'
 import HasManyBy from '../relations/HasManyBy'
+import HasManyThrough from '../relations/HasManyThrough'
 import BelongsToMany from '../relations/BelongsToMany'
 import MorphTo from '../relations/MorphTo'
 import MorphOne from '../relations/MorphOne'
@@ -50,6 +51,7 @@ export default class Contract {
            || attr instanceof BelongsTo
            || attr instanceof HasMany
            || attr instanceof HasManyBy
+           || attr instanceof HasManyThrough
            || attr instanceof BelongsToMany
            || attr instanceof MorphTo
            || attr instanceof MorphOne

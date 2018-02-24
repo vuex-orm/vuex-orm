@@ -80,7 +80,7 @@
       "src/**/*.ts"
     ],
     "exclude": [
-      "**/__test__/**"
+      "src/support/polyfills.ts"
     ],
     "instrument": false,
     "sourceMap": false

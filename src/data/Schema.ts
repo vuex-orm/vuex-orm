@@ -6,6 +6,7 @@ import HasOne from '../attributes/relations/HasOne'
 import BelongsTo from '../attributes/relations/BelongsTo'
 import HasMany from '../attributes/relations/HasMany'
 import HasManyBy from '../attributes/relations/HasManyBy'
+import HasManyThrough from '../attributes/relations/HasManyThrough'
 import BelongsToMany from '../attributes/relations/BelongsToMany'
 import MorphTo from '../attributes/relations/MorphTo'
 import MorphOne from '../attributes/relations/MorphOne'
@@ -90,6 +91,10 @@ export default class Schema {
 
     if (field instanceof HasManyBy) {
       return this.buildMany(field.parent, schemas, model, field)
+    }
+
+    if (field instanceof HasManyThrough) {
+      return this.buildMany(field.related, schemas, model, field)
     }
 
     if (field instanceof BelongsToMany) {
