@@ -88,6 +88,13 @@ export default class MorphedByMany extends Relation {
   }
 
   /**
+   * Attach the relational key to the given record.
+   */
+  attach (_key: any, _record: Record, _data: NormalizedData): void {
+    return
+  }
+
+  /**
    * Load the morph many relationship for the record.
    */
   load (repo: Repo, record: Record, relation: Load): PlainCollection {

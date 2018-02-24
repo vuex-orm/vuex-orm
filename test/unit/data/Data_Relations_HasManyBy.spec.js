@@ -100,4 +100,51 @@ describe('Data – Relations – Has Many By', () => {
 
     expect(Data.normalize(data, repo)).toEqual(expected)
   })
+
+  it('can normalize the has many by relation', () => {
+    class Node extends Model {
+      static entity = 'nodes'
+
+      static fields () {
+        return {
+          id: this.attr(null)
+        }
+      }
+    }
+
+    class Cluster extends Model {
+      static entity = 'clusters'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          node_ids: this.attr([]),
+          nodes: this.hasManyBy(Node, 'node_ids')
+        }
+      }
+    }
+
+    const store = createStore([{ model: Node }, { model: Cluster }])
+
+    const repo = new Repo(store.state.entities, 'clusters')
+
+    const data = {
+      id: 1,
+      nodes: [{ id: 1 }, { id: 2 }]
+    }
+
+    const expected = {
+      nodes: {
+        '1': { $id: 1, id: 1 },
+        '2': { $id: 2, id: 2 }
+      },
+      clusters: {
+        '1': { $id: 1, id: 1, node_ids: [1, 2], nodes: [1, 2] }
+      }
+    }
+
+    const normalizedData = Data.normalize(data, repo)
+
+    expect(Data.fill(normalizedData, repo)).toEqual(expected)
+  })
 })

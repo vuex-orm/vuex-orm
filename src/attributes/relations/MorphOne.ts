@@ -1,4 +1,4 @@
-import { Record, PlainItem } from '../../data/Contract'
+import { Record, NormalizedData, PlainItem } from '../../data/Contract'
 import Model from '../../model/Model'
 import Repo, { Relation as Load } from '../../repo/Repo'
 import { Fields } from '../contracts/Contract'
@@ -57,6 +57,13 @@ export default class MorphOne extends Relation {
    */
   fill (value: any): any {
     return value || null
+  }
+
+  /**
+   * Attach the relational key to the given record.
+   */
+  attach (_key: any, _record: Record, _data: NormalizedData): void {
+    return
   }
 
   /**

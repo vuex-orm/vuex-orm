@@ -1,8 +1,13 @@
-import { Record, PlainItem, PlainCollection } from '../../data/Contract'
+import { Record, NormalizedData, PlainItem, PlainCollection } from '../../data/Contract'
 import Repo, { Relation as Load } from '../../repo/Repo'
 import Attribute from '../Attribute'
 
 export default abstract class Relation extends Attribute {
+  /**
+   * Attach the relational key to the given record.
+   */
+  abstract attach (key: any, record: Record, data: NormalizedData): void
+
   /**
    * Load relationship records.
    */

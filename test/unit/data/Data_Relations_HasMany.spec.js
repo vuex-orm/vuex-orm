@@ -111,4 +111,54 @@ describe('Data – Relations – Has Many', () => {
 
     expect(Data.normalize(data, repo)).toEqual(expected)
   })
+
+  it('can generate relation field', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          posts: this.hasMany(Post, 'user_id')
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }, { model: Post }])
+
+    const repo = new Repo(store.state.entities, 'users')
+
+    const data = {
+      id: 1,
+      posts: [
+        { id: 1 },
+        { id: 2 }
+      ]
+    }
+
+    const expected = {
+      users: {
+        '1': { $id: 1, id: 1, posts: [1, 2] }
+      },
+      posts: {
+        '1': { $id: 1, id: 1, user_id: 1 },
+        '2': { $id: 2, id: 2, user_id: 1 }
+      }
+    }
+
+    const normalizedData = Data.normalize(data, repo)
+
+    expect(Data.fill(normalizedData, repo)).toEqual(expected)
+  })
 })
