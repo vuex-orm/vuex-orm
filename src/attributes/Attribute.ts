@@ -15,12 +15,6 @@ export default abstract class Attribute {
   }
 
   /**
-   * Set given value to the value field. This method is used when
-   * instantiating model to fill the attribute value.
-   */
-  abstract set (value: any): void
-
-  /**
    * Return the appropriate value for the normalization. This method will
    * be called during the data normalization to fill field value.
    */

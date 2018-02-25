@@ -44,14 +44,6 @@ export default class MorphMany extends Relation {
   }
 
   /**
-   * Set given value to the value field. This method is used when
-   * instantiating model to fill the attribute value.
-   */
-  set (value: any): void {
-    this.records = value
-  }
-
-  /**
    * Return empty array if the value is not present.
    */
   fill (value: any): any {

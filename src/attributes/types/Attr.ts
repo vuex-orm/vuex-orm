@@ -26,14 +26,6 @@ export default class Attr extends Type {
   }
 
   /**
-   * Set given value to the value field. This method is used when
-   * instantiating model to fill the attribute value.
-   */
-  set (value: any): void {
-    this.value = value
-  }
-
-  /**
    * Return the default value if the given value is empty.
    */
   fill (value: any): any {

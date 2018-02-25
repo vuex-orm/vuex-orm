@@ -8,14 +8,6 @@ export default class Increment extends Type {
   value: number = 1
 
   /**
-   * Set given value to the value field. This method is used when
-   * instantiating model to fill the attribute value.
-   */
-  set (value: any): void {
-    this.value = value
-  }
-
-  /**
    * Return null if the value is not present. Auto incrementation should
    * be done after the normalization completed.
    */
