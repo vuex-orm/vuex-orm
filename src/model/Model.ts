@@ -248,14 +248,16 @@ export default class Model {
   }
 
   /**
-   * Get a model from the container.
+   * Get the value of the primary key.
    */
-  static relation (model: typeof Model | string): typeof Model {
-    if (typeof model !== 'string') {
-      return model
+  static id (record: any): any {
+    const key = this.primaryKey
+
+    if (typeof key === 'string') {
+      return record[key]
     }
 
-    return this.conn().model(model)
+    return key.map(k => record[k]).join('_')
   }
 
   /**
@@ -270,16 +272,14 @@ export default class Model {
   }
 
   /**
-   * Get the value of the primary key.
+   * Get a model from the container.
    */
-  static id (record: any): any {
-    const key = this.primaryKey
-
-    if (typeof key === 'string') {
-      return record[key]
+  static relation (model: typeof Model | string): typeof Model {
+    if (typeof model !== 'string') {
+      return model
     }
 
-    return key.map(k => record[k]).join('_')
+    return this.conn().model(model)
   }
 
   /**
