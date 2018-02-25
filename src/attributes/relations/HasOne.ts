@@ -1,7 +1,6 @@
 import { Record, NormalizedData, PlainItem } from '../../data/Contract'
 import Model from '../../model/Model'
 import Repo, { Relation as Load } from '../../repo/Repo'
-import { Fields } from '../contracts/Contract'
 import Relation from './Relation'
 
 export default class HasOne extends Relation {
@@ -80,7 +79,7 @@ export default class HasOne extends Relation {
   /**
    * Make model instances of the relation.
    */
-  make (_parent: Fields, _key: string): Model | null {
-    return this.record ? new this.related(this.record) : null
+  make (value: any, _parent: Record, _key: string): Model | null {
+    return value ? new this.related(value) : null
   }
 }

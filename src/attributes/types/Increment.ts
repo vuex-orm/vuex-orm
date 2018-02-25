@@ -1,4 +1,4 @@
-import { Fields } from '../contracts/Contract'
+import { Record } from '../../data/Contract'
 import Type from './Type'
 
 export default class Increment extends Type {
@@ -27,7 +27,7 @@ export default class Increment extends Type {
    * Make value to be set to model property. This method is used when
    * instantiating model to set its properties.
    */
-  make (_parent: Fields, _key: string): number {
-    return this.value
+  make (value: any, _parent: Record, _key: string): number {
+    return value
   }
 }

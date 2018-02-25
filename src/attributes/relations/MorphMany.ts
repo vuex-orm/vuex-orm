@@ -1,7 +1,6 @@
 import { Record, NormalizedData, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
 import Repo, { Relation as Load } from '../../repo/Repo'
-import { Fields } from '../contracts/Contract'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -82,11 +81,11 @@ export default class MorphMany extends Relation {
   /**
    * Make model instances of the relation.
    */
-  make (_parent: Fields, _key: string): Model[] {
-    if (this.records.length === 0) {
+  make (value: any, _parent: Record, _key: string): Model[] {
+    if (value.length === 0) {
       return []
     }
 
-    return this.records.map(record => new this.related(record))
+    return value.map((record: Record) => new this.related(record))
   }
 }

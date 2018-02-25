@@ -1,5 +1,5 @@
+import { Record } from '../../data/Contract'
 import Model from '../../model/Model'
-import { Fields } from '../contracts/Contract'
 import Type from './Type'
 
 export type Mutator = (value: any) => any
@@ -44,9 +44,9 @@ export default class Attr extends Type {
    * Make value to be set to model property. This method is used when
    * instantiating model to set its properties.
    */
-  make (_parent: Fields, key: string): any {
+  make (value: any, _parent: Record, key: string): any {
     const mutator = this.mutator || this.model.mutators()[key]
 
-    return mutator ? mutator(this.value) : this.value
+    return mutator ? mutator(value) : value
   }
 }

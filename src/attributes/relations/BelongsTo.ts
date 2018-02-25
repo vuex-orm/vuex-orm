@@ -1,7 +1,6 @@
 import { Record, NormalizedData, PlainItem } from '../../data/Contract'
 import Model from '../../model/Model'
 import Repo, { Relation as Load } from '../../repo/Repo'
-import { Fields } from '../contracts/Contract'
 import Relation from './Relation'
 
 export default class BelongsTo extends Relation {
@@ -78,7 +77,7 @@ export default class BelongsTo extends Relation {
   /**
    * Make model instances of the relation.
    */
-  make (_parent: Fields, _key: string): Model | null {
-    return this.record ? new this.parent(this.record) : null
+  make (value: any, _parent: Record, _key: string): Model | null {
+    return value ? new this.parent(value) : null
   }
 }

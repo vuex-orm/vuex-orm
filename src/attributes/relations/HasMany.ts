@@ -1,6 +1,5 @@
 import { Record, NormalizedData, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
-import { Fields } from '../contracts/Contract'
 import Repo, { Relation as Load } from '../../repo/Repo'
 import Relation from './Relation'
 
@@ -82,15 +81,15 @@ export default class HasMany extends Relation {
   /**
    * Make model instances of the relation.
    */
-  make (_parent: Fields, _key: string): Model[] {
-    if (this.records.length === 0) {
+  make (value: any, _parent: Record, _key: string): Model[] {
+    if (value.length === 0) {
       return []
     }
 
-    if (typeof (this.records[0] as any) !== 'object') {
+    if (typeof value[0] !== 'object') {
       return []
     }
 
-    return this.records.map(record => new this.related(record))
+    return value.map((record: Record) => new this.related(record))
   }
 }

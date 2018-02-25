@@ -1,5 +1,5 @@
+import { Record } from '../data/Contract'
 import Model from '../model/Model'
-import { Fields } from './contracts/Contract'
 
 export default abstract class Attribute {
   /**
@@ -30,5 +30,5 @@ export default abstract class Attribute {
    * Make value to be set to model property. This method is used when
    * instantiating model to set its properties.
    */
-  abstract make (parent: Fields, key: string): any
+  abstract make (value: any, parent: Record, key: string): any
 }

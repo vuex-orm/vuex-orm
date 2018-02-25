@@ -45,7 +45,7 @@ export default class Model {
    * Create a model instance.
    */
   constructor (data?: Record) {
-    this.$initialize(data)
+    this.$fill(data)
   }
 
   /**
@@ -334,6 +334,33 @@ export default class Model {
   }
 
   /**
+   * Fill missing fields in given data with the default value. This method
+   * also fixes any wrong value assigned to the fields.
+   */
+  static fill (data?: Record): Record {
+    return this.processFill(data, this.fields())
+  }
+
+  /**
+   * Process `fill` method. This method is for the circuler call.
+   */
+  static processFill (data: Record = {}, fields: Fields): Record {
+    let record: Record = {}
+
+    Utils.forOwn(fields, (field, key) => {
+      if (field instanceof Attribute) {
+        record[key] = field.fill(data[key])
+
+        return
+      }
+
+      record[key] = this.processFill(data[key], (field as Fields))
+    })
+
+    return record
+  }
+
+  /**
    * Get the static class of this model.
    */
   $self (): typeof Model {
@@ -392,56 +419,22 @@ export default class Model {
   /**
    * Initialize the model by attaching all of the fields to its property.
    */
-  $initialize (data?: Record): void {
-    const fields = this.$merge(data)
-
-    this.$build(this, fields)
-  }
-
-  /**
-   * Merge given data into field's default value.
-   */
-  $merge (data?: Record): Fields {
-    if (!data) {
-      return this.$fields()
-    }
-
-    return this.$mergeFields({ ...this.$fields() }, data)
-  }
-
-  /**
-   * Merge given data with fields and create new fields.
-   */
-  $mergeFields (fields: Fields, data: Record): Fields {
-    Utils.forOwn(fields, (attr, key) => {
-      if (data[key] === undefined) {
-        return
-      }
-
-      if (attr instanceof Attribute) {
-        attr.set(data[key])
-
-        return
-      }
-
-      this.$mergeFields(attr, data[key])
-    })
-
-    return fields
+  $fill (data?: Record): void {
+    this.$build(this, this.$self().fill(data), this.$fields())
   }
 
   /**
    * Build model by initializing given data.
    */
-  $build (self: any, fields: Fields): void {
+  $build (self: any, data: Record, fields: Fields): void {
     _.forEach(fields, (field, key) => {
       if (field instanceof Attribute) {
-        self[key] = field.make(fields, key)
+        self[key] = field.make(data[key], data, key)
 
         return
       }
 
-      this.$build(self[key] = {}, field)
+      this.$build(self[key] = {}, data[key], field)
     })
   }
 

@@ -1,8 +1,6 @@
 import { Record, NormalizedData, PlainItem } from '../../data/Contract'
 import Model from '../../model/Model'
 import Repo, { Relation as Load } from '../../repo/Repo'
-import Attr from '../types/Attr'
-import { Fields } from '../contracts/Contract'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -73,10 +71,10 @@ export default class MorphTo extends Relation {
   /**
    * Make model instances of the relation.
    */
-  make (parent: Fields, _key: string): Model | null {
-    const related: string = (parent[this.type] as Attr).value
+  make (value: any, parent: Record, _key: string): Model | null {
+    const related: string = parent[this.type]
     const model = this.model.relation(related)
 
-    return this.record ? new model(this.record) : null
+    return value ? new model(value) : null
   }
 }
