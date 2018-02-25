@@ -15,10 +15,16 @@ export default abstract class Attribute {
   }
 
   /**
-   * Return the appropriate value for the normalization. This method will
-   * be called during the data normalization to fill field value.
+   * Normalize the given value. This method is called during data normalization
+   * to generate appropriate value to be saved to Vuex Store.
    */
-  abstract fill (value: any, parent: any): any
+  abstract normalize (value: any): any
+
+  /**
+   * Transform the given data to an appropriate value to be used for
+   * model instantiation.
+   */
+  abstract fill (value: any): any
 
   /**
    * Make value to be set to model property. This method is used when

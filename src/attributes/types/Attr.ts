@@ -26,6 +26,14 @@ export default class Attr extends Type {
   }
 
   /**
+   * Normalize the given value. This method is called during data normalization
+   * to generate appropriate value to be saved to Vuex Store.
+   */
+  normalize (value: any): any {
+    return this.fill(value)
+  }
+
+  /**
    * Return the default value if the given value is empty.
    */
   fill (value: any): any {

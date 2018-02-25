@@ -354,7 +354,7 @@ export default class Model {
         return
       }
 
-      record[key] = this.processFill(data[key], (field as Fields))
+      record[key] = this.processFill(data[key], field)
     })
 
     return record

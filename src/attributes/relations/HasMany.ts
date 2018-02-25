@@ -36,10 +36,24 @@ export default class HasMany extends Relation {
   }
 
   /**
+   * Normalize the given value. This method is called during data normalization
+   * to generate appropriate value to be saved to Vuex Store.
+   */
+  normalize (value: any): any {
+    return Array.isArray(value) ? value : []
+  }
+
+  /**
    * Return empty array if the value is not present.
    */
   fill (value: any): any {
-    return value || []
+    if (!Array.isArray(value)) {
+      return []
+    }
+
+    return value.filter((record) => {
+      return record && typeof record === 'object'
+    })
   }
 
   /**
@@ -47,13 +61,13 @@ export default class HasMany extends Relation {
    */
   attach (key: any, record: Record, data: NormalizedData): void {
     key.forEach((index: any) => {
-      const related = data[this.related.entity][index]
+      const related = data[this.related.entity]
 
-      if (!related || related[this.foreignKey] !== undefined) {
+      if (!related || !related[index] || related[index][this.foreignKey] !== undefined) {
         return
       }
 
-      related[this.foreignKey] = record.$id
+      related[index][this.foreignKey] = record.$id
     })
   }
 

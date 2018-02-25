@@ -10,19 +10,17 @@ export default class Data {
    * Normalize the data.
    */
   static normalize (data: any, repo: Repo): NormalizedData {
-    return Normalizer.normalize(data, repo)
+    const normalizedData = Normalizer.normalize(data, repo)
+
+    const attachedData = Attacher.attach(normalizedData, repo)
+
+    return Incrementer.increment(attachedData, repo)
   }
 
   /**
    * Fill missing records with default value based on model schema.
    */
   static fillAll (data: NormalizedData, repo: Repo): NormalizedData {
-    let records: NormalizedData = { ...data }
-
-    records = Attacher.attach(records, repo)
-    records = Builder.build(records, repo)
-    records = Incrementer.increment(records, repo)
-
-    return records
+    return Builder.build(data, repo)
   }
 }

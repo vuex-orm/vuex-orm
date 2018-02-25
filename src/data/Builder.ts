@@ -25,7 +25,7 @@ export default class Builder {
   static buildFields (record: Record, fields: Field): Record {
     return _.mapValues(fields, (field, key) => {
       if (field instanceof Attribute) {
-        return field.fill(record[key], record)
+        return field.normalize(record[key])
       }
 
       return this.buildFields(record[key] || {}, field)

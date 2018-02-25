@@ -36,10 +36,19 @@ export default class BelongsTo extends Relation {
   }
 
   /**
-   * Return null if the value is not present.
+   * Normalize the given value. This method is called during data normalization
+   * to generate appropriate value to be saved to Vuex Store.
+   */
+  normalize (value: any): any {
+    return value === undefined || Array.isArray(value) ? null : value
+  }
+
+  /**
+   * Transform the given data to an appropriate value to be used for
+   * model instantiation.
    */
   fill (value: any): any {
-    return value || null
+    return value && typeof value === 'object' ? value : null
   }
 
   /**
