@@ -34,7 +34,7 @@ describe('Data – Fill', () => {
       }
     }
 
-    expect(Data.fill(data, repo)).toEqual(expected)
+    expect(Data.fillAll(data, repo)).toEqual(expected)
   })
 
   it('removes unknown fields when filling data', () => {
@@ -67,7 +67,7 @@ describe('Data – Fill', () => {
       }
     }
 
-    expect(Data.fill(data, repo)).toEqual(expected)
+    expect(Data.fillAll(data, repo)).toEqual(expected)
   })
 
   it('sets the default value to the nested missing field', () => {
@@ -128,6 +128,6 @@ describe('Data – Fill', () => {
       }
     }
 
-    expect(Data.fill(data, repo)).toEqual(expected)
+    expect(Data.fillAll(data, repo)).toEqual(expected)
   })
 })

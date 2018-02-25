@@ -27,7 +27,7 @@ export default class Data {
   /**
    * Fill missing records with default value based on model schema.
    */
-  static fill (data: NormalizedData, repo: Repo, reset: boolean = false): NormalizedData {
+  static fillAll (data: NormalizedData, repo: Repo, reset: boolean = false): NormalizedData {
     let records: NormalizedData = { ...data }
 
     records = Attacher.attach(records, repo)

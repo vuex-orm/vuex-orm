@@ -145,6 +145,6 @@ describe('Data – Relations – Has Many By', () => {
 
     const normalizedData = Data.normalize(data, repo)
 
-    expect(Data.fill(normalizedData, repo)).toEqual(expected)
+    expect(Data.fillAll(normalizedData, repo)).toEqual(expected)
   })
 })

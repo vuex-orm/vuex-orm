@@ -218,7 +218,7 @@ export default class Repo {
     const normalizedData: NormalizedData = this.normalize(data)
     const toBePersisted: NormalizedData = {}
     const updatedItems: string[] = []
-    let persistedItems: string[] = []
+    let persistedItems: (string | number)[] = []
 
     // `normalizedData` contains the differenty entity types (e.g. `users`),
     _.forEach(normalizedData, (data, entity) => {
@@ -251,16 +251,16 @@ export default class Repo {
   /**
    * Persist data into Vuex Store.
    */
-  persist (defaultMethod: string, data: any, forceCreateFor: string[] = [], forceInsertFor: string[] = []): Item | Collection {
+  persist (method: string, data: any, forceCreateFor: string[] = [], forceInsertFor: string[] = []): Item | Collection {
     const normalizedData = this.normalize(data)
 
     if (_.isEmpty(normalizedData)) {
-      defaultMethod === 'create' && this.query[defaultMethod](normalizedData)
+      method === 'create' && this.query.create({})
 
-      return this.getReturnData([])
+      return null
     }
 
-    const items = this.processPersist(defaultMethod, normalizedData, forceCreateFor, forceInsertFor)
+    const items = this.processPersist(method, normalizedData, forceCreateFor, forceInsertFor)
 
     return this.getReturnData(items)
   }
@@ -268,10 +268,10 @@ export default class Repo {
   /**
    * Persist data into the store. It returns list of created ids.
    */
-  processPersist (defaultMethod: string, data: NormalizedData, forceCreateFor: string[] = [], forceInsertFor: string[] = []): string[] {
-    const items: string[] = []
+  processPersist (defaultMethod: string, data: NormalizedData, forceCreateFor: string[] = [], forceInsertFor: string[] = []): (string | number)[] {
+    const items: (string | number)[] = []
 
-    const records = Data.fill(data, this, defaultMethod === 'create')
+    const records = Data.fillAll(data, this, defaultMethod === 'create')
 
     _.forEach(records, (data, entity) => {
       const method = this.getPersistMethod(defaultMethod, entity, forceCreateFor, forceInsertFor)
@@ -315,7 +315,7 @@ export default class Repo {
   /**
    * Get all data that should be retunred.
    */
-  getReturnData (items: string[]): Item | Collection {
+  getReturnData (items: (string | number)[]): Item | Collection {
     if (items.length === 0) {
       return null
     }
@@ -331,7 +331,7 @@ export default class Repo {
    * Get all data that should be retunred. This method will always return
    * array of data even there's only a single item.
    */
-  getManyReturnData (items: string[]): Item | Collection {
+  getManyReturnData (items: (string | number)[]): Item | Collection {
     if (items.length === 0) {
       return []
     }

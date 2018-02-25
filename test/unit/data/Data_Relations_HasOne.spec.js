@@ -143,6 +143,6 @@ describe('Data – Relations – Has One', () => {
 
     const normalizedData = Data.normalize(data, repo)
 
-    expect(Data.fill(normalizedData, repo)).toEqual(expected)
+    expect(Data.fillAll(normalizedData, repo)).toEqual(expected)
   })
 })
