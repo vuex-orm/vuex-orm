@@ -1,3 +1,5 @@
+import './support/polyfills'
+
 import install, { Install } from './store/install'
 import use, { Use } from './plugins/use'
 import Database from './database/Database'

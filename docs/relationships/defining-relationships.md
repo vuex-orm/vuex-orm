@@ -5,6 +5,7 @@ Vuex ORM supports several different types of relationships:
 - [One To One](#one-to-one)
 - [One To Many](#one-to-many)
 - [Many To Many](#many-to-many)
+- [Has Many Through](#has-many-through)
 - [Polymorphic Relations](#polymorphic-relations)
 - [Many To Many Polymorphic Relations](#many-to-many-polymorphic-relations)
 
@@ -366,6 +367,64 @@ class RoleUser extends Model {
 ```
 
 As you can see, the relationship is defined the same as its User counterpart, except referencing the User model and the order of 3rd and 4th argument is inversed.
+
+## Has Many Through
+
+The "has-many-through" relationship provides a convenient shortcut for accessing distant relations via an intermediate relation. For example, a Country might have many Post through an intermediate User. In this example, you could easily gather all posts for a given country. Let's look at the models required to define this relationship:
+
+```js
+class Country extends Model {
+  static entity = 'countries'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      posts: this.hasManyThrough(Post, User, 'country_id', 'user_id')
+    }
+  }
+}
+
+class User extends Model {
+  static entity = 'users'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      country_id: this.attr(null)
+    }
+  }
+}
+
+class Post extends Model {
+  static entity = 'posts'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      user_id: this.attr(null)
+    }
+  }
+}
+```
+
+Though posts do not contain a country_id column, the `hasManyThrough` relation provides access to a country's posts. To perform this query, Vuex ORM inspects the `country_id` on the intermediate User model. After finding the matching user IDs, they are used to query the Post model.
+
+The first argument passed to the `hasManyThrough` method is the final model we wish to access, while the second argument is the intermediate model. The third argument is the name of the foreign key on the intermediate model. The fourth argument is the name of the foreign key on the final model.
+
+If you would like to customize the local key for the models, you could also pass the fifth argument which is the local key, while the sixth argument is the local key of the intermediate model.
+
+```js
+this.hasManyThrough(
+  Post, // Final model we wish to access.
+  User, // Intermediate model.
+  'country_id', // Foreign key on User model.
+  'user_id', // Foreign key on Post model.
+  'id', // Local key on Country model.
+  'id' // Local key on User model.
+)
+```
+
+> **NOTE:** When creating data that contains `hasManyThrough` relationship without intermediate relation, the intermediate record will not be generated. [See here](inserting-relationships#creating-has-many-through-relationship) for more details.
 
 ## Polymorphic Relations
 

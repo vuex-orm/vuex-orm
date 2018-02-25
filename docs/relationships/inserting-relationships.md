@@ -93,3 +93,107 @@ store.dispatch('entities/users/insert', {
 ```
 
 Note that the value passed to those `create` or `insert` options should be the name of the entity. Not the name of the field that defines the relationship in the User model.
+
+## Creating Has Many Through Relationship
+
+When creating data that contains `hasManyThrough` relationship without intermediate relation, the intermediate record will not be generated.
+
+Let's say you have following model definitions.
+
+```js
+class Country extends Model {
+  static entity = 'countries'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      users: this.hasMany(User, 'country_id'),
+      posts: this.hasManyThrough(Post, User, 'country_id', 'user_id')
+    }
+  }
+}
+
+class User extends Model {
+  static entity = 'users'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      country_id: this.attr(null),
+      posts: this.hasMany(Post, 'user_id')
+    }
+  }
+}
+
+class Post extends Model {
+  static entity = 'posts'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      user_id: this.attr(null)
+    }
+  }
+}
+```
+
+And then you try to save following data.
+
+```js
+const data = {
+  id: 1,
+  posts: [
+    { id: 1 },
+    { id: 2 }
+  ]
+}
+
+store.dispatch('entities/countries/create', { data })
+```
+
+Vuex ORM will normalize those data and save them to the store as below.
+
+```js
+{
+  countries: {
+    data: {
+      '1': { id: 1 }
+    }
+  },
+  users: {
+    data: {}
+  },
+  posts: {
+    data: {
+      '1': { id: 1, user_id: null },
+      '2': { id: 2, user_id: null }
+    }
+  }
+}
+```
+
+See there is no users record, and `user_id` at `posts` becomes empty. This happens because Vuex ORM wouldn't have any idea how would that posts relates to the intermediate model – User –. Hence if you create data like this, you wouldn't be able to retrieve them by getters anymore.
+
+So in such case, it is recommended to create data with the intermediate table.
+
+```js
+const data = {
+  id: 1,
+  users: [
+    {
+      id: 1,
+      posts: [
+        { id: 1 }
+      ]
+    },
+    {
+      id: 2,
+      posts: [
+        { id: 2 }
+      ]
+    }
+  ]
+}
+
+store.dispatch('entities/countries/create', { data })
+```

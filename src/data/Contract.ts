@@ -16,6 +16,6 @@ export type PlainItem = Record | null
 
 export type PlainCollection = Record[]
 
-export type Item = typeof Model | Record | null
+export type Item = Model | Record | null
 
-export type Collection = typeof Model[] | Record[]
+export type Collection = (Model | Record)[]
