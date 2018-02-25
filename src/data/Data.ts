@@ -27,12 +27,12 @@ export default class Data {
   /**
    * Fill missing records with default value based on model schema.
    */
-  static fillAll (data: NormalizedData, repo: Repo, reset: boolean = false): NormalizedData {
+  static fillAll (data: NormalizedData, repo: Repo): NormalizedData {
     let records: NormalizedData = { ...data }
 
     records = Attacher.attach(records, repo)
     records = Builder.build(records, repo)
-    records = Incrementer.increment(records, repo, reset)
+    records = Incrementer.increment(records, repo)
 
     return records
   }

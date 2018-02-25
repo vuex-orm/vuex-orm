@@ -41,41 +41,6 @@ describe('Repo – Create – Attributes', () => {
     expect(state).toEqual(expected)
   })
 
-  it('should reset increment value when creating a record', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.increment(),
-          name: this.attr('')
-        }
-      }
-    }
-
-    createApplication('entities', [{ model: User }])
-
-    const state = {
-      name: 'entities',
-      users: { data: {
-        '3': { $id: 3, id: 3, name: 'Jane' }
-      }}
-    }
-
-    const data = { name: 'John' }
-
-    const expected = {
-      name: 'entities',
-      users: { data: {
-        '1': { $id: 1, id: 1, name: 'John' }
-      }}
-    }
-
-    Repo.create(state, 'users', data)
-
-    expect(state).toEqual(expected)
-  })
-
   it('should increment value when creating multiple records', () => {
     class User extends Model {
       static entity = 'users'
@@ -102,8 +67,8 @@ describe('Repo – Create – Attributes', () => {
     const expected = {
       name: 'entities',
       users: { data: {
-        '1': { $id: 1, id: 1, name: 'John' },
-        '2': { $id: 2, id: 2, name: 'Jane' }
+        '4': { $id: 4, id: 4, name: 'John' },
+        '5': { $id: 5, id: 5, name: 'Jane' }
       }}
     }
 

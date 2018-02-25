@@ -10,23 +10,17 @@ export default class Incrementer {
   repo: Repo
 
   /**
-   * Whether to reset the id incrementation.
-   */
-  reset: boolean
-
-  /**
    * Create a new incrementer instance.
    */
-  constructor (repo: Repo, reset: boolean = false) {
+  constructor (repo: Repo) {
     this.repo = repo
-    this.reset = reset
   }
 
   /**
    * Increment fields that have increment attribute.
    */
-  static increment (data: NormalizedData, repo: Repo, reset?: boolean): NormalizedData {
-    return (new this(repo, reset)).increment(data)
+  static increment (data: NormalizedData, repo: Repo): NormalizedData {
+    return (new this(repo)).increment(data)
   }
 
   /**
@@ -83,7 +77,7 @@ export default class Incrementer {
    * with existing records.
    */
   max (data: any, repo: Repo, field: string): number {
-    const max: number = this.reset ? 0 : repo.max(field)
+    const max: number = repo.max(field)
     const records: any = _.map(data, value => value)
     const maxRecord: any = _.maxBy(records, field)
 

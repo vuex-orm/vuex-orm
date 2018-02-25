@@ -271,7 +271,7 @@ export default class Repo {
   processPersist (defaultMethod: string, data: NormalizedData, forceCreateFor: string[] = [], forceInsertFor: string[] = []): (string | number)[] {
     const items: (string | number)[] = []
 
-    const records = Data.fillAll(data, this, defaultMethod === 'create')
+    const records = Data.fillAll(data, this)
 
     _.forEach(records, (data, entity) => {
       const method = this.getPersistMethod(defaultMethod, entity, forceCreateFor, forceInsertFor)
