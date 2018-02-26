@@ -1,7 +1,7 @@
 import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
-describe('Features – Inserts – Create', () => {
+describe.only('Features – Inserts – Create', () => {
   class User extends Model {
     static entity = 'users'
 

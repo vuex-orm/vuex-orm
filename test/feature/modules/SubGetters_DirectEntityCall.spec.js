@@ -1,7 +1,7 @@
 import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
-describe('Features – Retrieve – Direct Entity Call', () => {
+describe('Features – Sub Getters – Direct Entity Call', () => {
   class User extends Model {
     static entity = 'users'
 
