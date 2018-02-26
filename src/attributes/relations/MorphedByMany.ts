@@ -43,11 +43,6 @@ export default class MorphedByMany extends Relation {
   relatedKey: string
 
   /**
-   * The related record.
-   */
-  records: PlainCollection = []
-
-  /**
    * Create a new belongs to instance.
    */
   constructor (

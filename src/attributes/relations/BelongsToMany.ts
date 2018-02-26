@@ -47,11 +47,6 @@ export default class BelongsToMany extends Relation {
   relatedKey: string
 
   /**
-   * The related record.
-   */
-  records: PlainCollection = []
-
-  /**
    * Create a new belongs to instance.
    */
   constructor (

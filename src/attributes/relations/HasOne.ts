@@ -20,11 +20,6 @@ export default class HasOne extends Relation {
   localKey: string
 
   /**
-   * The related record.
-   */
-  record: PlainItem = null
-
-  /**
    * Create a new has one instance.
    */
   constructor (model: typeof Model, related: typeof Model | string, foreignKey: string, localKey: string) {

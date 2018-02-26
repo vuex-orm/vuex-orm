@@ -20,11 +20,6 @@ export default class BelongsTo extends Relation {
   ownerKey: string
 
   /**
-   * The related record.
-   */
-  record: PlainItem = null
-
-  /**
    * Create a new belongs to instance.
    */
   constructor (model: typeof Model, parent: typeof Model | string, foreignKey: string, ownerKey: string) {

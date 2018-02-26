@@ -37,11 +37,6 @@ export default class HasManyThrough extends Relation {
   secondLocalKey: string
 
   /**
-   * The related records.
-   */
-  records: PlainCollection = []
-
-  /**
    * Create a new has many through instance.
    */
   constructor (

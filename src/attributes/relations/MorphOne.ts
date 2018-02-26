@@ -27,11 +27,6 @@ export default class MorphOne extends Relation {
   localKey: string
 
   /**
-   * The related record.
-   */
-  record: PlainItem = null
-
-  /**
    * Create a new belongs to instance.
    */
   constructor (model: typeof Model, related: Entity, id: string, type: string, localKey: string) {

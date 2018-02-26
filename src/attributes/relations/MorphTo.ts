@@ -17,11 +17,6 @@ export default class MorphTo extends Relation {
   type: string
 
   /**
-   * The related record.
-   */
-  record: PlainItem = null
-
-  /**
    * Create a new morph to instance.
    */
   constructor (model: typeof Model, id: string, type: string) {

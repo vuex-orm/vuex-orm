@@ -20,11 +20,6 @@ export default class HasMany extends Relation {
   localKey: string
 
   /**
-   * The related records.
-   */
-  records: PlainCollection = []
-
-  /**
    * Create a new has many instance.
    */
   constructor (model: typeof Model, related: typeof Model | string, foreignKey: string, localKey: string) {

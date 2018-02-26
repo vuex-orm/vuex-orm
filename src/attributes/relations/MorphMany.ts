@@ -27,11 +27,6 @@ export default class MorphMany extends Relation {
   localKey: string
 
   /**
-   * The related record.
-   */
-  records: PlainCollection = []
-
-  /**
    * Create a new belongs to instance.
    */
   constructor (model: typeof Model, related: Entity, id: string, type: string, localKey: string) {
