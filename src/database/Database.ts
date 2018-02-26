@@ -1,5 +1,4 @@
 import * as Vuex from 'vuex'
-import * as _ from '../support/lodash'
 import Model from '../model/Model'
 import Module, { Entity } from '../modules/Module'
 
@@ -39,6 +38,6 @@ export default class Database {
    * Register namespace to the all regitsered model.
    */
   registerNamespace (namespace: string): void {
-    _.forEach(this.entities, entity => { entity.model.connection = namespace })
+    this.entities.forEach(entity => { entity.model.connection = namespace })
   }
 }
