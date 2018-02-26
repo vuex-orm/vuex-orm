@@ -13,6 +13,7 @@ import MorphOne from '../attributes/relations/MorphOne'
 import MorphMany from '../attributes/relations/MorphMany'
 import MorphToMany from '../attributes/relations/MorphToMany'
 import MorphedByMany from '../attributes/relations/MorphedByMany'
+import NoKey from './NoKey'
 import IdAttribute from './IdAttribute'
 import ProcessStrategy from './ProcessStrategy'
 
@@ -25,9 +26,11 @@ export default class Schema {
    * Create a schema of given model.
    */
   static one (model: typeof Model, schemas: Schemas = {}, parent?: typeof Model, attr?: Relation): schema.Entity {
+    const noKey = new NoKey()
+
     const thisSchema = new schema.Entity(model.entity, {}, {
-      idAttribute: IdAttribute.create(model),
-      processStrategy: ProcessStrategy.create(model, parent, attr)
+      idAttribute: IdAttribute.create(noKey, model),
+      processStrategy: ProcessStrategy.create(noKey, model, parent, attr)
     })
 
     const definition = this.definition(model, {

@@ -61,7 +61,11 @@ export default class HasOne extends Relation {
       return
     }
 
-    related[key][this.foreignKey] = record.$id
+    if (!record[this.localKey]) {
+      record[this.localKey] = record.$id
+    }
+
+    related[key][this.foreignKey] = record[this.localKey]
   }
 
   /**

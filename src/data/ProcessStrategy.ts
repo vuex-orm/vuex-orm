@@ -3,6 +3,7 @@ import Model from '../model/Model'
 import Attrs, { Fields, Relation } from '../attributes/contracts/Contract'
 import Attribute from '../attributes/Attribute'
 import { Record } from './Contract'
+import NoKey from './NoKey'
 
 export type Strategy = (value: any, parent: any, key: string) => any
 
@@ -20,13 +21,13 @@ export default class ProcessStrategy {
   /**
    * Create the process strategy.
    */
-  static create (model: typeof Model, parent?: typeof Model, attr?: Relation): Strategy {
-    return (value: any, parentValue: any, _key: string) => {
+  static create (noKey: NoKey, model: typeof Model, parent?: typeof Model, attr?: Relation): Strategy {
+    return (value: any, parentValue: any, key: string) => {
       let record: Record = { ...value }
 
       record = this.fix(record, model)
 
-      record = this.setId(record, model)
+      record = this.setId(record, model, noKey, key)
 
       record = this.generateMorphFields(record, parentValue, parent, attr)
 
@@ -67,10 +68,10 @@ export default class ProcessStrategy {
   /**
    * Set id field to the record.
    */
-  static setId (record: Record, model: typeof Model): Record {
+  static setId (record: Record, model: typeof Model, noKey: NoKey, key: string): Record {
     const id = model.id(record)
 
-    return { ...record, $id: id === undefined ? this.noKey(true) : id }
+    return { ...record, $id: id !== undefined ? id : noKey.increment(key) }
   }
 
   /**

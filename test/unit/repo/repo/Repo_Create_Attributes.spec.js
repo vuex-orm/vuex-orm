@@ -1,12 +1,12 @@
 import { createApplication } from 'test/support/Helpers'
-import ProcessStrategy from 'app/data/ProcessStrategy'
+import NoKey from 'app/data/NoKey'
 import Model from 'app/model/Model'
 import Repo from 'app/repo/Repo'
 
 describe('Repo – Create – Attributes', () => {
-  afterEach(() => {
-    ProcessStrategy.count = 0
-  })
+  beforeEach(() => { NoKey.count = 0 })
+
+  afterEach(() => { NoKey.count = 0 })
 
   it('should increment the field value when creating a record if the field type is `increment`', () => {
     class User extends Model {

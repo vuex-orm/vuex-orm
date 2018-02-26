@@ -1,5 +1,5 @@
 import Model from '../model/Model'
-import ProcessStrategy from './ProcessStrategy'
+import NoKey from './NoKey'
 
 export type Attribute = (value: any, parent: any, key: string) => any
 
@@ -7,11 +7,11 @@ export default class IdAttribute {
   /**
    * Create the id attribute.
    */
-  static create (model: typeof Model): Attribute {
-    return (value: any, _parent: any, _key: string) => {
+  static create (noKey: NoKey, model: typeof Model): Attribute {
+    return (value: any, _parent: any, key: string) => {
       const id = model.id(value)
 
-      return id !== undefined ? id : ProcessStrategy.noKey()
+      return id !== undefined ? id : noKey.get(key)
     }
   }
 }
