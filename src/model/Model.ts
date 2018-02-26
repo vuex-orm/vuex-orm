@@ -213,6 +213,13 @@ export default class Model {
   }
 
   /**
+   * Mutators to mutate matching fields when instantiating the model.
+   */
+  static mutators (): { [field: string]: (value: any) => any } {
+    return {}
+  }
+
+  /**
    * Get connection instance out of the container.
    */
   static conn (): Connection {
@@ -324,13 +331,6 @@ export default class Model {
    */
   static hasPivotFields (): boolean {
     return this.pivotFields().length > 0
-  }
-
-  /**
-   * Mutators to mutate matching fields when instantiating the model.
-   */
-  static mutators (): { [field: string]: (value: any) => any } {
-    return {}
   }
 
   /**
