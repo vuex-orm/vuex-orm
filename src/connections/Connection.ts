@@ -1,4 +1,3 @@
-import * as _ from '../support/lodash'
 import * as Vuex from 'vuex'
 import Database from '../database/Database'
 import Model from '../model/Model'
@@ -35,7 +34,7 @@ export default class Connection {
    * Get models from the database.
    */
   models (): Models {
-    return _.reduce(this.database.entities, (models, entity) => {
+    return this.database.entities.reduce((models, entity) => {
       return {
         ...models,
         [entity.model.entity]: entity.model
