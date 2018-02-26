@@ -52,7 +52,7 @@ export default class HasOne extends Relation {
   attach (key: any, record: Record, data: NormalizedData): void {
     const related = data[this.related.entity]
 
-    if (!related || !related[key] || related[this.foreignKey] !== undefined) {
+    if (related && related[key] && related[key][this.foreignKey] !== undefined) {
       return
     }
 
