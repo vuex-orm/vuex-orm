@@ -31,6 +31,33 @@ describe('Data – Normalize', () => {
     expect(Data.normalize(data, repo)).toEqual(expected)
   })
 
+  it('removes any unkown fields from the data', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('')
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    const repo = new Repo(store.state.entities, 'users')
+
+    const data = { id: 1, name: 'John Doe', age: 24, role: 'user' }
+
+    const expected = {
+      users: {
+        '1': { $id: 1, id: 1, name: 'John Doe' }
+      }
+    }
+
+    expect(Data.normalize(data, repo)).toEqual(expected)
+  })
+
   it('can normalize list of data', () => {
     class User extends Model {
       static entity = 'users'
