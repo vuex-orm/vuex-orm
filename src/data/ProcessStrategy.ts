@@ -9,16 +9,6 @@ export type Strategy = (value: any, parent: any, key: string) => any
 
 export default class ProcessStrategy {
   /**
-   * Count to create a unique id for the record that missing its primary key.
-   */
-  static count: number = 0
-
-  /**
-   * Prefix string to be used for undefined primary key value.
-   */
-  static prefix: string = '_no_key_'
-
-  /**
    * Create the process strategy.
    */
   static create (noKey: NoKey, model: typeof Model, parent?: typeof Model, attr?: Relation): Strategy {
@@ -72,17 +62,6 @@ export default class ProcessStrategy {
     const id = model.id(record)
 
     return { ...record, $id: id !== undefined ? id : noKey.increment(key) }
-  }
-
-  /**
-   * Get string to be used for undefined primary key/
-   */
-  static noKey (increment: boolean = false): string {
-    if (increment) {
-      this.count++
-    }
-
-    return `_no_key_${this.count}`
   }
 
   /**
