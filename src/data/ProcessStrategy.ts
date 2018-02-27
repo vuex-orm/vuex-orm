@@ -44,7 +44,7 @@ export default class ProcessStrategy {
       }
 
       if (field instanceof Attribute) {
-        newRecord[key] = field.normalize(record[key])
+        newRecord[key] = field.fill(record[key])
 
         return
       }

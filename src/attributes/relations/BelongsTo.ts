@@ -31,19 +31,20 @@ export default class BelongsTo extends Relation {
   }
 
   /**
-   * Normalize the given value. This method is called during data normalization
-   * to generate appropriate value to be saved to Vuex Store.
+   * Transform given data to the appropriate value. This method will be called
+   * during data normalization to fix field that has an incorrect value,
+   * or add a missing field with the appropriate default value.
    */
-  normalize (value: any): any {
-    return value === undefined || Array.isArray(value) ? null : value
-  }
+  fill (value: any): string | number | null | Record {
+    if (value === undefined) {
+      return null
+    }
 
-  /**
-   * Transform the given data to an appropriate value to be used for
-   * model instantiation.
-   */
-  fill (value: any): any {
-    return value && typeof value === 'object' ? value : null
+    if (Array.isArray(value)) {
+      return null
+    }
+
+    return value
   }
 
   /**

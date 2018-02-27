@@ -6,12 +6,12 @@ export type Mutator = (value: any) => any
 
 export default class Attr extends Type {
   /**
-   * The value of the field.
+   * The default value of the field.
    */
   value: any
 
   /**
-   * Mutator for the field.
+   * The mutator for the field.
    */
   mutator?: Mutator
 
@@ -26,15 +26,9 @@ export default class Attr extends Type {
   }
 
   /**
-   * Normalize the given value. This method is called during data normalization
-   * to generate appropriate value to be saved to Vuex Store.
-   */
-  normalize (value: any): any {
-    return this.fill(value)
-  }
-
-  /**
-   * Return the default value if the given value is empty.
+   * Transform given data to the appropriate value. This method will be called
+   * during data normalization to fix field that has an incorrect value,
+   * or add a missing field with the appropriate default value.
    */
   fill (value: any): any {
     return value !== undefined ? value : this.value

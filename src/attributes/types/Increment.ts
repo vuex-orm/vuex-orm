@@ -8,18 +8,11 @@ export default class Increment extends Type {
   value: number = 1
 
   /**
-   * Normalize the given value. This method is called during data normalization
-   * to generate appropriate value to be saved to Vuex Store.
+   * Transform given data to the appropriate value. This method will be called
+   * during data normalization to fix field that has an incorrect value,
+   * or add a missing field with the appropriate default value.
    */
-  normalize (value: any): any {
-    return this.fill(value)
-  }
-
-  /**
-   * Return null if the value is not present. Auto incrementation should
-   * be done after the normalization completed.
-   */
-  fill (value: any): any {
+  fill (value: any): number | null {
     return typeof value === 'number' ? value : null
   }
 

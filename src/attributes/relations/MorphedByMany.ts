@@ -67,24 +67,12 @@ export default class MorphedByMany extends Relation {
   }
 
   /**
-   * Normalize the given value. This method is called during data normalization
-   * to generate appropriate value to be saved to Vuex Store.
+   * Transform given data to the appropriate value. This method will be called
+   * during data normalization to fix field that has an incorrect value,
+   * or add a missing field with the appropriate default value.
    */
-  normalize (value: any): any {
+  fill (value: any): (string | number | Record)[] {
     return Array.isArray(value) ? value : []
-  }
-
-  /**
-   * Return empty array if the value is not present.
-   */
-  fill (value: any): any {
-    if (!Array.isArray(value)) {
-      return []
-    }
-
-    return value.filter((record) => {
-      return record && typeof record === 'object'
-    })
   }
 
   /**
