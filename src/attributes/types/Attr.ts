@@ -39,8 +39,10 @@ export default class Attr extends Type {
    * instantiating a model or creating a plain object from a model.
    */
   make (value: any, _parent: Record, key: string): any {
+    const newValue = value !== undefined ? value : this.value
+
     const mutator = this.mutator || this.model.mutators()[key]
 
-    return mutator ? mutator(value) : value
+    return mutator ? mutator(newValue) : newValue
   }
 }

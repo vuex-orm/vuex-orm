@@ -52,7 +52,15 @@ export default class BelongsTo extends Relation {
    * instantiating a model or creating a plain object from a model.
    */
   make (value: any, _parent: Record, _key: string): Model | null {
-    return value ? new this.parent(value) : null
+    if (value === undefined) {
+      return null
+    }
+
+    if (Array.isArray(value)) {
+      return null
+    }
+
+    return new this.parent(value)
   }
 
   /**

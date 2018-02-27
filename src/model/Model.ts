@@ -45,7 +45,7 @@ export default class Model {
    * Create a model instance.
    */
   constructor (data?: Record) {
-    this.$fill(data)
+    this.$build(this, this.$fields(), data)
   }
 
   /**
@@ -334,33 +334,6 @@ export default class Model {
   }
 
   /**
-   * Fill missing fields in given data with the default value. This method
-   * also fixes any wrong value assigned to the fields.
-   */
-  static fill (data?: Record): Record {
-    return this.processFill(data, this.fields())
-  }
-
-  /**
-   * Process `fill` method. This method is for the circuler call.
-   */
-  static processFill (data: Record = {}, fields: Fields): Record {
-    let record: Record = {}
-
-    Utils.forOwn(fields, (field, key) => {
-      if (field instanceof Attribute) {
-        record[key] = field.fill(data[key])
-
-        return
-      }
-
-      record[key] = this.processFill(data[key], field)
-    })
-
-    return record
-  }
-
-  /**
    * Get the static class of this model.
    */
   $self (): typeof Model {
@@ -417,24 +390,23 @@ export default class Model {
   }
 
   /**
-   * Initialize the model by attaching all of the fields to its property.
-   */
-  $fill (data?: Record): void {
-    this.$build(this, this.$self().fill(data), this.$fields())
-  }
-
-  /**
    * Build model by initializing given data.
    */
-  $build (self: any, data: Record, fields: Fields): void {
-    _.forEach(fields, (field, key) => {
+  $build (self: { [key: string]: any }, fields: Fields, data?: Record): void {
+    // Create empty object if the `data` is not present. We can't use
+    // default-initialized parameter because it might be `null`.
+    const record = data || {}
+
+    Utils.forOwn(fields, (field, key) => {
       if (field instanceof Attribute) {
-        self[key] = field.make(data[key], data, key)
+        self[key] = field.make(record[key], record, key)
 
         return
       }
 
-      this.$build(self[key] = {}, data[key], field)
+      self[key] = {}
+
+      this.$build(self[key], field, record[key])
     })
   }
 

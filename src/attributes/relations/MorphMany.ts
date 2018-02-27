@@ -52,11 +52,23 @@ export default class MorphMany extends Relation {
    * instantiating a model or creating a plain object from a model.
    */
   make (value: any, _parent: Record, _key: string): Model[] {
+    if (value === undefined) {
+      return []
+    }
+
+    if (!Array.isArray(value)) {
+      return []
+    }
+
     if (value.length === 0) {
       return []
     }
 
-    return value.map((record: Record) => new this.related(record))
+    return value.filter((record) => {
+      return record && typeof record === 'object'
+    }).map((record) => {
+      return new this.related(record)
+    })
   }
 
   /**

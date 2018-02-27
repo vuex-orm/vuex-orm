@@ -48,10 +48,18 @@ export default class MorphTo extends Relation {
    * instantiating a model or creating a plain object from a model.
    */
   make (value: any, parent: Record, _key: string): Model | null {
+    if (value === undefined) {
+      return null
+    }
+
+    if (Array.isArray(value)) {
+      return null
+    }
+
     const related: string = parent[this.type]
     const model = this.model.relation(related)
 
-    return value ? new model(value) : null
+    return model ? new model(value) : null
   }
 
   /**
