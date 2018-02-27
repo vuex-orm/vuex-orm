@@ -40,6 +40,22 @@ export default class HasMany extends Relation {
   }
 
   /**
+   * Make value to be set to model property. This method is used when
+   * instantiating a model or creating a plain object from a model.
+   */
+  make (value: any, _parent: Record, _key: string): Model[] {
+    if (value.length === 0) {
+      return []
+    }
+
+    if (typeof value[0] !== 'object') {
+      return []
+    }
+
+    return value.map((record: Record) => new this.related(record))
+  }
+
+  /**
    * Attach the relational key to the given record.
    */
   attach (key: any, record: Record, data: NormalizedData): void {
@@ -65,20 +81,5 @@ export default class HasMany extends Relation {
     this.addConstraint(query, relation)
 
     return query.get()
-  }
-
-  /**
-   * Make model instances of the relation.
-   */
-  make (value: any, _parent: Record, _key: string): Model[] {
-    if (value.length === 0) {
-      return []
-    }
-
-    if (typeof value[0] !== 'object') {
-      return []
-    }
-
-    return value.map((record: Record) => new this.related(record))
   }
 }

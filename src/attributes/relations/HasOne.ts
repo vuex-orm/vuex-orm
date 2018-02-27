@@ -48,6 +48,14 @@ export default class HasOne extends Relation {
   }
 
   /**
+   * Make value to be set to model property. This method is used when
+   * instantiating a model or creating a plain object from a model.
+   */
+  make (value: any, _parent: Record, _key: string): Model | null {
+    return value ? new this.related(value) : null
+  }
+
+  /**
    * Attach the relational key to the given record.
    */
   attach (key: any, record: Record, data: NormalizedData): void {
@@ -75,12 +83,5 @@ export default class HasOne extends Relation {
     this.addConstraint(query, relation)
 
     return query.first()
-  }
-
-  /**
-   * Make model instances of the relation.
-   */
-  make (value: any, _parent: Record, _key: string): Model | null {
-    return value ? new this.related(value) : null
   }
 }

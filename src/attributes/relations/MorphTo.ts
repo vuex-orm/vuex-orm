@@ -44,6 +44,17 @@ export default class MorphTo extends Relation {
   }
 
   /**
+   * Make value to be set to model property. This method is used when
+   * instantiating a model or creating a plain object from a model.
+   */
+  make (value: any, parent: Record, _key: string): Model | null {
+    const related: string = parent[this.type]
+    const model = this.model.relation(related)
+
+    return value ? new model(value) : null
+  }
+
+  /**
    * Attach the relational key to the given record.
    */
   attach (_key: any, _record: Record, _data: NormalizedData): void {
@@ -63,15 +74,5 @@ export default class MorphTo extends Relation {
     this.addConstraint(query, relation)
 
     return query.first()
-  }
-
-  /**
-   * Make model instances of the relation.
-   */
-  make (value: any, parent: Record, _key: string): Model | null {
-    const related: string = parent[this.type]
-    const model = this.model.relation(related)
-
-    return value ? new model(value) : null
   }
 }

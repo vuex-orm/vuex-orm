@@ -40,6 +40,18 @@ export default class HasManyBy extends Relation {
   }
 
   /**
+   * Make value to be set to model property. This method is used when
+   * instantiating a model or creating a plain object from a model.
+   */
+  make (value: any, _parent: Record, _key: string): Model[] {
+    if (value.length === 0) {
+      return []
+    }
+
+    return value.map((record: Record) => new this.parent(record))
+  }
+
+  /**
    * Attach the relational key to the given record.
    */
   attach (key: any, record: Record, _data: NormalizedData): void {
@@ -66,16 +78,5 @@ export default class HasManyBy extends Relation {
 
       return query.first()
     })
-  }
-
-  /**
-   * Make model instances of the relation.
-   */
-  make (value: any, _parent: Record, _key: string): Model[] {
-    if (value.length === 0) {
-      return []
-    }
-
-    return value.map((record: Record) => new this.parent(record))
   }
 }

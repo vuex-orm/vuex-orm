@@ -76,6 +76,18 @@ export default class MorphToMany extends Relation {
   }
 
   /**
+   * Make value to be set to model property. This method is used when
+   * instantiating a model or creating a plain object from a model.
+   */
+  make (value: any, _parent: Record, _key: string): Model[] {
+    if (value.length === 0) {
+      return []
+    }
+
+    return value.map((record: Record) => new this.related(record))
+  }
+
+  /**
    * Attach the relational key to the given record.
    */
   attach (_key: any, _record: Record, _data: NormalizedData): void {
@@ -105,17 +117,6 @@ export default class MorphToMany extends Relation {
     this.addConstraint(relatedQuery, relation)
 
     return relatedQuery.get()
-  }
-
-  /**
-   * Make model instances of the relation.
-   */
-  make (value: any, _parent: Record, _key: string): Model[] {
-    if (value.length === 0) {
-      return []
-    }
-
-    return value.map((record: Record) => new this.related(record))
   }
 
   /**
