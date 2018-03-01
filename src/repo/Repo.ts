@@ -362,7 +362,7 @@ export default class Repo {
   processUpdateById (data: any, id?: any): Item | Collection {
     const items: any[] = []
 
-    if (id) {
+    if (id !== undefined) {
       this.query.update(data, id)
 
       items.push(id)
