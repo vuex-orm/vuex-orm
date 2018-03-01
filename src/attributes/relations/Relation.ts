@@ -22,7 +22,17 @@ export default abstract class Relation extends Attribute {
     if (relations.length !== 1) {
       relations.shift()
 
-      query.with(relations.join('.'))
+      if (relations.length > 1) {
+        query.with(relations.join('.'))
+      } else {
+        if (relations[0] === '*') {
+          query.withAll()
+        } else {
+          for (const relation of relations[0].split('|')) {
+            query.with(relation)
+          }
+        }
+      }
 
       return
     }

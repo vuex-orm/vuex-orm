@@ -472,7 +472,11 @@ export default class Repo {
    * Set the relationships that should be loaded.
    */
   with (name: string, constraint: Constraint | null = null): this {
-    this.load.push({ name, constraint })
+    if (name === '*') {
+      this.withAll()
+    } else {
+      this.load.push({ name, constraint })
+    }
 
     return this
   }
