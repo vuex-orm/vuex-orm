@@ -480,9 +480,13 @@ export default class Repo {
   }
 
   withAll (constraints: ConstraintCollection = {}): this {
-    for (const field in this.entity.fields()) {
-      const constraint = (field in constraints) ? constraints[field] : null;
-      this.load.push({ name: field, constraint })
+    const fields = this.entity.fields()
+
+    for (const field in fields) {
+      if (Attrs.isRelation(fields[field])) {
+        const constraint = (field in constraints) ? constraints[field] : null
+        this.load.push({ name: field, constraint })
+      }
     }
 
     return this
