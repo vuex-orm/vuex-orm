@@ -68,6 +68,91 @@ const user = store.getters['entities/users/query']()
 */
 ```
 
+## Load All Relations
+
+You can load all Relations with using the `withAll` method.
+
+```js
+const user = store.getters['entities/users/query']()
+  .withAll()
+  .find(1)
+
+/*
+  User {
+    id: 1,
+    name: 'john',
+    profile: Profile {
+      id: 1,
+      user_id: 1,
+      age: 24
+    },
+    posts: [
+      Post: {
+        id: 1,
+        user_id: 1,
+        body: '...',
+
+        comments: null
+      },
+
+      Post: {
+        id: 2,
+        user_id: 1,
+        body: '...',
+
+        comments: null
+      },
+    ]
+  }
+*/
+```
+
+To fetch all sub relations to a certain level you can use the `withAllRecursive` method.
+You can specify a depth to which relations should be loaded. The depth defaults to 3, so
+if you call `withAllRecursive` with no arguments, it will fetch all sub relations of
+sub relations of sub relations of the queried entity.
+
+```js
+const user = store.getters['entities/users/query']()
+  .withAllRecursive()
+  .find(1)
+
+/*
+  User {
+    id: 1,
+    name: 'john',
+    profile: Profile {
+      id: 1,
+      user_id: 1,
+      age: 24
+    },
+    posts: [
+      Post: {
+        id: 1,
+        user_id: 1,
+        body: '...',
+
+        comments: [
+          Comment: { id: 1, post_id: 1, body: '...' },
+          Comment: { id: 2, post_id: 1, body: '...' }
+        ]
+      },
+
+      Post: {
+        id: 2,
+        user_id: 1,
+        body: '...',
+
+        comments: [
+          Comment: { id: 3, post_id: 2, body: '...' },
+          Comment: { id: 4, post_id: 2, body: '...' }
+        ]
+      },
+    ]
+  }
+*/
+```
+
 ## Relation Constraint
 
 To filter the result of relation loaded with `with` method, you can do so by passing a closure to the second argument.
