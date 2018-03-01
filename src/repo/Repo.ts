@@ -11,6 +11,10 @@ export type Buildable = PlainItem | PlainCollection | null
 
 export type Constraint = (query: Repo) => void | boolean
 
+export type ConstraintCollection = {
+  [relationName: string]: Constraint
+}
+
 export interface Relation {
   name: string
   constraint: null | Constraint
@@ -471,6 +475,15 @@ export default class Repo {
    */
   with (name: string, constraint: Constraint | null = null): this {
     this.load.push({ name, constraint })
+
+    return this
+  }
+
+  withAll (constraints: ConstraintCollection = {}): this {
+    for (const field in this.entity.fields()) {
+      const constraint = (field in constraints) ? constraints[field] : null;
+      this.load.push({ name: field, constraint })
+    }
 
     return this
   }
