@@ -226,10 +226,11 @@ describe('Repo – Retrieve – Relations', () => {
       posts: [{ $id: 3, id: 3, user_id: 1, author: 1 }]
     };
 
+    const user1 = Repo.query(state, 'users', false).withAll().first()
+    const user2 = Repo.query(state, 'users', false).with('*').first()
 
-    const user = Repo.query(state, 'users', false).withAll().first()
-
-    expect(user).toEqual(expected)
+    expect(user1).toEqual(expected)
+    expect(user2).toEqual(expected)
   })
 
   it('can query all relations recursively', () => {
@@ -325,7 +326,7 @@ describe('Repo – Retrieve – Relations', () => {
     expect(post).toEqual(expected)
   })
 
-  it('can resolve nested relation with where clouse', () => {
+  it('can resolve nested relation with where clause', () => {
     const state = {
       name: 'entities',
       users: { data: {
@@ -421,6 +422,63 @@ describe('Repo – Retrieve – Relations', () => {
     const post = Repo.query(state, 'users', false).with('posts.comments.likes').first()
 
     expect(post).toEqual(expected)
+  })
+
+  it('can resolve child relations with multiple sub relations', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+          '1': { $id: 1, id: 1, profile: 3 }
+        }},
+      profiles: { data: {
+          '3': { $id: 3, id: 3, user_id: 1, users: 1 }
+        }},
+      posts: { data: {
+          '1': { id: 1, user_id: 1, title: 'Post Title', reviews: [1, 2] }
+        }},
+      comments: { data: {
+          '1': { id: 1, post_id: 1, type: 'review' }
+        }},
+      likes: { data: {
+          '1': { id: 1, comment_id: 1 }
+        }},
+      reviews: { data: {
+          '1': { id: 1 },
+          '2': { id: 2 }
+        }}
+    }
+
+    const expected1 = {
+      '$id': 1,
+      'id': 1,
+      'profile': 3,
+      'posts': [{
+        'id': 1,
+        'user_id': 1,
+        'title': 'Post Title',
+        'reviews': [{'id': 1}, {'id': 2}],
+        'comments': [{'id': 1, 'post_id': 1, 'type': 'review'}]
+      }]
+    };
+    const expected2 = {
+      '$id': 1,
+      'id': 1,
+      'profile': 3,
+      'posts': [{
+        'id': 1,
+        'user_id': 1,
+        'title': 'Post Title',
+        'reviews': [{'id': 1}, {'id': 2}],
+        'author': {'$id': 1, 'id': 1, 'profile': 3},
+        'comments': [{'id': 1, 'post_id': 1, 'type': 'review'}]
+      }]
+    };
+
+    const user1 = Repo.query(state, 'users', false).with('posts.reviews|comments').first()
+    const user2 = Repo.query(state, 'users', false).with('posts.*').first()
+
+    expect(user1).toEqual(expected1)
+    expect(user2).toEqual(expected2)
   })
 
   it('can query data depending on relationship existence', () => {
