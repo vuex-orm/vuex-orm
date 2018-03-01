@@ -18,12 +18,12 @@ describe('Features – Update', () => {
     const store = createStore([{ model: User }])
 
     store.dispatch('entities/users/create', {
-      data: { id: 1, name: 'John Doe', age: 30 }
+      data: { id: 0, name: 'John Doe', age: 30 }
     })
 
-    store.dispatch('entities/users/update', { id: 1, age: 24 })
+    store.dispatch('entities/users/update', { id: 0, age: 24 })
 
-    const user = store.getters['entities/users/find'](1)
+    const user = store.getters['entities/users/find'](0)
 
     expect(user.name).toBe('John Doe')
     expect(user.age).toBe(24)
