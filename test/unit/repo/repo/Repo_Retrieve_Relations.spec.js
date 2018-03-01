@@ -180,13 +180,13 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       posts: { data: {
-        '1': { id: 1, title: 'Post Title', comments: [1, 2, 3] }
-      }},
+          '1': { id: 1, title: 'Post Title', comments: [1, 2, 3] }
+        }},
       comments: { data: {
-        '1': { id: 1, post_id: 1, type: 'review' },
-        '2': { id: 2, post_id: 1, type: 'comment' },
-        '3': { id: 3, post_id: 1, type: 'review' }
-      }}
+          '1': { id: 1, post_id: 1, type: 'review' },
+          '2': { id: 2, post_id: 1, type: 'comment' },
+          '3': { id: 3, post_id: 1, type: 'review' }
+        }}
     }
 
     const expected = {
@@ -201,6 +201,33 @@ describe('Repo – Retrieve – Relations', () => {
     const post = Repo.query(state, 'posts', false).with('comments', (query) => {
       query.where('type', 'review')
     }).first()
+
+    expect(post).toEqual(expected)
+  })
+
+  it('can query all relations', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+          '1': { $id: 1, id: 1, profile: 3 }
+        }},
+      profiles: { data: {
+          '3': { $id: 3, id: 3, user_id: 1, users: 1 }
+        }},
+      posts: { data: {
+          '3': { $id: 3, id: 3, user_id: 1, author: 1 }
+        }}
+    }
+
+    const expected = {
+      $id: 1,
+      id: 1,
+      profile: { $id: 3, id: 3, user_id: 1, users: 1 },
+      posts: [{ $id: 3, id: 3, user_id: 1, author: 1 }]
+    };
+
+
+    const post = Repo.query(state, 'users', false).withAll().first()
 
     expect(post).toEqual(expected)
   })
