@@ -7884,7 +7884,7 @@ var Repo = /** @class */ (function () {
      */
     Repo.prototype.processUpdateById = function (data, id) {
         var items = [];
-        if (id) {
+        if (id !== undefined) {
             this.query.update(data, id);
             items.push(id);
         }
@@ -8814,6 +8814,21 @@ function use (plugin, options) {
         Model: Model,
         Repo: Repo,
         Query: Query,
+        Type: Type,
+        Attr: Attr,
+        Increment: Increment,
+        Relation: Relation,
+        HasOne: HasOne,
+        BelongsTo: BelongsTo,
+        HasMany: HasMany,
+        HasManyBy: HasManyBy,
+        BelongsToMany: BelongsToMany,
+        HasManyThrough: HasManyThrough,
+        MorphTo: MorphTo,
+        MorphOne: MorphOne,
+        MorphMany: MorphMany,
+        MorphToMany: MorphToMany,
+        MorphedByMany: MorphedByMany,
         rootGetters: rootGetters,
         subGetters: subGetters,
         rootActions: rootActions,
@@ -8922,6 +8937,21 @@ var index$1 = {
     Model: Model,
     Repo: Repo,
     Query: Query,
+    Type: Type,
+    Attr: Attr,
+    Increment: Increment,
+    Relation: Relation,
+    HasOne: HasOne,
+    BelongsTo: BelongsTo,
+    HasMany: HasMany,
+    HasManyBy: HasManyBy,
+    BelongsToMany: BelongsToMany,
+    HasManyThrough: HasManyThrough,
+    MorphTo: MorphTo,
+    MorphOne: MorphOne,
+    MorphMany: MorphMany,
+    MorphToMany: MorphToMany,
+    MorphedByMany: MorphedByMany,
     rootGetters: rootGetters,
     subGetters: subGetters,
     rootActions: rootActions,
@@ -8930,4 +8960,4 @@ var index$1 = {
 };
 
 export default index$1;
-export { install, use, Database, Model, Repo, Query, rootGetters, subGetters, rootActions, subActions, mutations };
+export { install, use, Database, Model, Repo, Query, Type, Attr, Increment, Relation, HasOne, BelongsTo, HasMany, HasManyBy, BelongsToMany, HasManyThrough, MorphTo, MorphOne, MorphMany, MorphToMany, MorphedByMany, rootGetters, subGetters, rootActions, subActions, mutations };
