@@ -68,6 +68,14 @@ const user = store.getters['entities/users/query']()
 */
 ```
 
+You can load multiple sub relations by separating them with `|`;
+
+```js
+const user = store.getters['entities/users/query']()
+  .with('posts.comments|reviews')
+  .find(1)
+```
+
 ## Load All Relations
 
 You can load all Relations with using the `withAll` method.
@@ -105,6 +113,14 @@ const user = store.getters['entities/users/query']()
     ]
   }
 */
+```
+
+To fetch all sub relations of a relation using the dot syntax, use `*`;
+
+```js
+const user = store.getters['entities/users/query']()
+  .with('posts.*') // Fetches all relations of all posts
+  .find(1)
 ```
 
 To fetch all sub relations to a certain level you can use the `withAllRecursive` method.
