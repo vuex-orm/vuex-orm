@@ -227,9 +227,74 @@ describe('Repo – Retrieve – Relations', () => {
     };
 
 
-    const post = Repo.query(state, 'users', false).withAll().first()
+    const user = Repo.query(state, 'users', false).withAll().first()
 
-    expect(post).toEqual(expected)
+    expect(user).toEqual(expected)
+  })
+
+  it('can query all relations recursively', () => {
+    const state = {
+      name: 'entities',
+      users: { data: {
+          '1': { $id: 1, id: 1, profile: 3 }
+        }},
+      profiles: { data: {
+          '3': { $id: 3, id: 3, user_id: 1, users: 1 }
+        }},
+      posts: { data: {
+          '1': { id: 1, user_id: 1, title: 'Post Title', reviews: [1, 2] }
+        }},
+      comments: { data: {
+          '1': { id: 1, post_id: 1, type: 'review' }
+        }},
+      likes: { data: {
+          '1': { id: 1, comment_id: 1 }
+        }},
+      reviews: { data: {
+          '1': { id: 1 },
+          '2': { id: 2 }
+        }}
+    }
+
+    const expected = {
+      '$id': 1,
+      'id': 1,
+      'posts': [{
+        'author': {
+          '$id': 1,
+          'id': 1,
+          'posts': [{'id': 1, 'reviews': [1, 2], 'title': 'Post Title', 'user_id': 1}],
+          'profile': {'$id': 3, 'id': 3, 'user_id': 1, 'users': 1}
+        },
+        'comments': [{
+          'id': 1,
+          'likes': [{'comment_id': 1, 'id': 1}],
+          'post': {'id': 1, 'reviews': [1, 2], 'title': 'Post Title', 'user_id': 1},
+          'post_id': 1,
+          'type': 'review'
+        }],
+        'id': 1,
+        'reviews': [{'id': 1}, {'id': 2}],
+        'title': 'Post Title',
+        'user_id': 1
+      }],
+      'profile': {
+        '$id': 3,
+        'id': 3,
+        'user': {
+          '$id': 1,
+          'id': 1,
+          'posts': [{'id': 1, 'reviews': [1, 2], 'title': 'Post Title', 'user_id': 1}],
+          'profile': {'$id': 3, 'id': 3, 'user_id': 1, 'users': 1}
+        },
+        'user_id': 1,
+        'users': 1
+      }
+    };
+
+    const user = Repo.query(state, 'users', false).withAllRecursive(2).first()
+
+    expect(user).toEqual(expected)
   })
 
   it('can resolve nested relation', () => {
