@@ -1,6 +1,9 @@
 import * as _ from '../support/lodash'
+import Utils from '../support/Utils'
 import Container from '../connections/Container'
 import { Record, PlainItem, PlainCollection } from '../data/Contract'
+import { Fields } from '../attributes/contracts/Contract'
+import Attribute from '../attributes/Attribute'
 import Model from '../model/Model'
 import { State, EntityState } from '../modules/Module'
 
@@ -133,16 +136,37 @@ export default class Query {
    * Update data in the state.
    */
   update (data: Record, condition: Condition): void {
+    const fields = this.model().fields()
+
     if (typeof condition !== 'function') {
       if (this.entity.data[condition]) {
-        this.entity.data[condition] = _.merge(this.entity.data[condition], data)
+        this.processUpdate(this.entity.data[condition], data, fields)
       }
 
       return
     }
 
-    this.entity.data = _.mapValues(this.entity.data, (record) => {
-      return condition(record) ? _.merge(record, data) : record
+    Utils.forOwn(this.entity.data, (record) => {
+      condition(record) && this.processUpdate(record, data, fields)
+    })
+  }
+
+  /**
+   * Process the update by recursively checking the model schema.
+   */
+  processUpdate (data: Record, record: Record, fields: Fields): void {
+    Utils.forOwn(fields, (field, key) => {
+      if (record[key] === undefined) {
+        return
+      }
+
+      if (field instanceof Attribute) {
+        data[key] = record[key]
+
+        return
+      }
+
+      this.processUpdate(data[key], record[key], field)
     })
   }
 

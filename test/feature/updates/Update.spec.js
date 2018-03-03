@@ -189,6 +189,92 @@ describe('Features – Update', () => {
     expect(user.settings.email).toBe('john@example.com')
   })
 
+  it('can update array field', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          parameters: this.attr([])
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    await store.dispatch('entities/users/create', {
+      data: { id: 1, parameters: [1, 2] }
+    })
+
+    await store.dispatch('entities/users/update', {
+      id: 1,
+      parameters: [3]
+    })
+
+    const user = store.getters['entities/users/find'](1)
+
+    expect(user.parameters).toEqual([3])
+  })
+
+  it('can update object field', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          settings: this.attr({})
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    await store.dispatch('entities/users/create', {
+      data: { id: 1, settings: { role: 'admin' } }
+    })
+
+    await store.dispatch('entities/users/update', {
+      id: 1,
+      settings: { active: true }
+    })
+
+    const user = store.getters['entities/users/find'](1)
+
+    expect(user.settings).toEqual({ active: true })
+  })
+
+  it('ignores field which is not defined at model schema', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('')
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    await store.dispatch('entities/users/create', {
+      data: { id: 1, name: 'John Doe' }
+    })
+
+    await store.dispatch('entities/users/update', {
+      id: 1,
+      name: 'Jane Doe',
+      age: 24
+    })
+
+    const user = store.getters['entities/users/find'](1)
+
+    expect(user.name).toBe('Jane Doe')
+    expect(user.age).toBe(undefined)
+  })
+
   it('does nothing if the condition did not match', () => {
     class User extends Model {
       static entity = 'users'
@@ -208,6 +294,7 @@ describe('Features – Update', () => {
       data: { id: 1, name: 'John Doe', age: 30 }
     })
 
+    store.dispatch('entities/users/update', { id: 2, age: 24 })
     store.dispatch('entities/users/update', { user_id: 2, age: 24 })
 
     const user = store.getters['entities/users/find'](1)
