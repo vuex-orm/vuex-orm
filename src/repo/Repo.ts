@@ -11,6 +11,8 @@ export type Buildable = PlainItem | PlainCollection | null
 
 export type Constraint = (query: Repo) => void | boolean
 
+export type ConstraintCallback = (relationName: string) => Constraint | null
+
 export interface Relation {
   name: string
   constraint: null | Constraint
@@ -471,6 +473,34 @@ export default class Repo {
    */
   with (name: string, constraint: Constraint | null = null): this {
     this.load.push({ name, constraint })
+
+    return this
+  }
+
+  /**
+   * Query all relations.
+   */
+  withAll (constraints: ConstraintCallback = () => null): this {
+    const fields = this.entity.fields()
+
+    for (const field in fields) {
+      if (Attrs.isRelation(fields[field])) {
+        this.load.push({ name: field, constraint: constraints(field) })
+      }
+    }
+
+    return this
+  }
+
+  /**
+   * Query all relations recursively.
+   */
+  withAllRecursive (depth: number = 3): this {
+    this.withAll(() => {
+      return depth > 0 ? (query: Repo) => {
+        query.withAllRecursive(depth - 1)
+      } : null
+    })
 
     return this
   }
