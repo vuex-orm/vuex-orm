@@ -135,26 +135,29 @@ export default class Query {
   /**
    * Update data in the state.
    */
-  update (data: Record, condition: Condition): void {
-    const fields = this.model().fields()
-
+  update (data: Record | ((record: Record) => void), condition: Condition): void {
     if (typeof condition !== 'function') {
-      if (this.entity.data[condition]) {
-        this.processUpdate(this.entity.data[condition], data, fields)
-      }
+      this.entity.data[condition] && this.processUpdate(this.entity.data[condition], data)
 
       return
     }
 
     Utils.forOwn(this.entity.data, (record) => {
-      condition(record) && this.processUpdate(record, data, fields)
+      condition(record) && this.processUpdate(record, data)
     })
+  }
+
+  /**
+   * Process the update depending on data type.
+   */
+  processUpdate (data: Record, record: Record | ((record: Record) => void)): void {
+    typeof record === 'function' ? record(data) : this.processUpdateRecursively(data, record, this.model().fields())
   }
 
   /**
    * Process the update by recursively checking the model schema.
    */
-  processUpdate (data: Record, record: Record, fields: Fields): void {
+  processUpdateRecursively (data: Record, record: Record, fields: Fields): void {
     Utils.forOwn(fields, (field, key) => {
       if (record[key] === undefined) {
         return
@@ -166,7 +169,7 @@ export default class Query {
         return
       }
 
-      this.processUpdate(data[key], record[key], field)
+      this.processUpdateRecursively(data[key], record[key], field)
     })
   }
 
