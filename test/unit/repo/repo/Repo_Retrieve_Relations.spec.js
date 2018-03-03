@@ -180,13 +180,13 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       posts: { data: {
-          '1': { id: 1, title: 'Post Title', comments: [1, 2, 3] }
-        }},
+        '1': { id: 1, title: 'Post Title', comments: [1, 2, 3] }
+      }},
       comments: { data: {
-          '1': { id: 1, post_id: 1, type: 'review' },
-          '2': { id: 2, post_id: 1, type: 'comment' },
-          '3': { id: 3, post_id: 1, type: 'review' }
-        }}
+        '1': { id: 1, post_id: 1, type: 'review' },
+        '2': { id: 2, post_id: 1, type: 'comment' },
+        '3': { id: 3, post_id: 1, type: 'review' }
+      }}
     }
 
     const expected = {
@@ -209,14 +209,14 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       users: { data: {
-          '1': { $id: 1, id: 1, profile: 3 }
-        }},
+        '1': { $id: 1, id: 1, profile: 3 }
+      }},
       profiles: { data: {
-          '3': { $id: 3, id: 3, user_id: 1, users: 1 }
-        }},
+        '3': { $id: 3, id: 3, user_id: 1, users: 1 }
+      }},
       posts: { data: {
-          '3': { $id: 3, id: 3, user_id: 1, author: 1 }
-        }}
+        '3': { $id: 3, id: 3, user_id: 1, author: 1 }
+      }}
     }
 
     const expected = {
@@ -224,7 +224,7 @@ describe('Repo – Retrieve – Relations', () => {
       id: 1,
       profile: { $id: 3, id: 3, user_id: 1, users: 1 },
       posts: [{ $id: 3, id: 3, user_id: 1, author: 1 }]
-    };
+    }
 
     const user1 = Repo.query(state, 'users', false).withAll().first()
     const user2 = Repo.query(state, 'users', false).with('*').first()
@@ -237,24 +237,24 @@ describe('Repo – Retrieve – Relations', () => {
     const state = {
       name: 'entities',
       users: { data: {
-          '1': { $id: 1, id: 1, profile: 3 }
-        }},
+        '1': { $id: 1, id: 1, profile: 3 }
+      }},
       profiles: { data: {
-          '3': { $id: 3, id: 3, user_id: 1, users: 1 }
-        }},
+        '3': { $id: 3, id: 3, user_id: 1, users: 1 }
+      }},
       posts: { data: {
-          '1': { id: 1, user_id: 1, title: 'Post Title', reviews: [1, 2] }
-        }},
+        '1': { id: 1, user_id: 1, title: 'Post Title', reviews: [1, 2] }
+      }},
       comments: { data: {
-          '1': { id: 1, post_id: 1, type: 'review' }
-        }},
+        '1': { id: 1, post_id: 1, type: 'review' }
+      }},
       likes: { data: {
-          '1': { id: 1, comment_id: 1 }
-        }},
+        '1': { id: 1, comment_id: 1 }
+      }},
       reviews: { data: {
-          '1': { id: 1 },
-          '2': { id: 2 }
-        }}
+        '1': { id: 1 },
+        '2': { id: 2 }
+      }}
     }
 
     const expected = {
@@ -264,18 +264,18 @@ describe('Repo – Retrieve – Relations', () => {
         'author': {
           '$id': 1,
           'id': 1,
-          'posts': [{'id': 1, 'reviews': [1, 2], 'title': 'Post Title', 'user_id': 1}],
-          'profile': {'$id': 3, 'id': 3, 'user_id': 1, 'users': 1}
+          'posts': [{ 'id': 1, 'reviews': [1, 2], 'title': 'Post Title', 'user_id': 1 }],
+          'profile': { '$id': 3, 'id': 3, 'user_id': 1, 'users': 1 }
         },
         'comments': [{
           'id': 1,
-          'likes': [{'comment_id': 1, 'id': 1}],
-          'post': {'id': 1, 'reviews': [1, 2], 'title': 'Post Title', 'user_id': 1},
+          'likes': [{ 'comment_id': 1, 'id': 1 }],
+          'post': { 'id': 1, 'reviews': [1, 2], 'title': 'Post Title', 'user_id': 1 },
           'post_id': 1,
           'type': 'review'
         }],
         'id': 1,
-        'reviews': [{'id': 1}, {'id': 2}],
+        'reviews': [{ 'id': 1 }, { 'id': 2 }],
         'title': 'Post Title',
         'user_id': 1
       }],
@@ -285,8 +285,8 @@ describe('Repo – Retrieve – Relations', () => {
         'user': {
           '$id': 1,
           'id': 1,
-          'posts': [{'id': 1, 'reviews': [1, 2], 'title': 'Post Title', 'user_id': 1}],
-          'profile': {'$id': 3, 'id': 3, 'user_id': 1, 'users': 1}
+          'posts': [{ 'id': 1, 'reviews': [1, 2], 'title': 'Post Title', 'user_id': 1 }],
+          'profile': { '$id': 3, 'id': 3, 'user_id': 1, 'users': 1 }
         },
         'user_id': 1,
         'users': 1

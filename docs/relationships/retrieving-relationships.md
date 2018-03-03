@@ -89,11 +89,13 @@ const user = store.getters['entities/users/query']()
   User {
     id: 1,
     name: 'john',
+
     profile: Profile {
       id: 1,
       user_id: 1,
       age: 24
     },
+
     posts: [
       Post: {
         id: 1,
@@ -119,14 +121,11 @@ To fetch all sub relations of a relation using the dot syntax, use `*`;
 
 ```js
 const user = store.getters['entities/users/query']()
-  .with('posts.*') // Fetches all relations of all posts
+  .with('posts.*') // Fetches all relations of all posts.
   .find(1)
 ```
 
-To fetch all sub relations to a certain level you can use the `withAllRecursive` method.
-You can specify a depth to which relations should be loaded. The depth defaults to 3, so
-if you call `withAllRecursive` with no arguments, it will fetch all sub relations of
-sub relations of sub relations of the queried entity.
+To fetch all sub relations to a certain level you can use the `withAllRecursive` method. You can specify a depth to which relations should be loaded. The depth defaults to 3, so if you call `withAllRecursive` with no arguments, it will fetch all sub relations of sub relations of sub relations of the queried entity.
 
 ```js
 const user = store.getters['entities/users/query']()
@@ -137,11 +136,13 @@ const user = store.getters['entities/users/query']()
   User {
     id: 1,
     name: 'john',
+
     profile: Profile {
       id: 1,
       user_id: 1,
       age: 24
     },
+    
     posts: [
       Post: {
         id: 1,
