@@ -201,7 +201,7 @@ store.dispatch('entities/users/update', {
 
 `where` condition can be a `Number` or a `String` representing the value of the primary key of the model or can be a `Function` to determine the target data. `Function` takes the record as the argument and must return `Boolean`.
 
-`data` is the data you want to update.
+`data` is the data you want to update. `data` also could be just a plain object, or a `Function`.
 
 Let's see some example here to understand how it works.
 
@@ -266,6 +266,18 @@ store.dispatch('entities/users/update', {
   },
 
   data: { age: 24 }
+})
+```
+
+Finally, you can pass `Function` to the `data`. The `Function` will receive target record as an argument. Then you can modify any properties. This is especially useful when you want to interact with the field that contains `Array` or `Object`.
+
+```js
+store.dispatch('entities/users/update', {
+  where: 1,
+  data (user) {
+    user.name = 'Jane Doe'
+    user.arrayField.push(1)
+  }
 })
 ```
 
