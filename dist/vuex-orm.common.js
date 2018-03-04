@@ -5988,7 +5988,20 @@ var Relation = /** @class */ (function (_super) {
         var relations = relation.name.split('.');
         if (relations.length !== 1) {
             relations.shift();
-            query.with(relations.join('.'));
+            if (relations.length > 1) {
+                query.with(relations.join('.'));
+            }
+            else {
+                if (relations[0] === '*') {
+                    query.withAll();
+                }
+                else {
+                    for (var _i = 0, _a = relations[0].split('|'); _i < _a.length; _i++) {
+                        var relation_1 = _a[_i];
+                        query.with(relation_1);
+                    }
+                }
+            }
             return;
         }
         var result = relation.constraint && relation.constraint(query);
@@ -7383,14 +7396,35 @@ var Query = /** @class */ (function () {
      * Update data in the state.
      */
     Query.prototype.update = function (data, condition) {
+        var _this = this;
         if (typeof condition !== 'function') {
-            if (this.entity.data[condition]) {
-                this.entity.data[condition] = merge(this.entity.data[condition], data);
-            }
+            this.entity.data[condition] && this.processUpdate(this.entity.data[condition], data);
             return;
         }
-        this.entity.data = mapValues(this.entity.data, function (record) {
-            return condition(record) ? merge(record, data) : record;
+        Utils.forOwn(this.entity.data, function (record) {
+            condition(record) && _this.processUpdate(record, data);
+        });
+    };
+    /**
+     * Process the update depending on data type.
+     */
+    Query.prototype.processUpdate = function (data, record) {
+        typeof record === 'function' ? record(data) : this.processUpdateRecursively(data, record, this.model().fields());
+    };
+    /**
+     * Process the update by recursively checking the model schema.
+     */
+    Query.prototype.processUpdateRecursively = function (data, record, fields) {
+        var _this = this;
+        Utils.forOwn(fields, function (field, key) {
+            if (record[key] === undefined) {
+                return;
+            }
+            if (field instanceof Attribute) {
+                data[key] = record[key];
+                return;
+            }
+            _this.processUpdateRecursively(data[key], record[key], field);
         });
     };
     /**
@@ -7975,7 +8009,37 @@ var Repo = /** @class */ (function () {
      */
     Repo.prototype.with = function (name, constraint) {
         if (constraint === void 0) { constraint = null; }
-        this.load.push({ name: name, constraint: constraint });
+        if (name === '*') {
+            this.withAll();
+        }
+        else {
+            this.load.push({ name: name, constraint: constraint });
+        }
+        return this;
+    };
+    /**
+     * Query all relations.
+     */
+    Repo.prototype.withAll = function (constraints) {
+        if (constraints === void 0) { constraints = function () { return null; }; }
+        var fields = this.entity.fields();
+        for (var field in fields) {
+            if (Contract.isRelation(fields[field])) {
+                this.load.push({ name: field, constraint: constraints(field) });
+            }
+        }
+        return this;
+    };
+    /**
+     * Query all relations recursively.
+     */
+    Repo.prototype.withAllRecursive = function (depth) {
+        if (depth === void 0) { depth = 3; }
+        this.withAll(function () {
+            return depth > 0 ? function (query) {
+                query.withAllRecursive(depth - 1);
+            } : null;
+        });
         return this;
     };
     /**
