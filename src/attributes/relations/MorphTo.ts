@@ -1,4 +1,4 @@
-import { Record, NormalizedData, PlainItem } from '../../data/Contract'
+import { Record, NormalizedData, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
 import Repo, { Relation as Load } from '../../repo/Repo'
 import Relation from './Relation'
@@ -76,15 +76,27 @@ export default class MorphTo extends Relation {
   /**
    * Load the morph many relationship for the record.
    */
-  load (repo: Repo, record: Record, relation: Load): PlainItem {
-    const related = this.model.relation(record[this.type])
-    const ownerKey = related.localKey()
-    const query = new Repo(repo.state, related.entity, false)
+  load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
+    const relatedRecords = Object.keys(repo.models()).reduce((records, name) => {
+      if (name === repo.name) {
+        return records
+      }
 
-    query.where(ownerKey, record[this.id])
+      const query = new Repo(repo.state, name, false)
 
-    this.addConstraint(query, relation)
+      this.addConstraint(query, relation)
 
-    return query.first()
+      records[name] = this.mapRecords(query.get(), '$id')
+
+      return records
+    }, {} as { [name: string]: { [id: string]: any } })
+
+    const relatedPath = this.relatedPath(relation.name)
+
+    return collection.map((item) => {
+      const related = relatedRecords[item[this.type]][item[this.id]]
+
+      return this.setRelated(item, related || null, relatedPath)
+    })
   }
 }

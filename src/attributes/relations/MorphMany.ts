@@ -85,13 +85,31 @@ export default class MorphMany extends Relation {
   /**
    * Load the morph many relationship for the record.
    */
-  load (repo: Repo, record: Record, relation: Load): PlainCollection {
-    const query = new Repo(repo.state, this.related.entity, false)
+  load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
+    const relatedQuery = new Repo(repo.state, this.related.entity, false)
 
-    query.where(this.id, record[this.localKey]).where(this.type, repo.name)
+    relatedQuery.where(this.type, repo.name)
 
-    this.addConstraint(query, relation)
+    this.addConstraint(relatedQuery, relation)
 
-    return query.get()
+    const relatedRecords = relatedQuery.get().reduce((records, record) => {
+      const key = record[this.id]
+
+      if (!records[key]) {
+        records[key] = []
+      }
+
+      records[key].push(record)
+
+      return records
+    }, {} as { [id: string]: Record[] })
+
+    const relatedPath = this.relatedPath(relation.name)
+
+    return collection.map((item) => {
+      const related = relatedRecords[item[this.localKey]]
+
+      return this.setRelated(item, related || [], relatedPath)
+    })
   }
 }

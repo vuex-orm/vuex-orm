@@ -3,6 +3,8 @@ import Container from '../connections/Container'
 import { Record, NormalizedData, PlainItem, PlainCollection, Item, Collection } from '../data/Contract'
 import Data from '../data/Data'
 import Attrs, { Fields } from '../attributes/contracts/Contract'
+import Attribute from '../attributes/Attribute'
+import RelationClass from '../attributes/relations/Relation'
 import Model from '../model/Model'
 import { State } from '../modules/Module'
 import Query, { OrderDirection, Condition } from './Query'
@@ -512,31 +514,49 @@ export default class Repo {
   /**
    * Set where constraint based on relationship existence.
    */
-  has (name: string, constraint: number | string | Constraint | null = null, count?: number): this {
+  has (name: string, constraint?: number | string, count?: number): this {
     return this.addHasConstraint(name, constraint, count, true)
   }
 
   /**
    * Set where constraint based on relationship absence.
    */
-  hasNot (name: string, constraint: number | string | Constraint | null = null, count?: number): this {
+  hasNot (name: string, constraint?: number | string, count?: number): this {
     return this.addHasConstraint(name, constraint, count, false)
   }
 
   /**
    * Add where constraints based on has or hasNot condition.
    */
-  addHasConstraint (name: string, constraint: number | string | Constraint | null = null, count?: number, existence: boolean = true): this {
-    const ids: any[] = []
-    const items = (new Query(this.state, this.name)).get()
+  addHasConstraint (name: string, constraint?: number | string, count?: number, existence?: boolean): this {
+    const ids = this.matchesHasRelation(name, constraint, count, existence)
 
-    _.forEach(items, (item) => {
-      const id = this.entity.id(item)
+    this.where('$id', (value: any) => _.includes(ids, value))
 
-      this.hasRelation(item, name, constraint, count) === existence && ids.push(id)
-    })
+    return this
+  }
 
-    this.where('$id', (key: any) => _.includes(ids, key))
+  /**
+   * Add where has condition.
+   */
+  whereHas (name: string, constraint: Constraint): this {
+    return this.addWhereHasConstraint(name, constraint, true)
+  }
+
+  /**
+   * Add where has not condition.
+   */
+  whereHasNot (name: string, constraint: Constraint): this {
+    return this.addWhereHasConstraint(name, constraint, false)
+  }
+
+  /**
+   * Add where has constraints that only matches the relationship constraint.
+   */
+  addWhereHasConstraint (name: string, constraint: Constraint, existence?: boolean): this {
+    const ids = this.matchesWhereHasRelation(name, constraint, existence)
+
+    this.where('$id', (value: any) => _.includes(ids, value))
 
     return this
   }
@@ -586,7 +606,7 @@ export default class Repo {
     let item: Item = queryItem
 
     if (!_.isEmpty(this.load)) {
-      item = this.loadRelations(item)
+      item = this.loadRelations([item])[0]
     }
 
     if (!this.wrap) {
@@ -604,10 +624,10 @@ export default class Repo {
       return []
     }
 
-    let item: Collection = collection
+    let item = collection
 
     if (!_.isEmpty(this.load)) {
-      item = _.map(item, data => this.loadRelations(data))
+      item = this.loadRelations(item)
     }
 
     if (!this.wrap) {
@@ -620,58 +640,117 @@ export default class Repo {
   /**
    * Load the relationships for the record.
    */
-  loadRelations (base: Record, load?: Relation[], record?: Record, fields?: Fields): Record {
-    const _load = load || this.load
-    const _record = record || { ...base }
-    const _fields = fields || this.entity.fields()
+  loadRelations (data: PlainCollection, relation?: Relation[]): PlainCollection {
+    const _relation = relation || this.load
+    const fields = this.entity.fields()
 
-    return _.reduce(_load, (record, relation) => {
-      const name = relation.name.split('.')[0]
-      const attr = _fields[name]
-
-      if (!attr || !Attrs.isAttribute(attr)) {
-        _.forEach(_fields, (f: any, key: string) => {
-          if (f[name]) {
-            record[key] = this.loadRelations(base, _load, record[key], f)
-
-            return
-          }
-        })
-
-        return record
-      }
-
-      if (Attrs.isRelation(attr)) {
-        record[name] = attr.load(this, base, relation)
-
-        return record
-      }
-
-      return record
-    }, _record)
+    return _.reduce(_relation, (records, rel) => {
+      return this.processLoadRelations(records, rel, fields)
+    }, data)
   }
 
   /**
-   * Check if the given record has given relationship.
+   * Process load relationships. This method is for the circuler processes.
    */
-  hasRelation (record: Record, name: string, constraint: number | string | Constraint | null = null, count?: number): boolean {
-    let _constraint = constraint
+  processLoadRelations (data: PlainCollection, relation: Relation, fields: Fields): PlainCollection {
+    const relationName = relation.name.split('.')[0]
 
-    if (typeof constraint === 'number') {
-      _constraint = query => query.count() === constraint
+    let collection: Collection = data
+
+    Object.keys(fields).some((key) => {
+      const field = fields[key]
+
+      if (key === relationName) {
+        if (field instanceof RelationClass) {
+          collection = field.load(this, collection, relation)
+        }
+
+        return true
+      }
+
+      if (field instanceof Attribute) {
+        return false
+      }
+
+      collection = this.processLoadRelations(collection, relation, field)
+
+      return false
+    })
+
+    return collection
+  }
+
+  /**
+   * Check if the given collection has given relationship.
+   */
+  matchesHasRelation (name: string, constraint?: number | string, count?: number, existence: boolean = true): string[] {
+    let _constraint: (records: PlainCollection) => boolean
+
+    if (constraint === undefined) {
+      _constraint = record => record.length >= 1
+    } else if (typeof constraint === 'number') {
+      _constraint = record => record.length >= constraint
+    } else if (constraint === '=' && typeof count === 'number') {
+      _constraint = record => record.length === count
     } else if (constraint === '>' && typeof count === 'number') {
-      _constraint = query => query.count() > count
+      _constraint = record => record.length > count
     } else if (constraint === '>=' && typeof count === 'number') {
-      _constraint = query => query.count() >= count
+      _constraint = record => record.length >= count
     } else if (constraint === '<' && typeof count === 'number') {
-      _constraint = query => query.count() < count
+      _constraint = record => record.length < count
     } else if (constraint === '<=' && typeof count === 'number') {
-      _constraint = query => query.count() <= count
+      _constraint = record => record.length <= count
     }
 
-    const data = this.loadRelations(record, [{ name, constraint: (_constraint as Constraint) }])
+    const data = (new Repo(this.state, this.name, false)).with(name).get()
 
-    return !_.isEmpty(data[name])
+    let ids: string[] = []
+
+    data.forEach((item) => {
+      const target = item[name]
+
+      let result: boolean = false
+
+      if (!target) {
+        result = false
+      } else if (Array.isArray(target) && target.length < 1) {
+        result = false
+      } else if (Array.isArray(target)) {
+        result = _constraint(target)
+      } else if (target) {
+        result = _constraint([target])
+      }
+
+      if (result !== existence) {
+        return
+      }
+
+      ids.push(item.$id)
+    })
+
+    return ids
+  }
+
+  /**
+   * Get all id of the record that matches the relation constraints.
+   */
+  matchesWhereHasRelation (name: string, constraint: Constraint, existence: boolean = true): string[] {
+    const data = (new Repo(this.state, this.name, false)).with(name, constraint).get()
+
+    let ids: string[] = []
+
+    data.forEach((item) => {
+      const target = item[name]
+      const result = Array.isArray(target) ? !!target.length : !!target
+
+      if (result !== existence) {
+        return
+      }
+
+      ids.push(item.$id)
+    })
+
+    return ids
   }
 
   /**

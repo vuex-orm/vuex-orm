@@ -91,7 +91,7 @@ export default class Query {
     this.state = state
     this.name = name
     this.entity = state[name]
-    this.records = _.map(state[name].data, (record: Record) => record)
+    this.records = _.map(state[name].data, v => v)
   }
 
   /**
@@ -177,85 +177,89 @@ export default class Query {
    * Returns single record of the query chain result.
    */
   get (): PlainCollection {
-    this.process()
+    const records = this.process()
 
-    return this.collect()
+    return this.collect(records)
   }
 
   /**
    * Returns single record of the query chain result.
    */
   first (id?: number | string): PlainItem {
-    this.process()
+    const records = this.process()
 
-    if (_.isEmpty(this.records)) {
+    if (_.isEmpty(records)) {
       return null
     }
 
     if (id !== undefined) {
-      return this.item(_.find(this.records, ['$id', id]))
+      return this.item(_.find(records, ['$id', id]))
     }
 
-    return this.item(this.records[0])
+    return this.item(records[0])
   }
 
   /**
    * Returns the last record of the query chain result.
    */
   last (): PlainItem {
-    this.process()
+    const records = this.process()
 
-    if (_.isEmpty(this.records)) {
+    if (_.isEmpty(records)) {
       return null
     }
 
-    const last = this.records.length - 1
+    const last = records.length - 1
 
-    return this.item(this.records[last])
+    return this.item(records[last])
   }
 
   /**
    * Process the query and filter data.
    */
-  process (): void {
+  process (): PlainCollection {
+    let records: PlainCollection = this.records.map(v => ({ ...v }))
+
     // Process `beforeProcess` hook.
-    this.executeHooks('beforeProcess')
+    records = this.executeHooks('beforeProcess', records)
 
     // If the where clause is registered, lets filter the records beased on it.
     if (!_.isEmpty(this.wheres)) {
-      this.selectByWheres()
+      records = this.selectByWheres(records)
     }
 
     // Process `afterWhere` hook.
-    this.executeHooks('afterWhere')
+    records = this.executeHooks('afterWhere', records)
 
     // Next, lets sort the data if orderBy is registred.
     if (!_.isEmpty(this.orders)) {
-      this.sortByOrders()
+      records = this.sortByOrders(records)
     }
 
     // Process `afterOrderBy` hook.
-    this.executeHooks('afterOrderBy')
+    records = this.executeHooks('afterOrderBy', records)
 
     // Finally, slice the record by limit and offset.
-    this.records = _.slice(this.records, this._offset, this._offset + this._limit)
+    records = _.slice(records, this._offset, this._offset + this._limit)
 
     // Process `afterLimit` hook.
-    this.executeHooks('afterLimit')
+    records = this.executeHooks('afterLimit', records)
+
+    return records
   }
 
   /**
    * Create a item from given record.
    */
-  item (record?: Record | null): PlainItem {
+  item (record?: PlainItem): PlainItem {
     return record ? record : null
   }
 
   /**
    * Create a collection (array) from given records.
    */
-  collect (): PlainCollection {
-    return !_.isEmpty(this.records) ? this.records : []
+  collect (records: PlainCollection): PlainCollection {
+    return !_.isEmpty(records) ? records : []
   }
 
   /**
@@ -306,18 +310,18 @@ export default class Query {
   /**
    * Filter the given data by registered where clause.
    */
-  selectByWheres (): void {
-    this.records = this.records.filter(record => this.whereOnRecord(record))
+  selectByWheres (records: PlainCollection): PlainCollection {
+    return records.filter(record => this.whereOnRecord(record))
   }
 
   /**
    * Sort the given data by registered orders.
    */
-  sortByOrders (): void {
+  sortByOrders (records: PlainCollection): PlainCollection {
     const keys = _.map(this.orders, 'field')
     const directions = _.map(this.orders, 'direction')
 
-    this.records = _.orderBy(this.records, keys, directions)
+    return _.orderBy(records, keys, directions)
   }
 
   /**
@@ -409,13 +413,19 @@ export default class Query {
   /**
    * Execute the callback of the given hook.
    */
-  executeHooks (on: string): void {
+  executeHooks (on: string, records: PlainCollection): PlainCollection {
+    let items = records
+
     this.self().hooks.forEach((hook) => {
       if (hook.on !== on) {
+        items = records
+
         return
       }
 
-      this.records = hook.callback(this.records, this.name)
+      items = hook.callback(items, this.name)
     })
+
+    return items
   }
 }
