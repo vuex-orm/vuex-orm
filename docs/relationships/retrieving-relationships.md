@@ -251,7 +251,7 @@ You may also specify count as well.
 store.getters['entities/posts/query']().has('comments', 2).get()
 ```
 
-Also, you may add an operator to customize your query even more. The supported operators are `>`, `>=`, `<` and `<=`.
+Also, you may add an operator to customize your query even more. The supported operators are `=`, `>`, `>=`, `<` and `<=`.
 
 ```js
 // Retrieve all posts that have more than 2 comments.
@@ -261,30 +261,25 @@ store.getters['entities/posts/query']().has('comments', '>' 2).get()
 store.getters['entities/posts/query']().has('comments', '<=' 2).get()
 ```
 
-And even more, you can pass closure for a complex query. If closure may return boolean, or it can just add constraints to the query.
+If you need even more power, you may use the `whereHas` method to put "where" conditions on your `has` queries. This method allow you to add customized constraints to a relationship constraint, such as checking the content of a comment.
 
 ```js
-// Retrieve all posts that have user_id of 1.
-store.getters['entities/posts/query']().has('comments', (query) => {
+// Retrieve all posts that have comment from user_id 1.
+store.getters['entities/posts/query']().whereHas('comments', (query) => {
   query.where('user_id', 1)
-}).get()
-
-// Retrieve all posts that have more than 2 comments with user_id of 1.
-store.getters['entities/posts/query']().has('comments', (query) => {
-  return query.where('user_id', 1).count() > 2
 }).get()
 ```
 
 ## Querying Relationship Absence
 
-To retrieve records depending on absence of the relationship, use `hasNot` method. `hasNot` method will work same as `has` but in opposite result.
+To retrieve records depending on absence of the relationship, use `hasNot` and `whereHasNot` method. These method will work same as `has` and `whereHas` but in opposite result.
 
 ```js
 // Retrieve all posts that doesn't have comments.
 store.getters['entities/posts/query']().hasNot('comments').get()
 
 // Retrieve all posts that doesn't have comment with user_id of 1.
-store.getters['entities/posts/query']().hasNot('comments', (query) => {
+store.getters['entities/posts/query']().whereHasNot('comments', (query) => {
   query.where('user_id', 1)
 }).get()
 ```

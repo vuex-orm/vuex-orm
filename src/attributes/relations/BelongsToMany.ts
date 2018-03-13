@@ -115,26 +115,34 @@ export default class BelongsToMany extends Relation {
   /**
    * Load the belongs to relationship for the record.
    */
-  load (repo: Repo, record: Record, relation: Load): PlainCollection {
-    const pivotQuery = new Repo(repo.state, this.pivot.entity, false)
-
-    const relatedItems = pivotQuery.where((rec: any) => {
-      return rec[this.foreignPivotKey] === record[this.parentKey]
-    }).get()
-
-    if (relatedItems.length === 0) {
-      return []
-    }
-
-    const relatedIds = _.map(relatedItems, this.relatedPivotKey)
-
+  load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
     const relatedQuery = new Repo(repo.state, this.related.entity, false)
-
-    relatedQuery.where(this.relatedKey, (v: any) => _.includes(relatedIds, v))
 
     this.addConstraint(relatedQuery, relation)
 
-    return relatedQuery.get()
+    const relatedRecords = relatedQuery.get()
+
+    const related = relatedRecords.reduce((records, record) => {
+      records[record[this.relatedKey]] = record
+
+      return records
+    }, {})
+
+    const pivots = _.reduce(repo.state[this.pivot.entity].data, (records, record) => {
+      if (!records[record[this.foreignPivotKey]]) {
+        records[record[this.foreignPivotKey]] = []
+      }
+
+      records[record[this.foreignPivotKey]].push(related[record[this.relatedPivotKey]])
+
+      return records
+    }, {} as any)
+
+    return collection.map((item) => {
+      item[relation.name] = pivots[item[this.parentKey]]
+
+      return item
+    })
   }
 
   /**

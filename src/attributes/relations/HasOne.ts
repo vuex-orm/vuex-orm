@@ -1,4 +1,4 @@
-import { Record, NormalizedData, PlainItem } from '../../data/Contract'
+import { Record, NormalizedData, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
 import Repo, { Relation as Load } from '../../repo/Repo'
 import Relation from './Relation'
@@ -87,13 +87,19 @@ export default class HasOne extends Relation {
   /**
    * Load the has one relationship for the record.
    */
-  load (repo: Repo, record: Record, relation: Load): PlainItem {
-    const query = new Repo(repo.state, this.related.entity, false)
+  load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
+    const relatedPath = this.relatedPath(relation.name)
 
-    query.where(this.foreignKey, record[this.localKey])
+    const relatedQuery = new Repo(repo.state, this.related.entity, false)
 
-    this.addConstraint(query, relation)
+    this.addConstraint(relatedQuery, relation)
 
-    return query.first()
+    const relatedRecords = this.mapRecords(relatedQuery.get(), this.foreignKey)
+
+    return collection.map((item) => {
+      const related = relatedRecords[item[this.localKey]]
+
+      return this.setRelated(item, related || null, relatedPath)
+    })
   }
 }

@@ -84,15 +84,25 @@ export default class HasManyBy extends Relation {
   /**
    * Load the has many by relationship for the record.
    */
-  load (repo: Repo, record: Record, relation: Load): PlainCollection {
-    return record[this.foreignKey].map((id: any) => {
-      const query = new Repo(repo.state, this.parent.entity, false)
+  load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
+    const relatedPath = this.relatedPath(relation.name)
 
-      query.where(this.ownerKey, id)
+    const relatedQuery = new Repo(repo.state, this.parent.entity, false)
 
-      this.addConstraint(query, relation)
+    this.addConstraint(relatedQuery, relation)
 
-      return query.first()
+    const relatedRecords = this.mapRecords(relatedQuery.get(), this.ownerKey)
+
+    return collection.map((item) => {
+      const related = item[relation.name].reduce((related: Record[], id: any) => {
+        if (relatedRecords[id]) {
+          related.push(relatedRecords[id])
+        }
+
+        return related
+      }, [])
+
+      return this.setRelated(item, related, relatedPath)
     })
   }
 }

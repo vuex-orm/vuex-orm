@@ -52,7 +52,7 @@ describe('Repo – Retrieve – Relations – Morph One', () => {
       comments: {
         '1': { $id: '1', id: '1', body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
         '2': { $id: '2', id: '2', body: 'comment2', commentable_id: 3, commentable_type: 'videos' },
-        '3': { $id: '3', id: '3', body: 'comment3', commentable_id: 1, commentable_type: 'posts' },
+        '3': { $id: '3', id: '3', body: 'comment3', commentable_id: 2, commentable_type: 'posts' },
         '4': { $id: '4', id: '4', body: 'comment4', commentable_id: 5, commentable_type: 'posts' }
       }
     })
@@ -170,7 +170,7 @@ describe('Repo – Retrieve – Relations – Morph One', () => {
       comments: {
         '1': { $id: '1', id: '1', body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
         '2': { $id: '2', id: '2', body: 'comment2', commentable_id: 3, commentable_type: 'videos' },
-        '3': { $id: '3', id: '3', body: 'comment3', commentable_id: 1, commentable_type: 'posts' },
+        '3': { $id: '3', id: '3', body: 'comment3', commentable_id: 2, commentable_type: 'posts' },
         '4': { $id: '4', id: '4', body: 'comment4', commentable_id: 5, commentable_type: 'posts' }
       }
     })
@@ -232,7 +232,7 @@ describe('Repo – Retrieve – Relations – Morph One', () => {
       comments: {
         '1': { $id: '1', id: '1', body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
         '2': { $id: '2', id: '2', body: 'comment2', commentable_id: 3, commentable_type: 'videos' },
-        '3': { $id: '3', id: '3', body: 'comment3', commentable_id: 1, commentable_type: 'posts' },
+        '3': { $id: '3', id: '3', body: 'comment3', commentable_id: 2, commentable_type: 'posts' },
         '4': { $id: '4', id: '4', body: 'comment4', commentable_id: 5, commentable_type: 'posts' }
       }
     })

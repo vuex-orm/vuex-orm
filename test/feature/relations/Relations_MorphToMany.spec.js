@@ -63,8 +63,8 @@ describe('Features – Relations – Morph To Many', () => {
         {
           id: 2,
           tags: [
-            { id: 3, name: 'news' },
-            { id: 4, name: 'cast' }
+            { id: 1, name: 'news' },
+            { id: 2, name: 'cast' }
           ]
         }
       ]

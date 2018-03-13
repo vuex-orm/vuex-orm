@@ -113,26 +113,38 @@ export default class MorphToMany extends Relation {
   /**
    * Load the morph many relationship for the record.
    */
-  load (repo: Repo, record: Record, relation: Load): PlainCollection {
-    const pivotQuery = new Repo(repo.state, this.pivot.entity, false)
-
-    const relatedItems = pivotQuery.where((rec: any) => {
-      return rec[this.id] === record[this.parentKey]
-    }).get()
-
-    if (relatedItems.length === 0) {
-      return []
-    }
-
-    const relatedIds = _.map(relatedItems, this.relatedId)
-
+  load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
     const relatedQuery = new Repo(repo.state, this.related.entity, false)
-
-    relatedQuery.where(this.relatedKey, (v: any) => _.includes(relatedIds, v))
 
     this.addConstraint(relatedQuery, relation)
 
-    return relatedQuery.get()
+    const relatedRecords = relatedQuery.get().reduce((records, record) => {
+      records[record[this.relatedKey]] = record
+
+      return records
+    }, {})
+
+    const pivotQuery = new Repo(repo.state, this.pivot.entity, false)
+
+    pivotQuery.where(this.type, repo.name)
+
+    const pivotRecords = pivotQuery.get().reduce((records, record) => {
+      if (!records[record[this.id]]) {
+        records[record[this.id]] = []
+      }
+
+      records[record[this.id]].push(relatedRecords[record[this.relatedId]])
+
+      return records
+    }, {} as any)
+
+    const relatedPath = this.relatedPath(relation.name)
+
+    return collection.map((item) => {
+      const related = pivotRecords[item[this.parentKey]]
+
+      return this.setRelated(item, related || [], relatedPath)
+    })
   }
 
   /**

@@ -1,4 +1,4 @@
-import { Record, NormalizedData, PlainItem } from '../../data/Contract'
+import { Record, NormalizedData, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
 import Repo, { Relation as Load } from '../../repo/Repo'
 import Relation from './Relation'
@@ -81,13 +81,19 @@ export default class BelongsTo extends Relation {
   /**
    * Load the belongs to relationship for the record.
    */
-  load (repo: Repo, record: Record, relation: Load): PlainItem {
-    const query = new Repo(repo.state, this.parent.entity, false)
+  load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
+    const relatedPath = this.relatedPath(relation.name)
 
-    query.where(this.ownerKey, record[this.foreignKey])
+    const relatedQuery = new Repo(repo.state, this.parent.entity, false)
 
-    this.addConstraint(query, relation)
+    this.addConstraint(relatedQuery, relation)
 
-    return query.first()
+    const relatedRecords = this.mapRecords(relatedQuery.get(), this.ownerKey)
+
+    return collection.map((item) => {
+      const related = relatedRecords[item[this.foreignKey]]
+
+      return this.setRelated(item, related || null, relatedPath)
+    })
   }
 }
