@@ -11,7 +11,7 @@
     "lib"
   ],
   "scripts": {
-    "build": "npm run clean && npm run build:ts && npm run build:main && tsc -p . --module commonjs",
+    "build": "npm run clean && npm run build:ts && npm run build:main && tsc -p .",
     "build:ts": "tsc -p .",
     "build:main": "node build/build.js",
     "clean": "rm -rf dist && rm -rf lib && rm -rf dist && rm -rf coverage && rm -rf .nyc_output && rm -rf .tmp",
