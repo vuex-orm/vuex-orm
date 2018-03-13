@@ -5976,11 +5976,69 @@ var __extends$3 = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __assign$1 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 var Relation = /** @class */ (function (_super) {
     __extends$3(Relation, _super);
     function Relation() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    /**
+     * Create a new map of the record by given key.
+     */
+    Relation.prototype.mapRecords = function (records, key) {
+        return records.reduce(function (records, record) {
+            return __assign$1({}, records, (_a = {}, _a[record[key]] = record, _a));
+            var _a;
+        }, {});
+    };
+    /**
+     * Get the path of the related field. It returns path as a dot-separated
+     * string something like `settings.accounts`.
+     */
+    Relation.prototype.relatedPath = function (key, fields, parent) {
+        var _this = this;
+        var _key = key.split('.')[0];
+        var _fields = fields || this.model.fields();
+        var path = '';
+        Object.keys(_fields).some(function (name) {
+            if (name === _key) {
+                path = parent ? parent + "." + _key : _key;
+                return true;
+            }
+            var field = _fields[name];
+            if (field instanceof Attribute) {
+                return false;
+            }
+            var parentPath = parent ? parent + "." + name : name;
+            var nestedPath = _this.relatedPath(_key, field, parentPath);
+            if (!nestedPath) {
+                return false;
+            }
+            path = nestedPath;
+            return true;
+        });
+        return path;
+    };
+    /**
+     * Set given related records to the item.
+     */
+    Relation.prototype.setRelated = function (item, related, path) {
+        var paths = path.split('.');
+        var length = paths.length - 1;
+        var schema = item;
+        for (var i = 0; i < length; i++) {
+            schema = schema[paths[i]];
+        }
+        schema[paths[length]] = related;
+        return item;
+    };
     /**
      * Add constraint to the query.
      */
@@ -6053,6 +6111,9 @@ var BelongsTo = /** @class */ (function (_super) {
      * instantiating a model or creating a plain object from a model.
      */
     BelongsTo.prototype.make = function (value, _parent, _key) {
+        if (value === null) {
+            return null;
+        }
         if (value === undefined) {
             return null;
         }
@@ -6073,11 +6134,16 @@ var BelongsTo = /** @class */ (function (_super) {
     /**
      * Load the belongs to relationship for the record.
      */
-    BelongsTo.prototype.load = function (repo, record, relation) {
-        var query = new Repo(repo.state, this.parent.entity, false);
-        query.where(this.ownerKey, record[this.foreignKey]);
-        this.addConstraint(query, relation);
-        return query.first();
+    BelongsTo.prototype.load = function (repo, collection, relation) {
+        var _this = this;
+        var relatedPath = this.relatedPath(relation.name);
+        var relatedQuery = new Repo(repo.state, this.parent.entity, false);
+        this.addConstraint(relatedQuery, relation);
+        var relatedRecords = this.mapRecords(relatedQuery.get(), this.ownerKey);
+        return collection.map(function (item) {
+            var related = relatedRecords[item[_this.foreignKey]];
+            return _this.setRelated(item, related || null, relatedPath);
+        });
     };
     return BelongsTo;
 }(Relation));
@@ -6118,6 +6184,9 @@ var HasMany = /** @class */ (function (_super) {
      */
     HasMany.prototype.make = function (value, _parent, _key) {
         var _this = this;
+        if (value === null) {
+            return [];
+        }
         if (value === undefined) {
             return [];
         }
@@ -6149,11 +6218,23 @@ var HasMany = /** @class */ (function (_super) {
     /**
      * Load the has many relationship for the record.
      */
-    HasMany.prototype.load = function (repo, record, relation) {
-        var query = new Repo(repo.state, this.related.entity, false);
-        query.where(this.foreignKey, record[this.localKey]);
-        this.addConstraint(query, relation);
-        return query.get();
+    HasMany.prototype.load = function (repo, collection, relation) {
+        var _this = this;
+        var relatedQuery = new Repo(repo.state, this.related.entity, false);
+        this.addConstraint(relatedQuery, relation);
+        var relatedRecords = relatedQuery.get().reduce(function (records, record) {
+            var key = record[_this.foreignKey];
+            if (!records[key]) {
+                records[key] = [];
+            }
+            records[key].push(record);
+            return records;
+        }, {});
+        var relatedPath = this.relatedPath(relation.name);
+        return collection.map(function (item) {
+            var related = relatedRecords[item[_this.localKey]];
+            return _this.setRelated(item, related || [], relatedPath);
+        });
     };
     return HasMany;
 }(Relation));
@@ -6194,6 +6275,9 @@ var HasManyBy = /** @class */ (function (_super) {
      */
     HasManyBy.prototype.make = function (value, _parent, _key) {
         var _this = this;
+        if (value === null) {
+            return [];
+        }
         if (value === undefined) {
             return [];
         }
@@ -6224,13 +6308,20 @@ var HasManyBy = /** @class */ (function (_super) {
     /**
      * Load the has many by relationship for the record.
      */
-    HasManyBy.prototype.load = function (repo, record, relation) {
+    HasManyBy.prototype.load = function (repo, collection, relation) {
         var _this = this;
-        return record[this.foreignKey].map(function (id) {
-            var query = new Repo(repo.state, _this.parent.entity, false);
-            query.where(_this.ownerKey, id);
-            _this.addConstraint(query, relation);
-            return query.first();
+        var relatedPath = this.relatedPath(relation.name);
+        var relatedQuery = new Repo(repo.state, this.parent.entity, false);
+        this.addConstraint(relatedQuery, relation);
+        var relatedRecords = this.mapRecords(relatedQuery.get(), this.ownerKey);
+        return collection.map(function (item) {
+            var related = item[relation.name].reduce(function (related, id) {
+                if (relatedRecords[id]) {
+                    related.push(relatedRecords[id]);
+                }
+                return related;
+            }, []);
+            return _this.setRelated(item, related, relatedPath);
         });
     };
     return HasManyBy;
@@ -6275,6 +6366,9 @@ var HasManyThrough = /** @class */ (function (_super) {
      */
     HasManyThrough.prototype.make = function (value, _parent, _key) {
         var _this = this;
+        if (value === null) {
+            return [];
+        }
         if (value === undefined) {
             return [];
         }
@@ -6299,14 +6393,27 @@ var HasManyThrough = /** @class */ (function (_super) {
     /**
      * Load the has many through relationship for the record.
      */
-    HasManyThrough.prototype.load = function (repo, record, relation) {
+    HasManyThrough.prototype.load = function (repo, collection, relation) {
         var _this = this;
-        var throuthQuery = new Repo(repo.state, this.through.entity, false);
-        var throughIds = throuthQuery.where(this.firstKey, record[this.localKey]).get().map(function (through) { return through[_this.secondLocalKey]; });
         var relatedQuery = new Repo(repo.state, this.related.entity, false);
-        relatedQuery.where(this.secondKey, function (id) { return throughIds.includes(id); });
+        var relatedRecords = this.mapRecords(relatedQuery.get(), this.secondKey);
         this.addConstraint(relatedQuery, relation);
-        return relatedQuery.get();
+        var throughQuery = new Repo(repo.state, this.through.entity, false);
+        var throughRecords = throughQuery.get().reduce(function (records, record) {
+            var key = record[_this.firstKey];
+            if (!records[key]) {
+                records[key] = [];
+            }
+            if (relatedRecords[record[_this.secondLocalKey]]) {
+                records[key].push(relatedRecords[record[_this.secondLocalKey]]);
+            }
+            return records;
+        }, {});
+        var relatedPath = this.relatedPath(relation.name);
+        return collection.map(function (item) {
+            var related = throughRecords[item[_this.localKey]];
+            return _this.setRelated(item, related || [], relatedPath);
+        });
     };
     return HasManyThrough;
 }(Relation));
@@ -6321,7 +6428,7 @@ var __extends$8 = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __assign$1 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$2 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -6358,6 +6465,9 @@ var BelongsToMany = /** @class */ (function (_super) {
      */
     BelongsToMany.prototype.make = function (value, _parent, _key) {
         var _this = this;
+        if (value === null) {
+            return [];
+        }
         if (value === undefined) {
             return [];
         }
@@ -6382,20 +6492,26 @@ var BelongsToMany = /** @class */ (function (_super) {
     /**
      * Load the belongs to relationship for the record.
      */
-    BelongsToMany.prototype.load = function (repo, record, relation) {
+    BelongsToMany.prototype.load = function (repo, collection, relation) {
         var _this = this;
-        var pivotQuery = new Repo(repo.state, this.pivot.entity, false);
-        var relatedItems = pivotQuery.where(function (rec) {
-            return rec[_this.foreignPivotKey] === record[_this.parentKey];
-        }).get();
-        if (relatedItems.length === 0) {
-            return [];
-        }
-        var relatedIds = map(relatedItems, this.relatedPivotKey);
         var relatedQuery = new Repo(repo.state, this.related.entity, false);
-        relatedQuery.where(this.relatedKey, function (v) { return includes(relatedIds, v); });
         this.addConstraint(relatedQuery, relation);
-        return relatedQuery.get();
+        var relatedRecords = relatedQuery.get();
+        var related = relatedRecords.reduce(function (records, record) {
+            records[record[_this.relatedKey]] = record;
+            return records;
+        }, {});
+        var pivots = reduce(repo.state[this.pivot.entity].data, function (records, record) {
+            if (!records[record[_this.foreignPivotKey]]) {
+                records[record[_this.foreignPivotKey]] = [];
+            }
+            records[record[_this.foreignPivotKey]].push(related[record[_this.relatedPivotKey]]);
+            return records;
+        }, {});
+        return collection.map(function (item) {
+            item[relation.name] = pivots[item[_this.parentKey]];
+            return item;
+        });
     };
     /**
      * Create pivot records for the given records if needed.
@@ -6418,7 +6534,7 @@ var BelongsToMany = /** @class */ (function (_super) {
         var _this = this;
         forEach(related, function (id) {
             var pivotKey = record[_this.parentKey] + "_" + id;
-            data[_this.pivot.entity] = __assign$1({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
+            data[_this.pivot.entity] = __assign$2({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
                     $id: pivotKey
                 }, _b[_this.foreignPivotKey] = record[_this.parentKey], _b[_this.relatedPivotKey] = id, _b), _a));
             var _a, _b;
@@ -6467,6 +6583,9 @@ var MorphTo = /** @class */ (function (_super) {
      * instantiating a model or creating a plain object from a model.
      */
     MorphTo.prototype.make = function (value, parent, _key) {
+        if (value === null) {
+            return null;
+        }
         if (value === undefined) {
             return null;
         }
@@ -6486,13 +6605,22 @@ var MorphTo = /** @class */ (function (_super) {
     /**
      * Load the morph many relationship for the record.
      */
-    MorphTo.prototype.load = function (repo, record, relation) {
-        var related = this.model.relation(record[this.type]);
-        var ownerKey = related.localKey();
-        var query = new Repo(repo.state, related.entity, false);
-        query.where(ownerKey, record[this.id]);
-        this.addConstraint(query, relation);
-        return query.first();
+    MorphTo.prototype.load = function (repo, collection, relation) {
+        var _this = this;
+        var relatedRecords = Object.keys(repo.models()).reduce(function (records, name) {
+            if (name === repo.name) {
+                return records;
+            }
+            var query = new Repo(repo.state, name, false);
+            _this.addConstraint(query, relation);
+            records[name] = _this.mapRecords(query.get(), '$id');
+            return records;
+        }, {});
+        var relatedPath = this.relatedPath(relation.name);
+        return collection.map(function (item) {
+            var related = relatedRecords[item[_this.type]][item[_this.id]];
+            return _this.setRelated(item, related || null, relatedPath);
+        });
     };
     return MorphTo;
 }(Relation));
@@ -6539,6 +6667,9 @@ var MorphOne = /** @class */ (function (_super) {
      * instantiating a model or creating a plain object from a model.
      */
     MorphOne.prototype.make = function (value, _parent, _key) {
+        if (value === null) {
+            return null;
+        }
         if (value === undefined) {
             return null;
         }
@@ -6556,11 +6687,17 @@ var MorphOne = /** @class */ (function (_super) {
     /**
      * Load the morph many relationship for the record.
      */
-    MorphOne.prototype.load = function (repo, record, relation) {
-        var query = new Repo(repo.state, this.related.entity, false);
-        query.where(this.id, record[this.localKey]).where(this.type, repo.name);
-        this.addConstraint(query, relation);
-        return query.first();
+    MorphOne.prototype.load = function (repo, collection, relation) {
+        var _this = this;
+        var relatedQuery = new Repo(repo.state, this.related.entity, false);
+        relatedQuery.where(this.type, repo.name);
+        this.addConstraint(relatedQuery, relation);
+        var relatedRecords = this.mapRecords(relatedQuery.get(), this.id);
+        var relatedPath = this.relatedPath(relation.name);
+        return collection.map(function (item) {
+            var related = relatedRecords[item[_this.localKey]];
+            return _this.setRelated(item, related || null, relatedPath);
+        });
     };
     return MorphOne;
 }(Relation));
@@ -6602,6 +6739,9 @@ var MorphMany = /** @class */ (function (_super) {
      */
     MorphMany.prototype.make = function (value, _parent, _key) {
         var _this = this;
+        if (value === null) {
+            return [];
+        }
         if (value === undefined) {
             return [];
         }
@@ -6626,11 +6766,24 @@ var MorphMany = /** @class */ (function (_super) {
     /**
      * Load the morph many relationship for the record.
      */
-    MorphMany.prototype.load = function (repo, record, relation) {
-        var query = new Repo(repo.state, this.related.entity, false);
-        query.where(this.id, record[this.localKey]).where(this.type, repo.name);
-        this.addConstraint(query, relation);
-        return query.get();
+    MorphMany.prototype.load = function (repo, collection, relation) {
+        var _this = this;
+        var relatedQuery = new Repo(repo.state, this.related.entity, false);
+        relatedQuery.where(this.type, repo.name);
+        this.addConstraint(relatedQuery, relation);
+        var relatedRecords = relatedQuery.get().reduce(function (records, record) {
+            var key = record[_this.id];
+            if (!records[key]) {
+                records[key] = [];
+            }
+            records[key].push(record);
+            return records;
+        }, {});
+        var relatedPath = this.relatedPath(relation.name);
+        return collection.map(function (item) {
+            var related = relatedRecords[item[_this.localKey]];
+            return _this.setRelated(item, related || [], relatedPath);
+        });
     };
     return MorphMany;
 }(Relation));
@@ -6645,7 +6798,7 @@ var __extends$12 = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __assign$2 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$3 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -6683,6 +6836,9 @@ var MorphToMany = /** @class */ (function (_super) {
      */
     MorphToMany.prototype.make = function (value, _parent, _key) {
         var _this = this;
+        if (value === null) {
+            return [];
+        }
         if (value === undefined) {
             return [];
         }
@@ -6707,20 +6863,28 @@ var MorphToMany = /** @class */ (function (_super) {
     /**
      * Load the morph many relationship for the record.
      */
-    MorphToMany.prototype.load = function (repo, record, relation) {
+    MorphToMany.prototype.load = function (repo, collection, relation) {
         var _this = this;
-        var pivotQuery = new Repo(repo.state, this.pivot.entity, false);
-        var relatedItems = pivotQuery.where(function (rec) {
-            return rec[_this.id] === record[_this.parentKey];
-        }).get();
-        if (relatedItems.length === 0) {
-            return [];
-        }
-        var relatedIds = map(relatedItems, this.relatedId);
         var relatedQuery = new Repo(repo.state, this.related.entity, false);
-        relatedQuery.where(this.relatedKey, function (v) { return includes(relatedIds, v); });
         this.addConstraint(relatedQuery, relation);
-        return relatedQuery.get();
+        var relatedRecords = relatedQuery.get().reduce(function (records, record) {
+            records[record[_this.relatedKey]] = record;
+            return records;
+        }, {});
+        var pivotQuery = new Repo(repo.state, this.pivot.entity, false);
+        pivotQuery.where(this.type, repo.name);
+        var pivotRecords = pivotQuery.get().reduce(function (records, record) {
+            if (!records[record[_this.id]]) {
+                records[record[_this.id]] = [];
+            }
+            records[record[_this.id]].push(relatedRecords[record[_this.relatedId]]);
+            return records;
+        }, {});
+        var relatedPath = this.relatedPath(relation.name);
+        return collection.map(function (item) {
+            var related = pivotRecords[item[_this.parentKey]];
+            return _this.setRelated(item, related || [], relatedPath);
+        });
     };
     /**
      * Create pivot records for the given records if needed.
@@ -6744,7 +6908,7 @@ var MorphToMany = /** @class */ (function (_super) {
         forEach(related, function (id) {
             var parentId = record[_this.parentKey];
             var pivotKey = parentId + "_" + id + "_" + parent.entity;
-            data[_this.pivot.entity] = __assign$2({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
+            data[_this.pivot.entity] = __assign$3({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
                     $id: pivotKey
                 }, _b[_this.relatedId] = id, _b[_this.id] = parentId, _b[_this.type] = parent.entity, _b), _a));
             var _a, _b;
@@ -6763,7 +6927,7 @@ var __extends$13 = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __assign$3 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$4 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -6801,6 +6965,9 @@ var MorphedByMany = /** @class */ (function (_super) {
      */
     MorphedByMany.prototype.make = function (value, _parent, _key) {
         var _this = this;
+        if (value === null) {
+            return [];
+        }
         if (value === undefined) {
             return [];
         }
@@ -6825,20 +6992,28 @@ var MorphedByMany = /** @class */ (function (_super) {
     /**
      * Load the morph many relationship for the record.
      */
-    MorphedByMany.prototype.load = function (repo, record, relation) {
+    MorphedByMany.prototype.load = function (repo, collection, relation) {
         var _this = this;
-        var pivotQuery = new Repo(repo.state, this.pivot.entity, false);
-        var relatedItems = pivotQuery.where(function (rec) {
-            return rec[_this.relatedId] === record[_this.parentKey] && rec[_this.type] === relation.name;
-        }).get();
-        if (relatedItems.length === 0) {
-            return [];
-        }
-        var relatedIds = map(relatedItems, this.id);
         var relatedQuery = new Repo(repo.state, this.related.entity, false);
-        relatedQuery.where(this.relatedKey, function (v) { return includes(relatedIds, v); });
         this.addConstraint(relatedQuery, relation);
-        return relatedQuery.get();
+        var relatedRecords = relatedQuery.get().reduce(function (records, record) {
+            records[record[_this.relatedKey]] = record;
+            return records;
+        }, {});
+        var pivotQuery = new Repo(repo.state, this.pivot.entity, false);
+        pivotQuery.where(this.type, relatedQuery.name);
+        var pivotRecords = pivotQuery.get().reduce(function (records, record) {
+            if (!records[record[_this.relatedId]]) {
+                records[record[_this.relatedId]] = [];
+            }
+            records[record[_this.relatedId]].push(relatedRecords[record[_this.id]]);
+            return records;
+        }, {});
+        var relatedPath = this.relatedPath(relation.name);
+        return collection.map(function (item) {
+            var related = pivotRecords[item[_this.parentKey]];
+            return _this.setRelated(item, related || [], relatedPath);
+        });
     };
     /**
      * Create pivot records for the given records if needed.
@@ -6862,7 +7037,7 @@ var MorphedByMany = /** @class */ (function (_super) {
         forEach(related, function (id) {
             var parentId = record[_this.parentKey];
             var pivotKey = id + "_" + parentId + "_" + _this.related.entity;
-            data[_this.pivot.entity] = __assign$3({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
+            data[_this.pivot.entity] = __assign$4({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
                     $id: pivotKey
                 }, _b[_this.relatedId] = parentId, _b[_this.id] = id, _b[_this.type] = _this.related.entity, _b), _a));
             var _a, _b;
@@ -6924,7 +7099,7 @@ var IdAttribute = /** @class */ (function () {
     return IdAttribute;
 }());
 
-var __assign$4 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$5 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -6941,7 +7116,7 @@ var ProcessStrategy = /** @class */ (function () {
     ProcessStrategy.create = function (noKey, model, parent, attr) {
         var _this = this;
         return function (value, parentValue, key) {
-            var record = __assign$4({}, value);
+            var record = __assign$5({}, value);
             record = _this.fix(record, model);
             record = _this.setId(record, model, noKey, key);
             record = _this.generateMorphFields(record, parentValue, parent, attr);
@@ -6978,7 +7153,7 @@ var ProcessStrategy = /** @class */ (function () {
      */
     ProcessStrategy.setId = function (record, model, noKey, key) {
         var id = model.id(record);
-        return __assign$4({}, record, { $id: id !== undefined ? id : noKey.increment(key) });
+        return __assign$5({}, record, { $id: id !== undefined ? id : noKey.increment(key) });
     };
     /**
      * Generate morph fields. This method will generate fileds needed for the
@@ -6994,13 +7169,13 @@ var ProcessStrategy = /** @class */ (function () {
         if (parent === undefined) {
             return record;
         }
-        return __assign$4((_a = {}, _a[attr.id] = parentValue.$id, _a[attr.type] = parent.entity, _a), record);
+        return __assign$5((_a = {}, _a[attr.id] = parentValue.$id, _a[attr.type] = parent.entity, _a), record);
         var _a;
     };
     return ProcessStrategy;
 }());
 
-var __assign$5 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$6 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -7021,7 +7196,7 @@ var Schema = /** @class */ (function () {
             idAttribute: IdAttribute.create(noKey, model),
             processStrategy: ProcessStrategy.create(noKey, model, parent, attr)
         });
-        var definition = this.definition(model, __assign$5({}, schemas, (_a = {}, _a[model.entity] = thisSchema, _a)));
+        var definition = this.definition(model, __assign$6({}, schemas, (_a = {}, _a[model.entity] = thisSchema, _a)));
         thisSchema.define(definition);
         return thisSchema;
         var _a;
@@ -7176,7 +7351,7 @@ var Attacher = /** @class */ (function () {
     return Attacher;
 }());
 
-var __assign$6 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$7 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -7195,7 +7370,7 @@ var Builder = /** @class */ (function () {
         return mapValues(data, function (records, entity) {
             var model = repo.model(entity);
             return mapValues(records, function (record) {
-                return __assign$6({}, _this.buildFields(record, model.fields()), { $id: record.$id });
+                return __assign$7({}, _this.buildFields(record, model.fields()), { $id: record.$id });
             });
         });
     };
@@ -7215,7 +7390,7 @@ var Builder = /** @class */ (function () {
     return Builder;
 }());
 
-var __assign$7 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$8 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -7256,7 +7431,7 @@ var Incrementer = /** @class */ (function () {
      */
     Incrementer.prototype.process = function (records, repo) {
         var _this = this;
-        var newRecords = __assign$7({}, records);
+        var newRecords = __assign$8({}, records);
         forEach(repo.entity.incrementFields(), function (field) {
             var incrementKey = _this.incrementKey(field);
             var max$$1 = _this.max(records, repo, incrementKey);
@@ -7319,7 +7494,7 @@ var Data$1 = /** @class */ (function () {
     return Data$$1;
 }());
 
-var __assign$8 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$9 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -7357,7 +7532,7 @@ var Query = /** @class */ (function () {
         this.state = state;
         this.name = name;
         this.entity = state[name];
-        this.records = map(state[name].data, function (record) { return record; });
+        this.records = map(state[name].data, function (v) { return v; });
     }
     /**
      * Register a callback.
@@ -7390,7 +7565,7 @@ var Query = /** @class */ (function () {
      * with the same primary key.
      */
     Query.prototype.insert = function (data) {
-        this.entity.data = __assign$8({}, this.entity.data, data);
+        this.entity.data = __assign$9({}, this.entity.data, data);
     };
     /**
      * Update data in the state.
@@ -7431,55 +7606,57 @@ var Query = /** @class */ (function () {
      * Returns single record of the query chain result.
      */
     Query.prototype.get = function () {
-        this.process();
-        return this.collect();
+        var records = this.process();
+        return this.collect(records);
     };
     /**
      * Returns single record of the query chain result.
      */
     Query.prototype.first = function (id) {
-        this.process();
-        if (isEmpty(this.records)) {
+        var records = this.process();
+        if (isEmpty(records)) {
             return null;
         }
         if (id !== undefined) {
-            return this.item(find(this.records, ['$id', id]));
+            return this.item(find(records, ['$id', id]));
         }
-        return this.item(this.records[0]);
+        return this.item(records[0]);
     };
     /**
      * Returns the last record of the query chain result.
      */
     Query.prototype.last = function () {
-        this.process();
-        if (isEmpty(this.records)) {
+        var records = this.process();
+        if (isEmpty(records)) {
             return null;
         }
-        var last = this.records.length - 1;
-        return this.item(this.records[last]);
+        var last = records.length - 1;
+        return this.item(records[last]);
     };
     /**
      * Process the query and filter data.
      */
     Query.prototype.process = function () {
+        var records = this.records.map(function (v) { return (__assign$9({}, v)); });
         // Process `beforeProcess` hook.
-        this.executeHooks('beforeProcess');
+        records = this.executeHooks('beforeProcess', records);
         // If the where clause is registered, lets filter the records beased on it.
         if (!isEmpty(this.wheres)) {
-            this.selectByWheres();
+            records = this.selectByWheres(records);
         }
         // Process `afterWhere` hook.
-        this.executeHooks('afterWhere');
+        records = this.executeHooks('afterWhere', records);
         // Next, lets sort the data if orderBy is registred.
         if (!isEmpty(this.orders)) {
-            this.sortByOrders();
+            records = this.sortByOrders(records);
         }
         // Process `afterOrderBy` hook.
-        this.executeHooks('afterOrderBy');
+        records = this.executeHooks('afterOrderBy', records);
         // Finally, slice the record by limit and offset.
-        this.records = slice(this.records, this._offset, this._offset + this._limit);
+        records = slice(records, this._offset, this._offset + this._limit);
         // Process `afterLimit` hook.
-        this.executeHooks('afterLimit');
+        records = this.executeHooks('afterLimit', records);
+        return records;
     };
     /**
      * Create a item from given record.
@@ -7490,8 +7667,8 @@ var Query = /** @class */ (function () {
     /**
      * Create a collection (array) from given records.
      */
-    Query.prototype.collect = function () {
-        return !isEmpty(this.records) ? this.records : [];
+    Query.prototype.collect = function (records) {
+        return !isEmpty(records) ? records : [];
     };
     /**
      * Add a and where clause to the query.
@@ -7531,17 +7708,17 @@ var Query = /** @class */ (function () {
     /**
      * Filter the given data by registered where clause.
      */
-    Query.prototype.selectByWheres = function () {
+    Query.prototype.selectByWheres = function (records) {
         var _this = this;
-        this.records = this.records.filter(function (record) { return _this.whereOnRecord(record); });
+        return records.filter(function (record) { return _this.whereOnRecord(record); });
     };
     /**
      * Sort the given data by registered orders.
      */
-    Query.prototype.sortByOrders = function () {
+    Query.prototype.sortByOrders = function (records) {
         var keys$$1 = map(this.orders, 'field');
         var directions = map(this.orders, 'direction');
-        this.records = orderBy(this.records, keys$$1, directions);
+        return orderBy(records, keys$$1, directions);
     };
     /**
      * Checks if given Record matches the registered where clause.
@@ -7615,14 +7792,17 @@ var Query = /** @class */ (function () {
     /**
      * Execute the callback of the given hook.
      */
-    Query.prototype.executeHooks = function (on) {
+    Query.prototype.executeHooks = function (on, records) {
         var _this = this;
+        var items = records;
         this.self().hooks.forEach(function (hook) {
             if (hook.on !== on) {
+                items = records;
                 return;
             }
-            _this.records = hook.callback(_this.records, _this.name);
+            items = hook.callback(items, _this.name);
         });
+        return items;
     };
     /**
      * Lifecycle hooks for the query.
@@ -7631,14 +7811,6 @@ var Query = /** @class */ (function () {
     return Query;
 }());
 
-var __assign$9 = (undefined && undefined.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
 var Repo = /** @class */ (function () {
     /**
      * Create a new repo instance.
@@ -8046,30 +8218,40 @@ var Repo = /** @class */ (function () {
      * Set where constraint based on relationship existence.
      */
     Repo.prototype.has = function (name, constraint, count) {
-        if (constraint === void 0) { constraint = null; }
         return this.addHasConstraint(name, constraint, count, true);
     };
     /**
      * Set where constraint based on relationship absence.
      */
     Repo.prototype.hasNot = function (name, constraint, count) {
-        if (constraint === void 0) { constraint = null; }
         return this.addHasConstraint(name, constraint, count, false);
     };
     /**
      * Add where constraints based on has or hasNot condition.
      */
     Repo.prototype.addHasConstraint = function (name, constraint, count, existence) {
-        var _this = this;
-        if (constraint === void 0) { constraint = null; }
-        if (existence === void 0) { existence = true; }
-        var ids = [];
-        var items = (new Query(this.state, this.name)).get();
-        forEach(items, function (item) {
-            var id = _this.entity.id(item);
-            _this.hasRelation(item, name, constraint, count) === existence && ids.push(id);
-        });
-        this.where('$id', function (key) { return includes(ids, key); });
+        var ids = this.matchesHasRelation(name, constraint, count, existence);
+        this.where('$id', function (value) { return includes(ids, value); });
+        return this;
+    };
+    /**
+     * Add where has condition.
+     */
+    Repo.prototype.whereHas = function (name, constraint) {
+        return this.addWhereHasConstraint(name, constraint, true);
+    };
+    /**
+     * Add where has not condition.
+     */
+    Repo.prototype.whereHasNot = function (name, constraint) {
+        return this.addWhereHasConstraint(name, constraint, false);
+    };
+    /**
+     * Add where has constraints that only matches the relationship constraint.
+     */
+    Repo.prototype.addWhereHasConstraint = function (name, constraint, existence) {
+        var ids = this.matchesWhereHasRelation(name, constraint, existence);
+        this.where('$id', function (value) { return includes(ids, value); });
         return this;
     };
     /**
@@ -8107,7 +8289,7 @@ var Repo = /** @class */ (function () {
         }
         var item = queryItem;
         if (!isEmpty(this.load)) {
-            item = this.loadRelations(item);
+            item = this.loadRelations([item])[0];
         }
         if (!this.wrap) {
             return item;
@@ -8124,7 +8306,7 @@ var Repo = /** @class */ (function () {
         }
         var item = collection;
         if (!isEmpty(this.load)) {
-            item = map(item, function (data) { return _this.loadRelations(data); });
+            item = this.loadRelations(item);
         }
         if (!this.wrap) {
             return item;
@@ -8134,53 +8316,104 @@ var Repo = /** @class */ (function () {
     /**
      * Load the relationships for the record.
      */
-    Repo.prototype.loadRelations = function (base, load, record, fields) {
+    Repo.prototype.loadRelations = function (data, relation) {
         var _this = this;
-        var _load = load || this.load;
-        var _record = record || __assign$9({}, base);
-        var _fields = fields || this.entity.fields();
-        return reduce(_load, function (record, relation) {
-            var name = relation.name.split('.')[0];
-            var attr = _fields[name];
-            if (!attr || !Contract.isAttribute(attr)) {
-                forEach(_fields, function (f, key) {
-                    if (f[name]) {
-                        record[key] = _this.loadRelations(base, _load, record[key], f);
-                        return;
-                    }
-                });
-                return record;
-            }
-            if (Contract.isRelation(attr)) {
-                record[name] = attr.load(_this, base, relation);
-                return record;
-            }
-            return record;
-        }, _record);
+        var _relation = relation || this.load;
+        var fields = this.entity.fields();
+        return reduce(_relation, function (records, rel) {
+            return _this.processLoadRelations(records, rel, fields);
+        }, data);
     };
     /**
-     * Check if the given record has given relationship.
+     * Process load relationships. This method is for the circuler processes.
      */
-    Repo.prototype.hasRelation = function (record, name, constraint, count) {
-        if (constraint === void 0) { constraint = null; }
-        var _constraint = constraint;
-        if (typeof constraint === 'number') {
-            _constraint = function (query) { return query.count() === constraint; };
+    Repo.prototype.processLoadRelations = function (data, relation, fields) {
+        var _this = this;
+        var relationName = relation.name.split('.')[0];
+        var collection = data;
+        Object.keys(fields).some(function (key) {
+            var field = fields[key];
+            if (key === relationName) {
+                if (field instanceof Relation) {
+                    collection = field.load(_this, collection, relation);
+                }
+                return true;
+            }
+            if (field instanceof Attribute) {
+                return false;
+            }
+            collection = _this.processLoadRelations(collection, relation, field);
+            return false;
+        });
+        return collection;
+    };
+    /**
+     * Check if the given collection has given relationship.
+     */
+    Repo.prototype.matchesHasRelation = function (name, constraint, count, existence) {
+        if (existence === void 0) { existence = true; }
+        var _constraint;
+        if (constraint === undefined) {
+            _constraint = function (record) { return record.length >= 1; };
+        }
+        else if (typeof constraint === 'number') {
+            _constraint = function (record) { return record.length >= constraint; };
+        }
+        else if (constraint === '=' && typeof count === 'number') {
+            _constraint = function (record) { return record.length === count; };
         }
         else if (constraint === '>' && typeof count === 'number') {
-            _constraint = function (query) { return query.count() > count; };
+            _constraint = function (record) { return record.length > count; };
         }
         else if (constraint === '>=' && typeof count === 'number') {
-            _constraint = function (query) { return query.count() >= count; };
+            _constraint = function (record) { return record.length >= count; };
         }
         else if (constraint === '<' && typeof count === 'number') {
-            _constraint = function (query) { return query.count() < count; };
+            _constraint = function (record) { return record.length < count; };
         }
         else if (constraint === '<=' && typeof count === 'number') {
-            _constraint = function (query) { return query.count() <= count; };
+            _constraint = function (record) { return record.length <= count; };
         }
-        var data = this.loadRelations(record, [{ name: name, constraint: _constraint }]);
-        return !isEmpty(data[name]);
+        var data = (new Repo(this.state, this.name, false)).with(name).get();
+        var ids = [];
+        data.forEach(function (item) {
+            var target = item[name];
+            var result = false;
+            if (!target) {
+                result = false;
+            }
+            else if (Array.isArray(target) && target.length < 1) {
+                result = false;
+            }
+            else if (Array.isArray(target)) {
+                result = _constraint(target);
+            }
+            else if (target) {
+                result = _constraint([target]);
+            }
+            if (result !== existence) {
+                return;
+            }
+            ids.push(item.$id);
+        });
+        return ids;
+    };
+    /**
+     * Get all id of the record that matches the relation constraints.
+     */
+    Repo.prototype.matchesWhereHasRelation = function (name, constraint, existence) {
+        if (existence === void 0) { existence = true; }
+        var data = (new Repo(this.state, this.name, false)).with(name, constraint).get();
+        var ids = [];
+        data.forEach(function (item) {
+            var target = item[name];
+            var result = Array.isArray(target) ? !!target.length : !!target;
+            if (result !== existence) {
+                return;
+            }
+            ids.push(item.$id);
+        });
+        return ids;
     };
     /**
      * Delete data from the state.
@@ -8238,6 +8471,9 @@ var HasOne = /** @class */ (function (_super) {
      * instantiating a model or creating a plain object from a model.
      */
     HasOne.prototype.make = function (value, _parent, _key) {
+        if (value === null) {
+            return null;
+        }
         if (value === undefined) {
             return null;
         }
@@ -8262,11 +8498,16 @@ var HasOne = /** @class */ (function (_super) {
     /**
      * Load the has one relationship for the record.
      */
-    HasOne.prototype.load = function (repo, record, relation) {
-        var query = new Repo(repo.state, this.related.entity, false);
-        query.where(this.foreignKey, record[this.localKey]);
-        this.addConstraint(query, relation);
-        return query.first();
+    HasOne.prototype.load = function (repo, collection, relation) {
+        var _this = this;
+        var relatedPath = this.relatedPath(relation.name);
+        var relatedQuery = new Repo(repo.state, this.related.entity, false);
+        this.addConstraint(relatedQuery, relation);
+        var relatedRecords = this.mapRecords(relatedQuery.get(), this.foreignKey);
+        return collection.map(function (item) {
+            var related = relatedRecords[item[_this.localKey]];
+            return _this.setRelated(item, related || null, relatedPath);
+        });
     };
     return HasOne;
 }(Relation));
