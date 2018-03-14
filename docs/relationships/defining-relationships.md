@@ -176,7 +176,7 @@ For this example, Post has many Comments. The arguments for the `this.hasMany` i
 
 Then of course, the 3rd argument can override which id to look up on parent model, which is Post in this case.
 
-```
+```js
 class Post extends Model {
   static entity = 'posts'
 
