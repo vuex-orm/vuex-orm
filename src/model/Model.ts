@@ -3,7 +3,7 @@ import * as _ from '../support/lodash'
 import Utils from '../support/Utils'
 import Container from '../connections/Container'
 import Connection from '../connections/Connection'
-import { Record } from '../data/Contract'
+import { Record, Records } from '../data/Contract'
 import AttrContract, { Fields } from '../attributes/contracts/Contract'
 import Attribute from '../attributes/Attribute'
 import Attr, { Mutator } from '../attributes/types/Attr'
@@ -361,6 +361,17 @@ export default class Model {
   }
 
   /**
+   * Fix multiple records.
+   */
+  static fixMany (data: Records): Records {
+    return Object.keys(data).reduce((records, id) => {
+      records[id] = this.fix(data[id])
+
+      return records
+    }, {} as Records)
+  }
+
+  /**
    * Fill any missing fields in the given data with the default
    * value defined in the model schema.
    */
@@ -381,6 +392,17 @@ export default class Model {
 
       return record
     }, {} as Record)
+  }
+
+  /**
+   * Fill multiple records.
+   */
+  static fillMany (data: Records): Records {
+    return Object.keys(data).reduce((records, id) => {
+      records[id] = this.fill(data[id])
+
+      return records
+    }, {} as Records)
   }
 
   /**

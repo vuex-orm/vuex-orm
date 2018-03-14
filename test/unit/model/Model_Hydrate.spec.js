@@ -53,6 +53,29 @@ describe('Model – Hydrate', () => {
     expect(User.fix(data)).toEqual(expected)
   })
 
+  it('can fix many data', () => {
+    class User extends Model {
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('')
+        }
+      }
+    }
+
+    const data = {
+      '1': { id: 1, name: 'John', age: 24, role: 'user' },
+      '2': { id: 2, age: 26, role: 'admin' }
+    }
+
+    const expected = {
+      '1': { id: 1, name: 'John' },
+      '2': { id: 2 }
+    }
+
+    expect(User.fixMany(data)).toEqual(expected)
+  })
+
   it('can fill the given data', () => {
     class User extends Model {
       static fields () {
@@ -101,5 +124,28 @@ describe('Model – Hydrate', () => {
     }
 
     expect(User.fill(data)).toEqual(expected)
+  })
+
+  it('can fill many data', () => {
+    class User extends Model {
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('John')
+        }
+      }
+    }
+
+    const data = {
+      '1': { id: 1, age: 24, role: 'user' },
+      '2': { id: 2, age: 26, role: 'admin' }
+    }
+
+    const expected = {
+      '1': { id: 1, name: 'John' },
+      '2': { id: 2, name: 'John' }
+    }
+
+    expect(User.fillMany(data)).toEqual(expected)
   })
 })
