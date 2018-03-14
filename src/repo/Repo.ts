@@ -1,6 +1,6 @@
 import * as _ from '../support/lodash'
 import Container from '../connections/Container'
-import { Record, NormalizedData, PlainItem, PlainCollection, Item, Collection } from '../data/Contract'
+import { Record, Records, NormalizedData, PlainItem, PlainCollection, Item, Collection } from '../data/Contract'
 import Data from '../data/Data'
 import Attrs, { Fields } from '../attributes/contracts/Contract'
 import Attribute from '../attributes/Attribute'
@@ -205,11 +205,11 @@ export default class Repo {
   }
 
   /**
-   * Save the given data to the state. This will replace any existing
+   * Save the given data to the state. It will replace any existing
    * data in the state.
    */
   create (data: any, insert: string[] = []): Item | Collection {
-    return this.persist('create', data, [], insert)
+    return this.persist('persistCreate', data, [], insert)
   }
 
   /**
@@ -218,7 +218,7 @@ export default class Repo {
    * with the same primary key.
    */
   insert (data: any, create: string[] = []): Item | Collection {
-    return this.persist('insert', data, create, [])
+    return this.persist('persistInsert', data, create, [])
   }
 
   /**
@@ -253,7 +253,7 @@ export default class Repo {
     })
 
     if (Object.keys(toBePersisted).length > 0) {
-      persistedItems = this.processPersist('insert', toBePersisted, create, [])
+      persistedItems = this.processPersist('persistInsert', toBePersisted, create, [])
     }
 
     // merging the ids of updated and persisted items to return all of them.
@@ -266,8 +266,8 @@ export default class Repo {
   persist (method: string, data: any, forceCreateFor: string[] = [], forceInsertFor: string[] = []): Item | Collection {
     const normalizedData = this.normalize(data)
 
-    if (_.isEmpty(normalizedData)) {
-      method === 'create' && this.query.create({})
+    if (_.isEmpty(normalizedData) && method === 'persistCreate') {
+      this.state.data = {}
 
       return null
     }
@@ -289,17 +289,31 @@ export default class Repo {
       const method = this.getPersistMethod(defaultMethod, entity, forceCreateFor, forceInsertFor)
 
       if (entity !== this.entity) {
-        (new Query(this.rootState, entity) as any)[method](data)
+        (new Repo(this.rootState, entity) as any)[method](data)
 
         return
       }
 
-      (this.query as any)[method](data)
+      (this as any)[method](data)
 
       _.forEach(data, item => { items.push(item.$id) })
     })
 
     return items
+  }
+
+  /**
+   * Persist data by removing any existing data.
+   */
+  persistCreate (data: Records): void {
+    this.state.data = data
+  }
+
+  /**
+   * Persist data by keeping any existing data.
+   */
+  persistInsert (data: Records): void {
+    this.state.data = { ...this.state.data, ...data }
   }
 
   /**
@@ -314,11 +328,11 @@ export default class Repo {
    */
   getPersistMethod (defaultMethod: string, entity: string, forceCreateFor: string[] = [], forceInsertFor: string[] = []): string {
     if (_.includes(forceCreateFor, entity)) {
-      return 'create'
+      return 'persistCreate'
     }
 
     if (_.includes(forceInsertFor, entity)) {
-      return 'insert'
+      return 'persistInsert'
     }
 
     return defaultMethod

@@ -116,23 +116,6 @@ export default class Query {
   }
 
   /**
-   * Save the given data to the state. This will replace any existing
-   * data in the state.
-   */
-  create (data: any): void {
-    this.entity.data = data
-  }
-
-  /**
-   * Insert given data to the state. Unlike `create`, this method will not
-   * remove existing data within the state, but it will update the data
-   * with the same primary key.
-   */
-  insert (data: any): void {
-    this.entity.data = { ...this.entity.data, ...data }
-  }
-
-  /**
    * Update data in the state.
    */
   update (data: Record | ((record: Record) => void), condition: Condition): void {
