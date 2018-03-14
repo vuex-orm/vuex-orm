@@ -8,10 +8,10 @@ export type DictionaryIterator<T, TResult> = (value: T, key: string, collection:
  * Iterates over own enumerable string keyed properties of an object and
  * invokes `iteratee` for each property.
  */
-export function forOwn<T> (object: Dictionary<T>, iteretee: DictionaryIterator<T, any>) {
+export function forOwn<T> (object: Dictionary<T>, iteretee: DictionaryIterator<T, any>): void {
   object = Object(object)
 
-  Object.keys(object).forEach((key) => iteretee(object[key], key, object))
+  Object.keys(object).forEach(key => iteretee(object[key], key, object))
 }
 
 export default {
