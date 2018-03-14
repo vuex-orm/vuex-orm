@@ -334,6 +334,33 @@ export default class Model {
   }
 
   /**
+   * Remove any fields not defined in the model schema. This method
+   * also fixes any incorrect values as well.
+   */
+  static fix (data: Record, fields?: Fields): Record {
+    const _fields = fields || this.fields()
+
+    return Object.keys(data).reduce((record, key) => {
+      const value = data[key]
+      const field = _fields[key]
+
+      if (!field) {
+        return record
+      }
+
+      if (field instanceof Attribute) {
+        record[key] = field.fill(value)
+
+        return record
+      }
+
+      record[key] = this.fix(value, field)
+
+      return record
+    }, {} as Record)
+  }
+
+  /**
    * Get the static class of this model.
    */
   $self (): typeof Model {
