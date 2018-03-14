@@ -9,18 +9,18 @@ export default class Data {
   /**
    * Normalize the data.
    */
-  static normalize (data: any, Query: Query): NormalizedData {
-    const normalizedData = Normalizer.normalize(data, Query)
+  static normalize (data: any, query: Query): NormalizedData {
+    const normalizedData = Normalizer.normalize(data, query)
 
-    const attachedData = Attacher.attach(normalizedData, Query)
+    const attachedData = Attacher.attach(normalizedData, query)
 
-    return Incrementer.increment(attachedData, Query)
+    return Incrementer.increment(attachedData, query)
   }
 
   /**
    * Fill missing records with default value based on model schema.
    */
-  static fillAll (data: NormalizedData, Query: Query): NormalizedData {
-    return Builder.build(data, Query)
+  static fillAll (data: NormalizedData, query: Query): NormalizedData {
+    return Builder.build(data, query)
   }
 }
