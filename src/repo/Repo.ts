@@ -8,7 +8,18 @@ import Attribute from '../attributes/Attribute'
 import RelationClass from '../attributes/relations/Relation'
 import Model from '../model/Model'
 import { State, EntityState } from '../modules/Module'
-import Query, { OrderDirection, Condition } from './Query'
+
+export type WhereBoolean = 'and' | 'or'
+
+export type WherePrimaryClosure = (record: Record, query: Repo, model?: Model) => boolean | void
+
+export type WhereSecondaryClosure = (value: any) => boolean
+
+export type OrderDirection = 'asc' | 'desc'
+
+export type Predicate = (item: Record) => boolean
+
+export type Condition = number | string | Predicate
 
 export type Buildable = PlainItem | PlainCollection | null
 
@@ -16,12 +27,33 @@ export type Constraint = (query: Repo) => void | boolean
 
 export type ConstraintCallback = (relationName: string) => Constraint | null
 
+export interface Wheres {
+  field: string | number | WherePrimaryClosure
+  value: string | number | WhereSecondaryClosure
+  boolean: WhereBoolean
+}
+
+export interface Orders {
+  field: string
+  direction: OrderDirection
+}
+
+export interface Hooks {
+  on: string
+  callback: Function
+}
+
 export interface Relation {
   name: string
   constraint: null | Constraint
 }
 
 export default class Repo {
+  /**
+   * Lifecycle hooks for the query.
+   */
+  static hooks: Hooks[] = []
+
   /**
    * The root state of the Vuex Store.
    */
@@ -43,19 +75,36 @@ export default class Repo {
   model: typeof Model
 
   /**
-   * The base query builder instance.
+   * The where constraints for the query.
    */
-  query: Query
+  wheres: Wheres[] = []
 
   /**
-   * Whether to wrap returing record with class or to return as plain object.
+   * The orders of the query result.
    */
-  wrap: boolean
+  orders: Orders[] = []
+
+  /**
+   * Number of results to skip.
+   */
+  _offset: number = 0
+
+  /**
+   * Maximum number of records to return.
+   *
+   * We use polyfill of `Number.MAX_SAFE_INTEGER` for IE11 here.
+   */
+  _limit: number = Math.pow(2, 53) - 1
 
   /**
    * The relationships that should be loaded with the result.
    */
   load: Relation[] = []
+
+  /**
+   * Whether to wrap returing record with class or to return as plain object.
+   */
+  wrap: boolean
 
   /**
    * Create a new repo instance.
@@ -66,7 +115,6 @@ export default class Repo {
     this.entity = entity
     this.model = this.getModel(entity)
     this.wrap = wrap
-    this.query = new Query(state, entity)
   }
 
   /**
@@ -180,6 +228,13 @@ export default class Repo {
     _.forEach(models, (_model, name) => {
       state[name] && (new this(state, name)).deleteAll()
     })
+  }
+
+  /**
+   * Register a callback.
+   */
+  static on (on: string, callback: Function): void {
+    this.hooks.push({ on, callback })
   }
 
   /**
@@ -472,28 +527,54 @@ export default class Repo {
    * Returns all record of the query chain result.
    */
   get (): Collection {
-    return this.collect(this.query.get())
+    const records = this.process()
+
+    return this.collect(records)
   }
 
   /**
    * Returns single record of the query chain result.
    */
   first (id?: number | string): Item {
-    return this.item(this.query.first(id))
+    const records = this.process()
+
+    if (_.isEmpty(records)) {
+      return null
+    }
+
+    if (id !== undefined) {
+      const item = _.find(records, ['$id', id])
+
+      if (item === undefined) {
+        return null
+      }
+
+      return this.item(item)
+    }
+
+    return this.item(records[0])
   }
 
   /**
    * Returns the last single record of the query chain result.
    */
   last (): Item {
-    return this.item(this.query.last())
+    const records = this.process()
+
+    if (_.isEmpty(records)) {
+      return null
+    }
+
+    const last = records.length - 1
+
+    return this.item(records[last])
   }
 
   /**
    * Add a and where clause to the query.
    */
   where (field: any, value?: any): this {
-    this.query.where(field, value)
+    this.wheres.push({ field, value, boolean: 'and' })
 
     return this
   }
@@ -502,7 +583,7 @@ export default class Repo {
    * Add a or where clause to the query.
    */
   orWhere (field: any, value?: any): this {
-    this.query.orWhere(field, value)
+    this.wheres.push({ field, value, boolean: 'or' })
 
     return this
   }
@@ -511,7 +592,7 @@ export default class Repo {
    * Add an order to the query.
    */
   orderBy (field: string, direction: OrderDirection = 'asc'): this {
-    this.query.orderBy(field, direction)
+    this.orders.push({ field, direction })
 
     return this
   }
@@ -520,7 +601,7 @@ export default class Repo {
    * Add an offset to the query.
    */
   offset (offset: number): this {
-    this.query.offset(offset)
+    this._offset = offset
 
     return this
   }
@@ -529,7 +610,7 @@ export default class Repo {
    * Add limit to the query.
    */
   limit (limit: number): this {
-    this.query.limit(limit)
+    this._limit = limit
 
     return this
   }
@@ -623,6 +704,140 @@ export default class Repo {
     this.where('$id', (value: any) => _.includes(ids, value))
 
     return this
+  }
+
+  /**
+   * Process the query and filter data.
+   */
+  process (): PlainCollection {
+    let records: PlainCollection = Object.keys(this.state.data).map(id => ({ ...this.state.data[id] }))
+
+    // Process `beforeProcess` hook.
+    records = this.executeHooks('beforeProcess', records)
+
+    // If the where clause is registered, lets filter the records beased on it.
+    if (!_.isEmpty(this.wheres)) {
+      records = this.selectByWheres(records)
+    }
+
+    // Process `afterWhere` hook.
+    records = this.executeHooks('afterWhere', records)
+
+    // Next, lets sort the data if orderBy is registred.
+    if (!_.isEmpty(this.orders)) {
+      records = this.sortByOrders(records)
+    }
+
+    // Process `afterOrderBy` hook.
+    records = this.executeHooks('afterOrderBy', records)
+
+    // Finally, slice the record by limit and offset.
+    records = _.slice(records, this._offset, this._offset + this._limit)
+
+    // Process `afterLimit` hook.
+    records = this.executeHooks('afterLimit', records)
+
+    return records
+  }
+
+  /**
+   * Filter the given data by registered where clause.
+   */
+  selectByWheres (records: PlainCollection): PlainCollection {
+    return records.filter(record => this.whereOnRecord(record))
+  }
+
+  /**
+   * Sort the given data by registered orders.
+   */
+  sortByOrders (records: PlainCollection): PlainCollection {
+    const keys = _.map(this.orders, 'field')
+    const directions = _.map(this.orders, 'direction')
+
+    return _.orderBy(records, keys, directions)
+  }
+
+  /**
+   * Checks if given Record matches the registered where clause.
+   */
+  whereOnRecord (record: Record): boolean {
+    let whereTypes: any = _.groupBy(this.wheres, where => where.boolean)
+    let whereResults: boolean[] = []
+    let comparator: (where: any) => boolean = this.getComparator(record)
+
+    if (whereTypes.and) {
+      whereResults.push(_.every(whereTypes.and, comparator))
+    }
+
+    if (whereTypes.or) {
+      whereResults.push(_.some(whereTypes.or, comparator))
+    }
+
+    return whereResults.indexOf(true) !== -1
+  }
+
+  /**
+   * Get comparator for the where clause.
+   */
+  getComparator (record: Record): (where: any) => boolean {
+    return (where: any) => {
+      // Function with Record and Query as argument.
+      if (_.isFunction(where.field)) {
+        const query = new Repo(this.rootState, this.entity)
+        const result = this.executeWhereClosure(record, query, where.field)
+
+        if (typeof result === 'boolean') {
+          return result
+        }
+
+        return !_.isEmpty(query.where('$id', record['$id']).get())
+      }
+
+      // Function with Record value as argument.
+      if (_.isFunction(where.value)) {
+        return where.value(record[where.field])
+      }
+
+      // Check if field value is in given where Array.
+      if (_.isArray(where.value)) {
+        return where.value.indexOf(record[where.field]) !== -1
+      }
+
+      // Simple equal check.
+      return record[where.field] === where.value
+    }
+  }
+
+  /**
+   * Execute where closure.
+   */
+  executeWhereClosure (record: Record, query: Repo, closure: WherePrimaryClosure): boolean | void {
+    if (closure.length !== 3) {
+      return closure(record, query)
+    }
+
+    const model = new this.model(record)
+
+    return closure(record, query, model)
+  }
+
+  /**
+   * Execute the callback of the given hook.
+   */
+  executeHooks (on: string, records: PlainCollection): PlainCollection {
+    let items = records
+
+    this.self().hooks.forEach((hook) => {
+      if (hook.on !== on) {
+        items = records
+
+        return
+      }
+
+      items = hook.callback(items, this.entity)
+    })
+
+    return items
   }
 
   /**

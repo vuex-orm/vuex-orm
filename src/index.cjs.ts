@@ -5,7 +5,6 @@ import use, { Use } from './plugins/use'
 import Database from './database/Database'
 import Model from './model/Model'
 import Repo from './repo/Repo'
-import Query from './repo/Query'
 import Type from './attributes/types/Type'
 import Attr from './attributes/types/Attr'
 import Increment from './attributes/types/Increment'
@@ -33,7 +32,6 @@ export interface VuexORM {
   Database: typeof Database
   Model: typeof Model
   Repo: typeof Repo
-  Query: typeof Query
   Type: typeof Type
   Attr: typeof Attr
   Increment: typeof Increment
@@ -62,7 +60,6 @@ export default {
   Database,
   Model,
   Repo,
-  Query,
   Type,
   Attr,
   Increment,
