@@ -143,7 +143,7 @@ export default class Query {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  static create (state: State, entity: string, data: any, insert: string[] = []): Item | Collection {
+  static create (state: State, entity: string, data: any, insert?: string[]): Item | Collection {
     return (new this(state, entity)).create(data, insert)
   }
 
@@ -152,7 +152,7 @@ export default class Query {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  static insert (state: State, entity: string, data: any, create: string[] = []): Item | Collection {
+  static insert (state: State, entity: string, data: any, create?: string[]): Item | Collection {
     return (new this(state, entity)).insert(data, create)
   }
 
@@ -168,7 +168,7 @@ export default class Query {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  static insertOrUpdate (state: State, entity: string, data: any, create: string[] = []): Item | Collection {
+  static insertOrUpdate (state: State, entity: string, data: any, create?: string[]): Item | Collection {
     return (new this(state, entity)).insertOrUpdate(data, create)
   }
 
