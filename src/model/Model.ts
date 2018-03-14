@@ -394,13 +394,13 @@ export default class Model {
         return record
       }
 
-      record[key] = this.fill(value, [], field)
+      record[key] = this.fill(value || [], [], field)
 
       return record
     }, {} as Record)
 
     return Object.keys(data).reduce((record, key) => {
-      if (keep.includes(key)) {
+      if (keep.includes(key) && data[key] !== undefined) {
         record[key] = data[key]
       }
 

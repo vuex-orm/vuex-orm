@@ -1,13 +1,14 @@
 import * as _ from '../support/lodash'
 import Utils from '../support/Utils'
 import Container from '../connections/Container'
-import { Record, Records, NormalizedData, PlainItem, PlainCollection, Item, Collection } from '../data/Contract'
+import { Record, NormalizedData, PlainItem, PlainCollection, Item, Collection } from '../data/Contract'
 import Data from '../data/Data'
 import Attrs, { Fields } from '../attributes/contracts/Contract'
 import Attribute from '../attributes/Attribute'
 import RelationClass from '../attributes/relations/Relation'
 import Model from '../model/Model'
 import { State, EntityState } from '../modules/Module'
+import Persist from './processors/Persist'
 
 export type WhereBoolean = 'and' | 'or'
 
@@ -264,8 +265,8 @@ export default class Query {
    * Save the given data to the state. It will replace any existing
    * data in the state.
    */
-  create (data: any, insert: string[] = []): Item | Collection {
-    return this.persist('persistCreate', data, [], insert)
+  create (data: any, insert?: string[]): Item | Collection {
+    return this.persist('create', data, [], insert)
   }
 
   /**
@@ -273,8 +274,18 @@ export default class Query {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert (data: any, create: string[] = []): Item | Collection {
-    return this.persist('persistInsert', data, create, [])
+  insert (data: any, create?: string[]): Item | Collection {
+    return this.persist('insert', data, create, [])
+  }
+
+  /**
+   * Persist data into Vuex Store.
+   */
+  persist (method: string, data: any, forceCreateFor?: string[], forceInsertFor?: string[]): Item | Collection {
+    const normalizedData = this.normalize(data)
+    const many = Array.isArray(data)
+
+    return new Persist(this, method, normalizedData, forceCreateFor, forceInsertFor, many).process()
   }
 
   /**
@@ -283,93 +294,44 @@ export default class Query {
    * the submitted data with the same primary key.
    */
   insertOrUpdate (data: any, create: string[] = []): Item | Collection {
-    const normalizedData: NormalizedData = this.normalize(data)
-    const toBePersisted: NormalizedData = {}
-    const updatedItems: string[] = []
-    let persistedItems: (string | number)[] = []
+    const many = Array.isArray(data)
+    const normalizedData = this.normalize(data)
 
-    // `normalizedData` contains the differenty entity types (e.g. `users`),
-    _.forEach(normalizedData, (data, entity) => {
-      const query = new Query(this.rootState, entity, false)
+    let toBePersisted: NormalizedData = {}
+    let updatedItems: Collection = []
+    let persistedItems: Collection = []
 
-      // `data` contains the items of `entity`.
-      _.forEach(data, (item, id) => {
-        // Check if item does not already exist in store and mark it as new.
-        if (query.model.id(item) === undefined || query.find(query.model.id(item)) === null) {
+    _.forEach(normalizedData, (records, entity) => {
+      const query = new Query(this.rootState, entity)
+
+      _.forEach(records, (record, id) => {
+        const recordId = query.model.id(record)
+
+        if (recordId === undefined || query.find(recordId) === null) {
           if (!toBePersisted.hasOwnProperty(entity)) {
             toBePersisted[entity] = {}
           }
 
-          toBePersisted[entity][id] = item
-        } else {
-          query.processUpdate(item, query.model.id(item))
-          updatedItems.push(query.model.id(item))
+          toBePersisted[entity][id] = record
+
+          return
         }
+
+        query.processUpdate(record, recordId)
+
+        const updatedItem = query.find(recordId)
+
+        updatedItem && updatedItems.push(updatedItem)
       })
     })
 
     if (Object.keys(toBePersisted).length > 0) {
-      persistedItems = this.processPersist('persistInsert', toBePersisted, create, [])
+      persistedItems = (new Persist(this, 'insert', toBePersisted, create, [], many).process() as Collection)
     }
 
-    // merging the ids of updated and persisted items to return all of them.
-    return this.getReturnData([...updatedItems, ...persistedItems])
-  }
+    const result = [...updatedItems, ...persistedItems]
 
-  /**
-   * Persist data into Vuex Store.
-   */
-  persist (method: string, data: any, forceCreateFor: string[] = [], forceInsertFor: string[] = []): Item | Collection {
-    const normalizedData = this.normalize(data)
-
-    if (_.isEmpty(normalizedData) && method === 'persistCreate') {
-      this.state.data = {}
-
-      return null
-    }
-
-    const items = this.processPersist(method, normalizedData, forceCreateFor, forceInsertFor)
-
-    return this.getReturnData(items)
-  }
-
-  /**
-   * Persist data into the store. It returns list of created ids.
-   */
-  processPersist (defaultMethod: string, data: NormalizedData, forceCreateFor: string[] = [], forceInsertFor: string[] = []): (string | number)[] {
-    const items: (string | number)[] = []
-
-    const records = Data.fillAll(data, this)
-
-    _.forEach(records, (data, entity) => {
-      const method = this.getPersistMethod(defaultMethod, entity, forceCreateFor, forceInsertFor)
-
-      if (entity !== this.entity) {
-        (new Query(this.rootState, entity) as any)[method](data)
-
-        return
-      }
-
-      (this as any)[method](data)
-
-      _.forEach(data, item => { items.push(item.$id) })
-    })
-
-    return items
-  }
-
-  /**
-   * Persist data by removing any existing data.
-   */
-  persistCreate (data: Records): void {
-    this.state.data = data
-  }
-
-  /**
-   * Persist data by keeping any existing data.
-   */
-  persistInsert (data: Records): void {
-    this.state.data = { ...this.state.data, ...data }
+    return many ? result : result[0]
   }
 
   /**
@@ -377,21 +339,6 @@ export default class Query {
    */
   normalize (data: any): NormalizedData {
     return Data.normalize(data, this)
-  }
-
-  /**
-   * Get method for persist.
-   */
-  getPersistMethod (defaultMethod: string, entity: string, forceCreateFor: string[] = [], forceInsertFor: string[] = []): string {
-    if (_.includes(forceCreateFor, entity)) {
-      return 'persistCreate'
-    }
-
-    if (_.includes(forceInsertFor, entity)) {
-      return 'persistInsert'
-    }
-
-    return defaultMethod
   }
 
   /**
