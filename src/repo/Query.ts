@@ -389,28 +389,6 @@ export default class Query {
   }
 
   /**
-   * Delete data from the state.
-   */
-  delete (condition: Condition): void {
-    if (typeof condition === 'function') {
-      this.entity.data = _.pickBy(this.entity.data, record => !condition(record))
-
-      return
-    }
-
-    const id = typeof condition === 'number' ? condition.toString() : condition
-
-    this.entity.data = _.pickBy(this.entity.data, (_record, key) => key !== id)
-  }
-
-  /**
-   * Delete all data from the state.
-   */
-  deleteAll (): void {
-    this.entity.data = {}
-  }
-
-  /**
    * Execute the callback of the given hook.
    */
   executeHooks (on: string, records: PlainCollection): PlainCollection {

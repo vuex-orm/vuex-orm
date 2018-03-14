@@ -170,12 +170,14 @@ export default class Repo {
   static deleteAll (state: State, entity?: string): void {
     if (entity) {
       (new this(state, entity)).deleteAll()
+
+      return
     }
 
     const models = this.getModels(state)
 
     _.forEach(models, (_model, name) => {
-      state[name] && (new Query(state, name)).deleteAll()
+      state[name] && (new this(state, name)).deleteAll()
     })
   }
 
@@ -763,13 +765,21 @@ export default class Repo {
    * Delete data from the state.
    */
   delete (condition: Condition): void {
-    this.query.delete(condition)
+    if (typeof condition === 'function') {
+      this.state.data = _.pickBy(this.state.data, record => !condition(record))
+
+      return
+    }
+
+    const id = typeof condition === 'number' ? condition.toString() : condition
+
+    this.state.data = _.pickBy(this.state.data, (_record, key) => key !== id)
   }
 
   /**
    * Delete all data from the state.
    */
   deleteAll (): void {
-    this.query.deleteAll()
+    this.state.data = {}
   }
 }
