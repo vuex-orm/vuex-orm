@@ -337,12 +337,18 @@ export default class Model {
    * Remove any fields not defined in the model schema. This method
    * also fixes any incorrect values as well.
    */
-  static fix (data: Record, fields?: Fields): Record {
+  static fix (data: Record, keep: string[] = [], fields?: Fields): Record {
     const _fields = fields || this.fields()
 
     return Object.keys(data).reduce((record, key) => {
       const value = data[key]
       const field = _fields[key]
+
+      if (keep.includes(key)) {
+        record[key] = value
+
+        return record
+      }
 
       if (!field) {
         return record
@@ -354,7 +360,7 @@ export default class Model {
         return record
       }
 
-      record[key] = this.fix(value, field)
+      record[key] = this.fix(value, [], field)
 
       return record
     }, {} as Record)
@@ -363,9 +369,9 @@ export default class Model {
   /**
    * Fix multiple records.
    */
-  static fixMany (data: Records): Records {
+  static fixMany (data: Records, keep?: string[]): Records {
     return Object.keys(data).reduce((records, id) => {
-      records[id] = this.fix(data[id])
+      records[id] = this.fix(data[id], keep)
 
       return records
     }, {} as Records)
@@ -375,10 +381,10 @@ export default class Model {
    * Fill any missing fields in the given data with the default
    * value defined in the model schema.
    */
-  static fill (data: Record, fields?: Fields): Record {
+  static fill (data: Record, keep: string[] = [], fields?: Fields): Record {
     const _fields = fields || this.fields()
 
-    return Object.keys(_fields).reduce((record, key) => {
+    const record = Object.keys(_fields).reduce((record, key) => {
       const field = _fields[key]
       const value = data[key]
 
@@ -388,18 +394,26 @@ export default class Model {
         return record
       }
 
-      record[key] = this.fill(value, field)
+      record[key] = this.fill(value, [], field)
 
       return record
     }, {} as Record)
+
+    return Object.keys(data).reduce((record, key) => {
+      if (keep.includes(key)) {
+        record[key] = data[key]
+      }
+
+      return record
+    }, record)
   }
 
   /**
    * Fill multiple records.
    */
-  static fillMany (data: Records): Records {
+  static fillMany (data: Records, keep?: string[]): Records {
     return Object.keys(data).reduce((records, id) => {
-      records[id] = this.fill(data[id])
+      records[id] = this.fill(data[id], keep)
 
       return records
     }, {} as Records)
