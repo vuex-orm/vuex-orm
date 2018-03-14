@@ -1,4 +1,5 @@
 import * as _ from '../support/lodash'
+import Utils from '../support/Utils'
 import Container from '../connections/Container'
 import { Record, Records, NormalizedData, PlainItem, PlainCollection, Item, Collection } from '../data/Contract'
 import Data from '../data/Data'
@@ -246,7 +247,7 @@ export default class Repo {
 
           toBePersisted[entity][id] = item
         } else {
-          repo.query.update(item, repo.model.id(item))
+          repo.processUpdate(item, repo.model.id(item))
           updatedItems.push(repo.model.id(item))
         }
       })
@@ -389,7 +390,7 @@ export default class Repo {
     const items: any[] = []
 
     if (id !== undefined) {
-      this.query.update(data, id)
+      this.processUpdate(data, id)
 
       items.push(id)
     }
@@ -405,9 +406,50 @@ export default class Repo {
 
     const items = _.map(records, record => this.model.id(record))
 
-    this.query.update(data, condition)
+    this.processUpdate(data, condition)
 
     return this.getManyReturnData(items)
+  }
+
+  /**
+   * Update data in the state.
+   */
+  processUpdate (data: Record | ((record: Record) => void), condition: Condition): void {
+    if (typeof condition !== 'function') {
+      this.state.data[condition] && this.processUpdateByClosure(this.state.data[condition], data)
+
+      return
+    }
+
+    Utils.forOwn(this.state.data, (record) => {
+      condition(record) && this.processUpdateByClosure(record, data)
+    })
+  }
+
+  /**
+   * Process the update depending on data type.
+   */
+  processUpdateByClosure (data: Record, record: Record | ((record: Record) => void)): void {
+    typeof record === 'function' ? record(data) : this.processUpdateRecursively(data, record, this.model.fields())
+  }
+
+  /**
+   * Process the update by recursively checking the model schema.
+   */
+  processUpdateRecursively (data: Record, record: Record, fields: Fields): void {
+    Utils.forOwn(fields, (field, key) => {
+      if (record[key] === undefined) {
+        return
+      }
+
+      if (field instanceof Attribute) {
+        data[key] = record[key]
+
+        return
+      }
+
+      this.processUpdateRecursively(data[key], record[key], field)
+    })
   }
 
   /**

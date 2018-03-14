@@ -1,9 +1,6 @@
 import * as _ from '../support/lodash'
-import Utils from '../support/Utils'
 import Container from '../connections/Container'
 import { Record, PlainItem, PlainCollection } from '../data/Contract'
-import { Fields } from '../attributes/contracts/Contract'
-import Attribute from '../attributes/Attribute'
 import Model from '../model/Model'
 import { State, EntityState } from '../modules/Module'
 
@@ -113,47 +110,6 @@ export default class Query {
    */
   model (): typeof Model {
     return Container.connection(this.state.name).model(this.name)
-  }
-
-  /**
-   * Update data in the state.
-   */
-  update (data: Record | ((record: Record) => void), condition: Condition): void {
-    if (typeof condition !== 'function') {
-      this.entity.data[condition] && this.processUpdate(this.entity.data[condition], data)
-
-      return
-    }
-
-    Utils.forOwn(this.entity.data, (record) => {
-      condition(record) && this.processUpdate(record, data)
-    })
-  }
-
-  /**
-   * Process the update depending on data type.
-   */
-  processUpdate (data: Record, record: Record | ((record: Record) => void)): void {
-    typeof record === 'function' ? record(data) : this.processUpdateRecursively(data, record, this.model().fields())
-  }
-
-  /**
-   * Process the update by recursively checking the model schema.
-   */
-  processUpdateRecursively (data: Record, record: Record, fields: Fields): void {
-    Utils.forOwn(fields, (field, key) => {
-      if (record[key] === undefined) {
-        return
-      }
-
-      if (field instanceof Attribute) {
-        data[key] = record[key]
-
-        return
-      }
-
-      this.processUpdateRecursively(data[key], record[key], field)
-    })
   }
 
   /**
