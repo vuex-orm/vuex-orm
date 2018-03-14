@@ -1,8 +1,8 @@
 import { createApplication, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
-describe('Repo – Retrieve – Relations – Morphed By Many', () => {
+describe('Query – Retrieve – Relations – Morphed By Many', () => {
   it('can resolve morphed by many relation', () => {
     class Post extends Model {
       static entity = 'posts'
@@ -73,7 +73,7 @@ describe('Repo – Retrieve – Relations – Morphed By Many', () => {
       }
     })
 
-    const tag = Repo.query(state, 'tags').with('posts').with('videos').find(1)
+    const tag = Query.query(state, 'tags').with('posts').with('videos').find(1)
 
     expect(tag).toBeInstanceOf(Tag)
     expect(tag.posts.length).toBe(2)
@@ -150,7 +150,7 @@ describe('Repo – Retrieve – Relations – Morphed By Many', () => {
       }
     })
 
-    const tag = Repo.query(state, 'tags').with('posts').with('videos').find(1)
+    const tag = Query.query(state, 'tags').with('posts').with('videos').find(1)
 
     expect(tag).toBeInstanceOf(Tag)
     expect(tag.posts.length).toBe(1)
@@ -232,7 +232,7 @@ describe('Repo – Retrieve – Relations – Morphed By Many', () => {
       }
     })
 
-    const tag = Repo.query(state, 'tags').with('posts').with('videos').find(1)
+    const tag = Query.query(state, 'tags').with('posts').with('videos').find(1)
 
     expect(tag).toBeInstanceOf(Tag)
     expect(tag.posts.length).toBe(2)
@@ -313,7 +313,7 @@ describe('Repo – Retrieve – Relations – Morphed By Many', () => {
       }
     })
 
-    const tag = Repo.query(state, 'tags').with('posts').with('videos').find(1)
+    const tag = Query.query(state, 'tags').with('posts').with('videos').find(1)
 
     expect(tag).toBeInstanceOf(Tag)
     expect(tag.posts.length).toBe(2)

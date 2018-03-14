@@ -1,6 +1,6 @@
 import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 import Data from 'app/data/Data'
 
 describe('Data – Normalize', () => {
@@ -18,7 +18,7 @@ describe('Data – Normalize', () => {
 
     const store = createStore([{ model: User }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = { id: 1, name: 'John Doe' }
 
@@ -45,7 +45,7 @@ describe('Data – Normalize', () => {
 
     const store = createStore([{ model: User }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = { id: 1, name: 'John Doe', age: 24, role: 'user' }
 
@@ -72,7 +72,7 @@ describe('Data – Normalize', () => {
 
     const store = createStore([{ model: User }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = [
       { id: 1, name: 'John Doe' },
@@ -105,7 +105,7 @@ describe('Data – Normalize', () => {
 
     const store = createStore([{ model: User }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = [
       { user_id: 1, name: 'John Doe' },
@@ -136,7 +136,7 @@ describe('Data – Normalize', () => {
 
     const store = createStore([{ model: User }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = [
       { name: 'John' },
@@ -173,7 +173,7 @@ describe('Data – Normalize', () => {
 
     const store = createStore([{ model: User }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = {
       id: 1,
@@ -219,7 +219,7 @@ describe('Data – Normalize', () => {
 
     const store = createStore([{ model: User }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = [
       {

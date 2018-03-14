@@ -1,6 +1,6 @@
 import { Record, NormalizedData, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
-import Repo, { Relation as Load } from '../../repo/Repo'
+import Query, { Relation as Load } from '../../query/Query'
 import Relation from './Relation'
 
 export default class HasMany extends Relation {
@@ -85,8 +85,8 @@ export default class HasMany extends Relation {
   /**
    * Load the has many relationship for the record.
    */
-  load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
-    const relatedQuery = new Repo(repo.rootState, this.related.entity, false)
+  load (query: Query, collection: PlainCollection, relation: Load): PlainCollection {
+    const relatedQuery = new Query(query.rootState, this.related.entity, false)
 
     this.addConstraint(relatedQuery, relation)
 

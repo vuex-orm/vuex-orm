@@ -1,8 +1,8 @@
 import { createApplication } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
-describe('Repo – Retrieve – Relations – Has Many', () => {
+describe('Query – Retrieve – Relations – Has Many', () => {
   it('can resolve has many relation', () => {
     class Post extends Model {
       static entity = 'posts'
@@ -50,7 +50,7 @@ describe('Repo – Retrieve – Relations – Has Many', () => {
       ]
     }
 
-    const result = Repo.query(state, 'posts', false).with('comments').first()
+    const result = Query.query(state, 'posts', false).with('comments').first()
 
     expect(result).toEqual(expected)
   })
@@ -103,7 +103,7 @@ describe('Repo – Retrieve – Relations – Has Many', () => {
       ]
     }
 
-    const result = Repo.query(state, 'users', false).with('posts').first()
+    const result = Query.query(state, 'users', false).with('posts').first()
 
     expect(result).toEqual(expected)
   })

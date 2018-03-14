@@ -6,9 +6,9 @@ import Comment from 'test/fixtures/models/Comment'
 import Review from 'test/fixtures/models/Review'
 import Like from 'test/fixtures/models/Like'
 import CustomKey from 'test/fixtures/models/CustomKey'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
-describe('Repo – Delete', () => {
+describe('Query – Delete', () => {
   beforeEach(() => {
     createApplication('entities', [
       { model: User },
@@ -37,7 +37,7 @@ describe('Repo – Delete', () => {
       }}
     }
 
-    Repo.delete(state, 'users', 1)
+    Query.delete(state, 'users', 1)
 
     expect(state).toEqual(expected)
   })
@@ -58,7 +58,7 @@ describe('Repo – Delete', () => {
       }}
     }
 
-    Repo.delete(state, 'users', '1')
+    Query.delete(state, 'users', '1')
 
     expect(state).toEqual(expected)
   })
@@ -80,7 +80,7 @@ describe('Repo – Delete', () => {
       }}
     }
 
-    Repo.delete(state, 'users', (record) => {
+    Query.delete(state, 'users', (record) => {
       return record.id === 1 || record.name === 'Jane'
     })
 
@@ -104,7 +104,7 @@ describe('Repo – Delete', () => {
       }
     }
 
-    Repo.deleteAll(state, 'users')
+    Query.deleteAll(state, 'users')
 
     expect(state).toEqual(expected)
   })
@@ -136,7 +136,7 @@ describe('Repo – Delete', () => {
       }
     }
 
-    Repo.deleteAll(state)
+    Query.deleteAll(state)
 
     expect(state).toEqual(expected)
   })

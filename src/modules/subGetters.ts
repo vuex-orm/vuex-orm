@@ -1,15 +1,15 @@
 import * as Vuex from 'vuex'
 import { Item, Collection } from '../data/Contract'
-import Repo from '../repo/Repo'
+import Query from '../query/Query'
 import { EntityState } from './Module'
 
 export type SubGetters = Vuex.GetterTree<any, EntityState>
 
 const subGetters: SubGetters = {
   /**
-   * Create a new repo instance.
+   * Create a new Query instance.
    */
-  query: (state, _getters, _rootState, rootGetters) => (wrap?: boolean): Repo => {
+  query: (state, _getters, _rootState, rootGetters) => (wrap?: boolean): Query => {
     return rootGetters[`${state.$connection}/query`](state.$name, wrap)
   },
 

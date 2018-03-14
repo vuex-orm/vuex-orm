@@ -1,6 +1,6 @@
 import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 import Data from 'app/data/Data'
 
 describe('Data – Fill', () => {
@@ -18,7 +18,7 @@ describe('Data – Fill', () => {
 
     const store = createStore([{ model: User }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = {
       users: {
@@ -51,7 +51,7 @@ describe('Data – Fill', () => {
 
     const store = createStore([{ model: User }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = {
       users: {
@@ -88,7 +88,7 @@ describe('Data – Fill', () => {
 
     const store = createStore([{ model: User }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = {
       users: {

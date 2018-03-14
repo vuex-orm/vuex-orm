@@ -1,5 +1,5 @@
 import { Record, Records, NormalizedData, PlainItem, PlainCollection } from '../../data/Contract'
-import Repo, { Relation as Load } from '../../repo/Repo'
+import Query, { Relation as Load } from '../../query/Query'
 import { Fields } from '../contracts/Contract'
 import Attribute from '../Attribute'
 
@@ -12,7 +12,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Load relationship records.
    */
-  abstract load (repo: Repo, collection: PlainCollection, relation: Load): PlainItem | PlainCollection
+  abstract load (query: Query, collection: PlainCollection, relation: Load): PlainItem | PlainCollection
 
   /**
    * Create a new map of the record by given key.
@@ -82,7 +82,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Add constraint to the query.
    */
-  addConstraint (query: Repo, relation: Load): void {
+  addConstraint (query: Query, relation: Load): void {
     const relations = relation.name.split('.')
 
     if (relations.length !== 1) {

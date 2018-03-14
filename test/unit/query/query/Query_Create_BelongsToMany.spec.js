@@ -1,8 +1,8 @@
 import { createApplication } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
-describe('Repo – Create – Belongs To Many', () => {
+describe('Query – Create – Belongs To Many', () => {
   it('can create a belongs to many relation data', () => {
     class User extends Model {
       static entity = 'users'
@@ -71,7 +71,7 @@ describe('Repo – Create – Belongs To Many', () => {
       }}
     }
 
-    Repo.create(state, 'users', data)
+    Query.create(state, 'users', data)
 
     expect(state).toEqual(expected)
   })
@@ -143,7 +143,7 @@ describe('Repo – Create – Belongs To Many', () => {
       }}
     }
 
-    Repo.create(state, 'users', data)
+    Query.create(state, 'users', data)
 
     expect(state).toEqual(expected)
   })

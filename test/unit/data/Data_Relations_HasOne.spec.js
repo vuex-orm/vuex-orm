@@ -1,6 +1,6 @@
 import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 import Data from 'app/data/Data'
 import NoKey from 'app/data/NoKey'
 
@@ -34,7 +34,7 @@ describe('Data – Relations – Has One', () => {
 
     const store = createStore([{ model: User }, { model: Phone }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = {
       id: 1,
@@ -78,7 +78,7 @@ describe('Data – Relations – Has One', () => {
 
     const store = createStore([{ model: User }, { model: Phone }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = [
       {
@@ -130,7 +130,7 @@ describe('Data – Relations – Has One', () => {
 
     const store = createStore([{ model: User }, { model: Phone }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = {
       id: 1,
@@ -174,7 +174,7 @@ describe('Data – Relations – Has One', () => {
 
     const store = createStore([{ model: User }, { model: Phone }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = {
       phone: { id: 2 }
@@ -217,7 +217,7 @@ describe('Data – Relations – Has One', () => {
 
     const store = createStore([{ model: User }, { model: Phone }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = [
       {
@@ -267,7 +267,7 @@ describe('Data – Relations – Has One', () => {
 
     const store = createStore([{ model: User }, { model: Phone }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = [
       {
@@ -319,7 +319,7 @@ describe('Data – Relations – Has One', () => {
 
     const store = createStore([{ model: User }, { model: Phone }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = [
       {
@@ -370,7 +370,7 @@ describe('Data – Relations – Has One', () => {
 
     const store = createStore([{ model: User }, { model: Phone }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = [
       {

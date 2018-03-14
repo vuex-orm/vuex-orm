@@ -1,6 +1,6 @@
 import * as Vuex from 'vuex'
 import { State } from './Module'
-import Repo from '../repo/Repo'
+import Query from '../query/Query'
 
 export type Mutations = Vuex.MutationTree<State>
 
@@ -10,7 +10,7 @@ const mutations: Mutations = {
    * data in the state.
    */
   create (state, { entity, data, insert, done }) {
-    const result = Repo.create(state, entity, data, insert)
+    const result = Query.create(state, entity, data, insert)
 
     done && done(result)
   },
@@ -21,7 +21,7 @@ const mutations: Mutations = {
    * with the same primary key.
    */
   insert (state, { entity, data, create, done }) {
-    const result = Repo.insert(state, entity, data, create)
+    const result = Query.insert(state, entity, data, create)
 
     done && done(result)
   },
@@ -30,7 +30,7 @@ const mutations: Mutations = {
    * Update data in the store.
    */
   update (state, { entity, where, data, done }) {
-    const result = Repo.update(state, entity, data, where)
+    const result = Query.update(state, entity, data, where)
 
     done && done(result)
   },
@@ -41,7 +41,7 @@ const mutations: Mutations = {
    * the submitted data with the same primary key.
    */
   insertOrUpdate (state, { entity, data, create, done }) {
-    const result = Repo.insertOrUpdate(state, entity, data, create)
+    const result = Query.insertOrUpdate(state, entity, data, create)
 
     done && done(result)
   },
@@ -50,7 +50,7 @@ const mutations: Mutations = {
    * Delete data from the store.
    */
   delete (state, { entity, where }) {
-    Repo.delete(state, entity, where)
+    Query.delete(state, entity, where)
   },
 
   /**
@@ -60,12 +60,12 @@ const mutations: Mutations = {
    */
   deleteAll (state, payload?) {
     if (payload && payload.entity) {
-      Repo.deleteAll(state, payload.entity)
+      Query.deleteAll(state, payload.entity)
 
       return
     }
 
-    Repo.deleteAll(state)
+    Query.deleteAll(state)
   }
 }
 

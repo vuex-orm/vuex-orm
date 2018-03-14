@@ -1,15 +1,15 @@
 import Utils from '../support/Utils'
 import Relation from '../attributes/relations/Relation'
-import Repo from '../repo/Repo'
+import Query from '../query/Query'
 import { NormalizedData } from './Contract'
 
 export default class Attacher {
   /**
    * Attach missing relational key to the records.
    */
-  static attach (data: NormalizedData, repo: Repo): NormalizedData {
+  static attach (data: NormalizedData, Query: Query): NormalizedData {
     Utils.forOwn(data, (entity, name) => {
-      const fields = repo.getModel(name).fields()
+      const fields = Query.getModel(name).fields()
 
       Utils.forOwn(entity, (record) => {
         Utils.forOwn(record, (value, key) => {

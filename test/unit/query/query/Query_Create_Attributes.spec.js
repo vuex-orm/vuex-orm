@@ -1,9 +1,9 @@
 import { createApplication } from 'test/support/Helpers'
 import NoKey from 'app/data/NoKey'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
-describe('Repo – Create – Attributes', () => {
+describe('Query – Create – Attributes', () => {
   beforeEach(() => { NoKey.count = 0 })
 
   afterEach(() => { NoKey.count = 0 })
@@ -36,7 +36,7 @@ describe('Repo – Create – Attributes', () => {
       }}
     }
 
-    Repo.create(state, 'users', data)
+    Query.create(state, 'users', data)
 
     expect(state).toEqual(expected)
   })
@@ -72,7 +72,7 @@ describe('Repo – Create – Attributes', () => {
       }}
     }
 
-    Repo.create(state, 'users', data)
+    Query.create(state, 'users', data)
 
     expect(state).toEqual(expected)
   })
@@ -108,7 +108,7 @@ describe('Repo – Create – Attributes', () => {
       }}
     }
 
-    Repo.create(state, 'users', data)
+    Query.create(state, 'users', data)
 
     expect(state).toEqual(expected)
   })
@@ -146,7 +146,7 @@ describe('Repo – Create – Attributes', () => {
       }}
     }
 
-    Repo.insert(state, 'users', data)
+    Query.insert(state, 'users', data)
 
     expect(state).toEqual(expected)
   })
@@ -185,7 +185,7 @@ describe('Repo – Create – Attributes', () => {
       }}
     }
 
-    Repo.insert(state, 'users', data)
+    Query.insert(state, 'users', data)
 
     expect(state).toEqual(expected)
   })
@@ -224,7 +224,7 @@ describe('Repo – Create – Attributes', () => {
       }}
     }
 
-    Repo.insert(state, 'users', data)
+    Query.insert(state, 'users', data)
 
     expect(state).toEqual(expected)
   })
@@ -262,7 +262,7 @@ describe('Repo – Create – Attributes', () => {
       }}
     }
 
-    Repo.insert(state, 'users', data)
+    Query.insert(state, 'users', data)
 
     expect(state).toEqual(expected)
   })
@@ -319,7 +319,7 @@ describe('Repo – Create – Attributes', () => {
       }}
     }
 
-    Repo.insert(state, 'users', data)
+    Query.insert(state, 'users', data)
 
     expect(state).toEqual(expected)
   })
@@ -357,7 +357,7 @@ describe('Repo – Create – Attributes', () => {
       }}
     }
 
-    Repo.insertOrUpdate(state, 'users', data)
+    Query.insertOrUpdate(state, 'users', data)
 
     expect(state).toEqual(expected)
   })
@@ -396,7 +396,7 @@ describe('Repo – Create – Attributes', () => {
       }}
     }
 
-    Repo.insertOrUpdate(state, 'users', data)
+    Query.insertOrUpdate(state, 'users', data)
 
     expect(state).toEqual(expected)
   })
@@ -435,7 +435,7 @@ describe('Repo – Create – Attributes', () => {
       }}
     }
 
-    Repo.insertOrUpdate(state, 'users', data)
+    Query.insertOrUpdate(state, 'users', data)
 
     expect(state).toEqual(expected)
   })
@@ -473,7 +473,7 @@ describe('Repo – Create – Attributes', () => {
       }}
     }
 
-    Repo.insertOrUpdate(state, 'users', data)
+    Query.insertOrUpdate(state, 'users', data)
 
     expect(state).toEqual(expected)
   })
@@ -530,7 +530,7 @@ describe('Repo – Create – Attributes', () => {
       }}
     }
 
-    Repo.insertOrUpdate(state, 'users', data)
+    Query.insertOrUpdate(state, 'users', data)
 
     expect(state).toEqual(expected)
   })

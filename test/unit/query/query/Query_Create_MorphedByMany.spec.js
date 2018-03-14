@@ -1,8 +1,8 @@
 import { createApplication, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
-describe('Repo – Create – Morphed By Many', () => {
+describe('Query – Create – Morphed By Many', () => {
   it('can create a morphed by many relation data', () => {
     class Post extends Model {
       static entity = 'posts'
@@ -86,7 +86,7 @@ describe('Repo – Create – Morphed By Many', () => {
       }
     })
 
-    Repo.create(state, 'tags', data)
+    Query.create(state, 'tags', data)
 
     expect(state).toEqual(expected)
   })
@@ -189,7 +189,7 @@ describe('Repo – Create – Morphed By Many', () => {
       }
     })
 
-    Repo.create(state, 'tags', data)
+    Query.create(state, 'tags', data)
 
     expect(state).toEqual(expected)
   })

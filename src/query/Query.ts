@@ -11,7 +11,7 @@ import { State, EntityState } from '../modules/Module'
 
 export type WhereBoolean = 'and' | 'or'
 
-export type WherePrimaryClosure = (record: Record, query: Repo, model?: Model) => boolean | void
+export type WherePrimaryClosure = (record: Record, query: Query, model?: Model) => boolean | void
 
 export type WhereSecondaryClosure = (value: any) => boolean
 
@@ -23,7 +23,7 @@ export type Condition = number | string | Predicate
 
 export type Buildable = PlainItem | PlainCollection | null
 
-export type Constraint = (query: Repo) => void | boolean
+export type Constraint = (query: Query) => void | boolean
 
 export type ConstraintCallback = (relationName: string) => Constraint | null
 
@@ -48,7 +48,7 @@ export interface Relation {
   constraint: null | Constraint
 }
 
-export default class Repo {
+export default class Query {
   /**
    * Lifecycle hooks for the query.
    */
@@ -107,7 +107,7 @@ export default class Repo {
   wrap: boolean
 
   /**
-   * Create a new repo instance.
+   * Create a new Query instance.
    */
   constructor (state: State, entity: string, wrap: boolean = true) {
     this.rootState = state
@@ -118,9 +118,9 @@ export default class Repo {
   }
 
   /**
-   * Create a new repo instance
+   * Create a new query instance
    */
-  static query (state: State, name: string, wrap?: boolean): Repo {
+  static query (state: State, name: string, wrap?: boolean): Query {
     return new this(state, name, wrap)
   }
 
@@ -238,10 +238,10 @@ export default class Repo {
   }
 
   /**
-   * Get Repo class.
+   * Get query class.
    */
-  self (): typeof Repo {
-    return this.constructor as typeof Repo
+  self (): typeof Query {
+    return this.constructor as typeof Query
   }
 
   /**
@@ -290,20 +290,20 @@ export default class Repo {
 
     // `normalizedData` contains the differenty entity types (e.g. `users`),
     _.forEach(normalizedData, (data, entity) => {
-      const repo = new Repo(this.rootState, entity, false)
+      const query = new Query(this.rootState, entity, false)
 
       // `data` contains the items of `entity`.
       _.forEach(data, (item, id) => {
         // Check if item does not already exist in store and mark it as new.
-        if (repo.model.id(item) === undefined || repo.find(repo.model.id(item)) === null) {
+        if (query.model.id(item) === undefined || query.find(query.model.id(item)) === null) {
           if (!toBePersisted.hasOwnProperty(entity)) {
             toBePersisted[entity] = {}
           }
 
           toBePersisted[entity][id] = item
         } else {
-          repo.processUpdate(item, repo.model.id(item))
-          updatedItems.push(repo.model.id(item))
+          query.processUpdate(item, query.model.id(item))
+          updatedItems.push(query.model.id(item))
         }
       })
     })
@@ -345,7 +345,7 @@ export default class Repo {
       const method = this.getPersistMethod(defaultMethod, entity, forceCreateFor, forceInsertFor)
 
       if (entity !== this.entity) {
-        (new Repo(this.rootState, entity) as any)[method](data)
+        (new Query(this.rootState, entity) as any)[method](data)
 
         return
       }
@@ -404,7 +404,7 @@ export default class Repo {
 
     const method = items.length > 1 ? 'get' : 'first'
 
-    return new Repo(this.rootState, this.entity).where('$id', (value: any) => {
+    return new Query(this.rootState, this.entity).where('$id', (value: any) => {
       return _.includes(items, value)
     })[method]()
   }
@@ -418,7 +418,7 @@ export default class Repo {
       return []
     }
 
-    return new Repo(this.rootState, this.entity).where('$id', (value: any) => {
+    return new Query(this.rootState, this.entity).where('$id', (value: any) => {
       return _.includes(items, value)
     }).get()
   }
@@ -457,7 +457,7 @@ export default class Repo {
    * Update data by id.
    */
   processUpdateByCondition (data: any, condition: (record: Record) => boolean): Item | Collection {
-    const records = (new Repo(this.rootState, this.entity, false)).where(condition).get()
+    const records = (new Query(this.rootState, this.entity, false)).where(condition).get()
 
     const items = _.map(records, record => this.model.id(record))
 
@@ -648,7 +648,7 @@ export default class Repo {
    */
   withAllRecursive (depth: number = 3): this {
     this.withAll(() => {
-      return depth > 0 ? (query: Repo) => {
+      return depth > 0 ? (query: Query) => {
         query.withAllRecursive(depth - 1)
       } : null
     })
@@ -783,7 +783,7 @@ export default class Repo {
     return (where: any) => {
       // Function with Record and Query as argument.
       if (_.isFunction(where.field)) {
-        const query = new Repo(this.rootState, this.entity)
+        const query = new Query(this.rootState, this.entity)
         const result = this.executeWhereClosure(record, query, where.field)
 
         if (typeof result === 'boolean') {
@@ -811,7 +811,7 @@ export default class Repo {
   /**
    * Execute where closure.
    */
-  executeWhereClosure (record: Record, query: Repo, closure: WherePrimaryClosure): boolean | void {
+  executeWhereClosure (record: Record, query: Query, closure: WherePrimaryClosure): boolean | void {
     if (closure.length !== 3) {
       return closure(record, query)
     }
@@ -981,7 +981,7 @@ export default class Repo {
       _constraint = record => record.length <= count
     }
 
-    const data = (new Repo(this.rootState, this.entity, false)).with(name).get()
+    const data = (new Query(this.rootState, this.entity, false)).with(name).get()
 
     let ids: string[] = []
 
@@ -1014,7 +1014,7 @@ export default class Repo {
    * Get all id of the record that matches the relation constraints.
    */
   matchesWhereHasRelation (name: string, constraint: Constraint, existence: boolean = true): string[] {
-    const data = (new Repo(this.rootState, this.entity, false)).with(name, constraint).get()
+    const data = (new Query(this.rootState, this.entity, false)).with(name, constraint).get()
 
     let ids: string[] = []
 

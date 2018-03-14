@@ -1,16 +1,16 @@
 import * as _ from '../support/lodash'
 import { Field } from '../attributes/contracts/Contract'
 import Attribute from '../attributes/Attribute'
-import Repo from '../repo/Repo'
+import Query from '../query/Query'
 import { Record, NormalizedData } from './Contract'
 
 export default class Builder {
   /**
    * Build missing records with default value based on model schema.
    */
-  static build (data: NormalizedData, repo: Repo): NormalizedData {
+  static build (data: NormalizedData, Query: Query): NormalizedData {
     return _.mapValues(data, (records, entity) => {
-      const model = repo.getModel(entity)
+      const model = Query.getModel(entity)
 
       return _.mapValues(records, (record) => {
         return { ...this.buildFields(record, model.fields()), $id: record.$id }

@@ -9,9 +9,9 @@ import Like from 'test/fixtures/models/Like'
 import Cluster from 'test/fixtures/models/Cluster'
 import Node from 'test/fixtures/models/Node'
 import CustomKey from 'test/fixtures/models/CustomKey'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
-describe('Repo – Retrieve', () => {
+describe('Query – Retrieve', () => {
   beforeEach(() => {
     createApplication('entities', [
       { model: User },
@@ -38,7 +38,7 @@ describe('Repo – Retrieve', () => {
       posts: { data: {} }
     }
 
-    const users = Repo.all(state, 'users')
+    const users = Query.all(state, 'users')
 
     if (users === null) {
       return t.fail('users is empty but its expected to have 2 records.')
@@ -62,7 +62,7 @@ describe('Repo – Retrieve', () => {
 
     const expected = [{ id: 1 }, { id: 2 }]
 
-    expect(Repo.all(state, 'users', false)).toEqual(expected)
+    expect(Query.all(state, 'users', false)).toEqual(expected)
   })
 
   it('can get all with all method chained with query', () => {
@@ -78,7 +78,7 @@ describe('Repo – Retrieve', () => {
 
     const expected = [{ id: 1 }, { id: 2 }]
 
-    expect(Repo.query(state, 'users', false).all()).toEqual(expected)
+    expect(Query.query(state, 'users', false).all()).toEqual(expected)
   })
 
   it('can get all data of the entity that matches the where query', () => {
@@ -97,7 +97,7 @@ describe('Repo – Retrieve', () => {
       { id: 3, role: 'admin', sex: 'male', enabled: true }
     ]
 
-    const result = Repo.query(state, 'users', false)
+    const result = Query.query(state, 'users', false)
       .where('role', 'admin')
       .where('sex', 'male')
       .where('enabled', true)
@@ -123,7 +123,7 @@ describe('Repo – Retrieve', () => {
       { id: 3, role: 'admin', sex: 'male', enabled: true }
     ]
 
-    const result = Repo.query(state, 'users', false)
+    const result = Query.query(state, 'users', false)
       .where('role', ['admin', 'user'])
       .where('sex', 'male')
       .where('enabled', true)
@@ -144,7 +144,7 @@ describe('Repo – Retrieve', () => {
 
     const expected = { id: 1, role: 'admin', sex: 'male' }
 
-    const result = Repo.query(state, 'users', false)
+    const result = Query.query(state, 'users', false)
       .where('role', 'admin')
       .where('sex', 'male')
       .first()
@@ -164,7 +164,7 @@ describe('Repo – Retrieve', () => {
 
     const expected = { id: 3, role: 'admin', sex: 'male' }
 
-    const result = Repo.query(state, 'users', false)
+    const result = Query.query(state, 'users', false)
       .where('role', 'admin')
       .where('sex', 'male')
       .last()
@@ -182,7 +182,7 @@ describe('Repo – Retrieve', () => {
 
     const expected = { id: 3, role: 'admin', sex: 'male' }
 
-    const result = Repo.query(state, 'users', false).where('id', 2).last()
+    const result = Query.query(state, 'users', false).where('id', 2).last()
 
     expect(result).toBe(null)
   })
@@ -202,7 +202,7 @@ describe('Repo – Retrieve', () => {
       { id: 2, role: 'user', age: 30 }
     ]
 
-    const result = Repo.query(state, 'users', false)
+    const result = Query.query(state, 'users', false)
       .where('age', v => v < 40)
       .get()
 
@@ -224,7 +224,7 @@ describe('Repo – Retrieve', () => {
       { id: 2, role: 'user', age: 30 }
     ]
 
-    const result = Repo.query(state, 'users', false)
+    const result = Query.query(state, 'users', false)
       .where(r => r.age < 40)
       .get()
 
@@ -248,7 +248,7 @@ describe('Repo – Retrieve', () => {
 
     const ageAsVariable = 40
 
-    const result = Repo.query(state, 'users', false)
+    const result = Query.query(state, 'users', false)
       .where(r => r.age < ageAsVariable)
       .get()
 
@@ -269,7 +269,7 @@ describe('Repo – Retrieve', () => {
       { $id: 1, id: 1, role: 'admin', age: 20 }
     ]
 
-    const result = Repo.query(state, 'users', false)
+    const result = Query.query(state, 'users', false)
       .where((_user, query) => { query.where('age', 20) })
       .get()
 
@@ -292,7 +292,7 @@ describe('Repo – Retrieve', () => {
       { $id: 4, id: 4, role: 'admin', age: 15 }
     ]
 
-    const result = Repo.query(state, 'users', false)
+    const result = Query.query(state, 'users', false)
       .where('id', 4)
       .orWhere((_user, query) => {
         query.where('age', value => value > 20).where('id', 1)
@@ -318,7 +318,7 @@ describe('Repo – Retrieve', () => {
       { $id: 4, id: 4, settings: { role: 'admin' }, age: 15 }
     ]
 
-    const result = Repo.query(state, 'users', false)
+    const result = Query.query(state, 'users', false)
       .where((_record, _query, model) => {
         return model.isAdmin()
       })
@@ -342,7 +342,7 @@ describe('Repo – Retrieve', () => {
       { id: 2, role: 'user', age: 30 }
     ]
 
-    const result = Repo.query(state, 'users', false)
+    const result = Query.query(state, 'users', false)
       .where(r => r.age === 20)
       .orWhere('role', 'user')
       .get()
@@ -362,7 +362,7 @@ describe('Repo – Retrieve', () => {
 
     const expected = [{ id: 2, role: 'user', age: 30 }]
 
-    const result = Repo.query(state, 'users', false).orWhere('role', 'user').get()
+    const result = Query.query(state, 'users', false).orWhere('role', 'user').get()
 
     expect(result).toEqual(expected)
   })
@@ -376,7 +376,7 @@ describe('Repo – Retrieve', () => {
       }}
     }
 
-    const user = Repo.find(state, 'users', 2)
+    const user = Query.find(state, 'users', 2)
 
     if (user === null) {
       return t.fail('user is empty but its expected to have 1 record.')
@@ -395,7 +395,7 @@ describe('Repo – Retrieve', () => {
       }}
     }
 
-    const user = Repo.query(state, 'users', false).find(2)
+    const user = Query.query(state, 'users', false).find(2)
 
     if (user === null) {
       return t.fail('user is empty but its expected to have 1 record.')
@@ -412,7 +412,7 @@ describe('Repo – Retrieve', () => {
       }}
     }
 
-    const user = Repo.find(state, 'users', 2)
+    const user = Query.find(state, 'users', 2)
 
     expect(user).toBe(null)
   })
@@ -426,7 +426,7 @@ describe('Repo – Retrieve', () => {
       }}
     }
 
-    const users = Repo.query(state, 'users').where('id', 3).get()
+    const users = Query.query(state, 'users').where('id', 3).get()
 
     expect(users).toEqual([])
   })
@@ -449,11 +449,11 @@ describe('Repo – Retrieve', () => {
       { id: 4, name: 'Andy' }
     ]
 
-    const result1 = Repo.query(state, 'users', false).orderBy('id').get()
+    const result1 = Query.query(state, 'users', false).orderBy('id').get()
 
     expect(result1).toEqual(expected)
 
-    const result2 = Repo.query(state, 'users', false).orderBy('id', 'asc').get()
+    const result2 = Query.query(state, 'users', false).orderBy('id', 'asc').get()
 
     expect(result2).toEqual(expected)
   })
@@ -476,7 +476,7 @@ describe('Repo – Retrieve', () => {
       { id: 3, name: 'Roger' }
     ]
 
-    const result = Repo.query(state, 'users', false)
+    const result = Query.query(state, 'users', false)
       .orderBy('name')
       .orderBy('id', 'desc')
       .get()
@@ -496,7 +496,7 @@ describe('Repo – Retrieve', () => {
 
     const expected = { id: 2, name: 'Andy' }
 
-    const result = Repo.query(state, 'users', false)
+    const result = Query.query(state, 'users', false)
       .orderBy('name')
       .orderBy('id', 'desc')
       .first()
@@ -520,7 +520,7 @@ describe('Repo – Retrieve', () => {
       { id: 2, name: 'Andy' }
     ]
 
-    const result = Repo.query(state, 'users', false)
+    const result = Query.query(state, 'users', false)
       .limit(2)
       .get()
 
@@ -543,7 +543,7 @@ describe('Repo – Retrieve', () => {
       { id: 3, name: 'Roger' }
     ]
 
-    const result = Repo.query(state, 'users', false)
+    const result = Query.query(state, 'users', false)
       .limit(2)
       .offset(1)
       .get()

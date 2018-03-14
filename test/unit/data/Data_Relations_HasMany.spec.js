@@ -1,6 +1,6 @@
 import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 import Data from 'app/data/Data'
 
 describe('Data – Relations – Has Many', () => {
@@ -29,7 +29,7 @@ describe('Data – Relations – Has Many', () => {
 
     const store = createStore([{ model: User }, { model: Post }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = {
       id: 1,
@@ -77,7 +77,7 @@ describe('Data – Relations – Has Many', () => {
 
     const store = createStore([{ model: User }, { model: Post }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = [
       {
@@ -137,7 +137,7 @@ describe('Data – Relations – Has Many', () => {
 
     const store = createStore([{ model: User }, { model: Post }])
 
-    const repo = new Repo(store.state.entities, 'users')
+    const repo = new Query(store.state.entities, 'users')
 
     const data = {
       id: 1,

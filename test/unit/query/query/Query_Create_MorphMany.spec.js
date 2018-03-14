@@ -1,16 +1,16 @@
 import { createApplication, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
-describe('Repo – Create – Morph One', () => {
-  it('can create a morph one relation data', () => {
+describe('Query – Create – Morph Many', () => {
+  it('can create a morph many relation data', () => {
     class Post extends Model {
       static entity = 'posts'
 
       static fields () {
         return {
           id: this.attr(null),
-          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -21,7 +21,7 @@ describe('Repo – Create – Morph One', () => {
       static fields () {
         return {
           id: this.attr(null),
-          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -49,32 +49,36 @@ describe('Repo – Create – Morph One', () => {
 
     const data = {
       id: 1,
-      comment: { id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' }
+      comments: [
+        { id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
+        { id: 3, body: 'comment2', commentable_id: 1, commentable_type: 'posts' }
+      ]
     }
 
     const expected = createState('entities', {
       posts: {
-        '1': { $id: 1, id: 1, comment: 2 }
+        '1': { $id: 1, id: 1, comments: [2, 3] }
       },
       videos: {},
       comments: {
-        '2': { $id: 2, id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' }
+        '2': { $id: 2, id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
+        '3': { $id: 3, id: 3, body: 'comment2', commentable_id: 1, commentable_type: 'posts' }
       }
     })
 
-    Repo.create(state, 'posts', data)
+    Query.create(state, 'posts', data)
 
     expect(state).toEqual(expected)
   })
 
-  it('can create many morph one relation data', () => {
+  it('can create many morph many relation data', () => {
     class Post extends Model {
       static entity = 'posts'
 
       static fields () {
         return {
           id: this.attr(null),
-          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -85,7 +89,7 @@ describe('Repo – Create – Morph One', () => {
       static fields () {
         return {
           id: this.attr(null),
-          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -114,39 +118,45 @@ describe('Repo – Create – Morph One', () => {
     const data = [
       {
         id: 1,
-        comment: { id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
+        comments: [
+          { id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
+          { id: 3, body: 'comment2', commentable_id: 1, commentable_type: 'posts' }
+        ]
       },
       {
         id: 2,
-        comment: { id: 4, body: 'comment2', commentable_id: 2, commentable_type: 'posts' }
+        comments: [
+          { id: 4, body: 'comment3', commentable_id: 2, commentable_type: 'posts' }
+        ]
       }
     ]
 
     const expected = createState('entities', {
       posts: {
-        '1': { $id: 1, id: 1, comment: 2 },
-        '2': { $id: 2, id: 2, comment: 4 }
+        '1': { $id: 1, id: 1, comments: [2, 3] },
+        '2': { $id: 2, id: 2, comments: [4] }
       },
       videos: {},
       comments: {
         '2': { $id: 2, id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
-        '4': { $id: 4, id: 4, body: 'comment2', commentable_id: 2, commentable_type: 'posts' }
+        '3': { $id: 3, id: 3, body: 'comment2', commentable_id: 1, commentable_type: 'posts' },
+        '4': { $id: 4, id: 4, body: 'comment3', commentable_id: 2, commentable_type: 'posts' }
       }
     })
 
-    Repo.create(state, 'posts', data)
+    Query.create(state, 'posts', data)
 
     expect(state).toEqual(expected)
   })
 
-  it('generates id and types for the morph one relations', () => {
+  it('generates id and types for the morph many relations', () => {
     class Post extends Model {
       static entity = 'posts'
 
       static fields () {
         return {
           id: this.attr(null),
-          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -157,7 +167,7 @@ describe('Repo – Create – Morph One', () => {
       static fields () {
         return {
           id: this.attr(null),
-          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -185,32 +195,36 @@ describe('Repo – Create – Morph One', () => {
 
     const data = {
       id: 1,
-      comment: { id: 2, body: 'comment1' }
+      comments: [
+        { id: 2, body: 'comment1' },
+        { id: 3, body: 'comment2' }
+      ]
     }
 
     const expected = createState('entities', {
       posts: {
-        '1': { $id: 1, id: 1, comment: 2 }
+        '1': { $id: 1, id: 1, comments: [2, 3] }
       },
       videos: {},
       comments: {
-        '2': { $id: 2, id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' }
+        '2': { $id: 2, id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
+        '3': { $id: 3, id: 3, body: 'comment2', commentable_id: 1, commentable_type: 'posts' }
       }
     })
 
-    Repo.create(state, 'posts', data)
+    Query.create(state, 'posts', data)
 
     expect(state).toEqual(expected)
   })
 
-  it('generates only missing id or types for the morph one relations', () => {
+  it('generates only missing id or types for the morph many relations', () => {
     class Post extends Model {
       static entity = 'posts'
 
       static fields () {
         return {
           id: this.attr(null),
-          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -221,7 +235,7 @@ describe('Repo – Create – Morph One', () => {
       static fields () {
         return {
           id: this.attr(null),
-          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -249,20 +263,24 @@ describe('Repo – Create – Morph One', () => {
 
     const data = {
       id: 1,
-      comment: { id: 2, body: 'comment1', commentable_id: 1 }
+      comments: [
+        { id: 2, body: 'comment1', commentable_id: 1 },
+        { id: 3, body: 'comment2', commentable_id: 2 }
+      ]
     }
 
     const expected = createState('entities', {
       posts: {
-        '1': { $id: 1, id: 1, comment: 2 }
+        '1': { $id: 1, id: 1, comments: [2, 3] }
       },
       videos: {},
       comments: {
-        '2': { $id: 2, id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' }
+        '2': { $id: 2, id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
+        '3': { $id: 3, id: 3, body: 'comment2', commentable_id: 2, commentable_type: 'posts' }
       }
     })
 
-    Repo.create(state, 'posts', data)
+    Query.create(state, 'posts', data)
 
     expect(state).toEqual(expected)
   })
@@ -274,7 +292,7 @@ describe('Repo – Create – Morph One', () => {
       static fields () {
         return {
           id: this.attr(null),
-          comments: this.morphOne(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -285,7 +303,7 @@ describe('Repo – Create – Morph One', () => {
       static fields () {
         return {
           id: this.attr(null),
-          comments: this.morphOne(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -325,12 +343,12 @@ describe('Repo – Create – Morph One', () => {
       }
     })
 
-    Repo.create(state, 'comments', data)
+    Query.create(state, 'comments', data)
 
     expect(state).toEqual(expected)
   })
 
-  it('generates id or types for the deeply nested morph one relations', () => {
+  it('generates id or types for the deeply nested morph many relations', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -349,7 +367,7 @@ describe('Repo – Create – Morph One', () => {
         return {
           id: this.attr(null),
           user_id: this.attr(null),
-          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -360,7 +378,7 @@ describe('Repo – Create – Morph One', () => {
       static fields () {
         return {
           id: this.attr(null),
-          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -392,7 +410,10 @@ describe('Repo – Create – Morph One', () => {
       posts: [{
         id: 5,
         user_id: 1,
-        comment: { id: 2, body: 'comment1', commentable_id: 1 }
+        comments: [
+          { id: 2, body: 'comment1', commentable_id: 1 },
+          { id: 3, body: 'comment2', commentable_id: 2 }
+        ]
       }]
     }
 
@@ -401,15 +422,16 @@ describe('Repo – Create – Morph One', () => {
         '1': { $id: 1, id: 1, posts: [5] }
       },
       posts: {
-        '5': { $id: 5, id: 5, user_id: 1, comment: 2 }
+        '5': { $id: 5, id: 5, user_id: 1, comments: [2, 3] }
       },
       videos: {},
       comments: {
-        '2': { $id: 2, id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' }
+        '2': { $id: 2, id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
+        '3': { $id: 3, id: 3, body: 'comment2', commentable_id: 2, commentable_type: 'posts' }
       }
     })
 
-    Repo.create(state, 'users', data)
+    Query.create(state, 'users', data)
 
     expect(state).toEqual(expected)
   })

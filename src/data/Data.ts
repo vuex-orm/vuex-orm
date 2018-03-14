@@ -1,4 +1,4 @@
-import Repo from '../repo/Repo'
+import Query from '../query/Query'
 import { NormalizedData } from './Contract'
 import Normalizer from './Normalizer'
 import Attacher from './Attacher'
@@ -9,18 +9,18 @@ export default class Data {
   /**
    * Normalize the data.
    */
-  static normalize (data: any, repo: Repo): NormalizedData {
-    const normalizedData = Normalizer.normalize(data, repo)
+  static normalize (data: any, Query: Query): NormalizedData {
+    const normalizedData = Normalizer.normalize(data, Query)
 
-    const attachedData = Attacher.attach(normalizedData, repo)
+    const attachedData = Attacher.attach(normalizedData, Query)
 
-    return Incrementer.increment(attachedData, repo)
+    return Incrementer.increment(attachedData, Query)
   }
 
   /**
    * Fill missing records with default value based on model schema.
    */
-  static fillAll (data: NormalizedData, repo: Repo): NormalizedData {
-    return Builder.build(data, repo)
+  static fillAll (data: NormalizedData, Query: Query): NormalizedData {
+    return Builder.build(data, Query)
   }
 }

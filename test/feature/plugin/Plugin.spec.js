@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexORM from 'app'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
 describe('Plugin', () => {
   class User extends Model {
@@ -51,14 +51,14 @@ describe('Plugin', () => {
     expect(user.instanceMethod()).toBe('Hello, world!')
   })
 
-  it('add additional feature to the Repo', async () => {
+  it('add additional feature to the Query', async () => {
     const plugin = {
       install (components) {
-        components.Repo.staticMethod = function () {
+        components.Query.staticMethod = function () {
           return 'Hello'
         }
 
-        components.Repo.prototype.instanceMethod = function () {
+        components.Query.prototype.instanceMethod = function () {
           return `${this.self().staticMethod()}, world!`
         }
       }
@@ -72,9 +72,9 @@ describe('Plugin', () => {
 
     await store.dispatch('entities/users/create', { data: { id: 1, name: 'John' } })
 
-    const repo = store.getters['entities/users/query']()
+    const query = store.getters['entities/users/query']()
 
-    expect(repo.instanceMethod()).toBe('Hello, world!')
+    expect(query.instanceMethod()).toBe('Hello, world!')
   })
 
   it('add additional feature to the rootGetters', () => {
@@ -172,7 +172,7 @@ describe('Plugin', () => {
   it('can take extra options', () => {
     const plugin = {
       install (components, options) {
-        components.Repo.version = () => {
+        components.Query.version = () => {
           return options.version
         }
       }
@@ -184,6 +184,6 @@ describe('Plugin', () => {
       plugins: [VuexORM.install(database)]
     })
 
-    expect(Repo.version()).toBe('1.0.0')
+    expect(Query.version()).toBe('1.0.0')
   })
 })

@@ -9,9 +9,9 @@ import Like from 'test/fixtures/models/Like'
 import Cluster from 'test/fixtures/models/Cluster'
 import Node from 'test/fixtures/models/Node'
 import CustomKey from 'test/fixtures/models/CustomKey'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
-describe('Repo – Retrieve – Relations', () => {
+describe('Query – Retrieve – Relations', () => {
   beforeEach(() => {
     createApplication('entities', [
       { model: User },
@@ -49,7 +49,7 @@ describe('Repo – Retrieve – Relations', () => {
       }
     }
 
-    const result = Repo.query(state, 'users', false).with('profile').first()
+    const result = Query.query(state, 'users', false).with('profile').first()
 
     expect(result).toEqual(expected)
   })
@@ -76,7 +76,7 @@ describe('Repo – Retrieve – Relations', () => {
       }
     }
 
-    const result = Repo.query(state, 'posts', false).with('author').first()
+    const result = Query.query(state, 'posts', false).with('author').first()
 
     expect(result).toEqual(expected)
   })
@@ -103,7 +103,7 @@ describe('Repo – Retrieve – Relations', () => {
       }
     }
 
-    const result = Repo.query(state, 'posts', false).with('author').first()
+    const result = Query.query(state, 'posts', false).with('author').first()
 
     expect(result).toEqual(expected)
   })
@@ -120,7 +120,7 @@ describe('Repo – Retrieve – Relations', () => {
       }}
     }
 
-    const nodes = Repo.query(state, 'nodes', false).with('cluster').get()
+    const nodes = Query.query(state, 'nodes', false).with('cluster').get()
 
     const expected = [
       { $id: 1, id: 1, name: 'one', clusterId: 1, cluster: { $id: 1, id: 1, name: 'tokyo', nodes: [1] } },
@@ -141,7 +141,7 @@ describe('Repo – Retrieve – Relations', () => {
       }}
     }
 
-    const result = Repo.query(state, 'posts').with('author').first()
+    const result = Query.query(state, 'posts').with('author').first()
 
     if (result === null || result.author === null) {
       return t.fail('The result is expected to be not null.')
@@ -169,7 +169,7 @@ describe('Repo – Retrieve – Relations', () => {
       reviews: [{ id: 1 }, { id: 2 }]
     }
 
-    const post = Repo.query(state, 'posts').with('reviews').first()
+    const post = Query.query(state, 'posts').with('reviews').first()
 
     expect(post).toBeInstanceOf(Post)
     expect(post.reviews.length).toBe(2)
@@ -198,7 +198,7 @@ describe('Repo – Retrieve – Relations', () => {
       ]
     }
 
-    const post = Repo.query(state, 'posts', false).with('comments', (query) => {
+    const post = Query.query(state, 'posts', false).with('comments', (query) => {
       query.where('type', 'review')
     }).first()
 
@@ -226,8 +226,8 @@ describe('Repo – Retrieve – Relations', () => {
       posts: [{ $id: 3, id: 3, user_id: 1, author: 1 }]
     }
 
-    const user1 = Repo.query(state, 'users', false).withAll().first()
-    const user2 = Repo.query(state, 'users', false).with('*').first()
+    const user1 = Query.query(state, 'users', false).withAll().first()
+    const user2 = Query.query(state, 'users', false).with('*').first()
 
     expect(user1).toEqual(expected)
     expect(user2).toEqual(expected)
@@ -293,7 +293,7 @@ describe('Repo – Retrieve – Relations', () => {
       }
     };
 
-    const user = Repo.query(state, 'users', false).withAllRecursive(2).first()
+    const user = Query.query(state, 'users', false).withAllRecursive(2).first()
 
     expect(user).toEqual(expected)
   })
@@ -321,7 +321,7 @@ describe('Repo – Retrieve – Relations', () => {
       }
     }
 
-    const post = Repo.query(state, 'users', false).with('accounts').first()
+    const post = Query.query(state, 'users', false).with('accounts').first()
 
     expect(post).toEqual(expected)
   })
@@ -348,7 +348,7 @@ describe('Repo – Retrieve – Relations', () => {
       }
     }]
 
-    const post = Repo.query(state, 'users', false)
+    const post = Query.query(state, 'users', false)
       .with('accounts', query => { query.where('id', 2) })
       .get()
 
@@ -385,7 +385,7 @@ describe('Repo – Retrieve – Relations', () => {
       }]
     }
 
-    const post = Repo.query(state, 'users', false).with('posts.comments').first()
+    const post = Query.query(state, 'users', false).with('posts.comments').first()
 
     expect(post).toEqual(expected)
   })
@@ -419,7 +419,7 @@ describe('Repo – Retrieve – Relations', () => {
       }]
     }
 
-    const post = Repo.query(state, 'users', false).with('posts.comments.likes').first()
+    const post = Query.query(state, 'users', false).with('posts.comments.likes').first()
 
     expect(post).toEqual(expected)
   })
@@ -474,8 +474,8 @@ describe('Repo – Retrieve – Relations', () => {
       }]
     };
 
-    const user1 = Repo.query(state, 'users', false).with('posts.reviews|comments').first()
-    const user2 = Repo.query(state, 'users', false).with('posts.*').first()
+    const user1 = Query.query(state, 'users', false).with('posts.reviews|comments').first()
+    const user2 = Query.query(state, 'users', false).with('posts.*').first()
 
     expect(user1).toEqual(expected1)
     expect(user2).toEqual(expected2)
@@ -498,7 +498,7 @@ describe('Repo – Retrieve – Relations', () => {
 
     const expected = [{ $id: 1, id: 1 }, { $id: 2, id: 2 }]
 
-    const users = Repo.query(state, 'users', false).has('posts').get()
+    const users = Query.query(state, 'users', false).has('posts').get()
 
     expect(users).toEqual(expected)
   })
@@ -520,7 +520,7 @@ describe('Repo – Retrieve – Relations', () => {
 
     const expected = [{ $id: 3, id: 3 }]
 
-    const users = Repo.query(state, 'users', false).hasNot('posts').get()
+    const users = Query.query(state, 'users', false).hasNot('posts').get()
 
     expect(users).toEqual(expected)
   })
@@ -542,7 +542,7 @@ describe('Repo – Retrieve – Relations', () => {
 
     const expected = [{ $id: 2, id: 2 }]
 
-    const users = Repo.query(state, 'users', false)
+    const users = Query.query(state, 'users', false)
       .whereHas('posts', query => query.where('type', 'event'))
       .get()
 
@@ -566,7 +566,7 @@ describe('Repo – Retrieve – Relations', () => {
 
     const expected = [{ $id: 1, id: 1 }, { $id: 3, id: 3 }]
 
-    const users = Repo.query(state, 'users', false)
+    const users = Query.query(state, 'users', false)
       .whereHasNot('posts', query => query.where('type', 'event'))
       .get()
 
@@ -590,7 +590,7 @@ describe('Repo – Retrieve – Relations', () => {
 
     const expected = [{ $id: 2, id: 2 }]
 
-    const users = Repo.query(state, 'users', false).has('posts', 2).get()
+    const users = Query.query(state, 'users', false).has('posts', 2).get()
 
     expect(users).toEqual(expected)
   })
@@ -612,7 +612,7 @@ describe('Repo – Retrieve – Relations', () => {
 
     const expected = [{ $id: 1, id: 1 }, { $id: 3, id: 3 }]
 
-    const users = Repo.query(state, 'users', false).hasNot('posts', 2).get()
+    const users = Query.query(state, 'users', false).hasNot('posts', 2).get()
 
     expect(users).toEqual(expected)
   })
@@ -632,10 +632,10 @@ describe('Repo – Retrieve – Relations', () => {
       }}
     }
 
-    expect(Repo.query(state, 'users', false).has('posts', '>', 1).get()).toEqual([{ $id: 2, id: 2 }])
-    expect(Repo.query(state, 'users', false).has('posts', '>=', 1).get()).toEqual([{ $id: 1, id: 1 }, { $id: 2, id: 2 }])
-    expect(Repo.query(state, 'users', false).has('posts', '<', 2).get()).toEqual([{ $id: 1, id: 1 }])
-    expect(Repo.query(state, 'users', false).has('posts', '<=', 2).get()).toEqual([{ $id: 1, id: 1 }, { $id: 2, id: 2 }])
+    expect(Query.query(state, 'users', false).has('posts', '>', 1).get()).toEqual([{ $id: 2, id: 2 }])
+    expect(Query.query(state, 'users', false).has('posts', '>=', 1).get()).toEqual([{ $id: 1, id: 1 }, { $id: 2, id: 2 }])
+    expect(Query.query(state, 'users', false).has('posts', '<', 2).get()).toEqual([{ $id: 1, id: 1 }])
+    expect(Query.query(state, 'users', false).has('posts', '<=', 2).get()).toEqual([{ $id: 1, id: 1 }, { $id: 2, id: 2 }])
   })
 
   it('can query data depending on relationship absence with string conditions', () => {
@@ -653,9 +653,9 @@ describe('Repo – Retrieve – Relations', () => {
       }}
     }
 
-    expect(Repo.query(state, 'users', false).hasNot('posts', '>', 1).get()).toEqual([{ $id: 1, id: 1 }, { $id: 3, id: 3 }])
-    expect(Repo.query(state, 'users', false).hasNot('posts', '>=', 1).get()).toEqual([{ $id: 3, id: 3 }])
-    expect(Repo.query(state, 'users', false).hasNot('posts', '<', 2).get()).toEqual([{ $id: 2, id: 2 }, { $id: 3, id: 3 }])
-    expect(Repo.query(state, 'users', false).hasNot('posts', '<=', 2).get()).toEqual([{ $id: 3, id: 3 }])
+    expect(Query.query(state, 'users', false).hasNot('posts', '>', 1).get()).toEqual([{ $id: 1, id: 1 }, { $id: 3, id: 3 }])
+    expect(Query.query(state, 'users', false).hasNot('posts', '>=', 1).get()).toEqual([{ $id: 3, id: 3 }])
+    expect(Query.query(state, 'users', false).hasNot('posts', '<', 2).get()).toEqual([{ $id: 2, id: 2 }, { $id: 3, id: 3 }])
+    expect(Query.query(state, 'users', false).hasNot('posts', '<=', 2).get()).toEqual([{ $id: 3, id: 3 }])
   })
 })

@@ -1,16 +1,16 @@
 import { createApplication, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
-describe('Repo – Retrieve – Relations – Morph Many', () => {
-  it('can resolve morph many relation', () => {
+describe('Query – Retrieve – Relations – Morph One', () => {
+  it('can resolve morph one relation', () => {
     class Post extends Model {
       static entity = 'posts'
 
       static fields () {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -21,7 +21,7 @@ describe('Repo – Retrieve – Relations – Morph Many', () => {
       static fields () {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -52,29 +52,26 @@ describe('Repo – Retrieve – Relations – Morph Many', () => {
       comments: {
         '1': { $id: '1', id: '1', body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
         '2': { $id: '2', id: '2', body: 'comment2', commentable_id: 3, commentable_type: 'videos' },
-        '3': { $id: '3', id: '3', body: 'comment3', commentable_id: 1, commentable_type: 'posts' },
+        '3': { $id: '3', id: '3', body: 'comment3', commentable_id: 2, commentable_type: 'posts' },
         '4': { $id: '4', id: '4', body: 'comment4', commentable_id: 5, commentable_type: 'posts' }
       }
     })
 
-    const post = Repo.query(state, 'posts').with('comments').find(1)
+    const post = Query.query(state, 'posts').with('comment').find(1)
 
     expect(post).toBeInstanceOf(Post)
-    expect(post.comments.length).toBe(2)
-    expect(post.comments[0]).toBeInstanceOf(Comment)
-    expect(post.comments[0].body).toBe('comment1')
-    expect(post.comments[1]).toBeInstanceOf(Comment)
-    expect(post.comments[1].body).toBe('comment3')
+    expect(post.comment).toBeInstanceOf(Comment)
+    expect(post.comment.body).toBe('comment1')
   })
 
-  it('can resolve empty morph many relation', () => {
+  it('can resolve empty morph one relation', () => {
     class Post extends Model {
       static entity = 'posts'
 
       static fields () {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphOne(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -85,7 +82,7 @@ describe('Repo – Retrieve – Relations – Morph Many', () => {
       static fields () {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphOne(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -116,13 +113,13 @@ describe('Repo – Retrieve – Relations – Morph Many', () => {
       comments: {}
     })
 
-    const post = Repo.query(state, 'posts').with('comments').find(1)
+    const post = Query.query(state, 'posts').with('comment').find(1)
 
     expect(post).toBeInstanceOf(Post)
-    expect(post.comments.length).toBe(0)
+    expect(post.comments).toBe(null)
   })
 
-  it('can resolve morph many relation with custom primary key', () => {
+  it('can resolve morph one relation with custom primary key', () => {
     class Post extends Model {
       static entity = 'posts'
 
@@ -131,7 +128,7 @@ describe('Repo – Retrieve – Relations – Morph Many', () => {
       static fields () {
         return {
           post_id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -142,7 +139,7 @@ describe('Repo – Retrieve – Relations – Morph Many', () => {
       static fields () {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -173,22 +170,19 @@ describe('Repo – Retrieve – Relations – Morph Many', () => {
       comments: {
         '1': { $id: '1', id: '1', body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
         '2': { $id: '2', id: '2', body: 'comment2', commentable_id: 3, commentable_type: 'videos' },
-        '3': { $id: '3', id: '3', body: 'comment3', commentable_id: 1, commentable_type: 'posts' },
+        '3': { $id: '3', id: '3', body: 'comment3', commentable_id: 2, commentable_type: 'posts' },
         '4': { $id: '4', id: '4', body: 'comment4', commentable_id: 5, commentable_type: 'posts' }
       }
     })
 
-    const post = Repo.query(state, 'posts').with('comments').find(1)
+    const post = Query.query(state, 'posts').with('comment').find(1)
 
     expect(post).toBeInstanceOf(Post)
-    expect(post.comments.length).toBe(2)
-    expect(post.comments[0]).toBeInstanceOf(Comment)
-    expect(post.comments[0].body).toBe('comment1')
-    expect(post.comments[1]).toBeInstanceOf(Comment)
-    expect(post.comments[1].body).toBe('comment3')
+    expect(post.comment).toBeInstanceOf(Comment)
+    expect(post.comment.body).toBe('comment1')
   })
 
-  it('can resolve morph many relation with custom local key', () => {
+  it('can resolve morph one relation with custom local key', () => {
     class Post extends Model {
       static entity = 'posts'
 
@@ -196,7 +190,7 @@ describe('Repo – Retrieve – Relations – Morph Many', () => {
         return {
           id: this.attr(null),
           post_id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type', 'post_id')
+          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type', 'post_id')
         }
       }
     }
@@ -207,7 +201,7 @@ describe('Repo – Retrieve – Relations – Morph Many', () => {
       static fields () {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
         }
       }
     }
@@ -238,18 +232,15 @@ describe('Repo – Retrieve – Relations – Morph Many', () => {
       comments: {
         '1': { $id: '1', id: '1', body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
         '2': { $id: '2', id: '2', body: 'comment2', commentable_id: 3, commentable_type: 'videos' },
-        '3': { $id: '3', id: '3', body: 'comment3', commentable_id: 1, commentable_type: 'posts' },
+        '3': { $id: '3', id: '3', body: 'comment3', commentable_id: 2, commentable_type: 'posts' },
         '4': { $id: '4', id: '4', body: 'comment4', commentable_id: 5, commentable_type: 'posts' }
       }
     })
 
-    const post = Repo.query(state, 'posts').with('comments').find(2)
+    const post = Query.query(state, 'posts').with('comment').find(2)
 
     expect(post).toBeInstanceOf(Post)
-    expect(post.comments.length).toBe(2)
-    expect(post.comments[0]).toBeInstanceOf(Comment)
-    expect(post.comments[0].body).toBe('comment1')
-    expect(post.comments[1]).toBeInstanceOf(Comment)
-    expect(post.comments[1].body).toBe('comment3')
+    expect(post.comment).toBeInstanceOf(Comment)
+    expect(post.comment.body).toBe('comment1')
   })
 })

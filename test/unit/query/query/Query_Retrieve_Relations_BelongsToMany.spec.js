@@ -1,6 +1,6 @@
 import { createApplication, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
 class User extends Model {
   static entity = 'users'
@@ -37,7 +37,7 @@ class RoleUser extends Model {
   }
 }
 
-describe('Repo – Retrieve – Relations – Belongs To Many', () => {
+describe('Query – Retrieve – Relations – Belongs To Many', () => {
   beforeEach(() => {
     createApplication('entities', [{ model: User }, { model: Role }, { model: RoleUser }])
   })
@@ -57,7 +57,7 @@ describe('Repo – Retrieve – Relations – Belongs To Many', () => {
       }
     })
 
-    const user = Repo.query(state, 'users').with('roles').find(1)
+    const user = Query.query(state, 'users').with('roles').find(1)
 
     expect(user).toBeInstanceOf(User)
     expect(user.roles.length).toBe(2)
@@ -82,7 +82,7 @@ describe('Repo – Retrieve – Relations – Belongs To Many', () => {
       }
     })
 
-    const role = Repo.query(state, 'roles').with('users').find(2)
+    const role = Query.query(state, 'roles').with('users').find(2)
 
     expect(role).toBeInstanceOf(Role)
     expect(role.users.length).toBe(1)
@@ -106,7 +106,7 @@ describe('Repo – Retrieve – Relations – Belongs To Many', () => {
       }
     })
 
-    const roles = Repo.query(state, 'roles').has('users').get(2)
+    const roles = Query.query(state, 'roles').has('users').get(2)
 
     expect(roles.length).toBe(2)
   })

@@ -1,8 +1,8 @@
 import { createApplication, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
-describe('Repo – Retrieve – Relations – Morph To', () => {
+describe('Query – Retrieve – Relations – Morph To', () => {
   it('can resolve morph to relation', () => {
     class Post extends Model {
       static entity = 'posts'
@@ -55,7 +55,7 @@ describe('Repo – Retrieve – Relations – Morph To', () => {
       }
     })
 
-    const comment = Repo.query(state, 'comments').with('commentable').find(1)
+    const comment = Query.query(state, 'comments').with('commentable').find(1)
 
     expect(comment).toBeInstanceOf(Comment)
     expect(comment.commentable).toBeInstanceOf(Post)
@@ -114,7 +114,7 @@ describe('Repo – Retrieve – Relations – Morph To', () => {
       }
     })
 
-    const comments = Repo.query(state, 'comments').with('commentable').get()
+    const comments = Query.query(state, 'comments').with('commentable').get()
 
     expect(comments[0]).toBeInstanceOf(Comment)
     expect(comments[1]).toBeInstanceOf(Comment)
@@ -179,7 +179,7 @@ describe('Repo – Retrieve – Relations – Morph To', () => {
       }
     })
 
-    const comments = Repo.query(state, 'comments').with('commentable').get()
+    const comments = Query.query(state, 'comments').with('commentable').get()
 
     expect(comments[0]).toBeInstanceOf(Comment)
     expect(comments[1]).toBeInstanceOf(Comment)

@@ -1,6 +1,6 @@
 import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 import Data from 'app/data/Data'
 
 describe('Data – Relations – Has Many By', () => {
@@ -28,7 +28,7 @@ describe('Data – Relations – Has Many By', () => {
 
     const store = createStore([{ model: Node }, { model: Cluster }])
 
-    const repo = new Repo(store.state.entities, 'clusters')
+    const repo = new Query(store.state.entities, 'clusters')
 
     const data = {
       id: 1,
@@ -72,7 +72,7 @@ describe('Data – Relations – Has Many By', () => {
 
     const store = createStore([{ model: Node }, { model: Cluster }])
 
-    const repo = new Repo(store.state.entities, 'clusters')
+    const repo = new Query(store.state.entities, 'clusters')
 
     const data = [
       {
@@ -126,7 +126,7 @@ describe('Data – Relations – Has Many By', () => {
 
     const store = createStore([{ model: Node }, { model: Cluster }])
 
-    const repo = new Repo(store.state.entities, 'clusters')
+    const repo = new Query(store.state.entities, 'clusters')
 
     const data = {
       id: 1,

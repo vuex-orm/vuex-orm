@@ -1,8 +1,8 @@
 import { createApplication } from 'test/support/Helpers'
 import User from 'test/fixtures/models/User'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
-describe('Repo – Aggregates', () => {
+describe('Query – Aggregates', () => {
   beforeEach(() => {
     createApplication('entities', [
       { model: User }
@@ -19,9 +19,9 @@ describe('Repo – Aggregates', () => {
       }}
     }
 
-    expect(Repo.count(state, 'users')).toBe(3)
-    expect(Repo.query(state, 'users').count()).toBe(3)
-    expect(Repo.query(state, 'users').where('role', 'admin').count()).toBe(2)
+    expect(Query.count(state, 'users')).toBe(3)
+    expect(Query.query(state, 'users').count()).toBe(3)
+    expect(Query.query(state, 'users').where('role', 'admin').count()).toBe(2)
   })
 
   it('can get max value of the specified field', () => {
@@ -34,9 +34,9 @@ describe('Repo – Aggregates', () => {
       }}
     }
 
-    expect(Repo.max(state, 'users', 'id')).toBe(12)
-    expect(Repo.query(state, 'users').max('id')).toBe(12)
-    expect(Repo.query(state, 'users').where('role', 'admin').max('id')).toBe(11)
+    expect(Query.max(state, 'users', 'id')).toBe(12)
+    expect(Query.query(state, 'users').max('id')).toBe(12)
+    expect(Query.query(state, 'users').where('role', 'admin').max('id')).toBe(11)
   })
 
   it('can get min value of the specified field', () => {
@@ -49,8 +49,8 @@ describe('Repo – Aggregates', () => {
       }}
     }
 
-    expect(Repo.min(state, 'users', 'id')).toBe(8)
-    expect(Repo.query(state, 'users').min('id')).toBe(8)
-    expect(Repo.query(state, 'users').where('role', 'admin').min('id')).toBe(8)
+    expect(Query.min(state, 'users', 'id')).toBe(8)
+    expect(Query.query(state, 'users').min('id')).toBe(8)
+    expect(Query.query(state, 'users').where('role', 'admin').min('id')).toBe(8)
   })
 })

@@ -1,7 +1,7 @@
 import * as _ from '../../support/lodash'
 import { Record, NormalizedData, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
-import Repo, { Relation as Load } from '../../repo/Repo'
+import Query, { Relation as Load } from '../../query/Query'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -115,8 +115,8 @@ export default class BelongsToMany extends Relation {
   /**
    * Load the belongs to relationship for the record.
    */
-  load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
-    const relatedQuery = new Repo(repo.rootState, this.related.entity, false)
+  load (query: Query, collection: PlainCollection, relation: Load): PlainCollection {
+    const relatedQuery = new Query(query.rootState, this.related.entity, false)
 
     this.addConstraint(relatedQuery, relation)
 
@@ -128,7 +128,7 @@ export default class BelongsToMany extends Relation {
       return records
     }, {})
 
-    const pivots = _.reduce(repo.rootState[this.pivot.entity].data, (records, record) => {
+    const pivots = _.reduce(query.rootState[this.pivot.entity].data, (records, record) => {
       if (!records[record[this.foreignPivotKey]]) {
         records[record[this.foreignPivotKey]] = []
       }

@@ -1,7 +1,7 @@
 import * as _ from '../../support/lodash'
 import { Record, NormalizedData, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
-import Repo, { Relation as Load } from '../../repo/Repo'
+import Query, { Relation as Load } from '../../query/Query'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -113,8 +113,8 @@ export default class MorphedByMany extends Relation {
   /**
    * Load the morph many relationship for the record.
    */
-  load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
-    const relatedQuery = new Repo(repo.rootState, this.related.entity, false)
+  load (query: Query, collection: PlainCollection, relation: Load): PlainCollection {
+    const relatedQuery = new Query(query.rootState, this.related.entity, false)
 
     this.addConstraint(relatedQuery, relation)
 
@@ -124,7 +124,7 @@ export default class MorphedByMany extends Relation {
       return records
     }, {})
 
-    const pivotQuery = new Repo(repo.rootState, this.pivot.entity, false)
+    const pivotQuery = new Query(query.rootState, this.pivot.entity, false)
 
     pivotQuery.where(this.type, relatedQuery.entity)
 

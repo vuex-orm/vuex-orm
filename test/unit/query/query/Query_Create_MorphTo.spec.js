@@ -1,8 +1,8 @@
 import { createApplication, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
-describe('Repo – Create – Morph To', () => {
+describe('Query – Create – Morph To', () => {
   it('can create a morph to relation data', () => {
     class Post extends Model {
       static entity = 'posts'
@@ -73,7 +73,7 @@ describe('Repo – Create – Morph To', () => {
       }
     })
 
-    Repo.create(state, 'comments', data)
+    Query.create(state, 'comments', data)
 
     expect(state).toEqual(expected)
   })
@@ -167,7 +167,7 @@ describe('Repo – Create – Morph To', () => {
       }
     })
 
-    Repo.create(state, 'comments', data)
+    Query.create(state, 'comments', data)
 
     expect(state).toEqual(expected)
   })

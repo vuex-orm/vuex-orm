@@ -1,26 +1,26 @@
 import * as _ from '../support/lodash'
 import { Records, NormalizedData } from '../data/Contract'
 import Increment from '../attributes/types/Increment'
-import Repo from '../repo/Repo'
+import Query from '../query/Query'
 
 export default class Incrementer {
   /**
-   * The repo instance.
+   * The Query instance.
    */
-  repo: Repo
+  query: Query
 
   /**
    * Create a new incrementer instance.
    */
-  constructor (repo: Repo) {
-    this.repo = repo
+  constructor (query: Query) {
+    this.query = query
   }
 
   /**
    * Increment fields that have increment attribute.
    */
-  static increment (data: NormalizedData, repo: Repo): NormalizedData {
-    return (new this(repo)).increment(data)
+  static increment (data: NormalizedData, Query: Query): NormalizedData {
+    return (new this(Query)).increment(data)
   }
 
   /**
@@ -28,28 +28,28 @@ export default class Incrementer {
    */
   increment (data: NormalizedData): NormalizedData {
     return _.mapValues(data, (record, entity) => {
-      const repo = new Repo(this.repo.rootState, entity, false)
+      const query = new Query(this.query.rootState, entity, false)
 
       // If the entity doesn't have increment attribute, do nothing and
       // just return immediately.
-      if (!repo.model.hasIncrementFields()) {
+      if (!query.model.hasIncrementFields()) {
         return record
       }
 
-      return this.process(record, repo)
+      return this.process(record, query)
     })
   }
 
   /**
    * Process the incrementation.
    */
-  process (records: Records, repo: Repo): Records {
+  process (records: Records, query: Query): Records {
     let newRecords = { ...records }
 
-    _.forEach(repo.model.incrementFields(), (field) => {
+    _.forEach(query.model.incrementFields(), (field) => {
       const incrementKey = this.incrementKey(field)
 
-      let max = this.max(records, repo, incrementKey)
+      let max = this.max(records, query, incrementKey)
 
       _.forEach(records, (_record, key) => {
         if (newRecords[key][incrementKey]) {
@@ -58,11 +58,11 @@ export default class Incrementer {
 
         newRecords[key][incrementKey] = ++max
 
-        newRecords[key]['$id'] = repo.model.id(newRecords[key])
+        newRecords[key]['$id'] = query.model.id(newRecords[key])
       })
     })
 
-    return this.setId(newRecords, repo)
+    return this.setId(newRecords, query)
   }
 
   /**
@@ -76,8 +76,8 @@ export default class Incrementer {
    * Get the max value of the specified field with given data combined
    * with existing records.
    */
-  max (data: any, repo: Repo, field: string): number {
-    const max: number = repo.max(field)
+  max (data: any, query: Query, field: string): number {
+    const max: number = query.max(field)
     const records: any = _.map(data, value => value)
     const maxRecord: any = _.maxBy(records, field)
 
@@ -87,11 +87,11 @@ export default class Incrementer {
   /**
    * Update the key of the records.
    */
-  setId (records: Records, repo: Repo): Records {
+  setId (records: Records, query: Query): Records {
     let newRecords: Records = {}
 
     _.forEach(records, (record) => {
-      newRecords[repo.model.id(record)] = record
+      newRecords[query.model.id(record)] = record
     })
 
     return newRecords

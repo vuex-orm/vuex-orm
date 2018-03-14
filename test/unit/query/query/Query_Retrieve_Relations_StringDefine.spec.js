@@ -1,8 +1,8 @@
 import { createApplication } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 
-describe('Repo – Retrieve – Relations - String Define', () => {
+describe('Query – Retrieve – Relations - String Define', () => {
   it('can define related model via string', () => {
     class User extends Model {
       static entity = 'users'
@@ -38,7 +38,7 @@ describe('Repo – Retrieve – Relations - String Define', () => {
       }}
     }
 
-    const user = Repo.query(state, 'users').with('posts').find(1)
+    const user = Query.query(state, 'users').with('posts').find(1)
 
     expect(user).toBeInstanceOf(User)
     expect(user.id).toBe(1)

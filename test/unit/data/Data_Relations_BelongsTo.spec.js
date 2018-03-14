@@ -1,6 +1,6 @@
 import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Repo from 'app/repo/Repo'
+import Query from 'app/query/Query'
 import Data from 'app/data/Data'
 
 describe('Data – Relations – Belongs To', () => {
@@ -29,7 +29,7 @@ describe('Data – Relations – Belongs To', () => {
 
     const store = createStore([{ model: User }, { model: Phone }])
 
-    const repo = new Repo(store.state.entities, 'phones')
+    const repo = new Query(store.state.entities, 'phones')
 
     const data = {
       id: 1,
@@ -74,7 +74,7 @@ describe('Data – Relations – Belongs To', () => {
 
     const store = createStore([{ model: User }, { model: Phone }])
 
-    const repo = new Repo(store.state.entities, 'phones')
+    const repo = new Query(store.state.entities, 'phones')
 
     const data = [
       {
@@ -128,7 +128,7 @@ describe('Data – Relations – Belongs To', () => {
 
     const store = createStore([{ model: User }, { model: Phone }])
 
-    const repo = new Repo(store.state.entities, 'phones')
+    const repo = new Query(store.state.entities, 'phones')
 
     const data = {
       id: 1,

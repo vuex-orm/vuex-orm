@@ -1,6 +1,6 @@
 import { Record, NormalizedData, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
-import Repo, { Relation as Load } from '../../repo/Repo'
+import Query, { Relation as Load } from '../../query/Query'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -76,17 +76,17 @@ export default class MorphTo extends Relation {
   /**
    * Load the morph many relationship for the record.
    */
-  load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
-    const relatedRecords = Object.keys(repo.getModels()).reduce((records, name) => {
-      if (name === repo.entity) {
+  load (query: Query, collection: PlainCollection, relation: Load): PlainCollection {
+    const relatedRecords = Object.keys(query.getModels()).reduce((records, name) => {
+      if (name === query.entity) {
         return records
       }
 
-      const query = new Repo(repo.rootState, name, false)
+      const relatedQuery = new Query(query.rootState, name, false)
 
-      this.addConstraint(query, relation)
+      this.addConstraint(relatedQuery, relation)
 
-      records[name] = this.mapRecords(query.get(), '$id')
+      records[name] = this.mapRecords(relatedQuery.get(), '$id')
 
       return records
     }, {} as { [name: string]: { [id: string]: any } })
