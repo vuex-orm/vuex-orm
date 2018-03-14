@@ -361,6 +361,29 @@ export default class Model {
   }
 
   /**
+   * Fill any missing fields in the given data with the default
+   * value defined in the model schema.
+   */
+  static fill (data: Record, fields?: Fields): Record {
+    const _fields = fields || this.fields()
+
+    return Object.keys(_fields).reduce((record, key) => {
+      const field = _fields[key]
+      const value = data[key]
+
+      if (field instanceof Attribute) {
+        record[key] = field.fill(value)
+
+        return record
+      }
+
+      record[key] = this.fill(value, field)
+
+      return record
+    }, {} as Record)
+  }
+
+  /**
    * Get the static class of this model.
    */
   $self (): typeof Model {
