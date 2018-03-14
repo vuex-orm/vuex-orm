@@ -77,12 +77,12 @@ export default class MorphTo extends Relation {
    * Load the morph many relationship for the record.
    */
   load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
-    const relatedRecords = Object.keys(repo.models()).reduce((records, name) => {
-      if (name === repo.name) {
+    const relatedRecords = Object.keys(repo.getModels()).reduce((records, name) => {
+      if (name === repo.entity) {
         return records
       }
 
-      const query = new Repo(repo.state, name, false)
+      const query = new Repo(repo.rootState, name, false)
 
       this.addConstraint(query, relation)
 

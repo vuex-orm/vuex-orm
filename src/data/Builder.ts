@@ -10,7 +10,7 @@ export default class Builder {
    */
   static build (data: NormalizedData, repo: Repo): NormalizedData {
     return _.mapValues(data, (records, entity) => {
-      const model = repo.model(entity)
+      const model = repo.getModel(entity)
 
       return _.mapValues(records, (record) => {
         return { ...this.buildFields(record, model.fields()), $id: record.$id }

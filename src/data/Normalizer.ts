@@ -14,7 +14,7 @@ export default class Data {
       return {}
     }
 
-    const schema = Array.isArray(data) ? Schema.many(repo.entity) : Schema.one(repo.entity)
+    const schema = Array.isArray(data) ? Schema.many(repo.model) : Schema.one(repo.model)
 
     const normalizedData = normalize(data, schema).entities
 

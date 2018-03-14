@@ -82,7 +82,7 @@ describe('Plugin', () => {
     const plugin = {
       install (components) {
         components.Repo.prototype.newQuery = function () {
-          return new Query(this.state, this.name, this.primaryKey)
+          return new Query(this.rootState, this.entity, this.primaryKey)
         }
 
         components.Query.prototype.instanceMethod = function () {

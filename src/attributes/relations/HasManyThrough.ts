@@ -106,13 +106,13 @@ export default class HasManyThrough extends Relation {
    * Load the has many through relationship for the record.
    */
   load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
-    const relatedQuery = new Repo(repo.state, this.related.entity, false)
+    const relatedQuery = new Repo(repo.rootState, this.related.entity, false)
 
     const relatedRecords = this.mapRecords(relatedQuery.get(), this.secondKey)
 
     this.addConstraint(relatedQuery, relation)
 
-    const throughQuery = new Repo(repo.state, this.through.entity, false)
+    const throughQuery = new Repo(repo.rootState, this.through.entity, false)
 
     const throughRecords = throughQuery.get().reduce((records, record) => {
       const key = record[this.firstKey]

@@ -114,7 +114,7 @@ export default class MorphToMany extends Relation {
    * Load the morph many relationship for the record.
    */
   load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
-    const relatedQuery = new Repo(repo.state, this.related.entity, false)
+    const relatedQuery = new Repo(repo.rootState, this.related.entity, false)
 
     this.addConstraint(relatedQuery, relation)
 
@@ -124,9 +124,9 @@ export default class MorphToMany extends Relation {
       return records
     }, {})
 
-    const pivotQuery = new Repo(repo.state, this.pivot.entity, false)
+    const pivotQuery = new Repo(repo.rootState, this.pivot.entity, false)
 
-    pivotQuery.where(this.type, repo.name)
+    pivotQuery.where(this.type, repo.entity)
 
     const pivotRecords = pivotQuery.get().reduce((records, record) => {
       if (!records[record[this.id]]) {

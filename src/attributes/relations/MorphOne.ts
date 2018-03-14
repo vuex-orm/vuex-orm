@@ -86,9 +86,9 @@ export default class MorphOne extends Relation {
    * Load the morph many relationship for the record.
    */
   load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
-    const relatedQuery = new Repo(repo.state, this.related.entity, false)
+    const relatedQuery = new Repo(repo.rootState, this.related.entity, false)
 
-    relatedQuery.where(this.type, repo.name)
+    relatedQuery.where(this.type, repo.entity)
 
     this.addConstraint(relatedQuery, relation)
 

@@ -28,11 +28,11 @@ export default class Incrementer {
    */
   increment (data: NormalizedData): NormalizedData {
     return _.mapValues(data, (record, entity) => {
-      const repo = new Repo(this.repo.state, entity, false)
+      const repo = new Repo(this.repo.rootState, entity, false)
 
       // If the entity doesn't have increment attribute, do nothing and
       // just return immediately.
-      if (!repo.entity.hasIncrementFields()) {
+      if (!repo.model.hasIncrementFields()) {
         return record
       }
 
@@ -46,7 +46,7 @@ export default class Incrementer {
   process (records: Records, repo: Repo): Records {
     let newRecords = { ...records }
 
-    _.forEach(repo.entity.incrementFields(), (field) => {
+    _.forEach(repo.model.incrementFields(), (field) => {
       const incrementKey = this.incrementKey(field)
 
       let max = this.max(records, repo, incrementKey)
@@ -58,7 +58,7 @@ export default class Incrementer {
 
         newRecords[key][incrementKey] = ++max
 
-        newRecords[key]['$id'] = repo.entity.id(newRecords[key])
+        newRecords[key]['$id'] = repo.model.id(newRecords[key])
       })
     })
 
@@ -91,7 +91,7 @@ export default class Incrementer {
     let newRecords: Records = {}
 
     _.forEach(records, (record) => {
-      newRecords[repo.entity.id(record)] = record
+      newRecords[repo.model.id(record)] = record
     })
 
     return newRecords

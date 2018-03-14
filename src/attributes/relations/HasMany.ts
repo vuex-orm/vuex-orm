@@ -86,7 +86,7 @@ export default class HasMany extends Relation {
    * Load the has many relationship for the record.
    */
   load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
-    const relatedQuery = new Repo(repo.state, this.related.entity, false)
+    const relatedQuery = new Repo(repo.rootState, this.related.entity, false)
 
     this.addConstraint(relatedQuery, relation)
 

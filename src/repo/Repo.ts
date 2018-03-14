@@ -6,7 +6,7 @@ import Attrs, { Fields } from '../attributes/contracts/Contract'
 import Attribute from '../attributes/Attribute'
 import RelationClass from '../attributes/relations/Relation'
 import Model from '../model/Model'
-import { State } from '../modules/Module'
+import { State, EntityState } from '../modules/Module'
 import Query, { OrderDirection, Condition } from './Query'
 
 export type Buildable = PlainItem | PlainCollection | null
@@ -22,19 +22,24 @@ export interface Relation {
 
 export default class Repo {
   /**
-   * The Vuex Store State.
+   * The root state of the Vuex Store.
    */
-  state: State
+  rootState: State
+
+  /**
+   * The entity state of the Vuex Store.
+   */
+  state: EntityState
 
   /**
    * The name of the entity.
    */
-  name: string
+  entity: string
 
   /**
    * The model of the entity.
    */
-  entity: typeof Model
+  model: typeof Model
 
   /**
    * The base query builder instance.
@@ -55,9 +60,10 @@ export default class Repo {
    * Create a new repo instance.
    */
   constructor (state: State, entity: string, wrap: boolean = true) {
-    this.state = state
-    this.name = entity
-    this.entity = this.model(entity)
+    this.rootState = state
+    this.state = state[entity]
+    this.entity = entity
+    this.model = this.getModel(entity)
     this.wrap = wrap
     this.query = new Query(state, entity)
   }
@@ -70,16 +76,16 @@ export default class Repo {
   }
 
   /**
-   * Get model of given name from connections container.
+   * Get model of given name from the container.
    */
-  static model (state: State, name: string): typeof Model {
+  static getModel (state: State, name: string): typeof Model {
     return Container.connection(state.name).model(name)
   }
 
   /**
-   * Get all models from connections container.
+   * Get all models from the container.
    */
-  static models (state: State): { [name: string]: typeof Model } {
+  static getModels (state: State): { [name: string]: typeof Model } {
     return Container.connection(state.name).models()
   }
 
@@ -166,7 +172,7 @@ export default class Repo {
       (new this(state, entity)).deleteAll()
     }
 
-    const models = this.models(state)
+    const models = this.getModels(state)
 
     _.forEach(models, (_model, name) => {
       state[name] && (new Query(state, name)).deleteAll()
@@ -181,19 +187,19 @@ export default class Repo {
   }
 
   /**
-   * Get model of given name from connections container.
+   * Get model of given name from the container.
    */
-  model (name?: string): typeof Model {
-    const entity = name || this.name
+  getModel (name?: string): typeof Model {
+    const entity = name || this.entity
 
-    return this.self().model(this.state, entity)
+    return this.self().getModel(this.rootState, entity)
   }
 
   /**
-   * Get all models from connections container.
+   * Get all models from the container.
    */
-  models (): { [name: string]: typeof Model } {
-    return this.self().models(this.state)
+  getModels (): { [name: string]: typeof Model } {
+    return this.self().getModels(this.rootState)
   }
 
   /**
@@ -226,20 +232,20 @@ export default class Repo {
 
     // `normalizedData` contains the differenty entity types (e.g. `users`),
     _.forEach(normalizedData, (data, entity) => {
-      const repo = new Repo(this.state, entity, false)
+      const repo = new Repo(this.rootState, entity, false)
 
       // `data` contains the items of `entity`.
       _.forEach(data, (item, id) => {
         // Check if item does not already exist in store and mark it as new.
-        if (repo.entity.id(item) === undefined || repo.find(repo.entity.id(item)) === null) {
+        if (repo.model.id(item) === undefined || repo.find(repo.model.id(item)) === null) {
           if (!toBePersisted.hasOwnProperty(entity)) {
             toBePersisted[entity] = {}
           }
 
           toBePersisted[entity][id] = item
         } else {
-          repo.query.update(item, repo.entity.id(item))
-          updatedItems.push(repo.entity.id(item))
+          repo.query.update(item, repo.model.id(item))
+          updatedItems.push(repo.model.id(item))
         }
       })
     })
@@ -280,8 +286,8 @@ export default class Repo {
     _.forEach(records, (data, entity) => {
       const method = this.getPersistMethod(defaultMethod, entity, forceCreateFor, forceInsertFor)
 
-      if (entity !== this.name) {
-        (new Query(this.state, entity) as any)[method](data)
+      if (entity !== this.entity) {
+        (new Query(this.rootState, entity) as any)[method](data)
 
         return
       }
@@ -326,7 +332,7 @@ export default class Repo {
 
     const method = items.length > 1 ? 'get' : 'first'
 
-    return new Repo(this.state, this.name).where('$id', (value: any) => {
+    return new Repo(this.rootState, this.entity).where('$id', (value: any) => {
       return _.includes(items, value)
     })[method]()
   }
@@ -340,7 +346,7 @@ export default class Repo {
       return []
     }
 
-    return new Repo(this.state, this.name).where('$id', (value: any) => {
+    return new Repo(this.rootState, this.entity).where('$id', (value: any) => {
       return _.includes(items, value)
     }).get()
   }
@@ -350,7 +356,7 @@ export default class Repo {
    */
   update (data: any, condition?: Condition): Item | Collection {
     if (!condition) {
-      return this.processUpdateById(data, this.entity.id(data))
+      return this.processUpdateById(data, this.model.id(data))
     }
 
     if (typeof condition === 'number' || typeof condition === 'string') {
@@ -379,9 +385,9 @@ export default class Repo {
    * Update data by id.
    */
   processUpdateByCondition (data: any, condition: (record: Record) => boolean): Item | Collection {
-    const records = (new Repo(this.state, this.name, false)).where(condition).get()
+    const records = (new Repo(this.rootState, this.entity, false)).where(condition).get()
 
-    const items = _.map(records, record => this.entity.id(record))
+    const items = _.map(records, record => this.model.id(record))
 
     this.query.update(data, condition)
 
@@ -487,7 +493,7 @@ export default class Repo {
    * Query all relations.
    */
   withAll (constraints: ConstraintCallback = () => null): this {
-    const fields = this.entity.fields()
+    const fields = this.model.fields()
 
     for (const field in fields) {
       if (Attrs.isRelation(fields[field])) {
@@ -613,7 +619,7 @@ export default class Repo {
       return item
     }
 
-    return new this.entity(item)
+    return new this.model(item)
   }
 
   /**
@@ -634,7 +640,7 @@ export default class Repo {
       return item
     }
 
-    return _.map(item, data => new this.entity(data))
+    return _.map(item, data => new this.model(data))
   }
 
   /**
@@ -642,7 +648,7 @@ export default class Repo {
    */
   loadRelations (data: PlainCollection, relation?: Relation[]): PlainCollection {
     const _relation = relation || this.load
-    const fields = this.entity.fields()
+    const fields = this.model.fields()
 
     return _.reduce(_relation, (records, rel) => {
       return this.processLoadRelations(records, rel, fields)
@@ -702,7 +708,7 @@ export default class Repo {
       _constraint = record => record.length <= count
     }
 
-    const data = (new Repo(this.state, this.name, false)).with(name).get()
+    const data = (new Repo(this.rootState, this.entity, false)).with(name).get()
 
     let ids: string[] = []
 
@@ -735,7 +741,7 @@ export default class Repo {
    * Get all id of the record that matches the relation constraints.
    */
   matchesWhereHasRelation (name: string, constraint: Constraint, existence: boolean = true): string[] {
-    const data = (new Repo(this.state, this.name, false)).with(name, constraint).get()
+    const data = (new Repo(this.rootState, this.entity, false)).with(name, constraint).get()
 
     let ids: string[] = []
 

@@ -116,7 +116,7 @@ export default class BelongsToMany extends Relation {
    * Load the belongs to relationship for the record.
    */
   load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
-    const relatedQuery = new Repo(repo.state, this.related.entity, false)
+    const relatedQuery = new Repo(repo.rootState, this.related.entity, false)
 
     this.addConstraint(relatedQuery, relation)
 
@@ -128,7 +128,7 @@ export default class BelongsToMany extends Relation {
       return records
     }, {})
 
-    const pivots = _.reduce(repo.state[this.pivot.entity].data, (records, record) => {
+    const pivots = _.reduce(repo.rootState[this.pivot.entity].data, (records, record) => {
       if (!records[record[this.foreignPivotKey]]) {
         records[record[this.foreignPivotKey]] = []
       }

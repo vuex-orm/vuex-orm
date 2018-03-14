@@ -9,7 +9,7 @@ export default class Attacher {
    */
   static attach (data: NormalizedData, repo: Repo): NormalizedData {
     Utils.forOwn(data, (entity, name) => {
-      const fields = repo.model(name).fields()
+      const fields = repo.getModel(name).fields()
 
       Utils.forOwn(entity, (record) => {
         Utils.forOwn(record, (value, key) => {
