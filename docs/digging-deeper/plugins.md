@@ -8,9 +8,9 @@ A Vuex ORM plugin should be an object that exposes an install method. The method
 
 ```js
 const plugin = {
-  // `components` contains Vuex ORM objects such as Model, Repo, or Query.
-  // The plugin author can then extend those objects to add whatever
-  // features it needs.
+  // `components` contains Vuex ORM objects such as Model and Query.
+  // The plugin author can then extend those objects to add
+  // whatever features it needs.
   install (components, options) {
     // Add global (static) method or property.
     components.Model.globalMethod = function () {
@@ -18,7 +18,7 @@ const plugin = {
     }
 
     // Add an instance method or property.
-    components.Repo.prototype.instanceMethod = function () {
+    components.Query.prototype.instanceMethod = function () {
       // Logic...
     }
   }
@@ -30,7 +30,6 @@ const plugin = {
 Following components are included within `components` argument.
 
 - Model
-- Repo
 - Query
 - Type
 - Attr
