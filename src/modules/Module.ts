@@ -1,5 +1,4 @@
 import * as Vuex from 'vuex'
-import * as _ from '../support/lodash'
 import Model from '../model/Model'
 import rootGetters from './rootGetters'
 import rootActions from './rootActions'
@@ -14,13 +13,13 @@ export interface Entity {
 
 export interface State {
   name: string
-  [key: string]: any
+  [entity: string]: any
 }
 
 export interface EntityState {
   $connection: string
   $name: string
-  data: { [key: string]: any }
+  data: { [id: string]: any }
   [key: string]: any
 }
 
@@ -36,10 +35,10 @@ export default class Module {
   }
 
   /**
-   * Creates module from the given entities.
+   * Create module from the given entities.
    */
   static create (namespace: string, entities: Entity[]): Vuex.Module<any, any> {
-    const tree: Vuex.Module<any, any> = {
+    const tree = {
       namespaced: true,
       state: { name: namespace },
       getters: rootGetters,
@@ -56,7 +55,7 @@ export default class Module {
    * from the given entities.
    */
   static createTree (tree: any, namespace: string, entities: Entity[]): Vuex.Module<any, any> {
-    _.forEach(entities, (entity) => {
+    entities.forEach((entity) => {
       tree.getters[entity.model.entity] = (_state: any, getters: any) => (wrap: boolean = true) => {
         return getters.query(entity.model.entity, wrap)
       }
