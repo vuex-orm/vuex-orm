@@ -9,7 +9,7 @@ export default class Database {
   store?: Vuex.Store<any>
 
   /**
-   * The list of entities to be registered to Vuex Store.
+   * The list of entities to be registered to the Vuex Store.
    */
   entities: Entity[] = []
 
