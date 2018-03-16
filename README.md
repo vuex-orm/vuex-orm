@@ -17,6 +17,10 @@ Learn more about the concept and motivation of Vuex ORM at [What Is Vuex ORM?](h
 
 You can check out the full documentation for Vuex ORM at https://vuex-orm.github.io/vuex-orm.
 
+## Questions & Discussions
+
+Join us on our [Slack Channel](https://join.slack.com/t/vuex-orm/shared_invite/enQtMzMxMTY4MzcwOTYzLTYwZDFjNTgzZDk4MDJlODJmMzk5NmNmZDBiYjIyMTVjMDk1MGRkYTEyYmNkMGM4MjRkNGJmYTBhNTIxYTA5OWI) for any questions and discussions.
+
 ## Examples
 
 You can find example application built with Vuex ORM [at here](https://github.com/vuex-orm/vuex-orm-examples).
