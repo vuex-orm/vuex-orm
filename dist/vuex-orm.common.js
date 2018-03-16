@@ -6134,10 +6134,10 @@ var BelongsTo = /** @class */ (function (_super) {
     /**
      * Load the belongs to relationship for the record.
      */
-    BelongsTo.prototype.load = function (repo, collection, relation) {
+    BelongsTo.prototype.load = function (query, collection, relation) {
         var _this = this;
         var relatedPath = this.relatedPath(relation.name);
-        var relatedQuery = new Repo(repo.state, this.parent.entity, false);
+        var relatedQuery = new Query(query.rootState, this.parent.entity, false);
         this.addConstraint(relatedQuery, relation);
         var relatedRecords = this.mapRecords(relatedQuery.get(), this.ownerKey);
         return collection.map(function (item) {
@@ -6218,9 +6218,9 @@ var HasMany = /** @class */ (function (_super) {
     /**
      * Load the has many relationship for the record.
      */
-    HasMany.prototype.load = function (repo, collection, relation) {
+    HasMany.prototype.load = function (query, collection, relation) {
         var _this = this;
-        var relatedQuery = new Repo(repo.state, this.related.entity, false);
+        var relatedQuery = new Query(query.rootState, this.related.entity, false);
         this.addConstraint(relatedQuery, relation);
         var relatedRecords = relatedQuery.get().reduce(function (records, record) {
             var key = record[_this.foreignKey];
@@ -6308,10 +6308,10 @@ var HasManyBy = /** @class */ (function (_super) {
     /**
      * Load the has many by relationship for the record.
      */
-    HasManyBy.prototype.load = function (repo, collection, relation) {
+    HasManyBy.prototype.load = function (query, collection, relation) {
         var _this = this;
         var relatedPath = this.relatedPath(relation.name);
-        var relatedQuery = new Repo(repo.state, this.parent.entity, false);
+        var relatedQuery = new Query(query.rootState, this.parent.entity, false);
         this.addConstraint(relatedQuery, relation);
         var relatedRecords = this.mapRecords(relatedQuery.get(), this.ownerKey);
         return collection.map(function (item) {
@@ -6393,12 +6393,12 @@ var HasManyThrough = /** @class */ (function (_super) {
     /**
      * Load the has many through relationship for the record.
      */
-    HasManyThrough.prototype.load = function (repo, collection, relation) {
+    HasManyThrough.prototype.load = function (query, collection, relation) {
         var _this = this;
-        var relatedQuery = new Repo(repo.state, this.related.entity, false);
+        var relatedQuery = new Query(query.rootState, this.related.entity, false);
         var relatedRecords = this.mapRecords(relatedQuery.get(), this.secondKey);
         this.addConstraint(relatedQuery, relation);
-        var throughQuery = new Repo(repo.state, this.through.entity, false);
+        var throughQuery = new Query(query.rootState, this.through.entity, false);
         var throughRecords = throughQuery.get().reduce(function (records, record) {
             var key = record[_this.firstKey];
             if (!records[key]) {
@@ -6492,16 +6492,16 @@ var BelongsToMany = /** @class */ (function (_super) {
     /**
      * Load the belongs to relationship for the record.
      */
-    BelongsToMany.prototype.load = function (repo, collection, relation) {
+    BelongsToMany.prototype.load = function (query, collection, relation) {
         var _this = this;
-        var relatedQuery = new Repo(repo.state, this.related.entity, false);
+        var relatedQuery = new Query(query.rootState, this.related.entity, false);
         this.addConstraint(relatedQuery, relation);
         var relatedRecords = relatedQuery.get();
         var related = relatedRecords.reduce(function (records, record) {
             records[record[_this.relatedKey]] = record;
             return records;
         }, {});
-        var pivots = reduce(repo.state[this.pivot.entity].data, function (records, record) {
+        var pivots = reduce(query.rootState[this.pivot.entity].data, function (records, record) {
             if (!records[record[_this.foreignPivotKey]]) {
                 records[record[_this.foreignPivotKey]] = [];
             }
@@ -6605,15 +6605,15 @@ var MorphTo = /** @class */ (function (_super) {
     /**
      * Load the morph many relationship for the record.
      */
-    MorphTo.prototype.load = function (repo, collection, relation) {
+    MorphTo.prototype.load = function (query, collection, relation) {
         var _this = this;
-        var relatedRecords = Object.keys(repo.models()).reduce(function (records, name) {
-            if (name === repo.name) {
+        var relatedRecords = Object.keys(query.getModels()).reduce(function (records, name) {
+            if (name === query.entity) {
                 return records;
             }
-            var query = new Repo(repo.state, name, false);
-            _this.addConstraint(query, relation);
-            records[name] = _this.mapRecords(query.get(), '$id');
+            var relatedQuery = new Query(query.rootState, name, false);
+            _this.addConstraint(relatedQuery, relation);
+            records[name] = _this.mapRecords(relatedQuery.get(), '$id');
             return records;
         }, {});
         var relatedPath = this.relatedPath(relation.name);
@@ -6687,10 +6687,10 @@ var MorphOne = /** @class */ (function (_super) {
     /**
      * Load the morph many relationship for the record.
      */
-    MorphOne.prototype.load = function (repo, collection, relation) {
+    MorphOne.prototype.load = function (query, collection, relation) {
         var _this = this;
-        var relatedQuery = new Repo(repo.state, this.related.entity, false);
-        relatedQuery.where(this.type, repo.name);
+        var relatedQuery = new Query(query.rootState, this.related.entity, false);
+        relatedQuery.where(this.type, query.entity);
         this.addConstraint(relatedQuery, relation);
         var relatedRecords = this.mapRecords(relatedQuery.get(), this.id);
         var relatedPath = this.relatedPath(relation.name);
@@ -6766,10 +6766,10 @@ var MorphMany = /** @class */ (function (_super) {
     /**
      * Load the morph many relationship for the record.
      */
-    MorphMany.prototype.load = function (repo, collection, relation) {
+    MorphMany.prototype.load = function (query, collection, relation) {
         var _this = this;
-        var relatedQuery = new Repo(repo.state, this.related.entity, false);
-        relatedQuery.where(this.type, repo.name);
+        var relatedQuery = new Query(query.rootState, this.related.entity, false);
+        relatedQuery.where(this.type, query.entity);
         this.addConstraint(relatedQuery, relation);
         var relatedRecords = relatedQuery.get().reduce(function (records, record) {
             var key = record[_this.id];
@@ -6863,16 +6863,16 @@ var MorphToMany = /** @class */ (function (_super) {
     /**
      * Load the morph many relationship for the record.
      */
-    MorphToMany.prototype.load = function (repo, collection, relation) {
+    MorphToMany.prototype.load = function (query, collection, relation) {
         var _this = this;
-        var relatedQuery = new Repo(repo.state, this.related.entity, false);
+        var relatedQuery = new Query(query.rootState, this.related.entity, false);
         this.addConstraint(relatedQuery, relation);
         var relatedRecords = relatedQuery.get().reduce(function (records, record) {
             records[record[_this.relatedKey]] = record;
             return records;
         }, {});
-        var pivotQuery = new Repo(repo.state, this.pivot.entity, false);
-        pivotQuery.where(this.type, repo.name);
+        var pivotQuery = new Query(query.rootState, this.pivot.entity, false);
+        pivotQuery.where(this.type, query.entity);
         var pivotRecords = pivotQuery.get().reduce(function (records, record) {
             if (!records[record[_this.id]]) {
                 records[record[_this.id]] = [];
@@ -6893,7 +6893,7 @@ var MorphToMany = /** @class */ (function (_super) {
         var _this = this;
         forEach(data[parent.entity], function (record) {
             var related = record[_this.related.entity];
-            if (related.length === 0) {
+            if (!Array.isArray(related) || related.length === 0) {
                 return;
             }
             _this.createPivotRecord(parent, data, record, related);
@@ -6992,16 +6992,16 @@ var MorphedByMany = /** @class */ (function (_super) {
     /**
      * Load the morph many relationship for the record.
      */
-    MorphedByMany.prototype.load = function (repo, collection, relation) {
+    MorphedByMany.prototype.load = function (query, collection, relation) {
         var _this = this;
-        var relatedQuery = new Repo(repo.state, this.related.entity, false);
+        var relatedQuery = new Query(query.rootState, this.related.entity, false);
         this.addConstraint(relatedQuery, relation);
         var relatedRecords = relatedQuery.get().reduce(function (records, record) {
             records[record[_this.relatedKey]] = record;
             return records;
         }, {});
-        var pivotQuery = new Repo(repo.state, this.pivot.entity, false);
-        pivotQuery.where(this.type, relatedQuery.name);
+        var pivotQuery = new Query(query.rootState, this.pivot.entity, false);
+        pivotQuery.where(this.type, relatedQuery.entity);
         var pivotRecords = pivotQuery.get().reduce(function (records, record) {
             if (!records[record[_this.relatedId]]) {
                 records[record[_this.relatedId]] = [];
@@ -7299,12 +7299,12 @@ var Schema = /** @class */ (function () {
 var PivotCreator = /** @class */ (function () {
     function PivotCreator() {
     }
-    PivotCreator.create = function (data, repo) {
-        if (!repo.entity.hasPivotFields()) {
+    PivotCreator.create = function (data, Query) {
+        if (!Query.model.hasPivotFields()) {
             return data;
         }
-        forEach(repo.entity.pivotFields(), function (field) {
-            forEach(field, function (attr) { attr.createPivots(repo.entity, data); });
+        forEach(Query.model.pivotFields(), function (field) {
+            forEach(field, function (attr) { attr.createPivots(Query.model, data); });
         });
         return data;
     };
@@ -7317,13 +7317,13 @@ var Data = /** @class */ (function () {
     /**
      * Normalize the data.
      */
-    Data.normalize = function (data, repo) {
+    Data.normalize = function (data, Query) {
         if (isEmpty(data)) {
             return {};
         }
-        var schema = Array.isArray(data) ? Schema.many(repo.entity) : Schema.one(repo.entity);
+        var schema = Array.isArray(data) ? Schema.many(Query.model) : Schema.one(Query.model);
         var normalizedData = src_2(data, schema).entities;
-        return PivotCreator.create(normalizedData, repo);
+        return PivotCreator.create(normalizedData, Query);
     };
     return Data;
 }());
@@ -7334,9 +7334,9 @@ var Attacher = /** @class */ (function () {
     /**
      * Attach missing relational key to the records.
      */
-    Attacher.attach = function (data, repo) {
+    Attacher.attach = function (data, Query) {
         Utils.forOwn(data, function (entity, name) {
-            var fields = repo.model(name).fields();
+            var fields = Query.getModel(name).fields();
             Utils.forOwn(entity, function (record) {
                 Utils.forOwn(record, function (value, key) {
                     var field = fields[key];
@@ -7365,10 +7365,10 @@ var Builder = /** @class */ (function () {
     /**
      * Build missing records with default value based on model schema.
      */
-    Builder.build = function (data, repo) {
+    Builder.build = function (data, Query) {
         var _this = this;
         return mapValues(data, function (records, entity) {
-            var model = repo.model(entity);
+            var model = Query.getModel(entity);
             return mapValues(records, function (record) {
                 return __assign$7({}, _this.buildFields(record, model.fields()), { $id: record.$id });
             });
@@ -7402,14 +7402,14 @@ var Incrementer = /** @class */ (function () {
     /**
      * Create a new incrementer instance.
      */
-    function Incrementer(repo) {
-        this.repo = repo;
+    function Incrementer(query) {
+        this.query = query;
     }
     /**
      * Increment fields that have increment attribute.
      */
-    Incrementer.increment = function (data, repo) {
-        return (new this(repo)).increment(data);
+    Incrementer.increment = function (data, Query$$1) {
+        return (new this(Query$$1)).increment(data);
     };
     /**
      * Increment fields that have increment attribute.
@@ -7417,33 +7417,33 @@ var Incrementer = /** @class */ (function () {
     Incrementer.prototype.increment = function (data) {
         var _this = this;
         return mapValues(data, function (record, entity) {
-            var repo = new Repo(_this.repo.state, entity, false);
+            var query = new Query(_this.query.rootState, entity, false);
             // If the entity doesn't have increment attribute, do nothing and
             // just return immediately.
-            if (!repo.entity.hasIncrementFields()) {
+            if (!query.model.hasIncrementFields()) {
                 return record;
             }
-            return _this.process(record, repo);
+            return _this.process(record, query);
         });
     };
     /**
      * Process the incrementation.
      */
-    Incrementer.prototype.process = function (records, repo) {
+    Incrementer.prototype.process = function (records, query) {
         var _this = this;
         var newRecords = __assign$8({}, records);
-        forEach(repo.entity.incrementFields(), function (field) {
+        forEach(query.model.incrementFields(), function (field) {
             var incrementKey = _this.incrementKey(field);
-            var max$$1 = _this.max(records, repo, incrementKey);
+            var max$$1 = _this.max(records, query, incrementKey);
             forEach(records, function (_record, key) {
                 if (newRecords[key][incrementKey]) {
                     return;
                 }
                 newRecords[key][incrementKey] = ++max$$1;
-                newRecords[key]['$id'] = repo.entity.id(newRecords[key]);
+                newRecords[key]['$id'] = query.model.id(newRecords[key]);
             });
         });
-        return this.setId(newRecords, repo);
+        return this.setId(newRecords, query);
     };
     /**
      * Get key of the field that should be incremented.
@@ -7455,8 +7455,8 @@ var Incrementer = /** @class */ (function () {
      * Get the max value of the specified field with given data combined
      * with existing records.
      */
-    Incrementer.prototype.max = function (data, repo, field) {
-        var max$$1 = repo.max(field);
+    Incrementer.prototype.max = function (data, query, field) {
+        var max$$1 = query.max(field);
         var records = map(data, function (value) { return value; });
         var maxRecord = maxBy(records, field);
         return maxRecord ? max([max$$1, maxRecord[field]]) : max$$1;
@@ -7464,10 +7464,10 @@ var Incrementer = /** @class */ (function () {
     /**
      * Update the key of the records.
      */
-    Incrementer.prototype.setId = function (records, repo) {
+    Incrementer.prototype.setId = function (records, query) {
         var newRecords = {};
         forEach(records, function (record) {
-            newRecords[repo.entity.id(record)] = record;
+            newRecords[query.model.id(record)] = record;
         });
         return newRecords;
     };
@@ -7480,16 +7480,16 @@ var Data$1 = /** @class */ (function () {
     /**
      * Normalize the data.
      */
-    Data$$1.normalize = function (data, repo) {
-        var normalizedData = Data.normalize(data, repo);
-        var attachedData = Attacher.attach(normalizedData, repo);
-        return Incrementer.increment(attachedData, repo);
+    Data$$1.normalize = function (data, query) {
+        var normalizedData = Data.normalize(data, query);
+        var attachedData = Attacher.attach(normalizedData, query);
+        return Incrementer.increment(attachedData, query);
     };
     /**
      * Fill missing records with default value based on model schema.
      */
-    Data$$1.fillAll = function (data, repo) {
-        return Builder.build(data, repo);
+    Data$$1.fillAll = function (data, query) {
+        return Builder.build(data, query);
     };
     return Data$$1;
 }());
@@ -7502,15 +7502,90 @@ var __assign$9 = (undefined && undefined.__assign) || Object.assign || function(
     }
     return t;
 };
+var Persist = /** @class */ (function () {
+    /**
+     * Create a new persist instance.
+     */
+    function Persist(query, method, data, forceCreateFor, forceInsertFor, many) {
+        if (forceCreateFor === void 0) { forceCreateFor = []; }
+        if (forceInsertFor === void 0) { forceInsertFor = []; }
+        if (many === void 0) { many = true; }
+        this.query = query;
+        this.method = method;
+        this.data = data;
+        this.forceCreateFor = forceCreateFor;
+        this.forceInsertFor = forceInsertFor;
+        this.many = many;
+    }
+    /**
+     * Persist data to the store.
+     */
+    Persist.prototype.process = function () {
+        if (isEmpty(this.data)) {
+            if (this.method === 'create') {
+                this.query.state.data = {};
+            }
+            return this.many ? [] : null;
+        }
+        return this.saveEach();
+    };
+    /**
+     * Save each entities to its own dedicated store.
+     */
+    Persist.prototype.saveEach = function () {
+        var _this = this;
+        Utils.forOwn(this.data, function (records, entity) {
+            var method = _this.getMethod(entity);
+            var filledRecords = _this.query.getModel(entity).fillMany(records, ['$id']);
+            _this[method](entity, filledRecords);
+        });
+        var entities = this.data[this.query.entity];
+        var collection = Object.keys(entities).map(function (id) { return entities[id]; });
+        return this.many ? this.query.collect(collection) : this.query.item(collection[0]);
+    };
+    /**
+     * Get method for persist.
+     */
+    Persist.prototype.getMethod = function (entity) {
+        if (this.forceCreateFor.includes(entity)) {
+            return 'create';
+        }
+        if (this.forceInsertFor.includes(entity)) {
+            return 'insert';
+        }
+        return this.method;
+    };
+    /**
+     * Persist data by removing any existing data.
+     */
+    Persist.prototype.create = function (entity, data) {
+        var state = this.query.rootState[entity];
+        state.data = data;
+    };
+    /**
+     * Persist data by keeping any existing data.
+     */
+    Persist.prototype.insert = function (entity, data) {
+        var state = this.query.rootState[entity];
+        state.data = __assign$9({}, state.data, data);
+    };
+    return Persist;
+}());
+
+var __assign$10 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 var Query = /** @class */ (function () {
     /**
-     * Create a new query instance.
+     * Create a new Query instance.
      */
-    function Query(state, name) {
-        /**
-         * The records that have been processed.
-         */
-        this.records = [];
+    function Query(state, entity, wrap) {
+        if (wrap === void 0) { wrap = true; }
         /**
          * The where constraints for the query.
          */
@@ -7529,11 +7604,113 @@ var Query = /** @class */ (function () {
          * We use polyfill of `Number.MAX_SAFE_INTEGER` for IE11 here.
          */
         this._limit = Math.pow(2, 53) - 1;
-        this.state = state;
-        this.name = name;
-        this.entity = state[name];
-        this.records = map(state[name].data, function (v) { return v; });
+        /**
+         * The relationships that should be loaded with the result.
+         */
+        this.load = [];
+        this.rootState = state;
+        this.state = state[entity];
+        this.entity = entity;
+        this.model = this.getModel(entity);
+        this.wrap = wrap;
     }
+    /**
+     * Create a new query instance
+     */
+    Query.query = function (state, name, wrap) {
+        return new this(state, name, wrap);
+    };
+    /**
+     * Get model of given name from the container.
+     */
+    Query.getModel = function (state, name) {
+        return Container.connection(state.name).model(name);
+    };
+    /**
+     * Get all models from the container.
+     */
+    Query.getModels = function (state) {
+        return Container.connection(state.name).models();
+    };
+    /**
+     * Save the given data to the state. This will replace any existing
+     * data in the state.
+     */
+    Query.create = function (state, entity, data, insert) {
+        return (new this(state, entity)).create(data, insert);
+    };
+    /**
+     * Insert given data to the state. Unlike `create`, this method will not
+     * remove existing data within the state, but it will update the data
+     * with the same primary key.
+     */
+    Query.insert = function (state, entity, data, create) {
+        return (new this(state, entity)).insert(data, create);
+    };
+    /**
+     * Update data in the state.
+     */
+    Query.update = function (state, entity, data, condition) {
+        return (new this(state, entity)).update(data, condition);
+    };
+    /**
+     * Insert or update given data to the state. Unlike `insert`, this method
+     * will not replace existing data within the state, but it will update only
+     * the submitted data with the same primary key.
+     */
+    Query.insertOrUpdate = function (state, entity, data, create) {
+        return (new this(state, entity)).insertOrUpdate(data, create);
+    };
+    /**
+     * Get all data of the given entity from the state.
+     */
+    Query.all = function (state, entity, wrap) {
+        return (new this(state, entity, wrap)).get();
+    };
+    /**
+     * Find a data of the given entity by given id from the given state.
+     */
+    Query.find = function (state, entity, id, wrap) {
+        return (new this(state, entity, wrap)).first(id);
+    };
+    /**
+     * Get the count of the retrieved data.
+     */
+    Query.count = function (state, entity, wrap) {
+        return (new this(state, entity, wrap)).count();
+    };
+    /**
+     * Get the max value of the specified filed.
+     */
+    Query.max = function (state, entity, field, wrap) {
+        return (new this(state, entity, wrap)).max(field);
+    };
+    /**
+     * Get the min value of the specified filed.
+     */
+    Query.min = function (state, entity, field, wrap) {
+        return (new this(state, entity, wrap)).min(field);
+    };
+    /**
+     * Delete data from the state.
+     */
+    Query.delete = function (state, entity, condition) {
+        (new this(state, entity)).delete(condition);
+    };
+    /**
+     * Delete all data from the state.
+     */
+    Query.deleteAll = function (state, entity) {
+        var _this = this;
+        if (entity) {
+            (new this(state, entity)).deleteAll();
+            return;
+        }
+        var models = this.getModels(state);
+        forEach(models, function (_model, name) {
+            state[name] && (new _this(state, name)).deleteAll();
+        });
+    };
     /**
      * Register a callback.
      */
@@ -7541,50 +7718,163 @@ var Query = /** @class */ (function () {
         this.hooks.push({ on: on, callback: callback });
     };
     /**
-     * Get static query.
+     * Get query class.
      */
     Query.prototype.self = function () {
         return this.constructor;
     };
     /**
-     * Get the model for the query.
+     * Get model of given name from the container.
      */
-    Query.prototype.model = function () {
-        return Container.connection(this.state.name).model(this.name);
+    Query.prototype.getModel = function (name) {
+        var entity = name || this.entity;
+        return this.self().getModel(this.rootState, entity);
     };
     /**
-     * Save the given data to the state. This will replace any existing
+     * Get all models from the container.
+     */
+    Query.prototype.getModels = function () {
+        return this.self().getModels(this.rootState);
+    };
+    /**
+     * Save the given data to the state. It will replace any existing
      * data in the state.
      */
-    Query.prototype.create = function (data) {
-        this.entity.data = data;
+    Query.prototype.create = function (data, insert) {
+        return this.persist('create', data, [], insert);
     };
     /**
      * Insert given data to the state. Unlike `create`, this method will not
      * remove existing data within the state, but it will update the data
      * with the same primary key.
      */
-    Query.prototype.insert = function (data) {
-        this.entity.data = __assign$9({}, this.entity.data, data);
+    Query.prototype.insert = function (data, create) {
+        return this.persist('insert', data, create, []);
+    };
+    /**
+     * Persist data into Vuex Store.
+     */
+    Query.prototype.persist = function (method, data, forceCreateFor, forceInsertFor) {
+        var normalizedData = this.normalize(data);
+        var many = Array.isArray(data);
+        return new Persist(this, method, normalizedData, forceCreateFor, forceInsertFor, many).process();
+    };
+    /**
+     * Insert or update given data to the state. Unlike `insert`, this method
+     * will not replace existing data within the state, but it will update only
+     * the submitted data with the same primary key.
+     */
+    Query.prototype.insertOrUpdate = function (data, create) {
+        var _this = this;
+        if (create === void 0) { create = []; }
+        var many = Array.isArray(data);
+        var normalizedData = this.normalize(data);
+        var toBePersisted = {};
+        var updatedItems = [];
+        var persistedItems = [];
+        forEach(normalizedData, function (records, entity) {
+            var query = new Query(_this.rootState, entity);
+            forEach(records, function (record, id) {
+                var recordId = query.model.id(record);
+                if (recordId === undefined || query.find(recordId) === null) {
+                    if (!toBePersisted.hasOwnProperty(entity)) {
+                        toBePersisted[entity] = {};
+                    }
+                    toBePersisted[entity][id] = record;
+                    return;
+                }
+                query.processUpdate(record, recordId);
+                var updatedItem = query.find(recordId);
+                updatedItem && updatedItems.push(updatedItem);
+            });
+        });
+        if (Object.keys(toBePersisted).length > 0) {
+            persistedItems = new Persist(this, 'insert', toBePersisted, create, [], many).process();
+        }
+        var result = updatedItems.concat(persistedItems);
+        return many ? result : result[0];
+    };
+    /**
+     * Normalize the given data.
+     */
+    Query.prototype.normalize = function (data) {
+        return Data$1.normalize(data, this);
+    };
+    /**
+     * Get all data that should be retunred.
+     */
+    Query.prototype.getReturnData = function (items) {
+        if (items.length === 0) {
+            return null;
+        }
+        var method = items.length > 1 ? 'get' : 'first';
+        return new Query(this.rootState, this.entity).where('$id', function (value) {
+            return includes(items, value);
+        })[method]();
+    };
+    /**
+     * Get all data that should be retunred. This method will always return
+     * array of data even there's only a single item.
+     */
+    Query.prototype.getManyReturnData = function (items) {
+        if (items.length === 0) {
+            return [];
+        }
+        return new Query(this.rootState, this.entity).where('$id', function (value) {
+            return includes(items, value);
+        }).get();
     };
     /**
      * Update data in the state.
      */
     Query.prototype.update = function (data, condition) {
+        if (!condition) {
+            return this.processUpdateById(data, this.model.id(data));
+        }
+        if (typeof condition === 'number' || typeof condition === 'string') {
+            return this.processUpdateById(data, condition);
+        }
+        return this.processUpdateByCondition(data, condition);
+    };
+    /**
+     * Update data by id.
+     */
+    Query.prototype.processUpdateById = function (data, id) {
+        var items = [];
+        if (id !== undefined) {
+            this.processUpdate(data, id);
+            items.push(id);
+        }
+        return this.getReturnData(items);
+    };
+    /**
+     * Update data by id.
+     */
+    Query.prototype.processUpdateByCondition = function (data, condition) {
+        var _this = this;
+        var records = (new Query(this.rootState, this.entity, false)).where(condition).get();
+        var items = map(records, function (record) { return _this.model.id(record); });
+        this.processUpdate(data, condition);
+        return this.getManyReturnData(items);
+    };
+    /**
+     * Update data in the state.
+     */
+    Query.prototype.processUpdate = function (data, condition) {
         var _this = this;
         if (typeof condition !== 'function') {
-            this.entity.data[condition] && this.processUpdate(this.entity.data[condition], data);
+            this.state.data[condition] && this.processUpdateByClosure(this.state.data[condition], data);
             return;
         }
-        Utils.forOwn(this.entity.data, function (record) {
-            condition(record) && _this.processUpdate(record, data);
+        Utils.forOwn(this.state.data, function (record) {
+            condition(record) && _this.processUpdateByClosure(record, data);
         });
     };
     /**
      * Process the update depending on data type.
      */
-    Query.prototype.processUpdate = function (data, record) {
-        typeof record === 'function' ? record(data) : this.processUpdateRecursively(data, record, this.model().fields());
+    Query.prototype.processUpdateByClosure = function (data, record) {
+        typeof record === 'function' ? record(data) : this.processUpdateRecursively(data, record, this.model.fields());
     };
     /**
      * Process the update by recursively checking the model schema.
@@ -7603,7 +7893,21 @@ var Query = /** @class */ (function () {
         });
     };
     /**
-     * Returns single record of the query chain result.
+     * Returns all record of the query chain result. This method is alias
+     * of the `get` method.
+     */
+    Query.prototype.all = function () {
+        return this.get();
+    };
+    /**
+     * Returns single record of the query chain result. This method is alias
+     * of the `first` method.
+     */
+    Query.prototype.find = function (id) {
+        return this.first(id);
+    };
+    /**
+     * Returns all record of the query chain result.
      */
     Query.prototype.get = function () {
         var records = this.process();
@@ -7618,12 +7922,16 @@ var Query = /** @class */ (function () {
             return null;
         }
         if (id !== undefined) {
-            return this.item(find(records, ['$id', id]));
+            var item = find(records, ['$id', id]);
+            if (item === undefined) {
+                return null;
+            }
+            return this.item(item);
         }
         return this.item(records[0]);
     };
     /**
-     * Returns the last record of the query chain result.
+     * Returns the last single record of the query chain result.
      */
     Query.prototype.last = function () {
         var records = this.process();
@@ -7632,43 +7940,6 @@ var Query = /** @class */ (function () {
         }
         var last = records.length - 1;
         return this.item(records[last]);
-    };
-    /**
-     * Process the query and filter data.
-     */
-    Query.prototype.process = function () {
-        var records = this.records.map(function (v) { return (__assign$9({}, v)); });
-        // Process `beforeProcess` hook.
-        records = this.executeHooks('beforeProcess', records);
-        // If the where clause is registered, lets filter the records beased on it.
-        if (!isEmpty(this.wheres)) {
-            records = this.selectByWheres(records);
-        }
-        // Process `afterWhere` hook.
-        records = this.executeHooks('afterWhere', records);
-        // Next, lets sort the data if orderBy is registred.
-        if (!isEmpty(this.orders)) {
-            records = this.sortByOrders(records);
-        }
-        // Process `afterOrderBy` hook.
-        records = this.executeHooks('afterOrderBy', records);
-        // Finally, slice the record by limit and offset.
-        records = slice(records, this._offset, this._offset + this._limit);
-        // Process `afterLimit` hook.
-        records = this.executeHooks('afterLimit', records);
-        return records;
-    };
-    /**
-     * Create a item from given record.
-     */
-    Query.prototype.item = function (record) {
-        return record ? record : null;
-    };
-    /**
-     * Create a collection (array) from given records.
-     */
-    Query.prototype.collect = function (records) {
-        return !isEmpty(records) ? records : [];
     };
     /**
      * Add a and where clause to the query.
@@ -7688,6 +7959,7 @@ var Query = /** @class */ (function () {
      * Add an order to the query.
      */
     Query.prototype.orderBy = function (field, direction) {
+        if (direction === void 0) { direction = 'asc'; }
         this.orders.push({ field: field, direction: direction });
         return this;
     };
@@ -7704,6 +7976,110 @@ var Query = /** @class */ (function () {
     Query.prototype.limit = function (limit) {
         this._limit = limit;
         return this;
+    };
+    /**
+     * Set the relationships that should be loaded.
+     */
+    Query.prototype.with = function (name, constraint) {
+        if (constraint === void 0) { constraint = null; }
+        if (name === '*') {
+            this.withAll();
+        }
+        else {
+            this.load.push({ name: name, constraint: constraint });
+        }
+        return this;
+    };
+    /**
+     * Query all relations.
+     */
+    Query.prototype.withAll = function (constraints) {
+        if (constraints === void 0) { constraints = function () { return null; }; }
+        var fields = this.model.fields();
+        for (var field in fields) {
+            if (Contract.isRelation(fields[field])) {
+                this.load.push({ name: field, constraint: constraints(field) });
+            }
+        }
+        return this;
+    };
+    /**
+     * Query all relations recursively.
+     */
+    Query.prototype.withAllRecursive = function (depth) {
+        if (depth === void 0) { depth = 3; }
+        this.withAll(function () {
+            return depth > 0 ? function (query) {
+                query.withAllRecursive(depth - 1);
+            } : null;
+        });
+        return this;
+    };
+    /**
+     * Set where constraint based on relationship existence.
+     */
+    Query.prototype.has = function (name, constraint, count) {
+        return this.addHasConstraint(name, constraint, count, true);
+    };
+    /**
+     * Set where constraint based on relationship absence.
+     */
+    Query.prototype.hasNot = function (name, constraint, count) {
+        return this.addHasConstraint(name, constraint, count, false);
+    };
+    /**
+     * Add where constraints based on has or hasNot condition.
+     */
+    Query.prototype.addHasConstraint = function (name, constraint, count, existence) {
+        var ids = this.matchesHasRelation(name, constraint, count, existence);
+        this.where('$id', function (value) { return includes(ids, value); });
+        return this;
+    };
+    /**
+     * Add where has condition.
+     */
+    Query.prototype.whereHas = function (name, constraint) {
+        return this.addWhereHasConstraint(name, constraint, true);
+    };
+    /**
+     * Add where has not condition.
+     */
+    Query.prototype.whereHasNot = function (name, constraint) {
+        return this.addWhereHasConstraint(name, constraint, false);
+    };
+    /**
+     * Add where has constraints that only matches the relationship constraint.
+     */
+    Query.prototype.addWhereHasConstraint = function (name, constraint, existence) {
+        var ids = this.matchesWhereHasRelation(name, constraint, existence);
+        this.where('$id', function (value) { return includes(ids, value); });
+        return this;
+    };
+    /**
+     * Process the query and filter data.
+     */
+    Query.prototype.process = function () {
+        var _this = this;
+        var records = Object.keys(this.state.data).map(function (id) { return (__assign$10({}, _this.state.data[id])); });
+        // Process `beforeProcess` hook.
+        records = this.executeHooks('beforeProcess', records);
+        // If the where clause is registered, lets filter the records beased on it.
+        if (!isEmpty(this.wheres)) {
+            records = this.selectByWheres(records);
+        }
+        // Process `afterWhere` hook.
+        records = this.executeHooks('afterWhere', records);
+        // Next, lets sort the data if orderBy is registred.
+        if (!isEmpty(this.orders)) {
+            records = this.sortByOrders(records);
+        }
+        // Process `afterOrderBy` hook.
+        records = this.executeHooks('afterOrderBy', records);
+        // Finally, slice the record by limit and offset.
+        records = slice(records, this._offset, this._offset + this._limit);
+        // Process `afterLimit` hook.
+        records = this.executeHooks('afterLimit', records);
+        return records;
     };
     /**
      * Filter the given data by registered where clause.
@@ -7743,7 +8119,7 @@ var Query = /** @class */ (function () {
         return function (where) {
             // Function with Record and Query as argument.
             if (isFunction(where.field)) {
-                var query = new Query(_this.state, _this.name);
+                var query = new Query(_this.rootState, _this.entity);
                 var result = _this.executeWhereClosure(record, query, where.field);
                 if (typeof result === 'boolean') {
                     return result;
@@ -7769,25 +8145,8 @@ var Query = /** @class */ (function () {
         if (closure.length !== 3) {
             return closure(record, query);
         }
-        var model = new (this.model())(record);
+        var model = new this.model(record);
         return closure(record, query, model);
-    };
-    /**
-     * Delete data from the state.
-     */
-    Query.prototype.delete = function (condition) {
-        if (typeof condition === 'function') {
-            this.entity.data = pickBy(this.entity.data, function (record) { return !condition(record); });
-            return;
-        }
-        var id = typeof condition === 'number' ? condition.toString() : condition;
-        this.entity.data = pickBy(this.entity.data, function (_record, key) { return key !== id; });
-    };
-    /**
-     * Delete all data from the state.
-     */
-    Query.prototype.deleteAll = function () {
-        this.entity.data = {};
     };
     /**
      * Execute the callback of the given hook.
@@ -7800,464 +8159,14 @@ var Query = /** @class */ (function () {
                 items = records;
                 return;
             }
-            items = hook.callback(items, _this.name);
+            items = hook.callback(items, _this.entity);
         });
         return items;
     };
     /**
-     * Lifecycle hooks for the query.
-     */
-    Query.hooks = [];
-    return Query;
-}());
-
-var Repo = /** @class */ (function () {
-    /**
-     * Create a new repo instance.
-     */
-    function Repo(state, entity, wrap) {
-        if (wrap === void 0) { wrap = true; }
-        /**
-         * The relationships that should be loaded with the result.
-         */
-        this.load = [];
-        this.state = state;
-        this.name = entity;
-        this.entity = this.model(entity);
-        this.wrap = wrap;
-        this.query = new Query(state, entity);
-    }
-    /**
-     * Create a new repo instance
-     */
-    Repo.query = function (state, name, wrap) {
-        return new this(state, name, wrap);
-    };
-    /**
-     * Get model of given name from connections container.
-     */
-    Repo.model = function (state, name) {
-        return Container.connection(state.name).model(name);
-    };
-    /**
-     * Get all models from connections container.
-     */
-    Repo.models = function (state) {
-        return Container.connection(state.name).models();
-    };
-    /**
-     * Save the given data to the state. This will replace any existing
-     * data in the state.
-     */
-    Repo.create = function (state, entity, data, insert) {
-        if (insert === void 0) { insert = []; }
-        return (new this(state, entity)).create(data, insert);
-    };
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    Repo.insert = function (state, entity, data, create) {
-        if (create === void 0) { create = []; }
-        return (new this(state, entity)).insert(data, create);
-    };
-    /**
-     * Update data in the state.
-     */
-    Repo.update = function (state, entity, data, condition) {
-        return (new this(state, entity)).update(data, condition);
-    };
-    /**
-     * Insert or update given data to the state. Unlike `insert`, this method
-     * will not replace existing data within the state, but it will update only
-     * the submitted data with the same primary key.
-     */
-    Repo.insertOrUpdate = function (state, entity, data, create) {
-        if (create === void 0) { create = []; }
-        return (new this(state, entity)).insertOrUpdate(data, create);
-    };
-    /**
-     * Get all data of the given entity from the state.
-     */
-    Repo.all = function (state, entity, wrap) {
-        return (new this(state, entity, wrap)).get();
-    };
-    /**
-     * Find a data of the given entity by given id from the given state.
-     */
-    Repo.find = function (state, entity, id, wrap) {
-        return (new this(state, entity, wrap)).first(id);
-    };
-    /**
      * Get the count of the retrieved data.
      */
-    Repo.count = function (state, entity, wrap) {
-        return (new this(state, entity, wrap)).count();
-    };
-    /**
-     * Get the max value of the specified filed.
-     */
-    Repo.max = function (state, entity, field, wrap) {
-        return (new this(state, entity, wrap)).max(field);
-    };
-    /**
-     * Get the min value of the specified filed.
-     */
-    Repo.min = function (state, entity, field, wrap) {
-        return (new this(state, entity, wrap)).min(field);
-    };
-    /**
-     * Delete data from the state.
-     */
-    Repo.delete = function (state, entity, condition) {
-        (new this(state, entity)).delete(condition);
-    };
-    /**
-     * Delete all data from the state.
-     */
-    Repo.deleteAll = function (state, entity) {
-        if (entity) {
-            (new this(state, entity)).deleteAll();
-        }
-        var models = this.models(state);
-        forEach(models, function (_model, name) {
-            state[name] && (new Query(state, name)).deleteAll();
-        });
-    };
-    /**
-     * Get Repo class.
-     */
-    Repo.prototype.self = function () {
-        return this.constructor;
-    };
-    /**
-     * Get model of given name from connections container.
-     */
-    Repo.prototype.model = function (name) {
-        var entity = name || this.name;
-        return this.self().model(this.state, entity);
-    };
-    /**
-     * Get all models from connections container.
-     */
-    Repo.prototype.models = function () {
-        return this.self().models(this.state);
-    };
-    /**
-     * Save the given data to the state. This will replace any existing
-     * data in the state.
-     */
-    Repo.prototype.create = function (data, insert) {
-        if (insert === void 0) { insert = []; }
-        return this.persist('create', data, [], insert);
-    };
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    Repo.prototype.insert = function (data, create) {
-        if (create === void 0) { create = []; }
-        return this.persist('insert', data, create, []);
-    };
-    /**
-     * Insert or update given data to the state. Unlike `insert`, this method
-     * will not replace existing data within the state, but it will update only
-     * the submitted data with the same primary key.
-     */
-    Repo.prototype.insertOrUpdate = function (data, create) {
-        var _this = this;
-        if (create === void 0) { create = []; }
-        var normalizedData = this.normalize(data);
-        var toBePersisted = {};
-        var updatedItems = [];
-        var persistedItems = [];
-        // `normalizedData` contains the differenty entity types (e.g. `users`),
-        forEach(normalizedData, function (data, entity) {
-            var repo = new Repo(_this.state, entity, false);
-            // `data` contains the items of `entity`.
-            forEach(data, function (item, id) {
-                // Check if item does not already exist in store and mark it as new.
-                if (repo.entity.id(item) === undefined || repo.find(repo.entity.id(item)) === null) {
-                    if (!toBePersisted.hasOwnProperty(entity)) {
-                        toBePersisted[entity] = {};
-                    }
-                    toBePersisted[entity][id] = item;
-                }
-                else {
-                    repo.query.update(item, repo.entity.id(item));
-                    updatedItems.push(repo.entity.id(item));
-                }
-            });
-        });
-        if (Object.keys(toBePersisted).length > 0) {
-            persistedItems = this.processPersist('insert', toBePersisted, create, []);
-        }
-        // merging the ids of updated and persisted items to return all of them.
-        return this.getReturnData(updatedItems.concat(persistedItems));
-    };
-    /**
-     * Persist data into Vuex Store.
-     */
-    Repo.prototype.persist = function (method, data, forceCreateFor, forceInsertFor) {
-        if (forceCreateFor === void 0) { forceCreateFor = []; }
-        if (forceInsertFor === void 0) { forceInsertFor = []; }
-        var normalizedData = this.normalize(data);
-        if (isEmpty(normalizedData)) {
-            method === 'create' && this.query.create({});
-            return null;
-        }
-        var items = this.processPersist(method, normalizedData, forceCreateFor, forceInsertFor);
-        return this.getReturnData(items);
-    };
-    /**
-     * Persist data into the store. It returns list of created ids.
-     */
-    Repo.prototype.processPersist = function (defaultMethod, data, forceCreateFor, forceInsertFor) {
-        var _this = this;
-        if (forceCreateFor === void 0) { forceCreateFor = []; }
-        if (forceInsertFor === void 0) { forceInsertFor = []; }
-        var items = [];
-        var records = Data$1.fillAll(data, this);
-        forEach(records, function (data, entity) {
-            var method = _this.getPersistMethod(defaultMethod, entity, forceCreateFor, forceInsertFor);
-            if (entity !== _this.name) {
-                new Query(_this.state, entity)[method](data);
-                return;
-            }
-            _this.query[method](data);
-            forEach(data, function (item) { items.push(item.$id); });
-        });
-        return items;
-    };
-    /**
-     * Normalize the given data.
-     */
-    Repo.prototype.normalize = function (data) {
-        return Data$1.normalize(data, this);
-    };
-    /**
-     * Get method for persist.
-     */
-    Repo.prototype.getPersistMethod = function (defaultMethod, entity, forceCreateFor, forceInsertFor) {
-        if (forceCreateFor === void 0) { forceCreateFor = []; }
-        if (forceInsertFor === void 0) { forceInsertFor = []; }
-        if (includes(forceCreateFor, entity)) {
-            return 'create';
-        }
-        if (includes(forceInsertFor, entity)) {
-            return 'insert';
-        }
-        return defaultMethod;
-    };
-    /**
-     * Get all data that should be retunred.
-     */
-    Repo.prototype.getReturnData = function (items) {
-        if (items.length === 0) {
-            return null;
-        }
-        var method = items.length > 1 ? 'get' : 'first';
-        return new Repo(this.state, this.name).where('$id', function (value) {
-            return includes(items, value);
-        })[method]();
-    };
-    /**
-     * Get all data that should be retunred. This method will always return
-     * array of data even there's only a single item.
-     */
-    Repo.prototype.getManyReturnData = function (items) {
-        if (items.length === 0) {
-            return [];
-        }
-        return new Repo(this.state, this.name).where('$id', function (value) {
-            return includes(items, value);
-        }).get();
-    };
-    /**
-     * Update data in the state.
-     */
-    Repo.prototype.update = function (data, condition) {
-        if (!condition) {
-            return this.processUpdateById(data, this.entity.id(data));
-        }
-        if (typeof condition === 'number' || typeof condition === 'string') {
-            return this.processUpdateById(data, condition);
-        }
-        return this.processUpdateByCondition(data, condition);
-    };
-    /**
-     * Update data by id.
-     */
-    Repo.prototype.processUpdateById = function (data, id) {
-        var items = [];
-        if (id !== undefined) {
-            this.query.update(data, id);
-            items.push(id);
-        }
-        return this.getReturnData(items);
-    };
-    /**
-     * Update data by id.
-     */
-    Repo.prototype.processUpdateByCondition = function (data, condition) {
-        var _this = this;
-        var records = (new Repo(this.state, this.name, false)).where(condition).get();
-        var items = map(records, function (record) { return _this.entity.id(record); });
-        this.query.update(data, condition);
-        return this.getManyReturnData(items);
-    };
-    /**
-     * Returns all record of the query chain result. This method is alias
-     * of the `get` method.
-     */
-    Repo.prototype.all = function () {
-        return this.get();
-    };
-    /**
-     * Returns single record of the query chain result. This method is alias
-     * of the `first` method.
-     */
-    Repo.prototype.find = function (id) {
-        return this.first(id);
-    };
-    /**
-     * Returns all record of the query chain result.
-     */
-    Repo.prototype.get = function () {
-        return this.collect(this.query.get());
-    };
-    /**
-     * Returns single record of the query chain result.
-     */
-    Repo.prototype.first = function (id) {
-        return this.item(this.query.first(id));
-    };
-    /**
-     * Returns the last single record of the query chain result.
-     */
-    Repo.prototype.last = function () {
-        return this.item(this.query.last());
-    };
-    /**
-     * Add a and where clause to the query.
-     */
-    Repo.prototype.where = function (field, value) {
-        this.query.where(field, value);
-        return this;
-    };
-    /**
-     * Add a or where clause to the query.
-     */
-    Repo.prototype.orWhere = function (field, value) {
-        this.query.orWhere(field, value);
-        return this;
-    };
-    /**
-     * Add an order to the query.
-     */
-    Repo.prototype.orderBy = function (field, direction) {
-        if (direction === void 0) { direction = 'asc'; }
-        this.query.orderBy(field, direction);
-        return this;
-    };
-    /**
-     * Add an offset to the query.
-     */
-    Repo.prototype.offset = function (offset) {
-        this.query.offset(offset);
-        return this;
-    };
-    /**
-     * Add limit to the query.
-     */
-    Repo.prototype.limit = function (limit) {
-        this.query.limit(limit);
-        return this;
-    };
-    /**
-     * Set the relationships that should be loaded.
-     */
-    Repo.prototype.with = function (name, constraint) {
-        if (constraint === void 0) { constraint = null; }
-        if (name === '*') {
-            this.withAll();
-        }
-        else {
-            this.load.push({ name: name, constraint: constraint });
-        }
-        return this;
-    };
-    /**
-     * Query all relations.
-     */
-    Repo.prototype.withAll = function (constraints) {
-        if (constraints === void 0) { constraints = function () { return null; }; }
-        var fields = this.entity.fields();
-        for (var field in fields) {
-            if (Contract.isRelation(fields[field])) {
-                this.load.push({ name: field, constraint: constraints(field) });
-            }
-        }
-        return this;
-    };
-    /**
-     * Query all relations recursively.
-     */
-    Repo.prototype.withAllRecursive = function (depth) {
-        if (depth === void 0) { depth = 3; }
-        this.withAll(function () {
-            return depth > 0 ? function (query) {
-                query.withAllRecursive(depth - 1);
-            } : null;
-        });
-        return this;
-    };
-    /**
-     * Set where constraint based on relationship existence.
-     */
-    Repo.prototype.has = function (name, constraint, count) {
-        return this.addHasConstraint(name, constraint, count, true);
-    };
-    /**
-     * Set where constraint based on relationship absence.
-     */
-    Repo.prototype.hasNot = function (name, constraint, count) {
-        return this.addHasConstraint(name, constraint, count, false);
-    };
-    /**
-     * Add where constraints based on has or hasNot condition.
-     */
-    Repo.prototype.addHasConstraint = function (name, constraint, count, existence) {
-        var ids = this.matchesHasRelation(name, constraint, count, existence);
-        this.where('$id', function (value) { return includes(ids, value); });
-        return this;
-    };
-    /**
-     * Add where has condition.
-     */
-    Repo.prototype.whereHas = function (name, constraint) {
-        return this.addWhereHasConstraint(name, constraint, true);
-    };
-    /**
-     * Add where has not condition.
-     */
-    Repo.prototype.whereHasNot = function (name, constraint) {
-        return this.addWhereHasConstraint(name, constraint, false);
-    };
-    /**
-     * Add where has constraints that only matches the relationship constraint.
-     */
-    Repo.prototype.addWhereHasConstraint = function (name, constraint, existence) {
-        var ids = this.matchesWhereHasRelation(name, constraint, existence);
-        this.where('$id', function (value) { return includes(ids, value); });
-        return this;
-    };
-    /**
-     * Get the count of the retrieved data.
-     */
-    Repo.prototype.count = function () {
+    Query.prototype.count = function () {
         // Do not wrap result data with class because it's unnecessary.
         this.wrap = false;
         return this.get().length;
@@ -8265,7 +8174,7 @@ var Repo = /** @class */ (function () {
     /**
      * Get the max value of the specified filed.
      */
-    Repo.prototype.max = function (field) {
+    Query.prototype.max = function (field) {
         // Do not wrap result data with class because it's unnecessary.
         this.wrap = false;
         var record = maxBy(this.get(), field);
@@ -8274,7 +8183,7 @@ var Repo = /** @class */ (function () {
     /**
      * Get the min value of the specified filed.
      */
-    Repo.prototype.min = function (field) {
+    Query.prototype.min = function (field) {
         // Do not wrap result data with class because it's unnecessary.
         this.wrap = false;
         var record = minBy(this.get(), field);
@@ -8283,7 +8192,7 @@ var Repo = /** @class */ (function () {
     /**
      * Create a item from given record.
      */
-    Repo.prototype.item = function (queryItem) {
+    Query.prototype.item = function (queryItem) {
         if (!queryItem) {
             return null;
         }
@@ -8294,12 +8203,12 @@ var Repo = /** @class */ (function () {
         if (!this.wrap) {
             return item;
         }
-        return new this.entity(item);
+        return new this.model(item);
     };
     /**
      * Create a collection (array) from given records.
      */
-    Repo.prototype.collect = function (collection) {
+    Query.prototype.collect = function (collection) {
         var _this = this;
         if (isEmpty(collection)) {
             return [];
@@ -8311,15 +8220,15 @@ var Repo = /** @class */ (function () {
         if (!this.wrap) {
             return item;
         }
-        return map(item, function (data) { return new _this.entity(data); });
+        return map(item, function (data) { return new _this.model(data); });
     };
     /**
      * Load the relationships for the record.
      */
-    Repo.prototype.loadRelations = function (data, relation) {
+    Query.prototype.loadRelations = function (data, relation) {
         var _this = this;
         var _relation = relation || this.load;
-        var fields = this.entity.fields();
+        var fields = this.model.fields();
         return reduce(_relation, function (records, rel) {
             return _this.processLoadRelations(records, rel, fields);
         }, data);
@@ -8327,7 +8236,7 @@ var Repo = /** @class */ (function () {
     /**
      * Process load relationships. This method is for the circuler processes.
      */
-    Repo.prototype.processLoadRelations = function (data, relation, fields) {
+    Query.prototype.processLoadRelations = function (data, relation, fields) {
         var _this = this;
         var relationName = relation.name.split('.')[0];
         var collection = data;
@@ -8350,7 +8259,7 @@ var Repo = /** @class */ (function () {
     /**
      * Check if the given collection has given relationship.
      */
-    Repo.prototype.matchesHasRelation = function (name, constraint, count, existence) {
+    Query.prototype.matchesHasRelation = function (name, constraint, count, existence) {
         if (existence === void 0) { existence = true; }
         var _constraint;
         if (constraint === undefined) {
@@ -8374,7 +8283,7 @@ var Repo = /** @class */ (function () {
         else if (constraint === '<=' && typeof count === 'number') {
             _constraint = function (record) { return record.length <= count; };
         }
-        var data = (new Repo(this.state, this.name, false)).with(name).get();
+        var data = (new Query(this.rootState, this.entity, false)).with(name).get();
         var ids = [];
         data.forEach(function (item) {
             var target = item[name];
@@ -8401,9 +8310,9 @@ var Repo = /** @class */ (function () {
     /**
      * Get all id of the record that matches the relation constraints.
      */
-    Repo.prototype.matchesWhereHasRelation = function (name, constraint, existence) {
+    Query.prototype.matchesWhereHasRelation = function (name, constraint, existence) {
         if (existence === void 0) { existence = true; }
-        var data = (new Repo(this.state, this.name, false)).with(name, constraint).get();
+        var data = (new Query(this.rootState, this.entity, false)).with(name, constraint).get();
         var ids = [];
         data.forEach(function (item) {
             var target = item[name];
@@ -8418,16 +8327,25 @@ var Repo = /** @class */ (function () {
     /**
      * Delete data from the state.
      */
-    Repo.prototype.delete = function (condition) {
-        this.query.delete(condition);
+    Query.prototype.delete = function (condition) {
+        if (typeof condition === 'function') {
+            this.state.data = pickBy(this.state.data, function (record) { return !condition(record); });
+            return;
+        }
+        var id = typeof condition === 'number' ? condition.toString() : condition;
+        this.state.data = pickBy(this.state.data, function (_record, key) { return key !== id; });
     };
     /**
      * Delete all data from the state.
      */
-    Repo.prototype.deleteAll = function () {
-        this.query.deleteAll();
+    Query.prototype.deleteAll = function () {
+        this.state.data = {};
     };
-    return Repo;
+    /**
+     * Lifecycle hooks for the query.
+     */
+    Query.hooks = [];
+    return Query;
 }());
 
 var __extends$14 = (undefined && undefined.__extends) || (function () {
@@ -8498,10 +8416,10 @@ var HasOne = /** @class */ (function (_super) {
     /**
      * Load the has one relationship for the record.
      */
-    HasOne.prototype.load = function (repo, collection, relation) {
+    HasOne.prototype.load = function (query, collection, relation) {
         var _this = this;
         var relatedPath = this.relatedPath(relation.name);
-        var relatedQuery = new Repo(repo.state, this.related.entity, false);
+        var relatedQuery = new Query(query.rootState, this.related.entity, false);
         this.addConstraint(relatedQuery, relation);
         var relatedRecords = this.mapRecords(relatedQuery.get(), this.foreignKey);
         return collection.map(function (item) {
@@ -8750,6 +8668,77 @@ var Model = /** @class */ (function () {
         return this.pivotFields().length > 0;
     };
     /**
+     * Remove any fields not defined in the model schema. This method
+     * also fixes any incorrect values as well.
+     */
+    Model.fix = function (data, keep, fields) {
+        var _this = this;
+        if (keep === void 0) { keep = []; }
+        var _fields = fields || this.fields();
+        return Object.keys(data).reduce(function (record, key) {
+            var value = data[key];
+            var field = _fields[key];
+            if (keep.includes(key)) {
+                record[key] = value;
+                return record;
+            }
+            if (!field) {
+                return record;
+            }
+            if (field instanceof Attribute) {
+                record[key] = field.fill(value);
+                return record;
+            }
+            record[key] = _this.fix(value, [], field);
+            return record;
+        }, {});
+    };
+    /**
+     * Fix multiple records.
+     */
+    Model.fixMany = function (data, keep) {
+        var _this = this;
+        return Object.keys(data).reduce(function (records, id) {
+            records[id] = _this.fix(data[id], keep);
+            return records;
+        }, {});
+    };
+    /**
+     * Fill any missing fields in the given data with the default
+     * value defined in the model schema.
+     */
+    Model.fill = function (data, keep, fields) {
+        var _this = this;
+        if (keep === void 0) { keep = []; }
+        var _fields = fields || this.fields();
+        var record = Object.keys(_fields).reduce(function (record, key) {
+            var field = _fields[key];
+            var value = data[key];
+            if (field instanceof Attribute) {
+                record[key] = field.fill(value);
+                return record;
+            }
+            record[key] = _this.fill(value || [], [], field);
+            return record;
+        }, {});
+        return Object.keys(data).reduce(function (record, key) {
+            if (keep.includes(key) && data[key] !== undefined) {
+                record[key] = data[key];
+            }
+            return record;
+        }, record);
+    };
+    /**
+     * Fill multiple records.
+     */
+    Model.fillMany = function (data, keep) {
+        var _this = this;
+        return Object.keys(data).reduce(function (records, id) {
+            records[id] = _this.fill(data[id], keep);
+            return records;
+        }, {});
+    };
+    /**
      * Get the static class of this model.
      */
     Model.prototype.$self = function () {
@@ -8849,28 +8838,28 @@ var Model = /** @class */ (function () {
 
 var rootGetters = {
     /**
-     * Create a new repo instance.
+     * Create a new Query instance.
      */
     query: function (state) { return function (entity, wrap) {
-        return Repo.query(state, entity, wrap);
+        return Query.query(state, entity, wrap);
     }; },
     /**
      * Get all data of given entity.
      */
     all: function (state) { return function (entity, wrap) {
-        return Repo.all(state, entity, wrap);
+        return Query.all(state, entity, wrap);
     }; },
     /**
      * Find a data of the given entity by given id.
      */
     find: function (state) { return function (entity, id, wrap) {
-        return Repo.find(state, entity, id, wrap);
+        return Query.find(state, entity, id, wrap);
     }; }
 };
 
 var subGetters = {
     /**
-     * Create a new repo instance.
+     * Create a new Query instance.
      */
     query: function (state, _getters, _rootState, rootGetters) { return function (wrap) {
         return rootGetters[state.$connection + "/query"](state.$name, wrap);
@@ -9063,7 +9052,7 @@ var mutations = {
      */
     create: function (state, _a) {
         var entity = _a.entity, data = _a.data, insert = _a.insert, done = _a.done;
-        var result = Repo.create(state, entity, data, insert);
+        var result = Query.create(state, entity, data, insert);
         done && done(result);
     },
     /**
@@ -9073,7 +9062,7 @@ var mutations = {
      */
     insert: function (state, _a) {
         var entity = _a.entity, data = _a.data, create = _a.create, done = _a.done;
-        var result = Repo.insert(state, entity, data, create);
+        var result = Query.insert(state, entity, data, create);
         done && done(result);
     },
     /**
@@ -9081,7 +9070,7 @@ var mutations = {
      */
     update: function (state, _a) {
         var entity = _a.entity, where = _a.where, data = _a.data, done = _a.done;
-        var result = Repo.update(state, entity, data, where);
+        var result = Query.update(state, entity, data, where);
         done && done(result);
     },
     /**
@@ -9091,7 +9080,7 @@ var mutations = {
      */
     insertOrUpdate: function (state, _a) {
         var entity = _a.entity, data = _a.data, create = _a.create, done = _a.done;
-        var result = Repo.insertOrUpdate(state, entity, data, create);
+        var result = Query.insertOrUpdate(state, entity, data, create);
         done && done(result);
     },
     /**
@@ -9099,7 +9088,7 @@ var mutations = {
      */
     delete: function (state, _a) {
         var entity = _a.entity, where = _a.where;
-        Repo.delete(state, entity, where);
+        Query.delete(state, entity, where);
     },
     /**
      * Delete all data from the store.
@@ -9108,10 +9097,10 @@ var mutations = {
      */
     deleteAll: function (state, payload) {
         if (payload && payload.entity) {
-            Repo.deleteAll(state, payload.entity);
+            Query.deleteAll(state, payload.entity);
             return;
         }
-        Repo.deleteAll(state);
+        Query.deleteAll(state);
     }
 };
 
@@ -9119,7 +9108,6 @@ function use (plugin, options) {
     if (options === void 0) { options = {}; }
     var components = {
         Model: Model,
-        Repo: Repo,
         Query: Query,
         Type: Type,
         Attr: Attr,
@@ -9145,7 +9133,7 @@ function use (plugin, options) {
     plugin.install(components, options);
 }
 
-var __assign$10 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$11 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -9157,7 +9145,7 @@ var Module = /** @class */ (function () {
     function Module() {
     }
     /**
-     * Creates module from the given entities.
+     * Create module from the given entities.
      */
     Module.create = function (namespace, entities) {
         var tree = {
@@ -9176,17 +9164,17 @@ var Module = /** @class */ (function () {
      */
     Module.createTree = function (tree, namespace, entities) {
         var _this = this;
-        forEach(entities, function (entity) {
+        entities.forEach(function (entity) {
             tree.getters[entity.model.entity] = function (_state, getters) { return function (wrap) {
                 if (wrap === void 0) { wrap = true; }
                 return getters.query(entity.model.entity, wrap);
             }; };
             tree.modules[entity.model.entity] = {
                 namespaced: true,
-                state: __assign$10({}, entity.module.state, _this.state, { $connection: namespace, $name: entity.model.entity })
+                state: __assign$11({}, entity.module.state, _this.state, { $connection: namespace, $name: entity.model.entity })
             };
-            tree.modules[entity.model.entity]['getters'] = __assign$10({}, subGetters, entity.module.getters);
-            tree.modules[entity.model.entity]['actions'] = __assign$10({}, subActions, entity.module.actions);
+            tree.modules[entity.model.entity]['getters'] = __assign$11({}, subGetters, entity.module.getters);
+            tree.modules[entity.model.entity]['actions'] = __assign$11({}, subActions, entity.module.actions);
             tree.modules[entity.model.entity]['mutations'] = entity.module.mutations || {};
         });
         return tree;
@@ -9206,7 +9194,7 @@ var Module = /** @class */ (function () {
 var Database = /** @class */ (function () {
     function Database() {
         /**
-         * The list of entities to be registered to Vuex Store.
+         * The list of entities to be registered to the Vuex Store.
          */
         this.entities = [];
     }
@@ -9242,7 +9230,6 @@ var index_cjs = {
     use: use,
     Database: Database,
     Model: Model,
-    Repo: Repo,
     Query: Query,
     Type: Type,
     Attr: Attr,
