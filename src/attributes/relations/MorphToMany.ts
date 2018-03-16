@@ -154,7 +154,7 @@ export default class MorphToMany extends Relation {
     _.forEach(data[parent.entity], (record) => {
       const related = record[this.related.entity]
 
-      if (related.length === 0) {
+      if (!Array.isArray(related) || related.length === 0) {
         return
       }
 
