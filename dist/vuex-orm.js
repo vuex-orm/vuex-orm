@@ -8163,7 +8163,8 @@ var Query = /** @class */ (function () {
                 items = records;
                 return;
             }
-            items = hook.callback(items, _this.entity);
+            var callback = hook.callback;
+            items = callback.call(_this, items, _this.entity);
         });
         return items;
     };
