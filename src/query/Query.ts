@@ -780,8 +780,8 @@ export default class Query {
 
         return
       }
-
-      items = hook.callback(items, this.entity)
+      const { callback } = hook
+      items = callback.call(this, items, this.entity)
     })
 
     return items
