@@ -43,7 +43,7 @@ describe('Query – Hooks', () => {
       { id: 1, role: 'admin', sex: 'male', enabled: true }
     ]
 
-    Query.on('afterWhere', function(records, entity) {
+    const hookId = Query.on('afterWhere', function(records, entity) {
       expect(records.length).toBe(2)
       return records.filter(r => r.id === 1)
     })
@@ -55,7 +55,9 @@ describe('Query – Hooks', () => {
       .get()
 
     expect(result).toEqual(expected)
-    Query.hooks = []
+
+    const removeBoolean = Query.off(hookId)
+    expect(removeBoolean).toBe(true)
 
   })
 
@@ -81,7 +83,7 @@ describe('Query – Hooks', () => {
       return records.filter(r => r.id === 1)
     }
 
-    Query.on('afterWhere', callbackFunction)
+    const hookId = Query.on('afterWhere', callbackFunction)
 
     const result = Query.query(state, 'users', false)
       .where('role', 'admin')
@@ -90,11 +92,13 @@ describe('Query – Hooks', () => {
       .get()
 
     expect(result).toEqual(expected)
-    Query.hooks = []
+
+    const removeBoolean = Query.off(hookId)
+    expect(removeBoolean).toBe(true)
 
   })
 
-  it('can contains correct instance context in hook', () => {
+  it('can remove callback hooks once and through off method', () => {
 
     const state = {
       name: 'entities',
@@ -106,38 +110,36 @@ describe('Query – Hooks', () => {
         }}
     }
 
-    const expected = [
-      { id: 1, role: 'admin', sex: 'male', enabled: true }
-    ]
-
-    Query.prototype.searches = ['term1']
-
-    Query.prototype.search = function (term) {
-      expect(this).toBeInstanceOf(Query)
-      expect(this.searches.length).toBe(1)
-      this.searches.push(term)
-      return this
-    }
-
     const callbackFunction = function (records) {
-      expect(records.length).toBe(2)
-      expect(this.searches.length).toBe(2)
-      expect(this).toBeInstanceOf(Query)
-      return records.filter(r => r.id === 1)
+      return records
     }
 
-    Query.on('afterWhere', callbackFunction)
+    const persistedHookId__1 = Query.on('afterWhere', callbackFunction)
+    expect(Query.hooks.length).toBe(1)
+    Query.query(state, 'users', false).all()
+    expect(Query.hooks.length).toBe(1)
 
-    const result = Query.query(state, 'users', false)
-      .where('role', 'admin')
-      .where('sex', 'male')
-      .where('enabled', true)
-      .search('term2')
-      .get()
+    const persistedHookId__2 = Query.on('beforeProcess', callbackFunction)
+    expect(Query.hooks.length).toBe(2)
 
-    expect(result).toEqual(expected)
-    Query.hooks = []
-    Query.searches = []
+    Query.query(state, 'users', false).all()
+    expect(Query.hooks.length).toBe(2)
+
+    Query.on('beforeProcess', callbackFunction, true)
+    Query.on('beforeProcess', callbackFunction, true)
+    Query.on('beforeProcess', callbackFunction, true)
+    expect(Query.hooks.length).toBe(5)
+
+    Query.query(state, 'users', false).all()
+    expect(Query.hooks.length).toBe(2)
+
+    const removed_1 = Query.off(persistedHookId__1)
+    expect(removed_1).toBe(true)
+    expect(Query.hooks.length).toBe(1)
+
+    const removed_2 = Query.off(persistedHookId__2)
+    expect(removed_2).toBe(true)
+    expect(Query.hooks.length).toBe(0)
 
   })
 
