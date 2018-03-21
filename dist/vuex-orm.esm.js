@@ -7710,8 +7710,7 @@ var Query = /** @class */ (function () {
         });
     };
     /**
-     * Register a callback.
-     * Returns unique ID for registered callback
+     * Register a callback. It Returns unique ID for registered callback.
      */
     Query.on = function (on, callback, once) {
         if (once === void 0) { once = false; }
@@ -7721,7 +7720,7 @@ var Query = /** @class */ (function () {
         return uid;
     };
     /**
-     * remove hook registration
+     * Remove hook registration.
      */
     Query.off = function (uid) {
         var index = this.hooks.findIndex(function (h) { return h.uid === uid; });
@@ -8093,15 +8092,13 @@ var Query = /** @class */ (function () {
         records = slice(records, this._offset, this._offset + this._limit);
         // Process `afterLimit` hook.
         records = this.executeHooks('afterLimit', records);
-        // Clean up all run once hooks that were not used
+        // Clean up all run once hooks that were not used.
         var deleteHookIndexes = [];
         this.self().hooks.forEach(function (hook, hookIndex) {
-            if (hook.once) {
-                // add hook index to delete
-                deleteHookIndexes.push(hookIndex);
-            }
+            // Add hook index to delete.
+            hook.once && deleteHookIndexes.push(hookIndex);
         });
-        // remove hooks to be deleted in reverse order
+        // Remove hooks to be deleted in reverse order.
         deleteHookIndexes.reverse().forEach(function (hookIndex) {
             _this.self().hooks.splice(hookIndex, 1);
         });
@@ -8179,20 +8176,18 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.executeHooks = function (on, records) {
         var _this = this;
-        // track indexes to delete
+        // Track indexes to delete
         var deleteHookIndexes = [];
-        // loop all hooks
+        // Loop all hooks.
         this.self().hooks.forEach(function (hook, hookIndex) {
             if (hook.on === on) {
                 var callback = hook.callback, once = hook.once;
                 records = callback.call(_this, records, _this.entity);
-                if (once) {
-                    // add hook index to delete
-                    deleteHookIndexes.push(hookIndex);
-                }
+                // Add hook index to delete.
+                once && deleteHookIndexes.push(hookIndex);
             }
         });
-        // remove hooks to be deleted in reverse order
+        // Remove hooks to be deleted in reverse order.
         deleteHookIndexes.reverse().forEach(function (hookIndex) {
             _this.self().hooks.splice(hookIndex, 1);
         });
@@ -8381,7 +8376,7 @@ var Query = /** @class */ (function () {
      */
     Query.hooks = [];
     /**
-     * Hook UID counter
+     * Hook UID counter.
      */
     Query.lastHookId = 0;
     return Query;
