@@ -7711,9 +7711,25 @@ var Query = /** @class */ (function () {
     };
     /**
      * Register a callback.
+     * Returns unique ID for registered callback
      */
-    Query.on = function (on, callback) {
-        this.hooks.push({ on: on, callback: callback });
+    Query.on = function (on, callback, once) {
+        if (once === void 0) { once = false; }
+        var uid = this.lastHookId++;
+        this.lastHookId = uid;
+        this.hooks.push({ on: on, callback: callback, once: once, uid: uid });
+        return uid;
+    };
+    /**
+     * remove hook registration
+     */
+    Query.off = function (uid) {
+        var index = this.hooks.findIndex(function (h) { return h.uid === uid; });
+        if (index !== -1) {
+            this.hooks.splice(index, 1);
+            return true;
+        }
+        return false;
     };
     /**
      * Get query class.
@@ -8077,6 +8093,18 @@ var Query = /** @class */ (function () {
         records = slice(records, this._offset, this._offset + this._limit);
         // Process `afterLimit` hook.
         records = this.executeHooks('afterLimit', records);
+        // Clean up all run once hooks that were not used
+        var deleteHookIndexes = [];
+        this.self().hooks.forEach(function (hook, hookIndex) {
+            if (hook.once) {
+                // add hook index to delete
+                deleteHookIndexes.push(hookIndex);
+            }
+        });
+        // remove hooks to be deleted in reverse order
+        deleteHookIndexes.reverse().forEach(function (hookIndex) {
+            _this.self().hooks.splice(hookIndex, 1);
+        });
         return records;
     };
     /**
@@ -8151,16 +8179,24 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.executeHooks = function (on, records) {
         var _this = this;
-        var items = records;
-        this.self().hooks.forEach(function (hook) {
-            if (hook.on !== on) {
-                items = records;
-                return;
+        // track indexes to delete
+        var deleteHookIndexes = [];
+        // loop all hooks
+        this.self().hooks.forEach(function (hook, hookIndex) {
+            if (hook.on === on) {
+                var callback = hook.callback, once = hook.once;
+                records = callback.call(_this, records, _this.entity);
+                if (once) {
+                    // add hook index to delete
+                    deleteHookIndexes.push(hookIndex);
+                }
             }
-            var callback = hook.callback;
-            items = callback.call(_this, items, _this.entity);
         });
-        return items;
+        // remove hooks to be deleted in reverse order
+        deleteHookIndexes.reverse().forEach(function (hookIndex) {
+            _this.self().hooks.splice(hookIndex, 1);
+        });
+        return records;
     };
     /**
      * Get the count of the retrieved data.
@@ -8344,6 +8380,10 @@ var Query = /** @class */ (function () {
      * Lifecycle hooks for the query.
      */
     Query.hooks = [];
+    /**
+     * Hook UID counter
+     */
+    Query.lastHookId = 0;
     return Query;
 }());
 
