@@ -58,7 +58,7 @@ export default class Query {
   static hooks: Hooks[] = []
 
   /**
-   * Hook UID counter
+   * Hook UID counter.
    */
   static lastHookId: number = 0
 
@@ -239,8 +239,7 @@ export default class Query {
   }
 
   /**
-   * Register a callback.
-   * Returns unique ID for registered callback
+   * Register a callback. It Returns unique ID for registered callback.
    */
   static on (on: string, callback: Function, once: boolean = false): number {
     const uid = this.lastHookId++
@@ -250,7 +249,7 @@ export default class Query {
   }
 
   /**
-   * remove hook registration
+   * Remove hook registration.
    */
   static off (uid: number): boolean {
     const index = this.hooks.findIndex(h => h.uid === uid)
@@ -706,15 +705,16 @@ export default class Query {
 
     // Process `afterLimit` hook.
     records = this.executeHooks('afterLimit', records)
-    // Clean up all run once hooks that were not used
-    let deleteHookIndexes: Array<number> = []
+
+    // Clean up all run once hooks that were not used.
+    let deleteHookIndexes: number[] = []
+
     this.self().hooks.forEach((hook, hookIndex) => {
-      if (hook.once) {
-        // add hook index to delete
-        deleteHookIndexes.push(hookIndex)
-      }
+      // Add hook index to delete.
+      hook.once && deleteHookIndexes.push(hookIndex)
     })
-    // remove hooks to be deleted in reverse order
+
+    // Remove hooks to be deleted in reverse order.
     deleteHookIndexes.reverse().forEach((hookIndex: number) => {
       this.self().hooks.splice(hookIndex, 1)
     })
@@ -807,20 +807,22 @@ export default class Query {
    * Execute the callback of the given hook.
    */
   executeHooks (on: string, records: PlainCollection): PlainCollection {
-    // track indexes to delete
-    let deleteHookIndexes: Array<number> = []
-    // loop all hooks
+    // Track indexes to delete
+    let deleteHookIndexes: number[] = []
+
+    // Loop all hooks.
     this.self().hooks.forEach((hook, hookIndex) => {
       if (hook.on === on) {
         const { callback, once } = hook
+
         records = callback.call(this, records, this.entity)
-        if (once) {
-          // add hook index to delete
-          deleteHookIndexes.push(hookIndex)
-        }
+
+        // Add hook index to delete.
+        once && deleteHookIndexes.push(hookIndex)
       }
     })
-    // remove hooks to be deleted in reverse order
+
+    // Remove hooks to be deleted in reverse order.
     deleteHookIndexes.reverse().forEach((hookIndex: number) => {
       this.self().hooks.splice(hookIndex, 1)
     })

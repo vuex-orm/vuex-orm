@@ -19,8 +19,9 @@ By registering callbacks to each hook, you can manipulate the result from the ge
 
 Like javascript events, you can use the **Query.on()** to register a hook, and **Query.off()** to remove the hook.
 
-```javascript
+```js
 const hookId = Query.on('afterWhere', callback())
+
 Query.off(hookId)
 ```
 
@@ -30,7 +31,7 @@ By default, all hooks are registered globally within the Query class and ran on 
 
 If you only want to register a hook to be available for the next query() call, you can add the third optional parameter **true** to have the Query class automatically remove your hook after the next query() method call.
 
-```javascript
+```js
 Query.on('beforeProcess', callback(), true)
 ``` 
 
@@ -43,12 +44,11 @@ Query.on('beforeProcess', callback(), true)
 
 **Returns**: number: < HookId >
 
-
 ### Examples
 
 **Register a beforeProcess hook to map all records** 
 
-```javascript
+```js
 import { Query } from 'vuex-orm/core'
 
 // Add extra `hooked` field on each record.
@@ -75,7 +75,7 @@ const hookRemoved = Query.off(hookMapRecordsId)
 
 **Soft Delete Hook Sample Implementation**
 
-```javascript
+```js
 import { Query } from 'vuex-orm/core'
 import store from '@/store'
 
