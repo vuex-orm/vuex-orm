@@ -7,6 +7,8 @@ const isCoverage = process.env.NODE_ENV === 'coverage';
 const rootDir = path.join(__dirname, '..')
 
 module.exports = {
+  mode: 'development',
+
   target: 'node',
 
   devtool: 'inline-cheap-module-source-map',
@@ -16,7 +18,7 @@ module.exports = {
   })],
 
   module: {
-    loaders: [].concat(
+    rules: [].concat(
       isCoverage ? {
         test: /\.(js|ts)/,
         include: `${rootDir}/src`,
