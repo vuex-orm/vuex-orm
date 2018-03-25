@@ -7,6 +7,13 @@ export type DictionaryIterator<T, TResult> = (value: T, key: string, collection:
 export type Predicate<T> = (value: T, key: string) => boolean
 
 /**
+ * Check if the given object is empty.
+ */
+function isEmpty<T> (object: Dictionary<T>): boolean {
+  return Object.keys(object).length === 0
+}
+
+/**
  * Iterates over own enumerable string keyed properties of an object and
  * invokes `iteratee` for each property.
  */
@@ -33,6 +40,7 @@ export function pickBy<T> (object: Dictionary<T>, predicate: Predicate<T>): Dict
 }
 
 export default {
+  isEmpty,
   forOwn,
   pickBy
 }

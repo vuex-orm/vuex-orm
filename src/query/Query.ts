@@ -9,7 +9,6 @@ import RelationClass from '../attributes/relations/Relation'
 import Model from '../model/Model'
 import { State, EntityState } from '../modules/Module'
 import Persist from './processors/Persist'
-import Delete from './processors/Delete'
 
 export type WhereBoolean = 'and' | 'or'
 
@@ -1033,13 +1032,21 @@ export default class Query {
    * Delete a record from the state.
    */
   delete (condition: Condition): void {
-    (new Delete(this)).delete(condition)
+    if (typeof condition === 'function') {
+      this.state.data = Utils.pickBy(this.state.data, record => !condition(record))
+
+      return
+    }
+
+    const id = typeof condition === 'number' ? condition.toString() : condition
+
+    this.state.data = Utils.pickBy(this.state.data, (_record, key) => key !== id)
   }
 
   /**
    * Delete all records from the state.
    */
   deleteAll (): void {
-    (new Delete(this)).deleteAll()
+    this.state.data = {}
   }
 }
