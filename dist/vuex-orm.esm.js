@@ -7298,11 +7298,13 @@ var PivotCreator = /** @class */ (function () {
     function PivotCreator() {
     }
     PivotCreator.create = function (data, Query) {
-        if (!Query.model.hasPivotFields()) {
-            return data;
-        }
-        forEach(Query.model.pivotFields(), function (field) {
-            forEach(field, function (attr) { attr.createPivots(Query.model, data); });
+        Object.keys(data).forEach(function (key) {
+            var model = Query.getModel(key);
+            if (model.hasPivotFields()) {
+                forEach(model.pivotFields(), function (field) {
+                    forEach(field, function (attr) { attr.createPivots(model, data); });
+                });
+            }
         });
         return data;
     };
