@@ -216,14 +216,14 @@ export default class Query {
   }
 
   /**
-   * Delete data from the state.
+   * Delete a record from the state.
    */
   static delete (state: State, entity: string, condition: Condition): void {
     (new this(state, entity)).delete(condition)
   }
 
   /**
-   * Delete all data from the state.
+   * Delete all records from the state.
    */
   static deleteAll (state: State, entity?: string): void {
     if (entity) {
@@ -1030,7 +1030,7 @@ export default class Query {
   }
 
   /**
-   * Delete a record.
+   * Delete a record from the state.
    */
   delete (condition: Condition): void {
     (new Delete(this)).delete(condition)

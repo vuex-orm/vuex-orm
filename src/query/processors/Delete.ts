@@ -12,14 +12,14 @@ export default class Delete {
   query: Query
 
   /**
-   * Create a new delete instance.
+   * Create a new delete processor instance.
    */
   constructor (query: Query) {
     this.query = query
   }
 
   /**
-   * Delete a record.
+   * Delete a record from the state.
    */
   delete (condition: Condition): void {
     condition = this.createCondition(condition)
