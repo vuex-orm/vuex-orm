@@ -4,12 +4,14 @@ import { NormalizedData } from './Contract'
 
 export default class PivotCreator {
   static create (data: NormalizedData, Query: Query): NormalizedData {
-    if (!Query.model.hasPivotFields()) {
-      return data
-    }
+    Object.keys(data).forEach((key) => {
+      const model = Query.getModel(key)
 
-    _.forEach(Query.model.pivotFields(), (field) => {
-      _.forEach(field, attr => { attr.createPivots(Query.model, data) })
+      if (model.hasPivotFields()) {
+        _.forEach(model.pivotFields(), (field) => {
+          _.forEach(field, attr => { attr.createPivots(model, data) })
+        })
+      }
     })
 
     return data
