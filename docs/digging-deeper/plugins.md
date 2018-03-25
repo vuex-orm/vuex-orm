@@ -31,6 +31,7 @@ Following components are included within `components` argument.
 
 - Model
 - Query
+- Attribute
 - Type
 - Attr
 - Increment
