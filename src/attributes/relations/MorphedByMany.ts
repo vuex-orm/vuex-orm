@@ -1,4 +1,4 @@
-import * as _ from '../../support/lodash'
+import Utils from '../../support/Utils'
 import { Record, NormalizedData, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
 import Query, { Relation as Load } from '../../query/Query'
@@ -151,7 +151,7 @@ export default class MorphedByMany extends Relation {
    * Create pivot records for the given records if needed.
    */
   createPivots (parent: typeof Model, data: NormalizedData): NormalizedData {
-    _.forEach(data[parent.entity], (record) => {
+    Utils.forOwn(data[parent.entity], (record) => {
       const related = record[this.related.entity]
 
       if (related.length === 0) {
@@ -168,7 +168,7 @@ export default class MorphedByMany extends Relation {
    * Create a pivot record.
    */
   createPivotRecord (data: NormalizedData, record: Record, related: any[]): void {
-    _.forEach(related, (id) => {
+    related.forEach((id) => {
       const parentId = record[this.parentKey]
       const pivotKey = `${id}_${parentId}_${this.related.entity}`
 

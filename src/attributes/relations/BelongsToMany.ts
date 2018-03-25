@@ -1,4 +1,4 @@
-import * as _ from '../../support/lodash'
+import Utils from '../../support/Utils'
 import { Record, NormalizedData, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
 import Query, { Relation as Load } from '../../query/Query'
@@ -128,7 +128,9 @@ export default class BelongsToMany extends Relation {
       return records
     }, {})
 
-    const pivots = _.reduce(query.rootState[this.pivot.entity].data, (records, record) => {
+    const pivotRecords = new Query(query.rootState, this.pivot.entity).get()
+
+    const pivots = pivotRecords.reduce((records, record) => {
       if (!records[record[this.foreignPivotKey]]) {
         records[record[this.foreignPivotKey]] = []
       }
@@ -149,7 +151,7 @@ export default class BelongsToMany extends Relation {
    * Create pivot records for the given records if needed.
    */
   createPivots (parent: typeof Model, data: NormalizedData): NormalizedData {
-    _.forEach(data[parent.entity], (record) => {
+    Utils.forOwn(data[parent.entity], (record) => {
       const related = record[this.related.entity]
 
       if (related === undefined || related.length === 0) {
@@ -166,7 +168,7 @@ export default class BelongsToMany extends Relation {
    * Create a pivot record.
    */
   createPivotRecord (data: NormalizedData, record: Record, related: any[]): void {
-    _.forEach(related, (id) => {
+    related.forEach((id) => {
       const pivotKey = `${record[this.parentKey]}_${id}`
 
       data[this.pivot.entity] = {
