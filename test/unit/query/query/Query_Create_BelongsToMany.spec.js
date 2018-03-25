@@ -42,7 +42,7 @@ describe('Query – Create – Belongs To Many', () => {
     createApplication('entities', [{ model: User }, { model: Role }, { model: RoleUser }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {} },
       roles: { data: {} },
       roleUser: { data: {} }
@@ -57,7 +57,7 @@ describe('Query – Create – Belongs To Many', () => {
     }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, roles: [2, 3] }
       }},
@@ -114,7 +114,7 @@ describe('Query – Create – Belongs To Many', () => {
     createApplication('entities', [{ model: User }, { model: Role }, { model: RoleUser }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {} },
       roles: { data: {} },
       roleUser: { data: {} }
@@ -129,7 +129,7 @@ describe('Query – Create – Belongs To Many', () => {
     }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, roles: [2, 3] }
       }},
@@ -199,7 +199,7 @@ describe('Query – Create – Belongs To Many', () => {
     createApplication('entities', [{ model: Team }, { model: User }, { model: Role }, { model: RoleUser }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       teams: { data: {} },
       users: { data: {} },
       roles: { data: {} },
@@ -219,7 +219,7 @@ describe('Query – Create – Belongs To Many', () => {
     }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       teams: { data: {
         '1': { $id: 1, id: 1, users: [1] }
       }},

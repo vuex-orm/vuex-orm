@@ -23,7 +23,7 @@ describe('Feature – Vuex ORM', () => {
       plugins: [VuexORM.install(database)]
     })
 
-    expect(store.state.entities.name).toBe('entities')
+    expect(store.state.entities.$name).toBe('entities')
     expect(store.state.entities.users.$name).toBe('users')
     expect(store.state.entities.posts.$name).toBe('posts')
   })
@@ -40,7 +40,7 @@ describe('Feature – Vuex ORM', () => {
       plugins: [VuexORM.install(database, options)]
     })
 
-    expect(store.state.my_entities.name).toBe('my_entities')
+    expect(store.state.my_entities.$name).toBe('my_entities')
     expect(store.state.my_entities.users.$name).toBe('users')
     expect(store.state.my_entities.posts.$name).toBe('posts')
   })

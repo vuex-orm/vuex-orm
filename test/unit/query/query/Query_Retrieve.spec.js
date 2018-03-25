@@ -29,7 +29,7 @@ describe('Query – Retrieve', () => {
 
   it('can get all data of the entity as class', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1 },
         '2': { id: 2 }
@@ -51,7 +51,7 @@ describe('Query – Retrieve', () => {
 
   it('can get all data of the entity as plain object', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1 },
         '2': { id: 2 }
@@ -67,7 +67,7 @@ describe('Query – Retrieve', () => {
 
   it('can get all with all method chained with query', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1 },
         '2': { id: 2 }
@@ -83,7 +83,7 @@ describe('Query – Retrieve', () => {
 
   it('can get all data of the entity that matches the where query', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, role: 'admin', sex: 'male', enabled: true },
         '2': { id: 2, role: 'user', sex: 'female', enabled: true },
@@ -108,7 +108,7 @@ describe('Query – Retrieve', () => {
 
   it('can get all data of the entity that matches the where query value as array', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, role: 'user', sex: 'male', enabled: true },
         '2': { id: 2, role: 'user', sex: 'female', enabled: true },
@@ -134,7 +134,7 @@ describe('Query – Retrieve', () => {
 
   it('can get single data of the entity that matches the where query', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, role: 'admin', sex: 'male' },
         '2': { id: 2, role: 'user', sex: 'female' },
@@ -154,7 +154,7 @@ describe('Query – Retrieve', () => {
 
   it('can get the last data of the entity that matches the where query', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, role: 'admin', sex: 'male' },
         '2': { id: 2, role: 'user', sex: 'female' },
@@ -174,7 +174,7 @@ describe('Query – Retrieve', () => {
 
   it('returns null when calling the last method on empty state', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, role: 'admin', sex: 'male' }
       }}
@@ -189,7 +189,7 @@ describe('Query – Retrieve', () => {
 
   it('can get data of the entity that matches the where query with callback as value', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, role: 'admin', age: 20 },
         '2': { id: 2, role: 'user', age: 30 },
@@ -211,7 +211,7 @@ describe('Query – Retrieve', () => {
 
   it('can get data of the entity that matches the where query with full callback', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, role: 'admin', age: 20 },
         '2': { id: 2, role: 'user', age: 30 },
@@ -233,7 +233,7 @@ describe('Query – Retrieve', () => {
 
   it('can get data of the entity that matches the where query with a function that accesses variables from outside the scope', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, role: 'admin', age: 20 },
         '2': { id: 2, role: 'user', age: 30 },
@@ -257,7 +257,7 @@ describe('Query – Retrieve', () => {
 
   it('can get data of the entity that matches the where query with nested query builder', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, role: 'admin', age: 20 },
         '2': { $id: 2, id: 2, role: 'user', age: 30 },
@@ -278,7 +278,7 @@ describe('Query – Retrieve', () => {
 
   it('can get data of the entity that matches the where query with complex nested query builder', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, role: 'admin', age: 30 },
         '2': { $id: 2, id: 2, role: 'user', age: 30 },
@@ -304,7 +304,7 @@ describe('Query – Retrieve', () => {
 
   it('can get data of the entity that matches the where with mutated data', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, settings: { role: 'user' }, age: 30 },
         '2': { $id: 2, id: 2, settings: { role: 'user' }, age: 30 },
@@ -329,7 +329,7 @@ describe('Query – Retrieve', () => {
 
   it('can get data of the entity that matches the orWhere query', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, role: 'admin', age: 20 },
         '2': { id: 2, role: 'user', age: 30 },
@@ -352,7 +352,7 @@ describe('Query – Retrieve', () => {
 
   it('can get data of the entity only with orWhere query', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, role: 'admin', age: 20 },
         '2': { id: 2, role: 'user', age: 30 },
@@ -369,7 +369,7 @@ describe('Query – Retrieve', () => {
 
   it('can find a single item of entity by id', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1 },
         '2': { $id: 2, id: 2 }
@@ -388,7 +388,7 @@ describe('Query – Retrieve', () => {
 
   it('can find a single item by find method chained with query', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1 },
         '2': { $id: 2, id: 2 }
@@ -406,7 +406,7 @@ describe('Query – Retrieve', () => {
 
   it('returns null when single record can not be found', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1 }
       }}
@@ -419,7 +419,7 @@ describe('Query – Retrieve', () => {
 
   it('returns empty array when multiple record can not be found', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1 },
         '2': { id: 2 }
@@ -433,7 +433,7 @@ describe('Query – Retrieve', () => {
 
   it('can sort by model fields in asc order', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, name: 'John' },
         '2': { id: 2, name: 'Andy' },
@@ -460,7 +460,7 @@ describe('Query – Retrieve', () => {
 
   it('can sort by model fields', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, name: 'John' },
         '2': { id: 2, name: 'Andy' },
@@ -486,7 +486,7 @@ describe('Query – Retrieve', () => {
 
   it('can sort by model fields with first method', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, name: 'John' },
         '2': { id: 2, name: 'Andy' },
@@ -506,7 +506,7 @@ describe('Query – Retrieve', () => {
 
   it('can limit number of records', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, name: 'John' },
         '2': { id: 2, name: 'Andy' },
@@ -529,7 +529,7 @@ describe('Query – Retrieve', () => {
 
   it('can limit number of records from an offset', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, name: 'John' },
         '2': { id: 2, name: 'Andy' },

@@ -29,7 +29,7 @@ describe('Query – Retrieve – Relations – Has Many', () => {
     createApplication('entities', [{ model: Post }, { model: Comment }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       posts: { data: {
         '1': { $id: 1, id: 1, title: 'Post Title', comments: [] }
       }},
@@ -83,7 +83,7 @@ describe('Query – Retrieve – Relations – Has Many', () => {
     createApplication('entities', [{ model: User }, { model: Post }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, custom_id: 1 }
       }},

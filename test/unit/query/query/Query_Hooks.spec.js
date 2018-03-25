@@ -30,7 +30,7 @@ describe('Query – Hooks', () => {
   it('can process afterWhere hook', () => {
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
           '1': { id: 1, role: 'admin', sex: 'male', enabled: true },
           '2': { id: 2, role: 'user', sex: 'female', enabled: true },
@@ -64,7 +64,7 @@ describe('Query – Hooks', () => {
   it('can get instance context in hook', () => {
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
           '1': { id: 1, role: 'admin', sex: 'male', enabled: true },
           '2': { id: 2, role: 'user', sex: 'female', enabled: true },
@@ -101,7 +101,7 @@ describe('Query – Hooks', () => {
   it('can remove callback hooks once and through off method', () => {
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
           '1': { id: 1, role: 'admin', sex: 'male', enabled: true },
           '2': { id: 2, role: 'user', sex: 'female', enabled: true },
@@ -140,7 +140,5 @@ describe('Query – Hooks', () => {
     const removed_2 = Query.off(persistedHookId__2)
     expect(removed_2).toBe(true)
     expect(Query.hooks.length).toBe(0)
-
   })
-
 })

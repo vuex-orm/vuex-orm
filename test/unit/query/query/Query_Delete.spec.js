@@ -23,7 +23,7 @@ describe('Query – Delete', () => {
 
   it('can delete record by id', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1 },
         '2': { id: 2 }
@@ -31,7 +31,7 @@ describe('Query – Delete', () => {
     }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '2': { id: 2 }
       }}
@@ -44,7 +44,7 @@ describe('Query – Delete', () => {
 
   it('can delete record by string key', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1 },
         '2': { id: 2 }
@@ -52,7 +52,7 @@ describe('Query – Delete', () => {
     }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '2': { id: 2 }
       }}
@@ -65,7 +65,7 @@ describe('Query – Delete', () => {
 
   it('can delete record by closure', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, name: 'John' },
         '2': { id: 2, name: 'Jane' },
@@ -74,7 +74,7 @@ describe('Query – Delete', () => {
     }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '3': { id: 3, name: 'George' }
       }}
@@ -89,7 +89,7 @@ describe('Query – Delete', () => {
 
   it('can delete all records for an entity', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, name: 'John' },
         '2': { id: 2, name: 'Jane' },
@@ -98,7 +98,7 @@ describe('Query – Delete', () => {
     }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: {
         data: {}
       }
@@ -111,7 +111,7 @@ describe('Query – Delete', () => {
 
   it('can delete all records for all entities', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, name: 'John' },
         '2': { id: 2, name: 'Jane' },
@@ -127,7 +127,7 @@ describe('Query – Delete', () => {
     }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: {
         data: {}
       },

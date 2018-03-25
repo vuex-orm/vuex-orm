@@ -23,14 +23,14 @@ describe('Query – Create – Attributes', () => {
     createApplication('entities', [{ model: User }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {} }
     }
 
     const data = { name: 'John' }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John' }
       }}
@@ -56,7 +56,7 @@ describe('Query – Create – Attributes', () => {
     createApplication('entities', [{ model: User }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '3': { $id: 3, id: 3, name: 'Jane' }
       }}
@@ -65,7 +65,7 @@ describe('Query – Create – Attributes', () => {
     const data = [{ name: 'John' }, { name: 'Jane' }]
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '4': { $id: 4, id: 4, name: 'John' },
         '5': { $id: 5, id: 5, name: 'Jane' }
@@ -92,7 +92,7 @@ describe('Query – Create – Attributes', () => {
     createApplication('entities', [{ model: User }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '3': { $id: 3, id: 3, name: 'Jane' }
       }}
@@ -101,7 +101,7 @@ describe('Query – Create – Attributes', () => {
     const data = [{ name: 'John' }, { id: 8, name: 'Jane' }]
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '8': { $id: 8, id: 8, name: 'Jane' },
         '9': { $id: 9, id: 9, name: 'John' }
@@ -128,7 +128,7 @@ describe('Query – Create – Attributes', () => {
     createApplication('entities', [{ model: User }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John' },
         '3': { $id: 3, id: 3, name: 'Jane' }
@@ -138,7 +138,7 @@ describe('Query – Create – Attributes', () => {
     const data = { name: 'Johnny' }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John' },
         '3': { $id: 3, id: 3, name: 'Jane' },
@@ -166,7 +166,7 @@ describe('Query – Create – Attributes', () => {
     createApplication('entities', [{ model: User }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John' },
         '3': { $id: 3, id: 3, name: 'Jane' }
@@ -176,7 +176,7 @@ describe('Query – Create – Attributes', () => {
     const data = [{ name: 'Johnny' }, { name: 'Josh' }]
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John' },
         '3': { $id: 3, id: 3, name: 'Jane' },
@@ -205,7 +205,7 @@ describe('Query – Create – Attributes', () => {
     createApplication('entities', [{ model: User }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John' },
         '3': { $id: 3, id: 3, name: 'Jane' }
@@ -215,7 +215,7 @@ describe('Query – Create – Attributes', () => {
     const data = [{ name: 'Johnny' }, { id: 8, name: 'Josh' }]
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John' },
         '3': { $id: 3, id: 3, name: 'Jane' },
@@ -245,7 +245,7 @@ describe('Query – Create – Attributes', () => {
     createApplication('entities', [{ model: User }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '3': { $id: 3, id: 3, otherId: 5, name: 'Jane' }
       }}
@@ -254,7 +254,7 @@ describe('Query – Create – Attributes', () => {
     const data = [{ name: 'John' }, { name: 'Johnny' }]
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '3': { $id: 3, id: 3, otherId: 5, name: 'Jane' },
         '4': { $id: 4, id: 4, otherId: 6, name: 'John' },
@@ -295,7 +295,7 @@ describe('Query – Create – Attributes', () => {
     createApplication('entities', [{ model: User }, { model: Post }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {} },
       posts: { data: {} }
     }
@@ -309,7 +309,7 @@ describe('Query – Create – Attributes', () => {
     }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John', posts: ['_no_key_2', '_no_key_3'] }
       }},
@@ -339,7 +339,7 @@ describe('Query – Create – Attributes', () => {
     createApplication('entities', [{ model: User }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John' },
         '3': { $id: 3, id: 3, name: 'Jane' }
@@ -349,7 +349,7 @@ describe('Query – Create – Attributes', () => {
     const data = { name: 'Johnny' }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John' },
         '3': { $id: 3, id: 3, name: 'Jane' },
@@ -377,7 +377,7 @@ describe('Query – Create – Attributes', () => {
     createApplication('entities', [{ model: User }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John' },
         '3': { $id: 3, id: 3, name: 'Jane' }
@@ -387,7 +387,7 @@ describe('Query – Create – Attributes', () => {
     const data = [{ name: 'Johnny' }, { name: 'Josh' }]
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John' },
         '3': { $id: 3, id: 3, name: 'Jane' },
@@ -416,7 +416,7 @@ describe('Query – Create – Attributes', () => {
     createApplication('entities', [{ model: User }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John' },
         '3': { $id: 3, id: 3, name: 'Jane' }
@@ -426,7 +426,7 @@ describe('Query – Create – Attributes', () => {
     const data = [{ name: 'Johnny' }, { id: 8, name: 'Josh' }]
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John' },
         '3': { $id: 3, id: 3, name: 'Jane' },
@@ -456,7 +456,7 @@ describe('Query – Create – Attributes', () => {
     createApplication('entities', [{ model: User }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '3': { $id: 3, id: 3, otherId: 5, name: 'Jane' }
       }}
@@ -465,7 +465,7 @@ describe('Query – Create – Attributes', () => {
     const data = [{ name: 'John' }, { name: 'Johnny' }]
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '3': { $id: 3, id: 3, otherId: 5, name: 'Jane' },
         '4': { $id: 4, id: 4, otherId: 6, name: 'John' },
@@ -506,7 +506,7 @@ describe('Query – Create – Attributes', () => {
     createApplication('entities', [{ model: User }, { model: Post }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {} },
       posts: { data: {} }
     }
@@ -520,7 +520,7 @@ describe('Query – Create – Attributes', () => {
     }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John', posts: ['_no_key_2', '_no_key_3'] }
       }},

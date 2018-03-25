@@ -12,7 +12,7 @@ export interface Entity {
 }
 
 export interface State {
-  name: string
+  $name: string
   [entity: string]: any
 }
 
@@ -40,7 +40,7 @@ export default class Module {
   static create (namespace: string, entities: Entity[]): Vuex.Module<any, any> {
     const tree = {
       namespaced: true,
-      state: { name: namespace },
+      state: { $name: namespace },
       getters: rootGetters,
       actions: rootActions,
       mutations,

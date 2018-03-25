@@ -45,7 +45,7 @@ export function createStore (entities) {
  */
 export function createState (namespace, state) {
   return {
-    name: namespace,
+    $name: namespace,
 
     ..._.mapValues(state, data => {
       return { data }

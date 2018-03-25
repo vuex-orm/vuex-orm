@@ -11,7 +11,7 @@ describe('Query – Aggregates', () => {
 
   it('can get count of the data', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, role: 'admin' },
         '2': { id: 2, role: 'user' },
@@ -26,7 +26,7 @@ describe('Query – Aggregates', () => {
 
   it('can get max value of the specified field', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 8, role: 'admin' },
         '2': { id: 12, role: 'user' },
@@ -41,7 +41,7 @@ describe('Query – Aggregates', () => {
 
   it('can get min value of the specified field', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 8, role: 'admin' },
         '2': { id: 12, role: 'user' },

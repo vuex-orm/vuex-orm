@@ -29,7 +29,7 @@ describe('Query – Retrieve – Relations - String Define', () => {
     createApplication('entities', [{ model: User }, { model: Post }])
 
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1 }
       }},

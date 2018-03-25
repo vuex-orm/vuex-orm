@@ -43,7 +43,7 @@ describe('Query – Create', () => {
     const data = { id: 0, name: 'John Doe' }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '0': { $id: 0, id: 0, name: 'John Doe' }
       }}
@@ -56,7 +56,7 @@ describe('Query – Create', () => {
 
   it('can create a single data with nested object schema in Vuex Store', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {} }
     }
 
@@ -68,7 +68,7 @@ describe('Query – Create', () => {
     }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': {
           $id: 1,
@@ -91,7 +91,7 @@ describe('Query – Create', () => {
 
   it('can create a list of data in Vuex Store', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '5': { id: 5 }
       }},
@@ -118,7 +118,7 @@ describe('Query – Create', () => {
     ]
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '10': { $id: 10, id: 10, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null },
         '11': { $id: 11, id: 11, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null }
@@ -142,7 +142,7 @@ describe('Query – Create', () => {
 
   it('can create a list of data and insert specified related entities in Vuex Store', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '5': { id: 5 }
       }},
@@ -172,7 +172,7 @@ describe('Query – Create', () => {
     ]
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '10': { $id: 10, id: 10, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null },
         '11': { $id: 11, id: 11, name: '', settings: { accounts: [], role: '' }, posts: [], profile: null }
@@ -196,7 +196,7 @@ describe('Query – Create', () => {
 
   it('can create data with empty object', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '10': { id: 10 },
         '11': { id: 11 }
@@ -204,7 +204,7 @@ describe('Query – Create', () => {
     }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {} }
     }
 
@@ -215,7 +215,7 @@ describe('Query – Create', () => {
 
   it('can create data with custom primary key', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       customKeys: { data: {} }
     }
 
@@ -225,7 +225,7 @@ describe('Query – Create', () => {
     ]
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       customKeys: { data: {
         '10': { $id: 10, id: 1, my_id: 10 },
         '20': { $id: 20, id: 2, my_id: 20 }
@@ -239,7 +239,7 @@ describe('Query – Create', () => {
 
   it('can insert single data to Vuex Store', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John', settings: { accounts: [], role: '' }, posts: [], profile: null },
         '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null }
@@ -249,7 +249,7 @@ describe('Query – Create', () => {
     const data = { id: 3, name: 'Johnny' }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John', settings: { accounts: [], role: '' }, posts: [], profile: null },
         '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null },
@@ -264,7 +264,7 @@ describe('Query – Create', () => {
 
   it('can insert a list of data to Vuex Store', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John', settings: { accounts: [], role: '' }, posts: [], profile: null },
         '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null }
@@ -277,7 +277,7 @@ describe('Query – Create', () => {
     ]
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'Janie', settings: { accounts: [], role: '' }, posts: [], profile: null },
         '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: '' }, posts: [], profile: null },
@@ -292,7 +292,7 @@ describe('Query – Create', () => {
 
   it('can insert with empty data', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '10': { id: 10 },
         '11': { id: 11 }
@@ -300,7 +300,7 @@ describe('Query – Create', () => {
     }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '10': { id: 10 },
         '11': { id: 11 }
@@ -314,7 +314,7 @@ describe('Query – Create', () => {
 
   it('can update single data to Vuex Store via insertOrUpdate', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John', settings: { accounts: [], role: 'user' }, posts: [], profile: null },
         '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: 'admin' }, posts: [], profile: null }
@@ -324,7 +324,7 @@ describe('Query – Create', () => {
     const data = { id: 1, name: 'Johnny' }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'Johnny', settings: { accounts: [], role: 'user' }, posts: [], profile: null },
         '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: 'admin' }, posts: [], profile: null }
@@ -338,7 +338,7 @@ describe('Query – Create', () => {
 
   it('can insert single data to Vuex Store via insertOrUpdate', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John', settings: { accounts: [], role: 'user' }, posts: [], profile: null },
         '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: 'admin' }, posts: [], profile: null }
@@ -348,7 +348,7 @@ describe('Query – Create', () => {
     const data = { id: 3, name: 'Peter' }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John', settings: { accounts: [], role: 'user' }, posts: [], profile: null },
         '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: 'admin' }, posts: [], profile: null },
@@ -363,7 +363,7 @@ describe('Query – Create', () => {
 
   it('can insertOrUpdate a list of data to Vuex Store', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John', settings: { accounts: [], role: 'user' }, posts: [], profile: null },
         '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: 'admin' }, posts: [], profile: null }
@@ -376,7 +376,7 @@ describe('Query – Create', () => {
     ]
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'Janie', settings: { accounts: [], role: 'user' }, posts: [], profile: null },
         '2': { $id: 2, id: 2, name: 'Jane', settings: { accounts: [], role: 'admin' }, posts: [], profile: null },
@@ -391,7 +391,7 @@ describe('Query – Create', () => {
 
   it('can insertOrUpdate with empty data', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '10': { id: 10 },
         '11': { id: 11 }
@@ -399,7 +399,7 @@ describe('Query – Create', () => {
     }
 
     const expected = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '10': { id: 10 },
         '11': { id: 11 }

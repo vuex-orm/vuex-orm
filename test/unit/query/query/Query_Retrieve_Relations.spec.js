@@ -29,7 +29,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can resolve has one relation', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, profile: 3 }
       }},
@@ -56,7 +56,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can resolve belongs to relation', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John Doe' }
       }},
@@ -83,7 +83,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can resolve belongs to relation which its id is 0', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '0': { $id: 0, id: 0, name: 'John Doe' }
       }},
@@ -110,7 +110,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can resolve belongs to relation with custom foreign key', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       clusters: { data: {
        '1': { $id: 1, id: 1, name: 'tokyo', nodes: [1] }
       }},
@@ -132,7 +132,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can resolve belongs to relation and instantiate the result record', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, name: 'John Doe' }
       }},
@@ -153,7 +153,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can resolve has many by relation', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       posts: { data: {
         '1': { id: 1, title: 'Post Title', reviews: [1, 2] }
       }},
@@ -178,7 +178,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can resolve relation constraint', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       posts: { data: {
         '1': { id: 1, title: 'Post Title', comments: [1, 2, 3] }
       }},
@@ -207,7 +207,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can query all relations', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, profile: 3 }
       }},
@@ -235,7 +235,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can query all relations recursively', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, profile: 3 }
       }},
@@ -300,7 +300,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can resolve nested relation', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, settings: { accounts: [1, 2] } }
       }},
@@ -328,7 +328,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can resolve nested relation with where clause', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1, settings: { accounts: [1, 2] } }
       }},
@@ -357,7 +357,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can resolve child relation', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1 }
       }},
@@ -392,7 +392,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can resolve even deeper child relation', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { id: 1 }
       }},
@@ -426,7 +426,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can resolve child relations with multiple sub relations', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1, profile: 3 }
       }},
@@ -483,7 +483,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can query data depending on relationship existence', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1 },
         '2': { $id: 2, id: 2 },
@@ -505,7 +505,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can query data depending on relationship absence', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1 },
         '2': { $id: 2, id: 2 },
@@ -527,7 +527,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can query data depending on relationship existence with constraint', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1 },
         '2': { $id: 2, id: 2 },
@@ -551,7 +551,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can query data depending on relationship absence with constraint', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1 },
         '2': { $id: 2, id: 2 },
@@ -575,7 +575,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can query data depending on relationship existence with number', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1 },
         '2': { $id: 2, id: 2 },
@@ -597,7 +597,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can query data depending on relationship absence with number', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1 },
         '2': { $id: 2, id: 2 },
@@ -619,7 +619,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can query data depending on relationship existence with string conditions', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1 },
         '2': { $id: 2, id: 2 },
@@ -640,7 +640,7 @@ describe('Query – Retrieve – Relations', () => {
 
   it('can query data depending on relationship absence with string conditions', () => {
     const state = {
-      name: 'entities',
+      $name: 'entities',
       users: { data: {
         '1': { $id: 1, id: 1 },
         '2': { $id: 2, id: 2 },

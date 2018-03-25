@@ -74,12 +74,12 @@ export default class Query {
   state: EntityState
 
   /**
-   * The name of the entity.
+   * The entity name being queried.
    */
   entity: string
 
   /**
-   * The model of the entity.
+   * The model being queried.
    */
   model: typeof Model
 
@@ -137,14 +137,14 @@ export default class Query {
    * Get model of given name from the container.
    */
   static getModel (state: State, name: string): typeof Model {
-    return Container.connection(state.name).model(name)
+    return Container.connection(state.$name).model(name)
   }
 
   /**
    * Get all models from the container.
    */
   static getModels (state: State): { [name: string]: typeof Model } {
-    return Container.connection(state.name).models()
+    return Container.connection(state.$name).models()
   }
 
   /**

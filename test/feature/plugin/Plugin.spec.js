@@ -81,7 +81,7 @@ describe('Plugin', () => {
     const plugin = {
       install (components) {
         components.rootGetters.getName = (state) => {
-          return state.name
+          return state.$name
         }
       }
     }

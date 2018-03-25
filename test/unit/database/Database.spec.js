@@ -41,7 +41,7 @@ describe('Database', () => {
 
     const expected = {
       namespaced: true,
-      state: { name: 'entities' },
+      state: { $name: 'entities', },
       getters,
       actions,
       mutations,
