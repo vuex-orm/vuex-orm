@@ -513,7 +513,7 @@ export default class Query {
   first (id?: number | string): Item {
     const records = this.process()
 
-    if (_.isEmpty(records)) {
+    if (Utils.isEmpty(records)) {
       return null
     }
 
@@ -536,7 +536,7 @@ export default class Query {
   last (): Item {
     const records = this.process()
 
-    if (_.isEmpty(records)) {
+    if (Utils.isEmpty(records)) {
       return null
     }
 
@@ -691,7 +691,7 @@ export default class Query {
     records = this.executeHooks('beforeProcess', records)
 
     // If the where clause is registered, lets filter the records beased on it.
-    if (!_.isEmpty(this.wheres)) {
+    if (!Utils.isEmpty(this.wheres)) {
       records = this.selectByWheres(records)
     }
 
@@ -699,7 +699,7 @@ export default class Query {
     records = this.executeHooks('afterWhere', records)
 
     // Next, lets sort the data if orderBy is registred.
-    if (!_.isEmpty(this.orders)) {
+    if (!Utils.isEmpty(this.orders)) {
       records = this.sortByOrders(records)
     }
 
@@ -770,7 +770,7 @@ export default class Query {
   getComparator (record: Record): (where: any) => boolean {
     return (where: any) => {
       // Function with Record and Query as argument.
-      if (_.isFunction(where.field)) {
+      if (typeof where.field === 'function') {
         const query = new Query(this.rootState, this.entity)
         const result = this.executeWhereClosure(record, query, where.field)
 
@@ -778,16 +778,16 @@ export default class Query {
           return result
         }
 
-        return !_.isEmpty(query.where('$id', record['$id']).get())
+        return !Utils.isEmpty(query.where('$id', record['$id']).get())
       }
 
       // Function with Record value as argument.
-      if (_.isFunction(where.value)) {
+      if (typeof where.value === 'function') {
         return where.value(record[where.field])
       }
 
       // Check if field value is in given where Array.
-      if (_.isArray(where.value)) {
+      if (Array.isArray(where.value)) {
         return where.value.indexOf(record[where.field]) !== -1
       }
 
@@ -880,7 +880,7 @@ export default class Query {
 
     let item: Item = queryItem
 
-    if (!_.isEmpty(this.load)) {
+    if (!Utils.isEmpty(this.load)) {
       item = this.loadRelations([item])[0]
     }
 
@@ -895,13 +895,13 @@ export default class Query {
    * Create a collection (array) from given records.
    */
   collect (collection: PlainCollection): Collection {
-    if (_.isEmpty(collection)) {
+    if (Utils.isEmpty(collection)) {
       return []
     }
 
     let item = collection
 
-    if (!_.isEmpty(this.load)) {
+    if (!Utils.isEmpty(this.load)) {
       item = this.loadRelations(item)
     }
 

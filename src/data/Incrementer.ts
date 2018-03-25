@@ -1,3 +1,4 @@
+import Utils from '../support/Utils'
 import * as _ from '../support/lodash'
 import { Records, NormalizedData } from '../data/Contract'
 import Increment from '../attributes/types/Increment'
@@ -27,7 +28,7 @@ export default class Incrementer {
    * Increment fields that have increment attribute.
    */
   increment (data: NormalizedData): NormalizedData {
-    return _.mapValues(data, (record, entity) => {
+    return Utils.mapValues(data, (record, entity) => {
       const query = new Query(this.query.rootState, entity, false)
 
       // If the entity doesn't have increment attribute, do nothing and
@@ -46,12 +47,12 @@ export default class Incrementer {
   process (records: Records, query: Query): Records {
     let newRecords = { ...records }
 
-    _.forEach(query.model.incrementFields(), (field) => {
+    Utils.forOwn(query.model.incrementFields(), (field) => {
       const incrementKey = this.incrementKey(field)
 
       let max = this.max(records, query, incrementKey)
 
-      _.forEach(records, (_record, key) => {
+      Utils.forOwn(records, (_record, key) => {
         if (newRecords[key][incrementKey]) {
           return
         }
@@ -78,7 +79,7 @@ export default class Incrementer {
    */
   max (data: any, query: Query, field: string): number {
     const max: number = query.max(field)
-    const records: any = _.map(data, value => value)
+    const records: any = Utils.map(data, value => value)
     const maxRecord: any = _.maxBy(records, field)
 
     return maxRecord ? _.max([max, maxRecord[field]]) : max
@@ -90,7 +91,7 @@ export default class Incrementer {
   setId (records: Records, query: Query): Records {
     let newRecords: Records = {}
 
-    _.forEach(records, (record) => {
+    Utils.forOwn(records, (record) => {
       newRecords[query.model.id(record)] = record
     })
 

@@ -1,4 +1,4 @@
-import * as _ from '../support/lodash'
+import Utils from '../support/Utils'
 import Query from '../query/Query'
 import { NormalizedData } from './Contract'
 
@@ -8,8 +8,8 @@ export default class PivotCreator {
       const model = Query.getModel(key)
 
       if (model.hasPivotFields()) {
-        _.forEach(model.pivotFields(), (field) => {
-          _.forEach(field, attr => { attr.createPivots(model, data) })
+        Utils.forOwn(model.pivotFields(), (field) => {
+          Utils.forOwn(field, attr => { attr.createPivots(model, data) })
         })
       }
     })

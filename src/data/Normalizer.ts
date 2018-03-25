@@ -1,5 +1,5 @@
 import { normalize } from 'normalizr'
-import * as _ from '../support/lodash'
+import Utils from '../support/Utils'
 import Query from '../query/Query'
 import { NormalizedData } from './Contract'
 import Schema from './Schema'
@@ -10,7 +10,7 @@ export default class Data {
    * Normalize the data.
    */
   static normalize (data: any, Query: Query): NormalizedData {
-    if (_.isEmpty(data)) {
+    if (Utils.isEmpty(data)) {
       return {}
     }
 

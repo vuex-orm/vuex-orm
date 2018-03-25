@@ -1,4 +1,3 @@
-import * as _ from '../../support/lodash'
 import Utils from '../../support/Utils'
 import { Records, NormalizedData, Item, Collection } from '../../data/Contract'
 import Query from '../Query'
@@ -50,7 +49,7 @@ export default class Persist {
    * Persist data to the store.
    */
   process (): Item | Collection {
-    if (_.isEmpty(this.data)) {
+    if (Utils.isEmpty(this.data)) {
       if (this.method === 'create') {
         this.query.state.data = {}
       }
