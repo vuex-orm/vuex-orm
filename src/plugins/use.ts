@@ -1,5 +1,6 @@
 import Model from '../model/Model'
 import Query from '../query/Query'
+import Attribute from '../attributes/Attribute'
 import Type from '../attributes/types/Type'
 import Attr from '../attributes/types/Attr'
 import Increment from '../attributes/types/Increment'
@@ -24,6 +25,7 @@ import mutations, { Mutations } from '../modules/mutations'
 export interface Components {
   Model: typeof Model
   Query: typeof Query
+  Attribute: typeof Attribute
   Type: typeof Type
   Attr: typeof Attr
   Increment: typeof Increment
@@ -61,6 +63,7 @@ export default function (plugin: Plugin, options: Options = {}): void {
   const components: Components = {
     Model,
     Query,
+    Attribute,
     Type,
     Attr,
     Increment,
