@@ -1,3 +1,4 @@
+import Utils from '../../support/Utils'
 import { Record, Records } from '../../data/Contract'
 import Query from '../Query'
 
@@ -24,7 +25,7 @@ export default class Delete {
   delete (condition: Condition): void {
     condition = this.createCondition(condition)
 
-    this.query.state.data = this.pickBy(condition)
+    this.query.state.data = Utils.pickBy(this.query.state.data, condition)
   }
 
   /**
@@ -45,20 +46,5 @@ export default class Delete {
     const id = typeof condition === 'number' ? condition.toString() : condition
 
     return (_record, key) => key !== id
-  }
-
-  /**
-   * Filter through the state and retrieve only the appropriate records.
-   */
-  private pickBy (condition: Predicate): Records {
-    return Object.keys(this.query.state.data).reduce((records, key) => {
-      const record = this.query.state.data[key]
-
-      if (condition(record, key)) {
-        records[key] = record
-      }
-
-      return records
-    }, {} as Records)
   }
 }
