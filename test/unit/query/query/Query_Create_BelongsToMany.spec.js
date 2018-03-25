@@ -148,7 +148,7 @@ describe('Query – Create – Belongs To Many', () => {
     expect(state).toEqual(expected)
   })
 
-  it.only('can create a belongs to many relation data from nested data', () => {
+  it('can create a belongs to many relation data from nested data', () => {
     class Team extends Model {
       static entity = 'teams'
 
