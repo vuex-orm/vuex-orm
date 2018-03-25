@@ -9,6 +9,7 @@ import RelationClass from '../attributes/relations/Relation'
 import Model from '../model/Model'
 import { State, EntityState } from '../modules/Module'
 import Persist from './processors/Persist'
+import Delete from './processors/Delete'
 
 export type WhereBoolean = 'and' | 'or'
 
@@ -242,9 +243,12 @@ export default class Query {
    * Register a callback. It Returns unique ID for registered callback.
    */
   static on (on: string, callback: Function, once: boolean = false): number {
-    const uid = this.lastHookId++
+    const uid = this.lastHookId + 1
+
     this.lastHookId = uid
+
     this.hooks.push({ on, callback, once, uid })
+
     return uid
   }
 
@@ -253,10 +257,13 @@ export default class Query {
    */
   static off (uid: number): boolean {
     const index = this.hooks.findIndex(h => h.uid === uid)
+
     if (index !== -1) {
       this.hooks.splice(index, 1)
+
       return true
     }
+
     return false
   }
 
@@ -1023,24 +1030,16 @@ export default class Query {
   }
 
   /**
-   * Delete data from the state.
+   * Delete a record.
    */
   delete (condition: Condition): void {
-    if (typeof condition === 'function') {
-      this.state.data = _.pickBy(this.state.data, record => !condition(record))
-
-      return
-    }
-
-    const id = typeof condition === 'number' ? condition.toString() : condition
-
-    this.state.data = _.pickBy(this.state.data, (_record, key) => key !== id)
+    (new Delete(this)).delete(condition)
   }
 
   /**
-   * Delete all data from the state.
+   * Delete all records from the state.
    */
   deleteAll (): void {
-    this.state.data = {}
+    (new Delete(this)).deleteAll()
   }
 }
