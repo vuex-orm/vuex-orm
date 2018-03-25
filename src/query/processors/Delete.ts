@@ -1,5 +1,5 @@
 import Utils from '../../support/Utils'
-import { Record, Records } from '../../data/Contract'
+import { Record } from '../../data/Contract'
 import Query from '../Query'
 
 export type Condition = number | string | Predicate
