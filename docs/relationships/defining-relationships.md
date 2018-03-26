@@ -530,7 +530,7 @@ store.getters['entities/comments/query'].with('commentable').get()
 */
 ```
 
-### One To One Polimorphic Relation
+### One To One Polymorphic Relation
 
 You can use `morphOne` method to define the one-to-one polymorphic relation.
 
