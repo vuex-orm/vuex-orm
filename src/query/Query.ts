@@ -1,4 +1,3 @@
-import * as _ from '../support/lodash'
 import Utils from '../support/Utils'
 import Container from '../connections/Container'
 import { Record, NormalizedData, PlainItem, PlainCollection, Item, Collection } from '../data/Contract'
@@ -233,7 +232,7 @@ export default class Query {
 
     const models = this.getModels(state)
 
-    _.forEach(models, (_model, name) => {
+    Utils.forOwn(models, (_model, name) => {
       state[name] && (new this(state, name)).deleteAll()
     })
   }
@@ -329,10 +328,10 @@ export default class Query {
     let updatedItems: Collection = []
     let persistedItems: Collection = []
 
-    _.forEach(normalizedData, (records, entity) => {
+    Utils.forOwn(normalizedData, (records, entity) => {
       const query = new Query(this.rootState, entity)
 
-      _.forEach(records, (record, id) => {
+      Utils.forOwn(records, (record, id) => {
         const recordId = query.model.id(record)
 
         if (recordId === undefined || query.find(recordId) === null) {
@@ -380,7 +379,7 @@ export default class Query {
     const method = items.length > 1 ? 'get' : 'first'
 
     return new Query(this.rootState, this.entity).where('$id', (value: any) => {
-      return _.includes(items, value)
+      return items.includes(value)
     })[method]()
   }
 
@@ -394,7 +393,7 @@ export default class Query {
     }
 
     return new Query(this.rootState, this.entity).where('$id', (value: any) => {
-      return _.includes(items, value)
+      return items.includes(value)
     }).get()
   }
 
@@ -434,7 +433,7 @@ export default class Query {
   processUpdateByCondition (data: any, condition: (record: Record) => boolean): Item | Collection {
     const records = (new Query(this.rootState, this.entity, false)).where(condition).get()
 
-    const items = _.map(records, record => this.model.id(record))
+    const items = records.map(record => this.model.id(record))
 
     this.processUpdate(data, condition)
 
@@ -518,7 +517,7 @@ export default class Query {
     }
 
     if (id !== undefined) {
-      const item = _.find(records, ['$id', id])
+      const item = records.find(record => record.$id === id)
 
       if (item === undefined) {
         return null
@@ -651,7 +650,7 @@ export default class Query {
   addHasConstraint (name: string, constraint?: number | string, count?: number, existence?: boolean): this {
     const ids = this.matchesHasRelation(name, constraint, count, existence)
 
-    this.where('$id', (value: any) => _.includes(ids, value))
+    this.where('$id', (value: any) => ids.includes(value))
 
     return this
   }
@@ -676,7 +675,7 @@ export default class Query {
   addWhereHasConstraint (name: string, constraint: Constraint, existence?: boolean): this {
     const ids = this.matchesWhereHasRelation(name, constraint, existence)
 
-    this.where('$id', (value: any) => _.includes(ids, value))
+    this.where('$id', (value: any) => ids.includes(value))
 
     return this
   }
@@ -707,7 +706,7 @@ export default class Query {
     records = this.executeHooks('afterOrderBy', records)
 
     // Finally, slice the record by limit and offset.
-    records = _.slice(records, this._offset, this._offset + this._limit)
+    records = records.slice(this._offset, this._offset + this._limit)
 
     // Process `afterLimit` hook.
     records = this.executeHooks('afterLimit', records)
@@ -739,26 +738,26 @@ export default class Query {
    * Sort the given data by registered orders.
    */
   sortByOrders (records: PlainCollection): PlainCollection {
-    const keys = _.map(this.orders, 'field')
-    const directions = _.map(this.orders, 'direction')
+    const keys = this.orders.map(order => order.field)
+    const directions = this.orders.map(order => order.direction)
 
-    return _.orderBy(records, keys, directions)
+    return Utils.orderBy(records, keys, directions)
   }
 
   /**
    * Checks if given Record matches the registered where clause.
    */
   whereOnRecord (record: Record): boolean {
-    let whereTypes: any = _.groupBy(this.wheres, where => where.boolean)
+    let whereTypes: any = Utils.groupBy(this.wheres, where => where.boolean)
     let whereResults: boolean[] = []
     let comparator: (where: any) => boolean = this.getComparator(record)
 
     if (whereTypes.and) {
-      whereResults.push(_.every(whereTypes.and, comparator))
+      whereResults.push(whereTypes.and.every(comparator))
     }
 
     if (whereTypes.or) {
-      whereResults.push(_.some(whereTypes.or, comparator))
+      whereResults.push(whereTypes.or.some(comparator))
     }
 
     return whereResults.indexOf(true) !== -1
@@ -853,9 +852,15 @@ export default class Query {
     // Do not wrap result data with class because it's unnecessary.
     this.wrap = false
 
-    const record = _.maxBy(this.get(), field)
+    const numbers = this.get().reduce<number[]>((numbers, item) => {
+      if (typeof item[field] === 'number') {
+        numbers.push(item[field])
+      }
 
-    return record ? record[field] : 0
+      return numbers
+    }, [])
+
+    return numbers.length === 0 ? 0 : Math.max(...numbers)
   }
 
   /**
@@ -865,9 +870,15 @@ export default class Query {
     // Do not wrap result data with class because it's unnecessary.
     this.wrap = false
 
-    const record = _.minBy(this.get(), field)
+    const numbers = this.get().reduce<number[]>((numbers, item) => {
+      if (typeof item[field] === 'number') {
+        numbers.push(item[field])
+      }
 
-    return record ? record[field] : 0
+      return numbers
+    }, [])
+
+    return numbers.length === 0 ? 0 : Math.min(...numbers)
   }
 
   /**
@@ -909,7 +920,7 @@ export default class Query {
       return item
     }
 
-    return _.map(item, data => new this.model(data))
+    return item.map(data => new this.model(data))
   }
 
   /**
@@ -919,7 +930,7 @@ export default class Query {
     const _relation = relation || this.load
     const fields = this.model.fields()
 
-    return _.reduce(_relation, (records, rel) => {
+    return _relation.reduce((records, rel) => {
       return this.processLoadRelations(records, rel, fields)
     }, data)
   }

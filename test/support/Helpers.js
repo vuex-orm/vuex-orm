@@ -1,7 +1,7 @@
-import * as _ from 'lodash-es'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexORM from 'app'
+import Utils from 'app/support/Utils'
 import Container from 'app/connections/Container'
 import Database from 'app/database/Database'
 import Model from 'app/model/Model'
@@ -14,7 +14,7 @@ Vue.use(Vuex)
 export function createApplication (namespace, entities) {
   const database = new Database()
 
-  _.forEach(entities, (entity) => {
+  entities.forEach((entity) => {
     database.register(entity.model, entity.module || {})
   })
 
@@ -31,7 +31,7 @@ export function createApplication (namespace, entities) {
 export function createStore (entities) {
   const database = new Database()
 
-  _.forEach(entities, (entity) => {
+  entities.forEach((entity) => {
     database.register(entity.model, entity.module || {})
   })
 
@@ -47,7 +47,7 @@ export function createState (namespace, state) {
   return {
     $name: namespace,
 
-    ..._.mapValues(state, data => {
+    ...Utils.mapValues(state, data => {
       return { data }
     })
   }

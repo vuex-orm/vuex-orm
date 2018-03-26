@@ -1,5 +1,4 @@
 import Utils from '../support/Utils'
-import * as _ from '../support/lodash'
 import { Records, NormalizedData } from '../data/Contract'
 import Increment from '../attributes/types/Increment'
 import Query from '../query/Query'
@@ -80,9 +79,9 @@ export default class Incrementer {
   max (data: any, query: Query, field: string): number {
     const max: number = query.max(field)
     const records: any = Utils.map(data, value => value)
-    const maxRecord: any = _.maxBy(records, field)
+    const maxRecord: any = Math.max(...records.map((record: any) => record[field] || 0))
 
-    return maxRecord ? _.max([max, maxRecord[field]]) : max
+    return maxRecord ? Math.max(max, maxRecord) : max
   }
 
   /**

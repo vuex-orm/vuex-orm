@@ -1,4 +1,4 @@
-export type Iteretee = (value: any, key: string, collection: any) => any
+export type Iteratee = (value: any, key: string, collection: any) => any
 
 export interface Dictionary<T> {
   [index: string]: T
@@ -21,16 +21,16 @@ function isEmpty (data: any): boolean {
  * Iterates over own enumerable string keyed properties of an object and
  * invokes `iteratee` for each property.
  */
-export function forOwn (object: any, iteretee: Iteretee): void {
-  Object.keys(object).forEach(key => iteretee(object[key], key, object))
+export function forOwn (object: any, iteratee: Iteratee): void {
+  Object.keys(object).forEach(key => iteratee(object[key], key, object))
 }
 
 /**
  * Create an array from the object.
  */
-export function map (object: any, iteretee: Iteretee): any[] {
+export function map (object: any, iteratee: Iteratee): any[] {
   return Object.keys(object).map((key) => {
-    return iteretee(object[key], key, object)
+    return iteratee(object[key], key, object)
   })
 }
 
@@ -40,11 +40,11 @@ export function map (object: any, iteretee: Iteretee): any[] {
  * iteratee. The iteratee is invoked with three arguments:
  * (value, key, object).
  */
-export function mapValues (object: any, iteretee: Iteretee): any {
+export function mapValues (object: any, iteratee: Iteratee): any {
   const newObject = Object.assign({}, object)
 
   return Object.keys(object).reduce((records, key) => {
-    records[key] = iteretee(object[key], key, object)
+    records[key] = iteratee(object[key], key, object)
 
     return records
   }, newObject)
@@ -66,10 +66,120 @@ export function pickBy<T> (object: Dictionary<T>, predicate: Predicate<T>): Dict
   }, {} as Dictionary<T>)
 }
 
+/**
+ * Creates an array of elements, sorted in specified order by the results
+ * of running each element in a collection thru each iteratee.
+ */
+export function orderBy<T> (collection: T[], keys: string[], directions: string[]): any {
+  let index = -1
+
+  const result = collection.map((value) => {
+    const criteria = keys.map(key => value[key])
+
+    return { criteria: criteria, index: ++index, value: value }
+  })
+
+  return baseSortBy(result, (object: any, other: any) => {
+    return compareMultiple(object, other, directions)
+  })
+}
+
+/**
+ * Creates an object composed of keys generated from the results of running
+ * each element of collection thru iteratee.
+ */
+export function groupBy (collection: any[], iteratee: (record: any) => any): any {
+  return collection.reduce((records, record) => {
+    const key = iteratee(record)
+
+    if (records[key] === undefined) {
+      records[key] = []
+    }
+
+    records[key].push(record)
+
+    return records
+  }, {} as any)
+}
+
+/**
+ * The base implementation of `_.sortBy` which uses `comparer` to define the
+ * sort order of `array` and replaces criteria objects with their corresponding
+ * values.
+ *
+ * @private
+ * @param {Array} array The array to sort.
+ * @param {Function} comparer The function to define sort order.
+ * @returns {Array} Returns `array`.
+ */
+function baseSortBy (array: any[], comparer: any): any[] {
+  let length = array.length
+
+  array.sort(comparer)
+
+  while (length--) {
+    array[length] = array[length].value
+  }
+
+  return array
+}
+
+/**
+ * Used by `orderBy` to compare multiple properties of a value to another
+ * and stable sort them.
+ *
+ * If `orders` is unspecified, all values are sorted in ascending order.
+ * Otherwise, specify an order of "desc" for descending or "asc" for
+ * ascending sort order of corresponding values.
+ */
+function compareMultiple (object: any, other: any, orders: string[]): number {
+  const objCriteria = object.criteria
+  const othCriteria = other.criteria
+  const length = objCriteria.length
+  const ordersLength = orders.length
+
+  let index = -1
+
+  while (++index < length) {
+    const result = compareAscending(objCriteria[index], othCriteria[index])
+
+    if (result) {
+      if (index >= ordersLength) {
+        return result
+      }
+
+      const order = orders[index]
+
+      return result * (order === 'desc' ? -1 : 1)
+    }
+  }
+
+  return object.index - other.index
+}
+
+/**
+ * Compares values to sort them in ascending order.
+ */
+function compareAscending (value: any, other: any): number {
+  if (value !== other) {
+    if (value > other) {
+      return 1
+    }
+
+    if (value < other) {
+      return -1
+    }
+  }
+
+  return 0
+}
+
 export default {
   isEmpty,
   forOwn,
+  groupBy,
   map,
   mapValues,
+  orderBy,
   pickBy
 }

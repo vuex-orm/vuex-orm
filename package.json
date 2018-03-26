@@ -39,13 +39,6 @@
   "bugs": {
     "url": "https://github.com/vuex-orm/vuex-orm/issues"
   },
-  "dependencies": {
-    "@types/lodash-es": "^4.17.0",
-    "lodash-es": "^4.17.7",
-    "normalizr": "^3.2.4",
-    "vue": "^2.5.16",
-    "vuex": "^3.0.1"
-  },
   "devDependencies": {
     "@types/sinon": "^4.3.0",
     "babel-core": "^6.26.0",
@@ -59,8 +52,9 @@
     "gitbook-plugin-edit-link": "^2.0.2",
     "gitbook-plugin-github": "^3.0.0",
     "istanbul-instrumenter-loader": "^3.0.0",
-    "mocha": "^5.0.4",
+    "mocha": "^5.0.5",
     "mocha-webpack": "2.0.0-beta.0",
+    "normalizr": "^3.2.4",
     "nyc": "^11.6.0",
     "rollup": "^0.57.1",
     "rollup-plugin-commonjs": "^9.1.0",
@@ -71,6 +65,8 @@
     "tslint-config-standard": "^7.0.0",
     "typescript": "^2.7.2",
     "uglify-js": "^3.3.16",
+    "vue": "^2.5.16",
+    "vuex": "^3.0.1",
     "webpack": "^4.2.0",
     "webpack-node-externals": "^1.6.0"
   },

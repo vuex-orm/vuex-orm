@@ -1,5 +1,4 @@
 import * as Vuex from 'vuex'
-import * as _ from '../support/lodash'
 import Utils from '../support/Utils'
 import Container from '../connections/Container'
 import Connection from '../connections/Connection'
@@ -295,7 +294,7 @@ export default class Model {
   static incrementFields (): { [key: string]: Increment }[] {
     const fields: { [key: string]: Increment }[] = []
 
-    _.forEach(this.fields(), (field, key) => {
+    Utils.forOwn(this.fields(), (field, key) => {
       if (field instanceof Increment) {
         fields.push({ [key]: field })
       }
@@ -317,7 +316,7 @@ export default class Model {
   static pivotFields (): { [key: string]: BelongsToMany | MorphToMany | MorphedByMany }[] {
     const fields: { [key: string]: BelongsToMany | MorphToMany | MorphedByMany }[] = []
 
-    _.forEach(this.fields(), (field, key) => {
+    Utils.forOwn(this.fields(), (field, key) => {
       if (field instanceof BelongsToMany || field instanceof MorphToMany || field instanceof MorphedByMany) {
         fields.push({ [key]: field })
       }
@@ -507,7 +506,7 @@ export default class Model {
    * Build Json data.
    */
   $buildJson (data: Fields, field: { [key: string]: any }): any {
-    return _.mapValues(data, (attr, key) => {
+    return Utils.mapValues(data, (attr, key) => {
       if (!field[key]) {
         return field[key]
       }

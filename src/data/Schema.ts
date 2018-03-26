@@ -1,5 +1,5 @@
 import { schema, Schema as NormalizrSchema } from 'normalizr'
-import * as _ from '../support/lodash'
+import Utils from '../support/Utils'
 import Model from '../model/Model'
 import Attrs, { Field, Fields, Relation } from '../attributes/contracts/Contract'
 import HasOne from '../attributes/relations/HasOne'
@@ -61,7 +61,8 @@ export default class Schema {
    * Build a definition schema.
    */
   static build (model: typeof Model, fields: Fields, schemas: Schemas): NormalizrSchema {
-    return _.reduce(fields, (definition, field, key) => {
+    return Object.keys(fields).reduce((definition, key) => {
+      const field = fields[key]
       const def = this.buildRelations(model, field, schemas)
 
       if (def) {
@@ -149,7 +150,7 @@ export default class Schema {
    * Build a morph schema definition.
    */
   static buildMorphOne (attr: MorphTo, schemas: Schemas, parent: typeof Model) {
-    const s = _.mapValues(parent.conn().models(), (model) => {
+    const s = Utils.mapValues(parent.conn().models(), (model) => {
       return this.buildOne(model, schemas, model, attr)
     })
 
