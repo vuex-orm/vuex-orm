@@ -23,7 +23,7 @@ export interface Schemas {
 
 export default class Schema {
   /**
-   * Create a schema of given model.
+   * Create a schema for the given model.
    */
   static one (model: typeof Model, schemas: Schemas = {}, parent?: typeof Model, attr?: Relation): schema.Entity {
     const noKey = new NoKey()
@@ -44,25 +44,20 @@ export default class Schema {
   }
 
   /**
-   * Create a array schema of givene model.
+   * Create an array schema for the given model.
    */
   static many (model: typeof Model, schemas: Schemas = {}, parent?: typeof Model, attr?: Relation): schema.Array {
     return new schema.Array(this.one(model, schemas, parent, attr))
   }
 
   /**
-   * Create a dfinition from given fields.
+   * Create a dfinition for the given model.
    */
-  static definition (model: typeof Model, schemas: Schemas): NormalizrSchema {
-    return this.build(model, model.fields(), schemas)
-  }
+  static definition (model: typeof Model, schemas: Schemas, fields?: Fields): NormalizrSchema {
+    const theFields = fields || model.fields()
 
-  /**
-   * Build a definition schema.
-   */
-  static build (model: typeof Model, fields: Fields, schemas: Schemas): NormalizrSchema {
-    return Object.keys(fields).reduce((definition, key) => {
-      const field = fields[key]
+    return Object.keys(theFields).reduce((definition, key) => {
+      const field = theFields[key]
       const def = this.buildRelations(model, field, schemas)
 
       if (def) {
@@ -70,7 +65,7 @@ export default class Schema {
       }
 
       return definition
-    }, {} as { [key: string]: NormalizrSchema })
+    }, {} as NormalizrSchema)
   }
 
   /**
@@ -78,7 +73,7 @@ export default class Schema {
    */
   static buildRelations (model: typeof Model, field: Field, schemas: Schemas): NormalizrSchema | null {
     if (!Attrs.isAttribute(field)) {
-      return this.build(model, field, schemas)
+      return this.definition(model, schemas, field)
     }
 
     if (field instanceof HasOne) {
