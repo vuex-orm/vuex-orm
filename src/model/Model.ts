@@ -43,8 +43,8 @@ export default class Model {
   /**
    * Create a model instance.
    */
-  constructor (data?: Record) {
-    this.$build(this, this.$fields(), data)
+  constructor (record?: Record) {
+    this.$build(this, this.$fields(), record)
   }
 
   /**
@@ -448,6 +448,20 @@ export default class Model {
   }
 
   /**
+   * The definition of the fields of the model and its relations.
+   */
+  $fields (): Fields {
+    return this.$self().fields()
+  }
+
+  /**
+   * Get the value of the primary key.
+   */
+  $id (): any {
+    return this.$self().id(this)
+  }
+
+  /**
    * Get the connection instance out of the container.
    */
   $conn (): Connection {
@@ -483,21 +497,9 @@ export default class Model {
   }
 
   /**
-   * Get the value of the primary key.
-   */
-  $id (): any {
-    return this.$self().id(this)
-  }
-
-  /**
-   * The definition of the fields of the model and its relations.
-   */
-  $fields (): Fields {
-    return this.$self().fields()
-  }
-
-  /**
-   * Build model by initializing given data.
+   * Fill the model instance with the given record. If no record were passed,
+   * or if the record has any missing fields, each value of the fields will
+   * be filled with its default value defined at model fields definition.
    */
   $build (self: { [key: string]: any }, fields: Fields, data?: Record): void {
     // Create empty object if the `data` is not present. We can't use
