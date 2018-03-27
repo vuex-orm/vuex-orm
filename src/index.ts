@@ -56,35 +56,6 @@ export interface VuexORM {
   mutations: Mutations
 }
 
-export default {
-  install,
-  use,
-  Database,
-  Model,
-  Query,
-  Type,
-  Attribute,
-  Attr,
-  Increment,
-  Relation,
-  HasOne,
-  BelongsTo,
-  HasMany,
-  HasManyBy,
-  BelongsToMany,
-  HasManyThrough,
-  MorphTo,
-  MorphOne,
-  MorphMany,
-  MorphToMany,
-  MorphedByMany,
-  rootGetters,
-  subGetters,
-  rootActions,
-  subActions,
-  mutations
-} as VuexORM
-
 export {
   install,
   use,
@@ -113,3 +84,32 @@ export {
   subActions,
   mutations
 }
+
+export default {
+  install,
+  use,
+  Database,
+  Model,
+  Query,
+  Type,
+  Attribute,
+  Attr,
+  Increment,
+  Relation,
+  HasOne,
+  BelongsTo,
+  HasMany,
+  HasManyBy,
+  BelongsToMany,
+  HasManyThrough,
+  MorphTo,
+  MorphOne,
+  MorphMany,
+  MorphToMany,
+  MorphedByMany,
+  rootGetters,
+  subGetters,
+  rootActions,
+  subActions,
+  mutations
+} as VuexORM

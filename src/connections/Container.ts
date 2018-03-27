@@ -1,15 +1,11 @@
 import Database from '../database/Database'
 import Connection from './Connection'
 
-export interface Connections {
-  [name: string]: Connection
-}
-
 export default class Container {
   /**
    * A list of connections that have been registered to Vuex ORM.
    */
-  static connections: Connections = {}
+  static connections: { [name: string]: Connection } = {}
 
   /**
    * Create a connection instance and registers it to the connections list.

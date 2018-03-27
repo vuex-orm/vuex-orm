@@ -104,13 +104,8 @@ export function groupBy (collection: any[], iteratee: (record: any) => any): any
 
 /**
  * The base implementation of `_.sortBy` which uses `comparer` to define the
- * sort order of `array` and replaces criteria objects with their corresponding
- * values.
- *
- * @private
- * @param {Array} array The array to sort.
- * @param {Function} comparer The function to define sort order.
- * @returns {Array} Returns `array`.
+ * sort order of `array` and replaces criteria objects with their
+ * corresponding values.
  */
 function baseSortBy (array: any[], comparer: any): any[] {
   let length = array.length

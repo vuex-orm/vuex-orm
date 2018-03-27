@@ -5,7 +5,7 @@ import { NormalizedData } from './Contract'
 import Schema from './Schema'
 import PivotCreator from './PivotCreator'
 
-export default class Data {
+export default class Normalizer {
   /**
    * Normalize the data.
    */

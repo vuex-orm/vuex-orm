@@ -2,10 +2,6 @@ import * as Vuex from 'vuex'
 import Database from '../database/Database'
 import Model from '../model/Model'
 
-export interface Models {
-  [entity: string]: typeof Model
-}
-
 export default class Connection {
   /**
    * The database instance.
@@ -33,13 +29,13 @@ export default class Connection {
   /**
    * Get models from the database.
    */
-  models (): Models {
+  models (): { [entity: string]: typeof Model } {
     return this.database.entities.reduce((models, entity) => {
       return {
         ...models,
         [entity.model.entity]: entity.model
       }
-    }, {} as Models)
+    }, {} as { [entity: string]: typeof Model })
   }
 
   /**
