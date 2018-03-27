@@ -20,7 +20,7 @@ export default class MorphTo extends Relation {
    * Create a new morph to instance.
    */
   constructor (model: typeof Model, id: string, type: string) {
-    super(model)
+    super(model) /* istanbul ignore next */
 
     this.id = id
     this.type = type

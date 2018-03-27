@@ -58,7 +58,7 @@ export default class BelongsToMany extends Relation {
     parentKey: string,
     relatedKey: string
   ) {
-    super(model)
+    super(model) /* istanbul ignore next */
 
     this.related = this.model.relation(related)
     this.pivot = this.model.relation(pivot)

@@ -48,7 +48,7 @@ export default class HasManyThrough extends Relation {
     localKey: string,
     secondLocalKey: string
   ) {
-    super(model)
+    super(model) /* istanbul ignore next */
 
     this.related = this.model.relation(related)
     this.through = this.model.relation(through)

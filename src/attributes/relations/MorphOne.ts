@@ -30,7 +30,7 @@ export default class MorphOne extends Relation {
    * Create a new belongs to instance.
    */
   constructor (model: typeof Model, related: Entity, id: string, type: string, localKey: string) {
-    super(model)
+    super(model) /* istanbul ignore next */
 
     this.related = this.model.relation(related)
     this.id = id

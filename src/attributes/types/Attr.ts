@@ -19,7 +19,7 @@ export default class Attr extends Type {
    * Create a new attr instance.
    */
   constructor (model: typeof Model, value: any, mutator?: Mutator) {
-    super(model)
+    super(model) /* istanbul ignore next */
 
     this.value = value
     this.mutator = mutator
