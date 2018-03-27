@@ -273,6 +273,13 @@ export default class Query {
   }
 
   /**
+   * Create a new query instance.
+   */
+  newPlainQuery (entity: string): Query {
+    return (new Query(this.rootState, entity)).plain()
+  }
+
+  /**
    * Get model of given name from the container.
    */
   getModel (name?: string): typeof Model {
@@ -286,6 +293,15 @@ export default class Query {
    */
   getModels (): { [name: string]: typeof Model } {
     return this.self().getModels(this.rootState)
+  }
+
+  /**
+   * Set wrap flag to false.
+   */
+  plain (): Query {
+    this.wrap = false
+
+    return this
   }
 
   /**

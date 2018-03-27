@@ -289,25 +289,47 @@ export default class Model {
   }
 
   /**
+   * Get the attribute class for the given attribute name.
+   */
+  static getAttributeClass (name: string): typeof Attribute {
+    switch (name) {
+      case 'increment': return Increment
+
+      default:
+        throw Error(`The attribute name "${name}" doesn't exists.`)
+    }
+  }
+
+  /**
+   * Get all of the fields that matches the given attribute name.
+   */
+  static getFields (name: string): { [key: string]: Attribute } {
+    const attr = this.getAttributeClass(name)
+    const fields = this.fields()
+
+    return Object.keys(fields).reduce((newFields, key) => {
+      const field = fields[key]
+
+      if (field instanceof attr) {
+        newFields[key] = field
+      }
+
+      return newFields
+    }, {} as { [key: string]: Attribute })
+  }
+
+  /**
    * Get all `increment` fields from the schema.
    */
-  static incrementFields (): { [key: string]: Increment }[] {
-    const fields: { [key: string]: Increment }[] = []
-
-    Utils.forOwn(this.fields(), (field, key) => {
-      if (field instanceof Increment) {
-        fields.push({ [key]: field })
-      }
-    })
-
-    return fields
+  static getIncrementFields (): { [key: string]: Increment } {
+    return this.getFields('increment') as { [key: string]: Increment }
   }
 
   /**
    * Check if fields contains the `increment` field type.
    */
   static hasIncrementFields (): boolean {
-    return this.incrementFields().length > 0
+    return Object.keys(this.getIncrementFields()).length > 0
   }
 
   /**

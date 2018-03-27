@@ -42,7 +42,7 @@ describe('Query – Create – Morph To Many', () => {
 
       static fields () {
         return {
-          id: this.attr(null),
+          id: this.increment(),
           tag_id: this.attr(null),
           taggable_id: this.attr(null),
           taggable_type: this.attr(null)
@@ -77,8 +77,8 @@ describe('Query – Create – Morph To Many', () => {
         '3': { $id: 3, id: 3, name: 'cast' }
       },
       taggables: {
-        '1_2_posts': { $id: '1_2_posts', id: null, tag_id: 2, taggable_id: 1, taggable_type: 'posts' },
-        '1_3_posts': { $id: '1_3_posts', id: null, tag_id: 3, taggable_id: 1, taggable_type: 'posts' }
+        '1': { $id: 1, id: 1, tag_id: 2, taggable_id: 1, taggable_type: 'posts' },
+        '2': { $id: 2, id: 2, tag_id: 3, taggable_id: 1, taggable_type: 'posts' }
       }
     })
 

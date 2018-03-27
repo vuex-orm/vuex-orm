@@ -66,8 +66,8 @@ describe('Query – Create – Belongs To Many', () => {
         '3': { $id: 3, id: 3, users: [] }
       }},
       roleUser: { data: {
-        '1_2': { $id: '1_2', user_id: 1, role_id: 2  },
-        '1_3': { $id: '1_3', user_id: 1, role_id: 3 }
+        '2_1': { $id: '2_1', user_id: 1, role_id: 2  },
+        '3_1': { $id: '3_1', user_id: 1, role_id: 3 }
       }}
     }
 
@@ -231,8 +231,8 @@ describe('Query – Create – Belongs To Many', () => {
         '3': { $id: 3, id: 3, users: [] }
       }},
       roleUser: { data: {
-        '1_2': { $id: '1_2', user_id: 1, role_id: 2  },
-        '1_3': { $id: '1_3', user_id: 1, role_id: 3 }
+        '2_1': { $id: '2_1', user_id: 1, role_id: 2  },
+        '3_1': { $id: '3_1', user_id: 1, role_id: 3 }
       }}
     }
 

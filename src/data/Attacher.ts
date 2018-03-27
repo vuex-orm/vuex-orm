@@ -7,7 +7,7 @@ export default class Attacher {
   /**
    * Attach missing relational key to the records.
    */
-  static attach (data: NormalizedData, Query: Query): NormalizedData {
+  static process (data: NormalizedData, Query: Query): NormalizedData {
     Utils.forOwn(data, (entity, name) => {
       const fields = Query.getModel(name).fields()
 

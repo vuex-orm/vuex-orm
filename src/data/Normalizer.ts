@@ -9,7 +9,7 @@ export default class Data {
   /**
    * Normalize the data.
    */
-  static normalize (data: any, Query: Query): NormalizedData {
+  static process (data: any, Query: Query): NormalizedData {
     if (Utils.isEmpty(data)) {
       return {}
     }

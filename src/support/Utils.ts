@@ -1,10 +1,10 @@
 export type Iteratee = (value: any, key: string, collection: any) => any
 
-export interface Dictionary<T> {
-  [index: string]: T
-}
-
 export type Predicate<T> = (value: T, key: string) => boolean
+
+export interface Dictionary<T> {
+  [key: string]: T
+}
 
 /**
  * Check if the given object is empty.

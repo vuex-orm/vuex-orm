@@ -1,20 +1,22 @@
 import Query from '../query/Query'
 import { NormalizedData } from './Contract'
 import Normalizer from './Normalizer'
-import Attacher from './Attacher'
-import Builder from './Builder'
 import Incrementer from './Incrementer'
+import Attacher from './Attacher'
+import IdFixer from './IdFixer'
+import Builder from './Builder'
 
 export default class Data {
   /**
    * Normalize the data.
    */
   static normalize (data: any, query: Query): NormalizedData {
-    const normalizedData = Normalizer.normalize(data, query)
+    data = Normalizer.process(data, query)
+    data = Incrementer.process(data, query)
+    data = Attacher.process(data, query)
+    data = IdFixer.process(data, query)
 
-    const attachedData = Attacher.attach(normalizedData, query)
-
-    return Incrementer.increment(attachedData, query)
+    return data
   }
 
   /**
