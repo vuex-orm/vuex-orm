@@ -130,7 +130,7 @@ describe('Model – Hydrate', () => {
 
     const expected = { id: 1, name: 'John' }
 
-    expect(User.fill(data)).toEqual(expected)
+    expect(User.hydrate(data)).toEqual(expected)
   })
 
   it('can fill the given data woth nested field', () => {
@@ -163,7 +163,7 @@ describe('Model – Hydrate', () => {
       }
     }
 
-    expect(User.fill(data)).toEqual(expected)
+    expect(User.hydrate(data)).toEqual(expected)
   })
 
   it('can keep specified field untouched when filling the given data', () => {
@@ -180,7 +180,7 @@ describe('Model – Hydrate', () => {
 
     const expected = { $id: 1, id: 1, name: 'John' }
 
-    expect(User.fill(data, ['$id'])).toEqual(expected)
+    expect(User.hydrate(data, ['$id'])).toEqual(expected)
   })
 
   it('can fill many data', () => {
@@ -203,7 +203,7 @@ describe('Model – Hydrate', () => {
       '2': { id: 2, name: 'John' }
     }
 
-    expect(User.fillMany(data)).toEqual(expected)
+    expect(User.hydrateMany(data)).toEqual(expected)
   })
 
   it('can keep specified field untouched when filling many data', () => {
@@ -226,6 +226,6 @@ describe('Model – Hydrate', () => {
       '2': { $id: 2, id: 2, name: 'John' }
     }
 
-    expect(User.fillMany(data, ['$id'])).toEqual(expected)
+    expect(User.hydrateMany(data, ['$id'])).toEqual(expected)
   })
 })

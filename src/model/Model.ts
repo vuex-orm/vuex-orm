@@ -44,7 +44,7 @@ export default class Model {
    * Create a model instance.
    */
   constructor (record?: Record) {
-    this.$build(this, this.$fields(), record)
+    this.$fill(record)
   }
 
   /**
@@ -402,7 +402,7 @@ export default class Model {
    * Fill any missing fields in the given data with the default
    * value defined in the model schema.
    */
-  static fill (data: Record, keep: string[] = [], fields?: Fields): Record {
+  static hydrate (data: Record, keep: string[] = [], fields?: Fields): Record {
     const _fields = fields || this.fields()
 
     const record = Object.keys(_fields).reduce((record, key) => {
@@ -415,7 +415,7 @@ export default class Model {
         return record
       }
 
-      record[key] = this.fill(value || [], [], field)
+      record[key] = this.hydrate(value || [], [], field)
 
       return record
     }, {} as Record)
@@ -432,12 +432,36 @@ export default class Model {
   /**
    * Fill multiple records.
    */
-  static fillMany (data: Records, keep?: string[]): Records {
+  static hydrateMany (data: Records, keep?: string[]): Records {
     return Object.keys(data).reduce((records, id) => {
-      records[id] = this.fill(data[id], keep)
+      records[id] = this.hydrate(data[id], keep)
 
       return records
     }, {} as Records)
+  }
+
+  /**
+   * Fill the given obejct with the given record. If no record were passed,
+   * or if the record has any missing fields, each value of the fields will
+   * be filled with its default value defined at model fields definition.
+   */
+  static fill (self: Model | Record = {}, record: Record = {}, fields?: Fields): Model | Record {
+    const theFields = fields || this.fields()
+
+    return Object.keys(theFields).reduce((target, key) => {
+      const field = theFields[key]
+      const value = record[key]
+
+      if (field instanceof Attribute) {
+        target[key] = field.make(value, record, key)
+
+        return target
+      }
+
+      target[key] = this.fill(target[key], value, field)
+
+      return target
+    }, self)
   }
 
   /**
@@ -501,22 +525,8 @@ export default class Model {
    * or if the record has any missing fields, each value of the fields will
    * be filled with its default value defined at model fields definition.
    */
-  $build (self: { [key: string]: any }, fields: Fields, data?: Record): void {
-    // Create empty object if the `data` is not present. We can't use
-    // default-initialized parameter because it might be `null`.
-    const record = data || {}
-
-    Utils.forOwn(fields, (field, key) => {
-      if (field instanceof Attribute) {
-        self[key] = field.make(record[key], record, key)
-
-        return
-      }
-
-      self[key] = {}
-
-      this.$build(self[key], field, record[key])
-    })
+  $fill (record?: Record): void {
+    this.$self().fill(this, record)
   }
 
   /**

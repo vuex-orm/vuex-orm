@@ -66,7 +66,7 @@ export default class Persist {
   saveEach (): Item | Collection {
     Utils.forOwn(this.data, (records, entity) => {
       const method = this.getMethod(entity)
-      const filledRecords = this.query.getModel(entity).fillMany(records, ['$id'])
+      const filledRecords = this.query.getModel(entity).hydrateMany(records, ['$id'])
 
       this[method](entity, filledRecords)
     })
