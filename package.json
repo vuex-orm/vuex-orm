@@ -59,15 +59,15 @@
     "rollup": "^0.57.1",
     "rollup-plugin-commonjs": "^9.1.0",
     "rollup-plugin-node-resolve": "^3.3.0",
-    "sinon": "^4.4.8",
+    "sinon": "^4.4.10",
     "ts-loader": "^4.1.0",
     "tslint": "^5.9.1",
     "tslint-config-standard": "^7.0.0",
-    "typescript": "^2.7.2",
+    "typescript": "^2.8.1",
     "uglify-js": "^3.3.16",
     "vue": "^2.5.16",
     "vuex": "^3.0.1",
-    "webpack": "^4.2.0",
+    "webpack": "^4.3.0",
     "webpack-node-externals": "^1.6.0"
   },
   "nyc": {
