@@ -2,7 +2,7 @@
 
 Vuex ORM is a plugin for [Vuex](https://github.com/vuejs/vuex) to enable Object-Relational Mapping access to the Vuex Store. Heavily inspired by Redux recipe of ["Normalizing State Shape"](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) and ["Updating Normalized Data"](http://redux.js.org/docs/recipes/reducers/UpdatingNormalizedData.html).
 
-Vuex ORM lets you create "normalized" data schema within Vuex Store with relationships like any other usual ORM library. It also provides fluent API to get, search and update Store state.
+Vuex ORM lets you create "normalized" data schema within Vuex Store with relationships such as "Has One" and "Belongs To Many" like any other usual ORM library. It also provides fluent API to get, search and update Store state.
 
 ## Table Of Contents
 
@@ -37,6 +37,8 @@ Vuex ORM lets you create "normalized" data schema within Vuex Store with relatio
 
 Join us on our [Slack Channel](https://join.slack.com/t/vuex-orm/shared_invite/enQtMzMxMTY4MzcwOTYzLTYwZDFjNTgzZDk4MDJlODJmMzk5NmNmZDBiYjIyMTVjMDk1MGRkYTEyYmNkMGM4MjRkNGJmYTBhNTIxYTA5OWI) for any questions and discussions.
 
+While there is the Slack Channel, do not hesitate to open an [issue](https://github.com/vuex-orm/vuex-orm/issues) for any question you might have. We're always more than happy to hear any feedback, and we don't care what kind of form they are.
+
 ## Examples
 
 You can find example application built with Vuex ORM [at here](https://github.com/vuex-orm/vuex-orm-examples).
@@ -45,7 +47,8 @@ You can find example application built with Vuex ORM [at here](https://github.co
 
 Vuex ORM can be extended via a plugin to add additional features. Here is the list of available plugins.
 
-- [plugin-search](https://github.com/vuex-orm/plugin-search) – The plugin adds a `search()` method to the vuex-orm query methods to easily filter matched records using fuzzy search logic from the [Fuse.js](http://fusejs.io) library.
+- [vuex-orm-search](https://github.com/vuex-orm/plugin-search) – The plugin adds a `search()` method to the vuex-orm query methods to easily filter matched records using fuzzy search logic from the [Fuse.js](http://fusejs.io) library.
+- [vuex-orm-apollo](https://github.com/vuex-orm/vuex-orm-apollo) – The plugin to sync the data against a [GraphQL](https://graphql.org) API via [Apollo](https://www.apollographql.com).
 
 ## Resources
 

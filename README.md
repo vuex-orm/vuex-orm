@@ -1,17 +1,29 @@
-# Vuex ORM
+<p align="center">
+  <img width="192" src="https://github.com/vuex-orm/vuex-orm/blob/master/logo-vuex-orm.png" alt="Vuex ORM">
+</p>
 
-[![Travis CI](https://travis-ci.org/vuex-orm/vuex-orm.svg?branch=master)](https://travis-ci.org/vuex-orm/vuex-orm)
-[![codecov](https://codecov.io/gh/vuex-orm/vuex-orm/branch/master/graph/badge.svg)](https://codecov.io/gh/vuex-orm/vuex-orm)
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-[![License](https://img.shields.io/npm/l/@vuex-orm/core.svg)](https://github.com/vuex-orm/vuex-orm/blob/master/LICENSE.md)
+<h1 align="center">Vuex ORM</h1>
+
+<p align="center">
+  <a href="https://travis-ci.org/vuex-orm/vuex-orm">
+    <img src="https://travis-ci.org/vuex-orm/vuex-orm.svg?branch=master" alt="Travis CI">
+  </a>
+  <a href="https://codecov.io/gh/vuex-orm/vuex-orm">
+    <img src="https://codecov.io/gh/vuex-orm/vuex-orm/branch/master/graph/badge.svg" alt="codecov">
+  </a>
+  <a href="https://standardjs.com">
+    <img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="JavaScript Style Guide">
+  </a>
+  <a href="https://github.com/vuex-orm/vuex-orm/blob/master/LICENSE.md">
+    <img src="https://img.shields.io/npm/l/@vuex-orm/core.svg" alt="License">
+  </a>
+</p>
 
 Vuex ORM is a plugin for [Vuex](https://github.com/vuejs/vuex) to enable Object-Relational Mapping access to the Vuex Store. Heavily inspired by Redux recipe of ["Normalizing State Shape"](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) and ["Updating Normalized Data"](http://redux.js.org/docs/recipes/reducers/UpdatingNormalizedData.html).
 
-Vuex ORM lets you create "normalized" data schema within Vuex Store with relationships like any other usual ORM library. It also provides fluent API to get, search and update Store state.
+Vuex ORM lets you create "normalized" data schema within Vuex Store with relationships such as "Has One" and "Belongs To Many" like any other usual ORM library. It also provides fluent API to get, search and update Store state.
 
 Learn more about the concept and motivation of Vuex ORM at [What Is Vuex ORM?](https://vuex-orm.github.io/vuex-orm/prologue/what-is-vuex-orm.html).
-
-> **IMPORTANT NOTICE:** As of Vuex ORM 0.16.0, the package has moved to `@vuex-orm/core` from `vuex-orm`. If you were using Vuex ORM before 0.15.0, please update the package name of your `package.json` to `@vuex-orm/core`.
 
 ## Documentation
 
@@ -21,9 +33,11 @@ You can check out the full documentation for Vuex ORM at https://vuex-orm.github
 
 Join us on our [Slack Channel](https://join.slack.com/t/vuex-orm/shared_invite/enQtMzMxMTY4MzcwOTYzLTYwZDFjNTgzZDk4MDJlODJmMzk5NmNmZDBiYjIyMTVjMDk1MGRkYTEyYmNkMGM4MjRkNGJmYTBhNTIxYTA5OWI) for any questions and discussions.
 
+While there is the Slack Channel, do not hesitate to open an [issue](https://github.com/vuex-orm/vuex-orm/issues) for any question you might have. We're always more than happy to hear any feedback, and we don't care what kind of form they are.
+
 ## Examples
 
-You can find example application built with Vuex ORM [at here](https://github.com/vuex-orm/vuex-orm-examples).
+You can find example application built with Vuex ORM at https://github.com/vuex-orm/vuex-orm-examples.
 
 ## Quick Start
 
@@ -245,7 +259,8 @@ Cool right? To get to know more about Vuex ORM, please [see the documentation](h
 
 Vuex ORM can be extended via a plugin to add additional features. Here is the list of available plugins.
 
-- [plugin-search](https://github.com/vuex-orm/plugin-search) – The plugin adds a `search()` method to the vuex-orm query methods to easily filter matched records using fuzzy search logic from the [Fuse.js](http://fusejs.io) library.
+- [vuex-orm-search](https://github.com/vuex-orm/plugin-search) – The plugin adds a `search()` method to the vuex-orm query methods to easily filter matched records using fuzzy search logic from the [Fuse.js](http://fusejs.io) library.
+- [vuex-orm-apollo](https://github.com/vuex-orm/vuex-orm-apollo) – The plugin to sync the data against a [GraphQL](https://graphql.org) API via [Apollo](https://www.apollographql.com).
 
 ## Contribution
 
