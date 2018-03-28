@@ -1,6 +1,5 @@
 import * as Vuex from 'vuex'
-import { Item, Collection } from '../data/Contract'
-import Query from '../query/Query'
+import { Query, Item, Collection } from '../query'
 import State from './State'
 
 export type RootGetters = Vuex.GetterTree<State, any>

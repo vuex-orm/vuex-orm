@@ -1,4 +1,4 @@
-import { Record, Records, NormalizedData, PlainItem, PlainCollection } from '../../data/Contract'
+import { Record, Records, NormalizedData } from '../../data'
 import Query, { Relation as Load } from '../../query/Query'
 import { Fields } from '../contracts/Contract'
 import Attribute from '../Attribute'
@@ -12,7 +12,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Load relationship records.
    */
-  abstract load (query: Query, collection: PlainCollection, relation: Load): PlainItem | PlainCollection
+  abstract load (query: Query, collection: Record[], relation: Load): Record | Record[] | null
 
   /**
    * Create a new map of the record by given key.
@@ -64,7 +64,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Set given related records to the item.
    */
-  setRelated (item: Record, related: PlainItem | PlainCollection, path: string): Record {
+  setRelated (item: Record, related: Record | Record[] | null, path: string): Record {
     const paths = path.split('.')
     const length = paths.length - 1
 

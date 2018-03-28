@@ -1,10 +1,10 @@
 import Query from '../query/Query'
-import { NormalizedData } from './Contract'
-import Normalizer from './Normalizer'
-import Incrementer from './Incrementer'
-import Attacher from './Attacher'
-import IdFixer from './IdFixer'
-import Builder from './Builder'
+import Normalizer from './processors/Normalizer'
+import Incrementer from './processors/Incrementer'
+import Attacher from './processors/Attacher'
+import IdFixer from './processors/IdFixer'
+import Builder from './processors/Builder'
+import NormalizedData from './NormalizedData'
 
 export default class Data {
   /**

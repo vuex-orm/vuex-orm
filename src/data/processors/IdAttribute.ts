@@ -1,4 +1,4 @@
-import Model from '../model/Model'
+import Model from '../../model/Model'
 import NoKey from './NoKey'
 
 export type Attribute = (value: any, parent: any, key: string) => any

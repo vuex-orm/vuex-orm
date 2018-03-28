@@ -1,5 +1,5 @@
 import { createApplication } from 'test/support/Helpers'
-import NoKey from 'app/data/NoKey'
+import NoKey from 'app/data/processors/NoKey'
 import Model from 'app/model/Model'
 import Query from 'app/query/Query'
 

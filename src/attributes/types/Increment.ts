@@ -1,4 +1,4 @@
-import { Record } from '../../data/Contract'
+import Record from '../../data/Record'
 import Type from './Type'
 
 export default class Increment extends Type {

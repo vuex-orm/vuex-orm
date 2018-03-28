@@ -1,6 +1,6 @@
 import Utils from '../support/Utils'
 import Container from '../connections/Container'
-import { Record, NormalizedData, PlainItem, PlainCollection, Item, Collection } from '../data/Contract'
+import { Record, NormalizedData } from '../data'
 import Data from '../data/Data'
 import Attrs, { Fields } from '../attributes/contracts/Contract'
 import Attribute from '../attributes/Attribute'
@@ -9,6 +9,8 @@ import Model from '../model/Model'
 import State from '../modules/State'
 import EntityState from '../modules/EntityState'
 import Persist from './processors/Persist'
+import Item from './Item'
+import Collection from './Collection'
 
 export type WhereBoolean = 'and' | 'or'
 
@@ -22,7 +24,7 @@ export type Predicate = (item: Record) => boolean
 
 export type Condition = number | string | Predicate
 
-export type Buildable = PlainItem | PlainCollection | null
+export type Buildable = Record | Record[] | null
 
 export type Constraint = (query: Query) => void | boolean
 
@@ -700,8 +702,8 @@ export default class Query {
   /**
    * Process the query and filter data.
    */
-  process (): PlainCollection {
-    let records: PlainCollection = Object.keys(this.state.data).map(id => ({ ...this.state.data[id] }))
+  process (): Record[] {
+    let records: Record[] = Object.keys(this.state.data).map(id => ({ ...this.state.data[id] }))
 
     // Process `beforeProcess` hook.
     records = this.executeHooks('beforeProcess', records)
@@ -747,14 +749,14 @@ export default class Query {
   /**
    * Filter the given data by registered where clause.
    */
-  selectByWheres (records: PlainCollection): PlainCollection {
+  selectByWheres (records: Record[]): Record[] {
     return records.filter(record => this.whereOnRecord(record))
   }
 
   /**
    * Sort the given data by registered orders.
    */
-  sortByOrders (records: PlainCollection): PlainCollection {
+  sortByOrders (records: Record[]): Record[] {
     const keys = this.orders.map(order => order.field)
     const directions = this.orders.map(order => order.direction)
 
@@ -828,7 +830,7 @@ export default class Query {
   /**
    * Execute the callback of the given hook.
    */
-  executeHooks (on: string, records: PlainCollection): PlainCollection {
+  executeHooks (on: string, records: Record[]): Record[] {
     // Track indexes to delete
     let deleteHookIndexes: number[] = []
 
@@ -901,7 +903,7 @@ export default class Query {
   /**
    * Create a item from given record.
    */
-  item (queryItem: PlainItem): Item {
+  item (queryItem: Record | null): Item {
     if (!queryItem) {
       return null
     }
@@ -922,7 +924,7 @@ export default class Query {
   /**
    * Create a collection (array) from given records.
    */
-  collect (collection: PlainCollection): Collection {
+  collect (collection: Record[]): Collection {
     if (Utils.isEmpty(collection)) {
       return []
     }
@@ -943,7 +945,7 @@ export default class Query {
   /**
    * Load the relationships for the record.
    */
-  loadRelations (data: PlainCollection, relation?: Relation[]): PlainCollection {
+  loadRelations (data: Record[], relation?: Relation[]): Record[] {
     const _relation = relation || this.load
     const fields = this.model.fields()
 
@@ -955,7 +957,7 @@ export default class Query {
   /**
    * Process load relationships. This method is for the circuler processes.
    */
-  processLoadRelations (data: PlainCollection, relation: Relation, fields: Fields): PlainCollection {
+  processLoadRelations (data: Record[], relation: Relation, fields: Fields): Record[] {
     const relationName = relation.name.split('.')[0]
 
     let collection: Collection = data
@@ -987,7 +989,7 @@ export default class Query {
    * Check if the given collection has given relationship.
    */
   matchesHasRelation (name: string, constraint?: number | string, count?: number, existence: boolean = true): string[] {
-    let _constraint: (records: PlainCollection) => boolean
+    let _constraint: (records: Record[]) => boolean
 
     if (constraint === undefined) {
       _constraint = record => record.length >= 1

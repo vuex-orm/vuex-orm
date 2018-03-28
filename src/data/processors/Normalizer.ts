@@ -1,7 +1,7 @@
 import { normalize } from 'normalizr'
-import Utils from '../support/Utils'
-import Query from '../query/Query'
-import { NormalizedData } from './Contract'
+import Utils from '../../support/Utils'
+import Query from '../../query/Query'
+import NormalizedData from '../NormalizedData'
 import Schema from './Schema'
 import PivotCreator from './PivotCreator'
 

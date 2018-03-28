@@ -1,5 +1,7 @@
 import Utils from '../../support/Utils'
-import { Records, NormalizedData, Item, Collection } from '../../data/Contract'
+import { Records, NormalizedData } from '../../data'
+import Item from '../Item'
+import Collection from '../Collection'
 import Query from '../Query'
 
 export default class Persist {

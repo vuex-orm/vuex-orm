@@ -1,8 +1,9 @@
-import Utils from '../support/Utils'
-import { Field } from '../attributes/contracts/Contract'
-import Attribute from '../attributes/Attribute'
-import Query from '../query/Query'
-import { Record, NormalizedData } from './Contract'
+import Utils from '../../support/Utils'
+import { Field } from '../../attributes/contracts/Contract'
+import Attribute from '../../attributes/Attribute'
+import Query from '../../query/Query'
+import Record from '../Record'
+import NormalizedData from '../NormalizedData'
 
 export default class Builder {
   /**

@@ -1,6 +1,6 @@
-import Utils from '../support/Utils'
-import Query from '../query/Query'
-import { NormalizedData } from './Contract'
+import Utils from '../../support/Utils'
+import Query from '../../query/Query'
+import NormalizedData from '../NormalizedData'
 
 export default class PivotCreator {
   static create (data: NormalizedData, Query: Query): NormalizedData {

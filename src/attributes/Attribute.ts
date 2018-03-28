@@ -1,4 +1,4 @@
-import { Record } from '../data/Contract'
+import Record from '../data/Record'
 import Model from '../model/Model'
 
 export default abstract class Attribute {

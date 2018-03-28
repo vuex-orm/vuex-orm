@@ -1,7 +1,7 @@
-import Utils from '../support/Utils'
-import Relation from '../attributes/relations/Relation'
-import Query from '../query/Query'
-import { NormalizedData } from './Contract'
+import Utils from '../../support/Utils'
+import Relation from '../../attributes/relations/Relation'
+import Query from '../../query/Query'
+import NormalizedData from '../NormalizedData'
 
 export default class Attacher {
   /**

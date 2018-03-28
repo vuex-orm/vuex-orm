@@ -1,6 +1,7 @@
-import Utils from '../support/Utils'
-import Query from '../query/Query'
-import { Records, NormalizedData } from './Contract'
+import Utils from '../../support/Utils'
+import Query from '../../query/Query'
+import Records from '../Records'
+import NormalizedData from '../NormalizedData'
 
 export default class IdFixer {
   /**

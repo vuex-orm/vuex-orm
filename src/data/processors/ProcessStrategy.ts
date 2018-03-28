@@ -1,8 +1,8 @@
-import Utils from '../support/Utils'
-import Model from '../model/Model'
-import Attrs, { Fields, Relation } from '../attributes/contracts/Contract'
-import Attribute from '../attributes/Attribute'
-import { Record } from './Contract'
+import Utils from '../../support/Utils'
+import Model from '../../model/Model'
+import Attrs, { Fields, Relation } from '../../attributes/contracts/Contract'
+import Attribute from '../../attributes/Attribute'
+import Record from '../Record'
 import NoKey from './NoKey'
 
 export type Strategy = (value: any, parent: any, key: string) => any

@@ -1,4 +1,4 @@
-import { Record, NormalizedData, PlainCollection } from '../../data/Contract'
+import { Record, NormalizedData } from '../../data'
 import Model from '../../model/Model'
 import Query, { Relation as Load } from '../../query/Query'
 import Relation from './Relation'
@@ -87,7 +87,7 @@ export default class HasOne extends Relation {
   /**
    * Load the has one relationship for the record.
    */
-  load (query: Query, collection: PlainCollection, relation: Load): PlainCollection {
+  load (query: Query, collection: Record[], relation: Load): Record[] {
     const relatedPath = this.relatedPath(relation.name)
 
     const relatedQuery = new Query(query.rootState, this.related.entity, false)
