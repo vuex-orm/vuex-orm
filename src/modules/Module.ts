@@ -1,27 +1,11 @@
 import * as Vuex from 'vuex'
-import Model from '../model/Model'
+import Modules from '../database/Modules'
+import EntityState from './EntityState'
 import rootGetters from './rootGetters'
 import rootActions from './rootActions'
 import mutations from './mutations'
 import subGetters from './subGetters'
 import subActions from './subActions'
-
-export interface Entity {
-  model: typeof Model
-  module: Vuex.Module<any, any>
-}
-
-export interface State {
-  $name: string
-  [entity: string]: any
-}
-
-export interface EntityState {
-  $connection: string
-  $name: string
-  data: { [id: string]: any }
-  [key: string]: any
-}
 
 export default class Module {
   /**
@@ -37,7 +21,7 @@ export default class Module {
   /**
    * Create module from the given entities.
    */
-  static create (namespace: string, entities: Entity[]): Vuex.Module<any, any> {
+  static create (namespace: string, modules: Modules): Vuex.Module<any, any> {
     const tree = {
       namespaced: true,
       state: { $name: namespace },
@@ -47,40 +31,36 @@ export default class Module {
       modules: {}
     }
 
-    return this.createTree(tree, namespace, entities)
+    return this.createTree(tree, namespace, modules)
   }
 
   /**
    * Creates module tree to be registered under top level module
    * from the given entities.
    */
-  static createTree (tree: any, namespace: string, entities: Entity[]): Vuex.Module<any, any> {
-    entities.forEach((entity) => {
-      tree.getters[entity.model.entity] = (_state: any, getters: any) => (wrap: boolean = true) => {
-        return getters.query(entity.model.entity, wrap)
+  static createTree (tree: any, namespace: string, modules: Modules): Vuex.Module<any, any> {
+    Object.keys(modules).forEach((name) => {
+      const module = modules[name]
+
+      tree.getters[name] = (_state: any, getters: any) => (wrap: boolean = true) => {
+        return getters.query(name, wrap)
       }
 
-      tree.modules[entity.model.entity] = {
+      tree.modules[name] = {
         namespaced: true,
         state: {
-          ...entity.module.state,
+          ...module.state,
           ...this.state,
           $connection: namespace,
-          $name: entity.model.entity
+          $name: name
         }
       }
 
-      tree.modules[entity.model.entity]['getters'] = {
-        ...subGetters,
-        ...entity.module.getters
-      }
+      tree.modules[name]['getters'] = { ...subGetters, ...module.getters }
 
-      tree.modules[entity.model.entity]['actions'] = {
-        ...subActions,
-        ...entity.module.actions
-      }
+      tree.modules[name]['actions'] = { ...subActions, ...module.actions }
 
-      tree.modules[entity.model.entity]['mutations'] = entity.module.mutations || {}
+      tree.modules[name]['mutations'] = module.mutations || {}
     })
 
     return tree

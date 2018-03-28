@@ -1,5 +1,5 @@
 import * as Vuex from 'vuex'
-import { EntityState } from './Module'
+import EntityState from './EntityState'
 
 export type SubActions = Vuex.ActionTree<EntityState, any>
 

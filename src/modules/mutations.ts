@@ -1,5 +1,5 @@
 import * as Vuex from 'vuex'
-import { State } from './Module'
+import State from './State'
 import Query from '../query/Query'
 
 export type Mutations = Vuex.MutationTree<State>

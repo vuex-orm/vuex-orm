@@ -3,7 +3,7 @@ import Connection from './Connection'
 
 export default class Container {
   /**
-   * A list of connections that have been registered to Vuex ORM.
+   * A list of connections that have been registered to the Vuex Store.
    */
   static connections: { [name: string]: Connection } = {}
 
@@ -15,7 +15,7 @@ export default class Container {
   }
 
   /**
-   * Find connection from the connection list.
+   * Find connection with the given from the connection list.
    */
   static connection (name: string): Connection {
     return this.connections[name]

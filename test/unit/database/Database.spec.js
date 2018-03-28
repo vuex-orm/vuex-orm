@@ -23,8 +23,8 @@ describe('Database', () => {
     const database = new Database()
 
     const expected = [
-      { model: User, module: users },
-      { model: Post, module: posts }
+      { name: 'users', model: User, module: users },
+      { name: 'posts', model: Post, module: posts }
     ]
 
     database.register(User, users)
@@ -64,6 +64,6 @@ describe('Database', () => {
       }
     }
 
-    expect(database.modules('entities')).toEqual(expected)
+    expect(database.createModule('entities')).toEqual(expected)
   })
 })
