@@ -36,7 +36,8 @@ export function createStore (entities) {
   })
 
   return new Vuex.Store({
-    plugins: [VuexORM.install(database)]
+    plugins: [VuexORM.install(database)],
+    strict: true
   })
 }
 
@@ -47,8 +48,12 @@ export function createState (namespace, state) {
   return {
     $name: namespace,
 
-    ...Utils.mapValues(state, data => {
-      return { data }
+    ...Utils.mapValues(state, (data, name) => {
+      return {
+        $connection: namespace,
+        $name: name,
+        data
+      }
     })
   }
 }

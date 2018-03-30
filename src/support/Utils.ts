@@ -7,9 +7,9 @@ export interface Dictionary<T> {
 }
 
 /**
- * Check if the given object is empty.
+ * Check if the given array or object is empty.
  */
-function isEmpty (data: any): boolean {
+export function isEmpty (data: any[] | object): boolean {
   if (Array.isArray(data)) {
     return data.length === 0
   }

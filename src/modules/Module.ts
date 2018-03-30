@@ -12,10 +12,12 @@ export default class Module {
    * The default state. This state will be merged with additional
    * entity's state if it has any.
    */
-  static state: EntityState = {
-    $connection: '',
-    $name: '',
-    data: {}
+  static state (): EntityState {
+    return {
+      $connection: '',
+      $name: '',
+      data: {}
+    }
   }
 
   /**
@@ -49,8 +51,8 @@ export default class Module {
       tree.modules[name] = {
         namespaced: true,
         state: {
-          ...module.state,
-          ...this.state,
+          ...(typeof module.state === 'function' ? module.state() : module.state),
+          ...this.state(),
           $connection: namespace,
           $name: name
         }

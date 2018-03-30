@@ -358,7 +358,7 @@ export default class Model {
    * Remove any fields not defined in the model schema. This method
    * also fixes any incorrect values as well.
    */
-  static fix (data: Record, keep: string[] = [], fields?: Fields): Record {
+  static fix (data: Record, keep: string[] = ['$id'], fields?: Fields): Record {
     const _fields = fields || this.fields()
 
     return Object.keys(data).reduce((record, key) => {
@@ -402,7 +402,7 @@ export default class Model {
    * Fill any missing fields in the given data with the default
    * value defined in the model schema.
    */
-  static hydrate (data: Record, keep: string[] = [], fields?: Fields): Record {
+  static hydrate (data: Record, keep: string[] = ['$id'], fields?: Fields): Record {
     const _fields = fields || this.fields()
 
     const record = Object.keys(_fields).reduce((record, key) => {

@@ -1,7 +1,7 @@
 import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
-describe('Features – Inserts – Create – Nested Field', () => {
+describe('Features – Persist – Create – Nested Field', () => {
   class User extends Model {
     static entity = 'users'
 
