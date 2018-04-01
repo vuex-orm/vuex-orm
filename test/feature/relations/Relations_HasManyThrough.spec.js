@@ -109,7 +109,8 @@ describe('Features – Relations – Has Many Through', () => {
       data: [
         { id: 1, user_id: 1 },
         { id: 2, user_id: 2 },
-        { id: 3, user_id: 3 }
+        { id: 3, user_id: 3 },
+        { id: 4, user_id: 1 }
       ]
     })
 
@@ -123,10 +124,18 @@ describe('Features – Relations – Has Many Through', () => {
     const country = store.getters['entities/countries/query']().with('posts').find(1)
 
     expect(country).toBeInstanceOf(Country)
-    expect(country.posts.length).toBe(2)
+    expect(country.posts.length).toBe(3)
     expect(country.posts[0]).toBeInstanceOf(Post)
+
+    // user_id: 1
+    expect(country.posts[0].user_id).toBe(1)
+    expect(country.posts[1].user_id).toBe(1)
     expect(country.posts[0].id).toBe(1)
-    expect(country.posts[1].id).toBe(2)
+    expect(country.posts[1].id).toBe(4)
+
+    // user_id: 2
+    expect(country.posts[2].user_id).toBe(2)
+    expect(country.posts[2].id).toBe(2)
   })
 
   it('can resolve has many through relationship with custom primary keys', async () => {
