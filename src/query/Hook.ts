@@ -131,10 +131,6 @@ export default class Hook {
    * Execute the action hook.
    */
   executeActionHook (on: string, data: any): any {
-    if (data === false) {
-      return false
-    }
-
     if (!this.query.actionContext) {
       return data
     }
@@ -202,12 +198,6 @@ export default class Hook {
       const result = this.execute(on, record)
 
       if (result === false) {
-        return newRecords
-      }
-
-      if (result === undefined) {
-        newRecords[id] = record
-
         return newRecords
       }
 
