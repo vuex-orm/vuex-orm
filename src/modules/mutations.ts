@@ -9,10 +9,15 @@ const mutations: Mutations = {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  create (state, { entity, data, insert, done }) {
-    const result = Query.create(state, entity, data, insert)
+  create (state, { entity, data, create, insert, update, insertOrUpdate }) {
+    Query.create(state, entity, data, { create, insert, update, insertOrUpdate })
+  },
 
-    done && done(result)
+  /**
+   * Commit `create` to the state.
+   */
+  commitCreate (state, { entity, data }) {
+    Query.commitCreate(state, entity, data)
   },
 
   /**
@@ -20,19 +25,29 @@ const mutations: Mutations = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert (state, { entity, data, create, done }) {
-    const result = Query.insert(state, entity, data, create)
+  insert (state, { entity, data, create, insert, update, insertOrUpdate }) {
+    Query.insert(state, entity, data, { create, insert, update, insertOrUpdate })
+  },
 
-    done && done(result)
+  /**
+   * Commit `insert` to the state.
+   */
+  commitInsert (state, { entity, data }) {
+    Query.commitInsert(state, entity, data)
   },
 
   /**
    * Update data in the store.
    */
-  update (state, { entity, where, data, done }) {
-    const result = Query.update(state, entity, data, where)
+  update (state, { entity, data, where, create, insert, update, insertOrUpdate }) {
+    Query.update(state, entity, data, where, { create, insert, update, insertOrUpdate })
+  },
 
-    done && done(result)
+  /**
+   * Commit `create` to the state.
+   */
+  commitUpdate (state, { entity, data }) {
+    Query.commitUpdate(state, entity, data)
   },
 
   /**
@@ -55,8 +70,6 @@ const mutations: Mutations = {
 
   /**
    * Delete all data from the store.
-   *
-   * @param {object} payload If exists, it should contain `entity`.
    */
   deleteAll (state, payload?) {
     if (payload && payload.entity) {
@@ -66,6 +79,13 @@ const mutations: Mutations = {
     }
 
     Query.deleteAll(state)
+  },
+
+  /**
+   * Commit `delete` to the state.
+   */
+  commitDelete (state, { entity, ids }): void {
+    Query.commitDelete(state, entity, ids)
   }
 }
 

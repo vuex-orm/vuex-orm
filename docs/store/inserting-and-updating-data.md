@@ -140,48 +140,36 @@ store.dispatch('entities/users/create', {
 
 ### Get Newly Inserted Data
 
-Both `create` and `insert` will return the created data as Promise so that you can get them as a return value.
+Both `create` and `insert` will return the created data as Promise so that you can get them as a return value. The return value will contain all of the data that was created.
 
 ```js
 store.dispatch('entities/users/create', {
   data: { id: 1, name: 'John Doe' }
-}).then((user) => {
-  console.log(user)
-})
-
-// User { id: 1, name: 'John Doe' }
-```
-
-If you insert an array of data, the returned object is going to be an array of data.
-
-```js
-store.dispatch('entities/users/create', {
-  data: [
-    { id: 1, name: 'John Doe' },
-    { id: 2, name: 'Jane Doe' }
-  ]
-}).then((users) => {
-  console.log(users)
+}).then((entities) => {
+  console.log(entities)
 })
 
 /*
-  [
-    User { id: 1, name: 'John Doe' },
-    User { id: 2, name: 'Jane Doe' }
-  ]
+  {
+    users: [User { id: 1, name: 'John Doe' }]
+  }
 */
 ```
 
 If you prefer to use [async / await](https://tc39.github.io/ecmascript-asyncawait), then you can compose inserts like this.
 
 ```js
-const user = await store.dispatch('entities/users/create', {
+const entities = await store.dispatch('entities/users/create', {
   data: { id: 1, name: 'John Doe' }
 })
 
-console.log(user)
+console.log(entities)
 
-// User { id: 1, name: 'John Doe' }
+/*
+  {
+    users: [User { id: 1, name: 'John Doe' }]
+  }
+*/
 ```
 
 ### Inserting Relationships
@@ -320,15 +308,34 @@ store.dispatch('entities/users/update', {
 
 ### Get Updated Data
 
-As same as `insert` or `create`, the `update` action also returns updated data as a Promise.
+As same as `insert` or `create`, the `update` action also returns updated data as a Promise. However, the data structure that will be returned is change depending on the use of the `update` action.
+
+If you pass the whole object to the `update` action, it will return all updated entities.
 
 ```js
 store.dispatch('entities/users/update', { id: 1, age: 24 })
-  .then((user) => {
-    console.log(user)
+  .then((entities) => {
+    console.log(entities)
   })
 
-// User { id: 1, name: 'John Doe', age: 24 }
+/*
+  {
+    users: [{ User { id: 1, name: 'John Doe', age: 24 }]
+  }
+*/
+```
+
+When specifying id value in the `where` property, it will return a single item that was updated.
+
+```js
+store.dispatch('entities/users/update', {
+  where: 1,
+  data { age: 24 }
+).then((user) => {
+  console.log(user)
+})
+
+// User { id: 1, name: 'John Doe', age: 24 },
 ```
 
 When updating many records by specifying closure to the `where` property, the returned data will always be an array containing all updated data.

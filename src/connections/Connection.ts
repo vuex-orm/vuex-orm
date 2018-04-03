@@ -39,9 +39,28 @@ export default class Connection {
   }
 
   /**
-   * Find model in database by given name
+   * Find model in database by given name.
    */
   model (name: string): typeof Model {
     return this.models()[name]
+  }
+
+  /**
+   * Get modules from the database.
+   */
+  modules (): { [entity: string]: Vuex.Module<any, any> } {
+    return this.database.entities.reduce((modules, entity) => {
+      return {
+        ...modules,
+        [entity.model.entity]: entity.module
+      }
+    }, {} as { [entity: string]: Vuex.Module<any, any> })
+  }
+
+  /**
+   * Find module in database by given name.
+   */
+  module (name: string): Vuex.Module<any, any> {
+    return this.modules()[name]
   }
 }

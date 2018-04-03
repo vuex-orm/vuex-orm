@@ -1,4 +1,5 @@
 import * as Vuex from 'vuex'
+import Query from '../query/Query'
 import State from './State'
 
 export type RootActions = Vuex.ActionTree<State, any>
@@ -8,10 +9,10 @@ const rootActions: RootActions = {
    * Save the given data to the state. This will replace any existing
    * data in the state.
    */
-  create ({ commit }, { entity, data, insert }): Promise<any> {
-    return new Promise((resolve) => {
-      commit('create', { entity, data, insert, done: resolve })
-    })
+  async create (context, { entity, data, create, insert, update, insertOrUpdate }) {
+    return (new Query(context.state, entity))
+      .setActionContext(context)
+      .create(data, { create, insert, update, insertOrUpdate })
   },
 
   /**
@@ -19,19 +20,19 @@ const rootActions: RootActions = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert ({ commit }, { entity, data, create }): Promise<any> {
-    return new Promise((resolve) => {
-      commit('insert', { entity, data, create, done: resolve })
-    })
+  async insert (context, { entity, data, create, insert, update, insertOrUpdate }) {
+    return (new Query(context.state, entity))
+      .setActionContext(context)
+      .insert(data, { create, insert, update, insertOrUpdate })
   },
 
   /**
    * Update data in the store.
    */
-  update ({ commit }, { entity, where, data }): Promise<any> {
-    return new Promise((resolve) => {
-      commit('update', { entity, where, data, done: resolve })
-    })
+  async update (context, { entity, where, data, create, insert, update, insertOrUpdate }) {
+    return (new Query(context.state, entity))
+      .setActionContext(context)
+      .update(data, where, { create, insert, update, insertOrUpdate })
   },
 
   /**
@@ -39,25 +40,23 @@ const rootActions: RootActions = {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  insertOrUpdate ({ commit }, { entity, data, create }): Promise<any> {
-    return new Promise((resolve) => {
-      commit('insertOrUpdate', { entity, data, create, done: resolve })
-    })
+  insertOrUpdate (context, { entity, data, create, insert, update, insertOrUpdate }) {
+    return (new Query(context.state, entity))
+      .setActionContext(context)
+      .insertOrUpdate(data, { create, insert, update, insertOrUpdate })
   },
 
   /**
    * Delete data from the store.
    */
-  delete ({ commit }, { entity, where }): void {
-    commit('delete', { entity, where })
+  delete (context, { entity, where }) {
+    return (new Query(context.state, entity)).setActionContext(context).delete(where)
   },
 
   /**
    * Delete all data from the store.
-   *
-   * @param {object} payload If exists, it should contain `entity`.
    */
-  deleteAll ({ commit }, payload?): void {
+  deleteAll ({ commit }, payload?) {
     commit('deleteAll', payload)
   }
 }

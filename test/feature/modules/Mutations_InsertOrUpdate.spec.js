@@ -1,7 +1,7 @@
-import { createStore } from 'test/support/Helpers'
+import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
-describe('Features – Mutations – Inserts – Insert Or Update', () => {
+describe('Features – Mutations – Insert Or Update', () => {
   class User extends Model {
     static entity = 'users'
 
@@ -19,6 +19,7 @@ describe('Features – Mutations – Inserts – Insert Or Update', () => {
     static fields () {
       return {
         id: this.attr(null),
+        user_id: this.attr(''),
         body: this.attr('')
       }
     }
@@ -50,16 +51,17 @@ describe('Features – Mutations – Inserts – Insert Or Update', () => {
       }
     })
 
-    const users = store.getters['entities/users/all']()
-    const posts = store.getters['entities/posts/all']()
+    const expected = createState('entities', {
+      users: {
+        '1': { $id: 1, id: 1, posts: [1, 3] }
+      },
+      posts: {
+        '1': { $id: 1, id: 1, user_id: 1, body: 'title' },
+        '2': { $id: 2, id: 2, user_id: 2, body: 'body' },
+        '3': { $id: 3, id: 3, user_id: 1, body: 'title' }
+      }
+    })
 
-    expect(users.length).toBe(1)
-    expect(posts.length).toBe(3)
-    expect(posts[0].id).toBe(1)
-    expect(posts[0].body).toBe('title')
-    expect(posts[1].id).toBe(2)
-    expect(posts[1].body).toBe('body')
-    expect(posts[2].id).toBe(3)
-    expect(posts[2].body).toBe('title')
+    expect(store.state.entities).toEqual(expected)
   })
 })

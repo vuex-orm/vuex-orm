@@ -70,13 +70,18 @@ store.dispatch('entities/users/create', { data })
 
 ## Choosing The Insert Method Of The Related Records
 
-When you insert data with related records included, all of the related records will be inserted using the base action that called. For example, if you call `create` actions, all of the related records get "created" into the store.
+When you insert data with related records included, all of the related records will be inserted using the base action that called. For example, if you call `create` action, all of the related records get "created" into the store.
 
 ```js
 store.dispatch('entities/users/create', { data })
 ```
 
-Sometimes, you might want the option to choose how Vuex ORM inserts data into the store depending on the relationship. For example, you might want to "create" users but "insert" posts. You may do so by passing additional `create` or `insert` options to the action.
+Sometimes, you might want the option to choose how Vuex ORM inserts data into the store depending on the relationship. For example, you might want to "create" users but "insert" posts. You may do so by passing additional options to the action. The available options are:
+
+- `create`
+- `insert`
+- `update`
+- `insertOrUpdate`
 
 ```js
 // `create` users but `insert` posts.
@@ -92,7 +97,9 @@ store.dispatch('entities/users/insert', {
 })
 ```
 
-Note that the value passed to those `create` or `insert` options should be the name of the entity. Not the name of the field that defines the relationship in the User model.
+These options can be specified at all of the persist type methods which are `create`, `insert`, `update` and `insertOrUpdate`.
+
+Note that the value passed to those `create` or `insert` options should be the name of the entity. Not the name of the field that defines the relationship in the model.
 
 ## Creating Has Many Through Relationship
 

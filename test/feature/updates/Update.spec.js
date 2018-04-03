@@ -399,10 +399,10 @@ describe('Features – Update', () => {
       data: { id: 1, name: 'John Doe', age: 30 }
     })
 
-    const user = await store.dispatch('entities/users/update', { id: 1, age: 24 })
+    const collection = await store.dispatch('entities/users/update', { id: 1, age: 24 })
 
-    expect(user).toBeInstanceOf(User)
-    expect(user.age).toBe(24)
+    expect(collection.users[0]).toBeInstanceOf(User)
+    expect(collection.users[0].age).toBe(24)
   })
 
   it('returns a updated object with specifying where condition', async () => {
