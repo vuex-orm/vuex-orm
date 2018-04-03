@@ -10,7 +10,7 @@ const rootActions: RootActions = {
    * state. If you want to keep existing data while saving new data,
    * use `insert` instead.
    */
-  async create (context, { entity, data, create, insert, update, insertOrUpdate }) {
+  create (context, { entity, data, create, insert, update, insertOrUpdate }) {
     return (new Query(context.state, entity))
       .setActionContext(context)
       .create(data, { create, insert, update, insertOrUpdate })
@@ -21,7 +21,7 @@ const rootActions: RootActions = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  async insert (context, { entity, data, create, insert, update, insertOrUpdate }) {
+  insert (context, { entity, data, create, insert, update, insertOrUpdate }) {
     return (new Query(context.state, entity))
       .setActionContext(context)
       .insert(data, { create, insert, update, insertOrUpdate })
@@ -30,7 +30,7 @@ const rootActions: RootActions = {
   /**
    * Update data in the store.
    */
-  async update (context, { entity, where, data, create, insert, update, insertOrUpdate }) {
+  update (context, { entity, where, data, create, insert, update, insertOrUpdate }) {
     return (new Query(context.state, entity))
       .setActionContext(context)
       .update(data, where, { create, insert, update, insertOrUpdate })

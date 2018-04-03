@@ -50,16 +50,14 @@ const subActions: SubActions = {
   delete ({ dispatch, state }, condition) {
     const where = typeof condition === 'object' ? condition.where : condition
 
-    return dispatch(`${state.$connection}/insertOrUpdate`, { entity: state.$name, where }, { root: true })
+    return dispatch(`${state.$connection}/delete`, { entity: state.$name, where }, { root: true })
   },
 
   /**
    * Delete all data from the store.
    */
-  deleteAll ({ commit, state }) {
-    commit(`${state.$connection}/deleteAll`, {
-      entity: state.$name
-    }, { root: true })
+  deleteAll ({ dispatch, state }) {
+    dispatch(`${state.$connection}/deleteAll`, { entity: state.$name }, { root: true })
   }
 }
 
