@@ -108,7 +108,14 @@ export default class HasManyThrough extends Relation {
   load (query: Query, collection: Record[], relation: Load): Record[] {
     const relatedQuery = new Query(query.rootState, this.related.entity, false)
 
-    const relatedRecords = this.mapRecords(relatedQuery.get(), this.secondKey)
+    const relatedRecords = relatedQuery.get().reduce((records, record) => {
+      const key = record[this.secondKey]
+      if (!records[key]) {
+        records[key] = []
+      }
+      records[key].push(record)
+      return records
+    }, {})
 
     this.addConstraint(relatedQuery, relation)
 
@@ -122,7 +129,7 @@ export default class HasManyThrough extends Relation {
       }
 
       if (relatedRecords[record[this.secondLocalKey]]) {
-        records[key].push(relatedRecords[record[this.secondLocalKey]])
+        records[key] = records[key].concat(relatedRecords[record[this.secondLocalKey]])
       }
 
       return records
