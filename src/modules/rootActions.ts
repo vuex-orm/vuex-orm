@@ -6,8 +6,9 @@ export type RootActions = Vuex.ActionTree<State, any>
 
 const rootActions: RootActions = {
   /**
-   * Save the given data to the state. This will replace any existing
-   * data in the state.
+   * Save new data to the state. It will remove all existing data in the
+   * state. If you want to keep existing data while saving new data,
+   * use `insert` instead.
    */
   async create (context, { entity, data, create, insert, update, insertOrUpdate }) {
     return (new Query(context.state, entity))
