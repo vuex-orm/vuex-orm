@@ -26,6 +26,7 @@ Vuex ORM lets you create "normalized" data schema within Vuex Store with relatio
 - [Advanced Usage](advanced-usage.md)
     - [Interact With Store From Model](advanced/interact-with-store-from-model.md)
     - [Accessors & Mutators](advanced/accessors-and-mutators.md)
+    - [Lifecycle Hooks](advanced/lifecycle-hooks.md)
     - [Serialization](advanced/serialization.md)
 - [Digging Deeper](digging-deeper.md)
     - [Query Class](digging-deeper/query-class.md)
