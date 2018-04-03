@@ -56,10 +56,8 @@ const mutations: Mutations = {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  insertOrUpdate (state: State, { entity, data, create, done }) {
-    const result = Query.insertOrUpdate(state, entity, data, create)
-
-    done && done(result)
+  insertOrUpdate (state: State, { entity, data, create }) {
+    Query.insertOrUpdate(state, entity, data, create)
   },
 
   /**
