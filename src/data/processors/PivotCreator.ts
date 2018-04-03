@@ -3,7 +3,11 @@ import Query from '../../query/Query'
 import NormalizedData from '../NormalizedData'
 
 export default class PivotCreator {
-  static create (data: NormalizedData, Query: Query): NormalizedData {
+  /**
+   * Create an intermediate entity if the data contains any entities that
+   * require it for example `belongsTo` or `morphMany`.
+   */
+  static process (data: NormalizedData, Query: Query): NormalizedData {
     Object.keys(data).forEach((key) => {
       const model = Query.getModel(key)
 

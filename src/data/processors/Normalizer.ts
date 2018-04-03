@@ -3,7 +3,6 @@ import Utils from '../../support/Utils'
 import Query from '../../query/Query'
 import NormalizedData from '../NormalizedData'
 import Schema from './Schema'
-import PivotCreator from './PivotCreator'
 
 export default class Normalizer {
   /**
@@ -16,8 +15,6 @@ export default class Normalizer {
 
     const schema = Array.isArray(data) ? Schema.many(Query.model) : Schema.one(Query.model)
 
-    const normalizedData = normalize(data, schema).entities
-
-    return PivotCreator.create(normalizedData, Query)
+    return normalize(data, schema).entities
   }
 }

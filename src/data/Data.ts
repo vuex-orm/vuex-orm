@@ -1,5 +1,6 @@
 import Query from '../query/Query'
 import Normalizer from './processors/Normalizer'
+import PivotCreator from './processors/PivotCreator'
 import Incrementer from './processors/Incrementer'
 import Attacher from './processors/Attacher'
 import IdFixer from './processors/IdFixer'
@@ -11,6 +12,7 @@ export default class Data {
    */
   static normalize (data: any, query: Query): NormalizedData {
     data = Normalizer.process(data, query)
+    data = PivotCreator.process(data, query)
     data = Incrementer.process(data, query)
     data = Attacher.process(data, query)
     data = IdFixer.process(data, query)
