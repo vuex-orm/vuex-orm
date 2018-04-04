@@ -1,7 +1,7 @@
 import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
-describe('Features – Update', () => {
+describe('Features – Persist – Update', () => {
   it('can update record by including primary key in the data', () => {
     class User extends Model {
       static entity = 'users'
