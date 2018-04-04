@@ -1,4 +1,5 @@
 import Attr from '../types/Attr'
+import String from '../types/String'
 import Increment from '../types/Increment'
 import HasOne from '../relations/HasOne'
 import BelongsTo from '../relations/BelongsTo'
@@ -39,6 +40,7 @@ export default class Contract {
    */
   static isAttribute (attr: Field): attr is Attribute {
     return attr instanceof Attr
+           || attr instanceof String
            || attr instanceof Increment
            || this.isRelation(attr)
   }
