@@ -44,8 +44,8 @@ export default class Module {
     Object.keys(modules).forEach((name) => {
       const module = modules[name]
 
-      tree.getters[name] = (_state: any, getters: any) => (wrap: boolean = true) => {
-        return getters.query(name, wrap)
+      tree.getters[name] = (_state: any, getters: any) => () => {
+        return getters.query(name)
       }
 
       tree.modules[name] = {

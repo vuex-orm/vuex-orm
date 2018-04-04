@@ -16,8 +16,15 @@ describe('Database', () => {
     static primaryKey = 'customId'
   }
 
-  const users = { actions: {} }
-  const posts = { mutations: {} }
+  const users = {
+    state: {},
+    actions: {}
+  }
+
+  const posts = {
+    state () {},
+    mutations: {}
+  }
 
   it('can register models', () => {
     const database = new Database()
