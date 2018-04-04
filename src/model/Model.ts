@@ -7,6 +7,7 @@ import AttrContract, { Fields } from '../attributes/contracts/Contract'
 import Attribute from '../attributes/Attribute'
 import Attr from '../attributes/types/Attr'
 import String from '../attributes/types/String'
+import Number from '../attributes/types/Number'
 import Increment from '../attributes/types/Increment'
 import HasOne from '../attributes/relations/HasOne'
 import BelongsTo from '../attributes/relations/BelongsTo'
@@ -68,6 +69,13 @@ export default class Model {
    */
   static string (value: any, mutator?: (value: any) => any): String {
     return new String(this, value, mutator)
+  }
+
+  /**
+   * Create a number attribute.
+   */
+  static number (value: any, mutator?: (value: any) => any): Number {
+    return new Number(this, value, mutator)
   }
 
   /**
