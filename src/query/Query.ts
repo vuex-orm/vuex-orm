@@ -454,9 +454,7 @@ export default class Query {
    */
   commitInsert (data: Records): void {
     this.commit('commitInsert', { data }, () => {
-      Utils.forOwn(data, (record, id) => {
-        this.state.data[id] = record
-      })
+      this.state.data = { ...this.state.data, ...data }
     })
   }
 
@@ -577,9 +575,7 @@ export default class Query {
    */
   commitUpdate (data: Records): void {
     this.commit('commitUpdate', { data }, () => {
-      Utils.forOwn(data, (record, id) => {
-        this.state.data[id] = record
-      })
+      this.state.data = { ...this.state.data, ...data }
     })
   }
 
