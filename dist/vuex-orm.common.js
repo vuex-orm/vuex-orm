@@ -1676,10 +1676,10 @@ var BelongsToMany = /** @class */ (function (_super) {
     /**
      * Create pivot records for the given records if needed.
      */
-    BelongsToMany.prototype.createPivots = function (parent, data) {
+    BelongsToMany.prototype.createPivots = function (parent, data, key) {
         var _this = this;
         Utils.forOwn(data[parent.entity], function (record) {
-            var related = record[_this.related.entity];
+            var related = record[key];
             if (related === undefined || related.length === 0) {
                 return;
             }
@@ -2476,11 +2476,11 @@ var PivotCreator = /** @class */ (function () {
      * require it for example `belongsTo` or `morphMany`.
      */
     PivotCreator.process = function (data, Query) {
-        Object.keys(data).forEach(function (key) {
-            var model = Query.getModel(key);
+        Object.keys(data).forEach(function (entity) {
+            var model = Query.getModel(entity);
             if (model.hasPivotFields()) {
                 Utils.forOwn(model.pivotFields(), function (field) {
-                    Utils.forOwn(field, function (attr) { attr.createPivots(model, data); });
+                    Utils.forOwn(field, function (attr, key) { attr.createPivots(model, data, key); });
                 });
             }
         });
@@ -3100,9 +3100,7 @@ var Query = /** @class */ (function () {
     Query.prototype.commitInsert = function (data) {
         var _this = this;
         this.commit('commitInsert', { data: data }, function () {
-            Utils.forOwn(data, function (record, id) {
-                _this.state.data[id] = record;
-            });
+            _this.state.data = __assign$8({}, _this.state.data, data);
         });
     };
     /**
@@ -3189,9 +3187,7 @@ var Query = /** @class */ (function () {
     Query.prototype.commitUpdate = function (data) {
         var _this = this;
         this.commit('commitUpdate', { data: data }, function () {
-            Utils.forOwn(data, function (record, id) {
-                _this.state.data[id] = record;
-            });
+            _this.state.data = __assign$8({}, _this.state.data, data);
         });
     };
     /**
@@ -4623,9 +4619,8 @@ var Module = /** @class */ (function () {
         var _this = this;
         Object.keys(modules).forEach(function (name) {
             var module = modules[name];
-            tree.getters[name] = function (_state, getters) { return function (wrap) {
-                if (wrap === void 0) { wrap = true; }
-                return getters.query(name, wrap);
+            tree.getters[name] = function (_state, getters) { return function () {
+                return getters.query(name);
             }; };
             tree.modules[name] = {
                 namespaced: true,
