@@ -1,6 +1,7 @@
 import Attr from '../types/Attr'
 import String from '../types/String'
 import Number from '../types/Number'
+import Boolean from '../types/Boolean'
 import Increment from '../types/Increment'
 import HasOne from '../relations/HasOne'
 import BelongsTo from '../relations/BelongsTo'
@@ -43,6 +44,7 @@ export default class Contract {
     return attr instanceof Attr
            || attr instanceof String
            || attr instanceof Number
+           || attr instanceof Boolean
            || attr instanceof Increment
            || this.isRelation(attr)
   }

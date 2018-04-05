@@ -8,6 +8,7 @@ import Attribute from '../attributes/Attribute'
 import Attr from '../attributes/types/Attr'
 import String from '../attributes/types/String'
 import Number from '../attributes/types/Number'
+import Boolean from '../attributes/types/Boolean'
 import Increment from '../attributes/types/Increment'
 import HasOne from '../attributes/relations/HasOne'
 import BelongsTo from '../attributes/relations/BelongsTo'
@@ -76,6 +77,13 @@ export default class Model {
    */
   static number (value: any, mutator?: (value: any) => any): Number {
     return new Number(this, value, mutator)
+  }
+
+  /**
+   * Create a boolean attribute.
+   */
+  static boolean (value: any, mutator?: (value: any) => any): Boolean {
+    return new Boolean(this, value, mutator)
   }
 
   /**
