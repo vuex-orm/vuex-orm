@@ -53,7 +53,7 @@ Vuex ORM lets you define mutators which are going to modify the specific field w
 
 ### Via Attribute
 
-You can pass a closure to the 2nd argument of `attr` method. The closure takes the corresponding value as an argument, and you can modify the value however you want.
+You can pass a closure to the 2nd argument of `attr`, `string`, `number`, and `boolean` attribute. The closure takes the corresponding value as an argument, and you can modify the value however you want.
 
 ```js
 import { Model } from '@vuex-orm/core'

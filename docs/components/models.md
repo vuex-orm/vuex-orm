@@ -126,6 +126,24 @@ class User extends Model {
 }
 ```
 
+## Specific Types
+
+You may use specific type attributes, `this.string()`, `this.number()`, and `this.boolean()` to cast the value to be those types. The argument is the default value.
+
+```js
+class User extends Model {
+  static fields () {
+    return {
+      id: this.number(0),
+      name: this.string('John Doe'),
+      active: this.boolean(true)
+    }
+  }
+}
+```
+
+Note that these attributes provide casting. It will convert for example `'0'` to be `0` or `1` to be `true`.
+
 ## Auto Increment Type
 
 `this.increment()` method will generate field type which will be auto incremented. Autoincrement field must be a number and should not have arguments. The value of this field gets incremented when you create a new record.
