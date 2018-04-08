@@ -5,7 +5,10 @@ import Connection from '../connections/Connection'
 import { Record, Records } from '../data'
 import AttrContract, { Fields } from '../attributes/contracts/Contract'
 import Attribute from '../attributes/Attribute'
-import Attr, { Mutator } from '../attributes/types/Attr'
+import Attr from '../attributes/types/Attr'
+import String from '../attributes/types/String'
+import Number from '../attributes/types/Number'
+import Boolean from '../attributes/types/Boolean'
 import Increment from '../attributes/types/Increment'
 import HasOne from '../attributes/relations/HasOne'
 import BelongsTo from '../attributes/relations/BelongsTo'
@@ -58,8 +61,29 @@ export default class Model {
    * Create an attr attribute. The given value will be used as a default
    * value for the field.
    */
-  static attr (value: any, mutator?: Mutator): Attr {
+  static attr (value: any, mutator?: (value: any) => any): Attr {
     return new Attr(this, value, mutator)
+  }
+
+  /**
+   * Create a string attribute.
+   */
+  static string (value: any, mutator?: (value: any) => any): String {
+    return new String(this, value, mutator)
+  }
+
+  /**
+   * Create a number attribute.
+   */
+  static number (value: any, mutator?: (value: any) => any): Number {
+    return new Number(this, value, mutator)
+  }
+
+  /**
+   * Create a boolean attribute.
+   */
+  static boolean (value: any, mutator?: (value: any) => any): Boolean {
+    return new Boolean(this, value, mutator)
   }
 
   /**

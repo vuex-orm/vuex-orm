@@ -2,16 +2,16 @@ import Record from '../../data/Record'
 import Model from '../../model/Model'
 import Type from './Type'
 
-export default class Attr extends Type {
+export default class Number extends Type {
   /**
    * The default value of the field.
    */
-  value: any
+  value: number
 
   /**
-   * Create a new attr instance.
+   * Create a new number instance.
    */
-  constructor (model: typeof Model, value: any, mutator?: (value: any) => any) {
+  constructor (model: typeof Model, value: number, mutator?: (value: any) => any) {
     super(model, mutator) /* istanbul ignore next */
 
     this.value = value
@@ -22,8 +22,24 @@ export default class Attr extends Type {
    * during data normalization to fix field that has an incorrect value,
    * or add a missing field with the appropriate default value.
    */
-  fill (value: any): any {
-    return value !== undefined ? value : this.value
+  fill (value: any): number {
+    if (value === undefined) {
+      return this.value
+    }
+
+    if (typeof value === 'number') {
+      return value
+    }
+
+    if (typeof value === 'string') {
+      return parseInt(value, 0)
+    }
+
+    if (typeof value === 'boolean') {
+      return value ? 1 : 0
+    }
+
+    return 0
   }
 
   /**
