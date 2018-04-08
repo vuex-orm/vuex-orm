@@ -236,10 +236,10 @@ export default class Query {
   }
 
   /**
-   * Find a data of the given entity by given id from the given state.
+   * Get the record of the given id.
    */
   static find (state: State, entity: string, id: string | number, wrap?: boolean): Item {
-    return (new this(state, entity, wrap)).first(id)
+    return (new this(state, entity, wrap)).find(id)
   }
 
   /**
@@ -695,11 +695,16 @@ export default class Query {
   }
 
   /**
-   * Returns single record of the query chain result. This method is alias
-   * of the `first` method.
+   * Get the record of the given id.
    */
   find (id: number | string): Item {
-    return this.first(id)
+    const record = this.state.data[id]
+
+    if (!record) {
+      return null
+    }
+
+    return this.item({ ...record })
   }
 
   /**
@@ -712,24 +717,10 @@ export default class Query {
   }
 
   /**
-   * Returns single record of the query chain result.
+   * Returns the first record of the query chain result.
    */
-  first (id?: number | string): Item {
+  first (): Item {
     const records = this.process()
-
-    if (Utils.isEmpty(records)) {
-      return null
-    }
-
-    if (id !== undefined) {
-      const item = records.find(record => record.$id === id)
-
-      if (item === undefined) {
-        return null
-      }
-
-      return this.item(item)
-    }
 
     return this.item(records[0])
   }
@@ -739,10 +730,6 @@ export default class Query {
    */
   last (): Item {
     const records = this.process()
-
-    if (Utils.isEmpty(records)) {
-      return null
-    }
 
     const last = records.length - 1
 
@@ -1060,7 +1047,7 @@ export default class Query {
   /**
    * Create a item from given record.
    */
-  item (queryItem: Record | null): Item {
+  item (queryItem?: Record | null): Item {
     if (!queryItem) {
       return null
     }
