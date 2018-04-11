@@ -290,9 +290,21 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 var Type = /** @class */ (function (_super) {
     __extends(Type, _super);
-    function Type() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    /**
+     * Create a new type instance.
+     */
+    function Type(model, mutator) {
+        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+        _this.mutator = mutator;
+        return _this;
     }
+    /**
+     * Mutate the given value by mutator.
+     */
+    Type.prototype.mutate = function (value, key) {
+        var mutator = this.mutator || this.model.mutators()[key];
+        return mutator ? mutator(value) : value;
+    };
     return Type;
 }(Attribute));
 
@@ -312,9 +324,8 @@ var Attr = /** @class */ (function (_super) {
      * Create a new attr instance.
      */
     function Attr(model, value, mutator) {
-        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+        var _this = _super.call(this, model, mutator) /* istanbul ignore next */ || this;
         _this.value = value;
-        _this.mutator = mutator;
         return _this;
     }
     /**
@@ -330,9 +341,7 @@ var Attr = /** @class */ (function (_super) {
      * instantiating a model or creating a plain object from a model.
      */
     Attr.prototype.make = function (value, _parent, key) {
-        var newValue = value !== undefined ? value : this.value;
-        var mutator = this.mutator || this.model.mutators()[key];
-        return mutator ? mutator(newValue) : newValue;
+        return this.mutate(this.fill(value), key);
     };
     return Attr;
 }(Type));
@@ -347,8 +356,156 @@ var __extends$2 = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var String$1 = /** @class */ (function (_super) {
+    __extends$2(String, _super);
+    /**
+     * Create a new string instance.
+     */
+    function String(model, value, mutator) {
+        var _this = _super.call(this, model, mutator) /* istanbul ignore next */ || this;
+        _this.value = value;
+        return _this;
+    }
+    /**
+     * Transform given data to the appropriate value. This method will be called
+     * during data normalization to fix field that has an incorrect value,
+     * or add a missing field with the appropriate default value.
+     */
+    String.prototype.fill = function (value) {
+        if (value === undefined) {
+            return this.value;
+        }
+        if (typeof value === 'string') {
+            return value;
+        }
+        return value + '';
+    };
+    /**
+     * Make value to be set to model property. This method is used when
+     * instantiating a model or creating a plain object from a model.
+     */
+    String.prototype.make = function (value, _parent, key) {
+        return this.mutate(this.fill(value), key);
+    };
+    return String;
+}(Type));
+
+var __extends$3 = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Number = /** @class */ (function (_super) {
+    __extends$3(Number, _super);
+    /**
+     * Create a new number instance.
+     */
+    function Number(model, value, mutator) {
+        var _this = _super.call(this, model, mutator) /* istanbul ignore next */ || this;
+        _this.value = value;
+        return _this;
+    }
+    /**
+     * Transform given data to the appropriate value. This method will be called
+     * during data normalization to fix field that has an incorrect value,
+     * or add a missing field with the appropriate default value.
+     */
+    Number.prototype.fill = function (value) {
+        if (value === undefined) {
+            return this.value;
+        }
+        if (typeof value === 'number') {
+            return value;
+        }
+        if (typeof value === 'string') {
+            return parseInt(value, 0);
+        }
+        if (typeof value === 'boolean') {
+            return value ? 1 : 0;
+        }
+        return 0;
+    };
+    /**
+     * Make value to be set to model property. This method is used when
+     * instantiating a model or creating a plain object from a model.
+     */
+    Number.prototype.make = function (value, _parent, key) {
+        return this.mutate(this.fill(value), key);
+    };
+    return Number;
+}(Type));
+
+var __extends$4 = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Boolean = /** @class */ (function (_super) {
+    __extends$4(Boolean, _super);
+    /**
+     * Create a new number instance.
+     */
+    function Boolean(model, value, mutator) {
+        var _this = _super.call(this, model, mutator) /* istanbul ignore next */ || this;
+        _this.value = value;
+        return _this;
+    }
+    /**
+     * Transform given data to the appropriate value. This method will be called
+     * during data normalization to fix field that has an incorrect value,
+     * or add a missing field with the appropriate default value.
+     */
+    Boolean.prototype.fill = function (value) {
+        if (value === undefined) {
+            return this.value;
+        }
+        if (typeof value === 'boolean') {
+            return value;
+        }
+        if (typeof value === 'string') {
+            if (value.length === 0) {
+                return false;
+            }
+            var int = parseInt(value, 0);
+            return isNaN(int) ? true : !!int;
+        }
+        if (typeof value === 'number') {
+            return !!value;
+        }
+        return false;
+    };
+    /**
+     * Make value to be set to model property. This method is used when
+     * instantiating a model or creating a plain object from a model.
+     */
+    Boolean.prototype.make = function (value, _parent, key) {
+        return this.mutate(this.fill(value), key);
+    };
+    return Boolean;
+}(Type));
+
+var __extends$5 = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var Increment = /** @class */ (function (_super) {
-    __extends$2(Increment, _super);
+    __extends$5(Increment, _super);
     function Increment() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /**
@@ -1116,7 +1273,7 @@ var src_1 = src.denormalize;
 var src_2 = src.normalize;
 var src_3 = src.schema;
 
-var __extends$3 = (undefined && undefined.__extends) || (function () {
+var __extends$6 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -1135,7 +1292,7 @@ var __assign$1 = (undefined && undefined.__assign) || Object.assign || function(
     return t;
 };
 var Relation = /** @class */ (function (_super) {
-    __extends$3(Relation, _super);
+    __extends$6(Relation, _super);
     function Relation() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -1220,7 +1377,7 @@ var Relation = /** @class */ (function (_super) {
     return Relation;
 }(Attribute));
 
-var __extends$4 = (undefined && undefined.__extends) || (function () {
+var __extends$7 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -1231,7 +1388,7 @@ var __extends$4 = (undefined && undefined.__extends) || (function () {
     };
 })();
 var BelongsTo = /** @class */ (function (_super) {
-    __extends$4(BelongsTo, _super);
+    __extends$7(BelongsTo, _super);
     /**
      * Create a new belongs to instance.
      */
@@ -1298,7 +1455,7 @@ var BelongsTo = /** @class */ (function (_super) {
     return BelongsTo;
 }(Relation));
 
-var __extends$5 = (undefined && undefined.__extends) || (function () {
+var __extends$8 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -1309,7 +1466,7 @@ var __extends$5 = (undefined && undefined.__extends) || (function () {
     };
 })();
 var HasMany = /** @class */ (function (_super) {
-    __extends$5(HasMany, _super);
+    __extends$8(HasMany, _super);
     /**
      * Create a new has many instance.
      */
@@ -1389,7 +1546,7 @@ var HasMany = /** @class */ (function (_super) {
     return HasMany;
 }(Relation));
 
-var __extends$6 = (undefined && undefined.__extends) || (function () {
+var __extends$9 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -1400,7 +1557,7 @@ var __extends$6 = (undefined && undefined.__extends) || (function () {
     };
 })();
 var HasManyBy = /** @class */ (function (_super) {
-    __extends$6(HasManyBy, _super);
+    __extends$9(HasManyBy, _super);
     /**
      * Create a new has many by instance.
      */
@@ -1477,7 +1634,7 @@ var HasManyBy = /** @class */ (function (_super) {
     return HasManyBy;
 }(Relation));
 
-var __extends$7 = (undefined && undefined.__extends) || (function () {
+var __extends$10 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -1488,7 +1645,7 @@ var __extends$7 = (undefined && undefined.__extends) || (function () {
     };
 })();
 var HasManyThrough = /** @class */ (function (_super) {
-    __extends$7(HasManyThrough, _super);
+    __extends$10(HasManyThrough, _super);
     /**
      * Create a new has many through instance.
      */
@@ -1575,7 +1732,7 @@ var HasManyThrough = /** @class */ (function (_super) {
     return HasManyThrough;
 }(Relation));
 
-var __extends$8 = (undefined && undefined.__extends) || (function () {
+var __extends$11 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -1594,7 +1751,7 @@ var __assign$2 = (undefined && undefined.__assign) || Object.assign || function(
     return t;
 };
 var BelongsToMany = /** @class */ (function (_super) {
-    __extends$8(BelongsToMany, _super);
+    __extends$11(BelongsToMany, _super);
     /**
      * Create a new belongs to instance.
      */
@@ -1701,7 +1858,7 @@ var BelongsToMany = /** @class */ (function (_super) {
     return BelongsToMany;
 }(Relation));
 
-var __extends$9 = (undefined && undefined.__extends) || (function () {
+var __extends$12 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -1712,7 +1869,7 @@ var __extends$9 = (undefined && undefined.__extends) || (function () {
     };
 })();
 var MorphTo = /** @class */ (function (_super) {
-    __extends$9(MorphTo, _super);
+    __extends$12(MorphTo, _super);
     /**
      * Create a new morph to instance.
      */
@@ -1783,7 +1940,7 @@ var MorphTo = /** @class */ (function (_super) {
     return MorphTo;
 }(Relation));
 
-var __extends$10 = (undefined && undefined.__extends) || (function () {
+var __extends$13 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -1794,7 +1951,7 @@ var __extends$10 = (undefined && undefined.__extends) || (function () {
     };
 })();
 var MorphOne = /** @class */ (function (_super) {
-    __extends$10(MorphOne, _super);
+    __extends$13(MorphOne, _super);
     /**
      * Create a new belongs to instance.
      */
@@ -1860,7 +2017,7 @@ var MorphOne = /** @class */ (function (_super) {
     return MorphOne;
 }(Relation));
 
-var __extends$11 = (undefined && undefined.__extends) || (function () {
+var __extends$14 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -1871,7 +2028,7 @@ var __extends$11 = (undefined && undefined.__extends) || (function () {
     };
 })();
 var MorphMany = /** @class */ (function (_super) {
-    __extends$11(MorphMany, _super);
+    __extends$14(MorphMany, _super);
     /**
      * Create a new belongs to instance.
      */
@@ -1946,7 +2103,7 @@ var MorphMany = /** @class */ (function (_super) {
     return MorphMany;
 }(Relation));
 
-var __extends$12 = (undefined && undefined.__extends) || (function () {
+var __extends$15 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -1965,7 +2122,7 @@ var __assign$3 = (undefined && undefined.__assign) || Object.assign || function(
     return t;
 };
 var MorphToMany = /** @class */ (function (_super) {
-    __extends$12(MorphToMany, _super);
+    __extends$15(MorphToMany, _super);
     /**
      * Create a new belongs to instance.
      */
@@ -2075,7 +2232,7 @@ var MorphToMany = /** @class */ (function (_super) {
     return MorphToMany;
 }(Relation));
 
-var __extends$13 = (undefined && undefined.__extends) || (function () {
+var __extends$16 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -2094,7 +2251,7 @@ var __assign$4 = (undefined && undefined.__assign) || Object.assign || function(
     return t;
 };
 var MorphedByMany = /** @class */ (function (_super) {
-    __extends$13(MorphedByMany, _super);
+    __extends$16(MorphedByMany, _super);
     /**
      * Create a new belongs to instance.
      */
@@ -2916,10 +3073,10 @@ var Query = /** @class */ (function () {
         return (new this(state, entity, wrap)).get();
     };
     /**
-     * Find a data of the given entity by given id from the given state.
+     * Get the record of the given id.
      */
     Query.find = function (state, entity, id, wrap) {
-        return (new this(state, entity, wrap)).first(id);
+        return (new this(state, entity, wrap)).find(id);
     };
     /**
      * Get the count of the retrieved data.
@@ -3280,11 +3437,14 @@ var Query = /** @class */ (function () {
         return this.get();
     };
     /**
-     * Returns single record of the query chain result. This method is alias
-     * of the `first` method.
+     * Get the record of the given id.
      */
     Query.prototype.find = function (id) {
-        return this.first(id);
+        var record = this.state.data[id];
+        if (!record) {
+            return null;
+        }
+        return this.item(__assign$8({}, record));
     };
     /**
      * Returns all record of the query chain result.
@@ -3294,20 +3454,10 @@ var Query = /** @class */ (function () {
         return this.collect(records);
     };
     /**
-     * Returns single record of the query chain result.
+     * Returns the first record of the query chain result.
      */
-    Query.prototype.first = function (id) {
+    Query.prototype.first = function () {
         var records = this.process();
-        if (Utils.isEmpty(records)) {
-            return null;
-        }
-        if (id !== undefined) {
-            var item = records.find(function (record) { return record.$id === id; });
-            if (item === undefined) {
-                return null;
-            }
-            return this.item(item);
-        }
         return this.item(records[0]);
     };
     /**
@@ -3315,9 +3465,6 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.last = function () {
         var records = this.process();
-        if (Utils.isEmpty(records)) {
-            return null;
-        }
         var last = records.length - 1;
         return this.item(records[last]);
     };
@@ -3779,7 +3926,7 @@ var Query = /** @class */ (function () {
     return Query;
 }());
 
-var __extends$14 = (undefined && undefined.__extends) || (function () {
+var __extends$17 = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -3790,7 +3937,7 @@ var __extends$14 = (undefined && undefined.__extends) || (function () {
     };
 })();
 var HasOne = /** @class */ (function (_super) {
-    __extends$14(HasOne, _super);
+    __extends$17(HasOne, _super);
     /**
      * Create a new has one instance.
      */
@@ -3875,6 +4022,9 @@ var Contract = /** @class */ (function () {
      */
     Contract.isAttribute = function (attr) {
         return attr instanceof Attr
+            || attr instanceof String$1
+            || attr instanceof Number
+            || attr instanceof Boolean
             || attr instanceof Increment
             || this.isRelation(attr);
     };
@@ -3922,6 +4072,24 @@ var Model = /** @class */ (function () {
      */
     Model.attr = function (value, mutator) {
         return new Attr(this, value, mutator);
+    };
+    /**
+     * Create a string attribute.
+     */
+    Model.string = function (value, mutator) {
+        return new String$1(this, value, mutator);
+    };
+    /**
+     * Create a number attribute.
+     */
+    Model.number = function (value, mutator) {
+        return new Number(this, value, mutator);
+    };
+    /**
+     * Create a boolean attribute.
+     */
+    Model.boolean = function (value, mutator) {
+        return new Boolean(this, value, mutator);
     };
     /**
      * Create an increment attribute. The field with this attribute will
