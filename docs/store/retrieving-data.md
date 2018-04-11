@@ -27,7 +27,7 @@ const users = store.getters['entities/users/all']()
 
 ## Get Single Data
 
-`find` getter is going to fetch single data from the store.
+`find` getter is going to fetch single data from the store. The argument is the id – primary key value – for the record.
 
 ```js
 // Retrieve a record by its primary key.
@@ -54,28 +54,20 @@ const query = store.getters['entities/users']()
 
 ### Get All Data
 
-Use `get` or `all` method to fetch all data for the entity. The result is going to be an array containing a list of model instances.
+Use `get` method to fetch all data for the entity. The result is going to be an array containing a list of model instances.
 
 ```js
 const users = store.getters['entities/users/query']().get()
-
-// or
-
-const users = store.getters['entities/users/query']().all()
 
 // [User { id: 1, name: 'John' }, User: { id: 2, name: 'Jane' }]
 ```
 
 ### Get A Single Data
 
-Use `first` or `find` method to fetch a single data for the entity. It will return the very first item in the state.
+Use `first` method to fetch a single data for the entity. It will return the very first item in the state.
 
 ```js
 const user = store.getters['entities/users/query']().first()
-
-// or
-
-const user = store.getters['entities/users/query']().find()
 
 // User { id: 1, name: 'John' }
 ```
