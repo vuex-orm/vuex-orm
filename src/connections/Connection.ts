@@ -1,6 +1,6 @@
 import * as Vuex from 'vuex'
 import Database from '../database/Database'
-import Model from '../model/Model'
+import BaseModel from '../model/BaseModel'
 
 export default class Connection {
   /**
@@ -29,19 +29,19 @@ export default class Connection {
   /**
    * Get models from the database.
    */
-  models (): { [entity: string]: typeof Model } {
+  models (): { [entity: string]: typeof BaseModel } {
     return this.database.entities.reduce((models, entity) => {
       return {
         ...models,
         [entity.model.entity]: entity.model
       }
-    }, {} as { [entity: string]: typeof Model })
+    }, {} as { [entity: string]: typeof BaseModel })
   }
 
   /**
    * Find model in database by given name.
    */
-  model (name: string): typeof Model {
+  model (name: string): typeof BaseModel {
     return this.models()[name]
   }
 

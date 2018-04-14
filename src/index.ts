@@ -27,7 +27,7 @@ import rootActions, { RootActions } from './modules/rootActions'
 import subActions, { SubActions } from './modules/subActions'
 import mutations, { Mutations } from './modules/mutations'
 
-export interface VuexORM {
+export interface VuexORMResource {
   install: Install
   use: Use
   Database: typeof Database
@@ -112,4 +112,4 @@ export default {
   rootActions,
   subActions,
   mutations
-} as VuexORM
+} as VuexORMResource

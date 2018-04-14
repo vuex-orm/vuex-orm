@@ -122,14 +122,31 @@
         return Container;
     }());
 
+    var ModuleOptions = /** @class */ (function () {
+        function ModuleOptions() {
+        }
+        ModuleOptions.register = function (options) {
+            if (options.namespace) {
+                this.namespace = options.namespace;
+            }
+            if (options.resources) {
+                this.resources = options.resources;
+            }
+        };
+        ModuleOptions.namespace = 'entities';
+        ModuleOptions.resources = {
+            baseUrl: ''
+        };
+        return ModuleOptions;
+    }());
+
     var install = (function (database, options) {
-        if (options === void 0) { options = {}; }
-        var namespace = options.namespace || 'entities';
         return function (store) {
-            store.registerModule(namespace, database.createModule(namespace));
+            ModuleOptions.register(options);
+            store.registerModule(ModuleOptions.namespace, database.createModule(ModuleOptions.namespace));
             database.registerStore(store);
-            database.registerNamespace(namespace);
-            Container.register(namespace, database);
+            database.registerNamespace(ModuleOptions.namespace);
+            Container.register(ModuleOptions.namespace, database);
         };
     });
 
@@ -343,8 +360,8 @@
             return value !== undefined ? value : this.value;
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         Attr.prototype.make = function (value, _parent, key) {
             return this.mutate(this.fill(value), key);
@@ -387,8 +404,8 @@
             return value + '';
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         String.prototype.make = function (value, _parent, key) {
             return this.mutate(this.fill(value), key);
@@ -437,8 +454,8 @@
             return 0;
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         Number.prototype.make = function (value, _parent, key) {
             return this.mutate(this.fill(value), key);
@@ -491,8 +508,8 @@
             return false;
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         Boolean.prototype.make = function (value, _parent, key) {
             return this.mutate(this.fill(value), key);
@@ -529,8 +546,8 @@
             return typeof value === 'number' ? value : null;
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         Increment.prototype.make = function (value, _parent, _key) {
             return typeof value === 'number' ? value : null;
@@ -1492,8 +1509,8 @@
             return Array.isArray(value) ? value : [];
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         HasMany.prototype.make = function (value, _parent, _key) {
             var _this = this;
@@ -1583,8 +1600,8 @@
             return Array.isArray(value) ? value : [];
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         HasManyBy.prototype.make = function (value, _parent, _key) {
             var _this = this;
@@ -1674,8 +1691,8 @@
             return Array.isArray(value) ? value : [];
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         HasManyThrough.prototype.make = function (value, _parent, _key) {
             var _this = this;
@@ -1780,8 +1797,8 @@
             return Array.isArray(value) ? value : [];
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         BelongsToMany.prototype.make = function (value, _parent, _key) {
             var _this = this;
@@ -1900,8 +1917,8 @@
             return value;
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         MorphTo.prototype.make = function (value, parent, _key) {
             if (value === null) {
@@ -1914,8 +1931,8 @@
                 return null;
             }
             var related = parent[this.type];
-            var model = this.model.relation(related);
-            return model ? new model(value) : null;
+            var BaseModel = this.model.relation(related);
+            return BaseModel ? new BaseModel(value) : null;
         };
         /**
          * Attach the relational key to the given record.
@@ -1984,8 +2001,8 @@
             return value;
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         MorphOne.prototype.make = function (value, _parent, _key) {
             if (value === null) {
@@ -2055,8 +2072,8 @@
             return Array.isArray(value) ? value : [];
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         MorphMany.prototype.make = function (value, _parent, _key) {
             var _this = this;
@@ -2152,8 +2169,8 @@
             return Array.isArray(value) ? value : [];
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         MorphToMany.prototype.make = function (value, _parent, _key) {
             var _this = this;
@@ -2281,8 +2298,8 @@
             return Array.isArray(value) ? value : [];
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         MorphedByMany.prototype.make = function (value, _parent, _key) {
             var _this = this;
@@ -3969,8 +3986,8 @@
             return value;
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         HasOne.prototype.make = function (value, _parent, _key) {
             if (value === null) {
@@ -4059,157 +4076,157 @@
         return Contract;
     }());
 
-    var Model = /** @class */ (function () {
+    var BaseModel = /** @class */ (function () {
         /**
          * Create a model instance.
          */
-        function Model(record) {
+        function BaseModel(record) {
             this.$fill(record);
         }
         /**
          * The definition of the fields of the model and its relations.
          */
-        Model.fields = function () {
+        BaseModel.fields = function () {
             return {};
         };
         /**
          * Create an attr attribute. The given value will be used as a default
          * value for the field.
          */
-        Model.attr = function (value, mutator) {
+        BaseModel.attr = function (value, mutator) {
             return new Attr(this, value, mutator);
         };
         /**
          * Create a string attribute.
          */
-        Model.string = function (value, mutator) {
+        BaseModel.string = function (value, mutator) {
             return new String$1(this, value, mutator);
         };
         /**
          * Create a number attribute.
          */
-        Model.number = function (value, mutator) {
+        BaseModel.number = function (value, mutator) {
             return new Number(this, value, mutator);
         };
         /**
          * Create a boolean attribute.
          */
-        Model.boolean = function (value, mutator) {
+        BaseModel.boolean = function (value, mutator) {
             return new Boolean(this, value, mutator);
         };
         /**
          * Create an increment attribute. The field with this attribute will
          * automatically increment its value when creating a new record.
          */
-        Model.increment = function () {
+        BaseModel.increment = function () {
             return new Increment(this);
         };
         /**
          * Create a has one relationship.
          */
-        Model.hasOne = function (related, foreignKey, localKey) {
+        BaseModel.hasOne = function (related, foreignKey, localKey) {
             return new HasOne(this, related, foreignKey, this.localKey(localKey));
         };
         /**
          * Create a belongs to relationship.
          */
-        Model.belongsTo = function (parent, foreignKey, ownerKey) {
+        BaseModel.belongsTo = function (parent, foreignKey, ownerKey) {
             return new BelongsTo(this, parent, foreignKey, this.relation(parent).localKey(ownerKey));
         };
         /**
          * Create a has many relationship.
          */
-        Model.hasMany = function (related, foreignKey, localKey) {
+        BaseModel.hasMany = function (related, foreignKey, localKey) {
             return new HasMany(this, related, foreignKey, this.localKey(localKey));
         };
         /**
          * Create a has many by relationship.
          */
-        Model.hasManyBy = function (parent, foreignKey, ownerKey) {
+        BaseModel.hasManyBy = function (parent, foreignKey, ownerKey) {
             return new HasManyBy(this, parent, foreignKey, this.relation(parent).localKey(ownerKey));
         };
         /**
          * Create a has many through relationship.
          */
-        Model.hasManyThrough = function (related, through, firstKey, secondKey, localKey, secondLocalKey) {
+        BaseModel.hasManyThrough = function (related, through, firstKey, secondKey, localKey, secondLocalKey) {
             return new HasManyThrough(this, related, through, firstKey, secondKey, this.localKey(localKey), this.relation(through).localKey(secondLocalKey));
         };
         /**
          * The belongs to many relationship.
          */
-        Model.belongsToMany = function (related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey) {
+        BaseModel.belongsToMany = function (related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey) {
             return new BelongsToMany(this, related, pivot, foreignPivotKey, relatedPivotKey, this.localKey(parentKey), this.relation(related).localKey(relatedKey));
         };
         /**
          * Create a morph to relationship.
          */
-        Model.morphTo = function (id, type) {
+        BaseModel.morphTo = function (id, type) {
             return new MorphTo(this, id, type);
         };
         /**
          * Create a morph one relationship.
          */
-        Model.morphOne = function (related, id, type, localKey) {
+        BaseModel.morphOne = function (related, id, type, localKey) {
             return new MorphOne(this, related, id, type, this.localKey(localKey));
         };
         /**
          * Create a morph many relationship.
          */
-        Model.morphMany = function (related, id, type, localKey) {
+        BaseModel.morphMany = function (related, id, type, localKey) {
             return new MorphMany(this, related, id, type, this.localKey(localKey));
         };
         /**
          * Create a morph to many relationship.
          */
-        Model.morphToMany = function (related, pivot, relatedId, id, type, parentKey, relatedKey) {
+        BaseModel.morphToMany = function (related, pivot, relatedId, id, type, parentKey, relatedKey) {
             return new MorphToMany(this, related, pivot, relatedId, id, type, this.localKey(parentKey), this.relation(related).localKey(relatedKey));
         };
         /**
          * Create a morphed by many relationship.
          */
-        Model.morphedByMany = function (related, pivot, relatedId, id, type, parentKey, relatedKey) {
+        BaseModel.morphedByMany = function (related, pivot, relatedId, id, type, parentKey, relatedKey) {
             return new MorphedByMany(this, related, pivot, relatedId, id, type, this.localKey(parentKey), this.relation(related).localKey(relatedKey));
         };
         /**
          * Mutators to mutate matching fields when instantiating the model.
          */
-        Model.mutators = function () {
+        BaseModel.mutators = function () {
             return {};
         };
         /**
          * Get connection instance out of the container.
          */
-        Model.conn = function () {
+        BaseModel.conn = function () {
             return Container.connection(this.connection);
         };
         /**
          * Get Vuex Store instance out of connection.
          */
-        Model.store = function () {
+        BaseModel.store = function () {
             return this.conn().store();
         };
         /**
          * Get module namespaced path for the model.
          */
-        Model.namespace = function (method) {
+        BaseModel.namespace = function (method) {
             return this.connection + "/" + this.entity + "/" + method;
         };
         /**
          * Dispatch an action.
          */
-        Model.dispatch = function (method, payload) {
+        BaseModel.dispatch = function (method, payload) {
             return this.store().dispatch(this.namespace(method), payload);
         };
         /**
          * Call getetrs.
          */
-        Model.getters = function (method) {
+        BaseModel.getters = function (method) {
             return this.store().getters[this.namespace(method)];
         };
         /**
          * Get the value of the primary key.
          */
-        Model.id = function (record) {
+        BaseModel.id = function (record) {
             var key = this.primaryKey;
             if (typeof key === 'string') {
                 return record[key];
@@ -4219,7 +4236,7 @@
         /**
          * Get local key to pass to the attributes.
          */
-        Model.localKey = function (key) {
+        BaseModel.localKey = function (key) {
             if (key) {
                 return key;
             }
@@ -4228,7 +4245,7 @@
         /**
          * Get a model from the container.
          */
-        Model.relation = function (model) {
+        BaseModel.relation = function (model) {
             if (typeof model !== 'string') {
                 return model;
             }
@@ -4237,7 +4254,7 @@
         /**
          * Get the attribute class for the given attribute name.
          */
-        Model.getAttributeClass = function (name) {
+        BaseModel.getAttributeClass = function (name) {
             switch (name) {
                 case 'increment': return Increment;
                 default:
@@ -4247,7 +4264,7 @@
         /**
          * Get all of the fields that matches the given attribute name.
          */
-        Model.getFields = function (name) {
+        BaseModel.getFields = function (name) {
             var attr = this.getAttributeClass(name);
             var fields = this.fields();
             return Object.keys(fields).reduce(function (newFields, key) {
@@ -4261,19 +4278,19 @@
         /**
          * Get all `increment` fields from the schema.
          */
-        Model.getIncrementFields = function () {
+        BaseModel.getIncrementFields = function () {
             return this.getFields('increment');
         };
         /**
          * Check if fields contains the `increment` field type.
          */
-        Model.hasIncrementFields = function () {
+        BaseModel.hasIncrementFields = function () {
             return Object.keys(this.getIncrementFields()).length > 0;
         };
         /**
          * Get all `belongsToMany` fields from the schema.
          */
-        Model.pivotFields = function () {
+        BaseModel.pivotFields = function () {
             var fields = [];
             Utils.forOwn(this.fields(), function (field, key) {
                 if (field instanceof BelongsToMany || field instanceof MorphToMany || field instanceof MorphedByMany) {
@@ -4286,14 +4303,14 @@
         /**
          * Check if fields contains the `belongsToMany` field type.
          */
-        Model.hasPivotFields = function () {
+        BaseModel.hasPivotFields = function () {
             return this.pivotFields().length > 0;
         };
         /**
          * Remove any fields not defined in the model schema. This method
          * also fixes any incorrect values as well.
          */
-        Model.fix = function (data, keep, fields) {
+        BaseModel.fix = function (data, keep, fields) {
             var _this = this;
             if (keep === void 0) { keep = ['$id']; }
             var _fields = fields || this.fields();
@@ -4318,7 +4335,7 @@
         /**
          * Fix multiple records.
          */
-        Model.fixMany = function (data, keep) {
+        BaseModel.fixMany = function (data, keep) {
             var _this = this;
             return Object.keys(data).reduce(function (records, id) {
                 records[id] = _this.fix(data[id], keep);
@@ -4329,7 +4346,7 @@
          * Fill any missing fields in the given data with the default
          * value defined in the model schema.
          */
-        Model.hydrate = function (data, keep, fields) {
+        BaseModel.hydrate = function (data, keep, fields) {
             var _this = this;
             if (keep === void 0) { keep = ['$id']; }
             var _fields = fields || this.fields();
@@ -4353,7 +4370,7 @@
         /**
          * Fill multiple records.
          */
-        Model.hydrateMany = function (data, keep) {
+        BaseModel.hydrateMany = function (data, keep) {
             var _this = this;
             return Object.keys(data).reduce(function (records, id) {
                 records[id] = _this.hydrate(data[id], keep);
@@ -4365,7 +4382,7 @@
          * or if the record has any missing fields, each value of the fields will
          * be filled with its default value defined at model fields definition.
          */
-        Model.fill = function (self, record, fields) {
+        BaseModel.fill = function (self, record, fields) {
             var _this = this;
             if (self === void 0) { self = {}; }
             if (record === void 0) { record = {}; }
@@ -4384,49 +4401,49 @@
         /**
          * Get the static class of this model.
          */
-        Model.prototype.$self = function () {
+        BaseModel.prototype.$self = function () {
             return this.constructor;
         };
         /**
          * The definition of the fields of the model and its relations.
          */
-        Model.prototype.$fields = function () {
+        BaseModel.prototype.$fields = function () {
             return this.$self().fields();
         };
         /**
          * Get the value of the primary key.
          */
-        Model.prototype.$id = function () {
+        BaseModel.prototype.$id = function () {
             return this.$self().id(this);
         };
         /**
          * Get the connection instance out of the container.
          */
-        Model.prototype.$conn = function () {
+        BaseModel.prototype.$conn = function () {
             return this.$self().conn();
         };
         /**
          * Get Vuex Store insatnce out of connection.
          */
-        Model.prototype.$store = function () {
+        BaseModel.prototype.$store = function () {
             return this.$self().store();
         };
         /**
          * Get module namespaced path for the model.
          */
-        Model.prototype.$namespace = function (method) {
+        BaseModel.prototype.$namespace = function (method) {
             return this.$self().namespace(method);
         };
         /**
          * Dispatch an action.
          */
-        Model.prototype.$dispatch = function (method, payload) {
+        BaseModel.prototype.$dispatch = function (method, payload) {
             return this.$self().dispatch(method, payload);
         };
         /**
          * Call getetrs.
          */
-        Model.prototype.$getters = function (method) {
+        BaseModel.prototype.$getters = function (method) {
             return this.$self().getters(method);
         };
         /**
@@ -4434,19 +4451,19 @@
          * or if the record has any missing fields, each value of the fields will
          * be filled with its default value defined at model fields definition.
          */
-        Model.prototype.$fill = function (record) {
+        BaseModel.prototype.$fill = function (record) {
             this.$self().fill(this, record);
         };
         /**
          * Serialize field values into json.
          */
-        Model.prototype.$toJson = function () {
+        BaseModel.prototype.$toJson = function () {
             return this.$buildJson(this.$self().fields(), this);
         };
         /**
          * Build Json data.
          */
-        Model.prototype.$buildJson = function (data, field) {
+        BaseModel.prototype.$buildJson = function (data, field) {
             return Utils.mapValues(data, function (attr, key) {
                 if (!field[key]) {
                     return field[key];
@@ -4458,7 +4475,7 @@
                     return field[key].$toJson();
                 }
                 if (attr instanceof HasMany) {
-                    return field[key].map(function (model) { return model.$toJson(); });
+                    return field[key].map(function (BaseModel) { return BaseModel.$toJson(); });
                 }
                 return field[key];
             });
@@ -4466,9 +4483,113 @@
         /**
          * The primary key to be used for the model.
          */
-        Model.primaryKey = 'id';
-        return Model;
+        BaseModel.primaryKey = 'id';
+        return BaseModel;
     }());
+
+    var __assign$9 = (undefined && undefined.__assign) || Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    var Http = /** @class */ (function () {
+        function Http() {
+        }
+        Http.request = function (url, _query, _method, _body, _headers, options) {
+            if (_body === void 0) { _body = null; }
+            if (_headers === void 0) { _headers = {}; }
+            if (options === void 0) { options = {}; }
+            var _options = __assign$9({}, this.defaultOptions, options);
+            return fetch(url, _options)
+                .then(function (response) { return response.json(); }); // parses response to JSON
+        };
+        Http.get = function (url, params, headers, options) {
+            if (params === void 0) { params = {}; }
+            if (headers === void 0) { headers = {}; }
+            if (options === void 0) { options = {}; }
+            return this.request(url, params, 'GET', null, headers, options);
+        };
+        Http.post = function (url, payload, headers, options) {
+            if (payload === void 0) { payload = null; }
+            if (headers === void 0) { headers = {}; }
+            if (options === void 0) { options = {}; }
+            return this.request(url, {}, 'POST', payload, headers, options);
+        };
+        // Default options are marked with *
+        Http.defaultOptions = {
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+                'user-agent': 'Mozilla/4.0 MDN Example',
+                'content-type': 'application/json'
+            },
+            mode: 'cors',
+            redirect: 'follow',
+            referrer: 'no-referrer' // *client, no-referrer
+        };
+        return Http;
+    }());
+
+    var __extends$18 = (undefined && undefined.__extends) || (function () {
+        var extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return function (d, b) {
+            extendStatics(d, b);
+            function __() { this.constructor = d; }
+            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+        };
+    })();
+    var Model = /** @class */ (function (_super) {
+        __extends$18(Model, _super);
+        function Model() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        /**
+         * Parse data after api response before save on the vuex store
+         */
+        Model.onSuccessFetch = function (data) {
+            return Promise.resolve(data);
+        };
+        /**
+         * Wrap query getter
+         */
+        Model.query = function () {
+            return this.getters('query')();
+        };
+        /**
+         * Wrap count method
+         */
+        Model.count = function () {
+            return this.query().all().length;
+        };
+        /**
+         * Fetch data from api server if the store is empty
+         */
+        Model.fetch = function () {
+            var data = this.query().get();
+            if (data.length)
+                return Promise.resolve(data);
+            return this.refresh();
+        };
+        /**
+         * Fetch data from api and store in vuex
+         */
+        Model.refresh = function () {
+            var _this = this;
+            var baseUrl = ModuleOptions.resources.baseUrl;
+            var url = baseUrl + "/" + this.name.toLowerCase() + ".json";
+            return Http.get(url).then(function (data) {
+                _this.dispatch('insertOrUpdate', { data: data });
+            }, function (err) {
+                console.log(err);
+            });
+        };
+        return Model;
+    }(BaseModel));
 
     var rootGetters = {
         /**
@@ -4571,7 +4692,7 @@
         }
     };
 
-    var __assign$9 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    var __assign$10 = (undefined && undefined.__assign) || Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
             s = arguments[i];
             for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -4587,7 +4708,7 @@
          */
         create: function (_a, payload) {
             var dispatch = _a.dispatch, state = _a.state;
-            return dispatch(state.$connection + "/create", __assign$9({ entity: state.$name }, payload), { root: true });
+            return dispatch(state.$connection + "/create", __assign$10({ entity: state.$name }, payload), { root: true });
         },
         /**
          * Insert given data to the state. Unlike `create`, this method will not
@@ -4596,7 +4717,7 @@
          */
         insert: function (_a, payload) {
             var dispatch = _a.dispatch, state = _a.state;
-            return dispatch(state.$connection + "/insert", __assign$9({ entity: state.$name }, payload), { root: true });
+            return dispatch(state.$connection + "/insert", __assign$10({ entity: state.$name }, payload), { root: true });
         },
         /**
          * Update data in the store.
@@ -4607,7 +4728,7 @@
             if (where === undefined || data === undefined) {
                 return dispatch(state.$connection + "/update", { entity: state.$name, data: payload }, { root: true });
             }
-            return dispatch(state.$connection + "/update", __assign$9({ entity: state.$name }, payload), { root: true });
+            return dispatch(state.$connection + "/update", __assign$10({ entity: state.$name }, payload), { root: true });
         },
         /**
          * Insert or update given data to the state. Unlike `insert`, this method
@@ -4616,7 +4737,7 @@
          */
         insertOrUpdate: function (_a, payload) {
             var dispatch = _a.dispatch, state = _a.state;
-            return dispatch(state.$connection + "/insertOrUpdate", __assign$9({ entity: state.$name }, payload), { root: true });
+            return dispatch(state.$connection + "/insertOrUpdate", __assign$10({ entity: state.$name }, payload), { root: true });
         },
         /**
          * Delete data from the store.
@@ -4747,7 +4868,7 @@
         plugin.install(components, options);
     }
 
-    var __assign$10 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    var __assign$11 = (undefined && undefined.__assign) || Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
             s = arguments[i];
             for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -4796,10 +4917,10 @@
                 }; };
                 tree.modules[name] = {
                     namespaced: true,
-                    state: __assign$10({}, (typeof module.state === 'function' ? module.state() : module.state), _this.state(), { $connection: namespace, $name: name })
+                    state: __assign$11({}, (typeof module.state === 'function' ? module.state() : module.state), _this.state(), { $connection: namespace, $name: name })
                 };
-                tree.modules[name]['getters'] = __assign$10({}, subGetters, module.getters);
-                tree.modules[name]['actions'] = __assign$10({}, subActions, module.actions);
+                tree.modules[name]['getters'] = __assign$11({}, subGetters, module.getters);
+                tree.modules[name]['actions'] = __assign$11({}, subActions, module.actions);
                 tree.modules[name]['mutations'] = module.mutations || {};
             });
             return tree;

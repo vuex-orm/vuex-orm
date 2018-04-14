@@ -1,6 +1,6 @@
 import { schema, Schema as NormalizrSchema } from 'normalizr'
 import Utils from '../../support/Utils'
-import Model from '../../model/Model'
+import BaseModel from '../../model/BaseModel'
 import Attrs, { Field, Fields, Relation } from '../../attributes/contracts/Contract'
 import HasOne from '../../attributes/relations/HasOne'
 import BelongsTo from '../../attributes/relations/BelongsTo'
@@ -25,7 +25,7 @@ export default class Schema {
   /**
    * Create a schema for the given model.
    */
-  static one (model: typeof Model, schemas: Schemas = {}, parent?: typeof Model, attr?: Relation): schema.Entity {
+  static one (model: typeof BaseModel, schemas: Schemas = {}, parent?: typeof BaseModel, attr?: Relation): schema.Entity {
     const noKey = new NoKey()
 
     const thisSchema = new schema.Entity(model.entity, {}, {
@@ -46,14 +46,14 @@ export default class Schema {
   /**
    * Create an array schema for the given model.
    */
-  static many (model: typeof Model, schemas: Schemas = {}, parent?: typeof Model, attr?: Relation): schema.Array {
+  static many (model: typeof BaseModel, schemas: Schemas = {}, parent?: typeof BaseModel, attr?: Relation): schema.Array {
     return new schema.Array(this.one(model, schemas, parent, attr))
   }
 
   /**
    * Create a dfinition for the given model.
    */
-  static definition (model: typeof Model, schemas: Schemas, fields?: Fields): NormalizrSchema {
+  static definition (model: typeof BaseModel, schemas: Schemas, fields?: Fields): NormalizrSchema {
     const theFields = fields || model.fields()
 
     return Object.keys(theFields).reduce((definition, key) => {
@@ -71,7 +71,7 @@ export default class Schema {
   /**
    * Build normalizr schema definition from the given relation.
    */
-  static buildRelations (model: typeof Model, field: Field, schemas: Schemas): NormalizrSchema | null {
+  static buildRelations (model: typeof BaseModel, field: Field, schemas: Schemas): NormalizrSchema | null {
     if (!Attrs.isAttribute(field)) {
       return this.definition(model, schemas, field)
     }
@@ -126,7 +126,7 @@ export default class Schema {
   /**
    * Build a single entity schema definition.
    */
-  static buildOne (related: typeof Model, schemas: Schemas, parent: typeof Model, attr: Relation): schema.Entity {
+  static buildOne (related: typeof BaseModel, schemas: Schemas, parent: typeof BaseModel, attr: Relation): schema.Entity {
     const s = schemas[related.entity]
 
     return s || this.one(related, schemas, parent, attr)
@@ -135,7 +135,7 @@ export default class Schema {
   /**
    * Build a array entity schema definition.
    */
-  static buildMany (related: typeof Model, schemas: Schemas, parent: typeof Model, attr: Relation): schema.Array {
+  static buildMany (related: typeof BaseModel, schemas: Schemas, parent: typeof BaseModel, attr: Relation): schema.Array {
     const s = schemas[related.entity]
 
     return s ? new schema.Array(s) : this.many(related, schemas, parent, attr)
@@ -144,7 +144,7 @@ export default class Schema {
   /**
    * Build a morph schema definition.
    */
-  static buildMorphOne (attr: MorphTo, schemas: Schemas, parent: typeof Model) {
+  static buildMorphOne (attr: MorphTo, schemas: Schemas, parent: typeof BaseModel) {
     const s = Utils.mapValues(parent.conn().models(), (model) => {
       return this.buildOne(model, schemas, model, attr)
     })

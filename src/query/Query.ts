@@ -6,7 +6,7 @@ import Data from '../data/Data'
 import Attrs, { Fields } from '../attributes/contracts/Contract'
 import Attribute from '../attributes/Attribute'
 import RelationClass from '../attributes/relations/Relation'
-import Model from '../model/Model'
+import BaseModel from '../model/BaseModel'
 import State from '../modules/State'
 import EntityState from '../modules/EntityState'
 import Hook from './Hook'
@@ -16,7 +16,7 @@ import EntityCollection from './EntityCollection'
 
 export type WhereBoolean = 'and' | 'or'
 
-export type WherePrimaryClosure = (record: Record, query: Query, model?: Model) => boolean | void
+export type WherePrimaryClosure = (record: Record, query: Query, model?: BaseModel) => boolean | void
 
 export type WhereSecondaryClosure = (value: any) => boolean
 
@@ -76,7 +76,7 @@ export default class Query {
   /**
    * The model being queried.
    */
-  model: typeof Model
+  model: typeof BaseModel
 
   /**
    * The module being queried.
@@ -148,14 +148,14 @@ export default class Query {
   /**
    * Get model of given name from the container.
    */
-  static getModel (state: State, name: string): typeof Model {
+  static getModel (state: State, name: string): typeof BaseModel {
     return Container.connection(state.$name).model(name)
   }
 
   /**
    * Get all models from the container.
    */
-  static getModels (state: State): { [name: string]: typeof Model } {
+  static getModels (state: State): { [name: string]: typeof BaseModel } {
     return Container.connection(state.$name).models()
   }
 
@@ -330,7 +330,7 @@ export default class Query {
   /**
    * Get model of given name from the container.
    */
-  getModel (name?: string): typeof Model {
+  getModel (name?: string): typeof BaseModel {
     const entity = name || this.entity
 
     return this.self().getModel(this.rootState, entity)
@@ -339,7 +339,7 @@ export default class Query {
   /**
    * Get all models from the container.
    */
-  getModels (): { [name: string]: typeof Model } {
+  getModels (): { [name: string]: typeof BaseModel } {
     return this.self().getModels(this.rootState)
   }
 

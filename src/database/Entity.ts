@@ -1,9 +1,9 @@
 import * as Vuex from 'vuex'
-import Model from '../model/Model'
+import BaseModel from '../model/BaseModel'
 
 export interface Entity {
   name: string
-  model: typeof Model
+  model: typeof BaseModel
   module: Vuex.Module<any, any>
 }
 

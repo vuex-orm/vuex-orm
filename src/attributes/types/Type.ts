@@ -1,4 +1,4 @@
-import Model from '../../model/Model'
+import BaseModel from '../../model/BaseModel'
 import Attribute from '../Attribute'
 
 export default abstract class Type extends Attribute {
@@ -10,7 +10,7 @@ export default abstract class Type extends Attribute {
   /**
    * Create a new type instance.
    */
-  constructor (model: typeof Model, mutator?: (value: any) => any) {
+  constructor (model: typeof BaseModel, mutator?: (value: any) => any) {
     super(model) /* istanbul ignore next */
 
     this.mutator = mutator

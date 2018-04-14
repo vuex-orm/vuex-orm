@@ -1,13 +1,13 @@
 import { Record, NormalizedData } from '../../data'
-import Model from '../../model/Model'
+import BaseModel from '../../model/BaseModel'
 import Query, { Relation as Load } from '../../query/Query'
 import Relation from './Relation'
 
 export default class HasManyBy extends Relation {
   /**
-   * The related model.
+   * The related BaseModel.
    */
-  parent: typeof Model
+  parent: typeof BaseModel
 
   /**
    * The foregin key of the model.
@@ -15,14 +15,14 @@ export default class HasManyBy extends Relation {
   foreignKey: string
 
   /**
-   * The associated key on the parent model.
+   * The associated key on the parent BaseModel.
    */
   ownerKey: string
 
   /**
    * Create a new has many by instance.
    */
-  constructor (model: typeof Model, parent: typeof Model | string, foreignKey: string, ownerKey: string) {
+  constructor (model: typeof BaseModel, parent: typeof BaseModel | string, foreignKey: string, ownerKey: string) {
     super(model) /* istanbul ignore next */
 
     this.parent = this.model.relation(parent)
@@ -40,10 +40,10 @@ export default class HasManyBy extends Relation {
   }
 
   /**
-   * Make value to be set to model property. This method is used when
-   * instantiating a model or creating a plain object from a model.
+   * Make value to be set to BaseModel property. This method is used when
+   * instantiating a BaseModel or creating a plain object from a BaseModel.
    */
-  make (value: any, _parent: Record, _key: string): Model[] {
+  make (value: any, _parent: Record, _key: string): BaseModel[] {
     if (value === null) {
       return []
     }

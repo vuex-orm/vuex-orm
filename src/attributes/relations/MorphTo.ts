@@ -1,25 +1,25 @@
 import { Record, NormalizedData } from '../../data'
-import Model from '../../model/Model'
+import BaseModel from '../../model/BaseModel'
 import Query, { Relation as Load } from '../../query/Query'
 import Relation from './Relation'
 
-export type Entity = typeof Model | string
+export type Entity = typeof BaseModel | string
 
 export default class MorphTo extends Relation {
   /**
-   * The field name that contains id of the parent model.
+   * The field name that contains id of the parent BaseModel.
    */
   id: string
 
   /**
-   * The field name fthat contains type of the parent model.
+   * The field name fthat contains type of the parent BaseModel.
    */
   type: string
 
   /**
    * Create a new morph to instance.
    */
-  constructor (model: typeof Model, id: string, type: string) {
+  constructor (model: typeof BaseModel, id: string, type: string) {
     super(model) /* istanbul ignore next */
 
     this.id = id
@@ -44,10 +44,10 @@ export default class MorphTo extends Relation {
   }
 
   /**
-   * Make value to be set to model property. This method is used when
-   * instantiating a model or creating a plain object from a model.
+   * Make value to be set to BaseModel property. This method is used when
+   * instantiating a BaseModel or creating a plain object from a BaseModel.
    */
-  make (value: any, parent: Record, _key: string): Model | null {
+  make (value: any, parent: Record, _key: string): BaseModel | null {
     if (value === null) {
       return null
     }
@@ -61,9 +61,9 @@ export default class MorphTo extends Relation {
     }
 
     const related: string = parent[this.type]
-    const model = this.model.relation(related)
+    const BaseModel = this.model.relation(related)
 
-    return model ? new model(value) : null
+    return BaseModel ? new BaseModel(value) : null
   }
 
   /**
