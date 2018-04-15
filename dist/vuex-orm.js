@@ -122,33 +122,30 @@
         return Container;
     }());
 
-    var ModuleOptions = /** @class */ (function () {
-        function ModuleOptions() {
-        }
-        ModuleOptions.register = function (options) {
-            if (options.namespace) {
-                this.namespace = options.namespace;
-            }
-            if (options.resources) {
-                this.resources = options.resources;
-            }
-        };
-        ModuleOptions.namespace = 'entities';
-        ModuleOptions.resources = {
-            baseUrl: ''
-        };
-        return ModuleOptions;
-    }());
-
     var install = (function (database, options) {
+        if (options === void 0) { options = {}; }
+        var namespace = options.namespace || 'entities';
         return function (store) {
-            ModuleOptions.register(options);
-            store.registerModule(ModuleOptions.namespace, database.createModule(ModuleOptions.namespace));
+            store.registerModule(namespace, database.createModule(namespace));
             database.registerStore(store);
-            database.registerNamespace(ModuleOptions.namespace);
-            Container.register(ModuleOptions.namespace, database);
+            database.registerNamespace(namespace);
+            Container.register(namespace, database);
         };
     });
+    // import * as Vuex from 'vuex'
+    // import Container from '../connections/Container'
+    // import Database from '../database/Database'
+    // import { Options, ModuleOptions } from '../options/Options'
+    // export type Install = (database: Database, options?: Options) => Vuex.Plugin<any>
+    // export default (database: Database, options: Options): Vuex.Plugin<any> => {
+    //   return (store: Vuex.Store<any>): void => {
+    //     ModuleOptions.register(options)
+    //     store.registerModule(ModuleOptions.namespace, database.createModule(ModuleOptions.namespace))
+    //     database.registerStore(store)
+    //     database.registerNamespace(ModuleOptions.namespace)
+    //     Container.register(ModuleOptions.namespace, database)
+    //   }
+    // }
 
     /**
      * Check if the given array or object is empty.
@@ -4561,13 +4558,81 @@
             return this.getters('query')();
         };
         /**
+         * Wrap find method
+         * @return {Promise<Collection>} list of results
+         */
+        Model.find = function () {
+            return Promise.resolve(this.query().all());
+        };
+        /**
+         * Wrap findById method
+         * @param {number} id of record to find
+         * @return {Promise<Item>} result object
+         */
+        Model.findById = function (id) {
+            return Promise.resolve(this.query().find(id));
+        };
+        /**
+         * Check if record identified by id param exist
+         * @param {number} id of the record to search
+         * @return {Promise<boolean>} the result
+         */
+        Model.exist = function (id) {
+            return this.findById(id).then(function (item) {
+                return item !== null;
+            });
+        };
+        /**
          * Wrap count method
+         * @return {Promise<Number>} number of element
          */
         Model.count = function () {
-            return this.query().all().length;
+            return Promise.resolve(this.query().count());
+        };
+        /**
+         * Wrap deleteById method
+         * @param id of record to delete
+         */
+        Model.deleteById = function (id) {
+            this.dispatch('delete', id);
+        };
+        /**
+         * Wrap deleteAll method
+         */
+        Model.deleteAll = function () {
+            this.dispatch('deleteAll', {});
+        };
+        /**
+         * Wrap create method
+         * @param {Record | Record[]} data to create
+         * @return {Promise<EntityCollection>} the created data
+         */
+        Model.create = function (data) {
+            return this.dispatch('create', { data: data });
+        };
+        /**
+         * Wrap update method
+         * @param {Record | Record[] | UpdateClosure} data to update
+         * @param {Condition} where conditions
+         * @return {Promise<UpdateReturn>} updated data
+         */
+        Model.update = function (data, where) {
+            return this.dispatch('update', {
+                where: where,
+                data: data
+            });
+        };
+        /**
+         * Wrap insertOrUpdate method
+         * @param {Record | Record[]} data to unsert or update
+         * @return {Promise<UpdateReturn>} data result
+         */
+        Model.insertOrUpdate = function (data) {
+            return this.dispatch('insertOrUpdate', data);
         };
         /**
          * Fetch data from api server if the store is empty
+         * @return {Promise<UpdateReturn>} fetched data
          */
         Model.fetch = function () {
             var data = this.query().get();
@@ -4577,13 +4642,14 @@
         };
         /**
          * Fetch data from api and store in vuex
+         * @return {Promise<UpdateReturn>} stored data
          */
         Model.refresh = function () {
             var _this = this;
-            var baseUrl = ModuleOptions.resources.baseUrl;
+            var baseUrl = 'api'; // ModuleOptions.resources.baseUrl
             var url = baseUrl + "/" + this.name.toLowerCase() + ".json";
             return Http.get(url).then(function (data) {
-                _this.dispatch('insertOrUpdate', { data: data });
+                return _this.dispatch('insertOrUpdate', data);
             }, function (err) {
                 console.log(err);
             });
