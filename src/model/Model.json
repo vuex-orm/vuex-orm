@@ -1,0 +1,56 @@
+{
+    "http": {
+        "path": ""
+    },
+    "methods": {
+        "find": {
+            "refreshFromApi": true,
+            "http": {
+                "path": "",
+                "verb": "get"
+            }
+        },
+        "findById": {
+            "refreshFromApi": true,
+            "http": {
+                "path": "/:id",
+                "verb": "get"
+            }
+        },
+        "exist": {
+            "refreshFromApi": true,
+            "http": {
+                "path": "/exist/:id",
+                "verb": "get"
+            }
+        },
+        "count": {
+            "refreshFromApi": true,
+            "http": {
+                "path": "/count",
+                "verb": "get"
+            }
+        },
+        "create": {
+            "applyToApi": true,
+            "http": {
+                "path": "",
+                "verb": "post"
+            }
+        },
+        "update": {
+            "applyToApi": true,
+            "http": {
+                "path": "/:id",
+                "verb": "put"
+            }
+        },
+        "deleteById": {
+            "applyToApi": true,
+            "http": {
+                "path": "/:id",
+                "verb": "delete"
+            }
+        }
+    }
+}
