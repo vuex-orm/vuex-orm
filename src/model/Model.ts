@@ -29,10 +29,41 @@ export default class Model extends BaseModel {
   }
 
   /**
-   * Wrap count method
+   * Wrap find method
+   * @return {Promise<Collection>} list of results
    */
-  public static count (): number {
-    return this.query().count()
+  public static find (): Promise<Collection> {
+    return Promise.resolve(this.query().all())
+  }
+
+  /**
+   * Wrap findById method
+   * @param {number} id of record to find
+   * @return {Promise<Item>} result object
+   */
+  public static findById (id: number): Promise<Item> {
+    return Promise.resolve(this.query().find(id))
+  }
+
+  /**
+   * Check if record identified by id param exist
+   * @param {number} id of the record to search
+   * @return {Promise<boolean>} the result
+   */
+  public static exist (id: number): Promise<boolean> {
+    return this.findById(id).then(
+      (item: Item) => {
+        return item !== null
+      }
+    )
+  }
+
+  /**
+   * Wrap count method
+   * @return {Promise<Number>} number of element
+   */
+  public static count (): Promise<number> {
+    return Promise.resolve(this.query().count())
   }
 
   /**
@@ -79,36 +110,6 @@ export default class Model extends BaseModel {
    */
   public static insertOrUpdate (data: Record | Record[]): Promise<UpdateReturn> {
     return this.dispatch('insertOrUpdate', data)
-  }
-
-  /**
-   * Wrap find method
-   * @return {Promise<Collection>} list of results
-   */
-  public static find (): Promise<Collection> {
-    return Promise.resolve(this.query().all())
-  }
-
-  /**
-   * Wrap findById method
-   * @param {number} id of record to find
-   * @return {Promise<Item>} result object
-   */
-  public static findById (id: number): Promise<Item> {
-    return Promise.resolve(this.query().find(id))
-  }
-
-  /**
-   * Check if record identified by id param exist
-   * @param {number} id of the record to search
-   * @return {Promise<boolean>} the result
-   */
-  public static exist (id: number): Promise<boolean> {
-    return this.findById(id).then(
-      (item: Item) => {
-        return item !== null
-      }
-    )
   }
 
   /**
