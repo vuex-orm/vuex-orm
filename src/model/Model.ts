@@ -133,7 +133,7 @@ export default class Model extends BaseModel {
 
     return Http.get(url).then(
       (data: any) => {
-        return this.dispatch('insertOrUpdate', data)
+        return this.dispatch('insertOrUpdate', { data })
       },
       err => {
         console.log(err)

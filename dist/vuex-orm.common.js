@@ -4645,7 +4645,7 @@ var Model = /** @class */ (function (_super) {
         var baseUrl = 'api'; // ModuleOptions.resources.baseUrl
         var url = baseUrl + "/" + this.name.toLowerCase() + ".json";
         return Http.get(url).then(function (data) {
-            return _this.dispatch('insertOrUpdate', data);
+            return _this.dispatch('insertOrUpdate', { data: data });
         }, function (err) {
             console.log(err);
         });
