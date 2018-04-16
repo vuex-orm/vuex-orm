@@ -2210,10 +2210,10 @@
         /**
          * Create pivot records for the given records if needed.
          */
-        MorphToMany.prototype.createPivots = function (parent, data) {
+        MorphToMany.prototype.createPivots = function (parent, data, key) {
             var _this = this;
             Utils.forOwn(data[parent.entity], function (record) {
-                var related = record[_this.related.entity];
+                var related = record[key];
                 if (!Array.isArray(related) || related.length === 0) {
                     return;
                 }
@@ -2339,10 +2339,10 @@
         /**
          * Create pivot records for the given records if needed.
          */
-        MorphedByMany.prototype.createPivots = function (parent, data) {
+        MorphedByMany.prototype.createPivots = function (parent, data, key) {
             var _this = this;
             Utils.forOwn(data[parent.entity], function (record) {
-                var related = record[_this.related.entity];
+                var related = record[key];
                 if (related.length === 0) {
                     return;
                 }
