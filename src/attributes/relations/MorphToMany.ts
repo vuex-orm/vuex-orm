@@ -150,9 +150,9 @@ export default class MorphToMany extends Relation {
   /**
    * Create pivot records for the given records if needed.
    */
-  createPivots (parent: typeof Model, data: NormalizedData): NormalizedData {
+  createPivots (parent: typeof Model, data: NormalizedData, key: string): NormalizedData {
     Utils.forOwn(data[parent.entity], (record) => {
-      const related = record[this.related.entity]
+      const related = record[key]
 
       if (!Array.isArray(related) || related.length === 0) {
         return

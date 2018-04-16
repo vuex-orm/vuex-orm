@@ -26,7 +26,7 @@ describe('Features – Relations – Morph Many', () => {
     }
 
     class Comment extends Model {
-      static entity = 'comments'
+      static entity = 'comment'
 
       static fields () {
         return {
@@ -82,7 +82,7 @@ describe('Features – Relations – Morph Many', () => {
     }
 
     class Comment extends Model {
-      static entity = 'comments'
+      static entity = 'comment'
 
       static fields () {
         return {
