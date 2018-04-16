@@ -26,7 +26,7 @@ describe('Features – Relations – Morph To Many', () => {
     }
 
     class Tag extends Model {
-      static entity = 'tags'
+      static entity = 'tag'
 
       static fields () {
         return {
@@ -86,7 +86,7 @@ describe('Features – Relations – Morph To Many', () => {
     }
 
     class Tag extends Model {
-      static entity = 'tags'
+      static entity = 'tag'
 
       static fields () {
         return {
