@@ -1,7 +1,6 @@
 {
-    "http": {
-        "path": ""
-    },
+    "baseUrl": "",
+    "path": "",
     "methods": {
         "find": {
             "refreshFromApi": true,

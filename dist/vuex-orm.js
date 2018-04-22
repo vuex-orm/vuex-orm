@@ -130,6 +130,10 @@
             database.registerStore(store);
             database.registerNamespace(namespace);
             Container.register(namespace, database);
+            // TODO configurare tutti i modelli
+            database.entities.forEach(function (entity) {
+                entity.model.conf();
+            });
         };
     });
     // import * as Vuex from 'vuex'
@@ -224,6 +228,9 @@
             records[key].push(record);
             return records;
         }, {});
+    }
+    function replaceAll(source, search, replacement) {
+        return source.replace(new RegExp(search, 'g'), replacement);
     }
     /**
      * The base implementation of `_.sortBy` which uses `comparer` to define the
@@ -4530,6 +4537,238 @@
         return Http;
     }());
 
+    var ModelConf = /** @class */ (function () {
+        /**
+         * Create a model's configuration from json
+         * @param {JsonModelConf} jsonConfig the json model's configuration
+         */
+        function ModelConf(conf) {
+            var _this = this;
+            /**
+             * The host/domain of api server
+             */
+            this._baseUrl = '';
+            /**
+             * The endpoint of model entity
+             */
+            this._endpointPath = '';
+            /**
+             * The methods of model
+             */
+            this._methods = new Map();
+            if (conf) {
+                this._baseUrl = conf.baseUrl;
+                this._endpointPath = conf.endpointPath;
+                conf.methods.forEach(function (method) {
+                    _this._methods.set(method.name, new Method(method));
+                });
+            }
+        }
+        ModelConf.prototype.extend = function (conf) {
+            var _this = this;
+            if (conf.baseUrl) {
+                this._baseUrl = conf.baseUrl;
+            }
+            if (conf.endpointPath) {
+                this._endpointPath = conf.endpointPath;
+            }
+            if (conf.methods && conf.methods.length) {
+                conf.methods.forEach(function (method) {
+                    var _method = _this._methods.get(method.name);
+                    if (_method) {
+                        _method.assign(method);
+                    }
+                    /* tslint:disable */
+                    else {
+                        _this._methods.set(method.name, new Method(method));
+                    }
+                });
+            }
+        };
+        /**
+         * Get a method
+         * @param {string} name the method's name to find
+         * @return {Method | undefined} return the method fint
+         */
+        ModelConf.prototype.method = function (name) {
+            return this._methods.get(name);
+        };
+        /**
+         * Add a model method
+         * @param name the method name
+         * @param method the method conf
+         */
+        ModelConf.prototype.addMethod = function (name, method) {
+            this._methods.set(name, method);
+        };
+        /**
+         * Set/Get the baseUrl
+         * @param {string} baseUrl the baseUrl to find or set
+         * @return {void | string} return the base url for get
+         */
+        ModelConf.prototype.baseUrl = function (baseUrl) {
+            if (baseUrl) {
+                this._baseUrl = baseUrl;
+            }
+            /* tslint:disable */
+            else {
+                return this._baseUrl;
+            }
+        };
+        /**
+         * Set/Get the endpointPath
+         * @param {string} endpointPath the endpointPath to find or set
+         * @return {void | string} return the endpointPath for get
+         */
+        ModelConf.prototype.path = function (endpointPath) {
+            if (endpointPath) {
+                this._endpointPath = endpointPath;
+            }
+            /* tslint:disable */
+            else {
+                return this._endpointPath;
+            }
+        };
+        return ModelConf;
+    }());
+    var Method = /** @class */ (function () {
+        /**
+         * Constructor
+         * @constructor
+         * @param {Method}
+         */
+        function Method(_a) {
+            var name = _a.name, _b = _a.refreshFromApi, refreshFromApi = _b === void 0 ? undefined : _b, _c = _a.applyToApi, applyToApi = _c === void 0 ? undefined : _c, http = _a.http;
+            this.name = name;
+            this.refreshFromApi = refreshFromApi;
+            this.applyToApi = applyToApi;
+            this.http = new HttpConf(http);
+        }
+        /**
+         * Assign the new conf for the method
+         * @param {Method}
+         */
+        Method.prototype.assign = function (_a) {
+            var _b = _a.name, name = _b === void 0 ? this.name : _b, _c = _a.refreshFromApi, refreshFromApi = _c === void 0 ? this.refreshFromApi : _c, _d = _a.applyToApi, applyToApi = _d === void 0 ? this.applyToApi : _d, _e = _a.http, http = _e === void 0 ? this.http : _e;
+            this.name = name;
+            this.refreshFromApi = refreshFromApi;
+            this.applyToApi = applyToApi;
+            this.http = new HttpConf(http);
+        };
+        return Method;
+    }());
+    var HttpMethod;
+    (function (HttpMethod) {
+        HttpMethod["GET"] = "get";
+        HttpMethod["HEAD"] = "head";
+        HttpMethod["POST"] = "post";
+        HttpMethod["PUT"] = "put";
+        HttpMethod["PATCH"] = "patch";
+        HttpMethod["DELETE"] = "delete";
+    })(HttpMethod || (HttpMethod = {}));
+    var HttpConf = /** @class */ (function () {
+        /**
+         * @constructor
+         * @param {HttpConf}
+         */
+        function HttpConf(_a) {
+            var path = _a.path, method = _a.method;
+            this._path = path;
+            this._method = method;
+        }
+        Object.defineProperty(HttpConf.prototype, "path", {
+            /**
+             * @return {string} return a http path
+             */
+            get: function () {
+                return this._path;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(HttpConf.prototype, "method", {
+            /**
+             * @return {HttpMethod} return a http method
+             */
+            get: function () {
+                return this._method;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return HttpConf;
+    }());
+    var defaultConf = {
+        "baseUrl": "",
+        "endpointPath": "",
+        "methods": [
+            {
+                "name": "find",
+                "refreshFromApi": true,
+                "http": {
+                    "path": "/{self}",
+                    "method": "get"
+                }
+            },
+            {
+                "name": "findById",
+                "refreshFromApi": true,
+                "http": {
+                    "path": "/{self}/:id",
+                    "method": "get"
+                }
+            },
+            {
+                "name": "exist",
+                "refreshFromApi": true,
+                "http": {
+                    "path": "/{self}/exist/:id",
+                    "method": "get"
+                }
+            },
+            {
+                "name": "count",
+                "refreshFromApi": true,
+                "http": {
+                    "path": "/{self}/count",
+                    "method": "get"
+                }
+            },
+            {
+                "name": "create",
+                "applyToApi": true,
+                "http": {
+                    "path": "/{self}",
+                    "method": "post"
+                }
+            },
+            {
+                "name": "update",
+                "applyToApi": true,
+                "http": {
+                    "path": "/{self}/:id",
+                    "method": "put"
+                }
+            },
+            {
+                "name": "delete",
+                "applyToApi": true,
+                "http": {
+                    "path": "/{self}",
+                    "method": "delete"
+                }
+            },
+            {
+                "name": "deleteById",
+                "applyToApi": true,
+                "http": {
+                    "path": "/{self}/:id",
+                    "method": "delete"
+                }
+            }
+        ]
+    };
+
     var __extends$18 = (undefined && undefined.__extends) || (function () {
         var extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4545,11 +4784,12 @@
         function Model() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
-        /**
-         * Parse data after api response before save on the vuex store
-         */
-        Model.onSuccessFetch = function (data) {
-            return Promise.resolve(data);
+        Model.conf = function () {
+            var _conf = this._conf;
+            this._conf = new ModelConf(JSON.parse(replaceAll(JSON.stringify(defaultConf), '{self}', this.name.toLowerCase())));
+            if (_conf) {
+                this._conf.extend(JSON.parse(replaceAll(JSON.stringify(_conf), '{self}', this.name.toLowerCase())));
+            }
         };
         /**
          * Wrap query getter
