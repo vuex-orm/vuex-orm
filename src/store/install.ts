@@ -1,6 +1,7 @@
 import * as Vuex from 'vuex'
 import Container from '../connections/Container'
 import Database from '../database/Database'
+import Entity from '../database/Entity'
 
 export type Install = (database: Database, options?: Options) => Vuex.Plugin<any>
 
@@ -19,6 +20,11 @@ export default (database: Database, options: Options = {}): Vuex.Plugin<any> => 
     database.registerNamespace(namespace)
 
     Container.register(namespace, database)
+
+    // TODO configurare tutti i modelli
+    database.entities.forEach((entity: Entity) => {
+      entity.model.conf()
+    })
   }
 }
 

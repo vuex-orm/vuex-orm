@@ -5,20 +5,39 @@ import { Record } from '../data'
 import Query, { UpdateClosure, Condition } from '../query/Query'
 import EntityCollection from '../query/EntityCollection'
 import { Collection, Item } from '../query'
+import ModelConf, { JsonModelConf , defaultConf } from '../model/ModelConf'
+import { replaceAll } from '../support/Utils'
 
 export type UpdateReturn = Item | Collection | EntityCollection
 
 export default class Model extends BaseModel {
-  /**
-   * The api path
-   */
-  public static apiPath: string
+  public static _conf: ModelConf | JsonModelConf
 
-  /**
-   * Parse data after api response before save on the vuex store
-   */
-  public static onSuccessFetch (data: any): Promise<any> {
-    return Promise.resolve(data)
+  public static conf () {
+
+    const _conf: JsonModelConf = this._conf as JsonModelConf
+
+    this._conf = new ModelConf(
+      JSON.parse(
+        replaceAll(
+          JSON.stringify(defaultConf),
+          '{self}',
+          this.name.toLowerCase()
+        )
+      )
+    )
+
+    if (_conf) {
+      this._conf.extend(
+        JSON.parse(
+          replaceAll(
+            JSON.stringify(_conf),
+            '{self}',
+            this.name.toLowerCase()
+          )
+        )
+      )
+    }
   }
 
   /**
