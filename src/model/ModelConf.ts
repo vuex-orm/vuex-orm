@@ -1,17 +1,16 @@
-
 export default class ModelConf {
   /**
    * The host/domain of api server
    */
-  private _baseUrl: string = ''
+  public baseUrl: string = ''
   /**
    * The endpoint of model entity
    */
-  private _endpointPath: string = ''
+  public endpointPath: string = ''
   /**
    * The methods of model
    */
-  private _methods: Map<string, Method> = new Map<string, Method>()
+  private _methods: Map<string, MethodConf> = new Map<string, MethodConf>()
 
   /**
    * Create a model's configuration from json
@@ -19,42 +18,54 @@ export default class ModelConf {
    */
   constructor (conf?: JsonModelConf) {
     if (conf) {
-      this._baseUrl = conf.baseUrl
-      this._endpointPath = conf.endpointPath
-      conf.methods.forEach((method: Method) => {
-        this._methods.set(method.name, new Method(method))
+      this.baseUrl = conf.baseUrl
+      this.endpointPath = conf.endpointPath
+      conf.methods.forEach((method: MethodConf) => {
+        this._methods.set(method.name, new MethodConf(method))
       })
     }
   }
 
   public extend (conf: JsonModelConf) {
     if (conf.baseUrl) {
-      this._baseUrl = conf.baseUrl
+      this.baseUrl = conf.baseUrl
     }
     if (conf.endpointPath) {
-      this._endpointPath = conf.endpointPath
+      this.endpointPath = conf.endpointPath
     }
     if (conf.methods && conf.methods.length) {
-      conf.methods.forEach((method: Method) => {
+      conf.methods.forEach((method: MethodConf) => {
         const _method = this._methods.get(method.name)
         if (_method) {
           _method.assign(method)
         }
         /* tslint:disable */ 
         else {
-          this._methods.set(method.name, new Method(method))
+          this._methods.set(method.name, new MethodConf(method))
         }
       })
     }
   }
 
   /**
-   * Get a method
+   * Get a method by name or alias
    * @param {string} name the method's name to find
-   * @return {Method | undefined} return the method fint
+   * @return {MethodConf | undefined} return the method fint
    */
-  public method (name: string): Method | undefined {
-    return this._methods.get(name)
+  public method (name: string): MethodConf | undefined {
+    let _method
+    this._methods.forEach(
+      (method: MethodConf, key: string, map: Map<string, MethodConf>) => {
+        if((method.alias && method.alias.indexOf(name)) || key === name) {
+          _method = method 
+        }
+      }
+    )
+    if(!_method) {
+      throw new Error(`${name}: method configuration not found`)
+    }
+    
+    return _method
   }
 
   /**
@@ -62,51 +73,26 @@ export default class ModelConf {
    * @param name the method name
    * @param method the method conf
    */
-  public addMethod (name: string, method: Method): void {
+  public addMethodConf (name: string, method: MethodConf): void {
     this._methods.set(name, method)
-  }
-  /**
-   * Set/Get the baseUrl
-   * @param {string} baseUrl the baseUrl to find or set
-   * @return {void | string} return the base url for get
-   */
-  public baseUrl (baseUrl?: string): void | string {
-    if (baseUrl) {
-      this._baseUrl = baseUrl
-    }
-    /* tslint:disable */
-    else {
-      return this._baseUrl
-    }
-  }
-
-  /**
-   * Set/Get the endpointPath
-   * @param {string} endpointPath the endpointPath to find or set
-   * @return {void | string} return the endpointPath for get
-   */
-  public path (endpointPath?: string): void | string {
-    if (endpointPath) {
-      this._endpointPath = endpointPath
-    }
-    /* tslint:disable */
-    else {
-      return this._endpointPath
-    }
   }
 }
 
 export interface JsonModelConf {
   baseUrl: string,
   endpointPath: string,
-  methods: Method[]
+  methods: MethodConf[]
 }
 
-export class Method {
+export class MethodConf {
   /**
    * The method's name
    */
   public name: string
+  /**
+   * The method's name
+   */
+  public alias?: string[]
   /**
    * The bolean for indicate that operation
    */
@@ -123,9 +109,9 @@ export class Method {
   /**
    * Constructor
    * @constructor
-   * @param {Method} 
+   * @param {MethodConf} 
    */
-  constructor ({name, refreshFromApi = undefined, applyToApi = undefined, http}: Method) {
+  constructor ({name, refreshFromApi = undefined, applyToApi = undefined, http}: MethodConf) {
     this.name = name
     this.refreshFromApi = refreshFromApi
     this.applyToApi = applyToApi
@@ -134,7 +120,7 @@ export class Method {
 
   /**
    * Assign the new conf for the method
-   * @param {Method}
+   * @param {MethodConf}
    */
   assign (
     {
@@ -142,7 +128,7 @@ export class Method {
       refreshFromApi  = this.refreshFromApi, 
       applyToApi      = this.applyToApi, 
       http            = this.http
-    }: Method
+    }: MethodConf
   ) {
     this.name = name
     this.refreshFromApi = refreshFromApi
@@ -194,22 +180,24 @@ export class HttpConf {
 }
 
 export const defaultConf = {
-  "baseUrl": "",
-  "endpointPath": "",
+  "baseUrl": "http://localhost:3000",
+  "endpointPath": "/{self}",
   "methods": [
     {
       "name": "find",
+      "alias": ["fetch", "refresh"],
       "refreshFromApi": true,
       "http": {
-          "path": "/{self}",
+          "path": "/",
           "method": "get"
       }
     },
     {
       "name": "findById",
+      "alias": ["fetchById", "refreshById"],
       "refreshFromApi": true,
       "http": {
-          "path": "/{self}/:id",
+          "path": "/:id",
           "method": "get"
       }
     },
@@ -217,7 +205,7 @@ export const defaultConf = {
       "name": "exist",
       "refreshFromApi": true,
       "http": {
-          "path": "/{self}/exist/:id",
+          "path": "/exist/:id",
           "method": "get"
       }
     },
@@ -225,7 +213,7 @@ export const defaultConf = {
       "name": "count",
       "refreshFromApi": true,
       "http": {
-          "path": "/{self}/count",
+          "path": "/count",
           "method": "get"
       }
     },
@@ -233,7 +221,7 @@ export const defaultConf = {
       "name": "create",
       "applyToApi": true,
       "http": {
-          "path": "/{self}",
+          "path": "/",
           "method": "post"
       }
     },
@@ -241,7 +229,7 @@ export const defaultConf = {
       "name": "update",
       "applyToApi": true,
       "http": {
-          "path": "/{self}/:id",
+          "path": "/:id",
           "method": "put"
       }
     },
@@ -249,7 +237,7 @@ export const defaultConf = {
       "name": "delete",
       "applyToApi": true,
       "http": {
-          "path": "/{self}",
+          "path": "/",
           "method": "delete"
       }
     },
@@ -257,7 +245,7 @@ export const defaultConf = {
       "name": "deleteById",
       "applyToApi": true,
       "http": {
-          "path": "/{self}/:id",
+          "path": "/:id",
           "method": "delete"
       }
     }

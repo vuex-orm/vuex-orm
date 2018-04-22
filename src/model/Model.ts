@@ -5,7 +5,7 @@ import { Record } from '../data'
 import Query, { UpdateClosure, Condition } from '../query/Query'
 import EntityCollection from '../query/EntityCollection'
 import { Collection, Item } from '../query'
-import ModelConf, { JsonModelConf , defaultConf } from '../model/ModelConf'
+import ModelConf, { JsonModelConf , defaultConf, MethodConf, HttpMethod } from '../model/ModelConf'
 import { replaceAll } from '../support/Utils'
 
 export type UpdateReturn = Item | Collection | EntityCollection
@@ -13,7 +13,11 @@ export type UpdateReturn = Item | Collection | EntityCollection
 export default class Model extends BaseModel {
   public static _conf: ModelConf | JsonModelConf
 
-  public static conf () {
+  /**
+   * Configure a model with default conf and extend or override
+   * the default configuration with a custom configuration
+   */
+  public static conf (): void {
 
     const _conf: JsonModelConf = this._conf as JsonModelConf
 
@@ -22,7 +26,7 @@ export default class Model extends BaseModel {
         replaceAll(
           JSON.stringify(defaultConf),
           '{self}',
-          this.name.toLowerCase()
+          this.entity
         )
       )
     )
@@ -33,11 +37,28 @@ export default class Model extends BaseModel {
           replaceAll(
             JSON.stringify(_conf),
             '{self}',
-            this.name.toLowerCase()
+            this.entity
           )
         )
       )
     }
+  }
+
+  /**
+   * Get the model conf
+   * @return {ModelConf}
+   */
+  public static getConf (): ModelConf {
+    return this._conf as ModelConf
+  }
+
+  /**
+   * Get the method conf by name
+   * @param {string} methodName The method's name
+   * @return {MethodConf}
+   */
+  public static getMethodConf (methodName: string): MethodConf {
+    return this.getConf().method(methodName) as MethodConf
   }
 
   /**
@@ -51,7 +72,13 @@ export default class Model extends BaseModel {
    * Wrap find method
    * @return {Promise<Collection>} list of results
    */
-  public static find (): Promise<Collection> {
+  public static find (conf: MethodConf = this.getMethodConf('find')): Promise<Collection> {
+    const _conf = this.checkMethodConf('find', conf)
+
+    if (_conf.refreshFromApi) {
+      return this.fetch(conf)
+    }
+
     return Promise.resolve(this.query().all())
   }
 
@@ -135,28 +162,53 @@ export default class Model extends BaseModel {
    * Fetch data from api server if the store is empty
    * @return {Promise<UpdateReturn>} fetched data
    */
-  public static fetch (): Promise<UpdateReturn> {
-    const data = this.query().get()
-    if (data.length) return Promise.resolve(data)
+  public static async fetch (conf: MethodConf = this.getMethodConf('fetch')): Promise<Collection> {
+    let data
+    const _conf = this.checkMethodConf('fetch', conf)
 
-    return this.refresh()
+    if (_conf.refreshFromApi) {
+      data = await this.refresh(conf)
+    }
+    /* tslint:disable */
+    else {
+      data = this.query().get()
+      // if (!data.length) {
+      //   data = await this.refresh(conf)
+      // }
+    }
+    return data
   }
 
   /**
    * Fetch data from api and store in vuex
-   * @return {Promise<UpdateReturn>} stored data
+   * @return {Promise<Collection>} stored data
    */
-  public static refresh (): Promise<UpdateReturn> {
-    const baseUrl = 'api' // ModuleOptions.resources.baseUrl
-    const url = `${baseUrl}/${this.name.toLowerCase()}.json`
+  public static async refresh (conf: MethodConf = this.getMethodConf('fetch')): Promise<Collection> {
+    const _conf = this.checkMethodConf('refresh', conf)
+    const url = this._conf.baseUrl + this._conf.endpointPath + _conf.http.path
+    const data = await Http[_conf.http.method as HttpMethod](url)
+    await this.dispatch('insertOrUpdate', { data })
+    return data
+  }
 
-    return Http.get(url).then(
-      (data: any) => {
-        return this.dispatch('insertOrUpdate', { data })
-      },
-      err => {
-        console.log(err)
-      }
-    )
+  /**
+   * Check the method configuration
+   * Return a new method's configuration
+   * @param {string} methodName 
+   * @param {ModelConf} conf
+   * @return {MethodConf}
+   * @throws Error
+   */
+  private static checkMethodConf(methodName: string, conf: MethodConf): MethodConf {
+    const _conf = this._conf as ModelConf
+    let _method = _conf.method(methodName)
+    if (conf && _method) {
+      _method = new MethodConf(_method as MethodConf)
+      _method.assign(conf)
+    }
+    if(!_method) {
+      throw new Error(`${methodName} configuration method not found`)
+    }
+    return _method as MethodConf
   }
 }

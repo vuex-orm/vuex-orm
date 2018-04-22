@@ -12,17 +12,17 @@ export default class Http {
     referrer: 'no-referrer' // *client, no-referrer
   }
 
-  public static request (url: string, _query: {}, _method: string, _body = null, _headers = {}, options = {}) {
+  public static request <T> (url: string, _query: {}, _method: string, _body = null, _headers = {}, options = {}): Promise<T> {
     const _options = { ...this.defaultOptions, ...options }
     return fetch(url, _options as RequestInit)
     .then(response => response.json()) // parses response to JSON
   }
 
-  public static get (url: string, params = {}, headers = {}, options = {}) {
-    return this.request(url, params, 'GET', null, headers, options)
+  public static get <T> (url: string, params = {}, headers = {}, options = {}): Promise<T> {
+    return this.request<T>(url, params, 'GET', null, headers, options)
   }
 
-  public static post (url: string, payload = null, headers = {}, options = {}) {
-    return this.request(url, {}, 'POST', payload, headers, options)
+  public static post <T> (url: string, payload = null, headers = {}, options = {}): Promise<T> {
+    return this.request<T>(url, {}, 'POST', payload, headers, options)
   }
 }
