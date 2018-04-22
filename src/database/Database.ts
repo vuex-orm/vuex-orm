@@ -1,5 +1,5 @@
 import * as Vuex from 'vuex'
-import BaseModel from '../model/BaseModel'
+import Model from '../model/Model'
 import Module from '../modules/Module'
 import Entity from './Entity'
 import Modules from './Modules'
@@ -19,7 +19,7 @@ export default class Database {
   /**
    * Register a model and module to the entities list.
    */
-  register (model: typeof BaseModel, module: Vuex.Module<any, any>): void {
+  register (model: typeof Model, module: Vuex.Module<any, any>): void {
     this.entities.push({
       name: model.entity,
       model,
