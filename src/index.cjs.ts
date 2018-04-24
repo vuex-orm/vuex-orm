@@ -8,6 +8,9 @@ import Query from './query/Query'
 import Attribute from './attributes/Attribute'
 import Type from './attributes/types/Type'
 import Attr from './attributes/types/Attr'
+import String from './attributes/types/String'
+import Number from './attributes/types/Number'
+import Boolean from './attributes/types/Boolean'
 import Increment from './attributes/types/Increment'
 import Relation from './attributes/relations/Relation'
 import HasOne from './attributes/relations/HasOne'
@@ -36,6 +39,9 @@ export interface VuexORM {
   Attribute: typeof Attribute
   Type: typeof Type
   Attr: typeof Attr
+  String: typeof String
+  Number: typeof Number
+  Boolean: typeof Boolean
   Increment: typeof Increment
   Relation: typeof Relation
   HasOne: typeof HasOne
@@ -65,6 +71,9 @@ export default {
   Attribute,
   Type,
   Attr,
+  String,
+  Number,
+  Boolean,
   Increment,
   Relation,
   HasOne,

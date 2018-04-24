@@ -41,6 +41,9 @@ Following components are included within `components` argument.
 - Attribute
 - Type
 - Attr
+- String
+- Number
+- Boolean
 - Increment
 - Relation
 - HasOne
