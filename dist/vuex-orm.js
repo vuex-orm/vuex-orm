@@ -595,9 +595,18 @@
     }
     });
 
-    unwrapExports(ImmutableUtils);
+    var ImmutableUtils$1 = unwrapExports(ImmutableUtils);
     var ImmutableUtils_1 = ImmutableUtils.isImmutable;
     var ImmutableUtils_2 = ImmutableUtils.denormalizeImmutable;
+
+    var ImmutableUtils$2 = /*#__PURE__*/Object.freeze({
+        default: ImmutableUtils$1,
+        __moduleExports: ImmutableUtils,
+        isImmutable: ImmutableUtils_1,
+        denormalizeImmutable: ImmutableUtils_2
+    });
+
+    var _ImmutableUtils = ( ImmutableUtils$2 && ImmutableUtils$1 ) || ImmutableUtils$2;
 
     var Entity = createCommonjsModule(function (module, exports) {
 
@@ -613,7 +622,7 @@
 
 
 
-    var ImmutableUtils$$1 = _interopRequireWildcard(ImmutableUtils);
+    var ImmutableUtils = _interopRequireWildcard(_ImmutableUtils);
 
     function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -623,7 +632,7 @@
 
     var getDefaultGetId = function getDefaultGetId(idAttribute) {
       return function (input) {
-        return ImmutableUtils$$1.isImmutable(input) ? input.get(idAttribute) : input[idAttribute];
+        return ImmutableUtils.isImmutable(input) ? input.get(idAttribute) : input[idAttribute];
       };
     };
 
@@ -697,8 +706,8 @@
         value: function denormalize(entity, unvisit) {
           var _this2 = this;
 
-          if (ImmutableUtils$$1.isImmutable(entity)) {
-            return ImmutableUtils$$1.denormalizeImmutable(this.schema, entity, unvisit);
+          if (ImmutableUtils.isImmutable(entity)) {
+            return ImmutableUtils.denormalizeImmutable(this.schema, entity, unvisit);
           }
 
           Object.keys(this.schema).forEach(function (key) {
@@ -727,7 +736,12 @@
     exports.default = EntitySchema;
     });
 
-    unwrapExports(Entity);
+    var Entity$1 = unwrapExports(Entity);
+
+    var Entity$2 = /*#__PURE__*/Object.freeze({
+        default: Entity$1,
+        __moduleExports: Entity
+    });
 
     var Polymorphic = createCommonjsModule(function (module, exports) {
 
@@ -786,11 +800,11 @@
       }, {
         key: 'denormalizeValue',
         value: function denormalizeValue(value, unvisit) {
-          var schemaKey = (0, ImmutableUtils.isImmutable)(value) ? value.get('schema') : value.schema;
+          var schemaKey = (0, _ImmutableUtils.isImmutable)(value) ? value.get('schema') : value.schema;
           if (!this.isSingleSchema && !schemaKey) {
             return value;
           }
-          var id = (0, ImmutableUtils.isImmutable)(value) ? value.get('id') : value.id;
+          var id = (0, _ImmutableUtils.isImmutable)(value) ? value.get('id') : value.id;
           var schema = this.isSingleSchema ? this.schema : this.schema[schemaKey];
           return unvisit(id || value, schema);
         }
@@ -807,7 +821,14 @@
     exports.default = PolymorphicSchema;
     });
 
-    unwrapExports(Polymorphic);
+    var Polymorphic$1 = unwrapExports(Polymorphic);
+
+    var Polymorphic$2 = /*#__PURE__*/Object.freeze({
+        default: Polymorphic$1,
+        __moduleExports: Polymorphic
+    });
+
+    var _Polymorphic = ( Polymorphic$2 && Polymorphic$1 ) || Polymorphic$2;
 
     var Union = createCommonjsModule(function (module, exports) {
 
@@ -819,7 +840,7 @@
 
 
 
-    var _Polymorphic2 = _interopRequireDefault(Polymorphic);
+    var _Polymorphic2 = _interopRequireDefault(_Polymorphic);
 
     function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -859,7 +880,12 @@
     exports.default = UnionSchema;
     });
 
-    unwrapExports(Union);
+    var Union$1 = unwrapExports(Union);
+
+    var Union$2 = /*#__PURE__*/Object.freeze({
+        default: Union$1,
+        __moduleExports: Union
+    });
 
     var Values = createCommonjsModule(function (module, exports) {
 
@@ -873,7 +899,7 @@
 
 
 
-    var _Polymorphic2 = _interopRequireDefault(Polymorphic);
+    var _Polymorphic2 = _interopRequireDefault(_Polymorphic);
 
     function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -922,7 +948,12 @@
     exports.default = ValuesSchema;
     });
 
-    unwrapExports(Values);
+    var Values$1 = unwrapExports(Values);
+
+    var Values$2 = /*#__PURE__*/Object.freeze({
+        default: Values$1,
+        __moduleExports: Values
+    });
 
     var _Array = createCommonjsModule(function (module, exports) {
 
@@ -935,7 +966,7 @@
 
 
 
-    var _Polymorphic2 = _interopRequireDefault(Polymorphic);
+    var _Polymorphic2 = _interopRequireDefault(_Polymorphic);
 
     function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1018,9 +1049,16 @@
     exports.default = ArraySchema;
     });
 
-    unwrapExports(_Array);
+    var _Array$1 = unwrapExports(_Array);
     var _Array_1 = _Array.denormalize;
     var _Array_2 = _Array.normalize;
+
+    var _Array$2 = /*#__PURE__*/Object.freeze({
+        default: _Array$1,
+        __moduleExports: _Array,
+        denormalize: _Array_1,
+        normalize: _Array_2
+    });
 
     var _Object = createCommonjsModule(function (module, exports) {
 
@@ -1035,7 +1073,7 @@
 
 
 
-    var ImmutableUtils$$1 = _interopRequireWildcard(ImmutableUtils);
+    var ImmutableUtils = _interopRequireWildcard(_ImmutableUtils);
 
     function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -1059,8 +1097,8 @@
 
     exports.normalize = _normalize;
     var _denormalize = function _denormalize(schema, input, unvisit) {
-      if (ImmutableUtils$$1.isImmutable(input)) {
-        return ImmutableUtils$$1.denormalizeImmutable(schema, input, unvisit);
+      if (ImmutableUtils.isImmutable(input)) {
+        return ImmutableUtils.denormalizeImmutable(schema, input, unvisit);
       }
 
       var object = _extends({}, input);
@@ -1115,9 +1153,26 @@
     exports.default = ObjectSchema;
     });
 
-    unwrapExports(_Object);
+    var _Object$1 = unwrapExports(_Object);
     var _Object_1 = _Object.denormalize;
     var _Object_2 = _Object.normalize;
+
+    var _Object$2 = /*#__PURE__*/Object.freeze({
+        default: _Object$1,
+        __moduleExports: _Object,
+        denormalize: _Object_1,
+        normalize: _Object_2
+    });
+
+    var _Entity = ( Entity$2 && Entity$1 ) || Entity$2;
+
+    var _Union = ( Union$2 && Union$1 ) || Union$2;
+
+    var _Values = ( Values$2 && Values$1 ) || Values$2;
+
+    var _Array$3 = ( _Array$2 && _Array$1 ) || _Array$2;
+
+    var _Object$3 = ( _Object$2 && _Object$1 ) || _Object$2;
 
     var src = createCommonjsModule(function (module, exports) {
 
@@ -1132,27 +1187,27 @@
 
 
 
-    var _Entity2 = _interopRequireDefault(Entity);
+    var _Entity2 = _interopRequireDefault(_Entity);
 
 
 
-    var _Union2 = _interopRequireDefault(Union);
+    var _Union2 = _interopRequireDefault(_Union);
 
 
 
-    var _Values2 = _interopRequireDefault(Values);
+    var _Values2 = _interopRequireDefault(_Values);
 
 
 
-    var ArrayUtils = _interopRequireWildcard(_Array);
+    var ArrayUtils = _interopRequireWildcard(_Array$3);
 
 
 
-    var ObjectUtils = _interopRequireWildcard(_Object);
+    var ObjectUtils = _interopRequireWildcard(_Object$3);
 
 
 
-    var ImmutableUtils$$1 = _interopRequireWildcard(ImmutableUtils);
+    var ImmutableUtils = _interopRequireWildcard(_ImmutableUtils);
 
     function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -1220,7 +1275,7 @@
 
       if (!cache[schema.key][id]) {
         // Ensure we don't mutate it non-immutable objects
-        var entityCopy = ImmutableUtils$$1.isImmutable(entity) ? entity : _extends({}, entity);
+        var entityCopy = ImmutableUtils.isImmutable(entity) ? entity : _extends({}, entity);
 
         // Need to set this first so that if it is referenced further within the
         // denormalization the reference will already exist.
@@ -1254,7 +1309,7 @@
     };
 
     var getEntities = function getEntities(entities) {
-      var isImmutable = ImmutableUtils$$1.isImmutable(entities);
+      var isImmutable = ImmutableUtils.isImmutable(entities);
 
       return function (entityOrId, schema) {
         var schemaKey = schema.key;
@@ -1857,7 +1912,10 @@
                 var pivotKey = record[_this.parentKey] + "_" + id;
                 data[_this.pivot.entity] = __assign$2({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
                         $id: pivotKey
-                    }, _b[_this.foreignPivotKey] = record[_this.parentKey], _b[_this.relatedPivotKey] = id, _b), _a));
+                    },
+                    _b[_this.foreignPivotKey] = record[_this.parentKey],
+                    _b[_this.relatedPivotKey] = id,
+                    _b), _a));
                 var _a, _b;
             });
         };
@@ -2231,7 +2289,11 @@
                 var pivotKey = parentId + "_" + id + "_" + parent.entity;
                 data[_this.pivot.entity] = __assign$3({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
                         $id: pivotKey
-                    }, _b[_this.relatedId] = id, _b[_this.id] = parentId, _b[_this.type] = parent.entity, _b), _a));
+                    },
+                    _b[_this.relatedId] = id,
+                    _b[_this.id] = parentId,
+                    _b[_this.type] = parent.entity,
+                    _b), _a));
                 var _a, _b;
             });
         };
@@ -2360,7 +2422,11 @@
                 var pivotKey = id + "_" + parentId + "_" + _this.related.entity;
                 data[_this.pivot.entity] = __assign$4({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
                         $id: pivotKey
-                    }, _b[_this.relatedId] = parentId, _b[_this.id] = id, _b[_this.type] = _this.related.entity, _b), _a));
+                    },
+                    _b[_this.relatedId] = parentId,
+                    _b[_this.id] = id,
+                    _b[_this.type] = _this.related.entity,
+                    _b), _a));
                 var _a, _b;
             });
         };
@@ -4725,6 +4791,9 @@
             Attribute: Attribute,
             Type: Type,
             Attr: Attr,
+            String: String$1,
+            Number: Number,
+            Boolean: Boolean,
             Increment: Increment,
             Relation: Relation,
             HasOne: HasOne,
@@ -4864,6 +4933,9 @@
         Attribute: Attribute,
         Type: Type,
         Attr: Attr,
+        String: String$1,
+        Number: Number,
+        Boolean: Boolean,
         Increment: Increment,
         Relation: Relation,
         HasOne: HasOne,
