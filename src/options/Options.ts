@@ -7,7 +7,7 @@ export interface Options {
   resources?: ResourcesOptions
 }
 
-export class ModuleOptions implements Options {
+export default class ModuleOptions implements Options {
   public static namespace: string = 'entities'
   public static resources: ResourcesOptions = {
     baseUrl: ''
@@ -23,5 +23,3 @@ export class ModuleOptions implements Options {
   }
 
 }
-
-export default Options

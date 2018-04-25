@@ -1,6 +1,6 @@
 import BaseModel from './BaseModel'
 import Http from '../http/Http'
-// import { ModuleOptions } from '../options/Options'
+import ModuleOptions from '../options/Options'
 import { Record } from '../data'
 import Query, { UpdateClosure, Condition } from '../query/Query'
 import EntityCollection from '../query/EntityCollection'
@@ -15,12 +15,16 @@ export default class Model extends BaseModel {
 
   /**
    * Configure a model with default conf and extend or override
-   * the default configuration with a custom configuration
+   * the default configuration with a custom configuration present on
+   * model class or on parameter.
+   * Priority confs:
+   * default -> custom on model class -> custom on conf() parameter
    */
-  public static conf (): void {
+  public static conf (parameterConf?: JsonModelConf): void {
 
-    const _conf: JsonModelConf = this._conf as JsonModelConf
+    const _onModelconf: JsonModelConf = this._conf as JsonModelConf
 
+    // instance default conf
     this._conf = new ModelConf(
       JSON.parse(
         replaceAll(
@@ -31,11 +35,25 @@ export default class Model extends BaseModel {
       )
     )
 
-    if (_conf) {
+    // check if confs on model are present
+    if (_onModelconf) {
       this._conf.extend(
         JSON.parse(
           replaceAll(
-            JSON.stringify(_conf),
+            JSON.stringify(_onModelconf),
+            '{self}',
+            this.entity
+          )
+        )
+      )
+    }
+
+    // check if confs parameter are present
+    if (parameterConf) {
+      this._conf.extend(
+        JSON.parse(
+          replaceAll(
+            JSON.stringify(parameterConf),
             '{self}',
             this.entity
           )
@@ -185,11 +203,19 @@ export default class Model extends BaseModel {
    */
   public static async refresh (conf: MethodConf = this.getMethodConf('fetch')): Promise<Collection> {
     const _conf = this.checkMethodConf('refresh', conf)
-    const url = this._conf.baseUrl + this._conf.endpointPath + _conf.http.path
+    const url = this.getUrl(_conf)
     const data = await Http[_conf.http.method as HttpMethod](url)
       .catch((err: Error) => { console.log(err); }) || []
     await this.dispatch('insertOrUpdate', { data })
     return data
+  }
+
+  public static getUrl(conf: MethodConf) {
+    let baseUrl = this._conf.baseUrl
+    if(ModuleOptions.resources.baseUrl) {
+      baseUrl = ModuleOptions.resources.baseUrl
+    }
+    return baseUrl + this._conf.endpointPath + conf.http.path
   }
 
   /**

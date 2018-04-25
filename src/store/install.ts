@@ -2,51 +2,26 @@ import * as Vuex from 'vuex'
 import Container from '../connections/Container'
 import Database from '../database/Database'
 import Entity from '../database/Entity'
+import ModuleOptions, { Options } from '../options/Options'
 
 export type Install = (database: Database, options?: Options) => Vuex.Plugin<any>
 
-export interface Options {
-  namespace?: string
-}
-
-export default (database: Database, options: Options = {}): Vuex.Plugin<any> => {
-  const namespace: string = options.namespace || 'entities'
+export default (database: Database, options: Options): Vuex.Plugin<any> => {
 
   return (store: Vuex.Store<any>): void => {
-    store.registerModule(namespace, database.createModule(namespace))
+
+    ModuleOptions.register(options)
+
+    store.registerModule(ModuleOptions.namespace, database.createModule(ModuleOptions.namespace))
 
     database.registerStore(store)
 
-    database.registerNamespace(namespace)
+    database.registerNamespace(ModuleOptions.namespace)
 
-    Container.register(namespace, database)
+    Container.register(ModuleOptions.namespace, database)
 
-    // TODO configurare tutti i modelli
     database.entities.forEach((entity: Entity) => {
       entity.model.conf()
     })
   }
 }
-
-// import * as Vuex from 'vuex'
-// import Container from '../connections/Container'
-// import Database from '../database/Database'
-// import { Options, ModuleOptions } from '../options/Options'
-
-// export type Install = (database: Database, options?: Options) => Vuex.Plugin<any>
-
-// export default (database: Database, options: Options): Vuex.Plugin<any> => {
-
-//   return (store: Vuex.Store<any>): void => {
-
-//     ModuleOptions.register(options)
-
-//     store.registerModule(ModuleOptions.namespace, database.createModule(ModuleOptions.namespace))
-
-//     database.registerStore(store)
-
-//     database.registerNamespace(ModuleOptions.namespace)
-
-//     Container.register(ModuleOptions.namespace, database)
-//   }
-// }

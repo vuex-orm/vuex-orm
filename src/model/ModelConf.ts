@@ -55,9 +55,9 @@ export default class ModelConf {
   public method (name: string): MethodConf | undefined {
     let _method
     this._methods.forEach(
-      (method: MethodConf, key: string, map: Map<string, MethodConf>) => {
-        if((method.alias && method.alias.indexOf(name)) || key === name) {
-          _method = method 
+      (method: MethodConf, key: string) => {
+        if((method.alias && method.alias.indexOf(name) > -1) || key === name) {
+          _method = method
         }
       }
     )
@@ -111,8 +111,17 @@ export class MethodConf {
    * @constructor
    * @param {MethodConf} 
    */
-  constructor ({name, refreshFromApi = undefined, applyToApi = undefined, http}: MethodConf) {
+  constructor (
+    {
+      name, 
+      alias = undefined, 
+      refreshFromApi = undefined, 
+      applyToApi = undefined, 
+      http
+    }: MethodConf
+  ) {
     this.name = name
+    this.alias = alias
     this.refreshFromApi = refreshFromApi
     this.applyToApi = applyToApi
     this.http = new HttpConf(http)
@@ -124,13 +133,15 @@ export class MethodConf {
    */
   assign (
     {
-      name            = this.name, 
+      name            = this.name,
+      alias           = this.alias,
       refreshFromApi  = this.refreshFromApi, 
       applyToApi      = this.applyToApi, 
       http            = this.http
     }: MethodConf
   ) {
     this.name = name
+    this.alias = alias
     this.refreshFromApi = refreshFromApi
     this.applyToApi = applyToApi
     this.http = new HttpConf(http)
@@ -188,7 +199,7 @@ export const defaultConf = {
       "alias": ["fetch", "refresh"],
       "refreshFromApi": true,
       "http": {
-          "path": "/",
+          "path": "",
           "method": "get"
       }
     },
@@ -221,7 +232,7 @@ export const defaultConf = {
       "name": "create",
       "applyToApi": true,
       "http": {
-          "path": "/",
+          "path": "",
           "method": "post"
       }
     },
@@ -237,7 +248,7 @@ export const defaultConf = {
       "name": "delete",
       "applyToApi": true,
       "http": {
-          "path": "/",
+          "path": "",
           "method": "delete"
       }
     },
