@@ -187,6 +187,7 @@ export default class Model extends BaseModel {
     const _conf = this.checkMethodConf('refresh', conf)
     const url = this._conf.baseUrl + this._conf.endpointPath + _conf.http.path
     const data = await Http[_conf.http.method as HttpMethod](url)
+      .catch((err: Error) => { console.log(err); }) || []
     await this.dispatch('insertOrUpdate', { data })
     return data
   }

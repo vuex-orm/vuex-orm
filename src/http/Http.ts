@@ -15,7 +15,13 @@ export default class Http {
   public static request <T> (url: string, _query: {}, _method: string, _body = null, _headers = {}, options = {}): Promise<T> {
     const _options = { ...this.defaultOptions, ...options }
     return fetch(url, _options as RequestInit)
-    .then(response => response.json()) // parses response to JSON
+      .then(response => {
+        if (!response.ok) {
+          return Promise.reject(new Error('http request failed'))
+        } else {
+          return Promise.resolve(response.json())
+        }
+      }) // parses response to JSON
   }
 
   public static get <T> (url: string, params = {}, headers = {}, options = {}): Promise<T> {
