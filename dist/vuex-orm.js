@@ -122,34 +122,37 @@
         return Container;
     }());
 
+    var ModuleOptions = /** @class */ (function () {
+        function ModuleOptions() {
+        }
+        ModuleOptions.register = function (options) {
+            if (options === void 0) { options = {}; }
+            if (options.namespace) {
+                this.namespace = options.namespace;
+            }
+            if (options.resources) {
+                this.resources = options.resources;
+            }
+        };
+        ModuleOptions.namespace = 'entities';
+        ModuleOptions.resources = {
+            baseUrl: ''
+        };
+        return ModuleOptions;
+    }());
+
     var install = (function (database, options) {
-        if (options === void 0) { options = {}; }
-        var namespace = options.namespace || 'entities';
         return function (store) {
-            store.registerModule(namespace, database.createModule(namespace));
+            ModuleOptions.register(options);
+            store.registerModule(ModuleOptions.namespace, database.createModule(ModuleOptions.namespace));
             database.registerStore(store);
-            database.registerNamespace(namespace);
-            Container.register(namespace, database);
-            // TODO configurare tutti i modelli
+            database.registerNamespace(ModuleOptions.namespace);
+            Container.register(ModuleOptions.namespace, database);
             database.entities.forEach(function (entity) {
                 entity.model.conf();
             });
         };
     });
-    // import * as Vuex from 'vuex'
-    // import Container from '../connections/Container'
-    // import Database from '../database/Database'
-    // import { Options, ModuleOptions } from '../options/Options'
-    // export type Install = (database: Database, options?: Options) => Vuex.Plugin<any>
-    // export default (database: Database, options: Options): Vuex.Plugin<any> => {
-    //   return (store: Vuex.Store<any>): void => {
-    //     ModuleOptions.register(options)
-    //     store.registerModule(ModuleOptions.namespace, database.createModule(ModuleOptions.namespace))
-    //     database.registerStore(store)
-    //     database.registerNamespace(ModuleOptions.namespace)
-    //     Container.register(ModuleOptions.namespace, database)
-    //   }
-    // }
 
     /**
      * Check if the given array or object is empty.
@@ -4508,7 +4511,14 @@
             if (options === void 0) { options = {}; }
             var _options = __assign$9({}, this.defaultOptions, options);
             return fetch(url, _options)
-                .then(function (response) { return response.json(); }); // parses response to JSON
+                .then(function (response) {
+                if (!response.ok) {
+                    return Promise.reject(new Error('http request failed'));
+                }
+                else {
+                    return Promise.resolve(response.json());
+                }
+            }); // parses response to JSON
         };
         Http.get = function (url, params, headers, options) {
             if (params === void 0) { params = {}; }
@@ -4547,30 +4557,30 @@
             /**
              * The host/domain of api server
              */
-            this._baseUrl = '';
+            this.baseUrl = '';
             /**
              * The endpoint of model entity
              */
-            this._endpointPath = '';
+            this.endpointPath = '';
             /**
              * The methods of model
              */
             this._methods = new Map();
             if (conf) {
-                this._baseUrl = conf.baseUrl;
-                this._endpointPath = conf.endpointPath;
+                this.baseUrl = conf.baseUrl;
+                this.endpointPath = conf.endpointPath;
                 conf.methods.forEach(function (method) {
-                    _this._methods.set(method.name, new Method(method));
+                    _this._methods.set(method.name, new MethodConf(method));
                 });
             }
         }
         ModelConf.prototype.extend = function (conf) {
             var _this = this;
             if (conf.baseUrl) {
-                this._baseUrl = conf.baseUrl;
+                this.baseUrl = conf.baseUrl;
             }
             if (conf.endpointPath) {
-                this._endpointPath = conf.endpointPath;
+                this.endpointPath = conf.endpointPath;
             }
             if (conf.methods && conf.methods.length) {
                 conf.methods.forEach(function (method) {
@@ -4580,82 +4590,65 @@
                     }
                     /* tslint:disable */
                     else {
-                        _this._methods.set(method.name, new Method(method));
+                        _this._methods.set(method.name, new MethodConf(method));
                     }
                 });
             }
         };
         /**
-         * Get a method
+         * Get a method by name or alias
          * @param {string} name the method's name to find
-         * @return {Method | undefined} return the method fint
+         * @return {MethodConf | undefined} return the method fint
          */
         ModelConf.prototype.method = function (name) {
-            return this._methods.get(name);
+            var _method;
+            this._methods.forEach(function (method, key) {
+                if ((method.alias && method.alias.indexOf(name) > -1) || key === name) {
+                    _method = method;
+                }
+            });
+            if (!_method) {
+                throw new Error(name + ": method configuration not found");
+            }
+            return _method;
         };
         /**
          * Add a model method
          * @param name the method name
          * @param method the method conf
          */
-        ModelConf.prototype.addMethod = function (name, method) {
+        ModelConf.prototype.addMethodConf = function (name, method) {
             this._methods.set(name, method);
-        };
-        /**
-         * Set/Get the baseUrl
-         * @param {string} baseUrl the baseUrl to find or set
-         * @return {void | string} return the base url for get
-         */
-        ModelConf.prototype.baseUrl = function (baseUrl) {
-            if (baseUrl) {
-                this._baseUrl = baseUrl;
-            }
-            /* tslint:disable */
-            else {
-                return this._baseUrl;
-            }
-        };
-        /**
-         * Set/Get the endpointPath
-         * @param {string} endpointPath the endpointPath to find or set
-         * @return {void | string} return the endpointPath for get
-         */
-        ModelConf.prototype.path = function (endpointPath) {
-            if (endpointPath) {
-                this._endpointPath = endpointPath;
-            }
-            /* tslint:disable */
-            else {
-                return this._endpointPath;
-            }
         };
         return ModelConf;
     }());
-    var Method = /** @class */ (function () {
+    var MethodConf = /** @class */ (function () {
         /**
          * Constructor
          * @constructor
-         * @param {Method}
+         * @param {MethodConf}
          */
-        function Method(_a) {
-            var name = _a.name, _b = _a.refreshFromApi, refreshFromApi = _b === void 0 ? undefined : _b, _c = _a.applyToApi, applyToApi = _c === void 0 ? undefined : _c, http = _a.http;
+        function MethodConf(_a) {
+            var name = _a.name, _b = _a.alias, alias = _b === void 0 ? undefined : _b, _c = _a.refreshFromApi, refreshFromApi = _c === void 0 ? undefined : _c, _d = _a.applyToApi, applyToApi = _d === void 0 ? undefined : _d, http = _a.http;
             this.name = name;
+            this.alias = alias;
             this.refreshFromApi = refreshFromApi;
             this.applyToApi = applyToApi;
             this.http = new HttpConf(http);
         }
         /**
          * Assign the new conf for the method
-         * @param {Method}
+         * @param {MethodConf}
          */
-        Method.prototype.assign = function (_a) {
-            var _b = _a.name, name = _b === void 0 ? this.name : _b, _c = _a.refreshFromApi, refreshFromApi = _c === void 0 ? this.refreshFromApi : _c, _d = _a.applyToApi, applyToApi = _d === void 0 ? this.applyToApi : _d, _e = _a.http, http = _e === void 0 ? this.http : _e;
+        MethodConf.prototype.assign = function (_a) {
+            var _b = _a.name, name = _b === void 0 ? this.name : _b, _c = _a.alias, alias = _c === void 0 ? this.alias : _c, _d = _a.refreshFromApi, refreshFromApi = _d === void 0 ? this.refreshFromApi : _d, _e = _a.applyToApi, applyToApi = _e === void 0 ? this.applyToApi : _e, _f = _a.http, http = _f === void 0 ? this.http : _f;
             this.name = name;
+            this.alias = alias;
             this.refreshFromApi = refreshFromApi;
             this.applyToApi = applyToApi;
             this.http = new HttpConf(http);
         };
-        return Method;
+        return MethodConf;
     }());
     var HttpMethod;
     (function (HttpMethod) {
@@ -4699,22 +4692,24 @@
         return HttpConf;
     }());
     var defaultConf = {
-        "baseUrl": "",
-        "endpointPath": "",
+        "baseUrl": "http://localhost:3000",
+        "endpointPath": "/{self}",
         "methods": [
             {
                 "name": "find",
+                "alias": ["fetch", "refresh"],
                 "refreshFromApi": true,
                 "http": {
-                    "path": "/{self}",
+                    "path": "",
                     "method": "get"
                 }
             },
             {
                 "name": "findById",
+                "alias": ["fetchById", "refreshById"],
                 "refreshFromApi": true,
                 "http": {
-                    "path": "/{self}/:id",
+                    "path": "/:id",
                     "method": "get"
                 }
             },
@@ -4722,7 +4717,7 @@
                 "name": "exist",
                 "refreshFromApi": true,
                 "http": {
-                    "path": "/{self}/exist/:id",
+                    "path": "/exist/:id",
                     "method": "get"
                 }
             },
@@ -4730,7 +4725,7 @@
                 "name": "count",
                 "refreshFromApi": true,
                 "http": {
-                    "path": "/{self}/count",
+                    "path": "/count",
                     "method": "get"
                 }
             },
@@ -4738,7 +4733,7 @@
                 "name": "create",
                 "applyToApi": true,
                 "http": {
-                    "path": "/{self}",
+                    "path": "",
                     "method": "post"
                 }
             },
@@ -4746,7 +4741,7 @@
                 "name": "update",
                 "applyToApi": true,
                 "http": {
-                    "path": "/{self}/:id",
+                    "path": "/:id",
                     "method": "put"
                 }
             },
@@ -4754,7 +4749,7 @@
                 "name": "delete",
                 "applyToApi": true,
                 "http": {
-                    "path": "/{self}",
+                    "path": "",
                     "method": "delete"
                 }
             },
@@ -4762,7 +4757,7 @@
                 "name": "deleteById",
                 "applyToApi": true,
                 "http": {
-                    "path": "/{self}/:id",
+                    "path": "/:id",
                     "method": "delete"
                 }
             }
@@ -4779,17 +4774,80 @@
             d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
         };
     })();
+    var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    };
+    var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+        function verb(n) { return function (v) { return step([n, v]); }; }
+        function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_) try {
+                if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [0, t.value];
+                switch (op[0]) {
+                    case 0: case 1: t = op; break;
+                    case 4: _.label++; return { value: op[1], done: false };
+                    case 5: _.label++; y = op[1]; op = [0]; continue;
+                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                    default:
+                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                        if (t[2]) _.ops.pop();
+                        _.trys.pop(); continue;
+                }
+                op = body.call(thisArg, _);
+            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+        }
+    };
     var Model = /** @class */ (function (_super) {
         __extends$18(Model, _super);
         function Model() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
-        Model.conf = function () {
-            var _conf = this._conf;
-            this._conf = new ModelConf(JSON.parse(replaceAll(JSON.stringify(defaultConf), '{self}', this.name.toLowerCase())));
-            if (_conf) {
-                this._conf.extend(JSON.parse(replaceAll(JSON.stringify(_conf), '{self}', this.name.toLowerCase())));
+        /**
+         * Configure a model with default conf and extend or override
+         * the default configuration with a custom configuration present on
+         * model class or on parameter.
+         * Priority confs:
+         * default -> custom on model class -> custom on conf() parameter
+         */
+        Model.conf = function (parameterConf) {
+            var _onModelconf = this._conf;
+            // instance default conf
+            this._conf = new ModelConf(JSON.parse(replaceAll(JSON.stringify(defaultConf), '{self}', this.entity)));
+            // check if confs on model are present
+            if (_onModelconf) {
+                this._conf.extend(JSON.parse(replaceAll(JSON.stringify(_onModelconf), '{self}', this.entity)));
             }
+            // check if confs parameter are present
+            if (parameterConf) {
+                this._conf.extend(JSON.parse(replaceAll(JSON.stringify(parameterConf), '{self}', this.entity)));
+            }
+        };
+        /**
+         * Get the model conf
+         * @return {ModelConf}
+         */
+        Model.getConf = function () {
+            return this._conf;
+        };
+        /**
+         * Get the method conf by name
+         * @param {string} methodName The method's name
+         * @return {MethodConf}
+         */
+        Model.getMethodConf = function (methodName) {
+            return this.getConf().method(methodName);
         };
         /**
          * Wrap query getter
@@ -4801,7 +4859,12 @@
          * Wrap find method
          * @return {Promise<Collection>} list of results
          */
-        Model.find = function () {
+        Model.find = function (conf) {
+            if (conf === void 0) { conf = this.getMethodConf('find'); }
+            var _conf = this.checkMethodConf('find', conf);
+            if (_conf.refreshFromApi) {
+                return this.fetch(conf);
+            }
             return Promise.resolve(this.query().all());
         };
         /**
@@ -4874,25 +4937,78 @@
          * Fetch data from api server if the store is empty
          * @return {Promise<UpdateReturn>} fetched data
          */
-        Model.fetch = function () {
-            var data = this.query().get();
-            if (data.length)
-                return Promise.resolve(data);
-            return this.refresh();
+        Model.fetch = function (conf) {
+            if (conf === void 0) { conf = this.getMethodConf('fetch'); }
+            return __awaiter(this, void 0, void 0, function () {
+                var data, _conf;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            _conf = this.checkMethodConf('fetch', conf);
+                            if (!_conf.refreshFromApi) return [3 /*break*/, 2];
+                            return [4 /*yield*/, this.refresh(conf)];
+                        case 1:
+                            data = _a.sent();
+                            return [3 /*break*/, 3];
+                        case 2:
+                            data = this.query().get();
+                            _a.label = 3;
+                        case 3: return [2 /*return*/, data];
+                    }
+                });
+            });
         };
         /**
          * Fetch data from api and store in vuex
-         * @return {Promise<UpdateReturn>} stored data
+         * @return {Promise<Collection>} stored data
          */
-        Model.refresh = function () {
-            var _this = this;
-            var baseUrl = 'api'; // ModuleOptions.resources.baseUrl
-            var url = baseUrl + "/" + this.name.toLowerCase() + ".json";
-            return Http.get(url).then(function (data) {
-                return _this.dispatch('insertOrUpdate', { data: data });
-            }, function (err) {
-                console.log(err);
+        Model.refresh = function (conf) {
+            if (conf === void 0) { conf = this.getMethodConf('fetch'); }
+            return __awaiter(this, void 0, void 0, function () {
+                var _conf, url, data;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            _conf = this.checkMethodConf('refresh', conf);
+                            url = this.getUrl(_conf);
+                            return [4 /*yield*/, Http[_conf.http.method](url)
+                                    .catch(function (err) { console.log(err); })];
+                        case 1:
+                            data = (_a.sent()) || [];
+                            return [4 /*yield*/, this.dispatch('insertOrUpdate', { data: data })];
+                        case 2:
+                            _a.sent();
+                            return [2 /*return*/, data];
+                    }
+                });
             });
+        };
+        Model.getUrl = function (conf) {
+            var baseUrl = this._conf.baseUrl;
+            if (ModuleOptions.resources.baseUrl) {
+                baseUrl = ModuleOptions.resources.baseUrl;
+            }
+            return baseUrl + this._conf.endpointPath + conf.http.path;
+        };
+        /**
+         * Check the method configuration
+         * Return a new method's configuration
+         * @param {string} methodName
+         * @param {ModelConf} conf
+         * @return {MethodConf}
+         * @throws Error
+         */
+        Model.checkMethodConf = function (methodName, conf) {
+            var _conf = this._conf;
+            var _method = _conf.method(methodName);
+            if (conf && _method) {
+                _method = new MethodConf(_method);
+                _method.assign(conf);
+            }
+            if (!_method) {
+                throw new Error(methodName + " configuration method not found");
+            }
+            return _method;
         };
         return Model;
     }(BaseModel));
