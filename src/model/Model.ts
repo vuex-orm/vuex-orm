@@ -281,15 +281,22 @@ export default class Model {
   /**
    * Create records.
    */
-  static async create (payload: { data: Record | Record[], create: string, insert: string, update: string, insertOrUpdate: string }): Promise<EntityCollection> {
+  static async create (payload: any): Promise<EntityCollection> {
     return this.dispatch('create', payload)
   }
 
   /**
    * Insert records.
    */
-  static async insert (payload: { data: Record | Record[], create: string, insert: string, update: string, insertOrUpdate: string }): Promise<EntityCollection> {
+  static async insert (payload: any): Promise<EntityCollection> {
     return this.dispatch('insert', payload)
+  }
+
+  /**
+   * Update records.
+   */
+  static async update (payload: any): Promise<EntityCollection> {
+    return this.dispatch('update', payload)
   }
 
   /**
@@ -562,15 +569,30 @@ export default class Model {
   /**
    * Create records.
    */
-  async $create (payload: { data: Record | Record[], create: string, insert: string, update: string, insertOrUpdate: string }): Promise<EntityCollection> {
+  async $create (payload: any): Promise<EntityCollection> {
     return this.$dispatch('create', payload)
   }
 
   /**
    * Create records.
    */
-  async $insert (payload: { data: Record | Record[], create: string, insert: string, update: string, insertOrUpdate: string }): Promise<EntityCollection> {
+  async $insert (payload: any): Promise<EntityCollection> {
     return this.$dispatch('insert', payload)
+  }
+
+  /**
+   * Update records.
+   */
+  async $update (payload: any): Promise<EntityCollection> {
+    if (payload.where !== undefined) {
+      return this.$dispatch('update', payload)
+    }
+
+    if (this.$self().id(payload) === undefined) {
+      return this.$dispatch('update', { where: this.$id(), data: payload })
+    }
+
+    return this.$dispatch('update', payload)
   }
 
   /**
