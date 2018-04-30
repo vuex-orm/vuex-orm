@@ -1,5 +1,6 @@
 import * as Vuex from 'vuex'
 import EntityState from './EntityState'
+import * as Paylods from './Payloads'
 
 export type SubActions = Vuex.ActionTree<EntityState, any>
 
@@ -9,7 +10,7 @@ const subActions: SubActions = {
    * state. If you want to keep existing data while saving new data,
    * use `insert` instead.
    */
-  create ({ dispatch, state }, payload) {
+  create ({ dispatch, state }, payload: Paylods.CreatePayload) {
     return dispatch(`${state.$connection}/create`, { entity: state.$name, ...payload }, { root: true })
   },
 
@@ -18,14 +19,14 @@ const subActions: SubActions = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert ({ dispatch, state }, payload) {
+  insert ({ dispatch, state }, payload: Paylods.InsertPayload) {
     return dispatch(`${state.$connection}/insert`, { entity: state.$name, ...payload }, { root: true })
   },
 
   /**
    * Update data in the store.
    */
-  update ({ dispatch, state }, payload) {
+  update ({ dispatch, state }, payload: Paylods.UpdatePayload) {
     const { where, data } = payload
 
     if (where === undefined || data === undefined) {
@@ -40,14 +41,14 @@ const subActions: SubActions = {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  insertOrUpdate ({ dispatch, state }, payload) {
+  insertOrUpdate ({ dispatch, state }, payload: Paylods.InsertOrUpdatePayload) {
     return dispatch(`${state.$connection}/insertOrUpdate`, { entity: state.$name, ...payload }, { root: true })
   },
 
   /**
    * Delete data from the store.
    */
-  delete ({ dispatch, state }, condition) {
+  delete ({ dispatch, state }, condition: Paylods.DeletePaylaod) {
     const where = typeof condition === 'object' ? condition.where : condition
 
     return dispatch(`${state.$connection}/delete`, { entity: state.$name, where }, { root: true })

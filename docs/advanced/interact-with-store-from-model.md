@@ -1,6 +1,6 @@
 # Advanced: Interact With Store From Model
 
-Alternative for calling store methods directly, you may access store instance from a model as well to dispatch actions or call getters.
+Alternative for calling store methods directly, you may access store instance from a model as well to dispatch actions or call getters. 
 
 ```js
 const user = User.dispatch('create', { data: ... })
@@ -8,6 +8,19 @@ const user = User.dispatch('create', { data: ... })
 // The above code is exactly same as below.
 
 const user = store.dispatch('entities/users/create', { data: ... })
+```
+
+Also, the model is capable of calling all of the store actions and getters such as `create` and `find`.
+
+```js
+User.create({
+  data: [
+    { id: 1, name: 'John Doe' },
+    { id: 2, name: 'Jane Doe' }
+  ]
+})
+
+const user = User.find(2)
 ```
 
 Accessing store from a model does nothing special compared to accessing the store directly. It's just for the convenience. Hence you may choose whichever way that fits your preference.
@@ -63,3 +76,52 @@ const users = user.$getters('all')()
 ```
 
 As same as actions, getters in the model is also namespaced automatically.
+
+## Dispatching Persist Method
+
+The model can dispatch all of the persist methods, which are `create`, `insert`, `update` and `insertOrUpdate`. You may call them through static and instance method. Note that you need to prefix the method name with `$` when dispatching methods by instance method.
+
+```js
+// As static method.
+
+User.create({ data: { ... } })
+
+// As instance method.
+
+const user = new User()
+
+const users = user.$create({ data: { ... } })
+```
+
+When calling `update` as an instance method, you may omit the primary key since the model instance already has it.
+
+```js
+const user = User.find(1)
+
+user.$update({ age: 24 }) // <- Updates where user has id of 1.
+```
+
+## Dispatching Persist Method
+
+You may call getters through models as well. All `all`, `find` and `query` getters are available.
+
+```js
+const users = User.all()
+
+// You can chain the query too.
+const users = User.query().where('active', true).get()
+```
+
+## Delete Method
+
+You can call delete actions through models as same as other methods. Like `update`, you may omit the primary key value when calling delete method through instance method.
+
+```js
+User.delete(1)
+
+// You can omit id with instance method.
+
+const user = User.find(1)
+
+user.$delete()
+```

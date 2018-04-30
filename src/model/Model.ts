@@ -21,6 +21,11 @@ import MorphOne from '../attributes/relations/MorphOne'
 import MorphMany from '../attributes/relations/MorphMany'
 import MorphToMany from '../attributes/relations/MorphToMany'
 import MorphedByMany from '../attributes/relations/MorphedByMany'
+import Query from '../query/Query'
+import Item from '../query/Item'
+import Collection from '../query/Collection'
+import EntityCollection from '../query/EntityCollection'
+import * as Payloads from '../modules/Payloads'
 
 export default class Model {
   /**
@@ -275,6 +280,62 @@ export default class Model {
    */
   static getters (method: string): any {
     return this.store().getters[this.namespace(method)]
+  }
+
+  /**
+   * Create records.
+   */
+  static async create (payload: Payloads.CreatePayload): Promise<EntityCollection> {
+    return this.dispatch('create', payload)
+  }
+
+  /**
+   * Insert records.
+   */
+  static async insert (payload: Payloads.InsertPayload): Promise<EntityCollection> {
+    return this.dispatch('insert', payload)
+  }
+
+  /**
+   * Update records.
+   */
+  static async update (payload: Payloads.UpdatePayload): Promise<EntityCollection> {
+    return this.dispatch('update', payload)
+  }
+
+  /**
+   * Insert or update records.
+   */
+  static async insertOrUpdate (payload: Payloads.InsertOrUpdatePayload): Promise<EntityCollection> {
+    return this.dispatch('insertOrUpdate', payload)
+  }
+
+  /**
+   * Get all records.
+   */
+  static all (): Collection {
+    return this.getters('all')()
+  }
+
+  /**
+   * Find a record.
+   */
+  static find (id: string | number): Collection {
+    return this.getters('find')(id)
+  }
+
+  /**
+   * Get query instance.
+   */
+  static query (): Query {
+    return this.getters('query')()
+  }
+
+  /**
+   * Insert or update records.
+   */
+  static async delete (condition: Payloads.DeletePaylaod): Promise<Item | Collection> {
+    return this.dispatch('delete', condition)
   }
 
   /**
@@ -542,6 +603,72 @@ export default class Model {
    */
   $getters (method: string): any {
     return this.$self().getters(method)
+  }
+
+  /**
+   * Create records.
+   */
+  async $create (payload: Payloads.CreatePayload): Promise<EntityCollection> {
+    return this.$dispatch('create', payload)
+  }
+
+  /**
+   * Create records.
+   */
+  async $insert (payload: Payloads.InsertPayload): Promise<EntityCollection> {
+    return this.$dispatch('insert', payload)
+  }
+
+  /**
+   * Update records.
+   */
+  async $update (payload: Payloads.UpdatePayload): Promise<EntityCollection> {
+    if (payload.where !== undefined) {
+      return this.$dispatch('update', payload)
+    }
+
+    if (this.$self().id(payload) === undefined) {
+      return this.$dispatch('update', { where: this.$id(), data: payload })
+    }
+
+    return this.$dispatch('update', payload)
+  }
+
+  /**
+   * Insert or update records.
+   */
+  async $insertOrUpdate (payload: Payloads.InsertOrUpdatePayload): Promise<EntityCollection> {
+    return this.$dispatch('insertOrUpdate', payload)
+  }
+
+  /**
+   * Get all records.
+   */
+  $all (): Collection {
+    return this.$getters('all')()
+  }
+
+  /**
+   * Find a record.
+   */
+  $find (id: string | number): Collection {
+    return this.$getters('find')(id)
+  }
+
+  /**
+   * Get query instance.
+   */
+  $query (): Query {
+    return this.$getters('query')()
+  }
+
+  /**
+   * Insert or update records.
+   */
+  async $delete (condition?: Payloads.DeletePaylaod): Promise<Item | Collection> {
+    condition = condition === undefined ? this.$id() : condition
+
+    return this.$dispatch('delete', condition)
   }
 
   /**
