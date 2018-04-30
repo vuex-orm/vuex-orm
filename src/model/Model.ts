@@ -300,6 +300,13 @@ export default class Model {
   }
 
   /**
+   * Insert or update records.
+   */
+  static async insertOrUpdate (payload: any): Promise<EntityCollection> {
+    return this.dispatch('insertOrUpdate', payload)
+  }
+
+  /**
    * Get the value of the primary key.
    */
   static id (record: any): any {
@@ -593,6 +600,13 @@ export default class Model {
     }
 
     return this.$dispatch('update', payload)
+  }
+
+  /**
+   * Insert or update records.
+   */
+  async $insertOrUpdate (payload: any): Promise<EntityCollection> {
+    return this.$dispatch('insertOrUpdate', payload)
   }
 
   /**
