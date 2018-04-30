@@ -21,6 +21,8 @@ import MorphOne from '../attributes/relations/MorphOne'
 import MorphMany from '../attributes/relations/MorphMany'
 import MorphToMany from '../attributes/relations/MorphToMany'
 import MorphedByMany from '../attributes/relations/MorphedByMany'
+import Item from '../query/Item'
+import Collection from '../query/Collection'
 import EntityCollection from '../query/EntityCollection'
 
 export default class Model {
@@ -304,6 +306,13 @@ export default class Model {
    */
   static async insertOrUpdate (payload: any): Promise<EntityCollection> {
     return this.dispatch('insertOrUpdate', payload)
+  }
+
+  /**
+   * Insert or update records.
+   */
+  static async delete (condition: any): Promise<Item | Collection> {
+    return this.dispatch('delete', condition)
   }
 
   /**
@@ -607,6 +616,15 @@ export default class Model {
    */
   async $insertOrUpdate (payload: any): Promise<EntityCollection> {
     return this.$dispatch('insertOrUpdate', payload)
+  }
+
+  /**
+   * Insert or update records.
+   */
+  async $delete (condition: any): Promise<Item | Collection> {
+    condition = condition === undefined ? this.$id() : condition
+
+    return this.$dispatch('delete', condition)
   }
 
   /**
