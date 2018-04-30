@@ -255,10 +255,10 @@ Also, you may add an operator to customize your query even more. The supported o
 
 ```js
 // Retrieve all posts that have more than 2 comments.
-store.getters['entities/posts/query']().has('comments', '>' 2).get()
+store.getters['entities/posts/query']().has('comments', '>', 2).get()
 
 // Retrieve all posts that have less than or exactly 3 comments.
-store.getters['entities/posts/query']().has('comments', '<=' 2).get()
+store.getters['entities/posts/query']().has('comments', '<=', 2).get()
 ```
 
 If you need even more power, you may use the `whereHas` method to put "where" conditions on your `has` queries. This method allow you to add customized constraints to a relationship constraint, such as checking the content of a comment.
