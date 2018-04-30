@@ -1,7 +1,17 @@
 import { createApplication } from 'test/support/Helpers'
+import Connection from 'app/connections/Connection'
 import Model from 'app/model/Model'
 
 describe('Model', () => {
+  it('can fetch empty fields when model fields is not declared', () => {
+    class User extends Model {
+      static entity = 'users'
+    }
+
+    expect(User.fields()).toEqual({})
+    expect((new User).$fields()).toEqual({})
+  })
+
   it('should set default field values as a property on instanciation', () => {
     class User extends Model {
       static entity = 'users'
@@ -194,5 +204,47 @@ describe('Model', () => {
     const vote = new Vote(data)
 
     expect(vote.$id()).toBe('2_1')
+  })
+
+  it('can get local key of the model', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static primaryKey = ['name', 'email']
+
+      static fields () {
+        return {
+          name: this.attr('John Doe'),
+          email: this.attr('john@example.com')
+        }
+      }
+    }
+
+    expect(User.localKey()).toBe('id')
+  })
+
+  it('throws error when trying to fetch attribute class that does not exist', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          name: this.attr('John Doe'),
+          email: this.attr('john@example.com')
+        }
+      }
+    }
+
+    expect(() => { User.getAttributeClass('blah') }).toThrow()
+  })
+
+  it('can get connection instance', () => {
+    class User extends Model {
+      static entity = 'users'
+    }
+
+    createApplication('entities', [{ model: User }])
+
+    expect((new User).$conn()).toBeInstanceOf(Connection)
   })
 })
