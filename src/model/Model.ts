@@ -21,6 +21,7 @@ import MorphOne from '../attributes/relations/MorphOne'
 import MorphMany from '../attributes/relations/MorphMany'
 import MorphToMany from '../attributes/relations/MorphToMany'
 import MorphedByMany from '../attributes/relations/MorphedByMany'
+import EntityCollection from '../query/EntityCollection'
 
 export default class Model {
   /**
@@ -275,6 +276,13 @@ export default class Model {
    */
   static getters (method: string): any {
     return this.store().getters[this.namespace(method)]
+  }
+
+  /**
+   * Create records.
+   */
+  static async create (payload: { data: Record | Record[], create: string, insert: string, update: string, insertOrUpdate: string }): Promise<EntityCollection> {
+    return this.dispatch('create', payload)
   }
 
   /**
@@ -542,6 +550,13 @@ export default class Model {
    */
   $getters (method: string): any {
     return this.$self().getters(method)
+  }
+
+  /**
+   * Create records.
+   */
+  async $create (payload: { data: Record | Record[], create: string, insert: string, update: string, insertOrUpdate: string }): Promise<EntityCollection> {
+    return this.$dispatch('create', payload)
   }
 
   /**
