@@ -21,6 +21,7 @@ import MorphOne from '../attributes/relations/MorphOne'
 import MorphMany from '../attributes/relations/MorphMany'
 import MorphToMany from '../attributes/relations/MorphToMany'
 import MorphedByMany from '../attributes/relations/MorphedByMany'
+import Query from '../query/Query'
 import Item from '../query/Item'
 import Collection from '../query/Collection'
 import EntityCollection from '../query/EntityCollection'
@@ -306,6 +307,27 @@ export default class Model {
    */
   static async insertOrUpdate (payload: any): Promise<EntityCollection> {
     return this.dispatch('insertOrUpdate', payload)
+  }
+
+  /**
+   * Get all records.
+   */
+  static all (): Collection {
+    return this.getters('all')()
+  }
+
+  /**
+   * Find a record.
+   */
+  static find (id: string | number): Collection {
+    return this.getters('find')(id)
+  }
+
+  /**
+   * Get query instance.
+   */
+  static query (): Query {
+    return this.getters('query')()
   }
 
   /**
@@ -616,6 +638,27 @@ export default class Model {
    */
   async $insertOrUpdate (payload: any): Promise<EntityCollection> {
     return this.$dispatch('insertOrUpdate', payload)
+  }
+
+  /**
+   * Get all records.
+   */
+  $all (): Collection {
+    return this.$getters('all')()
+  }
+
+  /**
+   * Find a record.
+   */
+  $find (id: string | number): Collection {
+    return this.$getters('find')(id)
+  }
+
+  /**
+   * Get query instance.
+   */
+  $query (): Query {
+    return this.$getters('query')()
   }
 
   /**
