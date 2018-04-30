@@ -589,18 +589,9 @@ function denormalizeImmutable(schema, input, unvisit) {
 }
 });
 
-var ImmutableUtils$1 = unwrapExports(ImmutableUtils);
+unwrapExports(ImmutableUtils);
 var ImmutableUtils_1 = ImmutableUtils.isImmutable;
 var ImmutableUtils_2 = ImmutableUtils.denormalizeImmutable;
-
-var ImmutableUtils$2 = /*#__PURE__*/Object.freeze({
-    default: ImmutableUtils$1,
-    __moduleExports: ImmutableUtils,
-    isImmutable: ImmutableUtils_1,
-    denormalizeImmutable: ImmutableUtils_2
-});
-
-var _ImmutableUtils = ( ImmutableUtils$2 && ImmutableUtils$1 ) || ImmutableUtils$2;
 
 var Entity = createCommonjsModule(function (module, exports) {
 
@@ -616,7 +607,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 
 
-var ImmutableUtils = _interopRequireWildcard(_ImmutableUtils);
+var ImmutableUtils$$1 = _interopRequireWildcard(ImmutableUtils);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -626,7 +617,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var getDefaultGetId = function getDefaultGetId(idAttribute) {
   return function (input) {
-    return ImmutableUtils.isImmutable(input) ? input.get(idAttribute) : input[idAttribute];
+    return ImmutableUtils$$1.isImmutable(input) ? input.get(idAttribute) : input[idAttribute];
   };
 };
 
@@ -700,8 +691,8 @@ var EntitySchema = function () {
     value: function denormalize(entity, unvisit) {
       var _this2 = this;
 
-      if (ImmutableUtils.isImmutable(entity)) {
-        return ImmutableUtils.denormalizeImmutable(this.schema, entity, unvisit);
+      if (ImmutableUtils$$1.isImmutable(entity)) {
+        return ImmutableUtils$$1.denormalizeImmutable(this.schema, entity, unvisit);
       }
 
       Object.keys(this.schema).forEach(function (key) {
@@ -730,12 +721,7 @@ var EntitySchema = function () {
 exports.default = EntitySchema;
 });
 
-var Entity$1 = unwrapExports(Entity);
-
-var Entity$2 = /*#__PURE__*/Object.freeze({
-    default: Entity$1,
-    __moduleExports: Entity
-});
+unwrapExports(Entity);
 
 var Polymorphic = createCommonjsModule(function (module, exports) {
 
@@ -794,11 +780,11 @@ var PolymorphicSchema = function () {
   }, {
     key: 'denormalizeValue',
     value: function denormalizeValue(value, unvisit) {
-      var schemaKey = (0, _ImmutableUtils.isImmutable)(value) ? value.get('schema') : value.schema;
+      var schemaKey = (0, ImmutableUtils.isImmutable)(value) ? value.get('schema') : value.schema;
       if (!this.isSingleSchema && !schemaKey) {
         return value;
       }
-      var id = (0, _ImmutableUtils.isImmutable)(value) ? value.get('id') : value.id;
+      var id = (0, ImmutableUtils.isImmutable)(value) ? value.get('id') : value.id;
       var schema = this.isSingleSchema ? this.schema : this.schema[schemaKey];
       return unvisit(id || value, schema);
     }
@@ -815,14 +801,7 @@ var PolymorphicSchema = function () {
 exports.default = PolymorphicSchema;
 });
 
-var Polymorphic$1 = unwrapExports(Polymorphic);
-
-var Polymorphic$2 = /*#__PURE__*/Object.freeze({
-    default: Polymorphic$1,
-    __moduleExports: Polymorphic
-});
-
-var _Polymorphic = ( Polymorphic$2 && Polymorphic$1 ) || Polymorphic$2;
+unwrapExports(Polymorphic);
 
 var Union = createCommonjsModule(function (module, exports) {
 
@@ -834,7 +813,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 
 
-var _Polymorphic2 = _interopRequireDefault(_Polymorphic);
+var _Polymorphic2 = _interopRequireDefault(Polymorphic);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -874,12 +853,7 @@ var UnionSchema = function (_PolymorphicSchema) {
 exports.default = UnionSchema;
 });
 
-var Union$1 = unwrapExports(Union);
-
-var Union$2 = /*#__PURE__*/Object.freeze({
-    default: Union$1,
-    __moduleExports: Union
-});
+unwrapExports(Union);
 
 var Values = createCommonjsModule(function (module, exports) {
 
@@ -893,7 +867,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 
 
-var _Polymorphic2 = _interopRequireDefault(_Polymorphic);
+var _Polymorphic2 = _interopRequireDefault(Polymorphic);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -942,12 +916,7 @@ var ValuesSchema = function (_PolymorphicSchema) {
 exports.default = ValuesSchema;
 });
 
-var Values$1 = unwrapExports(Values);
-
-var Values$2 = /*#__PURE__*/Object.freeze({
-    default: Values$1,
-    __moduleExports: Values
-});
+unwrapExports(Values);
 
 var _Array = createCommonjsModule(function (module, exports) {
 
@@ -960,7 +929,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 
 
-var _Polymorphic2 = _interopRequireDefault(_Polymorphic);
+var _Polymorphic2 = _interopRequireDefault(Polymorphic);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1043,16 +1012,9 @@ var ArraySchema = function (_PolymorphicSchema) {
 exports.default = ArraySchema;
 });
 
-var _Array$1 = unwrapExports(_Array);
+unwrapExports(_Array);
 var _Array_1 = _Array.denormalize;
 var _Array_2 = _Array.normalize;
-
-var _Array$2 = /*#__PURE__*/Object.freeze({
-    default: _Array$1,
-    __moduleExports: _Array,
-    denormalize: _Array_1,
-    normalize: _Array_2
-});
 
 var _Object = createCommonjsModule(function (module, exports) {
 
@@ -1067,7 +1029,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 
-var ImmutableUtils = _interopRequireWildcard(_ImmutableUtils);
+var ImmutableUtils$$1 = _interopRequireWildcard(ImmutableUtils);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -1091,8 +1053,8 @@ var _normalize = function _normalize(schema, input, parent, key, visit, addEntit
 
 exports.normalize = _normalize;
 var _denormalize = function _denormalize(schema, input, unvisit) {
-  if (ImmutableUtils.isImmutable(input)) {
-    return ImmutableUtils.denormalizeImmutable(schema, input, unvisit);
+  if (ImmutableUtils$$1.isImmutable(input)) {
+    return ImmutableUtils$$1.denormalizeImmutable(schema, input, unvisit);
   }
 
   var object = _extends({}, input);
@@ -1147,26 +1109,9 @@ var ObjectSchema = function () {
 exports.default = ObjectSchema;
 });
 
-var _Object$1 = unwrapExports(_Object);
+unwrapExports(_Object);
 var _Object_1 = _Object.denormalize;
 var _Object_2 = _Object.normalize;
-
-var _Object$2 = /*#__PURE__*/Object.freeze({
-    default: _Object$1,
-    __moduleExports: _Object,
-    denormalize: _Object_1,
-    normalize: _Object_2
-});
-
-var _Entity = ( Entity$2 && Entity$1 ) || Entity$2;
-
-var _Union = ( Union$2 && Union$1 ) || Union$2;
-
-var _Values = ( Values$2 && Values$1 ) || Values$2;
-
-var _Array$3 = ( _Array$2 && _Array$1 ) || _Array$2;
-
-var _Object$3 = ( _Object$2 && _Object$1 ) || _Object$2;
 
 var src = createCommonjsModule(function (module, exports) {
 
@@ -1181,27 +1126,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 
-var _Entity2 = _interopRequireDefault(_Entity);
+var _Entity2 = _interopRequireDefault(Entity);
 
 
 
-var _Union2 = _interopRequireDefault(_Union);
+var _Union2 = _interopRequireDefault(Union);
 
 
 
-var _Values2 = _interopRequireDefault(_Values);
+var _Values2 = _interopRequireDefault(Values);
 
 
 
-var ArrayUtils = _interopRequireWildcard(_Array$3);
+var ArrayUtils = _interopRequireWildcard(_Array);
 
 
 
-var ObjectUtils = _interopRequireWildcard(_Object$3);
+var ObjectUtils = _interopRequireWildcard(_Object);
 
 
 
-var ImmutableUtils = _interopRequireWildcard(_ImmutableUtils);
+var ImmutableUtils$$1 = _interopRequireWildcard(ImmutableUtils);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -1269,7 +1214,7 @@ var unvisitEntity = function unvisitEntity(id, schema, unvisit, getEntity, cache
 
   if (!cache[schema.key][id]) {
     // Ensure we don't mutate it non-immutable objects
-    var entityCopy = ImmutableUtils.isImmutable(entity) ? entity : _extends({}, entity);
+    var entityCopy = ImmutableUtils$$1.isImmutable(entity) ? entity : _extends({}, entity);
 
     // Need to set this first so that if it is referenced further within the
     // denormalization the reference will already exist.
@@ -1303,7 +1248,7 @@ var getUnvisit = function getUnvisit(entities) {
 };
 
 var getEntities = function getEntities(entities) {
-  var isImmutable = ImmutableUtils.isImmutable(entities);
+  var isImmutable = ImmutableUtils$$1.isImmutable(entities);
 
   return function (entityOrId, schema) {
     var schemaKey = schema.key;
@@ -4119,6 +4064,41 @@ var Contract = /** @class */ (function () {
     return Contract;
 }());
 
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 var Model = /** @class */ (function () {
     /**
      * Create a model instance.
@@ -4265,6 +4245,74 @@ var Model = /** @class */ (function () {
      */
     Model.getters = function (method) {
         return this.store().getters[this.namespace(method)];
+    };
+    /**
+     * Create records.
+     */
+    Model.create = function (payload) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.dispatch('create', payload)];
+            });
+        });
+    };
+    /**
+     * Insert records.
+     */
+    Model.insert = function (payload) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.dispatch('insert', payload)];
+            });
+        });
+    };
+    /**
+     * Update records.
+     */
+    Model.update = function (payload) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.dispatch('update', payload)];
+            });
+        });
+    };
+    /**
+     * Insert or update records.
+     */
+    Model.insertOrUpdate = function (payload) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.dispatch('insertOrUpdate', payload)];
+            });
+        });
+    };
+    /**
+     * Get all records.
+     */
+    Model.all = function () {
+        return this.getters('all')();
+    };
+    /**
+     * Find a record.
+     */
+    Model.find = function (id) {
+        return this.getters('find')(id);
+    };
+    /**
+     * Get query instance.
+     */
+    Model.query = function () {
+        return this.getters('query')();
+    };
+    /**
+     * Insert or update records.
+     */
+    Model.delete = function (condition) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.dispatch('delete', condition)];
+            });
+        });
     };
     /**
      * Get the value of the primary key.
@@ -4488,6 +4536,81 @@ var Model = /** @class */ (function () {
      */
     Model.prototype.$getters = function (method) {
         return this.$self().getters(method);
+    };
+    /**
+     * Create records.
+     */
+    Model.prototype.$create = function (payload) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.$dispatch('create', payload)];
+            });
+        });
+    };
+    /**
+     * Create records.
+     */
+    Model.prototype.$insert = function (payload) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.$dispatch('insert', payload)];
+            });
+        });
+    };
+    /**
+     * Update records.
+     */
+    Model.prototype.$update = function (payload) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                if (payload.where !== undefined) {
+                    return [2 /*return*/, this.$dispatch('update', payload)];
+                }
+                if (this.$self().id(payload) === undefined) {
+                    return [2 /*return*/, this.$dispatch('update', { where: this.$id(), data: payload })];
+                }
+                return [2 /*return*/, this.$dispatch('update', payload)];
+            });
+        });
+    };
+    /**
+     * Insert or update records.
+     */
+    Model.prototype.$insertOrUpdate = function (payload) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.$dispatch('insertOrUpdate', payload)];
+            });
+        });
+    };
+    /**
+     * Get all records.
+     */
+    Model.prototype.$all = function () {
+        return this.$getters('all')();
+    };
+    /**
+     * Find a record.
+     */
+    Model.prototype.$find = function (id) {
+        return this.$getters('find')(id);
+    };
+    /**
+     * Get query instance.
+     */
+    Model.prototype.$query = function () {
+        return this.$getters('query')();
+    };
+    /**
+     * Insert or update records.
+     */
+    Model.prototype.$delete = function (condition) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                condition = condition === undefined ? this.$id() : condition;
+                return [2 /*return*/, this.$dispatch('delete', condition)];
+            });
+        });
     };
     /**
      * Fill the model instance with the given record. If no record were passed,

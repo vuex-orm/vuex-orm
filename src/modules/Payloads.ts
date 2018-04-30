@@ -1,6 +1,6 @@
 import { Record } from '../data'
 
-export type Condition = (record: Record) => boolean)
+export type Condition = (record: Record) => boolean
 
 export interface CreatePayload {
   data: Record | Record[]
