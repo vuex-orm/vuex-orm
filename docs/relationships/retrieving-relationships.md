@@ -257,7 +257,7 @@ Also, you may add an operator to customize your query even more. The supported o
 // Retrieve all posts that have more than 2 comments.
 store.getters['entities/posts/query']().has('comments', '>', 2).get()
 
-// Retrieve all posts that have less than or exactly 3 comments.
+// Retrieve all posts that have less than or exactly 2 comments.
 store.getters['entities/posts/query']().has('comments', '<=', 2).get()
 ```
 
