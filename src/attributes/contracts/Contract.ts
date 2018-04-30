@@ -20,7 +20,7 @@ import Relation from './Relation'
 export type Field = Fields | Attribute
 
 export interface Fields {
-  [key: string]: Field
+  [key: string]: Attribute
 }
 
 export type Attribute = Type | Relation

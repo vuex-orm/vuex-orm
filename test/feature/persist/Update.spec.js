@@ -232,40 +232,6 @@ describe('Features – Persist – Update', () => {
     expect(users[2].age).toBe(20)
   })
 
-  it('can update nested record', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          settings: {
-            role: this.attr(''),
-            email: this.attr('')
-          }
-        }
-      }
-    }
-
-    const store = createStore([{ model: User }])
-
-    store.dispatch('entities/users/create', {
-      data: { id: 1, settings: { role: 'admin', email: 'john@example.com' } }
-    })
-
-    store.dispatch('entities/users/update', {
-      id: 1,
-      settings: {
-        role: 'user'
-      }
-    })
-
-    const user = store.getters['entities/users/find'](1)
-
-    expect(user.settings.role).toBe('user')
-    expect(user.settings.email).toBe('john@example.com')
-  })
-
   it('can update array field', async () => {
     class User extends Model {
       static entity = 'users'

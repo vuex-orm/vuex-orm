@@ -443,12 +443,12 @@ export default class Model {
    * Remove any fields not defined in the model schema. This method
    * also fixes any incorrect values as well.
    */
-  static fix (data: Record, keep: string[] = ['$id'], fields?: Fields): Record {
-    const _fields = fields || this.fields()
+  static fix (data: Record, keep: string[] = ['$id']): Record {
+    const fields = this.fields()
 
     return Object.keys(data).reduce((record, key) => {
       const value = data[key]
-      const field = _fields[key]
+      const field = fields[key]
 
       if (keep.includes(key)) {
         record[key] = value
@@ -460,13 +460,7 @@ export default class Model {
         return record
       }
 
-      if (field instanceof Attribute) {
-        record[key] = field.fill(value)
-
-        return record
-      }
-
-      record[key] = this.fix(value, [], field)
+      record[key] = field.fill(value)
 
       return record
     }, {} as Record)
@@ -487,20 +481,14 @@ export default class Model {
    * Fill any missing fields in the given data with the default
    * value defined in the model schema.
    */
-  static hydrate (data: Record, keep: string[] = ['$id'], fields?: Fields): Record {
-    const _fields = fields || this.fields()
+  static hydrate (data: Record, keep: string[] = ['$id']): Record {
+    const fields = this.fields()
 
-    const record = Object.keys(_fields).reduce((record, key) => {
-      const field = _fields[key]
+    const record = Object.keys(fields).reduce((record, key) => {
+      const field = fields[key]
       const value = data[key]
 
-      if (field instanceof Attribute) {
-        record[key] = field.fill(value)
-
-        return record
-      }
-
-      record[key] = this.hydrate(value || [], [], field)
+      record[key] = field.fill(value)
 
       return record
     }, {} as Record)
