@@ -286,6 +286,13 @@ export default class Model {
   }
 
   /**
+   * Insert records.
+   */
+  static async insert (payload: { data: Record | Record[], create: string, insert: string, update: string, insertOrUpdate: string }): Promise<EntityCollection> {
+    return this.dispatch('insert', payload)
+  }
+
+  /**
    * Get the value of the primary key.
    */
   static id (record: any): any {
@@ -557,6 +564,13 @@ export default class Model {
    */
   async $create (payload: { data: Record | Record[], create: string, insert: string, update: string, insertOrUpdate: string }): Promise<EntityCollection> {
     return this.$dispatch('create', payload)
+  }
+
+  /**
+   * Create records.
+   */
+  async $insert (payload: { data: Record | Record[], create: string, insert: string, update: string, insertOrUpdate: string }): Promise<EntityCollection> {
+    return this.$dispatch('insert', payload)
   }
 
   /**
