@@ -5,7 +5,7 @@ import { Record } from '../data'
 import Query, { UpdateClosure, Condition } from '../query/Query'
 import EntityCollection from '../query/EntityCollection'
 import { Collection, Item } from '../query'
-import ModelConf, { JsonModelConf , defaultConf, MethodConf, HttpMethod } from '../model/ModelConf'
+import ModelConf, { JsonModelConf , defaultConf, MethodConf, HttpMethod, PathParam } from '../model/ModelConf'
 import { replaceAll } from '../support/Utils'
 
 export type UpdateReturn = Item | Collection | EntityCollection
@@ -19,6 +19,8 @@ export default class Model extends BaseModel {
    * model class or on parameter.
    * Priority confs:
    * default -> custom on model class -> custom on conf() parameter
+   * @param {parameterConf} parameterConf optionaly a json model's conf
+   * @static
    */
   public static conf (parameterConf?: JsonModelConf): void {
 
@@ -64,6 +66,7 @@ export default class Model extends BaseModel {
 
   /**
    * Get the model conf
+   * @static
    * @return {ModelConf}
    */
   public static getConf (): ModelConf {
@@ -73,6 +76,7 @@ export default class Model extends BaseModel {
   /**
    * Get the method conf by name
    * @param {string} methodName The method's name
+   * @static
    * @return {MethodConf}
    */
   public static getMethodConf (methodName: string): MethodConf {
@@ -81,6 +85,7 @@ export default class Model extends BaseModel {
 
   /**
    * Wrap query getter
+   * @static
    */
   public static query (): Query {
     return this.getters('query')()
@@ -88,30 +93,48 @@ export default class Model extends BaseModel {
 
   /**
    * Wrap find method
+   * @static
+   * @async
    * @return {Promise<Collection>} list of results
    */
-  public static find (conf: MethodConf = this.getMethodConf('find')): Promise<Collection> {
+  public static async find (conf: MethodConf = this.getMethodConf('find')): Promise<Collection> {
     const _conf = this.checkMethodConf('find', conf)
-
-    if (_conf.refreshFromApi) {
-      return this.fetch(conf)
+    let data
+    if (_conf.remote) {
+      data = await this.fetch(conf)
+    }
+    /* tslint:disable */
+    else {
+      data = this.query().all()
     }
 
-    return Promise.resolve(this.query().all())
+    return data
   }
 
   /**
    * Wrap findById method
    * @param {number} id of record to find
+   * @static
    * @return {Promise<Item>} result object
    */
-  public static findById (id: number): Promise<Item> {
-    return Promise.resolve(this.query().find(id))
+  public static async findById (id: number, conf: MethodConf = this.getMethodConf('findById')): Promise<Item> {
+    const _conf = this.checkMethodConf('findById', conf)
+    let data
+    if (_conf.remote) {
+      data = await this.fetchById(id, conf)
+    }
+    /* tslint:disable */
+    else {
+      data = this.query().find(id)
+    }
+
+    return data
   }
 
   /**
    * Check if record identified by id param exist
    * @param {number} id of the record to search
+   * @static
    * @return {Promise<boolean>} the result
    */
   public static exist (id: number): Promise<boolean> {
@@ -124,6 +147,7 @@ export default class Model extends BaseModel {
 
   /**
    * Wrap count method
+   * @static
    * @return {Promise<Number>} number of element
    */
   public static count (): Promise<number> {
@@ -133,6 +157,7 @@ export default class Model extends BaseModel {
   /**
    * Wrap deleteById method
    * @param id of record to delete
+   * @static
    */
   public static deleteById (id: number): void {
     this.dispatch('delete', id)
@@ -140,6 +165,7 @@ export default class Model extends BaseModel {
 
   /**
    * Wrap deleteAll method
+   * @static
    */
   public static deleteAll (): void {
     this.dispatch('deleteAll', {})
@@ -148,6 +174,7 @@ export default class Model extends BaseModel {
   /**
    * Wrap create method
    * @param {Record | Record[]} data to create
+   * @static
    * @return {Promise<EntityCollection>} the created data
    */
   public static create (data: Record | Record[]): Promise<EntityCollection> {
@@ -158,9 +185,10 @@ export default class Model extends BaseModel {
    * Wrap update method
    * @param {Record | Record[] | UpdateClosure} data to update
    * @param {Condition} where conditions
+   * @static
    * @return {Promise<UpdateReturn>} updated data
    */
-  public static update (data: Record | Record[] | UpdateClosure, where: Condition): Promise<UpdateReturn> {
+  public static update (data: Record | Record[] | UpdateClosure, where?: Condition): Promise<UpdateReturn> {
     return this.dispatch('update', {
       where,
       data
@@ -170,6 +198,7 @@ export default class Model extends BaseModel {
   /**
    * Wrap insertOrUpdate method
    * @param {Record | Record[]} data to unsert or update
+   * @static
    * @return {Promise<UpdateReturn>} data result
    */
   public static insertOrUpdate (data: Record | Record[]): Promise<UpdateReturn> {
@@ -177,53 +206,72 @@ export default class Model extends BaseModel {
   }
 
   /**
-   * Fetch data from api server if the store is empty
+   * Fetch data from api server and sync to the local store (optionaly)
+   * @param {MethodConf} conf a method's conf
+   * @static
+   * @async
    * @return {Promise<UpdateReturn>} fetched data
    */
   public static async fetch (conf: MethodConf = this.getMethodConf('fetch')): Promise<Collection> {
-    let data
     const _conf = this.checkMethodConf('fetch', conf)
-
-    if (_conf.refreshFromApi) {
-      data = await this.refresh(conf)
-    }
-    /* tslint:disable */
-    else {
-      data = this.query().get()
-      // if (!data.length) {
-      //   data = await this.refresh(conf)
-      // }
-    }
-    return data
-  }
-
-  /**
-   * Fetch data from api and store in vuex
-   * @return {Promise<Collection>} stored data
-   */
-  public static async refresh (conf: MethodConf = this.getMethodConf('fetch')): Promise<Collection> {
-    const _conf = this.checkMethodConf('refresh', conf)
     const url = this.getUrl(_conf)
     const data = await Http[_conf.http.method as HttpMethod](url)
       .catch((err: Error) => { console.log(err); }) || []
-    await this.dispatch('insertOrUpdate', { data })
+
+    if(_conf.localSync) {
+      await this.dispatch('insertOrUpdate', { data })
+    }
     return data
   }
 
-  public static getUrl(conf: MethodConf) {
-    let baseUrl = this._conf.baseUrl
-    if(ModuleOptions.resources.baseUrl) {
-      baseUrl = ModuleOptions.resources.baseUrl
+  /**
+   * Exec a fetchById api method with the default confs 
+   * or the pass confs and sync to the local store (optionaly) 
+   * @param {number} id of the fetching record
+   * @param {MethodConf} conf a method's conf
+   * @static
+   * @async
+   * @return {Promise<Item>} fetched item
+   */
+  public static async fetchById(id: number, conf: MethodConf = this.getMethodConf('fetchById')): Promise<Item> {
+    const _conf = this.checkMethodConf('fetchById', conf)
+    const url = this.getUrl(_conf, new PathParam('id', id.toString()))
+    const data = await Http[_conf.http.method as HttpMethod](url)
+      .catch((err: Error) => { console.log(err); }) || []
+    
+    if(_conf.localSync) {
+      // await this.dispatch('insertOrUpdate', { data })
+      await this.update(data)
     }
-    return baseUrl + this._conf.endpointPath + conf.http.path
+    return data
   }
 
   /**
-   * Check the method configuration
+   * Build a url of api from the global configuration 
+   * of model and optionaly the pass params 
+   * @param {MethodConf} conf a method's conf
+   * @param {PathParam[]} pathParams a method's path params
+   * @static
+   * @return {string} api's url
+   */
+  public static getUrl(conf: MethodConf, ...pathParams: PathParam[]): string {
+    let baseUrl = this._conf.baseUrl
+    const methodPath = pathParams.length ? conf.http.bindPathParams(pathParams) : conf.http.path
+    if(ModuleOptions.resources.baseUrl) {
+      baseUrl = ModuleOptions.resources.baseUrl
+    }
+    return baseUrl + this._conf.endpointPath + methodPath
+  }
+
+  /**
+   * Check if the method configuration exist and 
+   * assign the pass method's conf to it
    * Return a new method's configuration
-   * @param {string} methodName 
-   * @param {ModelConf} conf
-   * @return {MethodConf}
+   * @param {string} methodName a method's name
+   * @param {ModelConf} conf a method's conf
+   * @private
+   * @static
+   * @return {MethodConf} the new method's configuration
    * @throws Error
    */
   private static checkMethodConf(methodName: string, conf: MethodConf): MethodConf {

@@ -1,3 +1,29 @@
+import { replaceAll, clone } from 'src/support/Utils'
+export interface JsonModelConf {
+  baseUrl: string,
+  endpointPath: string,
+  methods: MethodConf[]
+}
+
+export enum HttpMethod {
+  GET = 'get',
+  HEAD = 'head',
+  POST = 'post',
+  PUT = 'put',
+  PATCH = 'patch',
+  DELETE = 'delete'
+}
+
+export class PathParam {
+  public name: string
+  public value: string
+
+  constructor (name: string, value: string) {
+    this.value = value
+    this.name = name
+  }
+}
+
 export default class ModelConf {
   /**
    * The host/domain of api server
@@ -26,6 +52,10 @@ export default class ModelConf {
     }
   }
 
+  /**
+   * Extend a current model's conf with the conf pass
+   * @param {JsonModelConf} conf a json model's conf
+   */
   public extend (conf: JsonModelConf) {
     if (conf.baseUrl) {
       this.baseUrl = conf.baseUrl
@@ -78,12 +108,6 @@ export default class ModelConf {
   }
 }
 
-export interface JsonModelConf {
-  baseUrl: string,
-  endpointPath: string,
-  methods: MethodConf[]
-}
-
 export class MethodConf {
   /**
    * The method's name
@@ -94,13 +118,13 @@ export class MethodConf {
    */
   public alias?: string[]
   /**
-   * The bolean for indicate that operation
+   * The boolean for indicate a api comunication
    */
-  public refreshFromApi?: boolean
+  public remote?: boolean
   /**
-   * The bolean for indicate that operation
+   * The boolean for indicate a local sync
    */
-  public applyToApi?: boolean
+  public localSync?: boolean
   /**
    * The method's http configuration
    */
@@ -115,15 +139,15 @@ export class MethodConf {
     {
       name, 
       alias = undefined, 
-      refreshFromApi = undefined, 
-      applyToApi = undefined, 
+      remote = undefined, 
+      localSync = undefined, 
       http
     }: MethodConf
   ) {
     this.name = name
     this.alias = alias
-    this.refreshFromApi = refreshFromApi
-    this.applyToApi = applyToApi
+    this.remote = remote
+    this.localSync = localSync
     this.http = new HttpConf(http)
   }
 
@@ -135,58 +159,49 @@ export class MethodConf {
     {
       name            = this.name,
       alias           = this.alias,
-      refreshFromApi  = this.refreshFromApi, 
-      applyToApi      = this.applyToApi, 
+      remote          = this.remote, 
+      localSync       = this.localSync, 
       http            = this.http
     }: MethodConf
   ) {
     this.name = name
     this.alias = alias
-    this.refreshFromApi = refreshFromApi
-    this.applyToApi = applyToApi
+    this.remote = remote
+    this.localSync = localSync
     this.http = new HttpConf(http)
   }
-}
-
-export enum HttpMethod {
-    GET = 'get',
-    HEAD = 'head',
-    POST = 'post',
-    PUT = 'put',
-    PATCH = 'patch',
-    DELETE = 'delete'
 }
 
 export class HttpConf {
   /**
    * The http path
    */
-  private readonly _path: string
+  public path: string
   /**
    * The http method
    */
-  private readonly _method: HttpMethod
+  public method: HttpMethod
 
   /**
    * @constructor
    * @param {HttpConf} 
    */
   constructor ({path, method}: HttpConf) {
-    this._path = path
-    this._method = method
+    this.path = path
+    this.method = method
   }
 
   /**
-   * @return {string} return a http path
+   * Bind a path param name with the pass value 
+   * @param {PathParam[]} params array 
+   * @return {string} path with bind params
    */
-  public get path (): string {
-    return this._path
-  }
-  /**
-   * @return {HttpMethod} return a http method
-   */
-  public get method (): HttpMethod {
-    return this._method
+  public bindPathParams(params: PathParam[]): string {
+    let _path = clone(this.path)
+    params.forEach(param => {
+      _path = replaceAll(_path, `:${param.name}`, param.value)
+    })
+    return _path
   }
 }
 
@@ -196,8 +211,9 @@ export const defaultConf = {
   "methods": [
     {
       "name": "find",
-      "alias": ["fetch", "refresh"],
-      "refreshFromApi": true,
+      "alias": ["fetch"],
+      "remote": true,
+      "localSync": true,
       "http": {
           "path": "",
           "method": "get"
@@ -205,8 +221,9 @@ export const defaultConf = {
     },
     {
       "name": "findById",
-      "alias": ["fetchById", "refreshById"],
-      "refreshFromApi": true,
+      "alias": ["fetchById", "fetchById"],
+      "remote": true,
+      "localSync": true,
       "http": {
           "path": "/:id",
           "method": "get"
@@ -214,7 +231,8 @@ export const defaultConf = {
     },
     {
       "name": "exist",
-      "refreshFromApi": true,
+      "remote": true,
+      "localSync": true,
       "http": {
           "path": "/exist/:id",
           "method": "get"
@@ -222,7 +240,8 @@ export const defaultConf = {
     },
     {
       "name": "count",
-      "refreshFromApi": true,
+      "remote": true,
+      "localSync": true,
       "http": {
           "path": "/count",
           "method": "get"
@@ -230,7 +249,8 @@ export const defaultConf = {
     },
     {
       "name": "create",
-      "applyToApi": true,
+      "remote": true,
+      "localSync": true,
       "http": {
           "path": "",
           "method": "post"
@@ -238,7 +258,8 @@ export const defaultConf = {
     },
     {
       "name": "update",
-      "applyToApi": true,
+      "remote": true,
+      "localSync": true,
       "http": {
           "path": "/:id",
           "method": "put"
@@ -246,7 +267,8 @@ export const defaultConf = {
     },
     {
       "name": "delete",
-      "applyToApi": true,
+      "remote": true,
+      "localSync": true,
       "http": {
           "path": "",
           "method": "delete"
@@ -254,7 +276,8 @@ export const defaultConf = {
     },
     {
       "name": "deleteById",
-      "applyToApi": true,
+      "remote": true,
+      "localSync": true,
       "http": {
           "path": "/:id",
           "method": "delete"
