@@ -671,7 +671,7 @@ export default class Query {
    * Update the state value by merging the given record and state.
    */
   merge (data: Record, state: Record, fields?: Fields): void {
-    const theFields = fields || this.model.fields()
+    const theFields = fields || this.model.getFields()
 
     Utils.forOwn(data, (value, key) => {
       const field = theFields[key]
@@ -809,7 +809,7 @@ export default class Query {
    * Query all relations.
    */
   withAll (constraints: ConstraintCallback = () => null): this {
-    const fields = this.model.fields()
+    const fields = this.model.getFields()
 
     for (const field in fields) {
       if (Attrs.isRelation(fields[field])) {
@@ -1047,22 +1047,16 @@ export default class Query {
   /**
    * Create a item from given record.
    */
-  item (queryItem?: Record | null): Item {
-    if (!queryItem) {
+  item (item?: Record | null): Item {
+    if (!item) {
       return null
     }
-
-    let item: Item = queryItem
 
     if (!Utils.isEmpty(this.load)) {
       item = this.loadRelations([item])[0]
     }
 
-    if (!this.wrap) {
-      return item
-    }
-
-    return new this.model(item)
+    return this.model.make(item, !this.wrap)
   }
 
   /**
@@ -1073,17 +1067,11 @@ export default class Query {
       return []
     }
 
-    let item = collection
-
     if (!Utils.isEmpty(this.load)) {
-      item = this.loadRelations(item)
+      collection = this.loadRelations(collection)
     }
 
-    if (!this.wrap) {
-      return item
-    }
-
-    return item.map(data => new this.model(data))
+    return collection.map(record => this.model.make(record, !this.wrap))
   }
 
   /**
@@ -1091,7 +1079,7 @@ export default class Query {
    */
   loadRelations (data: Record[], relation?: Relation[]): Record[] {
     const _relation = relation || this.load
-    const fields = this.model.fields()
+    const fields = this.model.getFields()
 
     return _relation.reduce((records, rel) => {
       return this.processLoadRelations(records, rel, fields)

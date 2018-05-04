@@ -26,8 +26,8 @@ describe('Feature – Models – Query', () => {
     const users = User.query().get()
 
     const expected = [
-      { id: 1, name: 'John Doe' },
-      { id: 2, name: 'Jane Doe' }
+      { $id: 1, id: 1, name: 'John Doe' },
+      { $id: 2, id: 2, name: 'Jane Doe' }
     ]
 
     expect(users).toEqual(expected)
@@ -48,7 +48,7 @@ describe('Feature – Models – Query', () => {
 
     const user = u.$query().find(1)
 
-    const expected = { id: 1, name: 'John Doe' }
+    const expected = { $id: 1, id: 1, name: 'John Doe' }
 
     expect(user).toEqual(expected)
     expect(user).toBeInstanceOf(User)

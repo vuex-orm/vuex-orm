@@ -25,7 +25,7 @@ describe('Feature – Models – Find', () => {
 
     const user = User.find(1)
 
-    const expected = { id: 1, name: 'John Doe' }
+    const expected = { $id: 1, id: 1, name: 'John Doe' }
 
     expect(user).toEqual(expected)
     expect(user).toBeInstanceOf(User)
@@ -45,7 +45,7 @@ describe('Feature – Models – Find', () => {
 
     const user = u.$find(1)
 
-    const expected = { id: 1, name: 'John Doe' }
+    const expected = { $id: 1, id: 1, name: 'John Doe' }
 
     expect(user).toEqual(expected)
     expect(user).toBeInstanceOf(User)

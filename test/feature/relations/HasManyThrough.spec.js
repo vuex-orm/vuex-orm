@@ -1,8 +1,8 @@
-import { createStore } from 'test/support/Helpers'
+import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Features – Relations – Has Many Through', () => {
-  it('can create data contains has many through relationship', async () => {
+  it('can create data contains has many through relationship', () => {
     class Country extends Model {
       static entity = 'countries'
 
@@ -46,19 +46,20 @@ describe('Features – Relations – Has Many Through', () => {
       ]
     }
 
-    await store.dispatch('entities/countries/create', { data })
+    const expected = createState('entities', {
+      countries: {
+        '1': { $id: 1, id: 1, posts: [1, 2] }
+      },
+      posts: {
+        '1': { $id: 1, id: 1, user_id: null },
+        '2': { $id: 2, id: 2, user_id: null }
+      },
+      users: {}
+    })
 
-    const country = store.getters['entities/countries/find'](1)
-    const posts = store.getters['entities/posts/all']()
+    store.dispatch('entities/countries/create', { data })
 
-    expect(country).toBeInstanceOf(Country)
-    expect(country.id).toBe(1)
-    expect(posts.length).toBe(2)
-    expect(posts[0]).toBeInstanceOf(Post)
-    expect(posts[0].id).toBe(1)
-    expect(posts[0].user_id).toBe(null)
-    expect(posts[1].id).toBe(2)
-    expect(posts[1].user_id).toBe(null)
+    expect(store.state.entities).toEqual(expected)
   })
 
   it('can resolve has many through relationship', async () => {

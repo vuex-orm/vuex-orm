@@ -63,6 +63,16 @@ export default class Model {
   }
 
   /**
+   * Get the model schema definition by adding additional default fields.
+   */
+  static getFields (): Fields {
+    return {
+      $id: this.attr(undefined),
+      ...this.fields()
+    }
+  }
+
+  /**
    * Create an attr attribute. The given value will be used as a default
    * value for the field.
    */
@@ -388,7 +398,7 @@ export default class Model {
   /**
    * Get all of the fields that matches the given attribute name.
    */
-  static getFields (name: string): { [key: string]: Attribute } {
+  static getFieldsByAttribute (name: string): { [key: string]: Attribute } {
     const attr = this.getAttributeClass(name)
     const fields = this.fields()
 
@@ -407,7 +417,7 @@ export default class Model {
    * Get all `increment` fields from the schema.
    */
   static getIncrementFields (): { [key: string]: Increment } {
-    return this.getFields('increment') as { [key: string]: Increment }
+    return this.getFieldsByAttribute('increment') as { [key: string]: Increment }
   }
 
   /**
@@ -462,7 +472,7 @@ export default class Model {
    * also fixes any incorrect values as well.
    */
   static fix (data: Record, keep: string[] = ['$id']): Record {
-    const fields = this.fields()
+    const fields = this.getFields()
 
     return Object.keys(data).reduce((record, key) => {
       const value = data[key]
@@ -500,7 +510,7 @@ export default class Model {
    * value defined in the model schema.
    */
   static hydrate (data: Record, keep: string[] = ['$id']): Record {
-    const fields = this.fields()
+    const fields = this.getFields()
 
     const record = Object.keys(fields).reduce((record, key) => {
       const field = fields[key]
@@ -537,7 +547,7 @@ export default class Model {
    * be filled with its default value defined at model fields definition.
    */
   static fill (self: Model | Record = {}, record: Record = {}, plain?: boolean): Model | Record {
-    const fields = this.fields()
+    const fields = this.getFields()
 
     return Object.keys(fields).reduce((target, key) => {
       const field = fields[key]
@@ -628,7 +638,7 @@ export default class Model {
     }
 
     if (this.$self().id(payload) === undefined) {
-      return this.$dispatch('update', { where: this.$id(), data: payload })
+      return this.$dispatch('update', { where: this.$id, data: payload })
     }
 
     return this.$dispatch('update', payload)
@@ -666,7 +676,7 @@ export default class Model {
    * Insert or update records.
    */
   async $delete (condition?: Payloads.DeletePaylaod): Promise<Item | Collection> {
-    condition = condition === undefined ? this.$id() : condition
+    condition = condition === undefined ? this.$id : condition
 
     return this.$dispatch('delete', condition)
   }

@@ -121,7 +121,7 @@ describe('Features – Persist – Create', () => {
     })
 
     const expected = {
-      users: [new User({ id: 1, name: 'John Doe' })]
+      users: [new User({ $id: 1, id: 1, name: 'John Doe' })]
     }
 
     expect(collection).toEqual(expected)
@@ -139,8 +139,8 @@ describe('Features – Persist – Create', () => {
 
     const expected = {
       users: [
-        new User({ id: 1, name: 'John Doe' }),
-        new User({ id: 2, name: 'Jane Doe' })
+        new User({ $id: 1, id: 1, name: 'John Doe' }),
+        new User({ $id: 2, id: 2, name: 'Jane Doe' })
       ]
     }
 
