@@ -228,48 +228,4 @@ describe('Model – Relations', () => {
     expect(post.comments).toBeInstanceOf(Array);
     expect(post.comments.length).toBe(0);
   })
-
-  it('can resolve a nested relation', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          settings: {
-            accounts: this.hasMany(Account, 'user_id')
-          }
-        }
-      }
-    }
-
-    class Account extends Model {
-      static entity = 'accounts'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          user_id: this.attr(null)
-        }
-      }
-    }
-
-    const data = {
-      id: 1,
-      settings: {
-        accounts: [
-          { id: 3, user_id: 1 },
-          { id: 4, user_id: 1 }
-        ]
-      }
-    }
-
-    const user = new User(data)
-
-    expect(user).toBeInstanceOf(User)
-    expect(user.settings.accounts[0]).toBeInstanceOf(Account)
-    expect(user.settings.accounts[1]).toBeInstanceOf(Account)
-    expect(user.settings.accounts[0].id).toBe(3)
-    expect(user.settings.accounts[1].id).toBe(4)
-  })
 })

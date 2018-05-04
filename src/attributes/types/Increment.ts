@@ -20,7 +20,7 @@ export default class Increment extends Type {
    * Make value to be set to model property. This method is used when
    * instantiating a model or creating a plain object from a model.
    */
-  make (value: any, _parent: Record, _key: string): number | null {
+  make (value: any, _parent: Record, _key: string, _plain?: boolean): number | null {
     return typeof value === 'number' ? value : null
   }
 }

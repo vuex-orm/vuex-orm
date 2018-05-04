@@ -43,7 +43,7 @@ export default class HasManyBy extends Relation {
    * Make value to be set to model property. This method is used when
    * instantiating a model or creating a plain object from a model.
    */
-  make (value: any, _parent: Record, _key: string): Model[] {
+  make (value: any, _parent: Record, _key: string, plain: boolean = false): Model[] | Record[] {
     if (value === null) {
       return []
     }
@@ -63,7 +63,7 @@ export default class HasManyBy extends Relation {
     return value.filter((record) => {
       return record && typeof record === 'object'
     }).map((record) => {
-      return new this.parent(record)
+      return this.parent.make(record, plain)
     })
   }
 

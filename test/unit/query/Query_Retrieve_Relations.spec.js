@@ -298,63 +298,6 @@ describe('Query – Retrieve – Relations', () => {
     expect(user).toEqual(expected)
   })
 
-  it('can resolve nested relation', () => {
-    const state = {
-      $name: 'entities',
-      users: { data: {
-        '1': { id: 1, settings: { accounts: [1, 2] } }
-      }},
-      accounts: { data: {
-        '1': { id: 1, user_id: 1 },
-        '2': { id: 2, user_id: 1 },
-        '3': { id: 3, user_id: 2 }
-      }}
-    }
-
-    const expected = {
-      id: 1,
-      settings: {
-        accounts: [
-          { id: 1, user_id: 1 },
-          { id: 2, user_id: 1 }
-        ]
-      }
-    }
-
-    const post = Query.query(state, 'users', false).with('accounts').first()
-
-    expect(post).toEqual(expected)
-  })
-
-  it('can resolve nested relation with where clause', () => {
-    const state = {
-      $name: 'entities',
-      users: { data: {
-        '1': { id: 1, settings: { accounts: [1, 2] } }
-      }},
-      accounts: { data: {
-        '1': { id: 1, user_id: 1 },
-        '2': { id: 2, user_id: 1 },
-        '3': { id: 3, user_id: 2 }
-      }}
-    }
-
-    const expected = [{
-      id: 1,
-      settings: {
-        accounts: [
-          { id: 2, user_id: 1 }
-        ]
-      }
-    }]
-
-    const post = Query.query(state, 'users', false)
-      .with('accounts', query => { query.where('id', 2) })
-      .get()
-
-    expect(post).toEqual(expected)
-  })
-
   it('can resolve child relation', () => {
     const state = {
       $name: 'entities',

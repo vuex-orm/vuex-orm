@@ -59,7 +59,7 @@ export default class MorphOne extends Relation {
    * Make value to be set to model property. This method is used when
    * instantiating a model or creating a plain object from a model.
    */
-  make (value: any, _parent: Record, _key: string): Model | null {
+  make (value: any, _parent: Record, _key: string, plain: boolean = false): Model | Record | null {
     if (value === null) {
       return null
     }
@@ -72,7 +72,7 @@ export default class MorphOne extends Relation {
       return null
     }
 
-    return new this.related(value)
+    return this.related.make(value, plain)
   }
 
   /**

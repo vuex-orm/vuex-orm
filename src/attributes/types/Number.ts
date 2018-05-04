@@ -46,7 +46,7 @@ export default class Number extends Type {
    * Make value to be set to model property. This method is used when
    * instantiating a model or creating a plain object from a model.
    */
-  make (value: any, _parent: Record, key: string): any {
+  make (value: any, _parent: Record, key: string, _plain?: boolean): any {
     return this.mutate(this.fill(value), key)
   }
 }

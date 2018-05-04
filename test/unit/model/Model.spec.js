@@ -113,6 +113,42 @@ describe('Model', () => {
     expect(user.name).toBe('JOHN DOE')
   })
 
+  it('can make a new model instance', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('')
+        }
+      }
+    }
+
+    const user = User.make({ id: 1, name: 'John Doe' })
+
+    expect(user).toBeInstanceOf(User)
+    expect(user.id).toBe(1)
+    expect(user.name).toBe('John Doe')
+  })
+
+  it('can make a plain model record', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null)
+        }
+      }
+    }
+
+    const user = User.makePlain({ id: 1 })
+
+    expect(user).not.toBeInstanceOf(User)
+    expect(user.id).toBe(1)
+  })
+
   it('can serialize own fields into json', () => {
     class User extends Model {
       static entity = 'users'
@@ -120,51 +156,16 @@ describe('Model', () => {
       static fields () {
         return {
           id: this.attr(null),
-          name: this.attr('John Doe')
+          name: this.attr('')
         }
       }
     }
 
-    class Comment extends Model {
-      static entity = 'comments'
+    const data = { id: 1, name: 'John Doe' }
 
-      static fields () {
-        return {
-          id: this.attr(null),
-          post_id: this.attr(null),
-          body: this.attr('')
-        }
-      }
-    }
+    const user = new User(data)
 
-    class Post extends Model {
-      static entity = 'posts'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          user_id: this.attr(null),
-          title: this.attr(''),
-          author: this.belongsTo(User, 'user_id'),
-          comments: this.hasMany(Comment, 'post_id')
-        }
-      }
-    }
-
-    const data = {
-      id: 1,
-      title: 'Post Title',
-      user_id: 1,
-      author: { id: 1, name: 'John' },
-      comments: [
-        { id: 1, post_id: 1, body: 'C1' },
-        { id: 2, post_id: 1, body: 'C2' }
-      ]
-    }
-
-    const post = new Post(data)
-
-    expect(post.$toJson()).toEqual(data)
+    expect(user.$toJson()).toEqual(data)
   })
 
   it('can get a value of the primary key', () => {

@@ -25,5 +25,5 @@ export default abstract class Attribute {
    * Make value to be set to model property. This method is used when
    * instantiating a model or creating a plain object from a model.
    */
-  abstract make (value: any, parent: Record, key: string): any
+  abstract make (value: any, parent: Record, key: string, plain: boolean): any
 }

@@ -3,7 +3,7 @@ import Utils from '../support/Utils'
 import Container from '../connections/Container'
 import Connection from '../connections/Connection'
 import { Record, Records } from '../data'
-import AttrContract, { Fields } from '../attributes/contracts/Contract'
+import { Fields } from '../attributes/contracts/Contract'
 import Attribute from '../attributes/Attribute'
 import Attr from '../attributes/types/Attr'
 import String from '../attributes/types/String'
@@ -440,6 +440,24 @@ export default class Model {
   }
 
   /**
+   * Create a new model instance.
+   */
+  static make (data: Record, plain: boolean = false): Model | Record {
+    if (!plain) {
+      return new this(data)
+    }
+
+    return this.fill({}, data, true)
+  }
+
+  /**
+   * Create a new plain model record.
+   */
+  static makePlain (data: Record): Record {
+    return this.make(data, true)
+  }
+
+  /**
    * Remove any fields not defined in the model schema. This method
    * also fixes any incorrect values as well.
    */
@@ -518,20 +536,14 @@ export default class Model {
    * or if the record has any missing fields, each value of the fields will
    * be filled with its default value defined at model fields definition.
    */
-  static fill (self: Model | Record = {}, record: Record = {}, fields?: Fields): Model | Record {
-    const theFields = fields || this.fields()
+  static fill (self: Model | Record = {}, record: Record = {}, plain?: boolean): Model | Record {
+    const fields = this.fields()
 
-    return Object.keys(theFields).reduce((target, key) => {
-      const field = theFields[key]
+    return Object.keys(fields).reduce((target, key) => {
+      const field = fields[key]
       const value = record[key]
 
-      if (field instanceof Attribute) {
-        target[key] = field.make(value, record, key)
-
-        return target
-      }
-
-      target[key] = this.fill(target[key], value, field)
+      target[key] = field.make(value, record, key, plain)
 
       return target
     }, self)
@@ -671,32 +683,7 @@ export default class Model {
   /**
    * Serialize field values into json.
    */
-  $toJson (): any {
-    return this.$buildJson(this.$self().fields(), this)
-  }
-
-  /**
-   * Build Json data.
-   */
-  $buildJson (data: Fields, field: { [key: string]: any }): any {
-    return Utils.mapValues(data, (attr, key) => {
-      if (!field[key]) {
-        return field[key]
-      }
-
-      if (!AttrContract.isAttribute(attr)) {
-        return field.$buildJson(attr, field[key])
-      }
-
-      if (attr instanceof HasOne || attr instanceof BelongsTo) {
-        return field[key].$toJson()
-      }
-
-      if (attr instanceof HasMany) {
-        return field[key].map((model: Model) => model.$toJson())
-      }
-
-      return field[key]
-    })
+  $toJson (): Record {
+    return this.$self().makePlain(this)
   }
 }

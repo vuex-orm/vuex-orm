@@ -302,31 +302,6 @@ describe('Query – Retrieve', () => {
     expect(result).toEqual(expected)
   })
 
-  it('can get data of the entity that matches the where with mutated data', () => {
-    const state = {
-      $name: 'entities',
-      users: { data: {
-        '1': { $id: 1, id: 1, settings: { role: 'user' }, age: 30 },
-        '2': { $id: 2, id: 2, settings: { role: 'user' }, age: 30 },
-        '3': { $id: 3, id: 3, settings: { role: 'admin' }, age: 40 },
-        '4': { $id: 4, id: 4, settings: { role: 'admin' }, age: 15 }
-      }}
-    }
-
-    const expected = [
-      { $id: 3, id: 3, settings: { role: 'admin' }, age: 40 },
-      { $id: 4, id: 4, settings: { role: 'admin' }, age: 15 }
-    ]
-
-    const result = Query.query(state, 'users', false)
-      .where((_record, _query, model) => {
-        return model.isAdmin()
-      })
-      .get()
-
-    expect(result).toEqual(expected)
-  })
-
   it('can get data of the entity that matches the orWhere query', () => {
     const state = {
       $name: 'entities',
