@@ -1,4 +1,4 @@
-import { replaceAll, clone } from 'src/support/Utils'
+import { replaceAll, clone } from '../support/Utils'
 export interface JsonModelConf {
   baseUrl: string,
   endpointPath: string,

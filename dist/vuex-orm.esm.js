@@ -229,6 +229,9 @@ function groupBy(collection, iteratee) {
 function replaceAll(source, search, replacement) {
     return source.replace(new RegExp(search, 'g'), replacement);
 }
+function clone(source) {
+    return JSON.parse(JSON.stringify(source));
+}
 /**
  * The base implementation of `_.sortBy` which uses `comparer` to define the
  * sort order of `array` and replaces criteria objects with their
@@ -289,7 +292,9 @@ var Utils = {
     map: map,
     mapValues: mapValues,
     orderBy: orderBy,
-    pickBy: pickBy
+    pickBy: pickBy,
+    replaceAll: replaceAll,
+    clone: clone
 };
 
 var Attribute = /** @class */ (function () {
@@ -4541,6 +4546,22 @@ var Http = /** @class */ (function () {
     return Http;
 }());
 
+var HttpMethod;
+(function (HttpMethod) {
+    HttpMethod["GET"] = "get";
+    HttpMethod["HEAD"] = "head";
+    HttpMethod["POST"] = "post";
+    HttpMethod["PUT"] = "put";
+    HttpMethod["PATCH"] = "patch";
+    HttpMethod["DELETE"] = "delete";
+})(HttpMethod || (HttpMethod = {}));
+var PathParam = /** @class */ (function () {
+    function PathParam(name, value) {
+        this.value = value;
+        this.name = name;
+    }
+    return PathParam;
+}());
 var ModelConf = /** @class */ (function () {
     /**
      * Create a model's configuration from json
@@ -4568,6 +4589,10 @@ var ModelConf = /** @class */ (function () {
             });
         }
     }
+    /**
+     * Extend a current model's conf with the conf pass
+     * @param {JsonModelConf} conf a json model's conf
+     */
     ModelConf.prototype.extend = function (conf) {
         var _this = this;
         if (conf.baseUrl) {
@@ -4623,11 +4648,11 @@ var MethodConf = /** @class */ (function () {
      * @param {MethodConf}
      */
     function MethodConf(_a) {
-        var name = _a.name, _b = _a.alias, alias = _b === void 0 ? undefined : _b, _c = _a.refreshFromApi, refreshFromApi = _c === void 0 ? undefined : _c, _d = _a.applyToApi, applyToApi = _d === void 0 ? undefined : _d, http = _a.http;
+        var name = _a.name, _b = _a.alias, alias = _b === void 0 ? undefined : _b, _c = _a.remote, remote = _c === void 0 ? undefined : _c, _d = _a.localSync, localSync = _d === void 0 ? undefined : _d, http = _a.http;
         this.name = name;
         this.alias = alias;
-        this.refreshFromApi = refreshFromApi;
-        this.applyToApi = applyToApi;
+        this.remote = remote;
+        this.localSync = localSync;
         this.http = new HttpConf(http);
     }
     /**
@@ -4635,24 +4660,15 @@ var MethodConf = /** @class */ (function () {
      * @param {MethodConf}
      */
     MethodConf.prototype.assign = function (_a) {
-        var _b = _a.name, name = _b === void 0 ? this.name : _b, _c = _a.alias, alias = _c === void 0 ? this.alias : _c, _d = _a.refreshFromApi, refreshFromApi = _d === void 0 ? this.refreshFromApi : _d, _e = _a.applyToApi, applyToApi = _e === void 0 ? this.applyToApi : _e, _f = _a.http, http = _f === void 0 ? this.http : _f;
+        var _b = _a.name, name = _b === void 0 ? this.name : _b, _c = _a.alias, alias = _c === void 0 ? this.alias : _c, _d = _a.remote, remote = _d === void 0 ? this.remote : _d, _e = _a.localSync, localSync = _e === void 0 ? this.localSync : _e, _f = _a.http, http = _f === void 0 ? this.http : _f;
         this.name = name;
         this.alias = alias;
-        this.refreshFromApi = refreshFromApi;
-        this.applyToApi = applyToApi;
+        this.remote = remote;
+        this.localSync = localSync;
         this.http = new HttpConf(http);
     };
     return MethodConf;
 }());
-var HttpMethod;
-(function (HttpMethod) {
-    HttpMethod["GET"] = "get";
-    HttpMethod["HEAD"] = "head";
-    HttpMethod["POST"] = "post";
-    HttpMethod["PUT"] = "put";
-    HttpMethod["PATCH"] = "patch";
-    HttpMethod["DELETE"] = "delete";
-})(HttpMethod || (HttpMethod = {}));
 var HttpConf = /** @class */ (function () {
     /**
      * @constructor
@@ -4660,29 +4676,21 @@ var HttpConf = /** @class */ (function () {
      */
     function HttpConf(_a) {
         var path = _a.path, method = _a.method;
-        this._path = path;
-        this._method = method;
+        this.path = path;
+        this.method = method;
     }
-    Object.defineProperty(HttpConf.prototype, "path", {
-        /**
-         * @return {string} return a http path
-         */
-        get: function () {
-            return this._path;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HttpConf.prototype, "method", {
-        /**
-         * @return {HttpMethod} return a http method
-         */
-        get: function () {
-            return this._method;
-        },
-        enumerable: true,
-        configurable: true
-    });
+    /**
+     * Bind a path param name with the pass value
+     * @param {PathParam[]} params array
+     * @return {string} path with bind params
+     */
+    HttpConf.prototype.bindPathParams = function (params) {
+        var _path = clone(this.path);
+        params.forEach(function (param) {
+            _path = replaceAll(_path, ":" + param.name, param.value);
+        });
+        return _path;
+    };
     return HttpConf;
 }());
 var defaultConf = {
@@ -4691,8 +4699,9 @@ var defaultConf = {
     "methods": [
         {
             "name": "find",
-            "alias": ["fetch", "refresh"],
-            "refreshFromApi": true,
+            "alias": ["fetch"],
+            "remote": true,
+            "localSync": true,
             "http": {
                 "path": "",
                 "method": "get"
@@ -4700,8 +4709,9 @@ var defaultConf = {
         },
         {
             "name": "findById",
-            "alias": ["fetchById", "refreshById"],
-            "refreshFromApi": true,
+            "alias": ["fetchById", "fetchById"],
+            "remote": true,
+            "localSync": true,
             "http": {
                 "path": "/:id",
                 "method": "get"
@@ -4709,7 +4719,8 @@ var defaultConf = {
         },
         {
             "name": "exist",
-            "refreshFromApi": true,
+            "remote": true,
+            "localSync": true,
             "http": {
                 "path": "/exist/:id",
                 "method": "get"
@@ -4717,7 +4728,8 @@ var defaultConf = {
         },
         {
             "name": "count",
-            "refreshFromApi": true,
+            "remote": true,
+            "localSync": true,
             "http": {
                 "path": "/count",
                 "method": "get"
@@ -4725,7 +4737,8 @@ var defaultConf = {
         },
         {
             "name": "create",
-            "applyToApi": true,
+            "remote": true,
+            "localSync": true,
             "http": {
                 "path": "",
                 "method": "post"
@@ -4733,7 +4746,8 @@ var defaultConf = {
         },
         {
             "name": "update",
-            "applyToApi": true,
+            "remote": true,
+            "localSync": true,
             "http": {
                 "path": "/:id",
                 "method": "put"
@@ -4741,7 +4755,8 @@ var defaultConf = {
         },
         {
             "name": "delete",
-            "applyToApi": true,
+            "remote": true,
+            "localSync": true,
             "http": {
                 "path": "",
                 "method": "delete"
@@ -4749,7 +4764,8 @@ var defaultConf = {
         },
         {
             "name": "deleteById",
-            "applyToApi": true,
+            "remote": true,
+            "localSync": true,
             "http": {
                 "path": "/:id",
                 "method": "delete"
@@ -4814,6 +4830,8 @@ var Model = /** @class */ (function (_super) {
      * model class or on parameter.
      * Priority confs:
      * default -> custom on model class -> custom on conf() parameter
+     * @param {parameterConf} parameterConf optionaly a json model's conf
+     * @static
      */
     Model.conf = function (parameterConf) {
         var _onModelconf = this._conf;
@@ -4830,6 +4848,7 @@ var Model = /** @class */ (function (_super) {
     };
     /**
      * Get the model conf
+     * @static
      * @return {ModelConf}
      */
     Model.getConf = function () {
@@ -4838,6 +4857,7 @@ var Model = /** @class */ (function (_super) {
     /**
      * Get the method conf by name
      * @param {string} methodName The method's name
+     * @static
      * @return {MethodConf}
      */
     Model.getMethodConf = function (methodName) {
@@ -4845,33 +4865,69 @@ var Model = /** @class */ (function (_super) {
     };
     /**
      * Wrap query getter
+     * @static
      */
     Model.query = function () {
         return this.getters('query')();
     };
     /**
      * Wrap find method
+     * @static
+     * @async
      * @return {Promise<Collection>} list of results
      */
     Model.find = function (conf) {
         if (conf === void 0) { conf = this.getMethodConf('find'); }
-        var _conf = this.checkMethodConf('find', conf);
-        if (_conf.refreshFromApi) {
-            return this.fetch(conf);
-        }
-        return Promise.resolve(this.query().all());
+        return __awaiter(this, void 0, void 0, function () {
+            var _conf, data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _conf = this.checkMethodConf('find', conf);
+                        if (!_conf.remote) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.fetch(conf)];
+                    case 1:
+                        data = _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        data = this.query().all();
+                        _a.label = 3;
+                    case 3: return [2 /*return*/, data];
+                }
+            });
+        });
     };
     /**
      * Wrap findById method
      * @param {number} id of record to find
+     * @static
      * @return {Promise<Item>} result object
      */
-    Model.findById = function (id) {
-        return Promise.resolve(this.query().find(id));
+    Model.findById = function (id, conf) {
+        if (conf === void 0) { conf = this.getMethodConf('findById'); }
+        return __awaiter(this, void 0, void 0, function () {
+            var _conf, data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _conf = this.checkMethodConf('findById', conf);
+                        if (!_conf.remote) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.fetchById(id, conf)];
+                    case 1:
+                        data = _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        data = this.query().find(id);
+                        _a.label = 3;
+                    case 3: return [2 /*return*/, data];
+                }
+            });
+        });
     };
     /**
      * Check if record identified by id param exist
      * @param {number} id of the record to search
+     * @static
      * @return {Promise<boolean>} the result
      */
     Model.exist = function (id) {
@@ -4881,6 +4937,7 @@ var Model = /** @class */ (function (_super) {
     };
     /**
      * Wrap count method
+     * @static
      * @return {Promise<Number>} number of element
      */
     Model.count = function () {
@@ -4889,12 +4946,14 @@ var Model = /** @class */ (function (_super) {
     /**
      * Wrap deleteById method
      * @param id of record to delete
+     * @static
      */
     Model.deleteById = function (id) {
         this.dispatch('delete', id);
     };
     /**
      * Wrap deleteAll method
+     * @static
      */
     Model.deleteAll = function () {
         this.dispatch('deleteAll', {});
@@ -4902,6 +4961,7 @@ var Model = /** @class */ (function (_super) {
     /**
      * Wrap create method
      * @param {Record | Record[]} data to create
+     * @static
      * @return {Promise<EntityCollection>} the created data
      */
     Model.create = function (data) {
@@ -4911,6 +4971,7 @@ var Model = /** @class */ (function (_super) {
      * Wrap update method
      * @param {Record | Record[] | UpdateClosure} data to update
      * @param {Condition} where conditions
+     * @static
      * @return {Promise<UpdateReturn>} updated data
      */
     Model.update = function (data, where) {
@@ -4922,30 +4983,36 @@ var Model = /** @class */ (function (_super) {
     /**
      * Wrap insertOrUpdate method
      * @param {Record | Record[]} data to unsert or update
+     * @static
      * @return {Promise<UpdateReturn>} data result
      */
     Model.insertOrUpdate = function (data) {
         return this.dispatch('insertOrUpdate', data);
     };
     /**
-     * Fetch data from api server if the store is empty
+     * Fetch data from api server and sync to the local store (optionaly)
+     * @param {MethodConf} conf a method's conf
+     * @static
+     * @async
      * @return {Promise<UpdateReturn>} fetched data
      */
     Model.fetch = function (conf) {
         if (conf === void 0) { conf = this.getMethodConf('fetch'); }
         return __awaiter(this, void 0, void 0, function () {
-            var data, _conf;
+            var _conf, url, data;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _conf = this.checkMethodConf('fetch', conf);
-                        if (!_conf.refreshFromApi) return [3 /*break*/, 2];
-                        return [4 /*yield*/, this.refresh(conf)];
+                        url = this.getUrl(_conf);
+                        return [4 /*yield*/, Http[_conf.http.method](url)
+                                .catch(function (err) { console.log(err); })];
                     case 1:
-                        data = _a.sent();
-                        return [3 /*break*/, 3];
+                        data = (_a.sent()) || [];
+                        if (!_conf.localSync) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this.dispatch('insertOrUpdate', { data: data })];
                     case 2:
-                        data = this.query().get();
+                        _a.sent();
                         _a.label = 3;
                     case 3: return [2 /*return*/, data];
                 }
@@ -4953,43 +5020,68 @@ var Model = /** @class */ (function (_super) {
         });
     };
     /**
-     * Fetch data from api and store in vuex
-     * @return {Promise<Collection>} stored data
+     * Exec a fetchById api method with the default confs
+     * or the pass confs and sync to the local store (optionaly)
+     * @param {number} id of the fetching record
+     * @param {MethodConf} conf a method's conf
+     * @static
+     * @async
+     * @return {Promise<Item>} fetched item
      */
-    Model.refresh = function (conf) {
-        if (conf === void 0) { conf = this.getMethodConf('fetch'); }
+    Model.fetchById = function (id, conf) {
+        if (conf === void 0) { conf = this.getMethodConf('fetchById'); }
         return __awaiter(this, void 0, void 0, function () {
             var _conf, url, data;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _conf = this.checkMethodConf('refresh', conf);
-                        url = this.getUrl(_conf);
+                        _conf = this.checkMethodConf('fetchById', conf);
+                        url = this.getUrl(_conf, new PathParam('id', id.toString()));
                         return [4 /*yield*/, Http[_conf.http.method](url)
                                 .catch(function (err) { console.log(err); })];
                     case 1:
                         data = (_a.sent()) || [];
-                        return [4 /*yield*/, this.dispatch('insertOrUpdate', { data: data })];
+                        if (!_conf.localSync) return [3 /*break*/, 3];
+                        // await this.dispatch('insertOrUpdate', { data })
+                        return [4 /*yield*/, this.update(data)];
                     case 2:
+                        // await this.dispatch('insertOrUpdate', { data })
                         _a.sent();
-                        return [2 /*return*/, data];
+                        _a.label = 3;
+                    case 3: return [2 /*return*/, data];
                 }
             });
         });
     };
+    /**
+     * Build a url of api from the global configuration
+     * of model and optionaly the pass params
+     * @param {MethodConf} conf a method's conf
+     * @param {PathParam[]} pathParams a method's path params
+     * @static
+     * @return {string} api's url
+     */
     Model.getUrl = function (conf) {
+        var pathParams = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            pathParams[_i - 1] = arguments[_i];
+        }
         var baseUrl = this._conf.baseUrl;
+        var methodPath = pathParams.length ? conf.http.bindPathParams(pathParams) : conf.http.path;
         if (ModuleOptions.resources.baseUrl) {
             baseUrl = ModuleOptions.resources.baseUrl;
         }
-        return baseUrl + this._conf.endpointPath + conf.http.path;
+        return baseUrl + this._conf.endpointPath + methodPath;
     };
     /**
-     * Check the method configuration
+     * Check if the method configuration exist and
+     * assign the pass method's conf to it
      * Return a new method's configuration
-     * @param {string} methodName
-     * @param {ModelConf} conf
-     * @return {MethodConf}
+     * @param {string} methodName a method's name
+     * @param {ModelConf} conf a method's conf
+     * @private
+     * @static
+     * @return {MethodConf} the new method's configuration
      * @throws Error
      */
     Model.checkMethodConf = function (methodName, conf) {
