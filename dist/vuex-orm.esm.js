@@ -5489,6 +5489,12 @@ var index$1 = {
     use: use,
     Database: Database,
     Model: Model,
+    ModelConf: ModelConf,
+    MethodConf: MethodConf,
+    HttpConf: HttpConf,
+    HttpMethod: HttpMethod,
+    Http: Http,
+    PathParam: PathParam,
     Query: Query,
     Type: Type,
     Attribute: Attribute,
@@ -5514,4 +5520,4 @@ var index$1 = {
 };
 
 export default index$1;
-export { install, use, Database, Model, Query, Attribute, Type, Attr, Increment, Relation, HasOne, BelongsTo, HasMany, HasManyBy, BelongsToMany, HasManyThrough, MorphTo, MorphOne, MorphMany, MorphToMany, MorphedByMany, rootGetters, subGetters, rootActions, subActions, mutations };
+export { install, use, Database, Model, ModelConf, MethodConf, HttpConf, HttpMethod, PathParam, Http, Query, Attribute, Type, Attr, Increment, Relation, HasOne, BelongsTo, HasMany, HasManyBy, BelongsToMany, HasManyThrough, MorphTo, MorphOne, MorphMany, MorphToMany, MorphedByMany, rootGetters, subGetters, rootActions, subActions, mutations };

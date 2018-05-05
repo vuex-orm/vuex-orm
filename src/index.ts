@@ -4,6 +4,8 @@ import install, { Install } from './store/install'
 import use, { Use } from './plugins/use'
 import Database from './database/Database'
 import Model from './model/Model'
+import ModelConf, { MethodConf, HttpConf, HttpMethod, JsonModelConf, PathParam } from './model/ModelConf'
+import Http from './http/Http'
 import Query from './query/Query'
 import Attribute from './attributes/Attribute'
 import Type from './attributes/types/Type'
@@ -61,6 +63,13 @@ export {
   use,
   Database,
   Model,
+  ModelConf,
+  MethodConf,
+  HttpConf,
+  HttpMethod,
+  JsonModelConf,
+  PathParam,
+  Http,
   Query,
   Attribute,
   Type,
@@ -90,6 +99,12 @@ export default {
   use,
   Database,
   Model,
+  ModelConf,
+  MethodConf,
+  HttpConf,
+  HttpMethod,
+  Http,
+  PathParam,
   Query,
   Type,
   Attribute,
