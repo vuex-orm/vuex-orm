@@ -4505,10 +4505,14 @@ var Http = /** @class */ (function () {
     function Http() {
     }
     Http.request = function (url, _query, _method, _body, _headers, options) {
-        if (_body === void 0) { _body = null; }
+        if (_body === void 0) { _body = {}; }
         if (_headers === void 0) { _headers = {}; }
         if (options === void 0) { options = {}; }
         var _options = __assign$9({}, this.defaultOptions, options);
+        _options.method = _method;
+        if (Object.keys(_body).length) {
+            _options.body = JSON.stringify(_body);
+        }
         return fetch(url, _options)
             .then(function (response) {
             if (!response.ok) {
@@ -4523,16 +4527,29 @@ var Http = /** @class */ (function () {
         if (params === void 0) { params = {}; }
         if (headers === void 0) { headers = {}; }
         if (options === void 0) { options = {}; }
-        return this.request(url, params, 'GET', null, headers, options);
+        return this.request(url, params, 'GET', {}, headers, options);
     };
     Http.post = function (url, payload, headers, options) {
-        if (payload === void 0) { payload = null; }
+        if (payload === void 0) { payload = {}; }
         if (headers === void 0) { headers = {}; }
         if (options === void 0) { options = {}; }
         return this.request(url, {}, 'POST', payload, headers, options);
     };
+    Http.put = function (url, payload, headers, options) {
+        if (payload === void 0) { payload = {}; }
+        if (headers === void 0) { headers = {}; }
+        if (options === void 0) { options = {}; }
+        return this.request(url, {}, 'PUT', payload, headers, options);
+    };
+    Http.delete = function (url, payload, headers, options) {
+        if (payload === void 0) { payload = {}; }
+        if (headers === void 0) { headers = {}; }
+        if (options === void 0) { options = {}; }
+        return this.request(url, {}, 'DELETE', payload, headers, options);
+    };
     // Default options are marked with *
     Http.defaultOptions = {
+        method: '',
         cache: 'no-cache',
         credentials: 'same-origin',
         headers: {
@@ -4709,7 +4726,7 @@ var defaultConf = {
         },
         {
             "name": "findById",
-            "alias": ["fetchById", "fetchById"],
+            "alias": ["fetchById"],
             "remote": true,
             "localSync": true,
             "http": {
@@ -4720,7 +4737,6 @@ var defaultConf = {
         {
             "name": "exist",
             "remote": true,
-            "localSync": true,
             "http": {
                 "path": "/exist/:id",
                 "method": "get"
@@ -4729,7 +4745,6 @@ var defaultConf = {
         {
             "name": "count",
             "remote": true,
-            "localSync": true,
             "http": {
                 "path": "/count",
                 "method": "get"
@@ -4847,149 +4862,6 @@ var Model = /** @class */ (function (_super) {
         }
     };
     /**
-     * Get the model conf
-     * @static
-     * @return {ModelConf}
-     */
-    Model.getConf = function () {
-        return this._conf;
-    };
-    /**
-     * Get the method conf by name
-     * @param {string} methodName The method's name
-     * @static
-     * @return {MethodConf}
-     */
-    Model.getMethodConf = function (methodName) {
-        return this.getConf().method(methodName);
-    };
-    /**
-     * Wrap query getter
-     * @static
-     */
-    Model.query = function () {
-        return this.getters('query')();
-    };
-    /**
-     * Wrap find method
-     * @static
-     * @async
-     * @return {Promise<Collection>} list of results
-     */
-    Model.find = function (conf) {
-        if (conf === void 0) { conf = this.getMethodConf('find'); }
-        return __awaiter(this, void 0, void 0, function () {
-            var _conf, data;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _conf = this.checkMethodConf('find', conf);
-                        if (!_conf.remote) return [3 /*break*/, 2];
-                        return [4 /*yield*/, this.fetch(conf)];
-                    case 1:
-                        data = _a.sent();
-                        return [3 /*break*/, 3];
-                    case 2:
-                        data = this.query().all();
-                        _a.label = 3;
-                    case 3: return [2 /*return*/, data];
-                }
-            });
-        });
-    };
-    /**
-     * Wrap findById method
-     * @param {number} id of record to find
-     * @static
-     * @return {Promise<Item>} result object
-     */
-    Model.findById = function (id, conf) {
-        if (conf === void 0) { conf = this.getMethodConf('findById'); }
-        return __awaiter(this, void 0, void 0, function () {
-            var _conf, data;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _conf = this.checkMethodConf('findById', conf);
-                        if (!_conf.remote) return [3 /*break*/, 2];
-                        return [4 /*yield*/, this.fetchById(id, conf)];
-                    case 1:
-                        data = _a.sent();
-                        return [3 /*break*/, 3];
-                    case 2:
-                        data = this.query().find(id);
-                        _a.label = 3;
-                    case 3: return [2 /*return*/, data];
-                }
-            });
-        });
-    };
-    /**
-     * Check if record identified by id param exist
-     * @param {number} id of the record to search
-     * @static
-     * @return {Promise<boolean>} the result
-     */
-    Model.exist = function (id) {
-        return this.findById(id).then(function (item) {
-            return item !== null;
-        });
-    };
-    /**
-     * Wrap count method
-     * @static
-     * @return {Promise<Number>} number of element
-     */
-    Model.count = function () {
-        return Promise.resolve(this.query().count());
-    };
-    /**
-     * Wrap deleteById method
-     * @param id of record to delete
-     * @static
-     */
-    Model.deleteById = function (id) {
-        this.dispatch('delete', id);
-    };
-    /**
-     * Wrap deleteAll method
-     * @static
-     */
-    Model.deleteAll = function () {
-        this.dispatch('deleteAll', {});
-    };
-    /**
-     * Wrap create method
-     * @param {Record | Record[]} data to create
-     * @static
-     * @return {Promise<EntityCollection>} the created data
-     */
-    Model.create = function (data) {
-        return this.dispatch('create', { data: data });
-    };
-    /**
-     * Wrap update method
-     * @param {Record | Record[] | UpdateClosure} data to update
-     * @param {Condition} where conditions
-     * @static
-     * @return {Promise<UpdateReturn>} updated data
-     */
-    Model.update = function (data, where) {
-        return this.dispatch('update', {
-            where: where,
-            data: data
-        });
-    };
-    /**
-     * Wrap insertOrUpdate method
-     * @param {Record | Record[]} data to unsert or update
-     * @static
-     * @return {Promise<UpdateReturn>} data result
-     */
-    Model.insertOrUpdate = function (data) {
-        return this.dispatch('insertOrUpdate', data);
-    };
-    /**
      * Fetch data from api server and sync to the local store (optionaly)
      * @param {MethodConf} conf a method's conf
      * @static
@@ -5020,6 +4892,62 @@ var Model = /** @class */ (function (_super) {
         });
     };
     /**
+     * Wrap find method
+     * @param {MethodConf} conf a method's conf
+     * @static
+     * @async
+     * @return {Promise<Collection>} list of results
+     */
+    Model.find = function (conf) {
+        if (conf === void 0) { conf = this.getMethodConf('find'); }
+        return __awaiter(this, void 0, void 0, function () {
+            var _conf, data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _conf = this.checkMethodConf('find', conf);
+                        if (!_conf.remote) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.fetch(conf)];
+                    case 1:
+                        data = _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        data = this.query().all();
+                        _a.label = 3;
+                    case 3: return [2 /*return*/, data];
+                }
+            });
+        });
+    };
+    /**
+     * Wrap findById method
+     * @param {number} id of record to find
+     * @param {MethodConf} conf a method's conf
+     * @static
+     * @return {Promise<Item>} result object
+     */
+    Model.findById = function (id, conf) {
+        if (conf === void 0) { conf = this.getMethodConf('findById'); }
+        return __awaiter(this, void 0, void 0, function () {
+            var _conf, data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _conf = this.checkMethodConf('findById', conf);
+                        if (!_conf.remote) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.fetchById(id, conf)];
+                    case 1:
+                        data = _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        data = this.query().find(id);
+                        _a.label = 3;
+                    case 3: return [2 /*return*/, data];
+                }
+            });
+        });
+    };
+    /**
      * Exec a fetchById api method with the default confs
      * or the pass confs and sync to the local store (optionaly)
      * @param {number} id of the fetching record
@@ -5042,16 +4970,215 @@ var Model = /** @class */ (function (_super) {
                     case 1:
                         data = (_a.sent()) || [];
                         if (!_conf.localSync) return [3 /*break*/, 3];
-                        // await this.dispatch('insertOrUpdate', { data })
-                        return [4 /*yield*/, this.update(data)];
+                        // await this.update(data)
+                        return [4 /*yield*/, this.dispatch('insertOrUpdate', { data: data })];
                     case 2:
-                        // await this.dispatch('insertOrUpdate', { data })
+                        // await this.update(data)
                         _a.sent();
                         _a.label = 3;
                     case 3: return [2 /*return*/, data];
                 }
             });
         });
+    };
+    /**
+     * Check if record identified by id param exist
+     * @param {number} id of the record to search
+     * @param {MethodConf} conf a method's conf
+     * @static
+     * @return {Promise<boolean>} the result
+     */
+    Model.exist = function (id, conf) {
+        if (conf === void 0) { conf = this.getMethodConf('exist'); }
+        return __awaiter(this, void 0, void 0, function () {
+            var _conf, data, url;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _conf = this.checkMethodConf('exist', conf);
+                        if (!_conf.remote) return [3 /*break*/, 2];
+                        url = this.getUrl(_conf, new PathParam('id', id.toString()));
+                        return [4 /*yield*/, Http[_conf.http.method](url)
+                                .catch(function (err) { console.log(err); })];
+                    case 1:
+                        data = (_a.sent()) || [];
+                        return [3 /*break*/, 3];
+                    case 2:
+                        data = this.query().find(id) !== null;
+                        _a.label = 3;
+                    case 3: return [2 /*return*/, data];
+                }
+            });
+        });
+    };
+    /**
+     * Wrap count method
+     * @param {MethodConf} conf a method's conf
+     * @static
+     * @return {Promise<Number>} number of element
+     */
+    Model.count = function (conf) {
+        if (conf === void 0) { conf = this.getMethodConf('count'); }
+        return __awaiter(this, void 0, void 0, function () {
+            var _conf, data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _conf = this.checkMethodConf('count', conf);
+                        if (!_conf.remote) return [3 /*break*/, 2];
+                        return [4 /*yield*/, Http[_conf.http.method](this.getUrl(_conf))
+                                .catch(function (err) { console.log(err); })];
+                    case 1:
+                        data = (_a.sent()) || [];
+                        return [3 /*break*/, 3];
+                    case 2:
+                        data = this.query().count();
+                        _a.label = 3;
+                    case 3: return [2 /*return*/, data];
+                }
+            });
+        });
+    };
+    /**
+     * Wrap create method
+     * @param {Record | Record[]} data to create
+     * @param {MethodConf} conf a method's conf
+     * @static
+     * @return {Promise<EntityCollection>} the created data
+     */
+    Model.create = function (data, conf) {
+        if (conf === void 0) { conf = this.getMethodConf('create'); }
+        return __awaiter(this, void 0, void 0, function () {
+            var _conf, dataOutput;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _conf = this.checkMethodConf('create', conf);
+                        if (!_conf.remote) return [3 /*break*/, 2];
+                        return [4 /*yield*/, Http[_conf.http.method](this.getUrl(_conf), data)
+                                .catch(function (err) { console.log(err); })];
+                    case 1:
+                        dataOutput = (_a.sent()) || [];
+                        if (_conf.localSync) {
+                            this.dispatch('insert', { data: dataOutput });
+                        }
+                        return [3 /*break*/, 3];
+                    case 2:
+                        dataOutput = this.dispatch('create', data);
+                        _a.label = 3;
+                    case 3: return [2 /*return*/, dataOutput];
+                }
+            });
+        });
+    };
+    /**
+     * Wrap update method
+     * @param {number} id of the record to search
+     * @param {Record | Record[] | UpdateClosure} data to update
+     * @param {MethodConf} conf a method's conf
+     * @static
+     * @return {Promise<UpdateReturn>} updated data
+     */
+    Model.update = function (id, data, conf) {
+        if (conf === void 0) { conf = this.getMethodConf('update'); }
+        return __awaiter(this, void 0, void 0, function () {
+            var _conf, dataOutput, url;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _conf = this.checkMethodConf('update', conf);
+                        if (!_conf.remote) return [3 /*break*/, 2];
+                        url = this.getUrl(_conf, new PathParam('id', id.toString()));
+                        return [4 /*yield*/, Http[_conf.http.method](url, data)
+                                .catch(function (err) { console.log(err); })];
+                    case 1:
+                        dataOutput = (_a.sent()) || [];
+                        if (_conf.localSync && dataOutput) {
+                            this.dispatch('update', {
+                                where: id,
+                                data: dataOutput
+                            });
+                        }
+                        return [3 /*break*/, 3];
+                    case 2:
+                        dataOutput = this.dispatch('update', {
+                            where: id,
+                            data: data
+                        });
+                        _a.label = 3;
+                    case 3: return [2 /*return*/, dataOutput];
+                }
+            });
+        });
+    };
+    /**
+     * Wrap deleteById method
+     * @param id of record to delete
+     * @param {MethodConf} conf a method's conf
+     * @static
+     */
+    Model.deleteById = function (id, conf) {
+        if (conf === void 0) { conf = this.getMethodConf('deleteById'); }
+        return __awaiter(this, void 0, void 0, function () {
+            var _conf, url, dataOutput;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _conf = this.checkMethodConf('deleteById', conf);
+                        if (!_conf.remote) return [3 /*break*/, 2];
+                        url = this.getUrl(_conf, new PathParam('id', id.toString()));
+                        return [4 /*yield*/, Http[_conf.http.method](url)
+                                .catch(function (err) { console.log(err); })];
+                    case 1:
+                        dataOutput = (_a.sent()) || [];
+                        if (_conf.localSync && dataOutput) {
+                            this.dispatch('delete', id);
+                        }
+                        return [3 /*break*/, 3];
+                    case 2:
+                        this.dispatch('delete', id);
+                        _a.label = 3;
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    /**
+     * Wrap deleteAll method
+     * @param {MethodConf} conf a method's conf
+     * @static
+     */
+    Model.delete = function (conf) {
+        if (conf === void 0) { conf = this.getMethodConf('deleteById'); }
+        return __awaiter(this, void 0, void 0, function () {
+            var _conf, dataOutput;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _conf = this.checkMethodConf('deleteById', conf);
+                        if (!_conf.remote) return [3 /*break*/, 2];
+                        return [4 /*yield*/, Http[_conf.http.method](this.getUrl(_conf))
+                                .catch(function (err) { console.log(err); })];
+                    case 1:
+                        dataOutput = (_a.sent()) || [];
+                        if (_conf.localSync && dataOutput) {
+                            this.dispatch('deleteAll', {});
+                        }
+                        return [3 /*break*/, 3];
+                    case 2:
+                        this.dispatch('deleteAll', {});
+                        _a.label = 3;
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    /**
+     * Wrap query getter
+     * @static
+     */
+    Model.query = function () {
+        return this.getters('query')();
     };
     /**
      * Build a url of api from the global configuration
@@ -5095,6 +5222,23 @@ var Model = /** @class */ (function (_super) {
             throw new Error(methodName + " configuration method not found");
         }
         return _method;
+    };
+    /**
+     * Get the model conf
+     * @static
+     * @return {ModelConf}
+     */
+    Model.getConf = function () {
+        return this._conf;
+    };
+    /**
+     * Get the method conf by name
+     * @param {string} methodName The method's name
+     * @static
+     * @return {MethodConf}
+     */
+    Model.getMethodConf = function (methodName) {
+        return this.getConf().method(methodName);
     };
     return Model;
 }(BaseModel));
