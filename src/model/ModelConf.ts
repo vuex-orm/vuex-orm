@@ -221,7 +221,7 @@ export const defaultConf = {
     },
     {
       "name": "findById",
-      "alias": ["fetchById", "fetchById"],
+      "alias": ["fetchById"],
       "remote": true,
       "localSync": true,
       "http": {
@@ -232,7 +232,6 @@ export const defaultConf = {
     {
       "name": "exist",
       "remote": true,
-      "localSync": true,
       "http": {
           "path": "/exist/:id",
           "method": "get"
@@ -241,7 +240,6 @@ export const defaultConf = {
     {
       "name": "count",
       "remote": true,
-      "localSync": true,
       "http": {
           "path": "/count",
           "method": "get"
