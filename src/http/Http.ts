@@ -1,6 +1,7 @@
 export default class Http {
   // Default options are marked with *
-  public static defaultOptions = {
+  public static defaultOptions: RequestInit = {
+    method: '',
     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
     credentials: 'same-origin', // include, same-origin, *omit
     headers: {
@@ -12,8 +13,20 @@ export default class Http {
     referrer: 'no-referrer' // *client, no-referrer
   }
 
-  public static request <T> (url: string, _query: {}, _method: string, _body = null, _headers = {}, options = {}): Promise<T> {
+  public static request <T> (
+    url: string,
+    _query: {},
+    _method: string,
+    _body = {},
+    _headers = {},
+    options = {}
+  ): Promise<T> {
+
     const _options = { ...this.defaultOptions, ...options }
+    _options.method = _method
+    if (Object.keys(_body).length) {
+      _options.body = JSON.stringify(_body)
+    }
     return fetch(url, _options as RequestInit)
       .then(response => {
         if (!response.ok) {
@@ -25,10 +38,18 @@ export default class Http {
   }
 
   public static get <T> (url: string, params = {}, headers = {}, options = {}): Promise<T> {
-    return this.request<T>(url, params, 'GET', null, headers, options)
+    return this.request<T>(url, params, 'GET', {}, headers, options)
   }
 
-  public static post <T> (url: string, payload = null, headers = {}, options = {}): Promise<T> {
+  public static post <T> (url: string, payload = {}, headers = {}, options = {}): Promise<T> {
     return this.request<T>(url, {}, 'POST', payload, headers, options)
+  }
+
+  public static put <T> (url: string, payload = {}, headers = {}, options = {}): Promise<T> {
+    return this.request<T>(url, {}, 'PUT', payload, headers, options)
+  }
+
+  public static delete <T> (url: string, payload = {}, headers = {}, options = {}): Promise<T> {
+    return this.request<T>(url, {}, 'DELETE', payload, headers, options)
   }
 }
