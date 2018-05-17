@@ -31,24 +31,10 @@ export default class BelongsTo extends Relation {
   }
 
   /**
-   * Transform given data to the appropriate value. This method will be called
-   * during data normalization to fix field that has an incorrect value,
-   * or add a missing field with the appropriate default value.
+   * Validate the given value to be a valid value for the relationship.
    */
-  fill (value: any): string | number | null | Record {
-    if (value === undefined) {
-      return null
-    }
-
-    if (Array.isArray(value)) {
-      return null
-    }
-
-    if (typeof value === 'object') {
-      return null
-    }
-
-    return value
+  fill (value: any): string | number | null {
+    return this.fillOne(value)
   }
 
   /**
