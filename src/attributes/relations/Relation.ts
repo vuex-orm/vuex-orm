@@ -13,10 +13,6 @@ export default abstract class Relation extends Attribute {
       return null
     }
 
-    if (Array.isArray(value)) {
-      return null
-    }
-
     if (typeof value === 'object') {
       return null
     }
