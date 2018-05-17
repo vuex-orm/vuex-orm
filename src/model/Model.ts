@@ -330,7 +330,7 @@ export default class Model {
   /**
    * Find a record.
    */
-  static find (id: string | number): Collection {
+  static find (id: string | number): Item {
     return this.getters('find')(id)
   }
 
@@ -661,7 +661,7 @@ export default class Model {
   /**
    * Find a record.
    */
-  $find (id: string | number): Collection {
+  $find (id: string | number): Item {
     return this.$getters('find')(id)
   }
 
