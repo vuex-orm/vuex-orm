@@ -44,6 +44,10 @@ export default class BelongsTo extends Relation {
       return null
     }
 
+    if (typeof value === 'object') {
+      return null
+    }
+
     return value
   }
 
@@ -61,6 +65,10 @@ export default class BelongsTo extends Relation {
     }
 
     if (Array.isArray(value)) {
+      return null
+    }
+
+    if (typeof value !== 'object') {
       return null
     }
 
