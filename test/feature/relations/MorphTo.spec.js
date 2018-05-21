@@ -1,7 +1,57 @@
-import { createStore } from 'test/support/Helpers'
+import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Features – Relations – Morph To', () => {
+  it('can create data containing the morph to relation', () => {
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
+        }
+      }
+    }
+
+    class Comment extends Model {
+      static entity = 'comments'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          body: this.attr(''),
+          commentable_id: this.attr(null),
+          commentable_type: this.attr(null),
+          commentable: this.morphTo('commentable_id', 'commentable_type')
+        }
+      }
+    }
+
+    const store = createStore([{ model: Post }, { model: Comment }])
+
+    store.dispatch('entities/comments/create', {
+      data: {
+        id: 1,
+        body: 'The Body',
+        commentable_type: 'posts',
+        commentable_id: 1,
+        commentable: { id: 1 }
+      }
+    })
+
+    const expected = createState('entities', {
+      posts: {
+        '1': { $id: 1, id: 1, comment: null }
+      },
+      comments: {
+        '1': { $id: 1, id: 1, body: 'The Body', commentable_type: 'posts', commentable_id: 1, commentable: null }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
+
   it('can retrieve all morph relations', async () => {
     class Post extends Model {
       static entity = 'posts'
