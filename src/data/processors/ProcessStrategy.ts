@@ -1,7 +1,5 @@
-import Utils from '../../support/Utils'
 import Model from '../../model/Model'
-import Attrs, { Fields, Relation } from '../../attributes/contracts/Contract'
-import Attribute from '../../attributes/Attribute'
+import Attrs, { Relation } from '../../attributes/contracts/Contract'
 import Record from '../Record'
 import NoKey from './NoKey'
 
@@ -15,44 +13,12 @@ export default class ProcessStrategy {
     return (value: any, parentValue: any, key: string) => {
       let record: Record = { ...value }
 
-      record = this.fix(record, model)
-
       record = this.setId(record, model, noKey, key)
 
       record = this.generateMorphFields(record, parentValue, parent, attr)
 
       return record
     }
-  }
-
-  /**
-   * Normalize individual records.
-   */
-  static fix (record: Record, model: typeof Model): Record {
-    return this.processFix(record, model.fields())
-  }
-
-  /**
-   * Normalize individual records.
-   */
-  static processFix (record: Record = {}, fields: Fields): Record {
-    let newRecord: Record = {}
-
-    Utils.forOwn(fields, (field, key) => {
-      if (record[key] === undefined) {
-        return
-      }
-
-      if (field instanceof Attribute) {
-        newRecord[key] = field.fill(record[key])
-
-        return
-      }
-
-      newRecord[key] = this.processFix(record[key], field)
-    })
-
-    return newRecord
   }
 
   /**

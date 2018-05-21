@@ -5,6 +5,30 @@ import Attribute from '../Attribute'
 
 export default abstract class Relation extends Attribute {
   /**
+   * Fill given value for the single item relationship such as
+   * `hasOne` and `belongsTo`.
+   */
+  fillOne (value: any): string | number | null {
+    if (value === undefined) {
+      return null
+    }
+
+    if (typeof value === 'object') {
+      return null
+    }
+
+    return value
+  }
+
+  /**
+   * Fill given value for the multi-item relationship such as
+   * `hasMany` and `belongsToMany`.
+   */
+  fillMany (value: any): (string | number)[] {
+    return Array.isArray(value) ? value : []
+  }
+
+  /**
    * Attach the relational key to the given record.
    */
   abstract attach (key: any, record: Record, data: NormalizedData): void

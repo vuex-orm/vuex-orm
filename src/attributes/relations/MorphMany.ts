@@ -39,12 +39,10 @@ export default class MorphMany extends Relation {
   }
 
   /**
-   * Transform given data to the appropriate value. This method will be called
-   * during data normalization to fix field that has an incorrect value,
-   * or add a missing field with the appropriate default value.
+   * Validate the given value to be a valid value for the relationship.
    */
-  fill (value: any): (string | number | Record)[] {
-    return Array.isArray(value) ? value : []
+  fill (value: any): (string | number)[] {
+    return this.fillMany(value)
   }
 
   /**
