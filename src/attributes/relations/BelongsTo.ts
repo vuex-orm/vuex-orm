@@ -78,7 +78,9 @@ export default class BelongsTo extends Relation {
   load (query: Query, collection: Record[], relation: Load): Record[] {
     const relatedPath = this.relatedPath(relation.name)
 
-    const relatedQuery = new Query(query.rootState, this.parent.entity, false)
+    const foreignKeys = collection.map(record => record[this.foreignKey])
+
+    const relatedQuery = query.newPlainQuery(this.parent.entity).where(this.ownerKey, foreignKeys)
 
     this.addConstraint(relatedQuery, relation)
 
