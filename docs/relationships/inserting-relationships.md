@@ -12,7 +12,7 @@ class User extends Model {
     return {
       id: this.attr(null),
       name: this.attr(''),
-      posts: this.hasMany(User, 'user_id')
+      posts: this.hasMany(Post, 'user_id')
     }
   }
 }
