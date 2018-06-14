@@ -2,7 +2,7 @@ import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Features – Relations – Persist – Nested Morph', () => {
-  it.only('can create data with nested morph one and morph to relationship', () => {
+  it('can create data with nested morph one and morph to relationship', () => {
     class User extends Model {
       static entity = 'users'
 
