@@ -9,7 +9,7 @@ export interface Options {
 }
 
 export default (database: Database, options: Options = {}): Vuex.Plugin<any> => {
-  const namespace: string = options.namespace || 'entities'
+  const namespace = options.namespace || 'entities'
 
   return (store: Vuex.Store<any>): void => {
     store.registerModule(namespace, database.createModule(namespace))

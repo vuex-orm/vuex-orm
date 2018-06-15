@@ -1,4 +1,5 @@
 import * as Vuex from 'vuex'
+import Utils from '../support/Utils'
 import Modules from '../database/Modules'
 import EntityState from './EntityState'
 import rootGetters from './rootGetters'
@@ -6,6 +7,15 @@ import rootActions from './rootActions'
 import mutations from './mutations'
 import subGetters from './subGetters'
 import subActions from './subActions'
+
+interface VuexModule<S, R> extends Vuex.Module<S, R> {
+  namespaced: boolean
+  state: S
+  getters: Vuex.GetterTree<S, R>
+  actions: Vuex.ActionTree<S, R>
+  mutations: Vuex.MutationTree<S>
+  modules: Vuex.ModuleTree<R>
+}
 
 export default class Module {
   /**
@@ -24,7 +34,7 @@ export default class Module {
    * Create module from the given entities.
    */
   static create (namespace: string, modules: Modules): Vuex.Module<any, any> {
-    const tree = {
+    const tree: VuexModule<any, any> = {
       namespaced: true,
       state: { $name: namespace },
       getters: rootGetters,
@@ -40,10 +50,8 @@ export default class Module {
    * Creates module tree to be registered under top level module
    * from the given entities.
    */
-  static createTree (tree: any, namespace: string, modules: Modules): Vuex.Module<any, any> {
-    Object.keys(modules).forEach((name) => {
-      const module = modules[name]
-
+  static createTree (tree: VuexModule<any, any>, namespace: string, modules: Modules): Vuex.Module<any, any> {
+    Utils.forOwn(modules, (module, name) => {
       tree.getters[name] = (_state: any, getters: any) => () => {
         return getters.query(name)
       }

@@ -56,6 +56,6 @@ export default class Database {
    * Register namespace to the all regitsered model.
    */
   registerNamespace (namespace: string): void {
-    this.entities.forEach(entity => { entity.model.connection = namespace })
+    Model.connection = namespace
   }
 }
