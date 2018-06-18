@@ -1,4 +1,4 @@
-# Advanced: Serialization
+# Serialization
 
 ## Serializing To Json
 

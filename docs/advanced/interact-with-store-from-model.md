@@ -1,4 +1,4 @@
-# Advanced: Interact With Store From Model
+# Interact With Store From Model
 
 Alternative for calling store methods directly, you may access store instance from a model as well to dispatch actions or call getters. 
 

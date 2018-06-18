@@ -1,19 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
-if [ -d _book ]; then
-  rm -rf _book
-fi
+set -e
 
-gitbook install
+npm run docs:build
 
-gitbook build
-
-cd _book
+cd docs/.vuepress/dist
 
 git init
-
 git add -A
-
-git commit -m 'Update docs'
+git commit -m 'deploy'
 
 git push -f git@github.com:vuex-orm/vuex-orm.git master:gh-pages
+
+cd -

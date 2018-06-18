@@ -1,4 +1,4 @@
-# API: Model
+# Model
 
 ## Static Methods
 

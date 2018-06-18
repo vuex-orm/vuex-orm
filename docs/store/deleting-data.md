@@ -1,4 +1,4 @@
-# Store: Deleting Data
+# Deleting Data
 
 You can delete data by `delete` action. The action must take `where` condition which can be `String`, `Number` or `Function`. 
 

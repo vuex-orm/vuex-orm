@@ -1,4 +1,4 @@
-# Store: Inserting And Updating Data
+# Inserting And Updating Data
 
 To insert or update data, you can dispatch corresponding actions through modules. Let's see what kind of actions are available.
 
@@ -174,7 +174,7 @@ console.log(entities)
 
 ### Inserting Relationships
 
-If you pass data with relationships inside to the `create` or `insert` action, those relationships will be normalized and inserted to the store. Please see [Inserting Relationships](relationships/inserting-relationships.md) for more detail.
+If you pass data with relationships inside to the `create` or `insert` action, those relationships will be normalized and inserted to the store. Please see [Inserting Relationships](/relationships/inserting-relationships.md) for more detail.
 
 ## Updates
 

@@ -1,4 +1,4 @@
-# Core Components: Modules And Store
+# Modules And Store
 
 Modules are simple [Vuex Module](https://vuex.vuejs.org/en/modules.html) that correspond to the Models. Vuex ORM will use modules to interact with Vuex Store. Vuex ORM will register predefined state, getters, actions, and mutations for interacting with store nicely. However, you are free to add any additional module you wish.
 

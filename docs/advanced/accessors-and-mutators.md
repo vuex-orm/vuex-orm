@@ -1,4 +1,4 @@
-# Advanced: Accessors & Mutators
+# Accessors & Mutators
 
 Accessors and mutators allow you to format attribute values of the data when retrieving them on a model instance. For example, you might want to modify some value to display nicely on the browser, but you still want to keep actual data as is inside Vuex Store.
 

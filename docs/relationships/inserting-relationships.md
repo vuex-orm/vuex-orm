@@ -1,4 +1,4 @@
-# Relationships: Inserting Relationships
+# Inserting Relationships
 
 When inserting data into the store through Vuex ORM action such as `create` and `insert`, it will normalize any relationship if data contains them.
 

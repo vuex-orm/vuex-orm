@@ -20,8 +20,9 @@
     "test:watch": "mocha-webpack --webpack-config test/webpack.config.js --watch --require test/bootstrap.js 'test/**/*.spec.js'",
     "test:coverage": "mocha-webpack --webpack-config test/webpack.config.js --require test/bootstrap.js 'src/**/*.js' 'test/**/*.spec.js'",
     "coverage": "NODE_ENV=coverage nyc --reporter=lcov --reporter=text npm run test:coverage",
-    "docs": "cd docs && gitbook install && gitbook serve",
-    "docs:deploy": "cd docs && bash ./deploy.sh"
+    "docs": "vuepress dev docs",
+    "docs:build": "vuepress build docs",
+    "docs:deploy": "bash ./docs/deploy.sh"
   },
   "repository": {
     "type": "git",
@@ -49,14 +50,12 @@
     "codecov.io": "^0.1.6",
     "expect": "^23.1.0",
     "fork-ts-checker-webpack-plugin": "^0.4.2",
-    "gitbook-plugin-edit-link": "^2.0.2",
-    "gitbook-plugin-github": "^3.0.0",
     "istanbul-instrumenter-loader": "^3.0.1",
     "mocha": "^5.2.0",
     "mocha-webpack": "2.0.0-beta.0",
     "normalizr": "^3.2.4",
     "nyc": "^12.0.2",
-    "rollup": "^0.60.5",
+    "rollup": "^0.60.7",
     "rollup-plugin-commonjs": "^9.1.3",
     "rollup-plugin-node-resolve": "^3.3.0",
     "sinon": "^6.0.0",
@@ -66,6 +65,8 @@
     "typescript": "^2.9.2",
     "uglify-js": "^3.4.0",
     "vue": "^2.5.16",
+    "vuepress": "^0.10.1",
+    "vuepress-theme-vue": "^1.0.3",
     "vuex": "^3.0.1",
     "webpack": "^4.12.0",
     "webpack-node-externals": "^1.7.2"

@@ -1,4 +1,4 @@
-# Store: Retrieving Data
+# Retrieving Data
 
 You can use getters to retrieve data from the Vuex Store. Not only it fetches the data, but Vuex ORM will convert those fetched data into a model class instance.
 

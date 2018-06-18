@@ -1,4 +1,4 @@
-# Prologue: Getting Started
+# Getting Started
 
 This document is quick start guide to begin using Vuex ORM. It assumes you have a basic understanding of [Vuex](https://github.com/vuejs/vuex/). If you are not familiar with Vuex, please visit [Vuex Documentation](https://vuex.vuejs.org) to learn about Vuex.
 

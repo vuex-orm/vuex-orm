@@ -1,4 +1,4 @@
-# Core Components: Models
+# Models
 
 Models are the definition of the data schema that will be handled by Vuex ORM. Every Model should extend Vuex ORM `Model`.
 

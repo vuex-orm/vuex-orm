@@ -6,32 +6,31 @@ Vuex ORM lets you create "normalized" data schema within Vuex Store with relatio
 
 ## Table Of Contents
 
-- [Prologue](prologue.md)
-    - [Release Notes](https://github.com/vuex-orm/vuex-orm/releases)
+- Prologue
     - [What Is Vuex ORM](prologue/what-is-vuex-orm.md)
     - [Installation](prologue/installation.md)
     - [Getting Started](prologue/getting-started.md)
-- [Core Components](core-components.md)
+- Core Components
     - [Models](components/models.md)
     - [Modules And Store](components/modules-and-store.md)
     - [Database And Registration](components/database-and-registration.md)
-- [Interacting With Store](interacting-with-store.md)
+- Interacting With Store
     - [Inserting And Updating Data](store/inserting-and-updating-data.md)
     - [Retrieving Data](store/retrieving-data.md)
     - [Deleting Data](store/deleting-data.md)
-- [Relationships](relationships.md)
+- Relationships
     - [Defining Relationships](relationships/defining-relationships.md)
     - [Inserting Relationships](relationships/inserting-relationships.md)
     - [Retrieving Relationships](relationships/retrieving-relationships.md)
-- [Advanced Usage](advanced-usage.md)
+- Advanced Usage
     - [Interact With Store From Model](advanced/interact-with-store-from-model.md)
     - [Accessors & Mutators](advanced/accessors-and-mutators.md)
     - [Lifecycle Hooks](advanced/lifecycle-hooks.md)
     - [Serialization](advanced/serialization.md)
-- [Digging Deeper](digging-deeper.md)
+- Digging Deeper
     - [Query Class](digging-deeper/query-class.md)
     - [Plugins](digging-deeper/plugins.md)
-- [API Reference](api-reference.md)
+- API Reference
     - [Model](api/model.md)
 
 ## Questions & Discussions

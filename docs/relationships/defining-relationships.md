@@ -1,4 +1,4 @@
-# Relationships: Defining Relationships
+# Defining Relationships
 
 Vuex ORM supports several different types of relationships:
 

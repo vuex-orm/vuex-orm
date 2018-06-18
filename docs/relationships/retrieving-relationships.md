@@ -1,4 +1,4 @@
-# Relationships: Retrieving Relationships
+# Retrieving Relationships
 
 You can use `with` method to load related model when querying data. The argument to the `with` method should be the name of the field that defines the relationship, not the entity name of the related model.
 
