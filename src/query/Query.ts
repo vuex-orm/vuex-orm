@@ -323,7 +323,9 @@ export default class Query {
   /**
    * Create a new query instance with wrap property set to false.
    */
-  newPlainQuery (entity: string): Query {
+  newPlainQuery (entity?: string): Query {
+    entity = entity || this.entity
+
     return (new Query(this.rootState, entity)).plain()
   }
 
@@ -1172,7 +1174,7 @@ export default class Query {
    * Get all id of the record that matches the relation constraints.
    */
   matchesWhereHasRelation (name: string, constraint: Constraint, existence: boolean = true): string[] {
-    const data = (new Query(this.rootState, this.entity, false)).with(name, constraint).get()
+    const data = this.newPlainQuery().with(name, constraint).get()
 
     let ids: string[] = []
 
