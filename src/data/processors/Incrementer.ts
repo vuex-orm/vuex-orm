@@ -41,7 +41,7 @@ export default class Incrementer {
     let max = this.max(records, query, key)
 
     Utils.forOwn(records, (record) => {
-      if (!record[key]) {
+      if (typeof record[key] !== 'number') {
         record[key] = ++max
       }
     })
@@ -53,7 +53,12 @@ export default class Incrementer {
    */
   private static max (records: Records, query: Query, field: string): number {
     const maxInState = query.max(field)
-    const maxInRecord = Math.max(...Utils.map(records, record => record[field] || 0))
+
+    const maxInRecord = Math.max(...Utils.map(records, record => {
+      const id = record[field]
+
+      return typeof id === 'number' ? id : 0
+    }))
 
     return Math.max(maxInRecord, maxInState)
   }
