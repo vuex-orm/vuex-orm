@@ -31,13 +31,6 @@ export type Relation = Relation
 
 export default class Contract {
   /**
-   * Determine if the given value is the type of fields.
-   */
-  static isFields (attr: Field): attr is Fields {
-    return !this.isAttribute(attr)
-  }
-
-  /**
    * Determine if the given value is the type of field.
    */
   static isAttribute (attr: Field): attr is Attribute {
