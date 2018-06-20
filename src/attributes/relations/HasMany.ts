@@ -69,6 +69,10 @@ export default class HasMany extends Relation {
    * Attach the relational key to the given record.
    */
   attach (key: any, record: Record, data: NormalizedData): void {
+    if (!Array.isArray(key)) {
+      return
+    }
+
     key.forEach((index: any) => {
       const related = data[this.related.entity]
 

@@ -76,25 +76,38 @@ describe('Features – Relations – Has Many', () => {
     const store = createStore([{ model: User }, { model: Post }])
 
     store.dispatch('entities/users/create', {
-      data: {
-        id: 1,
-        posts: [
-          { id: 1 },
-          { id: 2 }
-        ]
-      }
+      data: [
+        {
+          id: 1,
+          posts: [
+            { id: 1 },
+            { id: 2 }
+          ]
+        },
+        {
+          id: 2,
+          posts: null
+        }
+      ]
     })
 
-    const expected = {
-      $id: 1,
-      id: 1,
-      posts: [
-        { $id: 1, id: 1, user_id: 1 },
-        { $id: 2, id: 2, user_id: 1 }
-      ]
-    }
+    const expected = [
+      {
+        $id: 1,
+        id: 1,
+        posts: [
+          { $id: 1, id: 1, user_id: 1 },
+          { $id: 2, id: 2, user_id: 1 }
+        ]
+      },
+      {
+        $id: 2,
+        id: 2,
+        posts: []
+      }
+    ]
 
-    const user = store.getters['entities/users/query']().with('posts').find(1)
+    const user = store.getters['entities/users/query']().with('posts').all()
 
     expect(user).toEqual(expected)
   })
