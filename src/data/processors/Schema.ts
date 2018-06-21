@@ -145,7 +145,7 @@ export default class Schema {
    * Build a morph schema definition.
    */
   static buildMorphOne (attr: MorphTo, schemas: Schemas, parent: typeof Model) {
-    const s = Utils.mapValues(parent.conn().models(), (model) => {
+    const s = Utils.mapValues(parent.database().models(), (model) => {
       return this.buildOne(model, schemas, model, attr)
     })
 

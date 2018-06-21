@@ -1,4 +1,4 @@
-import { createApplication } from 'test/support/Helpers'
+import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 import Query from 'app/query/Query'
 
@@ -26,7 +26,7 @@ describe('Query – Retrieve – Relations - String Define', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }, { model: Post }])
+    createStore([{ model: User }, { model: Post }])
 
     const state = {
       $name: 'entities',

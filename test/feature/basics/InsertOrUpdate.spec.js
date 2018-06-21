@@ -56,7 +56,7 @@ describe('Feature – Basics – Insert Or Update', () => {
       ]
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'Jane Doe', posts: [1] },
         '2': { $id: 2, id: 2, name: 'Johnny Doe', posts: [2] }

@@ -37,7 +37,7 @@ describe('Features – Mutations', () => {
       data: [{ id: 1 }, { id: 2}]
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: '', posts: [] },
         '2': { $id: 2, id: 2, name: '', posts: [] }
@@ -61,7 +61,7 @@ describe('Features – Mutations', () => {
       data: { id: 3 }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: '', posts: [] },
         '2': { $id: 2, id: 2, name: '', posts: [] },
@@ -86,7 +86,7 @@ describe('Features – Mutations', () => {
       data: { id: 1, name: 'Jane Doe' }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'Jane Doe', posts: [] }
       },
@@ -112,7 +112,7 @@ describe('Features – Mutations', () => {
       ]
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'Jane Doe', posts: [] },
         '2': { $id: 2, id: 2, name: 'Johnny Doe', posts: [] }
@@ -136,7 +136,7 @@ describe('Features – Mutations', () => {
       where: 1
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {},
       posts: {}
     })
@@ -156,7 +156,7 @@ describe('Features – Mutations', () => {
       entity: 'users'
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {},
       posts: {}
     })
@@ -177,7 +177,7 @@ describe('Features – Mutations', () => {
 
     store.commit('entities/deleteAll')
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {},
       posts: {}
     })

@@ -36,7 +36,7 @@ describe('Features – Relations – Has Many By', () => {
       }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, posts: [1, 2] }
       },

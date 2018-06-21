@@ -1,4 +1,3 @@
-import { createApplication } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Model – Relations – Morph One', () => {

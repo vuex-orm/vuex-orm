@@ -22,7 +22,7 @@ describe('Feature – Models – Update', () => {
 
     await User.update({ id: 1, name: 'Jane Doe' })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'Jane Doe' }
       }
@@ -43,7 +43,7 @@ describe('Feature – Models – Update', () => {
       data: { name: 'Jane Doe' }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'Jane Doe' }
       }
@@ -71,7 +71,7 @@ describe('Feature – Models – Update', () => {
       data: { name: 'John Doe' }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'John Doe' },
         '2': { $id: 2, id: 2, name: 'John Doe' },
@@ -101,7 +101,7 @@ describe('Feature – Models – Update', () => {
       }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'Jane Doe' },
         '2': { $id: 2, id: 2, name: 'Jane Doe' },
@@ -123,7 +123,7 @@ describe('Feature – Models – Update', () => {
 
     await user.$update({ id: 1, name: 'Jane Doe' })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'Jane Doe' }
       }
@@ -143,7 +143,7 @@ describe('Feature – Models – Update', () => {
 
     await user.$update({ name: 'Jane Doe' })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'Jane Doe' }
       }
@@ -166,7 +166,7 @@ describe('Feature – Models – Update', () => {
       data: { name: 'Jane Doe' }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'Jane Doe' }
       }

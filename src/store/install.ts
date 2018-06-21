@@ -1,5 +1,5 @@
 import * as Vuex from 'vuex'
-import Container from '../connections/Container'
+import Container from '../container/Container'
 import Database from '../database/Database'
 
 export type Install = (database: Database, options?: Options) => Vuex.Plugin<any>

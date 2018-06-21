@@ -59,7 +59,7 @@ describe('Hooks – Delete', () => {
 
     await store.dispatch('entities/users/delete', 2)
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'John Doe' },
         '2': { $id: 2, id: 2, name: 'Jane Doe' }

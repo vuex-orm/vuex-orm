@@ -55,7 +55,7 @@ describe('Features – Relations – Persist – Nested Morph', () => {
       }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, comments: [1] }
       },

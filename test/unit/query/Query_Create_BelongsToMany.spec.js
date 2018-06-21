@@ -1,4 +1,4 @@
-import { createApplication } from 'test/support/Helpers'
+import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 import Query from 'app/query/Query'
 
@@ -39,7 +39,7 @@ describe('Query – Create – Belongs To Many', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }, { model: Role }, { model: RoleUser }])
+    createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
     const state = {
       $name: 'entities',
@@ -111,7 +111,7 @@ describe('Query – Create – Belongs To Many', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }, { model: Role }, { model: RoleUser }])
+    createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
     const state = {
       $name: 'entities',
@@ -196,7 +196,7 @@ describe('Query – Create – Belongs To Many', () => {
       }
     }
 
-    createApplication('entities', [{ model: Team }, { model: User }, { model: Role }, { model: RoleUser }])
+    createStore([{ model: Team }, { model: User }, { model: Role }, { model: RoleUser }])
 
     const state = {
       $name: 'entities',

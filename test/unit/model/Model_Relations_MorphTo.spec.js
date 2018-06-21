@@ -1,4 +1,4 @@
-import { createApplication } from 'test/support/Helpers'
+import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Model – Relations – Morph To', () => {
@@ -39,7 +39,7 @@ describe('Model – Relations – Morph To', () => {
   }
 
   it('can resolve morph to relation', () => {
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
     const data = {
       id: 1,
@@ -57,7 +57,7 @@ describe('Model – Relations – Morph To', () => {
   })
 
   it('can resolve empty morph many relation', () => {
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
     const comment = new Comment({
       id: 1,

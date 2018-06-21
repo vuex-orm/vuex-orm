@@ -40,7 +40,7 @@ describe('Features – Relations – Morph To', () => {
       }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       posts: {
         '1': { $id: 1, id: 1, comment: null }
       },

@@ -42,7 +42,7 @@ describe('Features – Relations – Morph One', () => {
       }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       posts: {
         '1': { $id: 1, id: 1, comment: 1 }
       },

@@ -1,12 +1,10 @@
-import { createApplication } from 'test/support/Helpers'
+import { createStore } from 'test/support/Helpers'
 import User from 'test/fixtures/models/User'
 import Query from 'app/query/Query'
 
 describe('Query – Aggregates', () => {
   beforeEach(() => {
-    createApplication('entities', [
-      { model: User }
-    ])
+    createStore([{ model: User }])
   })
 
   it('can get count of the data', () => {

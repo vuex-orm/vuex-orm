@@ -20,7 +20,7 @@ describe('Feature – Models – Create', () => {
       data: { id: 1, name: 'John Doe' }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'John Doe' }
       }
@@ -39,7 +39,7 @@ describe('Feature – Models – Create', () => {
       ]
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'John Doe' },
         '2': { $id: 2, id: 2, name: 'Jane Doe' }
@@ -72,7 +72,7 @@ describe('Feature – Models – Create', () => {
       data: { id: 1, name: 'John Doe' }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'John Doe' }
       }
@@ -93,7 +93,7 @@ describe('Feature – Models – Create', () => {
       ]
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'John Doe' },
         '2': { $id: 2, id: 2, name: 'Jane Doe' }

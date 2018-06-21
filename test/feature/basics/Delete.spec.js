@@ -36,7 +36,7 @@ describe('Feature – Basics – Delete', () => {
 
     await store.dispatch('entities/users/delete', 1)
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '2': { $id: 2, id: 2, name: '' }
       },
@@ -57,7 +57,7 @@ describe('Feature – Basics – Delete', () => {
       where: 1
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '2': { $id: 2, id: 2, name: '' }
       },
@@ -80,7 +80,7 @@ describe('Feature – Basics – Delete', () => {
 
     await store.dispatch('entities/users/delete', user => user.name === 'Jane Doe')
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'John Doe' }
       },
@@ -107,7 +107,7 @@ describe('Feature – Basics – Delete', () => {
       }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'John Doe' }
       },
@@ -126,7 +126,7 @@ describe('Feature – Basics – Delete', () => {
 
     await store.dispatch('entities/users/delete', '3')
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: '' },
         '2': { $id: 2, id: 2, name: '' }
@@ -146,7 +146,7 @@ describe('Feature – Basics – Delete', () => {
 
     await store.dispatch('entities/users/delete', 3)
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: '' },
         '2': { $id: 2, id: 2, name: '' }
@@ -199,7 +199,7 @@ describe('Feature – Basics – Delete', () => {
 
     await store.dispatch('entities/users/deleteAll')
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {},
       posts: {}
     })
@@ -220,7 +220,7 @@ describe('Feature – Basics – Delete', () => {
 
     await store.dispatch('entities/deleteAll')
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {},
       posts: {}
     })

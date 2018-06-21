@@ -1,4 +1,4 @@
-import { createApplication, createState } from 'test/support/Helpers'
+import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 import Query from 'app/query/Query'
 
@@ -50,9 +50,9 @@ describe('Query – Create – Morph To Many', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {},
       videos: {},
       tags: {},
@@ -67,7 +67,7 @@ describe('Query – Create – Morph To Many', () => {
       ]
     }
 
-    const expected = createState('entities', {
+    const expected = createState({
       posts: {
         '1': { $id: 1, id: 1, tags: [2, 3] }
       },
@@ -134,9 +134,9 @@ describe('Query – Create – Morph To Many', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {},
       videos: {},
       tags: {},
@@ -160,7 +160,7 @@ describe('Query – Create – Morph To Many', () => {
       }
     ]
 
-    const expected = createState('entities', {
+    const expected = createState({
       posts: {
         '1': { $id: 1, id: 1, tags: [2, 3] },
         '2': { $id: 2, id: 2, tags: [2, 5] }

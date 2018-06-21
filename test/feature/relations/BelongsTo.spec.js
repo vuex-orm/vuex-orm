@@ -35,7 +35,7 @@ describe('Features – Relations – Belongs To', () => {
       }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1 }
       },
@@ -79,7 +79,7 @@ describe('Features – Relations – Belongs To', () => {
       }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1 }
       },

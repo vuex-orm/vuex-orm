@@ -19,7 +19,7 @@ describe('Feature – Attributes – Increment', () => {
       data: { id: 'Not number' }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1 },
       }

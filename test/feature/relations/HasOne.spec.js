@@ -34,7 +34,7 @@ describe('Features – Relations – Has One', () => {
       }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, phone: 1 }
       },

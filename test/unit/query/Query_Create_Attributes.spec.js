@@ -1,4 +1,4 @@
-import { createApplication } from 'test/support/Helpers'
+import { createStore } from 'test/support/Helpers'
 import NoKey from 'app/data/processors/NoKey'
 import Model from 'app/model/Model'
 import Query from 'app/query/Query'
@@ -20,7 +20,7 @@ describe('Query – Create – Attributes', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }])
+    createStore([{ model: User }])
 
     const state = {
       $name: 'entities',
@@ -53,7 +53,7 @@ describe('Query – Create – Attributes', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }])
+    createStore([{ model: User }])
 
     const state = {
       $name: 'entities',
@@ -89,7 +89,7 @@ describe('Query – Create – Attributes', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }])
+    createStore([{ model: User }])
 
     const state = {
       $name: 'entities',
@@ -125,7 +125,7 @@ describe('Query – Create – Attributes', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }])
+    createStore([{ model: User }])
 
     const state = {
       $name: 'entities',
@@ -163,7 +163,7 @@ describe('Query – Create – Attributes', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }])
+    createStore([{ model: User }])
 
     const state = {
       $name: 'entities',
@@ -202,7 +202,7 @@ describe('Query – Create – Attributes', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }])
+    createStore([{ model: User }])
 
     const state = {
       $name: 'entities',
@@ -242,7 +242,7 @@ describe('Query – Create – Attributes', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }])
+    createStore([{ model: User }])
 
     const state = {
       $name: 'entities',
@@ -292,7 +292,7 @@ describe('Query – Create – Attributes', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }, { model: Post }])
+    createStore([{ model: User }, { model: Post }])
 
     const state = {
       $name: 'entities',
@@ -336,7 +336,7 @@ describe('Query – Create – Attributes', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }])
+    createStore([{ model: User }])
 
     const state = {
       $name: 'entities',
@@ -374,7 +374,7 @@ describe('Query – Create – Attributes', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }])
+    createStore([{ model: User }])
 
     const state = {
       $name: 'entities',
@@ -413,7 +413,7 @@ describe('Query – Create – Attributes', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }])
+    createStore([{ model: User }])
 
     const state = {
       $name: 'entities',
@@ -453,7 +453,7 @@ describe('Query – Create – Attributes', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }])
+    createStore([{ model: User }])
 
     const state = {
       $name: 'entities',
@@ -503,7 +503,7 @@ describe('Query – Create – Attributes', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }, { model: Post }])
+    createStore([{ model: User }, { model: Post }])
 
     const state = {
       $name: 'entities',

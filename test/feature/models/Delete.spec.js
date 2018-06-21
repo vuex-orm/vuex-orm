@@ -25,7 +25,7 @@ describe('Feature – Models – Delete', () => {
 
     await User.delete(2)
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'John Doe' }
       }
@@ -46,7 +46,7 @@ describe('Feature – Models – Delete', () => {
 
     await User.delete({ where: 2 })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'John Doe' }
       }
@@ -68,7 +68,7 @@ describe('Feature – Models – Delete', () => {
 
     await User.delete(record => record.name === 'Jane Doe')
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'John Doe' }
       }
@@ -91,7 +91,7 @@ describe('Feature – Models – Delete', () => {
 
     await user.$delete(2)
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'John Doe' }
       }
@@ -114,7 +114,7 @@ describe('Feature – Models – Delete', () => {
 
     await user.$delete()
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'John Doe' }
       }

@@ -1,5 +1,3 @@
-import { createApplication } from 'test/support/Helpers'
-import Connection from 'app/connections/Connection'
 import Model from 'app/model/Model'
 
 describe('Model', () => {
@@ -229,15 +227,5 @@ describe('Model', () => {
     }
 
     expect(() => { User.getAttributeClass('blah') }).toThrow()
-  })
-
-  it('can get connection instance', () => {
-    class User extends Model {
-      static entity = 'users'
-    }
-
-    createApplication('entities', [{ model: User }])
-
-    expect((new User).$conn()).toBeInstanceOf(Connection)
   })
 })

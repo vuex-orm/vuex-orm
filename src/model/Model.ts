@@ -1,7 +1,7 @@
 import * as Vuex from 'vuex'
 import Utils from '../support/Utils'
-import Container from '../connections/Container'
-import Connection from '../connections/Connection'
+import Container from '../container/Container'
+import Database from '../database/Database'
 import { Record, Records } from '../data'
 import { Fields } from '../attributes/contracts/Contract'
 import Attribute from '../attributes/Attribute'
@@ -258,17 +258,17 @@ export default class Model {
   }
 
   /**
-   * Get connection instance out of the container.
+   * Get database out of the container.
    */
-  static conn (): Connection {
-    return Container.connection(this.connection)
+  static database (): Database {
+    return Container.database(this.connection)
   }
 
   /**
    * Get Vuex Store instance out of connection.
    */
   static store (): Vuex.Store<any> {
-    return this.conn().store()
+    return this.database().store
   }
 
   /**
@@ -380,7 +380,7 @@ export default class Model {
       return model
     }
 
-    return this.conn().model(model)
+    return this.database().model(model)
   }
 
   /**
@@ -581,10 +581,10 @@ export default class Model {
   }
 
   /**
-   * Get the connection instance out of the container.
+   * Get the database out of the container.
    */
-  $conn (): Connection {
-    return this.$self().conn()
+  $database (): Database {
+    return this.$self().database()
   }
 
   /**

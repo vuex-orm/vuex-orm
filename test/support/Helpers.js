@@ -2,33 +2,16 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexORM from 'app'
 import Utils from 'app/support/Utils'
-import Container from 'app/connections/Container'
+import Container from 'app/container/Container'
 import Database from 'app/database/Database'
 import Model from 'app/model/Model'
 
 Vue.use(Vuex)
 
 /**
- * Create whole application.
- */
-export function createApplication (namespace, entities) {
-  const database = new Database()
-
-  entities.forEach((entity) => {
-    database.register(entity.model, entity.module || {})
-  })
-
-  database.registerNamespace(namespace)
-
-  Container.register(namespace, database)
-
-  return Container
-}
-
-/**
  * Create a new Vuex Store.
  */
-export function createStore (entities) {
+export function createStore (entities, namespace) {
   const database = new Database()
 
   entities.forEach((entity) => {
@@ -36,7 +19,7 @@ export function createStore (entities) {
   })
 
   return new Vuex.Store({
-    plugins: [VuexORM.install(database)],
+    plugins: [VuexORM.install(database, { namespace })],
     strict: true
   })
 }
@@ -44,7 +27,7 @@ export function createStore (entities) {
 /**
  * Create a new Vuex State.
  */
-export function createState (namespace, state) {
+export function createState (state, namespace = 'entities') {
   return {
     $name: namespace,
 
@@ -59,7 +42,6 @@ export function createState (namespace, state) {
 }
 
 export default {
-  createApplication,
   createStore,
   createState
 }

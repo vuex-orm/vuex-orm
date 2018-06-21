@@ -1,4 +1,4 @@
-import { createApplication, createState } from 'test/support/Helpers'
+import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 import Query from 'app/query/Query'
 
@@ -39,11 +39,11 @@ class RoleUser extends Model {
 
 describe('Query – Retrieve – Relations – Belongs To Many', () => {
   beforeEach(() => {
-    createApplication('entities', [{ model: User }, { model: Role }, { model: RoleUser }])
+    createStore([{ model: User }, { model: Role }, { model: RoleUser }])
   })
 
   it('can resolve belongs to many relation', () => {
-    const state = createState('entities', {
+    const state = createState({
       users: {
         '1': { $id: 1, id: 1, roles: [2, 3] }
       },
@@ -68,7 +68,7 @@ describe('Query – Retrieve – Relations – Belongs To Many', () => {
   })
 
   it('can resolve inverse belongs to many relation', () => {
-    const state = createState('entities', {
+    const state = createState({
       users: {
         '1': { $id: 1, id: 1, roles: [2, 3] }
       },
@@ -91,7 +91,7 @@ describe('Query – Retrieve – Relations – Belongs To Many', () => {
   })
 
   it('can resolve belongs to many relation with has constraint', () => {
-    const state = createState('entities', {
+    const state = createState({
       users: {
         '1': { $id: 1, id: 1, roles: [2, 3] }
       },

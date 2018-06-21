@@ -1,4 +1,4 @@
-import { createApplication, createState } from 'test/support/Helpers'
+import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 import Query from 'app/query/Query'
 
@@ -39,9 +39,9 @@ describe('Query – Create – Morph One', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {},
       videos: {},
       comments: {}
@@ -52,7 +52,7 @@ describe('Query – Create – Morph One', () => {
       comment: { id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' }
     }
 
-    const expected = createState('entities', {
+    const expected = createState({
       posts: {
         '1': { $id: 1, id: 1, comment: 2 }
       },
@@ -103,9 +103,9 @@ describe('Query – Create – Morph One', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {},
       videos: {},
       comments: {}
@@ -122,7 +122,7 @@ describe('Query – Create – Morph One', () => {
       }
     ]
 
-    const expected = createState('entities', {
+    const expected = createState({
       posts: {
         '1': { $id: 1, id: 1, comment: 2 },
         '2': { $id: 2, id: 2, comment: 4 }
@@ -175,9 +175,9 @@ describe('Query – Create – Morph One', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {},
       videos: {},
       comments: {}
@@ -188,7 +188,7 @@ describe('Query – Create – Morph One', () => {
       comment: { id: 2, body: 'comment1' }
     }
 
-    const expected = createState('entities', {
+    const expected = createState({
       posts: {
         '1': { $id: 1, id: 1, comment: 2 }
       },
@@ -239,9 +239,9 @@ describe('Query – Create – Morph One', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {},
       videos: {},
       comments: {}
@@ -252,7 +252,7 @@ describe('Query – Create – Morph One', () => {
       comment: { id: 2, body: 'comment1', commentable_id: 1 }
     }
 
-    const expected = createState('entities', {
+    const expected = createState({
       posts: {
         '1': { $id: 1, id: 1, comment: 2 }
       },
@@ -303,9 +303,9 @@ describe('Query – Create – Morph One', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {},
       videos: {},
       comments: {}
@@ -316,7 +316,7 @@ describe('Query – Create – Morph One', () => {
       { id: 3, body: 'comment2' }
     ]
 
-    const expected = createState('entities', {
+    const expected = createState({
       posts: {},
       videos: {},
       comments: {
@@ -378,9 +378,9 @@ describe('Query – Create – Morph One', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }, { model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: User }, { model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState('entities', {
+    const state = createState({
       users: {},
       posts: {},
       videos: {},
@@ -396,7 +396,7 @@ describe('Query – Create – Morph One', () => {
       }]
     }
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, posts: [5] }
       },

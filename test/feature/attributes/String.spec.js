@@ -26,7 +26,7 @@ describe('Feature – Attributes – String', () => {
       ]
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, str: 'default' },
         '2': { $id: 2, id: 2, str: 'value' },

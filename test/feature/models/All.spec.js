@@ -1,4 +1,4 @@
-import { createStore, createState } from 'test/support/Helpers'
+import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Feature – Models – All', () => {

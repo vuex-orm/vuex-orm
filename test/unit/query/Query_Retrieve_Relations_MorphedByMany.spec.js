@@ -1,4 +1,4 @@
-import { createApplication, createState } from 'test/support/Helpers'
+import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 import Query from 'app/query/Query'
 
@@ -50,9 +50,9 @@ describe('Query – Retrieve – Relations – Morphed By Many', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {
         '1': { $id: 1, id: 1 },
         '5': { $id: 5, id: 5 }
@@ -129,9 +129,9 @@ describe('Query – Retrieve – Relations – Morphed By Many', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {
         '1': { $id: 1, id: 1 },
         '5': { $id: 5, id: 5 }
@@ -209,9 +209,9 @@ describe('Query – Retrieve – Relations – Morphed By Many', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {
         '1': { $id: 1, post_id: 1 },
         '5': { $id: 5, post_id: 5 }
@@ -290,9 +290,9 @@ describe('Query – Retrieve – Relations – Morphed By Many', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {
         '1': { $id: 1, id: 1, post_id: 100 },
         '5': { $id: 5, id: 5, post_id: 105 }

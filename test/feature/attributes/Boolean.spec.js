@@ -29,7 +29,7 @@ describe('Feature – Attributes – Boolean', () => {
       ]
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, bool: true },
         '2': { $id: 2, id: 2, bool: false },

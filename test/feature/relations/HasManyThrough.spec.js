@@ -46,7 +46,7 @@ describe('Features – Relations – Has Many Through', () => {
       ]
     }
 
-    const expected = createState('entities', {
+    const expected = createState({
       countries: {
         '1': { $id: 1, id: 1, posts: [1, 2] }
       },

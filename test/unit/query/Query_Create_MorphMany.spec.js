@@ -1,4 +1,4 @@
-import { createApplication, createState } from 'test/support/Helpers'
+import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 import Query from 'app/query/Query'
 
@@ -39,9 +39,9 @@ describe('Query – Create – Morph Many', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {},
       videos: {},
       comments: {}
@@ -55,7 +55,7 @@ describe('Query – Create – Morph Many', () => {
       ]
     }
 
-    const expected = createState('entities', {
+    const expected = createState({
       posts: {
         '1': { $id: 1, id: 1, comments: [2, 3] }
       },
@@ -107,9 +107,9 @@ describe('Query – Create – Morph Many', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {},
       videos: {},
       comments: {}
@@ -131,7 +131,7 @@ describe('Query – Create – Morph Many', () => {
       }
     ]
 
-    const expected = createState('entities', {
+    const expected = createState({
       posts: {
         '1': { $id: 1, id: 1, comments: [2, 3] },
         '2': { $id: 2, id: 2, comments: [4] }
@@ -185,9 +185,9 @@ describe('Query – Create – Morph Many', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {},
       videos: {},
       comments: {}
@@ -201,7 +201,7 @@ describe('Query – Create – Morph Many', () => {
       ]
     }
 
-    const expected = createState('entities', {
+    const expected = createState({
       posts: {
         '1': { $id: 1, id: 1, comments: [2, 3] }
       },
@@ -253,9 +253,9 @@ describe('Query – Create – Morph Many', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {},
       videos: {},
       comments: {}
@@ -269,7 +269,7 @@ describe('Query – Create – Morph Many', () => {
       ]
     }
 
-    const expected = createState('entities', {
+    const expected = createState({
       posts: {
         '1': { $id: 1, id: 1, comments: [2, 3] }
       },
@@ -321,9 +321,9 @@ describe('Query – Create – Morph Many', () => {
       }
     }
 
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState('entities', {
+    const state = createState({
       posts: {},
       videos: {},
       comments: {}
@@ -334,7 +334,7 @@ describe('Query – Create – Morph Many', () => {
       { id: 3, body: 'comment2' }
     ]
 
-    const expected = createState('entities', {
+    const expected = createState({
       posts: {},
       videos: {},
       comments: {
@@ -396,9 +396,9 @@ describe('Query – Create – Morph Many', () => {
       }
     }
 
-    createApplication('entities', [{ model: User }, { model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: User }, { model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState('entities', {
+    const state = createState({
       users: {},
       posts: {},
       videos: {},
@@ -417,7 +417,7 @@ describe('Query – Create – Morph Many', () => {
       }]
     }
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, posts: [5] }
       },

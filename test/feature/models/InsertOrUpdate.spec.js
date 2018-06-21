@@ -29,7 +29,7 @@ describe('Feature – Models – Insert Or Update', () => {
       ]
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'Jane Doe' },
         '2': { $id: 2, id: 2, name: 'Johnny Doe' }
@@ -57,7 +57,7 @@ describe('Feature – Models – Insert Or Update', () => {
       ]
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, name: 'Jane Doe' },
         '2': { $id: 2, id: 2, name: 'Johnny Doe' }

@@ -1,6 +1,8 @@
 import * as Vuex from 'vuex'
 import Utils from '../support/Utils'
-import Container from '../connections/Container'
+import Container from '../container/Container'
+import Models from '../database/Models'
+import Modules from '../database/Modules'
 import { Record, Records, NormalizedData } from '../data'
 import Data from '../data/Data'
 import Attrs, { Fields } from '../attributes/contracts/Contract'
@@ -149,28 +151,28 @@ export default class Query {
    * Get model of given name from the container.
    */
   static getModel (state: State, name: string): typeof Model {
-    return Container.connection(state.$name).model(name)
+    return Container.database(state.$name).model(name)
   }
 
   /**
    * Get all models from the container.
    */
-  static getModels (state: State): { [name: string]: typeof Model } {
-    return Container.connection(state.$name).models()
+  static getModels (state: State): Models {
+    return Container.database(state.$name).models()
   }
 
   /**
    * Get module of given name from the container.
    */
   static getModule (state: State, name: string): Vuex.Module<any, any> {
-    return Container.connection(state.$name).module(name)
+    return Container.database(state.$name).module(name)
   }
 
   /**
    * Get all modules from the container.
    */
-  static getModules (state: State): { [name: string]: Vuex.Module<any, any> } {
-    return Container.connection(state.$name).modules()
+  static getModules (state: State): Modules {
+    return Container.database(state.$name).modules()
   }
 
   /**

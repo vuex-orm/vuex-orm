@@ -46,7 +46,7 @@ describe('Features – Relations – Belongs To Many', () => {
       }
     })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, permissions: [1, 2] }
       },
@@ -102,7 +102,7 @@ describe('Features – Relations – Belongs To Many', () => {
 
     await store.dispatch('entities/users/create', { data: { id: 1 } })
 
-    const expected = createState('entities', {
+    const expected = createState({
       users: {
         '1': { $id: 1, id: 1, roles: [] }
       },

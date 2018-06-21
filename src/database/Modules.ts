@@ -1,7 +1,7 @@
 import * as Vuex from 'vuex'
 
-export interface Entities {
+export interface Modules {
   [name: string]: Vuex.Module<any, any>
 }
 
-export default Entities
+export default Modules

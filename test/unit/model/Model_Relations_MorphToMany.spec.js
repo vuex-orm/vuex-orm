@@ -1,4 +1,4 @@
-import { createApplication } from 'test/support/Helpers'
+import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Model – Relations – Morph To Many', () => {
@@ -49,7 +49,7 @@ describe('Model – Relations – Morph To Many', () => {
   }
 
   it('can resolve morph to many relation', () => {
-    createApplication('entities', [{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
     const data = {
       id: 1,
