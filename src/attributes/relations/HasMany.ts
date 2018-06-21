@@ -84,7 +84,11 @@ export default class HasMany extends Relation {
    * Load the has many relationship for the record.
    */
   load (query: Query, collection: Record[], relation: Load): Record[] {
-    const relatedQuery = new Query(query.rootState, this.related.entity, false)
+    const localKeys = collection.map(record => record[this.localKey])
+
+    const relatedQuery = query.newPlainQuery(this.related.entity)
+
+    relatedQuery.where(this.foreignKey, localKeys)
 
     this.addConstraint(relatedQuery, relation)
 

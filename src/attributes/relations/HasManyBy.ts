@@ -85,7 +85,7 @@ export default class HasManyBy extends Relation {
   load (query: Query, collection: Record[], relation: Load): Record[] {
     const relatedPath = this.relatedPath(relation.name)
 
-    const relatedQuery = new Query(query.rootState, this.parent.entity, false)
+    const relatedQuery = query.newPlainQuery(this.parent.entity)
 
     this.addConstraint(relatedQuery, relation)
 

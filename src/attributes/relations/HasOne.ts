@@ -80,7 +80,11 @@ export default class HasOne extends Relation {
   load (query: Query, collection: Record[], relation: Load): Record[] {
     const relatedPath = this.relatedPath(relation.name)
 
-    const relatedQuery = new Query(query.rootState, this.related.entity, false)
+    const localKeys = collection.map(record => record[this.localKey])
+
+    const relatedQuery = query.newPlainQuery(this.related.entity)
+
+    relatedQuery.where(this.foreignKey, localKeys)
 
     this.addConstraint(relatedQuery, relation)
 
