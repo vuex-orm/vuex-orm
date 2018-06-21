@@ -1,9 +1,11 @@
 import * as Vuex from 'vuex'
 import Model from '../model/Model'
 import Module from '../modules/Module'
+import Schema from './schema/Schema'
 import Entity from './Entity'
 import Models from './Models'
 import Modules from './Modules'
+import Schemas from './Schemas'
 
 export default class Database {
   /**
@@ -16,6 +18,19 @@ export default class Database {
    * models and modules with its name.
    */
   entities: Entity[] = []
+
+  /**
+   * The database schema definition. This schema will be used when normalizing
+   * the data before persisting them to the Vuex Store.
+   */
+  schemas: Schemas = {}
+
+  /**
+   * Initialize the database before a user can start using it.
+   */
+  start (): void {
+    this.createSchema()
+  }
 
   /**
    * Register a model and module to the entities list.
@@ -83,5 +98,16 @@ export default class Database {
    */
   createModule (namespace: string): Vuex.Module<any, any> {
     return Module.create(namespace, this.modules())
+  }
+
+  /**
+   * Create the schema definition from registered entities list and set
+   * it to the property. This schema will be used by the normalizer
+   * to normalize data before persisting them to the Vuex Store.
+   */
+  createSchema (): void {
+    this.entities.forEach((entity) => {
+      this.schemas[entity.name] = Schema.one(entity.model)
+    })
   }
 }

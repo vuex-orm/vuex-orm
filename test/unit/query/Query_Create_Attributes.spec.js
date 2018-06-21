@@ -1,5 +1,5 @@
 import { createStore } from 'test/support/Helpers'
-import NoKey from 'app/data/processors/NoKey'
+import NoKey from 'app/database/schema/NoKey'
 import Model from 'app/model/Model'
 import Query from 'app/query/Query'
 

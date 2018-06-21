@@ -18,6 +18,8 @@ export default (database: Database, options: Options = {}): Vuex.Plugin<any> => 
 
     database.registerNamespace(namespace)
 
+    database.start()
+
     Container.register(namespace, database)
   }
 }

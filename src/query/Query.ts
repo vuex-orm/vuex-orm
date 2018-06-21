@@ -1,6 +1,7 @@
 import * as Vuex from 'vuex'
 import Utils from '../support/Utils'
 import Container from '../container/Container'
+import Database from '../database/Database'
 import Models from '../database/Models'
 import Modules from '../database/Modules'
 import { Record, Records, NormalizedData } from '../data'
@@ -148,31 +149,38 @@ export default class Query {
   }
 
   /**
+   * Get the database from the container.
+   */
+  static database (state: State): Database {
+    return Container.database(state.$name)
+  }
+
+  /**
    * Get model of given name from the container.
    */
   static getModel (state: State, name: string): typeof Model {
-    return Container.database(state.$name).model(name)
+    return this.database(state).model(name)
   }
 
   /**
    * Get all models from the container.
    */
   static getModels (state: State): Models {
-    return Container.database(state.$name).models()
+    return this.database(state).models()
   }
 
   /**
    * Get module of given name from the container.
    */
   static getModule (state: State, name: string): Vuex.Module<any, any> {
-    return Container.database(state.$name).module(name)
+    return this.database(state).module(name)
   }
 
   /**
    * Get all modules from the container.
    */
   static getModules (state: State): Modules {
-    return Container.database(state.$name).modules()
+    return this.database(state).modules()
   }
 
   /**
@@ -329,6 +337,13 @@ export default class Query {
     entity = entity || this.entity
 
     return (new Query(this.rootState, entity)).plain()
+  }
+
+  /**
+   * Get the database from the container.
+   */
+  database (): Database {
+    return this.self().database(this.rootState)
   }
 
   /**

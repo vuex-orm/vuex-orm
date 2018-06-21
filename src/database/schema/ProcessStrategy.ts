@@ -1,6 +1,6 @@
 import Model from '../../model/Model'
 import Attrs, { Relation } from '../../attributes/contracts/Contract'
-import Record from '../Record'
+import Record from '../../data/Record'
 import NoKey from './NoKey'
 
 export type Strategy = (value: any, parent: any, key: string) => any
