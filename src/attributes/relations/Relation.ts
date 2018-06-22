@@ -39,6 +39,17 @@ export default abstract class Relation extends Attribute {
   abstract load (query: Query, collection: Record[], relation: Load): Record | Record[] | null
 
   /**
+   * Check if the given value is a single relation, which is the Object.
+   */
+  isOneRelation (record: any): boolean {
+    if (!Array.isArray(record) && record !== null && typeof record === 'object') {
+      return true
+    }
+
+    return false
+  }
+
+  /**
    * Create a new map of the record by given key.
    */
   mapRecords (records: Record[], key: string): Records {
