@@ -90,6 +90,25 @@ describe('Features – Relations – Belongs To', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
+  it('returns created record from `create` method', async () => {
+    const store = createStore([{ model: User }, { model: Post }])
+
+    const result = await store.dispatch('entities/posts/create', {
+      data: {
+        id: 1,
+        user_id: 1,
+        user: { id: 1 }
+      }
+    })
+
+    const expected = {
+      users: [{ $id: 1, id: 1 }],
+      posts: [{ $id: 1, id: 1, user_id: 1, user: null }]
+    }
+
+    expect(result).toEqual(expected)
+  })
+
   it('can resolve the belongs to relation', () => {
     const store = createStore([{ model: User }, { model: Post }])
 
