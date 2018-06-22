@@ -58,19 +58,35 @@ export default class HasOne extends Relation {
   }
 
   /**
-   * Attach the relational key to the given record.
+   * Attach the relational key to the related record. For example,
+   * when User has one Phone, it will attach value to the
+   * `user_id` field of Phone record.
    */
   attach (key: any, record: Record, data: NormalizedData): void {
+    // Get related record.
     const related = data[this.related.entity]
 
-    if (related && related[key] && related[key][this.foreignKey] !== undefined) {
+    // If there's no related record, there's nothing we can do so return here.
+    if (!related) {
       return
     }
 
+    // If there is a related record, check if the related record already has
+    // proper foreign key value. If it has, that means the user has provided
+    // the foreign key themselves so leave it alone and do nothing.
+    if (related[key] && related[key][this.foreignKey] !== undefined) {
+      return
+    }
+
+    // Check if the record has local key set. If not, set the local key to be
+    // the id value. This happens if the user defines the custom local key
+    // and didn't include in the data being normalized.
     if (!record[this.localKey]) {
       record[this.localKey] = record.$id
     }
 
+    // Finally, set the foreign key of the related record to be the local
+    // key of this record.
     related[key][this.foreignKey] = record[this.localKey]
   }
 
