@@ -124,4 +124,22 @@ describe('Features – Relations – Has One', () => {
 
     expect(user).toEqual(expected)
   })
+
+  it('can resolve the empty has one relation', () => {
+    const store = createStore([{ model: User }, { model: Phone }])
+
+    store.dispatch('entities/users/create', {
+      data: { id: 1 }
+    })
+
+    const expected = {
+      $id: 1,
+      id: 1,
+      phone: null
+    }
+
+    const user = store.getters['entities/users/query']().with('phone').find(1)
+
+    expect(user).toEqual(expected)
+  })
 })
