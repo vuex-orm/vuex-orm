@@ -2,29 +2,29 @@ import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Features – Relations – Belongs To', () => {
+  class User extends Model {
+    static entity = 'users'
+
+    static fields () {
+      return {
+        id: this.attr(null)
+      }
+    }
+  }
+
+  class Post extends Model {
+    static entity = 'posts'
+
+    static fields () {
+      return {
+        id: this.attr(null),
+        user_id: this.attr(null),
+        user: this.belongsTo(User, 'user_id')
+      }
+    }
+  }
+
   it('can create data containing the belongs to relation', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null)
-        }
-      }
-    }
-
-    class Post extends Model {
-      static entity = 'posts'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          user_id: this.attr(null),
-          user: this.belongsTo(User, 'user_id')
-        }
-      }
-    }
-
     const store = createStore([{ model: User }, { model: Post }])
 
     store.dispatch('entities/posts/create', {
@@ -47,29 +47,28 @@ describe('Features – Relations – Belongs To', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
+  it('can create data when the belongs to relation is `null`', () => {
+    const store = createStore([{ model: User }, { model: Post }])
+
+    store.dispatch('entities/posts/create', {
+      data: {
+        id: 1,
+        user_id: 1,
+        user: null
+      }
+    })
+
+    const expected = createState({
+      users: {},
+      posts: {
+        '1': { $id: 1, id: 1, user_id: 1, user: null }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
+
   it('can generate relation field', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null)
-        }
-      }
-    }
-
-    class Post extends Model {
-      static entity = 'posts'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          user_id: this.attr(null),
-          user: this.belongsTo(User, 'user_id')
-        }
-      }
-    }
-
     const store = createStore([{ model: User }, { model: Post }])
 
     store.dispatch('entities/posts/create', {
@@ -92,28 +91,6 @@ describe('Features – Relations – Belongs To', () => {
   })
 
   it('can resolve the belongs to relation', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null)
-        }
-      }
-    }
-
-    class Post extends Model {
-      static entity = 'posts'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          user_id: this.attr(null),
-          user: this.belongsTo(User, 'user_id')
-        }
-      }
-    }
-
     const store = createStore([{ model: User }, { model: Post }])
 
     store.dispatch('entities/posts/create', {
@@ -139,28 +116,6 @@ describe('Features – Relations – Belongs To', () => {
   })
 
   it('can resolve belongs to relation which its id is 0', () => {
-  class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null)
-        }
-      }
-    }
-
-    class Post extends Model {
-      static entity = 'posts'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          user_id: this.attr(null),
-          user: this.belongsTo(User, 'user_id')
-        }
-      }
-    }
-
     const store = createStore([{ model: User }, { model: Post }])
 
     store.dispatch('entities/posts/create', {
@@ -186,7 +141,7 @@ describe('Features – Relations – Belongs To', () => {
   })
 
   it('can resolve belongs to relation with custom foreign key', () => {
-  class User extends Model {
+    class User extends Model {
       static entity = 'users'
 
       static fields () {
