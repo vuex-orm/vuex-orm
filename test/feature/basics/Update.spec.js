@@ -88,6 +88,80 @@ describe('Feature – Basics – Update', () => {
     expect(user.age).toBe(24)
   })
 
+  it('can update record passing array', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: [
+        { id: 0, name: 'John Doe', age: 30 },
+        { id: 1, name: 'Jane Doe', age: 24 }
+      ]
+    })
+
+    store.dispatch('entities/users/update', [
+      { id: 0, age: 24 },
+      { id: 1, age: 30 }
+    ])
+
+    const user0 = store.getters['entities/users/find'](0)
+    const user1 = store.getters['entities/users/find'](1)
+
+    expect(user0.name).toBe('John Doe')
+    expect(user0.age).toBe(24)
+    expect(user1.name).toBe('Jane Doe')
+    expect(user1.age).toBe(30)
+  })
+
+  it('can update record passing array as a data', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: [
+        { id: 0, name: 'John Doe', age: 30 },
+        { id: 1, name: 'Jane Doe', age: 24 }
+      ]
+    })
+
+    store.dispatch('entities/users/update', {
+      data: [
+        { id: 0, age: 24 },
+        { id: 1, age: 30 }
+      ]
+    })
+
+    const user0 = store.getters['entities/users/find'](0)
+    const user1 = store.getters['entities/users/find'](1)
+
+    expect(user0.name).toBe('John Doe')
+    expect(user0.age).toBe(24)
+    expect(user1.name).toBe('Jane Doe')
+    expect(user1.age).toBe(30)
+  })
+
   it('can update record by specifying condition with id', () => {
     class User extends Model {
       static entity = 'users'
@@ -346,6 +420,68 @@ describe('Feature – Basics – Update', () => {
     expect(user.age).toBe(30)
   })
 
+  it('throws error when the `data` is closure and there is no condition', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: { id: 1, name: 'John Doe', age: 30 }
+    })
+
+    try {
+      await store.dispatch('entities/users/update', {
+        data (user) {
+          user.age = 24
+        }
+      })
+    } catch (e) {
+      expect(e.message).toBe('You must specify `where` to update records by specifying `data` as a closure.')
+    }
+  })
+
+  it('throws error when the condition is specified but model has composite key defined', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static primaryKey = ['id1', 'id2']
+
+      static fields () {
+        return {
+          id1: this.attr(null),
+          id2: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: { id1: 1, id2: 2, name: 'John Doe', age: 30 }
+    })
+
+    try {
+      await store.dispatch('entities/users/update', {
+        where: 1,
+        data: { age: 24 }
+      })
+    } catch (e) {
+      expect(e.message).toBe('You can not specify `where` value when you have a composite key defined in your model. Please include composite keys to the `data` fields.')
+    }
+  })
+
   it('returns a updated object', async () => {
     class User extends Model {
       static entity = 'users'
@@ -390,12 +526,12 @@ describe('Feature – Basics – Update', () => {
       data: { id: 1, name: 'John Doe', age: 30 }
     })
 
-    const user = await store.dispatch('entities/users/update', {
+    const result = await store.dispatch('entities/users/update', {
       where: 1,
       data: { age: 24 }
     })
 
-    expect(user).toBeInstanceOf(User)
-    expect(user.age).toBe(24)
+    expect(result.users[0]).toBeInstanceOf(User)
+    expect(result.users[0].age).toBe(24)
   })
 })

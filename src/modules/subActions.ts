@@ -27,9 +27,7 @@ const subActions: SubActions = {
    * Update data in the store.
    */
   update ({ dispatch, state }, payload: Paylods.UpdatePayload) {
-    const { where, data } = payload
-
-    if (where === undefined || data === undefined) {
+    if (payload.data === undefined || Array.isArray(payload)) {
       return dispatch(`${state.$connection}/update`, { entity: state.$name, data: payload }, { root: true })
     }
 
