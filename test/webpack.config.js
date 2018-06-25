@@ -1,5 +1,4 @@
 const path = require('path')
-const nodeExternals = require('webpack-node-externals')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 
 const isCoverage = process.env.NODE_ENV === 'coverage';
@@ -12,10 +11,6 @@ module.exports = {
   target: 'node',
 
   devtool: 'inline-cheap-module-source-map',
-
-  externals: [nodeExternals({
-    whitelist: [/lodash-es/]
-  })],
 
   module: {
     rules: [].concat(

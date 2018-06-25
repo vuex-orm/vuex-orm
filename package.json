@@ -68,8 +68,7 @@
     "vuepress": "^0.10.2",
     "vuepress-theme-vue": "^1.0.3",
     "vuex": "^3.0.1",
-    "webpack": "^4.12.0",
-    "webpack-node-externals": "^1.7.2"
+    "webpack": "^4.12.0"
   },
   "nyc": {
     "include": [
