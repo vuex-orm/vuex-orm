@@ -481,19 +481,54 @@ export default class Query {
    * Update data in the state.
    */
   update (data: Record | Record[] | UpdateClosure, condition?: Condition, options?: PersistOptions): Item | Collection | EntityCollection {
+    // If the data is array, normalize the data and update them.
     if (Array.isArray(data)) {
       return this.persist(data, 'update', options)
     }
 
+    // Let's see what we can do if `data` is closure.
+    if (typeof data === 'function') {
+      // If the data is closure, but there's no condition, we will not know
+      // what record to update so raise an error an abort.
+      if (!condition) {
+        throw new Error('You must specify `where` to update records by specifying `data` as a closure.')
+      }
+
+      // If the condition is closure, update records by the closure.
+      if (typeof condition === 'function') {
+        return this.updateByCondition(data, condition)
+      }
+
+      // Else the condition is either String or Number, so let's
+      // update the record by ID.
+      return this.updateById(data, condition)
+    }
+
+    // Now the data is not a closure, and it's not an array, so it should be an object.
+    // If the condition is closure, we can't normalize the data so let's update
+    // records using the closure.
     if (typeof condition === 'function') {
       return this.updateByCondition(data, condition)
     }
 
+    // If there's no condition, let's normalize the data and update them.
     if (!condition) {
       return this.persist(data, 'update', options)
     }
 
-    return this.updateById(data, condition)
+    // Now since the condition is either String or Number, let's check if the
+    // model's primary key is not a composite key. If yes, we can't set the
+    // condition as ID value for the record so throw an error and abort.
+    if (Array.isArray(this.model.primaryKey)) {
+      throw new Error('You can not specify `where` value when you have a composite key defined in your model. Please include composite keys to the `data` fields.')
+    }
+
+    // Finally,let's add condition as the primary key of the object and
+    // then normalize them to update the records.
+
+    data[this.model.primaryKey] = condition
+
+    return this.persist(data, 'update', options)
   }
 
   /**
