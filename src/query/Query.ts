@@ -1056,20 +1056,14 @@ export default class Query {
    * Get the count of the retrieved data.
    */
   count (): number {
-    // Do not wrap result data with class because it's unnecessary.
-    this.wrap = false
-
-    return this.get().length
+    return this.plain().get().length
   }
 
   /**
    * Get the max value of the specified filed.
    */
   max (field: string): number {
-    // Do not wrap result data with class because it's unnecessary.
-    this.wrap = false
-
-    const numbers = this.get().reduce<number[]>((numbers, item) => {
+    const numbers = this.plain().get().reduce<number[]>((numbers, item) => {
       if (typeof item[field] === 'number') {
         numbers.push(item[field])
       }
@@ -1084,10 +1078,7 @@ export default class Query {
    * Get the min value of the specified filed.
    */
   min (field: string): number {
-    // Do not wrap result data with class because it's unnecessary.
-    this.wrap = false
-
-    const numbers = this.get().reduce<number[]>((numbers, item) => {
+    const numbers = this.plain().get().reduce<number[]>((numbers, item) => {
       if (typeof item[field] === 'number') {
         numbers.push(item[field])
       }
