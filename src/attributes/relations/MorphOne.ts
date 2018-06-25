@@ -50,15 +50,7 @@ export default class MorphOne extends Relation {
    * instantiating a model or creating a plain object from a model.
    */
   make (value: any, _parent: Record, _key: string, plain: boolean = false): Model | Record | null {
-    if (value === null) {
-      return null
-    }
-
-    if (value === undefined) {
-      return null
-    }
-
-    if (Array.isArray(value)) {
+    if (!this.isOneRelation(value)) {
       return null
     }
 
