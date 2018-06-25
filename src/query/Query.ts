@@ -1122,44 +1122,30 @@ export default class Query {
   /**
    * Load the relationships for the record.
    */
-  loadRelations (data: Record[], relation?: Relation[]): Record[] {
-    const _relation = relation || this.load
+  loadRelations (data: Record[]): Record[] {
     const fields = this.model.getFields()
 
-    return _relation.reduce((records, rel) => {
-      return this.processLoadRelations(records, rel, fields)
-    }, data)
-  }
+    return this.load.reduce((records, relation) => {
+      const relationName = relation.name.split('.')[0]
 
-  /**
-   * Process load relationships. This method is for the circuler processes.
-   */
-  processLoadRelations (data: Record[], relation: Relation, fields: Fields): Record[] {
-    const relationName = relation.name.split('.')[0]
+      Object.keys(fields).some((key) => {
+        const field = fields[key]
 
-    let collection: Collection = data
-
-    Object.keys(fields).some((key) => {
-      const field = fields[key]
-
-      if (key === relationName) {
-        if (field instanceof RelationClass) {
-          collection = field.load(this, collection, relation)
+        if (key !== relationName) {
+          return false
         }
 
+        if (!(field instanceof RelationClass)) {
+          return false
+        }
+
+        records = field.load(this, records, relation)
+
         return true
-      }
+      })
 
-      if (field instanceof Attribute) {
-        return false
-      }
-
-      collection = this.processLoadRelations(collection, relation, field)
-
-      return false
-    })
-
-    return collection
+      return records
+    }, data)
   }
 
   /**
