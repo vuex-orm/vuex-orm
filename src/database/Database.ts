@@ -14,6 +14,11 @@ export default class Database {
   store!: Vuex.Store<any>
 
   /**
+   * The namespace of the Vuex Store Module where the database is registered.
+   */
+  namespace!: string
+
+  /**
    * The list of entities to be registered to the Vuex Store. It contains
    * models and modules with its name.
    */
@@ -46,15 +51,9 @@ export default class Database {
   /**
    * Register a Vuex Store instance.
    */
-  registerStore (store: Vuex.Store<any>): void {
+  registerStore (store: Vuex.Store<any>, namespace: string): void {
     this.store = store
-  }
-
-  /**
-   * Register namespace to the all regitsered model.
-   */
-  registerNamespace (namespace: string): void {
-    Model.connection = namespace
+    this.namespace = namespace
   }
 
   /**

@@ -13,11 +13,6 @@ import * as Payloads from '../modules/Payloads'
 
 export default class Model {
   /**
-   * Name of the connection that this model is registerd.
-   */
-  static connection: string
-
-  /**
    * The name that is going be used as module name in Vuex Store.
    */
   static entity: string
@@ -245,7 +240,7 @@ export default class Model {
    * Get database out of the container.
    */
   static database (): Database {
-    return Container.database(this.connection)
+    return Container.database
   }
 
   /**
@@ -259,7 +254,7 @@ export default class Model {
    * Get module namespaced path for the model.
    */
   static namespace (method: string): string {
-    return `${this.connection}/${this.entity}/${method}`
+    return `${this.database().namespace}/${this.entity}/${method}`
   }
 
   /**

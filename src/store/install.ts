@@ -14,12 +14,10 @@ export default (database: Database, options: Options = {}): Vuex.Plugin<any> => 
   return (store: Vuex.Store<any>): void => {
     store.registerModule(namespace, database.createModule(namespace))
 
-    database.registerStore(store)
-
-    database.registerNamespace(namespace)
+    database.registerStore(store, namespace)
 
     database.start()
 
-    Container.register(namespace, database)
+    Container.register(database)
   }
 }

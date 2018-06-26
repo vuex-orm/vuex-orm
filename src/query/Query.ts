@@ -151,36 +151,36 @@ export default class Query {
   /**
    * Get the database from the container.
    */
-  static database (state: State): Database {
-    return Container.database(state.$name)
+  static database (): Database {
+    return Container.database
   }
 
   /**
    * Get model of given name from the container.
    */
-  static getModel (state: State, name: string): typeof Model {
-    return this.database(state).model(name)
+  static getModel (name: string): typeof Model {
+    return this.database().model(name)
   }
 
   /**
    * Get all models from the container.
    */
-  static getModels (state: State): Models {
-    return this.database(state).models()
+  static getModels (): Models {
+    return this.database().models()
   }
 
   /**
    * Get module of given name from the container.
    */
-  static getModule (state: State, name: string): Vuex.Module<any, any> {
-    return this.database(state).module(name)
+  static getModule (name: string): Vuex.Module<any, any> {
+    return this.database().module(name)
   }
 
   /**
    * Get all modules from the container.
    */
-  static getModules (state: State): Modules {
-    return this.database(state).modules()
+  static getModules (): Modules {
+    return this.database().modules()
   }
 
   /**
@@ -288,7 +288,7 @@ export default class Query {
       return (new this(state, entity)).deleteAll()
     }
 
-    const models = this.getModels(state)
+    const models = this.getModels()
 
     Utils.forOwn(models, (_model, name) => {
       state[name] && (new this(state, name)).deleteAll()
@@ -343,7 +343,7 @@ export default class Query {
    * Get the database from the container.
    */
   database (): Database {
-    return this.self().database(this.rootState)
+    return this.self().database()
   }
 
   /**
@@ -352,14 +352,14 @@ export default class Query {
   getModel (name?: string): typeof Model {
     const entity = name || this.entity
 
-    return this.self().getModel(this.rootState, entity)
+    return this.self().getModel(entity)
   }
 
   /**
    * Get all models from the container.
    */
   getModels (): { [name: string]: typeof Model } {
-    return this.self().getModels(this.rootState)
+    return this.self().getModels()
   }
 
   /**
@@ -368,14 +368,14 @@ export default class Query {
   getModule (name?: string): Vuex.Module<any, any> {
     const entity = name || this.entity
 
-    return this.self().getModule(this.rootState, entity)
+    return this.self().getModule(entity)
   }
 
   /**
    * Get all modules from the container.
    */
   getModules (): { [name: string]: Vuex.Module<any, any> } {
-    return this.self().getModules(this.rootState)
+    return this.self().getModules()
   }
 
   /**
