@@ -4,23 +4,7 @@ import Container from '../container/Container'
 import Database from '../database/Database'
 import { Record, Records } from '../data'
 import { Fields } from '../attributes/contracts/Contract'
-import Attribute from '../attributes/Attribute'
-import Attr from '../attributes/types/Attr'
-import String from '../attributes/types/String'
-import Number from '../attributes/types/Number'
-import Boolean from '../attributes/types/Boolean'
-import Increment from '../attributes/types/Increment'
-import HasOne from '../attributes/relations/HasOne'
-import BelongsTo from '../attributes/relations/BelongsTo'
-import HasMany from '../attributes/relations/HasMany'
-import HasManyBy from '../attributes/relations/HasManyBy'
-import HasManyThrough from '../attributes/relations/HasManyThrough'
-import BelongsToMany from '../attributes/relations/BelongsToMany'
-import MorphTo from '../attributes/relations/MorphTo'
-import MorphOne from '../attributes/relations/MorphOne'
-import MorphMany from '../attributes/relations/MorphMany'
-import MorphToMany from '../attributes/relations/MorphToMany'
-import MorphedByMany from '../attributes/relations/MorphedByMany'
+import * as Attributes from '../attributes'
 import Query from '../query/Query'
 import Item from '../query/Item'
 import Collection from '../query/Collection'
@@ -76,65 +60,65 @@ export default class Model {
    * Create an attr attribute. The given value will be used as a default
    * value for the field.
    */
-  static attr (value: any, mutator?: (value: any) => any): Attr {
-    return new Attr(this, value, mutator)
+  static attr (value: any, mutator?: (value: any) => any): Attributes.Attr {
+    return new Attributes.Attr(this, value, mutator)
   }
 
   /**
    * Create a string attribute.
    */
-  static string (value: any, mutator?: (value: any) => any): String {
-    return new String(this, value, mutator)
+  static string (value: any, mutator?: (value: any) => any): Attributes.String {
+    return new Attributes.String(this, value, mutator)
   }
 
   /**
    * Create a number attribute.
    */
-  static number (value: any, mutator?: (value: any) => any): Number {
-    return new Number(this, value, mutator)
+  static number (value: any, mutator?: (value: any) => any): Attributes.Number {
+    return new Attributes.Number(this, value, mutator)
   }
 
   /**
    * Create a boolean attribute.
    */
-  static boolean (value: any, mutator?: (value: any) => any): Boolean {
-    return new Boolean(this, value, mutator)
+  static boolean (value: any, mutator?: (value: any) => any): Attributes.Boolean {
+    return new Attributes.Boolean(this, value, mutator)
   }
 
   /**
    * Create an increment attribute. The field with this attribute will
    * automatically increment its value when creating a new record.
    */
-  static increment (): Increment {
-    return new Increment(this)
+  static increment (): Attributes.Increment {
+    return new Attributes.Increment(this)
   }
 
   /**
    * Create a has one relationship.
    */
-  static hasOne (related: typeof Model | string, foreignKey: string, localKey?: string): HasOne {
-    return new HasOne(this, related, foreignKey, this.localKey(localKey))
+  static hasOne (related: typeof Model | string, foreignKey: string, localKey?: string): Attributes.HasOne {
+    return new Attributes.HasOne(this, related, foreignKey, this.localKey(localKey))
   }
 
   /**
    * Create a belongs to relationship.
    */
-  static belongsTo (parent: typeof Model | string, foreignKey: string, ownerKey?: string): BelongsTo {
-    return new BelongsTo(this, parent, foreignKey, this.relation(parent).localKey(ownerKey))
+  static belongsTo (parent: typeof Model | string, foreignKey: string, ownerKey?: string): Attributes.BelongsTo {
+    return new Attributes.BelongsTo(this, parent, foreignKey, this.relation(parent).localKey(ownerKey))
   }
 
   /**
    * Create a has many relationship.
    */
-  static hasMany (related: typeof Model | string, foreignKey: string, localKey?: string): HasMany {
-    return new HasMany(this, related, foreignKey, this.localKey(localKey))
+  static hasMany (related: typeof Model | string, foreignKey: string, localKey?: string): Attributes.HasMany {
+    return new Attributes.HasMany(this, related, foreignKey, this.localKey(localKey))
   }
 
   /**
    * Create a has many by relationship.
    */
-  static hasManyBy (parent: typeof Model | string, foreignKey: string, ownerKey?: string): HasManyBy {
-    return new HasManyBy(this, parent, foreignKey, this.relation(parent).localKey(ownerKey))
+  static hasManyBy (parent: typeof Model | string, foreignKey: string, ownerKey?: string): Attributes.HasManyBy {
+    return new Attributes.HasManyBy(this, parent, foreignKey, this.relation(parent).localKey(ownerKey))
   }
 
   /**
@@ -147,8 +131,8 @@ export default class Model {
     secondKey: string,
     localKey?: string,
     secondLocalKey?: string
-  ): HasManyThrough {
-    return new HasManyThrough(
+  ): Attributes.HasManyThrough {
+    return new Attributes.HasManyThrough(
       this,
       related,
       through,
@@ -169,8 +153,8 @@ export default class Model {
     relatedPivotKey: string,
     parentKey?: string,
     relatedKey?: string
-  ): BelongsToMany {
-    return new BelongsToMany(
+  ): Attributes.BelongsToMany {
+    return new Attributes.BelongsToMany(
       this,
       related,
       pivot,
@@ -184,22 +168,22 @@ export default class Model {
   /**
    * Create a morph to relationship.
    */
-  static morphTo (id: string, type: string): MorphTo {
-    return new MorphTo(this, id, type)
+  static morphTo (id: string, type: string): Attributes.MorphTo {
+    return new Attributes.MorphTo(this, id, type)
   }
 
   /**
    * Create a morph one relationship.
    */
-  static morphOne (related: typeof Model | string, id: string, type: string, localKey?: string): MorphOne {
-    return new MorphOne(this, related, id, type, this.localKey(localKey))
+  static morphOne (related: typeof Model | string, id: string, type: string, localKey?: string): Attributes.MorphOne {
+    return new Attributes.MorphOne(this, related, id, type, this.localKey(localKey))
   }
 
   /**
    * Create a morph many relationship.
    */
-  static morphMany (related: typeof Model | string, id: string, type: string, localKey?: string): MorphMany {
-    return new MorphMany(this, related, id, type, this.localKey(localKey))
+  static morphMany (related: typeof Model | string, id: string, type: string, localKey?: string): Attributes.MorphMany {
+    return new Attributes.MorphMany(this, related, id, type, this.localKey(localKey))
   }
 
   /**
@@ -213,8 +197,8 @@ export default class Model {
     type: string,
     parentKey?: string,
     relatedKey?: string
-  ): MorphToMany {
-    return new MorphToMany(
+  ): Attributes.MorphToMany {
+    return new Attributes.MorphToMany(
       this,
       related,
       pivot,
@@ -237,8 +221,8 @@ export default class Model {
     type: string,
     parentKey?: string,
     relatedKey?: string
-  ): MorphedByMany {
-    return new MorphedByMany(
+  ): Attributes.MorphedByMany {
+    return new Attributes.MorphedByMany(
       this,
       related,
       pivot,
@@ -386,9 +370,9 @@ export default class Model {
   /**
    * Get the attribute class for the given attribute name.
    */
-  static getAttributeClass (name: string): typeof Attribute {
+  static getAttributeClass (name: string): typeof Attributes.Attribute {
     switch (name) {
-      case 'increment': return Increment
+      case 'increment': return Attributes.Increment
 
       default:
         throw Error(`The attribute name "${name}" doesn't exists.`)
@@ -398,7 +382,7 @@ export default class Model {
   /**
    * Get all of the fields that matches the given attribute name.
    */
-  static getFieldsByAttribute (name: string): { [key: string]: Attribute } {
+  static getFieldsByAttribute (name: string): { [key: string]: Attributes.Attribute } {
     const attr = this.getAttributeClass(name)
     const fields = this.fields()
 
@@ -410,14 +394,14 @@ export default class Model {
       }
 
       return newFields
-    }, {} as { [key: string]: Attribute })
+    }, {} as { [key: string]: Attributes.Attribute })
   }
 
   /**
    * Get all `increment` fields from the schema.
    */
-  static getIncrementFields (): { [key: string]: Increment } {
-    return this.getFieldsByAttribute('increment') as { [key: string]: Increment }
+  static getIncrementFields (): { [key: string]: Attributes.Increment } {
+    return this.getFieldsByAttribute('increment') as { [key: string]: Attributes.Increment }
   }
 
   /**
@@ -430,11 +414,11 @@ export default class Model {
   /**
    * Get all `belongsToMany` fields from the schema.
    */
-  static pivotFields (): { [key: string]: BelongsToMany | MorphToMany | MorphedByMany }[] {
-    const fields: { [key: string]: BelongsToMany | MorphToMany | MorphedByMany }[] = []
+  static pivotFields (): { [key: string]: Attributes.BelongsToMany | Attributes.MorphToMany | Attributes.MorphedByMany }[] {
+    const fields: { [key: string]: Attributes.BelongsToMany | Attributes.MorphToMany | Attributes.MorphedByMany }[] = []
 
     Utils.forOwn(this.fields(), (field, key) => {
-      if (field instanceof BelongsToMany || field instanceof MorphToMany || field instanceof MorphedByMany) {
+      if (field instanceof Attributes.BelongsToMany || field instanceof Attributes.MorphToMany || field instanceof Attributes.MorphedByMany) {
         fields.push({ [key]: field })
       }
     })
