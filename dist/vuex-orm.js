@@ -47,21 +47,11 @@
         function Container() {
         }
         /**
-         * Register the given database to the databases list.
+         * Register the database.
          */
-        Container.register = function (name, database) {
-            this.databases[name] = database;
+        Container.register = function (database) {
+            this.database = database;
         };
-        /**
-         * Find connection with the given from the connection list.
-         */
-        Container.database = function (name) {
-            return this.databases[name];
-        };
-        /**
-         * A list of databases that have been registered to the Vuex Store.
-         */
-        Container.databases = {};
         return Container;
     }());
 
@@ -70,10 +60,9 @@
         var namespace = options.namespace || 'entities';
         return function (store) {
             store.registerModule(namespace, database.createModule(namespace));
-            database.registerStore(store);
-            database.registerNamespace(namespace);
+            database.registerStore(store, namespace);
             database.start();
-            Container.register(namespace, database);
+            Container.register(database);
         };
     });
 
@@ -306,8 +295,49 @@
             d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
         };
     })();
+    var Increment = /** @class */ (function (_super) {
+        __extends$2(Increment, _super);
+        /**
+         * Create a new increment instance.
+         */
+        function Increment(model) {
+            var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+            /**
+             * The initial count to start incrementing.
+             */
+            _this.value = 1;
+            return _this;
+        }
+        /**
+         * Transform given data to the appropriate value. This method will be called
+         * during data normalization to fix field that has an incorrect value,
+         * or add a missing field with the appropriate default value.
+         */
+        Increment.prototype.fill = function (value) {
+            return value;
+        };
+        /**
+         * Make value to be set to model property. This method is used when
+         * instantiating a model or creating a plain object from a model.
+         */
+        Increment.prototype.make = function (value, _parent, _key, _plain) {
+            return typeof value === 'number' ? value : null;
+        };
+        return Increment;
+    }(Type));
+
+    var __extends$3 = (undefined && undefined.__extends) || (function () {
+        var extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return function (d, b) {
+            extendStatics(d, b);
+            function __() { this.constructor = d; }
+            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+        };
+    })();
     var String$1 = /** @class */ (function (_super) {
-        __extends$2(String, _super);
+        __extends$3(String, _super);
         /**
          * Create a new string instance.
          */
@@ -340,7 +370,7 @@
         return String;
     }(Type));
 
-    var __extends$3 = (undefined && undefined.__extends) || (function () {
+    var __extends$4 = (undefined && undefined.__extends) || (function () {
         var extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
             function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -351,7 +381,7 @@
         };
     })();
     var Number = /** @class */ (function (_super) {
-        __extends$3(Number, _super);
+        __extends$4(Number, _super);
         /**
          * Create a new number instance.
          */
@@ -390,7 +420,7 @@
         return Number;
     }(Type));
 
-    var __extends$4 = (undefined && undefined.__extends) || (function () {
+    var __extends$5 = (undefined && undefined.__extends) || (function () {
         var extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
             function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -401,7 +431,7 @@
         };
     })();
     var Boolean = /** @class */ (function (_super) {
-        __extends$4(Boolean, _super);
+        __extends$5(Boolean, _super);
         /**
          * Create a new number instance.
          */
@@ -442,47 +472,6 @@
             return this.mutate(this.fill(value), key);
         };
         return Boolean;
-    }(Type));
-
-    var __extends$5 = (undefined && undefined.__extends) || (function () {
-        var extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
-    var Increment = /** @class */ (function (_super) {
-        __extends$5(Increment, _super);
-        /**
-         * Create a new increment instance.
-         */
-        function Increment(model) {
-            var _this = _super.call(this, model) /* istanbul ignore next */ || this;
-            /**
-             * The initial count to start incrementing.
-             */
-            _this.value = 1;
-            return _this;
-        }
-        /**
-         * Transform given data to the appropriate value. This method will be called
-         * during data normalization to fix field that has an incorrect value,
-         * or add a missing field with the appropriate default value.
-         */
-        Increment.prototype.fill = function (value) {
-            return value;
-        };
-        /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
-         */
-        Increment.prototype.make = function (value, _parent, _key, _plain) {
-            return typeof value === 'number' ? value : null;
-        };
-        return Increment;
     }(Type));
 
     var __extends$6 = (undefined && undefined.__extends) || (function () {
@@ -527,6 +516,15 @@
          */
         Relation.prototype.fillMany = function (value) {
             return Array.isArray(value) ? value : [];
+        };
+        /**
+         * Check if the given value is a single relation, which is the Object.
+         */
+        Relation.prototype.isOneRelation = function (record) {
+            if (!Array.isArray(record) && record !== null && typeof record === 'object') {
+                return true;
+            }
+            return false;
         };
         /**
          * Create a new map of the record by given key.
@@ -643,28 +641,37 @@
          */
         HasOne.prototype.make = function (value, _parent, _key, plain) {
             if (plain === void 0) { plain = false; }
-            if (value === null) {
-                return null;
-            }
-            if (value === undefined) {
-                return null;
-            }
-            if (Array.isArray(value)) {
+            if (!this.isOneRelation(value)) {
                 return null;
             }
             return this.related.make(value, plain);
         };
         /**
-         * Attach the relational key to the given record.
+         * Attach the relational key to the related record. For example,
+         * when User has one Phone, it will attach value to the
+         * `user_id` field of Phone record.
          */
         HasOne.prototype.attach = function (key, record, data) {
+            // Get related record.
             var related = data[this.related.entity];
-            if (related && related[key] && related[key][this.foreignKey] !== undefined) {
+            // If there's no related record, there's nothing we can do so return here.
+            if (!related) {
                 return;
             }
+            // If there is a related record, check if the related record already has
+            // proper foreign key value. If it has, that means the user has provided
+            // the foreign key themselves so leave it alone and do nothing.
+            if (related[key] && related[key][this.foreignKey] !== undefined) {
+                return;
+            }
+            // Check if the record has local key set. If not, set the local key to be
+            // the id value. This happens if the user defines the custom local key
+            // and didn't include in the data being normalized.
             if (!record[this.localKey]) {
                 record[this.localKey] = record.$id;
             }
+            // Finally, set the foreign key of the related record to be the local
+            // key of this record.
             related[key][this.foreignKey] = record[this.localKey];
         };
         /**
@@ -720,27 +727,23 @@
          */
         BelongsTo.prototype.make = function (value, _parent, _key, plain) {
             if (plain === void 0) { plain = false; }
-            if (value === null) {
-                return null;
-            }
-            if (value === undefined) {
-                return null;
-            }
-            if (Array.isArray(value)) {
-                return null;
-            }
-            if (typeof value !== 'object') {
+            if (!this.isOneRelation(value)) {
                 return null;
             }
             return this.parent.make(value, plain);
         };
         /**
-         * Attach the relational key to the given record.
+         * Attach the relational key to the related record. For example,
+         * when Post belongs to User, it will attach value to the
+         * `user_id` field of Post record.
          */
         BelongsTo.prototype.attach = function (key, record, _data) {
+            // See if the record has the foreign key, if yes, it means the user has
+            // provided the key explicitly so do nothing and return.
             if (record[this.foreignKey] !== undefined) {
                 return;
             }
+            // If there is no foreign key, let's set it here.
             record[this.foreignKey] = key;
         };
         /**
@@ -2019,13 +2022,7 @@
          */
         MorphTo.prototype.make = function (value, parent, _key, plain) {
             if (plain === void 0) { plain = false; }
-            if (value === null) {
-                return null;
-            }
-            if (value === undefined) {
-                return null;
-            }
-            if (Array.isArray(value)) {
+            if (!this.isOneRelation(value)) {
                 return null;
             }
             var related = parent[this.type];
@@ -2096,13 +2093,7 @@
          */
         MorphOne.prototype.make = function (value, _parent, _key, plain) {
             if (plain === void 0) { plain = false; }
-            if (value === null) {
-                return null;
-            }
-            if (value === undefined) {
-                return null;
-            }
-            if (Array.isArray(value)) {
+            if (!this.isOneRelation(value)) {
                 return null;
             }
             return this.related.make(value, plain);
@@ -2739,32 +2730,32 @@
         /**
          * Get the database from the container.
          */
-        Query.database = function (state) {
-            return Container.database(state.$name);
+        Query.database = function () {
+            return Container.database;
         };
         /**
          * Get model of given name from the container.
          */
-        Query.getModel = function (state, name) {
-            return this.database(state).model(name);
+        Query.getModel = function (name) {
+            return this.database().model(name);
         };
         /**
          * Get all models from the container.
          */
-        Query.getModels = function (state) {
-            return this.database(state).models();
+        Query.getModels = function () {
+            return this.database().models();
         };
         /**
          * Get module of given name from the container.
          */
-        Query.getModule = function (state, name) {
-            return this.database(state).module(name);
+        Query.getModule = function (name) {
+            return this.database().module(name);
         };
         /**
          * Get all modules from the container.
          */
-        Query.getModules = function (state) {
-            return this.database(state).modules();
+        Query.getModules = function () {
+            return this.database().modules();
         };
         /**
          * Save new data to the state. It will remove all existing data in the
@@ -2858,7 +2849,7 @@
             if (entity) {
                 return (new this(state, entity)).deleteAll();
             }
-            var models = this.getModels(state);
+            var models = this.getModels();
             Utils.forOwn(models, function (_model, name) {
                 state[name] && (new _this(state, name)).deleteAll();
             });
@@ -2904,33 +2895,33 @@
          * Get the database from the container.
          */
         Query.prototype.database = function () {
-            return this.self().database(this.rootState);
+            return this.self().database();
         };
         /**
          * Get model of given name from the container.
          */
         Query.prototype.getModel = function (name) {
             var entity = name || this.entity;
-            return this.self().getModel(this.rootState, entity);
+            return this.self().getModel(entity);
         };
         /**
          * Get all models from the container.
          */
         Query.prototype.getModels = function () {
-            return this.self().getModels(this.rootState);
+            return this.self().getModels();
         };
         /**
          * Get module of given name from the container.
          */
         Query.prototype.getModule = function (name) {
             var entity = name || this.entity;
-            return this.self().getModule(this.rootState, entity);
+            return this.self().getModule(entity);
         };
         /**
          * Get all modules from the container.
          */
         Query.prototype.getModules = function () {
-            return this.self().getModules(this.rootState);
+            return this.self().getModules();
         };
         /**
          * Commit changes to the state. This method will call mutation name of
@@ -3017,16 +3008,45 @@
          * Update data in the state.
          */
         Query.prototype.update = function (data, condition, options) {
+            // If the data is array, normalize the data and update them.
             if (Array.isArray(data)) {
                 return this.persist(data, 'update', options);
             }
+            // Let's see what we can do if `data` is closure.
+            if (typeof data === 'function') {
+                // If the data is closure, but there's no condition, we will not know
+                // what record to update so raise an error an abort.
+                if (!condition) {
+                    throw new Error('You must specify `where` to update records by specifying `data` as a closure.');
+                }
+                // If the condition is closure, update records by the closure.
+                if (typeof condition === 'function') {
+                    return this.updateByCondition(data, condition);
+                }
+                // Else the condition is either String or Number, so let's
+                // update the record by ID.
+                return this.updateById(data, condition);
+            }
+            // Now the data is not a closure, and it's not an array, so it should be an object.
+            // If the condition is closure, we can't normalize the data so let's update
+            // records using the closure.
             if (typeof condition === 'function') {
                 return this.updateByCondition(data, condition);
             }
+            // If there's no condition, let's normalize the data and update them.
             if (!condition) {
                 return this.persist(data, 'update', options);
             }
-            return this.updateById(data, condition);
+            // Now since the condition is either String or Number, let's check if the
+            // model's primary key is not a composite key. If yes, we can't set the
+            // condition as ID value for the record so throw an error and abort.
+            if (Array.isArray(this.model.primaryKey)) {
+                throw new Error('You can not specify `where` value when you have a composite key defined in your model. Please include composite keys to the `data` fields.');
+            }
+            // Finally,let's add condition as the primary key of the object and
+            // then normalize them to update the records.
+            data[this.model.primaryKey] = condition;
+            return this.persist(data, 'update', options);
         };
         /**
          * Update all records.
@@ -3442,17 +3462,13 @@
          * Get the count of the retrieved data.
          */
         Query.prototype.count = function () {
-            // Do not wrap result data with class because it's unnecessary.
-            this.wrap = false;
-            return this.get().length;
+            return this.plain().get().length;
         };
         /**
          * Get the max value of the specified filed.
          */
         Query.prototype.max = function (field) {
-            // Do not wrap result data with class because it's unnecessary.
-            this.wrap = false;
-            var numbers = this.get().reduce(function (numbers, item) {
+            var numbers = this.plain().get().reduce(function (numbers, item) {
                 if (typeof item[field] === 'number') {
                     numbers.push(item[field]);
                 }
@@ -3464,9 +3480,7 @@
          * Get the min value of the specified filed.
          */
         Query.prototype.min = function (field) {
-            // Do not wrap result data with class because it's unnecessary.
-            this.wrap = false;
-            var numbers = this.get().reduce(function (numbers, item) {
+            var numbers = this.plain().get().reduce(function (numbers, item) {
                 if (typeof item[field] === 'number') {
                     numbers.push(item[field]);
                 }
@@ -3502,36 +3516,24 @@
         /**
          * Load the relationships for the record.
          */
-        Query.prototype.loadRelations = function (data, relation) {
+        Query.prototype.loadRelations = function (data) {
             var _this = this;
-            var _relation = relation || this.load;
             var fields = this.model.getFields();
-            return _relation.reduce(function (records, rel) {
-                return _this.processLoadRelations(records, rel, fields);
-            }, data);
-        };
-        /**
-         * Process load relationships. This method is for the circuler processes.
-         */
-        Query.prototype.processLoadRelations = function (data, relation, fields) {
-            var _this = this;
-            var relationName = relation.name.split('.')[0];
-            var collection = data;
-            Object.keys(fields).some(function (key) {
-                var field = fields[key];
-                if (key === relationName) {
-                    if (field instanceof Relation) {
-                        collection = field.load(_this, collection, relation);
+            return this.load.reduce(function (records, relation) {
+                var relationName = relation.name.split('.')[0];
+                Object.keys(fields).some(function (key) {
+                    var field = fields[key];
+                    if (key !== relationName) {
+                        return false;
                     }
+                    if (!(field instanceof Relation)) {
+                        return false;
+                    }
+                    records = field.load(_this, records, relation);
                     return true;
-                }
-                if (field instanceof Attribute) {
-                    return false;
-                }
-                collection = _this.processLoadRelations(collection, relation, field);
-                return false;
-            });
-            return collection;
+                });
+                return records;
+            }, data);
         };
         /**
          * Check if the given collection has given relationship.
@@ -3940,7 +3942,7 @@
          * Get database out of the container.
          */
         Model.database = function () {
-            return Container.database(this.connection);
+            return Container.database;
         };
         /**
          * Get Vuex Store instance out of connection.
@@ -3952,7 +3954,7 @@
          * Get module namespaced path for the model.
          */
         Model.namespace = function (method) {
-            return this.connection + "/" + this.entity + "/" + method;
+            return this.database().namespace + "/" + this.entity + "/" + method;
         };
         /**
          * Dispatch an action.
@@ -4223,18 +4225,6 @@
             return this.$self().fields();
         };
         /**
-         * Get the value of the primary key.
-         */
-        Model.prototype.$id = function () {
-            return this.$self().id(this);
-        };
-        /**
-         * Get the database out of the container.
-         */
-        Model.prototype.$database = function () {
-            return this.$self().database();
-        };
-        /**
          * Get Vuex Store insatnce out of connection.
          */
         Model.prototype.$store = function () {
@@ -4487,8 +4477,7 @@
          */
         update: function (_a, payload) {
             var dispatch = _a.dispatch, state = _a.state;
-            var where = payload.where, data = payload.data;
-            if (where === undefined || data === undefined) {
+            if (payload.data === undefined || Array.isArray(payload)) {
                 return dispatch(state.$connection + "/update", { entity: state.$name, data: payload }, { root: true });
             }
             return dispatch(state.$connection + "/update", __assign$7({ entity: state.$name }, payload), { root: true });
@@ -4945,14 +4934,9 @@
         /**
          * Register a Vuex Store instance.
          */
-        Database.prototype.registerStore = function (store) {
+        Database.prototype.registerStore = function (store, namespace) {
             this.store = store;
-        };
-        /**
-         * Register namespace to the all regitsered model.
-         */
-        Database.prototype.registerNamespace = function (namespace) {
-            Model.connection = namespace;
+            this.namespace = namespace;
         };
         /**
          * Get the model of the given name from the entities list.
