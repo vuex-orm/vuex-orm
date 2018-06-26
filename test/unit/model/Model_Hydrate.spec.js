@@ -160,4 +160,19 @@ describe('Model – Hydrate', () => {
 
     expect(User.hydrateMany(data, ['$id'])).toEqual(expected)
   })
+
+  it('can fill the properties by the default values no record are passed', () => {
+    class User extends Model {
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('John')
+        }
+      }
+    }
+
+    const expected = { id: null, name: 'John' }
+
+    expect(User.fill()).toEqual(expected)
+  })
 })

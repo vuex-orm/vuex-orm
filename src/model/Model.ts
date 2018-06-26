@@ -558,20 +558,6 @@ export default class Model {
   }
 
   /**
-   * Get the value of the primary key.
-   */
-  $id (): any {
-    return this.$self().id(this)
-  }
-
-  /**
-   * Get the database out of the container.
-   */
-  $database (): Database {
-    return this.$self().database()
-  }
-
-  /**
    * Get Vuex Store insatnce out of connection.
    */
   $store (): Vuex.Store<any> {
