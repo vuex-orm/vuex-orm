@@ -63,7 +63,7 @@ export interface Plugin {
   [key: string]: any
 }
 
-export type Use = (plugin: Plugin) => void
+export type Use = (plugin: Plugin, options?: Options) => void
 
 export default function (plugin: Plugin, options: Options = {}): void {
   const components: Components = {
