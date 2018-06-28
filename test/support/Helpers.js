@@ -4,6 +4,7 @@ import VuexORM from 'app'
 import Utils from 'app/support/Utils'
 import Container from 'app/container/Container'
 import Database from 'app/database/Database'
+import NoKey from 'app/schema/NoKey'
 import Model from 'app/model/Model'
 
 Vue.use(Vuex)
@@ -41,7 +42,12 @@ export function createState (state, namespace = 'entities') {
   }
 }
 
+export function refreshNoKey () {
+  NoKey.count = 0
+}
+
 export default {
   createStore,
-  createState
+  createState,
+  refreshNoKey
 }

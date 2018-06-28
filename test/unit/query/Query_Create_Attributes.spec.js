@@ -1,12 +1,11 @@
-import { createStore } from 'test/support/Helpers'
-import NoKey from 'app/database/schema/NoKey'
+import { createStore, refreshNoKey } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 import Query from 'app/query/Query'
 
 describe('Query – Create – Attributes', () => {
-  beforeEach(() => { NoKey.count = 0 })
+  beforeEach(() => { refreshNoKey() })
 
-  afterEach(() => { NoKey.count = 0 })
+  afterEach(() => { refreshNoKey() })
 
   it('should increment the field value when creating a record if the field type is `increment`', () => {
     class User extends Model {

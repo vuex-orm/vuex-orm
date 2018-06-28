@@ -1,11 +1,11 @@
 import * as Vuex from 'vuex'
+import Schema from '../schema/Schema'
+import Schemas from '../schema/Schemas'
 import Model from '../model/Model'
 import Module from '../modules/Module'
-import Schema from './schema/Schema'
 import Entity from './Entity'
 import Models from './Models'
 import Modules from './Modules'
-import Schemas from './Schemas'
 
 export default class Database {
   /**
