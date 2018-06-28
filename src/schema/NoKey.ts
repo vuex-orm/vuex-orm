@@ -10,32 +10,33 @@ export default class NoKey {
   static prefix: string = '_no_key_'
 
   /**
-   * Current no key value for the keys.
+   * The current unique id value. This is the combination of
+   * the `prefix` and the `count`.
    */
-  keys: { [key: string]: string } = {}
+  static value: string = ''
 
   /**
-   * Get no key class.
+   * Set new unique id value.
    */
-  self (): typeof NoKey {
-    return this.constructor as typeof NoKey
+  static set (): void {
+    this.value = `${this.prefix}${this.count}`
   }
 
   /**
-   * Get current no key value for the given key.
+   * Get the current unique id value.
    */
-  get (key: string): string {
-    return this.keys[key]
+  static get (): string {
+    return this.value
   }
 
   /**
-   * Increment the count, then set new key to the keys.
+   * Increment the count, new unique id value.
    */
-  increment (key: string): string {
-    this.self().count++
+  static increment (): string {
+    this.count++
 
-    this.keys[key] = `${this.self().prefix}${this.self().count}`
+    this.set()
 
-    return this.keys[key]
+    return this.get()
   }
 }

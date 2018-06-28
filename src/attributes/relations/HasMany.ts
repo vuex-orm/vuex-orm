@@ -1,3 +1,5 @@
+import { Schema as NormalizrSchema } from 'normalizr'
+import Schema from '../../schema/Schema'
 import { Record, NormalizedData } from '../../data'
 import Model from '../../model/Model'
 import Query, { Relation as Load } from '../../query/Query'
@@ -28,6 +30,13 @@ export default class HasMany extends Relation {
     this.related = this.model.relation(related)
     this.foreignKey = foreignKey
     this.localKey = localKey
+  }
+
+  /**
+   * Define the normalizr schema for the relationship.
+   */
+  define (schema: Schema): NormalizrSchema {
+    return schema.many(this.related)
   }
 
   /**

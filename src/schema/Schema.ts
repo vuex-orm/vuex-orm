@@ -1,154 +1,91 @@
-import { schema, Schema as NormalizrSchema } from 'normalizr'
-import Utils from '../support/Utils'
+import { schema as Normalizr, Schema as NormalizrSchema } from 'normalizr'
 import Model from '../model/Model'
-import Attrs, { Field, Fields, Relation } from '../attributes/contracts/Contract'
-import HasOne from '../attributes/relations/HasOne'
-import BelongsTo from '../attributes/relations/BelongsTo'
-import HasMany from '../attributes/relations/HasMany'
-import HasManyBy from '../attributes/relations/HasManyBy'
-import HasManyThrough from '../attributes/relations/HasManyThrough'
-import BelongsToMany from '../attributes/relations/BelongsToMany'
-import MorphTo from '../attributes/relations/MorphTo'
-import MorphOne from '../attributes/relations/MorphOne'
-import MorphMany from '../attributes/relations/MorphMany'
-import MorphToMany from '../attributes/relations/MorphToMany'
-import MorphedByMany from '../attributes/relations/MorphedByMany'
-import NoKey from './NoKey'
+import Relation from '../attributes/relations/Relation'
+import Schemas from './Schemas'
 import IdAttribute from './IdAttribute'
 import ProcessStrategy from './ProcessStrategy'
 
-export interface Schemas {
-  [entity: string]: schema.Entity
-}
-
 export default class Schema {
+  /**
+   * List of generated schemas.
+   */
+  schemas: Schemas = {}
+
+  /**
+   * The model class.
+   */
+  model: typeof Model
+
+  /**
+   * Create a new schema instance.
+   */
+  constructor (model: typeof Model) {
+    this.model = model
+
+    const models = model.database().models()
+
+    Object.keys(models).forEach((name) => { this.one(models[name]) })
+  }
+
   /**
    * Create a schema for the given model.
    */
-  static one (model: typeof Model, schemas: Schemas = {}, parent?: typeof Model, attr?: Relation): schema.Entity {
-    const noKey = new NoKey()
+  static create (model: typeof Model): Normalizr.Entity {
+    return (new this(model)).one()
+  }
 
-    const thisSchema = new schema.Entity(model.entity, {}, {
-      idAttribute: IdAttribute.create(noKey, model),
-      processStrategy: ProcessStrategy.create(noKey, model, parent, attr)
+  /**
+   * Create a single schema for the given model.
+   */
+  one (model?: typeof Model): Normalizr.Entity {
+    model = model || this.model
+
+    if (this.schemas[model.entity]) {
+      return this.schemas[model.entity]
+    }
+
+    const schema = new Normalizr.Entity(model.entity, {}, {
+      idAttribute: IdAttribute.create(model),
+      processStrategy: ProcessStrategy.create(model)
     })
 
-    const definition = this.definition(model, {
-      ...schemas,
-      [model.entity]: thisSchema
-    })
+    this.schemas[model.entity] = schema
 
-    thisSchema.define(definition)
+    const definition = this.definition(model)
 
-    return thisSchema
+    schema.define(definition)
+
+    return schema
   }
 
   /**
    * Create an array schema for the given model.
    */
-  static many (model: typeof Model, schemas: Schemas = {}, parent?: typeof Model, attr?: Relation): schema.Array {
-    return new schema.Array(this.one(model, schemas, parent, attr))
+  many (model: typeof Model): Normalizr.Array {
+    return new Normalizr.Array(this.one(model))
+  }
+
+  /**
+   * Create an union schema for the given model.
+   */
+  union (callback: Normalizr.SchemaFunction): Normalizr.Union {
+    return new Normalizr.Union(this.schemas, callback)
   }
 
   /**
    * Create a dfinition for the given model.
    */
-  static definition (model: typeof Model, schemas: Schemas, fields?: Fields): NormalizrSchema {
-    const theFields = fields || model.fields()
+  definition (model: typeof Model): NormalizrSchema {
+    const fields = model.fields()
 
-    return Object.keys(theFields).reduce((definition, key) => {
-      const field = theFields[key]
-      const def = this.buildRelations(model, field, schemas)
+    return Object.keys(fields).reduce((definition, key) => {
+      const field = fields[key]
 
-      if (def) {
-        definition[key] = def
+      if (field instanceof Relation) {
+        definition[key] = field.define(this)
       }
 
       return definition
     }, {} as NormalizrSchema)
-  }
-
-  /**
-   * Build normalizr schema definition from the given relation.
-   */
-  static buildRelations (model: typeof Model, field: Field, schemas: Schemas): NormalizrSchema | null {
-    if (!Attrs.isAttribute(field)) {
-      return this.definition(model, schemas, field)
-    }
-
-    if (field instanceof HasOne) {
-      return this.buildOne(field.related, schemas, model, field)
-    }
-
-    if (field instanceof BelongsTo) {
-      return this.buildOne(field.parent, schemas, model, field)
-    }
-
-    if (field instanceof HasMany) {
-      return this.buildMany(field.related, schemas, model, field)
-    }
-
-    if (field instanceof HasManyBy) {
-      return this.buildMany(field.parent, schemas, model, field)
-    }
-
-    if (field instanceof HasManyThrough) {
-      return this.buildMany(field.related, schemas, model, field)
-    }
-
-    if (field instanceof BelongsToMany) {
-      return this.buildMany(field.related, schemas, model, field)
-    }
-
-    if (field instanceof MorphTo) {
-      return this.buildMorphOne(field, schemas, model)
-    }
-
-    if (field instanceof MorphOne) {
-      return this.buildOne(field.related, schemas, model, field)
-    }
-
-    if (field instanceof MorphMany) {
-      return this.buildMany(field.related, schemas, model, field)
-    }
-
-    if (field instanceof MorphToMany) {
-      return this.buildMany(field.related, schemas, model, field)
-    }
-
-    if (field instanceof MorphedByMany) {
-      return this.buildMany(field.related, schemas, model, field)
-    }
-
-    return null
-  }
-
-  /**
-   * Build a single entity schema definition.
-   */
-  static buildOne (related: typeof Model, schemas: Schemas, parent: typeof Model, attr: Relation): schema.Entity {
-    const s = schemas[related.entity]
-
-    return s || this.one(related, schemas, parent, attr)
-  }
-
-  /**
-   * Build a array entity schema definition.
-   */
-  static buildMany (related: typeof Model, schemas: Schemas, parent: typeof Model, attr: Relation): schema.Array {
-    const s = schemas[related.entity]
-
-    return s ? new schema.Array(s) : this.many(related, schemas, parent, attr)
-  }
-
-  /**
-   * Build a morph schema definition.
-   */
-  static buildMorphOne (attr: MorphTo, schemas: Schemas, parent: typeof Model) {
-    const s = Utils.mapValues(parent.database().models(), (model) => {
-      return this.buildOne(model, schemas, model, attr)
-    })
-
-    return new schema.Union(s, (_value, parentValue) => parentValue[attr.type])
   }
 }

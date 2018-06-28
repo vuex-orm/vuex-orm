@@ -1,3 +1,5 @@
+import { Schema as NormalizrSchema } from 'normalizr'
+import Schema from '../../schema/Schema'
 import { Record, NormalizedData } from '../../data'
 import Model from '../../model/Model'
 import Query, { Relation as Load } from '../../query/Query'
@@ -28,6 +30,13 @@ export default class BelongsTo extends Relation {
     this.parent = this.model.relation(parent)
     this.foreignKey = foreignKey
     this.ownerKey = ownerKey
+  }
+
+  /**
+   * Define the normalizr schema for the relationship.
+   */
+  define (schema: Schema): NormalizrSchema {
+    return schema.one(this.parent)
   }
 
   /**

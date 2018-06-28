@@ -1,9 +1,16 @@
+import { Schema as NormalizrSchema } from 'normalizr'
+import Schema from '../../schema/Schema'
 import { Record, Records, NormalizedData } from '../../data'
+import Fields from '../../model/Fields'
 import Query, { Relation as Load } from '../../query/Query'
-import { Fields } from '../contracts/Contract'
 import Attribute from '../Attribute'
 
 export default abstract class Relation extends Attribute {
+  /**
+   * Define the normalizr schema for the relationship.
+   */
+  abstract define (schema: Schema): NormalizrSchema
+
   /**
    * Fill given value for the single item relationship such as
    * `hasOne` and `belongsTo`.
@@ -36,7 +43,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Load relationship records.
    */
-  abstract load (query: Query, collection: Record[], relation: Load): Record | Record[] | null
+  abstract load (query: Query, collection: Record[], relation: Load): Record[]
 
   /**
    * Check if the given value is a single relation, which is the Object.

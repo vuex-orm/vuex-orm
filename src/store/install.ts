@@ -16,8 +16,8 @@ export default (database: Database, options: Options = {}): Vuex.Plugin<any> => 
 
     database.registerStore(store, namespace)
 
-    database.start()
-
     Container.register(database)
+
+    database.start()
   }
 }

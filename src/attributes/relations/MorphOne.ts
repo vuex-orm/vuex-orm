@@ -1,3 +1,5 @@
+import { Schema as NormalizrSchema } from 'normalizr'
+import Schema from '../../schema/Schema'
 import { Record, NormalizedData } from '../../data'
 import Model from '../../model/Model'
 import Query, { Relation as Load } from '../../query/Query'
@@ -39,6 +41,13 @@ export default class MorphOne extends Relation {
   }
 
   /**
+   * Define the normalizr schema for the relationship.
+   */
+  define (schema: Schema): NormalizrSchema {
+    return schema.one(this.related)
+  }
+
+  /**
    * Validate the given value to be a valid value for the relationship.
    */
   fill (value: any): string | number | null {
@@ -60,8 +69,12 @@ export default class MorphOne extends Relation {
   /**
    * Attach the relational key to the given record.
    */
-  attach (_key: any, _record: Record, _data: NormalizedData): void {
-    return
+  attach (key: any, record: Record, data: NormalizedData): void {
+    const relatedItems = data[this.related.entity]
+    const relatedItem = relatedItems[key]
+
+    relatedItem[this.id] = relatedItem[this.id] || record.$id
+    relatedItem[this.type] = relatedItem[this.type] || this.model.entity
   }
 
   /**

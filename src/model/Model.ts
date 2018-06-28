@@ -3,13 +3,13 @@ import Utils from '../support/Utils'
 import Container from '../container/Container'
 import Database from '../database/Database'
 import { Record, Records } from '../data'
-import { Fields } from '../attributes/contracts/Contract'
 import * as Attributes from '../attributes'
 import Query from '../query/Query'
 import Item from '../query/Item'
 import Collection from '../query/Collection'
 import EntityCollection from '../query/EntityCollection'
 import * as Payloads from '../modules/Payloads'
+import Fields from './Fields'
 
 export default class Model {
   /**
@@ -525,7 +525,7 @@ export default class Model {
    * or if the record has any missing fields, each value of the fields will
    * be filled with its default value defined at model fields definition.
    */
-  static fill (self: Model | Record = {}, record: Record = {}, plain?: boolean): Model | Record {
+  static fill (self: Model | Record = {}, record: Record = {}, plain: boolean = false): Model | Record {
     const fields = this.getFields()
 
     return Object.keys(fields).reduce((target, key) => {

@@ -7,11 +7,11 @@ export default class IdAttribute {
   /**
    * Create the id attribute.
    */
-  static create (noKey: NoKey, model: typeof Model): Attribute {
-    return (value: any, _parent: any, key: string) => {
+  static create (model: typeof Model): Attribute {
+    return (value: any, _parent: any, _key: string) => {
       const id = model.id(value)
 
-      return id !== undefined ? id : noKey.get(key)
+      return id !== undefined ? id : NoKey.get()
     }
   }
 }

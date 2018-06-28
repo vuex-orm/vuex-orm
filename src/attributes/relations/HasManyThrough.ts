@@ -1,3 +1,5 @@
+import { Schema as NormalizrSchema } from 'normalizr'
+import Schema from '../../schema/Schema'
 import { Record, NormalizedData } from '../../data'
 import Model from '../../model/Model'
 import Query, { Relation as Load } from '../../query/Query'
@@ -56,6 +58,13 @@ export default class HasManyThrough extends Relation {
     this.secondKey = secondKey
     this.localKey = localKey
     this.secondLocalKey = secondLocalKey
+  }
+
+  /**
+   * Define the normalizr schema for the relationship.
+   */
+  define (schema: Schema): NormalizrSchema {
+    return schema.many(this.related)
   }
 
   /**

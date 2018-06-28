@@ -106,7 +106,7 @@ export default class Database {
    */
   createSchema (): void {
     this.entities.forEach((entity) => {
-      this.schemas[entity.name] = Schema.one(entity.model)
+      this.schemas[entity.name] = Schema.create(entity.model)
     })
   }
 }

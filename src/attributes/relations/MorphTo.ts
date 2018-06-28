@@ -1,3 +1,5 @@
+import { Schema as NormalizrSchema } from 'normalizr'
+import Schema from '../../schema/Schema'
 import { Record, NormalizedData } from '../../data'
 import Model from '../../model/Model'
 import Query, { Relation as Load } from '../../query/Query'
@@ -24,6 +26,13 @@ export default class MorphTo extends Relation {
 
     this.id = id
     this.type = type
+  }
+
+  /**
+   * Define the normalizr schema for the relationship.
+   */
+  define (schema: Schema): NormalizrSchema {
+    return schema.union((_value, parentValue) => parentValue[this.type])
   }
 
   /**

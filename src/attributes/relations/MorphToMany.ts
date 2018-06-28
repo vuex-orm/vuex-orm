@@ -1,4 +1,6 @@
+import { Schema as NormalizrSchema } from 'normalizr'
 import Utils from '../../support/Utils'
+import Schema from '../../schema/Schema'
 import { Record, NormalizedData } from '../../data'
 import Model from '../../model/Model'
 import Query, { Relation as Load } from '../../query/Query'
@@ -64,6 +66,13 @@ export default class MorphToMany extends Relation {
     this.type = type
     this.parentKey = parentKey
     this.relatedKey = relatedKey
+  }
+
+  /**
+   * Define the normalizr schema for the relationship.
+   */
+  define (schema: Schema): NormalizrSchema {
+    return schema.many(this.related)
   }
 
   /**

@@ -1,3 +1,5 @@
+import { Schema as NormalizrSchema } from 'normalizr'
+import Schema from '../../schema/Schema'
 import Utils from '../../support/Utils'
 import { Record, NormalizedData } from '../../data'
 import Model from '../../model/Model'
@@ -66,6 +68,13 @@ export default class BelongsToMany extends Relation {
     this.relatedPivotKey = relatedPivotKey
     this.parentKey = parentKey
     this.relatedKey = relatedKey
+  }
+
+  /**
+   * Define the normalizr schema for the relationship.
+   */
+  define (schema: Schema): NormalizrSchema {
+    return schema.many(this.related)
   }
 
   /**
