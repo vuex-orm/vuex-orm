@@ -259,8 +259,8 @@ Cool right? To get to know more about Vuex ORM, please [see the documentation](h
 
 Vuex ORM can be extended via a plugin to add additional features. Here is the list of available plugins.
 
+- [Vuex ORM GraphQL](https://github.com/vuex-orm/vuex-orm-graphql) – The plugin to sync the data against a [GraphQL](https://graphql.org) API.
 - [vuex-orm-search](https://github.com/vuex-orm/plugin-search) – The plugin adds a `search()` method to the vuex-orm query methods to easily filter matched records using fuzzy search logic from the [Fuse.js](http://fusejs.io) library.
-- [vuex-orm-apollo](https://github.com/vuex-orm/vuex-orm-apollo) – The plugin to sync the data against a [GraphQL](https://graphql.org) API via [Apollo](https://www.apollographql.com).
 
 ## Contribution
 
