@@ -11,19 +11,13 @@ import Model from '../model/Model'
 import Fields from '../model/Fields'
 import State from '../modules/State'
 import EntityState from '../modules/EntityState'
+import * as Options from './options'
 import Processor from './processors/Processor'
+import Filter from './filters/Filter'
 import Hook from './Hook'
 import Item from './Item'
 import Collection from './Collection'
 import EntityCollection from './EntityCollection'
-
-export type WhereBoolean = 'and' | 'or'
-
-export type WherePrimaryClosure = (record: Record, query: Query, model?: Model) => boolean | void
-
-export type WhereSecondaryClosure = (value: any) => boolean
-
-export type OrderDirection = 'asc' | 'desc'
 
 export type UpdateClosure = (record: Record) => void
 
@@ -42,17 +36,6 @@ export interface PersistOptions {
   insert?: string[]
   update?: string[]
   insertOrUpdate?: string[]
-}
-
-export interface Wheres {
-  field: string | number | WherePrimaryClosure
-  value: string | number | WhereSecondaryClosure
-  boolean: WhereBoolean
-}
-
-export interface Orders {
-  field: string
-  direction: OrderDirection
 }
 
 export interface Relation {
@@ -89,12 +72,12 @@ export default class Query {
   /**
    * The where constraints for the query.
    */
-  wheres: Wheres[] = []
+  wheres: Options.Where[] = []
 
   /**
    * The orders of the query result.
    */
-  orders: Orders[] = []
+  orders: Options.Orders[] = []
 
   /**
    * Number of results to skip.
@@ -822,7 +805,7 @@ export default class Query {
   /**
    * Add an order to the query.
    */
-  orderBy (field: string, direction: OrderDirection = 'asc'): this {
+  orderBy (field: string, direction: Options.OrderDirection = 'asc'): this {
     this.orders.push({ field, direction })
 
     return this
@@ -946,24 +929,20 @@ export default class Query {
     // Process `beforeProcess` hook.
     records = this.hook.execute('beforeProcess', records)
 
-    // If the where clause is registered, lets filter the records beased on it.
-    if (!Utils.isEmpty(this.wheres)) {
-      records = this.selectByWheres(records)
-    }
+    // Let's filter the records at first by the where clauses.
+    records = this.filterWhere(records)
 
     // Process `afterWhere` hook.
     records = this.hook.execute('afterWhere', records)
 
-    // Next, lets sort the data if orderBy is registred.
-    if (!Utils.isEmpty(this.orders)) {
-      records = this.sortByOrders(records)
-    }
+    // Next, lets sort the data.
+    records = this.filterOrderBy(records)
 
     // Process `afterOrderBy` hook.
     records = this.hook.execute('afterOrderBy', records)
 
     // Finally, slice the record by limit and offset.
-    records = records.slice(this._offset, this._offset + this._limit)
+    records = this.filterLimit(records)
 
     // Process `afterLimit` hook.
     records = this.hook.execute('afterLimit', records)
@@ -974,82 +953,22 @@ export default class Query {
   /**
    * Filter the given data by registered where clause.
    */
-  selectByWheres (records: Record[]): Record[] {
-    return records.filter(record => this.whereOnRecord(record))
+  filterWhere (records: Record[]): Record[] {
+    return Filter.where(this, records)
   }
 
   /**
    * Sort the given data by registered orders.
    */
-  sortByOrders (records: Record[]): Record[] {
-    const keys = this.orders.map(order => order.field)
-    const directions = this.orders.map(order => order.direction)
-
-    return Utils.orderBy(records, keys, directions)
+  filterOrderBy (records: Record[]): Record[] {
+    return Filter.orderBy(this, records)
   }
 
   /**
-   * Checks if given Record matches the registered where clause.
+   * Limit the given records by the lmilt and offset.
    */
-  whereOnRecord (record: Record): boolean {
-    let whereTypes: any = Utils.groupBy(this.wheres, where => where.boolean)
-    let whereResults: boolean[] = []
-    let comparator: (where: any) => boolean = this.getComparator(record)
-
-    if (whereTypes.and) {
-      whereResults.push(whereTypes.and.every(comparator))
-    }
-
-    if (whereTypes.or) {
-      whereResults.push(whereTypes.or.some(comparator))
-    }
-
-    return whereResults.indexOf(true) !== -1
-  }
-
-  /**
-   * Get comparator for the where clause.
-   */
-  getComparator (record: Record): (where: any) => boolean {
-    return (where: any) => {
-      // Function with Record and Query as argument.
-      if (typeof where.field === 'function') {
-        const query = new Query(this.rootState, this.entity)
-        const result = this.executeWhereClosure(record, query, where.field)
-
-        if (typeof result === 'boolean') {
-          return result
-        }
-
-        return !Utils.isEmpty(query.where('$id', record['$id']).get())
-      }
-
-      // Function with Record value as argument.
-      if (typeof where.value === 'function') {
-        return where.value(record[where.field])
-      }
-
-      // Check if field value is in given where Array.
-      if (Array.isArray(where.value)) {
-        return where.value.indexOf(record[where.field]) !== -1
-      }
-
-      // Simple equal check.
-      return record[where.field] === where.value
-    }
-  }
-
-  /**
-   * Execute where closure.
-   */
-  executeWhereClosure (record: Record, query: Query, closure: WherePrimaryClosure): boolean | void {
-    if (closure.length !== 3) {
-      return closure(record, query)
-    }
-
-    const model = new this.model(record)
-
-    return closure(record, query, model)
+  filterLimit (records: Record[]): Record[] {
+    return Filter.limit(this, records)
   }
 
   /**

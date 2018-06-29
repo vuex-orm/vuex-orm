@@ -13,6 +13,10 @@ describe('Feature – Retrieve – Where', () => {
         active: this.attr(false)
       }
     }
+
+    isActive () {
+      return this.active
+    }
   }
 
   it('can retrieve records that matches the where clause', () => {
@@ -152,6 +156,30 @@ describe('Feature – Retrieve – Where', () => {
 
     const users = store.getters['entities/users/query']()
       .where((_user, query) => { query.where('age', 20) })
+      .get()
+
+    expect(users).toEqual(expected)
+  })
+
+  it('can retrieve records that match the where query by comparing model instance.', () => {
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: [
+        { id: 1, name: 'John', age: 24, active: false },
+        { id: 2, name: 'Jane', age: 20, active: true },
+        { id: 3, name: 'Johnny', age: 24, active: false }
+      ]
+    })
+
+    const expected = [
+      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+    ]
+
+    const users = store.getters['entities/users/query']()
+      .where((_user, _query, model) => {
+        return model.isActive()
+      })
       .get()
 
     expect(users).toEqual(expected)
