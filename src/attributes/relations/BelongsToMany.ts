@@ -78,6 +78,14 @@ export default class BelongsToMany extends Relation {
   }
 
   /**
+   * Attach the relational key to the given data. Since belongs to many
+   * relationship doesn't have any foreign key, it would do nothing.
+   */
+  attach (_key: any, _record: Record, _data: NormalizedData): void {
+    return
+  }
+
+  /**
    * Validate the given value to be a valid value for the relationship.
    */
   fill (value: any): (string | number)[] {
@@ -110,13 +118,6 @@ export default class BelongsToMany extends Relation {
     }).map((record) => {
       return this.related.make(record, plain)
     })
-  }
-
-  /**
-   * Attach the relational key to the given record.
-   */
-  attach (_key: any, _record: Record, _data: NormalizedData): void {
-    return
   }
 
   /**

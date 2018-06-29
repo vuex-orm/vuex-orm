@@ -48,6 +48,17 @@ export default class MorphOne extends Relation {
   }
 
   /**
+   * Attach the relational key to the given data.
+   */
+  attach (key: any, record: Record, data: NormalizedData): void {
+    const relatedItems = data[this.related.entity]
+    const relatedItem = relatedItems[key]
+
+    relatedItem[this.id] = relatedItem[this.id] || record.$id
+    relatedItem[this.type] = relatedItem[this.type] || this.model.entity
+  }
+
+  /**
    * Validate the given value to be a valid value for the relationship.
    */
   fill (value: any): string | number | null {
@@ -64,17 +75,6 @@ export default class MorphOne extends Relation {
     }
 
     return this.related.make(value, plain)
-  }
-
-  /**
-   * Attach the relational key to the given record.
-   */
-  attach (key: any, record: Record, data: NormalizedData): void {
-    const relatedItems = data[this.related.entity]
-    const relatedItem = relatedItems[key]
-
-    relatedItem[this.id] = relatedItem[this.id] || record.$id
-    relatedItem[this.type] = relatedItem[this.type] || this.model.entity
   }
 
   /**

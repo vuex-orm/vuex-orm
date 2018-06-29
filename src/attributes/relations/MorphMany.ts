@@ -48,6 +48,20 @@ export default class MorphMany extends Relation {
   }
 
   /**
+   * Attach the relational key to the given data.
+   */
+  attach (key: any, record: Record, data: NormalizedData): void {
+    const relatedItems = data[this.related.entity]
+
+    key.forEach((id: any) => {
+      const relatedItem = relatedItems[id]
+
+      relatedItem[this.id] = relatedItem[this.id] || record.$id
+      relatedItem[this.type] = relatedItem[this.type] || this.model.entity
+    })
+  }
+
+  /**
    * Validate the given value to be a valid value for the relationship.
    */
   fill (value: any): (string | number)[] {
@@ -79,20 +93,6 @@ export default class MorphMany extends Relation {
       return record && typeof record === 'object'
     }).map((record) => {
       return this.related.make(record, plain)
-    })
-  }
-
-  /**
-   * Attach the relational key to the given record.
-   */
-  attach (key: any, record: Record, data: NormalizedData): void {
-    const relatedItems = data[this.related.entity]
-
-    key.forEach((id: any) => {
-      const relatedItem = relatedItems[id]
-
-      relatedItem[this.id] = relatedItem[this.id] || record.$id
-      relatedItem[this.type] = relatedItem[this.type] || this.model.entity
     })
   }
 

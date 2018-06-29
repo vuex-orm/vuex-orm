@@ -40,26 +40,7 @@ export default class HasOne extends Relation {
   }
 
   /**
-   * Validate the given value to be a valid value for the relationship.
-   */
-  fill (value: any): string | number | null {
-    return this.fillOne(value)
-  }
-
-  /**
-   * Make value to be set to model property. This method is used when
-   * instantiating a model or creating a plain object from a model.
-   */
-  make (value: any, _parent: Record, _key: string, plain: boolean = false): Model | Record | null {
-    if (!this.isOneRelation(value)) {
-      return null
-    }
-
-    return this.related.make(value, plain)
-  }
-
-  /**
-   * Attach the relational key to the related record. For example,
+   * Attach the relational key to the related data. For example,
    * when User has one Phone, it will attach value to the
    * `user_id` field of Phone record.
    */
@@ -89,6 +70,25 @@ export default class HasOne extends Relation {
     // Finally, set the foreign key of the related record to be the local
     // key of this record.
     related[key][this.foreignKey] = record[this.localKey]
+  }
+
+  /**
+   * Validate the given value to be a valid value for the relationship.
+   */
+  fill (value: any): string | number | null {
+    return this.fillOne(value)
+  }
+
+  /**
+   * Make value to be set to model property. This method is used when
+   * instantiating a model or creating a plain object from a model.
+   */
+  make (value: any, _parent: Record, _key: string, plain: boolean = false): Model | Record | null {
+    if (!this.isOneRelation(value)) {
+      return null
+    }
+
+    return this.related.make(value, plain)
   }
 
   /**

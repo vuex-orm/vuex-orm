@@ -12,6 +12,12 @@ export default abstract class Relation extends Attribute {
   abstract define (schema: Schema): NormalizrSchema
 
   /**
+   * Attach the relational key to the given data. Basically, this method
+   * should attach any missing foreign keys to the normalized data.
+   */
+  abstract attach (key: any, record: Record, data: NormalizedData): void
+
+  /**
    * Fill given value for the single item relationship such as
    * `hasOne` and `belongsTo`.
    */
@@ -34,11 +40,6 @@ export default abstract class Relation extends Attribute {
   fillMany (value: any): (string | number)[] {
     return Array.isArray(value) ? value : []
   }
-
-  /**
-   * Attach the relational key to the given record.
-   */
-  abstract attach (key: any, record: Record, data: NormalizedData): void
 
   /**
    * Load relationship records.

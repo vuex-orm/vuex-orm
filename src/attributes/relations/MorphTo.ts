@@ -36,6 +36,14 @@ export default class MorphTo extends Relation {
   }
 
   /**
+   * Attach the relational key to the given record. Since morph to
+   * relationship doesn't have any foreign key, it would do nothing.
+   */
+  attach (_key: any, _record: Record, _data: NormalizedData): void {
+    return
+  }
+
+  /**
    * Validate the given value to be a valid value for the relationship.
    */
   fill (value: any): string | number | null {
@@ -55,13 +63,6 @@ export default class MorphTo extends Relation {
     const model = this.model.relation(related)
 
     return model ? model.make(value, plain) : null
-  }
-
-  /**
-   * Attach the relational key to the given record.
-   */
-  attach (_key: any, _record: Record, _data: NormalizedData): void {
-    return
   }
 
   /**

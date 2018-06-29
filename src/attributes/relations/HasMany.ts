@@ -40,6 +40,25 @@ export default class HasMany extends Relation {
   }
 
   /**
+   * Attach the relational key to the given data.
+   */
+  attach (key: any, record: Record, data: NormalizedData): void {
+    if (!Array.isArray(key)) {
+      return
+    }
+
+    key.forEach((index: any) => {
+      const related = data[this.related.entity]
+
+      if (!related || !related[index] || related[index][this.foreignKey] !== undefined) {
+        return
+      }
+
+      related[index][this.foreignKey] = record.$id
+    })
+  }
+
+  /**
    * Validate the given value to be a valid value for the relationship.
    */
   fill (value: any): (string | number)[] {
@@ -71,25 +90,6 @@ export default class HasMany extends Relation {
       return record && typeof record === 'object'
     }).map((record) => {
       return this.related.make(record, plain)
-    })
-  }
-
-  /**
-   * Attach the relational key to the given record.
-   */
-  attach (key: any, record: Record, data: NormalizedData): void {
-    if (!Array.isArray(key)) {
-      return
-    }
-
-    key.forEach((index: any) => {
-      const related = data[this.related.entity]
-
-      if (!related || !related[index] || related[index][this.foreignKey] !== undefined) {
-        return
-      }
-
-      related[index][this.foreignKey] = record.$id
     })
   }
 

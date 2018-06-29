@@ -40,6 +40,20 @@ export default class HasManyBy extends Relation {
   }
 
   /**
+   * Attach the relational key to the given data.
+   */
+  attach (key: any, record: Record, _data: NormalizedData): void {
+    if (key.length === 0) {
+      return
+    }
+    if (record[this.foreignKey] !== undefined) {
+      return
+    }
+
+    record[this.foreignKey] = key
+  }
+
+  /**
    * Validate the given value to be a valid value for the relationship.
    */
   fill (value: any): (string | number)[] {
@@ -72,20 +86,6 @@ export default class HasManyBy extends Relation {
     }).map((record) => {
       return this.parent.make(record, plain)
     })
-  }
-
-  /**
-   * Attach the relational key to the given record.
-   */
-  attach (key: any, record: Record, _data: NormalizedData): void {
-    if (key.length === 0) {
-      return
-    }
-    if (record[this.foreignKey] !== undefined) {
-      return
-    }
-
-    record[this.foreignKey] = key
   }
 
   /**
