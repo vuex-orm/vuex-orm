@@ -68,6 +68,6 @@ describe('Performance – Retrieve – Has Many Through', () => {
 
     const end = new Date();
 
-    expect(end - start).toBeLessThan(300)
+    expect(end - start).toBeLessThan(500)
   })
 })
