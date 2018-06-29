@@ -1,13 +1,13 @@
 import Utils from '../../support/Utils'
+import Records from '../../data/Records'
+import NormalizedData from '../../data/NormalizedData'
 import Query from '../../query/Query'
-import Records from '../Records'
-import NormalizedData from '../NormalizedData'
 
 export default class IdFixer {
   /**
    * Fix all of the "no key" records with appropriate id value if it can.
    */
-  static process (data: NormalizedData, query: Query): NormalizedData {
+  static process (query: Query, data: NormalizedData): NormalizedData {
     return Utils.mapValues(data, (records, entity) => {
       const newQuery = query.newPlainQuery(entity)
 

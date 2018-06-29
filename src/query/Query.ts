@@ -5,13 +5,13 @@ import Database from '../database/Database'
 import Models from '../database/Models'
 import Modules from '../database/Modules'
 import { Record, Records, NormalizedData } from '../data'
-import Data from '../data/Data'
 import Attribute from '../attributes/Attribute'
 import RelationClass from '../attributes/relations/Relation'
 import Model from '../model/Model'
 import Fields from '../model/Fields'
 import State from '../modules/State'
 import EntityState from '../modules/EntityState'
+import Processor from './processors/Processor'
 import Hook from './Hook'
 import Item from './Item'
 import Collection from './Collection'
@@ -717,8 +717,8 @@ export default class Query {
   /**
    * Normalize the given data.
    */
-  normalize (data: any): NormalizedData {
-    return Data.normalize(data, this)
+  normalize (data: Record | Record[]): NormalizedData {
+    return Processor.normalize(this, data)
   }
 
   /**

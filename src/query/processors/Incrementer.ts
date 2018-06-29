@@ -1,13 +1,13 @@
 import Utils from '../../support/Utils'
+import Records from '../../data/Records'
+import NormalizedData from '../../data/NormalizedData'
 import Query from '../../query/Query'
-import Records from '../Records'
-import NormalizedData from '../NormalizedData'
 
 export default class Incrementer {
   /**
    * Increment all fields that have increment attribute.
    */
-  static process (data: NormalizedData, query: Query): NormalizedData {
+  static process (query: Query, data: NormalizedData): NormalizedData {
     return Utils.mapValues(data, (records, entity) => {
       const newQuery = query.newPlainQuery(entity)
 
