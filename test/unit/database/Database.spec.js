@@ -6,7 +6,7 @@ import subGetters from 'app/modules/subGetters'
 import Model from 'app/model/Model'
 import Database from 'app/database/Database'
 
-describe('Database', () => {
+describe('Unit – Database', () => {
   class User extends Model {
     static entity = 'users'
   }
@@ -38,39 +38,5 @@ describe('Database', () => {
     database.register(Post, posts)
 
     expect(database.entities).toEqual(expected)
-  })
-
-  it('can generate Vuex Module Tree from registered entities', () => {
-    const database = new Database()
-
-    database.register(User, users)
-    database.register(Post, posts)
-
-    const expected = {
-      namespaced: true,
-      state: { $name: 'entities', },
-      getters,
-      actions,
-      mutations,
-
-      modules: {
-        users: {
-          namespaced: true,
-          state: { $connection: 'entities', $name: 'users', data: {} },
-          getters: subGetters,
-          actions: subActions,
-          mutations: {}
-        },
-        posts: {
-          namespaced: true,
-          state: { $connection: 'entities', $name: 'posts', data: {} },
-          getters: subGetters,
-          actions: subActions,
-          mutations: {}
-        }
-      }
-    }
-
-    expect(database.createModule('entities')).toEqual(expected)
   })
 })

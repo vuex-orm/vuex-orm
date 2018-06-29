@@ -33,7 +33,12 @@ export default class Database {
   /**
    * Initialize the database before a user can start using it.
    */
-  start (): void {
+  start (store: Vuex.Store<any>, namespace: string): void {
+    this.store = store
+    this.namespace = namespace
+
+    this.registerModules()
+
     this.createSchema()
   }
 
@@ -46,14 +51,6 @@ export default class Database {
       model,
       module
     })
-  }
-
-  /**
-   * Register a Vuex Store instance.
-   */
-  registerStore (store: Vuex.Store<any>, namespace: string): void {
-    this.store = store
-    this.namespace = namespace
   }
 
   /**
@@ -95,8 +92,8 @@ export default class Database {
   /**
    * Create the Vuex Module from registered entities.
    */
-  createModule (namespace: string): Vuex.Module<any, any> {
-    return Module.create(namespace, this.modules())
+  registerModules (): void {
+    this.store.registerModule(this.namespace, Module.create(this.namespace, this.modules()))
   }
 
   /**
