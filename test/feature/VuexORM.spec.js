@@ -1,7 +1,10 @@
+import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexORM from 'app'
 
 describe('Feature – Vuex ORM', () => {
+  Vue.use(Vuex)
+
   class User extends VuexORM.Model {
     static entity = 'users'
   }

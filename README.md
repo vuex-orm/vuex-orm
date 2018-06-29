@@ -268,25 +268,37 @@ We are excited that you are interested in contributing to Vuex ORM! Anything fro
 
 ### Development
 
-```console
+```bash
 $ npm run build
 ```
 
 Compile files and generate bundles in `dist` directory.
 
-```console
+```bash
 $ npm run lint
 ```
 
 Lint files using a rule of Standard JS.
 
-```console
+```bash
 $ npm run test
 ```
 
 Run the test using [Mocha Webpack](https://github.com/zinserjan/mocha-webpack).
 
-```console
+```bash
+$ npm run test:watch
+```
+
+Run the test in watch mode.
+
+```bash
+$ npm run test:perf
+```
+
+Run the performance test.
+
+```bash
 $ npm run coverage
 ```
 
