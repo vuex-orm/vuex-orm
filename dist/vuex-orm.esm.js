@@ -53,10 +53,8 @@ var install = (function (database, options) {
     if (options === void 0) { options = {}; }
     var namespace = options.namespace || 'entities';
     return function (store) {
-        store.registerModule(namespace, database.createModule(namespace));
-        database.registerStore(store, namespace);
-        database.start();
         Container.register(database);
+        database.start(store, namespace);
     };
 });
 
@@ -624,24 +622,13 @@ var HasOne = /** @class */ (function (_super) {
         return _this;
     }
     /**
-     * Validate the given value to be a valid value for the relationship.
+     * Define the normalizr schema for the relationship.
      */
-    HasOne.prototype.fill = function (value) {
-        return this.fillOne(value);
+    HasOne.prototype.define = function (schema) {
+        return schema.one(this.related);
     };
     /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    HasOne.prototype.make = function (value, _parent, _key, plain) {
-        if (plain === void 0) { plain = false; }
-        if (!this.isOneRelation(value)) {
-            return null;
-        }
-        return this.related.make(value, plain);
-    };
-    /**
-     * Attach the relational key to the related record. For example,
+     * Attach the relational key to the related data. For example,
      * when User has one Phone, it will attach value to the
      * `user_id` field of Phone record.
      */
@@ -667,6 +654,23 @@ var HasOne = /** @class */ (function (_super) {
         // Finally, set the foreign key of the related record to be the local
         // key of this record.
         related[key][this.foreignKey] = record[this.localKey];
+    };
+    /**
+     * Validate the given value to be a valid value for the relationship.
+     */
+    HasOne.prototype.fill = function (value) {
+        return this.fillOne(value);
+    };
+    /**
+     * Make value to be set to model property. This method is used when
+     * instantiating a model or creating a plain object from a model.
+     */
+    HasOne.prototype.make = function (value, _parent, _key, plain) {
+        if (plain === void 0) { plain = false; }
+        if (!this.isOneRelation(value)) {
+            return null;
+        }
+        return this.related.make(value, plain);
     };
     /**
      * Load the has one relationship for the record.
@@ -710,6 +714,26 @@ var BelongsTo = /** @class */ (function (_super) {
         return _this;
     }
     /**
+     * Define the normalizr schema for the relationship.
+     */
+    BelongsTo.prototype.define = function (schema) {
+        return schema.one(this.parent);
+    };
+    /**
+     * Attach the relational key to the given data. For example,
+     * when Post belongs to User, it will attach value to the
+     * `user_id` field of Post record.
+     */
+    BelongsTo.prototype.attach = function (key, record, _data) {
+        // See if the record has the foreign key, if yes, it means the user has
+        // provided the key explicitly so do nothing and return.
+        if (record[this.foreignKey] !== undefined) {
+            return;
+        }
+        // If there is no foreign key, let's set it here.
+        record[this.foreignKey] = key;
+    };
+    /**
      * Validate the given value to be a valid value for the relationship.
      */
     BelongsTo.prototype.fill = function (value) {
@@ -725,20 +749,6 @@ var BelongsTo = /** @class */ (function (_super) {
             return null;
         }
         return this.parent.make(value, plain);
-    };
-    /**
-     * Attach the relational key to the related record. For example,
-     * when Post belongs to User, it will attach value to the
-     * `user_id` field of Post record.
-     */
-    BelongsTo.prototype.attach = function (key, record, _data) {
-        // See if the record has the foreign key, if yes, it means the user has
-        // provided the key explicitly so do nothing and return.
-        if (record[this.foreignKey] !== undefined) {
-            return;
-        }
-        // If there is no foreign key, let's set it here.
-        record[this.foreignKey] = key;
     };
     /**
      * Load the belongs to relationship for the record.
@@ -781,6 +791,28 @@ var HasMany = /** @class */ (function (_super) {
         return _this;
     }
     /**
+     * Define the normalizr schema for the relationship.
+     */
+    HasMany.prototype.define = function (schema) {
+        return schema.many(this.related);
+    };
+    /**
+     * Attach the relational key to the given data.
+     */
+    HasMany.prototype.attach = function (key, record, data) {
+        var _this = this;
+        if (!Array.isArray(key)) {
+            return;
+        }
+        key.forEach(function (index) {
+            var related = data[_this.related.entity];
+            if (!related || !related[index] || related[index][_this.foreignKey] !== undefined) {
+                return;
+            }
+            related[index][_this.foreignKey] = record.$id;
+        });
+    };
+    /**
      * Validate the given value to be a valid value for the relationship.
      */
     HasMany.prototype.fill = function (value) {
@@ -809,22 +841,6 @@ var HasMany = /** @class */ (function (_super) {
             return record && typeof record === 'object';
         }).map(function (record) {
             return _this.related.make(record, plain);
-        });
-    };
-    /**
-     * Attach the relational key to the given record.
-     */
-    HasMany.prototype.attach = function (key, record, data) {
-        var _this = this;
-        if (!Array.isArray(key)) {
-            return;
-        }
-        key.forEach(function (index) {
-            var related = data[_this.related.entity];
-            if (!related || !related[index] || related[index][_this.foreignKey] !== undefined) {
-                return;
-            }
-            related[index][_this.foreignKey] = record.$id;
         });
     };
     /**
@@ -876,6 +892,24 @@ var HasManyBy = /** @class */ (function (_super) {
         return _this;
     }
     /**
+     * Define the normalizr schema for the relationship.
+     */
+    HasManyBy.prototype.define = function (schema) {
+        return schema.many(this.parent);
+    };
+    /**
+     * Attach the relational key to the given data.
+     */
+    HasManyBy.prototype.attach = function (key, record, _data) {
+        if (key.length === 0) {
+            return;
+        }
+        if (record[this.foreignKey] !== undefined) {
+            return;
+        }
+        record[this.foreignKey] = key;
+    };
+    /**
      * Validate the given value to be a valid value for the relationship.
      */
     HasManyBy.prototype.fill = function (value) {
@@ -905,18 +939,6 @@ var HasManyBy = /** @class */ (function (_super) {
         }).map(function (record) {
             return _this.parent.make(record, plain);
         });
-    };
-    /**
-     * Attach the relational key to the given record.
-     */
-    HasManyBy.prototype.attach = function (key, record, _data) {
-        if (key.length === 0) {
-            return;
-        }
-        if (record[this.foreignKey] !== undefined) {
-            return;
-        }
-        record[this.foreignKey] = key;
     };
     /**
      * Load the has many by relationship for the record.
@@ -1685,15 +1707,15 @@ var Normalizer = /** @class */ (function () {
     function Normalizer() {
     }
     /**
-     * Normalize the data.
+     * Normalize the data given data.
      */
-    Normalizer.process = function (data, query) {
-        if (Utils.isEmpty(data)) {
+    Normalizer.process = function (query, record) {
+        if (Utils.isEmpty(record)) {
             return {};
         }
         var entity = query.database().schemas[query.model.entity];
-        var schema = Array.isArray(data) ? [entity] : entity;
-        return src_2(data, schema).entities;
+        var schema = Array.isArray(record) ? [entity] : entity;
+        return src_2(record, schema).entities;
     };
     return Normalizer;
 }());
@@ -1705,9 +1727,9 @@ var PivotCreator = /** @class */ (function () {
      * Create an intermediate entity if the data contains any entities that
      * require it for example `belongsTo` or `morphMany`.
      */
-    PivotCreator.process = function (data, Query) {
+    PivotCreator.process = function (query, data) {
         Object.keys(data).forEach(function (entity) {
-            var model = Query.getModel(entity);
+            var model = query.getModel(entity);
             if (model.hasPivotFields()) {
                 Utils.forOwn(model.pivotFields(), function (field) {
                     Utils.forOwn(field, function (attr, key) { attr.createPivots(model, data, key); });
@@ -1725,7 +1747,7 @@ var Incrementer = /** @class */ (function () {
     /**
      * Increment all fields that have increment attribute.
      */
-    Incrementer.process = function (data, query) {
+    Incrementer.process = function (query, data) {
         var _this = this;
         return Utils.mapValues(data, function (records, entity) {
             var newQuery = query.newPlainQuery(entity);
@@ -1780,9 +1802,9 @@ var Attacher = /** @class */ (function () {
     /**
      * Attach missing relational key to the records.
      */
-    Attacher.process = function (data, Query) {
+    Attacher.process = function (query, data) {
         Utils.forOwn(data, function (entity, name) {
-            var fields = Query.getModel(name).fields();
+            var fields = query.getModel(name).fields();
             Utils.forOwn(entity, function (record) {
                 Utils.forOwn(record, function (value, key) {
                     var field = fields[key];
@@ -1811,7 +1833,7 @@ var IdFixer = /** @class */ (function () {
     /**
      * Fix all of the "no key" records with appropriate id value if it can.
      */
-    IdFixer.process = function (data, query) {
+    IdFixer.process = function (query, data) {
         var _this = this;
         return Utils.mapValues(data, function (records, entity) {
             var newQuery = query.newPlainQuery(entity);
@@ -1838,670 +1860,138 @@ var IdFixer = /** @class */ (function () {
     return IdFixer;
 }());
 
-var Data = /** @class */ (function () {
-    function Data() {
+var Processor = /** @class */ (function () {
+    function Processor() {
     }
     /**
-     * Normalize the data.
+     * Normalize the given data.
      */
-    Data.normalize = function (data, query) {
-        data = Normalizer.process(data, query);
-        data = PivotCreator.process(data, query);
-        data = Incrementer.process(data, query);
-        data = Attacher.process(data, query);
-        data = IdFixer.process(data, query);
+    Processor.normalize = function (query, record) {
+        var data = Normalizer.process(query, record);
+        data = PivotCreator.process(query, data);
+        data = Incrementer.process(query, data);
+        data = Attacher.process(query, data);
+        data = IdFixer.process(query, data);
         return data;
     };
-    return Data;
+    return Processor;
 }());
 
-var __extends$b = (undefined && undefined.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __assign$2 = (undefined && undefined.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
-var BelongsToMany = /** @class */ (function (_super) {
-    __extends$b(BelongsToMany, _super);
-    /**
-     * Create a new belongs to instance.
-     */
-    function BelongsToMany(model, related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey) {
-        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
-        _this.related = _this.model.relation(related);
-        _this.pivot = _this.model.relation(pivot);
-        _this.foreignPivotKey = foreignPivotKey;
-        _this.relatedPivotKey = relatedPivotKey;
-        _this.parentKey = parentKey;
-        _this.relatedKey = relatedKey;
-        return _this;
+var WhereFilter = /** @class */ (function () {
+    function WhereFilter() {
     }
     /**
-     * Validate the given value to be a valid value for the relationship.
+     * Filter the given data by registered where clause.
      */
-    BelongsToMany.prototype.fill = function (value) {
-        return this.fillMany(value);
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    BelongsToMany.prototype.make = function (value, _parent, _key, plain) {
+    WhereFilter.filter = function (query, records) {
         var _this = this;
-        if (plain === void 0) { plain = false; }
-        if (value === null) {
-            return [];
-        }
-        if (value === undefined) {
-            return [];
-        }
-        if (!Array.isArray(value)) {
-            return [];
-        }
-        if (value.length === 0) {
-            return [];
-        }
-        return value.filter(function (record) {
-            return record && typeof record === 'object';
-        }).map(function (record) {
-            return _this.related.make(record, plain);
-        });
-    };
-    /**
-     * Attach the relational key to the given record.
-     */
-    BelongsToMany.prototype.attach = function (_key, _record, _data) {
-        return;
-    };
-    /**
-     * Load the belongs to relationship for the record.
-     */
-    BelongsToMany.prototype.load = function (query, collection, relation) {
-        var _this = this;
-        var relatedQuery = new Query(query.rootState, this.related.entity, false);
-        this.addConstraint(relatedQuery, relation);
-        var relatedRecords = relatedQuery.get();
-        var related = relatedRecords.reduce(function (records, record) {
-            records[record[_this.relatedKey]] = record;
+        if (query.wheres.length === 0) {
             return records;
-        }, {});
-        var pivotRecords = new Query(query.rootState, this.pivot.entity).get();
-        var pivots = pivotRecords.reduce(function (records, record) {
-            if (!records[record[_this.foreignPivotKey]]) {
-                records[record[_this.foreignPivotKey]] = [];
-            }
-            records[record[_this.foreignPivotKey]].push(related[record[_this.relatedPivotKey]]);
-            return records;
-        }, {});
-        return collection.map(function (item) {
-            item[relation.name] = pivots[item[_this.parentKey]];
-            return item;
-        });
+        }
+        return records.filter(function (record) { return _this.check(query, record); });
     };
     /**
-     * Create pivot records for the given records if needed.
+     * Checks if given Record matches the registered where clause.
      */
-    BelongsToMany.prototype.createPivots = function (parent, data, key) {
-        var _this = this;
-        Utils.forOwn(data[parent.entity], function (record) {
-            var related = record[key];
-            if (related === undefined || related.length === 0) {
-                return;
-            }
-            _this.createPivotRecord(data, record, related);
-        });
-        return data;
+    WhereFilter.check = function (query, record) {
+        var whereTypes = Utils.groupBy(query.wheres, function (where) { return where.boolean; });
+        var comparator = this.getComparator(query, record);
+        var results = [];
+        whereTypes.and && results.push(whereTypes.and.every(comparator));
+        whereTypes.or && results.push(whereTypes.or.some(comparator));
+        return results.indexOf(true) !== -1;
     };
     /**
-     * Create a pivot record.
+     * Get comparator for the where clause.
      */
-    BelongsToMany.prototype.createPivotRecord = function (data, record, related) {
+    WhereFilter.getComparator = function (query, record) {
         var _this = this;
-        related.forEach(function (id) {
-            var _a, _b;
-            var pivotKey = record[_this.parentKey] + "_" + id;
-            data[_this.pivot.entity] = __assign$2({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
-                    $id: pivotKey
-                },
-                _b[_this.foreignPivotKey] = record[_this.parentKey],
-                _b[_this.relatedPivotKey] = id,
-                _b), _a));
-        });
+        return function (where) {
+            // Function with Record and Query as argument.
+            if (typeof where.field === 'function') {
+                var newQuery = new Query(query.rootState, query.entity);
+                var result = _this.executeWhereClosure(query, record, where.field);
+                if (typeof result === 'boolean') {
+                    return result;
+                }
+                return !Utils.isEmpty(newQuery.where('$id', record['$id']).get());
+            }
+            // Function with Record value as argument.
+            if (typeof where.value === 'function') {
+                return where.value(record[where.field]);
+            }
+            // Check if field value is in given where Array.
+            if (Array.isArray(where.value)) {
+                return where.value.indexOf(record[where.field]) !== -1;
+            }
+            // Simple equal check.
+            return record[where.field] === where.value;
+        };
     };
-    return BelongsToMany;
-}(Relation));
+    /**
+     * Execute where closure.
+     */
+    WhereFilter.executeWhereClosure = function (query, record, closure) {
+        if (closure.length !== 3) {
+            return closure(record, query);
+        }
+        var model = new query.model(record);
+        return closure(record, query, model);
+    };
+    return WhereFilter;
+}());
 
-var __extends$c = (undefined && undefined.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var MorphTo = /** @class */ (function (_super) {
-    __extends$c(MorphTo, _super);
-    /**
-     * Create a new morph to instance.
-     */
-    function MorphTo(model, id, type) {
-        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
-        _this.id = id;
-        _this.type = type;
-        return _this;
+var OrderByFilter = /** @class */ (function () {
+    function OrderByFilter() {
     }
     /**
-     * Validate the given value to be a valid value for the relationship.
+     * Sort the given data by registered orders.
      */
-    MorphTo.prototype.fill = function (value) {
-        return this.fillOne(value);
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    MorphTo.prototype.make = function (value, parent, _key, plain) {
-        if (plain === void 0) { plain = false; }
-        if (!this.isOneRelation(value)) {
-            return null;
-        }
-        var related = parent[this.type];
-        var model = this.model.relation(related);
-        return model ? model.make(value, plain) : null;
-    };
-    /**
-     * Attach the relational key to the given record.
-     */
-    MorphTo.prototype.attach = function (_key, _record, _data) {
-        return;
-    };
-    /**
-     * Load the morph many relationship for the record.
-     */
-    MorphTo.prototype.load = function (query, collection, relation) {
-        var _this = this;
-        var relatedRecords = Object.keys(query.getModels()).reduce(function (records, name) {
-            if (name === query.entity) {
-                return records;
-            }
-            var relatedQuery = new Query(query.rootState, name, false);
-            _this.addConstraint(relatedQuery, relation);
-            records[name] = _this.mapRecords(relatedQuery.get(), '$id');
+    OrderByFilter.filter = function (query, records) {
+        if (query.orders.length === 0) {
             return records;
-        }, {});
-        var relatedPath = this.relatedPath(relation.name);
-        return collection.map(function (item) {
-            var related = relatedRecords[item[_this.type]][item[_this.id]];
-            return _this.setRelated(item, related || null, relatedPath);
-        });
+        }
+        var keys = query.orders.map(function (order) { return order.field; });
+        var directions = query.orders.map(function (order) { return order.direction; });
+        return Utils.orderBy(records, keys, directions);
     };
-    return MorphTo;
-}(Relation));
+    return OrderByFilter;
+}());
 
-var __extends$d = (undefined && undefined.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var MorphOne = /** @class */ (function (_super) {
-    __extends$d(MorphOne, _super);
-    /**
-     * Create a new belongs to instance.
-     */
-    function MorphOne(model, related, id, type, localKey) {
-        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
-        _this.related = _this.model.relation(related);
-        _this.id = id;
-        _this.type = type;
-        _this.localKey = localKey;
-        return _this;
+var LimitFilter = /** @class */ (function () {
+    function LimitFilter() {
     }
     /**
-     * Validate the given value to be a valid value for the relationship.
+     * Limit the given records by the lmilt and offset.
      */
-    MorphOne.prototype.fill = function (value) {
-        return this.fillOne(value);
+    LimitFilter.filter = function (query, records) {
+        return records.slice(query._offset, query._offset + query._limit);
     };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    MorphOne.prototype.make = function (value, _parent, _key, plain) {
-        if (plain === void 0) { plain = false; }
-        if (!this.isOneRelation(value)) {
-            return null;
-        }
-        return this.related.make(value, plain);
-    };
-    /**
-     * Attach the relational key to the given record.
-     */
-    MorphOne.prototype.attach = function (_key, _record, _data) {
-        return;
-    };
-    /**
-     * Load the morph many relationship for the record.
-     */
-    MorphOne.prototype.load = function (query, collection, relation) {
-        var _this = this;
-        var relatedQuery = new Query(query.rootState, this.related.entity, false);
-        relatedQuery.where(this.type, query.entity);
-        this.addConstraint(relatedQuery, relation);
-        var relatedRecords = this.mapRecords(relatedQuery.get(), this.id);
-        var relatedPath = this.relatedPath(relation.name);
-        return collection.map(function (item) {
-            var related = relatedRecords[item[_this.localKey]];
-            return _this.setRelated(item, related || null, relatedPath);
-        });
-    };
-    return MorphOne;
-}(Relation));
+    return LimitFilter;
+}());
 
-var __extends$e = (undefined && undefined.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var MorphMany = /** @class */ (function (_super) {
-    __extends$e(MorphMany, _super);
-    /**
-     * Create a new belongs to instance.
-     */
-    function MorphMany(model, related, id, type, localKey) {
-        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
-        _this.related = _this.model.relation(related);
-        _this.id = id;
-        _this.type = type;
-        _this.localKey = localKey;
-        return _this;
+var Filter = /** @class */ (function () {
+    function Filter() {
     }
     /**
-     * Validate the given value to be a valid value for the relationship.
+     * Filter the given data by registered where clause.
      */
-    MorphMany.prototype.fill = function (value) {
-        return this.fillMany(value);
+    Filter.where = function (query, records) {
+        return WhereFilter.filter(query, records);
     };
     /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
+     * Sort the given data by registered orders.
      */
-    MorphMany.prototype.make = function (value, _parent, _key, plain) {
-        var _this = this;
-        if (plain === void 0) { plain = false; }
-        if (value === null) {
-            return [];
-        }
-        if (value === undefined) {
-            return [];
-        }
-        if (!Array.isArray(value)) {
-            return [];
-        }
-        if (value.length === 0) {
-            return [];
-        }
-        return value.filter(function (record) {
-            return record && typeof record === 'object';
-        }).map(function (record) {
-            return _this.related.make(record, plain);
-        });
+    Filter.orderBy = function (query, records) {
+        return OrderByFilter.filter(query, records);
     };
     /**
-     * Attach the relational key to the given record.
+     * Limit the given records by the lmilt and offset.
      */
-    MorphMany.prototype.attach = function (_key, _record, _data) {
-        return;
+    Filter.limit = function (query, records) {
+        return LimitFilter.filter(query, records);
     };
-    /**
-     * Load the morph many relationship for the record.
-     */
-    MorphMany.prototype.load = function (query, collection, relation) {
-        var _this = this;
-        var relatedQuery = new Query(query.rootState, this.related.entity, false);
-        relatedQuery.where(this.type, query.entity);
-        this.addConstraint(relatedQuery, relation);
-        var relatedRecords = relatedQuery.get().reduce(function (records, record) {
-            var key = record[_this.id];
-            if (!records[key]) {
-                records[key] = [];
-            }
-            records[key].push(record);
-            return records;
-        }, {});
-        var relatedPath = this.relatedPath(relation.name);
-        return collection.map(function (item) {
-            var related = relatedRecords[item[_this.localKey]];
-            return _this.setRelated(item, related || [], relatedPath);
-        });
-    };
-    return MorphMany;
-}(Relation));
-
-var __extends$f = (undefined && undefined.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __assign$3 = (undefined && undefined.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
-var MorphToMany = /** @class */ (function (_super) {
-    __extends$f(MorphToMany, _super);
-    /**
-     * Create a new belongs to instance.
-     */
-    function MorphToMany(model, related, pivot, relatedId, id, type, parentKey, relatedKey) {
-        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
-        _this.related = _this.model.relation(related);
-        _this.pivot = _this.model.relation(pivot);
-        _this.relatedId = relatedId;
-        _this.id = id;
-        _this.type = type;
-        _this.parentKey = parentKey;
-        _this.relatedKey = relatedKey;
-        return _this;
-    }
-    /**
-     * Validate the given value to be a valid value for the relationship.
-     */
-    MorphToMany.prototype.fill = function (value) {
-        return this.fillMany(value);
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    MorphToMany.prototype.make = function (value, _parent, _key, plain) {
-        var _this = this;
-        if (plain === void 0) { plain = false; }
-        if (value === null) {
-            return [];
-        }
-        if (value === undefined) {
-            return [];
-        }
-        if (!Array.isArray(value)) {
-            return [];
-        }
-        if (value.length === 0) {
-            return [];
-        }
-        return value.filter(function (record) {
-            return record && typeof record === 'object';
-        }).map(function (record) {
-            return _this.related.make(record, plain);
-        });
-    };
-    /**
-     * Attach the relational key to the given record.
-     */
-    MorphToMany.prototype.attach = function (_key, _record, _data) {
-        return;
-    };
-    /**
-     * Load the morph many relationship for the record.
-     */
-    MorphToMany.prototype.load = function (query, collection, relation) {
-        var _this = this;
-        var relatedQuery = new Query(query.rootState, this.related.entity, false);
-        this.addConstraint(relatedQuery, relation);
-        var relatedRecords = relatedQuery.get().reduce(function (records, record) {
-            records[record[_this.relatedKey]] = record;
-            return records;
-        }, {});
-        var pivotQuery = new Query(query.rootState, this.pivot.entity, false);
-        pivotQuery.where(this.type, query.entity);
-        var pivotRecords = pivotQuery.get().reduce(function (records, record) {
-            if (!records[record[_this.id]]) {
-                records[record[_this.id]] = [];
-            }
-            records[record[_this.id]].push(relatedRecords[record[_this.relatedId]]);
-            return records;
-        }, {});
-        var relatedPath = this.relatedPath(relation.name);
-        return collection.map(function (item) {
-            var related = pivotRecords[item[_this.parentKey]];
-            return _this.setRelated(item, related || [], relatedPath);
-        });
-    };
-    /**
-     * Create pivot records for the given records if needed.
-     */
-    MorphToMany.prototype.createPivots = function (parent, data, key) {
-        var _this = this;
-        Utils.forOwn(data[parent.entity], function (record) {
-            var related = record[key];
-            if (!Array.isArray(related) || related.length === 0) {
-                return;
-            }
-            _this.createPivotRecord(parent, data, record, related);
-        });
-        return data;
-    };
-    /**
-     * Create a pivot record.
-     */
-    MorphToMany.prototype.createPivotRecord = function (parent, data, record, related) {
-        var _this = this;
-        related.forEach(function (id) {
-            var _a, _b;
-            var parentId = record[_this.parentKey];
-            var pivotKey = parentId + "_" + id + "_" + parent.entity;
-            data[_this.pivot.entity] = __assign$3({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
-                    $id: pivotKey
-                },
-                _b[_this.relatedId] = id,
-                _b[_this.id] = parentId,
-                _b[_this.type] = parent.entity,
-                _b), _a));
-        });
-    };
-    return MorphToMany;
-}(Relation));
-
-var __extends$g = (undefined && undefined.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __assign$4 = (undefined && undefined.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
-var MorphedByMany = /** @class */ (function (_super) {
-    __extends$g(MorphedByMany, _super);
-    /**
-     * Create a new belongs to instance.
-     */
-    function MorphedByMany(model, related, pivot, relatedId, id, type, parentKey, relatedKey) {
-        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
-        _this.related = _this.model.relation(related);
-        _this.pivot = _this.model.relation(pivot);
-        _this.relatedId = relatedId;
-        _this.id = id;
-        _this.type = type;
-        _this.parentKey = parentKey;
-        _this.relatedKey = relatedKey;
-        return _this;
-    }
-    /**
-     * Validate the given value to be a valid value for the relationship.
-     */
-    MorphedByMany.prototype.fill = function (value) {
-        return this.fillMany(value);
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    MorphedByMany.prototype.make = function (value, _parent, _key, plain) {
-        var _this = this;
-        if (plain === void 0) { plain = false; }
-        if (value === null) {
-            return [];
-        }
-        if (value === undefined) {
-            return [];
-        }
-        if (!Array.isArray(value)) {
-            return [];
-        }
-        if (value.length === 0) {
-            return [];
-        }
-        return value.filter(function (record) {
-            return record && typeof record === 'object';
-        }).map(function (record) {
-            return _this.related.make(record, plain);
-        });
-    };
-    /**
-     * Attach the relational key to the given record.
-     */
-    MorphedByMany.prototype.attach = function (_key, _record, _data) {
-        return;
-    };
-    /**
-     * Load the morph many relationship for the record.
-     */
-    MorphedByMany.prototype.load = function (query, collection, relation) {
-        var _this = this;
-        var relatedQuery = new Query(query.rootState, this.related.entity, false);
-        this.addConstraint(relatedQuery, relation);
-        var relatedRecords = relatedQuery.get().reduce(function (records, record) {
-            records[record[_this.relatedKey]] = record;
-            return records;
-        }, {});
-        var pivotQuery = new Query(query.rootState, this.pivot.entity, false);
-        pivotQuery.where(this.type, relatedQuery.entity);
-        var pivotRecords = pivotQuery.get().reduce(function (records, record) {
-            if (!records[record[_this.relatedId]]) {
-                records[record[_this.relatedId]] = [];
-            }
-            records[record[_this.relatedId]].push(relatedRecords[record[_this.id]]);
-            return records;
-        }, {});
-        var relatedPath = this.relatedPath(relation.name);
-        return collection.map(function (item) {
-            var related = pivotRecords[item[_this.parentKey]];
-            return _this.setRelated(item, related || [], relatedPath);
-        });
-    };
-    /**
-     * Create pivot records for the given records if needed.
-     */
-    MorphedByMany.prototype.createPivots = function (parent, data, key) {
-        var _this = this;
-        Utils.forOwn(data[parent.entity], function (record) {
-            var related = record[key];
-            if (related.length === 0) {
-                return;
-            }
-            _this.createPivotRecord(data, record, related);
-        });
-        return data;
-    };
-    /**
-     * Create a pivot record.
-     */
-    MorphedByMany.prototype.createPivotRecord = function (data, record, related) {
-        var _this = this;
-        related.forEach(function (id) {
-            var _a, _b;
-            var parentId = record[_this.parentKey];
-            var pivotKey = id + "_" + parentId + "_" + _this.related.entity;
-            data[_this.pivot.entity] = __assign$4({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
-                    $id: pivotKey
-                },
-                _b[_this.relatedId] = parentId,
-                _b[_this.id] = id,
-                _b[_this.type] = _this.related.entity,
-                _b), _a));
-        });
-    };
-    return MorphedByMany;
-}(Relation));
-
-var Contract = /** @class */ (function () {
-    function Contract() {
-    }
-    /**
-     * Determine if the given value is the type of field.
-     */
-    Contract.isAttribute = function (attr) {
-        return attr instanceof Attr
-            || attr instanceof String$1
-            || attr instanceof Number
-            || attr instanceof Boolean
-            || attr instanceof Increment
-            || this.isRelation(attr);
-    };
-    /**
-     * Determine if the given value is the type of relations.
-     */
-    Contract.isRelation = function (attr) {
-        return attr instanceof HasOne
-            || attr instanceof BelongsTo
-            || attr instanceof HasMany
-            || attr instanceof HasManyBy
-            || attr instanceof HasManyThrough
-            || attr instanceof BelongsToMany
-            || attr instanceof MorphTo
-            || attr instanceof MorphOne
-            || attr instanceof MorphMany
-            || attr instanceof MorphToMany
-            || attr instanceof MorphedByMany;
-    };
-    /**
-     * Determine if the given value is the type of morph relations.
-     */
-    Contract.isMorphRelation = function (attr) {
-        return attr instanceof MorphOne || attr instanceof MorphMany;
-    };
-    return Contract;
+    return Filter;
 }());
 
 var Hook = /** @class */ (function () {
@@ -2667,7 +2157,7 @@ var Hook = /** @class */ (function () {
     return Hook;
 }());
 
-var __assign$5 = (undefined && undefined.__assign) || Object.assign || function(t) {
+var __assign$2 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -2927,7 +2417,7 @@ var Query = /** @class */ (function () {
             callback();
             return;
         }
-        payload = __assign$5({ entity: this.entity }, payload);
+        payload = __assign$2({ entity: this.entity }, payload);
         this.actionContext.commit(this.rootState.$name + "/" + method, payload, { root: true });
     };
     /**
@@ -2995,7 +2485,7 @@ var Query = /** @class */ (function () {
     Query.prototype.commitInsert = function (data) {
         var _this = this;
         this.commit('commitInsert', { data: data }, function () {
-            _this.state.data = __assign$5({}, _this.state.data, data);
+            _this.state.data = __assign$2({}, _this.state.data, data);
         });
     };
     /**
@@ -3111,7 +2601,7 @@ var Query = /** @class */ (function () {
     Query.prototype.commitUpdate = function (data) {
         var _this = this;
         this.commit('commitUpdate', { data: data }, function () {
-            _this.state.data = __assign$5({}, _this.state.data, data);
+            _this.state.data = __assign$2({}, _this.state.data, data);
         });
     };
     /**
@@ -3181,7 +2671,7 @@ var Query = /** @class */ (function () {
      * Normalize the given data.
      */
     Query.prototype.normalize = function (data) {
-        return Data.normalize(data, this);
+        return Processor.normalize(this, data);
     };
     /**
      * Update the state value by merging the given record and state.
@@ -3213,7 +2703,7 @@ var Query = /** @class */ (function () {
         if (!record) {
             return null;
         }
-        return this.item(__assign$5({}, record));
+        return this.item(__assign$2({}, record));
     };
     /**
      * Returns all record of the query chain result.
@@ -3244,7 +2734,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.records = function (records) {
         var theRecords = records || this.state.data;
-        return Object.keys(theRecords).map(function (id) { return (__assign$5({}, theRecords[id])); });
+        return Object.keys(theRecords).map(function (id) { return (__assign$2({}, theRecords[id])); });
     };
     /**
      * Add a and where clause to the query.
@@ -3302,7 +2792,7 @@ var Query = /** @class */ (function () {
         if (constraints === void 0) { constraints = function () { return null; }; }
         var fields = this.model.getFields();
         for (var field in fields) {
-            if (Contract.isRelation(fields[field])) {
+            if (fields[field] instanceof Relation) {
                 this.load.push({ name: field, constraint: constraints(field) });
             }
         }
@@ -3367,20 +2857,16 @@ var Query = /** @class */ (function () {
         var records = this.records();
         // Process `beforeProcess` hook.
         records = this.hook.execute('beforeProcess', records);
-        // If the where clause is registered, lets filter the records beased on it.
-        if (!Utils.isEmpty(this.wheres)) {
-            records = this.selectByWheres(records);
-        }
+        // Let's filter the records at first by the where clauses.
+        records = this.filterWhere(records);
         // Process `afterWhere` hook.
         records = this.hook.execute('afterWhere', records);
-        // Next, lets sort the data if orderBy is registred.
-        if (!Utils.isEmpty(this.orders)) {
-            records = this.sortByOrders(records);
-        }
+        // Next, lets sort the data.
+        records = this.filterOrderBy(records);
         // Process `afterOrderBy` hook.
         records = this.hook.execute('afterOrderBy', records);
         // Finally, slice the record by limit and offset.
-        records = records.slice(this._offset, this._offset + this._limit);
+        records = this.filterLimit(records);
         // Process `afterLimit` hook.
         records = this.hook.execute('afterLimit', records);
         return records;
@@ -3388,69 +2874,20 @@ var Query = /** @class */ (function () {
     /**
      * Filter the given data by registered where clause.
      */
-    Query.prototype.selectByWheres = function (records) {
-        var _this = this;
-        return records.filter(function (record) { return _this.whereOnRecord(record); });
+    Query.prototype.filterWhere = function (records) {
+        return Filter.where(this, records);
     };
     /**
      * Sort the given data by registered orders.
      */
-    Query.prototype.sortByOrders = function (records) {
-        var keys = this.orders.map(function (order) { return order.field; });
-        var directions = this.orders.map(function (order) { return order.direction; });
-        return Utils.orderBy(records, keys, directions);
+    Query.prototype.filterOrderBy = function (records) {
+        return Filter.orderBy(this, records);
     };
     /**
-     * Checks if given Record matches the registered where clause.
+     * Limit the given records by the lmilt and offset.
      */
-    Query.prototype.whereOnRecord = function (record) {
-        var whereTypes = Utils.groupBy(this.wheres, function (where) { return where.boolean; });
-        var whereResults = [];
-        var comparator = this.getComparator(record);
-        if (whereTypes.and) {
-            whereResults.push(whereTypes.and.every(comparator));
-        }
-        if (whereTypes.or) {
-            whereResults.push(whereTypes.or.some(comparator));
-        }
-        return whereResults.indexOf(true) !== -1;
-    };
-    /**
-     * Get comparator for the where clause.
-     */
-    Query.prototype.getComparator = function (record) {
-        var _this = this;
-        return function (where) {
-            // Function with Record and Query as argument.
-            if (typeof where.field === 'function') {
-                var query = new Query(_this.rootState, _this.entity);
-                var result = _this.executeWhereClosure(record, query, where.field);
-                if (typeof result === 'boolean') {
-                    return result;
-                }
-                return !Utils.isEmpty(query.where('$id', record['$id']).get());
-            }
-            // Function with Record value as argument.
-            if (typeof where.value === 'function') {
-                return where.value(record[where.field]);
-            }
-            // Check if field value is in given where Array.
-            if (Array.isArray(where.value)) {
-                return where.value.indexOf(record[where.field]) !== -1;
-            }
-            // Simple equal check.
-            return record[where.field] === where.value;
-        };
-    };
-    /**
-     * Execute where closure.
-     */
-    Query.prototype.executeWhereClosure = function (record, query, closure) {
-        if (closure.length !== 3) {
-            return closure(record, query);
-        }
-        var model = new this.model(record);
-        return closure(record, query, model);
+    Query.prototype.filterLimit = function (records) {
+        return Filter.limit(this, records);
     };
     /**
      * Get the count of the retrieved data.
@@ -3669,7 +3106,7 @@ var Query = /** @class */ (function () {
     return Query;
 }());
 
-var __extends$h = (undefined && undefined.__extends) || (function () {
+var __extends$b = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -3680,7 +3117,7 @@ var __extends$h = (undefined && undefined.__extends) || (function () {
     };
 })();
 var HasManyThrough = /** @class */ (function (_super) {
-    __extends$h(HasManyThrough, _super);
+    __extends$b(HasManyThrough, _super);
     /**
      * Create a new has many through instance.
      */
@@ -3694,6 +3131,19 @@ var HasManyThrough = /** @class */ (function (_super) {
         _this.secondLocalKey = secondLocalKey;
         return _this;
     }
+    /**
+     * Define the normalizr schema for the relationship.
+     */
+    HasManyThrough.prototype.define = function (schema) {
+        return schema.many(this.related);
+    };
+    /**
+     * Attach the relational key to the given data. Since has many through
+     * relationship doesn't have any foreign key, it would do nothing.
+     */
+    HasManyThrough.prototype.attach = function (_key, _record, _data) {
+        return;
+    };
     /**
      * Validate the given value to be a valid value for the relationship.
      */
@@ -3724,12 +3174,6 @@ var HasManyThrough = /** @class */ (function (_super) {
         }).map(function (record) {
             return _this.related.make(record, plain);
         });
-    };
-    /**
-     * Attach the relational key to the given record.
-     */
-    HasManyThrough.prototype.attach = function (_key, _record, _data) {
-        return;
     };
     /**
      * Load the has many through relationship for the record.
@@ -3764,6 +3208,666 @@ var HasManyThrough = /** @class */ (function (_super) {
         });
     };
     return HasManyThrough;
+}(Relation));
+
+var __extends$c = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __assign$3 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var BelongsToMany = /** @class */ (function (_super) {
+    __extends$c(BelongsToMany, _super);
+    /**
+     * Create a new belongs to instance.
+     */
+    function BelongsToMany(model, related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey) {
+        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+        _this.related = _this.model.relation(related);
+        _this.pivot = _this.model.relation(pivot);
+        _this.foreignPivotKey = foreignPivotKey;
+        _this.relatedPivotKey = relatedPivotKey;
+        _this.parentKey = parentKey;
+        _this.relatedKey = relatedKey;
+        return _this;
+    }
+    /**
+     * Define the normalizr schema for the relationship.
+     */
+    BelongsToMany.prototype.define = function (schema) {
+        return schema.many(this.related);
+    };
+    /**
+     * Attach the relational key to the given data. Since belongs to many
+     * relationship doesn't have any foreign key, it would do nothing.
+     */
+    BelongsToMany.prototype.attach = function (_key, _record, _data) {
+        return;
+    };
+    /**
+     * Validate the given value to be a valid value for the relationship.
+     */
+    BelongsToMany.prototype.fill = function (value) {
+        return this.fillMany(value);
+    };
+    /**
+     * Make value to be set to model property. This method is used when
+     * instantiating a model or creating a plain object from a model.
+     */
+    BelongsToMany.prototype.make = function (value, _parent, _key, plain) {
+        var _this = this;
+        if (plain === void 0) { plain = false; }
+        if (value === null) {
+            return [];
+        }
+        if (value === undefined) {
+            return [];
+        }
+        if (!Array.isArray(value)) {
+            return [];
+        }
+        if (value.length === 0) {
+            return [];
+        }
+        return value.filter(function (record) {
+            return record && typeof record === 'object';
+        }).map(function (record) {
+            return _this.related.make(record, plain);
+        });
+    };
+    /**
+     * Load the belongs to relationship for the record.
+     */
+    BelongsToMany.prototype.load = function (query, collection, relation) {
+        var _this = this;
+        var relatedQuery = new Query(query.rootState, this.related.entity, false);
+        this.addConstraint(relatedQuery, relation);
+        var relatedRecords = relatedQuery.get();
+        var related = relatedRecords.reduce(function (records, record) {
+            records[record[_this.relatedKey]] = record;
+            return records;
+        }, {});
+        var pivotRecords = new Query(query.rootState, this.pivot.entity).get();
+        var pivots = pivotRecords.reduce(function (records, record) {
+            if (!records[record[_this.foreignPivotKey]]) {
+                records[record[_this.foreignPivotKey]] = [];
+            }
+            records[record[_this.foreignPivotKey]].push(related[record[_this.relatedPivotKey]]);
+            return records;
+        }, {});
+        return collection.map(function (item) {
+            item[relation.name] = pivots[item[_this.parentKey]];
+            return item;
+        });
+    };
+    /**
+     * Create pivot records for the given records if needed.
+     */
+    BelongsToMany.prototype.createPivots = function (parent, data, key) {
+        var _this = this;
+        Utils.forOwn(data[parent.entity], function (record) {
+            var related = record[key];
+            if (related === undefined || related.length === 0) {
+                return;
+            }
+            _this.createPivotRecord(data, record, related);
+        });
+        return data;
+    };
+    /**
+     * Create a pivot record.
+     */
+    BelongsToMany.prototype.createPivotRecord = function (data, record, related) {
+        var _this = this;
+        related.forEach(function (id) {
+            var _a, _b;
+            var pivotKey = record[_this.parentKey] + "_" + id;
+            data[_this.pivot.entity] = __assign$3({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
+                    $id: pivotKey
+                },
+                _b[_this.foreignPivotKey] = record[_this.parentKey],
+                _b[_this.relatedPivotKey] = id,
+                _b), _a));
+        });
+    };
+    return BelongsToMany;
+}(Relation));
+
+var __extends$d = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var MorphTo = /** @class */ (function (_super) {
+    __extends$d(MorphTo, _super);
+    /**
+     * Create a new morph to instance.
+     */
+    function MorphTo(model, id, type) {
+        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+        _this.id = id;
+        _this.type = type;
+        return _this;
+    }
+    /**
+     * Define the normalizr schema for the relationship.
+     */
+    MorphTo.prototype.define = function (schema) {
+        var _this = this;
+        return schema.union(function (_value, parentValue) { return parentValue[_this.type]; });
+    };
+    /**
+     * Attach the relational key to the given record. Since morph to
+     * relationship doesn't have any foreign key, it would do nothing.
+     */
+    MorphTo.prototype.attach = function (_key, _record, _data) {
+        return;
+    };
+    /**
+     * Validate the given value to be a valid value for the relationship.
+     */
+    MorphTo.prototype.fill = function (value) {
+        return this.fillOne(value);
+    };
+    /**
+     * Make value to be set to model property. This method is used when
+     * instantiating a model or creating a plain object from a model.
+     */
+    MorphTo.prototype.make = function (value, parent, _key, plain) {
+        if (plain === void 0) { plain = false; }
+        if (!this.isOneRelation(value)) {
+            return null;
+        }
+        var related = parent[this.type];
+        var model = this.model.relation(related);
+        return model ? model.make(value, plain) : null;
+    };
+    /**
+     * Load the morph many relationship for the record.
+     */
+    MorphTo.prototype.load = function (query, collection, relation) {
+        var _this = this;
+        var relatedRecords = Object.keys(query.getModels()).reduce(function (records, name) {
+            if (name === query.entity) {
+                return records;
+            }
+            var relatedQuery = new Query(query.rootState, name, false);
+            _this.addConstraint(relatedQuery, relation);
+            records[name] = _this.mapRecords(relatedQuery.get(), '$id');
+            return records;
+        }, {});
+        var relatedPath = this.relatedPath(relation.name);
+        return collection.map(function (item) {
+            var related = relatedRecords[item[_this.type]][item[_this.id]];
+            return _this.setRelated(item, related || null, relatedPath);
+        });
+    };
+    return MorphTo;
+}(Relation));
+
+var __extends$e = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var MorphOne = /** @class */ (function (_super) {
+    __extends$e(MorphOne, _super);
+    /**
+     * Create a new belongs to instance.
+     */
+    function MorphOne(model, related, id, type, localKey) {
+        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+        _this.related = _this.model.relation(related);
+        _this.id = id;
+        _this.type = type;
+        _this.localKey = localKey;
+        return _this;
+    }
+    /**
+     * Define the normalizr schema for the relationship.
+     */
+    MorphOne.prototype.define = function (schema) {
+        return schema.one(this.related);
+    };
+    /**
+     * Attach the relational key to the given data.
+     */
+    MorphOne.prototype.attach = function (key, record, data) {
+        var relatedItems = data[this.related.entity];
+        var relatedItem = relatedItems[key];
+        relatedItem[this.id] = relatedItem[this.id] || record.$id;
+        relatedItem[this.type] = relatedItem[this.type] || this.model.entity;
+    };
+    /**
+     * Validate the given value to be a valid value for the relationship.
+     */
+    MorphOne.prototype.fill = function (value) {
+        return this.fillOne(value);
+    };
+    /**
+     * Make value to be set to model property. This method is used when
+     * instantiating a model or creating a plain object from a model.
+     */
+    MorphOne.prototype.make = function (value, _parent, _key, plain) {
+        if (plain === void 0) { plain = false; }
+        if (!this.isOneRelation(value)) {
+            return null;
+        }
+        return this.related.make(value, plain);
+    };
+    /**
+     * Load the morph many relationship for the record.
+     */
+    MorphOne.prototype.load = function (query, collection, relation) {
+        var _this = this;
+        var relatedQuery = new Query(query.rootState, this.related.entity, false);
+        relatedQuery.where(this.type, query.entity);
+        this.addConstraint(relatedQuery, relation);
+        var relatedRecords = this.mapRecords(relatedQuery.get(), this.id);
+        var relatedPath = this.relatedPath(relation.name);
+        return collection.map(function (item) {
+            var related = relatedRecords[item[_this.localKey]];
+            return _this.setRelated(item, related || null, relatedPath);
+        });
+    };
+    return MorphOne;
+}(Relation));
+
+var __extends$f = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var MorphMany = /** @class */ (function (_super) {
+    __extends$f(MorphMany, _super);
+    /**
+     * Create a new belongs to instance.
+     */
+    function MorphMany(model, related, id, type, localKey) {
+        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+        _this.related = _this.model.relation(related);
+        _this.id = id;
+        _this.type = type;
+        _this.localKey = localKey;
+        return _this;
+    }
+    /**
+     * Define the normalizr schema for the relationship.
+     */
+    MorphMany.prototype.define = function (schema) {
+        return schema.many(this.related);
+    };
+    /**
+     * Attach the relational key to the given data.
+     */
+    MorphMany.prototype.attach = function (key, record, data) {
+        var _this = this;
+        var relatedItems = data[this.related.entity];
+        key.forEach(function (id) {
+            var relatedItem = relatedItems[id];
+            relatedItem[_this.id] = relatedItem[_this.id] || record.$id;
+            relatedItem[_this.type] = relatedItem[_this.type] || _this.model.entity;
+        });
+    };
+    /**
+     * Validate the given value to be a valid value for the relationship.
+     */
+    MorphMany.prototype.fill = function (value) {
+        return this.fillMany(value);
+    };
+    /**
+     * Make value to be set to model property. This method is used when
+     * instantiating a model or creating a plain object from a model.
+     */
+    MorphMany.prototype.make = function (value, _parent, _key, plain) {
+        var _this = this;
+        if (plain === void 0) { plain = false; }
+        if (value === null) {
+            return [];
+        }
+        if (value === undefined) {
+            return [];
+        }
+        if (!Array.isArray(value)) {
+            return [];
+        }
+        if (value.length === 0) {
+            return [];
+        }
+        return value.filter(function (record) {
+            return record && typeof record === 'object';
+        }).map(function (record) {
+            return _this.related.make(record, plain);
+        });
+    };
+    /**
+     * Load the morph many relationship for the record.
+     */
+    MorphMany.prototype.load = function (query, collection, relation) {
+        var _this = this;
+        var relatedQuery = new Query(query.rootState, this.related.entity, false);
+        relatedQuery.where(this.type, query.entity);
+        this.addConstraint(relatedQuery, relation);
+        var relatedRecords = relatedQuery.get().reduce(function (records, record) {
+            var key = record[_this.id];
+            if (!records[key]) {
+                records[key] = [];
+            }
+            records[key].push(record);
+            return records;
+        }, {});
+        var relatedPath = this.relatedPath(relation.name);
+        return collection.map(function (item) {
+            var related = relatedRecords[item[_this.localKey]];
+            return _this.setRelated(item, related || [], relatedPath);
+        });
+    };
+    return MorphMany;
+}(Relation));
+
+var __extends$g = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __assign$4 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var MorphToMany = /** @class */ (function (_super) {
+    __extends$g(MorphToMany, _super);
+    /**
+     * Create a new belongs to instance.
+     */
+    function MorphToMany(model, related, pivot, relatedId, id, type, parentKey, relatedKey) {
+        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+        _this.related = _this.model.relation(related);
+        _this.pivot = _this.model.relation(pivot);
+        _this.relatedId = relatedId;
+        _this.id = id;
+        _this.type = type;
+        _this.parentKey = parentKey;
+        _this.relatedKey = relatedKey;
+        return _this;
+    }
+    /**
+     * Define the normalizr schema for the relationship.
+     */
+    MorphToMany.prototype.define = function (schema) {
+        return schema.many(this.related);
+    };
+    /**
+     * Attach the relational key to the given record. Since morph to many
+     * relationship doesn't have any foreign key, it would do nothing.
+     */
+    MorphToMany.prototype.attach = function (_key, _record, _data) {
+        return;
+    };
+    /**
+     * Validate the given value to be a valid value for the relationship.
+     */
+    MorphToMany.prototype.fill = function (value) {
+        return this.fillMany(value);
+    };
+    /**
+     * Make value to be set to model property. This method is used when
+     * instantiating a model or creating a plain object from a model.
+     */
+    MorphToMany.prototype.make = function (value, _parent, _key, plain) {
+        var _this = this;
+        if (plain === void 0) { plain = false; }
+        if (value === null) {
+            return [];
+        }
+        if (value === undefined) {
+            return [];
+        }
+        if (!Array.isArray(value)) {
+            return [];
+        }
+        if (value.length === 0) {
+            return [];
+        }
+        return value.filter(function (record) {
+            return record && typeof record === 'object';
+        }).map(function (record) {
+            return _this.related.make(record, plain);
+        });
+    };
+    /**
+     * Load the morph many relationship for the record.
+     */
+    MorphToMany.prototype.load = function (query, collection, relation) {
+        var _this = this;
+        var relatedQuery = new Query(query.rootState, this.related.entity, false);
+        this.addConstraint(relatedQuery, relation);
+        var relatedRecords = relatedQuery.get().reduce(function (records, record) {
+            records[record[_this.relatedKey]] = record;
+            return records;
+        }, {});
+        var pivotQuery = new Query(query.rootState, this.pivot.entity, false);
+        pivotQuery.where(this.type, query.entity);
+        var pivotRecords = pivotQuery.get().reduce(function (records, record) {
+            if (!records[record[_this.id]]) {
+                records[record[_this.id]] = [];
+            }
+            records[record[_this.id]].push(relatedRecords[record[_this.relatedId]]);
+            return records;
+        }, {});
+        var relatedPath = this.relatedPath(relation.name);
+        return collection.map(function (item) {
+            var related = pivotRecords[item[_this.parentKey]];
+            return _this.setRelated(item, related || [], relatedPath);
+        });
+    };
+    /**
+     * Create pivot records for the given records if needed.
+     */
+    MorphToMany.prototype.createPivots = function (parent, data, key) {
+        var _this = this;
+        Utils.forOwn(data[parent.entity], function (record) {
+            var related = record[key];
+            if (!Array.isArray(related) || related.length === 0) {
+                return;
+            }
+            _this.createPivotRecord(parent, data, record, related);
+        });
+        return data;
+    };
+    /**
+     * Create a pivot record.
+     */
+    MorphToMany.prototype.createPivotRecord = function (parent, data, record, related) {
+        var _this = this;
+        related.forEach(function (id) {
+            var _a, _b;
+            var parentId = record[_this.parentKey];
+            var pivotKey = parentId + "_" + id + "_" + parent.entity;
+            data[_this.pivot.entity] = __assign$4({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
+                    $id: pivotKey
+                },
+                _b[_this.relatedId] = id,
+                _b[_this.id] = parentId,
+                _b[_this.type] = parent.entity,
+                _b), _a));
+        });
+    };
+    return MorphToMany;
+}(Relation));
+
+var __extends$h = (undefined && undefined.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __assign$5 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var MorphedByMany = /** @class */ (function (_super) {
+    __extends$h(MorphedByMany, _super);
+    /**
+     * Create a new belongs to instance.
+     */
+    function MorphedByMany(model, related, pivot, relatedId, id, type, parentKey, relatedKey) {
+        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+        _this.related = _this.model.relation(related);
+        _this.pivot = _this.model.relation(pivot);
+        _this.relatedId = relatedId;
+        _this.id = id;
+        _this.type = type;
+        _this.parentKey = parentKey;
+        _this.relatedKey = relatedKey;
+        return _this;
+    }
+    /**
+     * Define the normalizr schema for the relationship.
+     */
+    MorphedByMany.prototype.define = function (schema) {
+        return schema.many(this.related);
+    };
+    /**
+     * Attach the relational key to the given data. Since morphed by many
+     * relationship doesn't have any foreign key, it would do nothing.
+     */
+    MorphedByMany.prototype.attach = function (_key, _record, _data) {
+        return;
+    };
+    /**
+     * Validate the given value to be a valid value for the relationship.
+     */
+    MorphedByMany.prototype.fill = function (value) {
+        return this.fillMany(value);
+    };
+    /**
+     * Make value to be set to model property. This method is used when
+     * instantiating a model or creating a plain object from a model.
+     */
+    MorphedByMany.prototype.make = function (value, _parent, _key, plain) {
+        var _this = this;
+        if (plain === void 0) { plain = false; }
+        if (value === null) {
+            return [];
+        }
+        if (value === undefined) {
+            return [];
+        }
+        if (!Array.isArray(value)) {
+            return [];
+        }
+        if (value.length === 0) {
+            return [];
+        }
+        return value.filter(function (record) {
+            return record && typeof record === 'object';
+        }).map(function (record) {
+            return _this.related.make(record, plain);
+        });
+    };
+    /**
+     * Load the morph many relationship for the record.
+     */
+    MorphedByMany.prototype.load = function (query, collection, relation) {
+        var _this = this;
+        var relatedQuery = new Query(query.rootState, this.related.entity, false);
+        this.addConstraint(relatedQuery, relation);
+        var relatedRecords = relatedQuery.get().reduce(function (records, record) {
+            records[record[_this.relatedKey]] = record;
+            return records;
+        }, {});
+        var pivotQuery = new Query(query.rootState, this.pivot.entity, false);
+        pivotQuery.where(this.type, relatedQuery.entity);
+        var pivotRecords = pivotQuery.get().reduce(function (records, record) {
+            if (!records[record[_this.relatedId]]) {
+                records[record[_this.relatedId]] = [];
+            }
+            records[record[_this.relatedId]].push(relatedRecords[record[_this.id]]);
+            return records;
+        }, {});
+        var relatedPath = this.relatedPath(relation.name);
+        return collection.map(function (item) {
+            var related = pivotRecords[item[_this.parentKey]];
+            return _this.setRelated(item, related || [], relatedPath);
+        });
+    };
+    /**
+     * Create pivot records for the given records if needed.
+     */
+    MorphedByMany.prototype.createPivots = function (parent, data, key) {
+        var _this = this;
+        Utils.forOwn(data[parent.entity], function (record) {
+            var related = record[key];
+            if (related.length === 0) {
+                return;
+            }
+            _this.createPivotRecord(data, record, related);
+        });
+        return data;
+    };
+    /**
+     * Create a pivot record.
+     */
+    MorphedByMany.prototype.createPivotRecord = function (data, record, related) {
+        var _this = this;
+        related.forEach(function (id) {
+            var _a, _b;
+            var parentId = record[_this.parentKey];
+            var pivotKey = id + "_" + parentId + "_" + _this.related.entity;
+            data[_this.pivot.entity] = __assign$5({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
+                    $id: pivotKey
+                },
+                _b[_this.relatedId] = parentId,
+                _b[_this.id] = id,
+                _b[_this.type] = _this.related.entity,
+                _b), _a));
+        });
+    };
+    return MorphedByMany;
 }(Relation));
 
 var __assign$6 = (undefined && undefined.__assign) || Object.assign || function(t) {
@@ -4198,6 +4302,7 @@ var Model = /** @class */ (function () {
     Model.fill = function (self, record, plain) {
         if (self === void 0) { self = {}; }
         if (record === void 0) { record = {}; }
+        if (plain === void 0) { plain = false; }
         var fields = this.getFields();
         return Object.keys(fields).reduce(function (target, key) {
             var field = fields[key];
@@ -4617,7 +4722,158 @@ function use (plugin, options) {
     plugin.install(components, options);
 }
 
+var NoKey = /** @class */ (function () {
+    function NoKey() {
+    }
+    /**
+     * Set new unique id value.
+     */
+    NoKey.set = function () {
+        this.value = "" + this.prefix + this.count;
+    };
+    /**
+     * Get the current unique id value.
+     */
+    NoKey.get = function () {
+        return this.value;
+    };
+    /**
+     * Increment the count, new unique id value.
+     */
+    NoKey.increment = function () {
+        this.count++;
+        this.set();
+        return this.get();
+    };
+    /**
+     * Count to create a unique id for the record that missing its primary key.
+     */
+    NoKey.count = 0;
+    /**
+     * Prefix string to be used for undefined primary key value.
+     */
+    NoKey.prefix = '_no_key_';
+    /**
+     * The current unique id value. This is the combination of
+     * the `prefix` and the `count`.
+     */
+    NoKey.value = '';
+    return NoKey;
+}());
+
+var IdAttribute = /** @class */ (function () {
+    function IdAttribute() {
+    }
+    /**
+     * Create the id attribute.
+     */
+    IdAttribute.create = function (model) {
+        return function (value, _parent, _key) {
+            var id = model.id(value);
+            return id !== undefined ? id : NoKey.get();
+        };
+    };
+    return IdAttribute;
+}());
+
 var __assign$8 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var ProcessStrategy = /** @class */ (function () {
+    function ProcessStrategy() {
+    }
+    /**
+     * Create the process strategy.
+     */
+    ProcessStrategy.create = function (model) {
+        var _this = this;
+        return function (value, _parentValue, _key) {
+            var id = _this.getId(model, value);
+            return __assign$8({}, value, { $id: id });
+        };
+    };
+    /**
+     * Get the ID value for the given record.
+     */
+    ProcessStrategy.getId = function (model, value) {
+        var id = model.id(value);
+        return id !== undefined ? id : NoKey.increment();
+    };
+    return ProcessStrategy;
+}());
+
+var Schema = /** @class */ (function () {
+    /**
+     * Create a new schema instance.
+     */
+    function Schema(model) {
+        var _this = this;
+        /**
+         * List of generated schemas.
+         */
+        this.schemas = {};
+        this.model = model;
+        var models = model.database().models();
+        Object.keys(models).forEach(function (name) { _this.one(models[name]); });
+    }
+    /**
+     * Create a schema for the given model.
+     */
+    Schema.create = function (model) {
+        return (new this(model)).one();
+    };
+    /**
+     * Create a single schema for the given model.
+     */
+    Schema.prototype.one = function (model) {
+        model = model || this.model;
+        if (this.schemas[model.entity]) {
+            return this.schemas[model.entity];
+        }
+        var schema$$1 = new src_3.Entity(model.entity, {}, {
+            idAttribute: IdAttribute.create(model),
+            processStrategy: ProcessStrategy.create(model)
+        });
+        this.schemas[model.entity] = schema$$1;
+        var definition = this.definition(model);
+        schema$$1.define(definition);
+        return schema$$1;
+    };
+    /**
+     * Create an array schema for the given model.
+     */
+    Schema.prototype.many = function (model) {
+        return new src_3.Array(this.one(model));
+    };
+    /**
+     * Create an union schema for the given model.
+     */
+    Schema.prototype.union = function (callback) {
+        return new src_3.Union(this.schemas, callback);
+    };
+    /**
+     * Create a dfinition for the given model.
+     */
+    Schema.prototype.definition = function (model) {
+        var _this = this;
+        var fields = model.fields();
+        return Object.keys(fields).reduce(function (definition, key) {
+            var field = fields[key];
+            if (field instanceof Relation) {
+                definition[key] = field.define(_this);
+            }
+            return definition;
+        }, {});
+    };
+    return Schema;
+}());
+
+var __assign$9 = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -4665,235 +4921,15 @@ var Module = /** @class */ (function () {
             }; };
             tree.modules[name] = {
                 namespaced: true,
-                state: __assign$8({}, (typeof module.state === 'function' ? module.state() : module.state), _this.state(), { $connection: namespace, $name: name })
+                state: __assign$9({}, (typeof module.state === 'function' ? module.state() : module.state), _this.state(), { $connection: namespace, $name: name })
             };
-            tree.modules[name]['getters'] = __assign$8({}, subGetters, module.getters);
-            tree.modules[name]['actions'] = __assign$8({}, subActions, module.actions);
+            tree.modules[name]['getters'] = __assign$9({}, subGetters, module.getters);
+            tree.modules[name]['actions'] = __assign$9({}, subActions, module.actions);
             tree.modules[name]['mutations'] = module.mutations || {};
         });
         return tree;
     };
     return Module;
-}());
-
-var NoKey = /** @class */ (function () {
-    function NoKey() {
-        /**
-         * Current no key value for the keys.
-         */
-        this.keys = {};
-    }
-    /**
-     * Get no key class.
-     */
-    NoKey.prototype.self = function () {
-        return this.constructor;
-    };
-    /**
-     * Get current no key value for the given key.
-     */
-    NoKey.prototype.get = function (key) {
-        return this.keys[key];
-    };
-    /**
-     * Increment the count, then set new key to the keys.
-     */
-    NoKey.prototype.increment = function (key) {
-        this.self().count++;
-        this.keys[key] = "" + this.self().prefix + this.self().count;
-        return this.keys[key];
-    };
-    /**
-     * Count to create a unique id for the record that missing its primary key.
-     */
-    NoKey.count = 0;
-    /**
-     * Prefix string to be used for undefined primary key value.
-     */
-    NoKey.prefix = '_no_key_';
-    return NoKey;
-}());
-
-var IdAttribute = /** @class */ (function () {
-    function IdAttribute() {
-    }
-    /**
-     * Create the id attribute.
-     */
-    IdAttribute.create = function (noKey, model) {
-        return function (value, _parent, key) {
-            var id = model.id(value);
-            return id !== undefined ? id : noKey.get(key);
-        };
-    };
-    return IdAttribute;
-}());
-
-var __assign$9 = (undefined && undefined.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
-var ProcessStrategy = /** @class */ (function () {
-    function ProcessStrategy() {
-    }
-    /**
-     * Create the process strategy.
-     */
-    ProcessStrategy.create = function (noKey, model, parent, attr) {
-        var _this = this;
-        return function (value, parentValue, key) {
-            var record = __assign$9({}, value);
-            record = _this.setId(record, model, noKey, key);
-            record = _this.generateMorphFields(record, parentValue, parent, attr);
-            return record;
-        };
-    };
-    /**
-     * Set id field to the record.
-     */
-    ProcessStrategy.setId = function (record, model, noKey, key) {
-        var id = model.id(record);
-        return __assign$9({}, record, { $id: id !== undefined ? id : noKey.increment(key) });
-    };
-    /**
-     * Generate morph fields. This method will generate fileds needed for the
-     * morph fields such as `commentable_id` and `commentable_type`.
-     */
-    ProcessStrategy.generateMorphFields = function (record, parentValue, parent, attr) {
-        var _a;
-        if (attr === undefined) {
-            return record;
-        }
-        if (!Contract.isMorphRelation(attr)) {
-            return record;
-        }
-        if (parent === undefined) {
-            return record;
-        }
-        return __assign$9((_a = {}, _a[attr.id] = parentValue.$id, _a[attr.type] = parent.entity, _a), record);
-    };
-    return ProcessStrategy;
-}());
-
-var __assign$a = (undefined && undefined.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
-var Schema = /** @class */ (function () {
-    function Schema() {
-    }
-    /**
-     * Create a schema for the given model.
-     */
-    Schema.one = function (model, schemas, parent, attr) {
-        if (schemas === void 0) { schemas = {}; }
-        var _a;
-        var noKey = new NoKey();
-        var thisSchema = new src_3.Entity(model.entity, {}, {
-            idAttribute: IdAttribute.create(noKey, model),
-            processStrategy: ProcessStrategy.create(noKey, model, parent, attr)
-        });
-        var definition = this.definition(model, __assign$a({}, schemas, (_a = {}, _a[model.entity] = thisSchema, _a)));
-        thisSchema.define(definition);
-        return thisSchema;
-    };
-    /**
-     * Create an array schema for the given model.
-     */
-    Schema.many = function (model, schemas, parent, attr) {
-        if (schemas === void 0) { schemas = {}; }
-        return new src_3.Array(this.one(model, schemas, parent, attr));
-    };
-    /**
-     * Create a dfinition for the given model.
-     */
-    Schema.definition = function (model, schemas, fields) {
-        var _this = this;
-        var theFields = fields || model.fields();
-        return Object.keys(theFields).reduce(function (definition, key) {
-            var field = theFields[key];
-            var def = _this.buildRelations(model, field, schemas);
-            if (def) {
-                definition[key] = def;
-            }
-            return definition;
-        }, {});
-    };
-    /**
-     * Build normalizr schema definition from the given relation.
-     */
-    Schema.buildRelations = function (model, field, schemas) {
-        if (!Contract.isAttribute(field)) {
-            return this.definition(model, schemas, field);
-        }
-        if (field instanceof HasOne) {
-            return this.buildOne(field.related, schemas, model, field);
-        }
-        if (field instanceof BelongsTo) {
-            return this.buildOne(field.parent, schemas, model, field);
-        }
-        if (field instanceof HasMany) {
-            return this.buildMany(field.related, schemas, model, field);
-        }
-        if (field instanceof HasManyBy) {
-            return this.buildMany(field.parent, schemas, model, field);
-        }
-        if (field instanceof HasManyThrough) {
-            return this.buildMany(field.related, schemas, model, field);
-        }
-        if (field instanceof BelongsToMany) {
-            return this.buildMany(field.related, schemas, model, field);
-        }
-        if (field instanceof MorphTo) {
-            return this.buildMorphOne(field, schemas, model);
-        }
-        if (field instanceof MorphOne) {
-            return this.buildOne(field.related, schemas, model, field);
-        }
-        if (field instanceof MorphMany) {
-            return this.buildMany(field.related, schemas, model, field);
-        }
-        if (field instanceof MorphToMany) {
-            return this.buildMany(field.related, schemas, model, field);
-        }
-        if (field instanceof MorphedByMany) {
-            return this.buildMany(field.related, schemas, model, field);
-        }
-        return null;
-    };
-    /**
-     * Build a single entity schema definition.
-     */
-    Schema.buildOne = function (related, schemas, parent, attr) {
-        var s = schemas[related.entity];
-        return s || this.one(related, schemas, parent, attr);
-    };
-    /**
-     * Build a array entity schema definition.
-     */
-    Schema.buildMany = function (related, schemas, parent, attr) {
-        var s = schemas[related.entity];
-        return s ? new src_3.Array(s) : this.many(related, schemas, parent, attr);
-    };
-    /**
-     * Build a morph schema definition.
-     */
-    Schema.buildMorphOne = function (attr, schemas, parent) {
-        var _this = this;
-        var s = Utils.mapValues(parent.database().models(), function (model) {
-            return _this.buildOne(model, schemas, model, attr);
-        });
-        return new src_3.Union(s, function (_value, parentValue) { return parentValue[attr.type]; });
-    };
-    return Schema;
 }());
 
 var Database = /** @class */ (function () {
@@ -4912,7 +4948,10 @@ var Database = /** @class */ (function () {
     /**
      * Initialize the database before a user can start using it.
      */
-    Database.prototype.start = function () {
+    Database.prototype.start = function (store, namespace) {
+        this.store = store;
+        this.namespace = namespace;
+        this.registerModules();
         this.createSchema();
     };
     /**
@@ -4924,13 +4963,6 @@ var Database = /** @class */ (function () {
             model: model,
             module: module
         });
-    };
-    /**
-     * Register a Vuex Store instance.
-     */
-    Database.prototype.registerStore = function (store, namespace) {
-        this.store = store;
-        this.namespace = namespace;
     };
     /**
      * Get the model of the given name from the entities list.
@@ -4965,8 +4997,8 @@ var Database = /** @class */ (function () {
     /**
      * Create the Vuex Module from registered entities.
      */
-    Database.prototype.createModule = function (namespace) {
-        return Module.create(namespace, this.modules());
+    Database.prototype.registerModules = function () {
+        this.store.registerModule(this.namespace, Module.create(this.namespace, this.modules()));
     };
     /**
      * Create the schema definition from registered entities list and set
@@ -4976,7 +5008,7 @@ var Database = /** @class */ (function () {
     Database.prototype.createSchema = function () {
         var _this = this;
         this.entities.forEach(function (entity) {
-            _this.schemas[entity.name] = Schema.one(entity.model);
+            _this.schemas[entity.name] = Schema.create(entity.model);
         });
     };
     return Database;
