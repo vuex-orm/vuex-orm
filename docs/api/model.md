@@ -2,6 +2,8 @@
 
 ## Static Methods
 
+### store
+
 - **`store(): void`**
 
   Get Vuex Store instance.
@@ -9,6 +11,8 @@
   ```js
   const store = User.store()
   ```
+
+### dispatch
 
 - **`dispatch(method: string, payload?: any): Promise<any>`**
 
@@ -18,6 +22,8 @@
   User.dispatch('create', { data: ... })
   ```
 
+### getters
+
 - **`getters(method: string): any`**
 
   Call a getter. It will generate module namespace automatically.
@@ -25,6 +31,8 @@
   ```js
   const users = User.$getters('all')()
   ```
+
+### namespace
 
 - **`namespace(method: string): string`**
 
@@ -38,6 +46,8 @@
 
 ## Instance Methods
 
+### $store
+
 - **`$store(): void`**
 
   Get Vuex Store instance.
@@ -47,6 +57,8 @@
 
   const store = user.$store()
   ```
+
+### $dispatch
 
 - **`$dispatch(method: string, payload?: any): Promise<any>`**
 
@@ -58,6 +70,8 @@
   user.$dispatch('create', { data: ... })
   ```
 
+### $getters
+
 - **`$getters(method: string): any`**
 
   Call a getter. It will generate module namespace automatically.
@@ -67,6 +81,8 @@
 
   const users = user.$getters('all')()
   ```
+
+### $namespace
 
 - **`$namespace(method: string): string`**
 
@@ -79,6 +95,8 @@
 
   // 'entities/users/create'
   ```
+
+### $fields
 
 - **`$fields(): Object`**
 
@@ -104,6 +122,8 @@
 
   // { username: { ... }, name: { ... } }
   ```
+
+### $id
 
 - **`$id(): any`**
 
