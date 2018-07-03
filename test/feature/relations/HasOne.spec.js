@@ -46,6 +46,23 @@ describe('Features – Relations – Has One', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
+  it('can create data when the has one relation is empty', () => {
+    const store = createStore([{ model: User }, { model: Phone }])
+
+    store.dispatch('entities/users/create', {
+      data: { id: 1 }
+    })
+
+    const expected = createState({
+      users: {
+        '1': { $id: 1, id: 1, phone: null }
+      },
+      phones: {}
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
+
   it('can create data when the has one relation is `null`', () => {
     const store = createStore([{ model: User }, { model: Phone }])
 
