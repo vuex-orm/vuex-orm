@@ -14,7 +14,7 @@ export interface Insert extends PersistOptions {
 export type Update = UpdateObject | Record[]
 
 export interface UpdateObject extends PersistOptions {
-  data: Record | Record[]
+  data?: Record | Record[]
   where?: string | number | Condition
   [key: string]: any
 }
