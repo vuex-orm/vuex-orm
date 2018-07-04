@@ -7,29 +7,29 @@ Vuex ORM lets you create "normalized" data schema within Vuex Store with relatio
 ## Table Of Contents
 
 - Prologue
-    - [What Is Vuex ORM](prologue/what-is-vuex-orm.md)
-    - [Installation](prologue/installation.md)
-    - [Getting Started](prologue/getting-started.md)
+    - [What Is Vuex ORM](guide/prologue/what-is-vuex-orm.md)
+    - [Installation](guide/prologue/installation.md)
+    - [Getting Started](guide/prologue/getting-started.md)
 - Core Components
-    - [Models](components/models.md)
-    - [Modules And Store](components/modules-and-store.md)
-    - [Database And Registration](components/database-and-registration.md)
+    - [Models](guide/components/models.md)
+    - [Modules And Store](guide/components/modules-and-store.md)
+    - [Database And Registration](guide/components/database-and-registration.md)
 - Interacting With Store
-    - [Inserting And Updating Data](store/inserting-and-updating-data.md)
-    - [Retrieving Data](store/retrieving-data.md)
-    - [Deleting Data](store/deleting-data.md)
+    - [Inserting And Updating Data](guide/store/inserting-and-updating-data.md)
+    - [Retrieving Data](guide/store/retrieving-data.md)
+    - [Deleting Data](guide/store/deleting-data.md)
 - Relationships
-    - [Defining Relationships](relationships/defining-relationships.md)
-    - [Inserting Relationships](relationships/inserting-relationships.md)
-    - [Retrieving Relationships](relationships/retrieving-relationships.md)
+    - [Defining Relationships](guide/relationships/defining-relationships.md)
+    - [Inserting Relationships](guide/relationships/inserting-relationships.md)
+    - [Retrieving Relationships](guide/relationships/retrieving-relationships.md)
 - Advanced Usage
-    - [Interact With Store From Model](advanced/interact-with-store-from-model.md)
-    - [Accessors & Mutators](advanced/accessors-and-mutators.md)
-    - [Lifecycle Hooks](advanced/lifecycle-hooks.md)
-    - [Serialization](advanced/serialization.md)
+    - [Interact With Store From Model](guide/advanced/interact-with-store-from-model.md)
+    - [Accessors & Mutators](guide/advanced/accessors-and-mutators.md)
+    - [Lifecycle Hooks](guide/advanced/lifecycle-hooks.md)
+    - [Serialization](guide/advanced/serialization.md)
 - Digging Deeper
-    - [Query Class](digging-deeper/query-class.md)
-    - [Plugins](digging-deeper/plugins.md)
+    - [Query Class](guide/digging-deeper/query-class.md)
+    - [Plugins](guide/digging-deeper/plugins.md)
 - API Reference
     - [Model](api/model.md)
 
