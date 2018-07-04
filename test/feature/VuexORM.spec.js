@@ -47,4 +47,25 @@ describe('Feature – Vuex ORM', () => {
     expect(store.state.my_entities.users.$name).toBe('users')
     expect(store.state.my_entities.posts.$name).toBe('posts')
   })
+
+  it('can install Vuex ORM along with custom state as a function', () => {
+    const database = new VuexORM.Database()
+
+    const users = {
+      state () {
+        return {
+          customState: 'Yes, it is custom'
+        }
+      }
+    }
+
+    database.register(User, users)
+
+    const store = new Vuex.Store({
+      plugins: [VuexORM.install(database)]
+    })
+
+    expect(store.state.entities.users.$name).toBe('users')
+    expect(store.state.entities.users.customState).toBe('Yes, it is custom')
+  })
 })
