@@ -2,7 +2,7 @@ import * as Vuex from 'vuex'
 import Schema from '../schema/Schema'
 import Schemas from '../schema/Schemas'
 import Model from '../model/Model'
-import Module from '../modules/Module'
+import ModuleBuilder from '../modules/builder/Builder'
 import Entity from './Entity'
 import Models from './Models'
 import Modules from './Modules'
@@ -93,7 +93,9 @@ export default class Database {
    * Create the Vuex Module from registered entities.
    */
   registerModules (): void {
-    this.store.registerModule(this.namespace, Module.create(this.namespace, this.modules()))
+    const modules = ModuleBuilder.create(this.namespace, this.modules())
+
+    this.store.registerModule(this.namespace, modules)
   }
 
   /**
