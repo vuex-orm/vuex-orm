@@ -1,8 +1,8 @@
 import { Schema as NormalizrSchema } from 'normalizr'
 import Schema from '../../schema/Schema'
-import { Record, NormalizedData } from '../../data'
+import { Record, Records, NormalizedData } from '../../data'
 import Model from '../../model/Model'
-import Query, { Relation as Load } from '../../query/Query'
+import Query from '../../query/Query'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -111,44 +111,62 @@ export default class HasManyThrough extends Relation {
   }
 
   /**
-   * Load the has many through relationship for the record.
+   * Load the has many through relationship for the collection.
    */
-  load (query: Query, collection: Record[], relation: Load): Record[] {
-    const relatedQuery = new Query(query.rootState, this.related.entity, false)
+  load (query: Query, collection: Record[], key: string): void {
+    const relatedQuery = this.getRelation(query, this.related.entity)
 
-    const relatedRecords = relatedQuery.get().reduce((records, record) => {
-      const key = record[this.secondKey]
-      if (!records[key]) {
-        records[key] = []
-      }
-      records[key].push(record)
-      return records
-    }, {})
+    const throughQuery = query.newPlainQuery(this.through.entity)
 
-    this.addConstraint(relatedQuery, relation)
+    this.addEagerConstraintForThrough(throughQuery, collection)
 
-    const throughQuery = new Query(query.rootState, this.through.entity, false)
+    const throughs = throughQuery.get()
 
-    const throughRecords = throughQuery.get().reduce((records, record) => {
-      const key = record[this.firstKey]
+    this.addEagerConstraintForRelated(relatedQuery, throughs)
 
-      if (!records[key]) {
-        records[key] = []
-      }
+    const relateds = this.mapThroughRelations(throughs, relatedQuery)
 
-      if (relatedRecords[record[this.secondLocalKey]]) {
-        records[key] = records[key].concat(relatedRecords[record[this.secondLocalKey]])
-      }
+    collection.forEach((item) => {
+      const related = relateds[item[this.localKey]]
 
-      return records
-    }, {} as { [id: string]: Record[] })
-
-    const relatedPath = this.relatedPath(relation.name)
-
-    return collection.map((item) => {
-      const related = throughRecords[item[this.localKey]]
-
-      return this.setRelated(item, related || [], relatedPath)
+      item[key] = related
     })
+  }
+
+  /**
+   * Set the constraints for the through relation.
+   */
+  addEagerConstraintForThrough (query: Query, collection: Record[]): void {
+    query.where(this.firstKey, this.getKeys(collection, this.localKey))
+  }
+
+  /**
+   * Set the constraints for the related relation.
+   */
+  addEagerConstraintForRelated (query: Query, collection: Record[]): void {
+    query.where(this.secondKey, this.getKeys(collection, this.secondLocalKey))
+  }
+
+  /**
+   * Create a new indexed map for the through relation.
+   */
+  mapThroughRelations (throughs: Record[], relatedQuery: Query): Records {
+    const relateds = this.mapManyRelations(relatedQuery.get(), this.secondKey)
+
+    return throughs.reduce((records, record) => {
+      const id = record[this.firstKey]
+
+      if (!records[id]) {
+        records[id] = []
+      }
+
+      const related = relateds[record[this.secondLocalKey]]
+
+      if (related) {
+        records[id] = records[id].concat(related)
+      }
+
+      return records
+    }, {} as Records)
   }
 }

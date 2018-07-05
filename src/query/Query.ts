@@ -6,7 +6,6 @@ import Models from '../database/Models'
 import Modules from '../database/Modules'
 import * as Data from '../data'
 import Attribute from '../attributes/Attribute'
-import RelationClass from '../attributes/relations/Relation'
 import Model from '../model/Model'
 import Fields from '../model/Fields'
 import State from '../modules/contracts/State'
@@ -15,6 +14,7 @@ import PersistOptions from '../modules/payloads/PersistOptions'
 import * as Options from './options'
 import Processor from './processors/Processor'
 import Filter from './filters/Filter'
+import Loader from './loaders/Loader'
 import Hook from './Hook'
 
 export type UpdateClosure = (record: Data.Record) => void
@@ -28,11 +28,6 @@ export type Buildable = Data.Record | Data.Record[] | null
 export type Constraint = (query: Query) => void | boolean
 
 export type ConstraintCallback = (relationName: string) => Constraint | null
-
-export interface Relation {
-  name: string
-  constraint: null | Constraint
-}
 
 export default class Query {
   /**
@@ -83,9 +78,9 @@ export default class Query {
   _limit: number = Math.pow(2, 53) - 1
 
   /**
-   * The relationships that should be loaded with the result.
+   * The relationships that should be eager loaded with the result.
    */
-  load: Relation[] = []
+  load: Options.Load = {}
 
   /**
    * The lifecycle hook instance.
@@ -823,12 +818,8 @@ export default class Query {
   /**
    * Set the relationships that should be loaded.
    */
-  with (name: string, constraint: Constraint | null = null): this {
-    if (name === '*') {
-      this.withAll()
-    } else {
-      this.load.push({ name, constraint })
-    }
+  with (name: string, constraint: Options.Constraint | null = null): this {
+    Loader.with(this, name, constraint)
 
     return this
   }
@@ -836,14 +827,8 @@ export default class Query {
   /**
    * Query all relations.
    */
-  withAll (constraints: ConstraintCallback = () => null): this {
-    const fields = this.model.getFields()
-
-    for (const field in fields) {
-      if (fields[field] instanceof RelationClass) {
-        this.load.push({ name: field, constraint: constraints(field) })
-      }
-    }
+  withAll (constraint: Options.Constraint = () => null): this {
+    Loader.withAll(this, constraint)
 
     return this
   }
@@ -852,11 +837,7 @@ export default class Query {
    * Query all relations recursively.
    */
   withAllRecursive (depth: number = 3): this {
-    this.withAll(() => {
-      return depth > 0 ? (query: Query) => {
-        query.withAllRecursive(depth - 1)
-      } : null
-    })
+    Loader.withAllRecursive(this, depth)
 
     return this
   }
@@ -1007,9 +988,7 @@ export default class Query {
       return null
     }
 
-    if (!Utils.isEmpty(this.load)) {
-      item = this.loadRelations([item])[0]
-    }
+    Loader.eagerLoadRelations(this, [item])
 
     return this.model.make(item, !this.wrap)
   }
@@ -1022,40 +1001,9 @@ export default class Query {
       return []
     }
 
-    if (!Utils.isEmpty(this.load)) {
-      collection = this.loadRelations(collection)
-    }
+    Loader.eagerLoadRelations(this, collection)
 
     return collection.map(record => this.model.make(record, !this.wrap))
-  }
-
-  /**
-   * Load the relationships for the record.
-   */
-  loadRelations (data: Data.Record[]): Data.Record[] {
-    const fields = this.model.getFields()
-
-    return this.load.reduce((records, relation) => {
-      const relationName = relation.name.split('.')[0]
-
-      Object.keys(fields).some((key) => {
-        const field = fields[key]
-
-        if (key !== relationName) {
-          return false
-        }
-
-        if (!(field instanceof RelationClass)) {
-          return false
-        }
-
-        records = field.load(this, records, relation)
-
-        return true
-      })
-
-      return records
-    }, data)
   }
 
   /**

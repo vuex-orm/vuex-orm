@@ -1,8 +1,8 @@
 import { Schema as NormalizrSchema } from 'normalizr'
 import Schema from '../../schema/Schema'
-import { Record, NormalizedData } from '../../data'
+import { Record, Records, NormalizedData } from '../../data'
 import Model from '../../model/Model'
-import Query, { Relation as Load } from '../../query/Query'
+import Query from '../../query/Query'
 import Relation from './Relation'
 
 export default class HasManyBy extends Relation {
@@ -89,27 +89,43 @@ export default class HasManyBy extends Relation {
   }
 
   /**
-   * Load the has many by relationship for the record.
+   * Load the has many by relationship for the collection.
    */
-  load (query: Query, collection: Record[], relation: Load): Record[] {
-    const relatedPath = this.relatedPath(relation.name)
+  load (query: Query, collection: Record[], key: string): void {
+    const relatedQuery = this.getRelation(query, this.parent.entity)
 
-    const relatedQuery = query.newPlainQuery(this.parent.entity)
+    this.addConstraintForHasManyBy(relatedQuery, collection)
 
-    this.addConstraint(relatedQuery, relation)
+    const relations = this.mapSingleRelations(relatedQuery.get(), this.ownerKey)
 
-    const relatedRecords = this.mapRecords(relatedQuery.get(), this.ownerKey)
+    collection.forEach((item) => {
+      const related = this.getRelatedRecords(relations, item[this.foreignKey])
 
-    return collection.map((item) => {
-      const related = item[relation.name].reduce((related: Record[], id: any) => {
-        if (relatedRecords[id]) {
-          related.push(relatedRecords[id])
-        }
-
-        return related
-      }, [])
-
-      return this.setRelated(item, related, relatedPath)
+      item[key] = related
     })
+  }
+
+  /**
+   * Set the constraints for an eager load of the relation.
+   */
+  addConstraintForHasManyBy (query: Query, collection: Record[]): void {
+    const keys = collection.reduce<string[]>((keys, item) => {
+      return keys.concat(item[this.foreignKey])
+    }, [] as string[])
+
+    query.where(this.ownerKey, keys)
+  }
+
+  /**
+   * Get related records.
+   */
+  getRelatedRecords (records: Records, keys: string[]): Record[] {
+    return keys.reduce<Record[]>((items, id) => {
+      const related = records[id]
+
+      related && items.push(related)
+
+      return items
+    }, [] as Record[])
   }
 }

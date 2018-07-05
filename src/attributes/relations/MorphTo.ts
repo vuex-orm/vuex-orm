@@ -2,7 +2,7 @@ import { Schema as NormalizrSchema } from 'normalizr'
 import Schema from '../../schema/Schema'
 import { Record, NormalizedData } from '../../data'
 import Model from '../../model/Model'
-import Query, { Relation as Load } from '../../query/Query'
+import Query from '../../query/Query'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -66,29 +66,38 @@ export default class MorphTo extends Relation {
   }
 
   /**
-   * Load the morph many relationship for the record.
+   * Load the morph to relationship for the collection.
    */
-  load (query: Query, collection: Record[], relation: Load): Record[] {
-    const relatedRecords = Object.keys(query.getModels()).reduce((records, name) => {
-      if (name === query.entity) {
-        return records
-      }
+  load (query: Query, collection: Record[], key: string): void {
+    const types = this.getTypes(collection)
 
-      const relatedQuery = new Query(query.rootState, name, false)
+    const relateds = types.reduce<NormalizedData>((relateds, type) => {
+      const relatedQuery = this.getRelation(query, type)
 
-      this.addConstraint(relatedQuery, relation)
+      relateds[type] = this.mapSingleRelations(relatedQuery.get(), '$id')
 
-      records[name] = this.mapRecords(relatedQuery.get(), '$id')
+      return relateds
+    }, {} as NormalizedData)
 
-      return records
-    }, {} as { [name: string]: { [id: string]: any } })
+    collection.forEach((item) => {
+      const id = item[this.id]
+      const type = item[this.type]
+      const related = relateds[type][id]
 
-    const relatedPath = this.relatedPath(relation.name)
-
-    return collection.map((item) => {
-      const related = relatedRecords[item[this.type]][item[this.id]]
-
-      return this.setRelated(item, related || null, relatedPath)
+      item[key] = related || null
     })
+  }
+
+  /**
+   * Get all types from the collection.
+   */
+  getTypes (collection: Record[]): string[] {
+    return collection.reduce<string[]>((types, item) => {
+      const type = item[this.type]
+
+      !types.includes(type) && types.push(type)
+
+      return types
+    }, [] as string[])
   }
 }

@@ -2,7 +2,7 @@ import { Schema as NormalizrSchema } from 'normalizr'
 import Schema from '../../schema/Schema'
 import { Record, NormalizedData } from '../../data'
 import Model from '../../model/Model'
-import Query, { Relation as Load } from '../../query/Query'
+import Query from '../../query/Query'
 import Relation from './Relation'
 
 export default class HasOne extends Relation {
@@ -92,25 +92,19 @@ export default class HasOne extends Relation {
   }
 
   /**
-   * Load the has one relationship for the record.
+   * Load the has one relationship for the collection.
    */
-  load (query: Query, collection: Record[], relation: Load): Record[] {
-    const relatedPath = this.relatedPath(relation.name)
+  load (query: Query, collection: Record[], key: string): void {
+    const relation = this.getRelation(query, this.related.entity)
 
-    const localKeys = collection.map(record => record[this.localKey])
+    relation.where(this.foreignKey, this.getKeys(collection, this.localKey))
 
-    const relatedQuery = query.newPlainQuery(this.related.entity)
+    const relations = this.mapSingleRelations(relation.get(), this.foreignKey)
 
-    relatedQuery.where(this.foreignKey, localKeys)
+    collection.forEach((item) => {
+      const related = relations[item[this.localKey]]
 
-    this.addConstraint(relatedQuery, relation)
-
-    const relatedRecords = this.mapRecords(relatedQuery.get(), this.foreignKey)
-
-    return collection.map((item) => {
-      const related = relatedRecords[item[this.localKey]]
-
-      return this.setRelated(item, related || null, relatedPath)
+      item[key] = related || null
     })
   }
 }

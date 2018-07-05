@@ -2,7 +2,7 @@ import { Schema as NormalizrSchema } from 'normalizr'
 import Schema from '../../schema/Schema'
 import { Record, NormalizedData } from '../../data'
 import Model from '../../model/Model'
-import Query, { Relation as Load } from '../../query/Query'
+import Query from '../../query/Query'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -99,31 +99,24 @@ export default class MorphMany extends Relation {
   /**
    * Load the morph many relationship for the record.
    */
-  load (query: Query, collection: Record[], relation: Load): Record[] {
-    const relatedQuery = new Query(query.rootState, this.related.entity, false)
+  load (query: Query, collection: Record[], key: string): void {
+    const relatedQuery = this.getRelation(query, this.related.entity)
 
-    relatedQuery.where(this.type, query.entity)
+    this.addEagerConstraintForMorphMany(relatedQuery, collection, query.entity)
 
-    this.addConstraint(relatedQuery, relation)
+    const relations = this.mapManyRelations(relatedQuery.get(), this.id)
 
-    const relatedRecords = relatedQuery.get().reduce((records, record) => {
-      const key = record[this.id]
+    collection.forEach((item) => {
+      const related = relations[item[this.localKey]]
 
-      if (!records[key]) {
-        records[key] = []
-      }
-
-      records[key].push(record)
-
-      return records
-    }, {} as { [id: string]: Record[] })
-
-    const relatedPath = this.relatedPath(relation.name)
-
-    return collection.map((item) => {
-      const related = relatedRecords[item[this.localKey]]
-
-      return this.setRelated(item, related || [], relatedPath)
+      item[key] = related
     })
+  }
+
+  /**
+   * Set the constraints for an eager load of the relation.
+   */
+  addEagerConstraintForMorphMany (query: Query, collection: Record[], type: string): void {
+    query.where(this.type, type).where(this.id, this.getKeys(collection, this.localKey))
   }
 }

@@ -1,9 +1,9 @@
 import { Schema as NormalizrSchema } from 'normalizr'
 import Schema from '../../schema/Schema'
 import Utils from '../../support/Utils'
-import { Record, NormalizedData } from '../../data'
+import { Record, Records, NormalizedData } from '../../data'
 import Model from '../../model/Model'
-import Query, { Relation as Load } from '../../query/Query'
+import Query from '../../query/Query'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -123,36 +123,61 @@ export default class BelongsToMany extends Relation {
   /**
    * Load the belongs to relationship for the record.
    */
-  load (query: Query, collection: Record[], relation: Load): Record[] {
-    const relatedQuery = new Query(query.rootState, this.related.entity, false)
+  load (query: Query, collection: Record[], key: string): void {
+    const relatedQuery = this.getRelation(query, this.related.entity)
 
-    this.addConstraint(relatedQuery, relation)
+    const pivotQuery = query.newPlainQuery(this.pivot.entity)
 
-    const relatedRecords = relatedQuery.get()
+    this.addEagerConstraintForPivot(pivotQuery, collection)
 
-    const related = relatedRecords.reduce((records, record) => {
-      records[record[this.relatedKey]] = record
+    const pivots = pivotQuery.get()
 
-      return records
-    }, {})
+    this.addEagerConstraintForRelated(relatedQuery, pivots)
 
-    const pivotRecords = new Query(query.rootState, this.pivot.entity).get()
+    const relateds = this.mapPivotRelations(pivots, relatedQuery)
 
-    const pivots = pivotRecords.reduce((records, record) => {
-      if (!records[record[this.foreignPivotKey]]) {
-        records[record[this.foreignPivotKey]] = []
+    collection.forEach((item) => {
+      const related = relateds[item[this.parentKey]]
+
+      item[key] = related
+    })
+  }
+
+  /**
+   * Set the constraints for the pivot relation.
+   */
+  addEagerConstraintForPivot (query: Query, collection: Record[]): void {
+    query.where(this.foreignPivotKey, this.getKeys(collection, this.parentKey))
+  }
+
+  /**
+   * Set the constraints for the related relation.
+   */
+  addEagerConstraintForRelated (query: Query, collection: Record[]): void {
+    query.where(this.relatedPivotKey, this.getKeys(collection, this.relatedKey))
+  }
+
+  /**
+   * Create a new indexed map for the pivot relation.
+   */
+  mapPivotRelations (pivots: Record[], relatedQuery: Query): Records {
+    const relateds = this.mapManyRelations(relatedQuery.get(), this.relatedKey)
+
+    return pivots.reduce((records, record) => {
+      const id = record[this.foreignPivotKey]
+
+      if (!records[id]) {
+        records[id] = []
       }
 
-      records[record[this.foreignPivotKey]].push(related[record[this.relatedPivotKey]])
+      const related = relateds[record[this.relatedPivotKey]]
+
+      if (related) {
+        records[id] = records[id].concat(related)
+      }
 
       return records
-    }, {} as any)
-
-    return collection.map((item) => {
-      item[relation.name] = pivots[item[this.parentKey]]
-
-      return item
-    })
+    }, {} as Records)
   }
 
   /**

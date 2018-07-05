@@ -4,6 +4,8 @@ import WherePrimaryClosure from './WherePrimaryClosure'
 import WhereSecondaryClosure from './WhereSecondaryClosure'
 import Orders from './Orders'
 import OrderDirection from './OrderDirection'
+import Constraint from './Constraint'
+import Load from './Load'
 
 export {
   Where,
@@ -11,5 +13,7 @@ export {
   WherePrimaryClosure,
   WhereSecondaryClosure,
   Orders,
-  OrderDirection
+  OrderDirection,
+  Constraint,
+  Load
 }
