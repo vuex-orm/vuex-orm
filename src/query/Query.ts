@@ -11,6 +11,7 @@ import Model from '../model/Model'
 import Fields from '../model/Fields'
 import State from '../modules/contracts/State'
 import RootState from '../modules/contracts/RootState'
+import PersistOptions from '../modules/payloads/PersistOptions'
 import * as Options from './options'
 import Processor from './processors/Processor'
 import Filter from './filters/Filter'
@@ -27,13 +28,6 @@ export type Buildable = Data.Record | Data.Record[] | null
 export type Constraint = (query: Query) => void | boolean
 
 export type ConstraintCallback = (relationName: string) => Constraint | null
-
-export interface PersistOptions {
-  create?: string[]
-  insert?: string[]
-  update?: string[]
-  insertOrUpdate?: string[]
-}
 
 export interface Relation {
   name: string
