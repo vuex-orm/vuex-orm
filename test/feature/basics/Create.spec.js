@@ -13,12 +13,8 @@ describe('Feature – Basics – Create', () => {
     }
   }
 
-  function getStore () {
-    return createStore([{ model: User }])
-  }
-
   it('can create a data', async () => {
-    const store = getStore()
+    const store = createStore([{ model: User }])
 
     await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe' }
@@ -32,7 +28,7 @@ describe('Feature – Basics – Create', () => {
   })
 
   it('can create list of data', async () => {
-    const store = getStore()
+    const store = createStore([{ model: User }])
 
     await store.dispatch('entities/users/create', {
       data: [
@@ -50,7 +46,7 @@ describe('Feature – Basics – Create', () => {
   })
 
   it('replaces any existing records', async () => {
-    const store = getStore()
+    const store = createStore([{ model: User }])
 
     await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe' }
@@ -68,7 +64,7 @@ describe('Feature – Basics – Create', () => {
   })
 
   it('cleans all existing records when passing empty object', async () => {
-    const store = getStore()
+    const store = createStore([{ model: User }])
 
     await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe' }
@@ -84,7 +80,7 @@ describe('Feature – Basics – Create', () => {
   })
 
   it('cleans all existing records when passing empty array', async () => {
-    const store = getStore()
+    const store = createStore([{ model: User }])
 
     store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe' }
@@ -100,7 +96,7 @@ describe('Feature – Basics – Create', () => {
   })
 
   it('fills missing fields with the default value', async () => {
-    const store = getStore()
+    const store = createStore([{ model: User }])
 
     store.dispatch('entities/users/create', {
       data: { id: 1 }
@@ -114,7 +110,7 @@ describe('Feature – Basics – Create', () => {
   })
 
   it('returns a newly created data', async () => {
-    const store = getStore()
+    const store = createStore([{ model: User }])
 
     const collection = await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe' }
@@ -128,7 +124,7 @@ describe('Feature – Basics – Create', () => {
   })
 
   it('returns list of newly created data', async () => {
-    const store = getStore()
+    const store = createStore([{ model: User }])
 
     const collection = await store.dispatch('entities/users/create', {
       data: [
@@ -148,7 +144,7 @@ describe('Feature – Basics – Create', () => {
   })
 
   it('returns null when creating empty data', async () => {
-    const store = getStore()
+    const store = createStore([{ model: User }])
 
     const collection = await store.dispatch('entities/users/create', { data: {} })
 
