@@ -152,6 +152,33 @@ describe('Feature – Models – Update', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
+  it('can update a record passing array of records by instance method', async () => {
+    const store = createStore([{ model: User }])
+
+    await User.insert({
+      data: [
+        { id: 1, name: 'John Doe' },
+        { id: 2, name: 'Jane Doe' }
+      ]
+    })
+
+    const user = store.getters['entities/users/find'](1)
+
+    await user.$update([
+      { id: 1, name: 'Jane Doe' },
+      { id: 2, name: 'Johnny Doe' }
+    ])
+
+    const expected = createState({
+      users: {
+        '1': { $id: 1, id: 1, name: 'Jane Doe' },
+        '2': { $id: 2, id: 2, name: 'Johnny Doe' }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
+
   it('can update a record by passing where value to the instance method', async () => {
     const store = createStore([{ model: User }])
 

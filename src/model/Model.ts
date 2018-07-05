@@ -2,13 +2,14 @@ import * as Vuex from 'vuex'
 import Utils from '../support/Utils'
 import Container from '../container/Container'
 import Database from '../database/Database'
-import { Record, Records } from '../data'
+import Record from '../data/Record'
+import Records from '../data/Records'
+import Item from '../data/Item'
+import Collection from '../data/Collection'
+import EntityCollection from '../data/EntityCollection'
 import * as Attributes from '../attributes'
 import Query from '../query/Query'
-import Item from '../query/Item'
-import Collection from '../query/Collection'
-import EntityCollection from '../query/EntityCollection'
-import * as Payloads from '../modules/Payloads'
+import * as Payloads from '../modules/payloads/Actions'
 import Fields from './Fields'
 
 export default class Model {
@@ -274,28 +275,28 @@ export default class Model {
   /**
    * Create records.
    */
-  static async create (payload: Payloads.CreatePayload): Promise<EntityCollection> {
+  static async create (payload: Payloads.Create): Promise<EntityCollection> {
     return this.dispatch('create', payload)
   }
 
   /**
    * Insert records.
    */
-  static async insert (payload: Payloads.InsertPayload): Promise<EntityCollection> {
+  static async insert (payload: Payloads.Insert): Promise<EntityCollection> {
     return this.dispatch('insert', payload)
   }
 
   /**
    * Update records.
    */
-  static async update (payload: Payloads.UpdatePayload): Promise<EntityCollection> {
+  static async update (payload: Payloads.Update): Promise<EntityCollection> {
     return this.dispatch('update', payload)
   }
 
   /**
    * Insert or update records.
    */
-  static async insertOrUpdate (payload: Payloads.InsertOrUpdatePayload): Promise<EntityCollection> {
+  static async insertOrUpdate (payload: Payloads.InsertOrUpdate): Promise<EntityCollection> {
     return this.dispatch('insertOrUpdate', payload)
   }
 
@@ -323,7 +324,7 @@ export default class Model {
   /**
    * Insert or update records.
    */
-  static async delete (condition: Payloads.DeletePaylaod): Promise<Item | Collection> {
+  static async delete (condition: Payloads.Delete): Promise<Item | Collection> {
     return this.dispatch('delete', condition)
   }
 
@@ -583,21 +584,25 @@ export default class Model {
   /**
    * Create records.
    */
-  async $create (payload: Payloads.CreatePayload): Promise<EntityCollection> {
+  async $create (payload: Payloads.Create): Promise<EntityCollection> {
     return this.$dispatch('create', payload)
   }
 
   /**
    * Create records.
    */
-  async $insert (payload: Payloads.InsertPayload): Promise<EntityCollection> {
+  async $insert (payload: Payloads.Insert): Promise<EntityCollection> {
     return this.$dispatch('insert', payload)
   }
 
   /**
    * Update records.
    */
-  async $update (payload: Payloads.UpdatePayload): Promise<EntityCollection> {
+  async $update (payload: Payloads.Update): Promise<EntityCollection> {
+    if (Array.isArray(payload)) {
+      return this.$dispatch('update', payload)
+    }
+
     if (payload.where !== undefined) {
       return this.$dispatch('update', payload)
     }
@@ -612,7 +617,7 @@ export default class Model {
   /**
    * Insert or update records.
    */
-  async $insertOrUpdate (payload: Payloads.InsertOrUpdatePayload): Promise<EntityCollection> {
+  async $insertOrUpdate (payload: Payloads.InsertOrUpdate): Promise<EntityCollection> {
     return this.$dispatch('insertOrUpdate', payload)
   }
 
@@ -640,7 +645,7 @@ export default class Model {
   /**
    * Insert or update records.
    */
-  async $delete (condition?: Payloads.DeletePaylaod): Promise<Item | Collection> {
+  async $delete (condition?: Payloads.Delete): Promise<Item | Collection> {
     condition = condition === undefined ? this.$id : condition
 
     return this.$dispatch('delete', condition)

@@ -1,8 +1,3 @@
-import getters from 'app/modules/rootGetters'
-import actions from 'app/modules/rootActions'
-import mutations from 'app/modules/mutations'
-import subActions from 'app/modules/subActions'
-import subGetters from 'app/modules/subGetters'
 import Model from 'app/model/Model'
 import Database from 'app/database/Database'
 

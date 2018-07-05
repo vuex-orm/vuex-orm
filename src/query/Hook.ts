@@ -1,6 +1,6 @@
-import { Records } from '../data'
+import Records from '../data/Records'
+import Collection from '../data/Collection'
 import Query from './Query'
-import Collection from './Collection'
 
 export interface GlobalHook {
   callback: Function

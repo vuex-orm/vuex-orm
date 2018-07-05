@@ -1,23 +1,21 @@
-import * as Vuex from 'vuex'
 import Query from '../query/Query'
-import State from './State'
+import RootState from './contracts/RootState'
+import MutationsContract from './contracts/RootMutations'
 
-export type Mutations = Vuex.MutationTree<State>
-
-const mutations: Mutations = {
+const RootMutations: MutationsContract = {
   /**
    * Save new data to the state. It will remove all existing data in the
    * state. If you want to keep existing data while saving new data,
    * use `insert` instead.
    */
-  create (state: State, { entity, data, create, insert, update, insertOrUpdate }) {
+  create (state: RootState, { entity, data, create, insert, update, insertOrUpdate }) {
     Query.create(state, entity, data, { create, insert, update, insertOrUpdate })
   },
 
   /**
    * Commit `create` to the state.
    */
-  commitCreate (state: State, { entity, data }) {
+  commitCreate (state: RootState, { entity, data }) {
     Query.commitCreate(state, entity, data)
   },
 
@@ -26,28 +24,28 @@ const mutations: Mutations = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert (state: State, { entity, data, create, insert, update, insertOrUpdate }) {
+  insert (state: RootState, { entity, data, create, insert, update, insertOrUpdate }) {
     Query.insert(state, entity, data, { create, insert, update, insertOrUpdate })
   },
 
   /**
    * Commit `insert` to the state.
    */
-  commitInsert (state: State, { entity, data }) {
+  commitInsert (state: RootState, { entity, data }) {
     Query.commitInsert(state, entity, data)
   },
 
   /**
    * Update data in the store.
    */
-  update (state: State, { entity, data, where, create, insert, update, insertOrUpdate }) {
+  update (state: RootState, { entity, data, where, create, insert, update, insertOrUpdate }) {
     Query.update(state, entity, data, where, { create, insert, update, insertOrUpdate })
   },
 
   /**
    * Commit `create` to the state.
    */
-  commitUpdate (state: State, { entity, data }) {
+  commitUpdate (state: RootState, { entity, data }) {
     Query.commitUpdate(state, entity, data)
   },
 
@@ -56,21 +54,21 @@ const mutations: Mutations = {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  insertOrUpdate (state: State, { entity, data, create }) {
+  insertOrUpdate (state: RootState, { entity, data, create }) {
     Query.insertOrUpdate(state, entity, data, create)
   },
 
   /**
    * Delete data from the store.
    */
-  delete (state: State, { entity, where }) {
+  delete (state: RootState, { entity, where }) {
     Query.delete(state, entity, where)
   },
 
   /**
    * Delete all data from the store.
    */
-  deleteAll (state, payload?) {
+  deleteAll (state: RootState, payload?) {
     if (payload && payload.entity) {
       Query.deleteAll(state, payload.entity)
 
@@ -83,9 +81,9 @@ const mutations: Mutations = {
   /**
    * Commit `delete` to the state.
    */
-  commitDelete (state: State, { entity, ids }) {
+  commitDelete (state: RootState, { entity, ids }) {
     Query.commitDelete(state, entity, ids)
   }
 }
 
-export default mutations
+export default RootMutations

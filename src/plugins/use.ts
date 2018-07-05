@@ -19,11 +19,16 @@ import MorphOne from '../attributes/relations/MorphOne'
 import MorphMany from '../attributes/relations/MorphMany'
 import MorphToMany from '../attributes/relations/MorphToMany'
 import MorphedByMany from '../attributes/relations/MorphedByMany'
-import rootGetters, { RootGetters } from '../modules/rootGetters'
-import subGetters, { SubGetters } from '../modules/subGetters'
-import rootActions, { RootActions } from '../modules/rootActions'
-import subActions, { SubActions } from '../modules/subActions'
-import mutations, { Mutations } from '../modules/mutations'
+import Getters from '../modules/Getters'
+import Actions from '../modules/Actions'
+import RootGetters from '../modules/RootGetters'
+import RootActions from '../modules/RootActions'
+import RootMutations from '../modules/RootMutations'
+import GettersContract from '../modules/contracts/Getters'
+import ActionsContract from '../modules/contracts/Actions'
+import RootGettersContract from '../modules/contracts/RootGetters'
+import RootActionsContract from '../modules/contracts/RootActions'
+import RootMutationsContract from '../modules/contracts/RootMutations'
 
 export interface Components {
   Model: typeof Model
@@ -47,11 +52,11 @@ export interface Components {
   MorphMany: typeof MorphMany
   MorphToMany: typeof MorphToMany
   MorphedByMany: typeof MorphedByMany
-  rootGetters: RootGetters
-  subGetters: SubGetters
-  rootActions: RootActions
-  subActions: SubActions
-  mutations: Mutations
+  Getters: GettersContract
+  Actions: ActionsContract
+  RootGetters: RootGettersContract
+  RootActions: RootActionsContract
+  RootMutations: RootMutationsContract
 }
 
 export interface Options {
@@ -88,11 +93,11 @@ export default function (plugin: Plugin, options: Options = {}): void {
     MorphMany,
     MorphToMany,
     MorphedByMany,
-    rootGetters,
-    subGetters,
-    rootActions,
-    subActions,
-    mutations
+    Getters,
+    Actions,
+    RootGetters,
+    RootActions,
+    RootMutations
   }
 
   plugin.install(components, options)

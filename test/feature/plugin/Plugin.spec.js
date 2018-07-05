@@ -80,7 +80,7 @@ describe('Plugin', () => {
   it('add additional feature to the rootGetters', () => {
     const plugin = {
       install (components) {
-        components.rootGetters.getName = (state) => {
+        components.RootGetters.getName = (state) => {
           return state.$name
         }
       }
@@ -98,7 +98,7 @@ describe('Plugin', () => {
   it('add additional feature to the subGetters', () => {
     const plugin = {
       install (components) {
-        components.subGetters.getName = (state) => {
+        components.Getters.getName = (state) => {
           return state.$name
         }
       }
@@ -116,7 +116,7 @@ describe('Plugin', () => {
   it('add additional feature to the rootActions', async () => {
     const plugin = {
       install (components) {
-        components.rootActions.getName = () => {
+        components.RootActions.getName = () => {
           return 'John Doe'
         }
       }
@@ -134,7 +134,7 @@ describe('Plugin', () => {
   it('add additional feature to the subActions', async () => {
     const plugin = {
       install (components) {
-        components.subActions.getName = () => {
+        components.Actions.getName = () => {
           return 'John Doe'
         }
       }
@@ -152,7 +152,7 @@ describe('Plugin', () => {
   it('add additional feature to the mutations', () => {
     const plugin = {
       install (components) {
-        components.mutations.setName = (state, name) => {
+        components.RootMutations.setName = (state, name) => {
           state.name = name
         }
       }

@@ -4,28 +4,25 @@ import Container from '../container/Container'
 import Database from '../database/Database'
 import Models from '../database/Models'
 import Modules from '../database/Modules'
-import { Record, Records, NormalizedData } from '../data'
+import * as Data from '../data'
 import Attribute from '../attributes/Attribute'
 import RelationClass from '../attributes/relations/Relation'
 import Model from '../model/Model'
 import Fields from '../model/Fields'
-import State from '../modules/State'
-import EntityState from '../modules/EntityState'
+import State from '../modules/contracts/State'
+import RootState from '../modules/contracts/RootState'
 import * as Options from './options'
 import Processor from './processors/Processor'
 import Filter from './filters/Filter'
 import Hook from './Hook'
-import Item from './Item'
-import Collection from './Collection'
-import EntityCollection from './EntityCollection'
 
-export type UpdateClosure = (record: Record) => void
+export type UpdateClosure = (record: Data.Record) => void
 
-export type Predicate = (item: Record) => boolean
+export type Predicate = (item: Data.Record) => boolean
 
 export type Condition = number | string | Predicate
 
-export type Buildable = Record | Record[] | null
+export type Buildable = Data.Record | Data.Record[] | null
 
 export type Constraint = (query: Query) => void | boolean
 
@@ -47,12 +44,12 @@ export default class Query {
   /**
    * The root state of the Vuex Store.
    */
-  rootState: State
+  rootState: RootState
 
   /**
    * The entity state of the Vuex Store.
    */
-  state: EntityState
+  state: State
 
   /**
    * The entity name being queried.
@@ -109,12 +106,12 @@ export default class Query {
   /**
    * The Vuex Action context.
    */
-  actionContext: Vuex.ActionContext<State, any> | null = null
+  actionContext: Vuex.ActionContext<RootState, any> | null = null
 
   /**
    * Create a new Query instance.
    */
-  constructor (state: State, entity: string, wrap: boolean = true) {
+  constructor (state: RootState, entity: string, wrap: boolean = true) {
     this.rootState = state
     this.state = state[entity]
     this.entity = entity
@@ -127,7 +124,7 @@ export default class Query {
   /**
    * Create a new query instance
    */
-  static query (state: State, name: string, wrap?: boolean): Query {
+  static query (state: RootState, name: string, wrap?: boolean): Query {
     return new this(state, name, wrap)
   }
 
@@ -171,14 +168,14 @@ export default class Query {
    * state. If you want to keep existing data while saving new data,
    * use `insert` instead.
    */
-  static create (state: State, entity: string, data: Record | Record[], options: PersistOptions): EntityCollection {
+  static create (state: RootState, entity: string, data: Data.Record | Data.Record[], options: PersistOptions): Data.EntityCollection {
     return (new this(state, entity)).create(data, options)
   }
 
   /**
    * Commit `create` to the state.
    */
-  static commitCreate (state: State, entity: string, records: Records): void {
+  static commitCreate (state: RootState, entity: string, records: Data.Records): void {
     (new this(state, entity)).commitCreate(records)
   }
 
@@ -187,28 +184,28 @@ export default class Query {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  static insert (state: State, entity: string, data: Record | Record[], options: PersistOptions): EntityCollection {
+  static insert (state: RootState, entity: string, data: Data.Record | Data.Record[], options: PersistOptions): Data.EntityCollection {
     return (new this(state, entity)).insert(data, options)
   }
 
   /**
    * Commit `insert` to the state.
    */
-  static commitInsert (state: State, entity: string, data: Records): void {
+  static commitInsert (state: RootState, entity: string, data: Data.Records): void {
     (new this(state, entity)).commitInsert(data)
   }
 
   /**
    * Update data in the state.
    */
-  static update (state: State, entity: string, data: Record | Record[] | UpdateClosure, condition?: Condition, options?: PersistOptions): Item | Collection {
+  static update (state: RootState, entity: string, data: Data.Record | Data.Record[] | UpdateClosure, condition?: Condition, options?: PersistOptions): Data.Item | Data.Collection {
     return (new this(state, entity)).update(data, condition, options)
   }
 
   /**
    * Commit `update` to the state.
    */
-  static commitUpdate (state: State, entity: string, data: Records): void {
+  static commitUpdate (state: RootState, entity: string, data: Data.Records): void {
     (new this(state, entity)).commitUpdate(data)
   }
 
@@ -217,56 +214,56 @@ export default class Query {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  static insertOrUpdate (state: State, entity: string, data: Record | Record[], options: PersistOptions): Item | Collection {
+  static insertOrUpdate (state: RootState, entity: string, data: Data.Record | Data.Record[], options: PersistOptions): Data.Item | Data.Collection {
     return (new this(state, entity)).insertOrUpdate(data, options)
   }
 
   /**
    * Get all data of the given entity from the state.
    */
-  static all (state: State, entity: string, wrap?: boolean): Collection {
+  static all (state: RootState, entity: string, wrap?: boolean): Data.Collection {
     return (new this(state, entity, wrap)).get()
   }
 
   /**
    * Get the record of the given id.
    */
-  static find (state: State, entity: string, id: string | number, wrap?: boolean): Item {
+  static find (state: RootState, entity: string, id: string | number, wrap?: boolean): Data.Item {
     return (new this(state, entity, wrap)).find(id)
   }
 
   /**
    * Get the count of the retrieved data.
    */
-  static count (state: State, entity: string, wrap?: boolean): number {
+  static count (state: RootState, entity: string, wrap?: boolean): number {
     return (new this(state, entity, wrap)).count()
   }
 
   /**
    * Get the max value of the specified filed.
    */
-  static max (state: State, entity: string, field: string, wrap?: boolean): number {
+  static max (state: RootState, entity: string, field: string, wrap?: boolean): number {
     return (new this(state, entity, wrap)).max(field)
   }
 
   /**
    * Get the min value of the specified filed.
    */
-  static min (state: State, entity: string, field: string, wrap?: boolean): number {
+  static min (state: RootState, entity: string, field: string, wrap?: boolean): number {
     return (new this(state, entity, wrap)).min(field)
   }
 
   /**
    * Delete a record from the state.
    */
-  static delete (state: State, entity: string, condition: Condition): Item | Collection {
+  static delete (state: RootState, entity: string, condition: Condition): Data.Item | Data.Collection {
     return (new this(state, entity)).delete(condition)
   }
 
   /**
    * Delete all records from the state.
    */
-  static deleteAll (state: State, entity?: string): Collection | void {
+  static deleteAll (state: RootState, entity?: string): Data.Collection | void {
     if (entity) {
       return (new this(state, entity)).deleteAll()
     }
@@ -281,7 +278,7 @@ export default class Query {
   /**
    * Commit `delete` to the state.
    */
-  static commitDelete (state: State, entity: string, ids: string[]): void {
+  static commitDelete (state: RootState, entity: string, ids: string[]): void {
     (new Query(state, entity)).commitDelete(ids)
   }
 
@@ -390,7 +387,7 @@ export default class Query {
   /**
    * Set Vuex Action Context to the query.
    */
-  setActionContext (context: Vuex.ActionContext<State, any> | null): Query {
+  setActionContext (context: Vuex.ActionContext<RootState, any> | null): Query {
     this.actionContext = context
 
     return this
@@ -401,14 +398,14 @@ export default class Query {
    * state. If you want to keep existing data while saving new data,
    * use `insert` instead.
    */
-  create (data: Record | Record[], options: PersistOptions): EntityCollection {
+  create (data: Data.Record | Data.Record[], options: PersistOptions): Data.EntityCollection {
     return this.persist(data, 'create', options)
   }
 
   /**
    * Create records to the state.
    */
-  createMany (records: Records): Collection {
+  createMany (records: Data.Records): Data.Collection {
     records = this.model.hydrateMany(records)
     records = this.hook.executeOnRecords('beforeCreate', records)
 
@@ -422,7 +419,7 @@ export default class Query {
   /**
    * Commit `create` to the state.
    */
-  commitCreate (data: Records): void {
+  commitCreate (data: Data.Records): void {
     this.commit('commitCreate', { data }, () => {
       this.state.data = data
     })
@@ -433,14 +430,14 @@ export default class Query {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert (data: Record | Record[], options: PersistOptions): EntityCollection {
+  insert (data: Data.Record | Data.Record[], options: PersistOptions): Data.EntityCollection {
     return this.persist(data, 'insert', options)
   }
 
   /**
    * Insert list of records in the state.
    */
-  insertMany (records: Records): Collection {
+  insertMany (records: Data.Records): Data.Collection {
     records = this.model.hydrateMany(records)
     records = this.hook.executeOnRecords('beforeCreate', records)
 
@@ -454,7 +451,7 @@ export default class Query {
   /**
    * Commit `insert` to the state.
    */
-  commitInsert (data: Records): void {
+  commitInsert (data: Data.Records): void {
     this.commit('commitInsert', { data }, () => {
       this.state.data = { ...this.state.data, ...data }
     })
@@ -463,7 +460,7 @@ export default class Query {
   /**
    * Update data in the state.
    */
-  update (data: Record | Record[] | UpdateClosure, condition?: Condition, options?: PersistOptions): Item | Collection | EntityCollection {
+  update (data: Data.Record | Data.Record[] | UpdateClosure, condition?: Condition, options?: PersistOptions): Data.Item | Data.Collection | Data.EntityCollection {
     // If the data is array, normalize the data and update them.
     if (Array.isArray(data)) {
       return this.persist(data, 'update', options)
@@ -517,8 +514,8 @@ export default class Query {
   /**
    * Update all records.
    */
-  updateMany (records: Records): Collection {
-    let toBeUpdated: Records = {}
+  updateMany (records: Data.Records): Data.Collection {
+    let toBeUpdated: Data.Records = {}
 
     records = this.model.fixMany(records, [])
 
@@ -550,7 +547,7 @@ export default class Query {
   /**
    * Update the state by id.
    */
-  updateById (data: Record | UpdateClosure, id: string | number): Item {
+  updateById (data: Data.Record | UpdateClosure, id: string | number): Data.Item {
     id = typeof id === 'number' ? id.toString() : id
 
     const state = this.state.data[id]
@@ -581,8 +578,8 @@ export default class Query {
   /**
    * Update the state by condition.
    */
-  updateByCondition (data: Record | UpdateClosure, condition: Predicate): Collection {
-    let toBeUpdated: Records = {}
+  updateByCondition (data: Data.Record | UpdateClosure, condition: Predicate): Data.Collection {
+    let toBeUpdated: Data.Records = {}
 
     Utils.forOwn(this.state.data, (record, id) => {
       if (!condition(record)) {
@@ -610,7 +607,7 @@ export default class Query {
   /**
    * Commit `update` to the state.
    */
-  commitUpdate (data: Records): void {
+  commitUpdate (data: Data.Records): void {
     this.commit('commitUpdate', { data }, () => {
       this.state.data = { ...this.state.data, ...data }
     })
@@ -621,16 +618,16 @@ export default class Query {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  insertOrUpdate (data: Record | Record[], options: PersistOptions): EntityCollection {
+  insertOrUpdate (data: Data.Record | Data.Record[], options: PersistOptions): Data.EntityCollection {
     return this.persist(data, 'insertOrUpdate', options)
   }
 
   /**
    * Insert or update the records.
    */
-  insertOrUpdateMany (records: Records): Collection {
-    let toBeInserted: Records = {}
-    let toBeUpdated: Records = {}
+  insertOrUpdateMany (records: Data.Records): Data.Collection {
+    let toBeInserted: Data.Records = {}
+    let toBeUpdated: Data.Records = {}
 
     Utils.forOwn(records, (record, id) => {
       if (this.state.data[id]) {
@@ -651,7 +648,7 @@ export default class Query {
   /**
    * Persist data into the state.
    */
-  persist (data: Record | Record[], method: string, options: PersistOptions = {}): EntityCollection {
+  persist (data: Data.Record | Data.Record[], method: string, options: PersistOptions = {}): Data.EntityCollection {
     data = this.normalize(data)
 
     if (Utils.isEmpty(data)) {
@@ -671,7 +668,7 @@ export default class Query {
       }
 
       return collection
-    }, {} as EntityCollection)
+    }, {} as Data.EntityCollection)
   }
 
   /**
@@ -700,14 +697,14 @@ export default class Query {
   /**
    * Normalize the given data.
    */
-  normalize (data: Record | Record[]): NormalizedData {
+  normalize (data: Data.Record | Data.Record[]): Data.NormalizedData {
     return Processor.normalize(this, data)
   }
 
   /**
    * Update the state value by merging the given record and state.
    */
-  merge (data: Record, state: Record, fields?: Fields): void {
+  merge (data: Data.Record, state: Data.Record, fields?: Fields): void {
     const theFields = fields || this.model.getFields()
 
     Utils.forOwn(data, (value, key) => {
@@ -727,14 +724,14 @@ export default class Query {
    * Returns all record of the query chain result. This method is alias
    * of the `get` method.
    */
-  all (): Collection {
+  all (): Data.Collection {
     return this.get()
   }
 
   /**
    * Get the record of the given id.
    */
-  find (id: number | string): Item {
+  find (id: number | string): Data.Item {
     const record = this.state.data[id]
 
     if (!record) {
@@ -747,7 +744,7 @@ export default class Query {
   /**
    * Returns all record of the query chain result.
    */
-  get (): Collection {
+  get (): Data.Collection {
     const records = this.process()
 
     return this.collect(records)
@@ -756,7 +753,7 @@ export default class Query {
   /**
    * Returns the first record of the query chain result.
    */
-  first (): Item {
+  first (): Data.Item {
     const records = this.process()
 
     return this.item(records[0])
@@ -765,7 +762,7 @@ export default class Query {
   /**
    * Returns the last single record of the query chain result.
    */
-  last (): Item {
+  last (): Data.Item {
     const records = this.process()
 
     const last = records.length - 1
@@ -778,7 +775,7 @@ export default class Query {
    * If you pass records, it will create an array out of that records
    * instead of the store state.
    */
-  records (records?: Records): Record[] {
+  records (records?: Data.Records): Data.Record[] {
     const theRecords = records || this.state.data
 
     return Object.keys(theRecords).map(id => ({ ...theRecords[id] }))
@@ -923,8 +920,8 @@ export default class Query {
   /**
    * Process the query and filter data.
    */
-  process (): Record[] {
-    let records: Record[] = this.records()
+  process (): Data.Record[] {
+    let records: Data.Record[] = this.records()
 
     // Process `beforeProcess` hook.
     records = this.hook.execute('beforeProcess', records)
@@ -953,21 +950,21 @@ export default class Query {
   /**
    * Filter the given data by registered where clause.
    */
-  filterWhere (records: Record[]): Record[] {
+  filterWhere (records: Data.Record[]): Data.Record[] {
     return Filter.where(this, records)
   }
 
   /**
    * Sort the given data by registered orders.
    */
-  filterOrderBy (records: Record[]): Record[] {
+  filterOrderBy (records: Data.Record[]): Data.Record[] {
     return Filter.orderBy(this, records)
   }
 
   /**
    * Limit the given records by the lmilt and offset.
    */
-  filterLimit (records: Record[]): Record[] {
+  filterLimit (records: Data.Record[]): Data.Record[] {
     return Filter.limit(this, records)
   }
 
@@ -1011,7 +1008,7 @@ export default class Query {
   /**
    * Create a item from given record.
    */
-  item (item?: Record | null): Item {
+  item (item?: Data.Record | null): Data.Item {
     if (!item) {
       return null
     }
@@ -1026,7 +1023,7 @@ export default class Query {
   /**
    * Create a collection (array) from given records.
    */
-  collect (collection: Record[]): Collection {
+  collect (collection: Data.Record[]): Data.Collection {
     if (Utils.isEmpty(collection)) {
       return []
     }
@@ -1041,7 +1038,7 @@ export default class Query {
   /**
    * Load the relationships for the record.
    */
-  loadRelations (data: Record[]): Record[] {
+  loadRelations (data: Data.Record[]): Data.Record[] {
     const fields = this.model.getFields()
 
     return this.load.reduce((records, relation) => {
@@ -1071,7 +1068,7 @@ export default class Query {
    * Check if the given collection has given relationship.
    */
   matchesHasRelation (name: string, constraint?: number | string, count?: number, existence: boolean = true): string[] {
-    let _constraint: (records: Record[]) => boolean
+    let _constraint: (records: Data.Record[]) => boolean
 
     if (constraint === undefined) {
       _constraint = record => record.length >= 1
@@ -1143,7 +1140,7 @@ export default class Query {
   /**
    * Delete records from the state.
    */
-  delete (condition: Condition): Item | Collection {
+  delete (condition: Condition): Data.Item | Data.Collection {
     if (typeof condition === 'function') {
       return this.deleteByCondition(condition)
     }
@@ -1154,7 +1151,7 @@ export default class Query {
   /**
    * Delete a record by id.
    */
-  deleteById (id: string | number): Item {
+  deleteById (id: string | number): Data.Item {
     id = typeof id === 'number' ? id.toString() : id
 
     const state = this.state.data[id]
@@ -1181,8 +1178,8 @@ export default class Query {
   /**
    * Delete record by condition.
    */
-  deleteByCondition (condition: Predicate): Collection {
-    let toBeDeleted: Records = {}
+  deleteByCondition (condition: Predicate): Data.Collection {
+    let toBeDeleted: Data.Records = {}
 
     Utils.forOwn(this.state.data, (record, id) => {
       if (!condition(record)) {
@@ -1206,7 +1203,7 @@ export default class Query {
   /**
    * Delete all records from the state.
    */
-  deleteAll (): Collection {
+  deleteAll (): Data.Collection {
     let toBeDeleted = this.state.data
 
     toBeDeleted = this.hook.executeOnRecords('beforeDelete', toBeDeleted)
@@ -1231,7 +1228,7 @@ export default class Query {
         }
 
         return state
-      }, {} as Record)
+      }, {} as Data.Record)
     })
   }
 }
