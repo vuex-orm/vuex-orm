@@ -170,69 +170,50 @@ const user = store.getters['entities/users/query']()
 */
 ```
 
-## Relation Constraint
+## Relation Constraints
 
-To filter the result of relation loaded with `with` method, you can do so by passing a closure to the second argument.
+To filter the result of relation loaded by `with` method, you can pass a closure to the second argument to define additional constraints to the query.
 
 ```js
+// Get all users with posts that have `published` field value of `true`.
 const user = store.getters['entities/users/query']().with('posts', (query) => {
   query.where('published', true)
-}).find(1)
+}).get()
 
 /*
-  User {
-    id: 1,
-    name: 'john',
+  [
+    User {
+      id: 1,
+      name: 'john',
+      posts: [
+        Post: { id: 1, user_id: 1, body: '...', published: true },
+        Post: { id: 2, user_id: 1, body: '...', published: true }
+      ]
+    },
 
-    posts: [
-      Post: { id: 1, user_id: 1, body: '...', published: true },
-      Post: { id: 2, user_id: 1, body: '...', published: true }
-    ]
-  }
+    ...
+  ]
 */
 ```
 
-When you want to add a constraint to the nested relation, use a closure instead of the dot syntax.
+When you add constraints to the "nested" relation, the constraints will be applied to the deepest relationship.
 
 ```js
-const user = store.getters['entities/users/query']().with('posts', (query) => {
+const user = store.getters['entities/users/query']().with('posts.comments', (query) => {
+  // This constraint will be applied to the `comments`, not `posts`.
+  query.where('type', 'review')
+}).get()
+*/
+```
+
+If you need to add constraints to each relations, you could always nest constraints. This is the most flexible way of defining constraints to the relationships.
+
+```js
+const user = store.getters['entities/users/query']().with('posts.comments', (query) => {
   query.with('comments', (query) => {
     query.where('type', 'review')
   }).where('published', true)
-}).find(1)
-
-/*
-  User {
-    id: 1,
-    name: 'john',
-
-    posts: [
-      Post: {
-        id: 1,
-        user_id: 1,
-        body: '...',
-        published: true,
-
-        comments: [
-          Comment: { id: 1, post_id: 1, body: '...', type: 'review' },
-          Comment: { id: 2, post_id: 1, body: '...', type: 'review' }
-        ]
-      },
-
-      Post: {
-        id: 2,
-        user_id: 1,
-        body: '...',
-        published: true,
-
-        comments: [
-          Comment: { id: 3, post_id: 2, body: '...', type: 'review' },
-          Comment: { id: 4, post_id: 2, body: '...', type: 'review' }
-        ]
-      },
-    ]
-  }
-*/
+}).get()
 ```
 
 ## Querying Relationship Existence
