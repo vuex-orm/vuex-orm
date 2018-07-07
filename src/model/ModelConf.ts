@@ -2,7 +2,7 @@ import { replaceAll, clone } from '../support/Utils'
 export interface JsonModelConf {
   baseUrl?: string,
   endpointPath: string,
-  methods: MethodConf[]
+  methods?: MethodConf[]
 }
 
 export enum HttpMethod {
@@ -46,9 +46,11 @@ export default class ModelConf {
     if (conf) {
       this.baseUrl = conf.baseUrl
       this.endpointPath = conf.endpointPath
-      conf.methods.forEach((method: MethodConf) => {
-        this._methods.set(method.name, new MethodConf(method))
-      })
+      if(conf.methods) {
+        conf.methods.forEach((method: MethodConf) => {
+          this._methods.set(method.name, new MethodConf(method))
+        })
+      }
     }
   }
 
@@ -56,7 +58,7 @@ export default class ModelConf {
    * Extend a current model's conf with the conf pass
    * @param {JsonModelConf} conf a json model's conf
    */
-  public extend (conf: JsonModelConf) {
+  public extend (conf: JsonModelConf): void {
     if (conf.baseUrl) {
       this.baseUrl = conf.baseUrl
     }
@@ -155,7 +157,7 @@ export class MethodConf {
    * Assign the new conf for the method
    * @param {MethodConf}
    */
-  assign (
+  public assign (
     {
       name            = this.name,
       alias           = this.alias,
@@ -163,7 +165,7 @@ export class MethodConf {
       localSync       = this.localSync, 
       http            = this.http
     }: MethodConf
-  ) {
+  ): void {
     this.name = name
     this.alias = alias
     this.remote = remote

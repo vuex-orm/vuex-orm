@@ -4607,9 +4607,11 @@
             if (conf) {
                 this.baseUrl = conf.baseUrl;
                 this.endpointPath = conf.endpointPath;
-                conf.methods.forEach(function (method) {
-                    _this._methods.set(method.name, new MethodConf(method));
-                });
+                if (conf.methods) {
+                    conf.methods.forEach(function (method) {
+                        _this._methods.set(method.name, new MethodConf(method));
+                    });
+                }
             }
         }
         /**

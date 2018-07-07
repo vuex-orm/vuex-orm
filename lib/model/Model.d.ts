@@ -6,7 +6,7 @@ import { Collection, Item } from '../query';
 import ModelConf, { JsonModelConf, MethodConf, PathParam } from '../model/ModelConf';
 export declare type UpdateReturn = Item | Collection | EntityCollection;
 export default class Model extends BaseModel {
-    static _conf: ModelConf | JsonModelConf;
+    static _conf: ModelConf & JsonModelConf;
     /**
      * Configure a model with default conf and extend or override
      * the default configuration with a custom configuration present on

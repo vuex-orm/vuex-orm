@@ -1,7 +1,7 @@
 export interface JsonModelConf {
     baseUrl?: string;
     endpointPath: string;
-    methods: MethodConf[];
+    methods?: MethodConf[];
 }
 export declare enum HttpMethod {
     GET = "get",
