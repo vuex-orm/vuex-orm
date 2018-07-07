@@ -68,8 +68,8 @@ var Connection = /** @class */ (function () {
      */
     Connection.prototype.models = function () {
         return this.database.entities.reduce(function (models, entity) {
-            return __assign({}, models, (_a = {}, _a[entity.model.entity] = entity.model, _a));
             var _a;
+            return __assign({}, models, (_a = {}, _a[entity.model.entity] = entity.model, _a));
         }, {});
     };
     /**
@@ -83,8 +83,8 @@ var Connection = /** @class */ (function () {
      */
     Connection.prototype.modules = function () {
         return this.database.entities.reduce(function (modules, entity) {
-            return __assign({}, modules, (_a = {}, _a[entity.model.entity] = entity.module, _a));
             var _a;
+            return __assign({}, modules, (_a = {}, _a[entity.model.entity] = entity.module, _a));
         }, {});
     };
     /**
@@ -1332,8 +1332,8 @@ var Relation = /** @class */ (function (_super) {
      */
     Relation.prototype.mapRecords = function (records, key) {
         return records.reduce(function (records, record) {
-            return __assign$1({}, records, (_a = {}, _a[record[key]] = record, _a));
             var _a;
+            return __assign$1({}, records, (_a = {}, _a[record[key]] = record, _a));
         }, {});
     };
     /**
@@ -1879,11 +1879,11 @@ var BelongsToMany = /** @class */ (function (_super) {
     BelongsToMany.prototype.createPivotRecord = function (data, record, related) {
         var _this = this;
         related.forEach(function (id) {
+            var _a, _b;
             var pivotKey = record[_this.parentKey] + "_" + id;
             data[_this.pivot.entity] = __assign$2({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
                     $id: pivotKey
                 }, _b[_this.foreignPivotKey] = record[_this.parentKey], _b[_this.relatedPivotKey] = id, _b), _a));
-            var _a, _b;
         });
     };
     return BelongsToMany;
@@ -2252,12 +2252,12 @@ var MorphToMany = /** @class */ (function (_super) {
     MorphToMany.prototype.createPivotRecord = function (parent, data, record, related) {
         var _this = this;
         related.forEach(function (id) {
+            var _a, _b;
             var parentId = record[_this.parentKey];
             var pivotKey = parentId + "_" + id + "_" + parent.entity;
             data[_this.pivot.entity] = __assign$3({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
                     $id: pivotKey
                 }, _b[_this.relatedId] = id, _b[_this.id] = parentId, _b[_this.type] = parent.entity, _b), _a));
-            var _a, _b;
         });
     };
     return MorphToMany;
@@ -2381,12 +2381,12 @@ var MorphedByMany = /** @class */ (function (_super) {
     MorphedByMany.prototype.createPivotRecord = function (data, record, related) {
         var _this = this;
         related.forEach(function (id) {
+            var _a, _b;
             var parentId = record[_this.parentKey];
             var pivotKey = id + "_" + parentId + "_" + _this.related.entity;
             data[_this.pivot.entity] = __assign$4({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
                     $id: pivotKey
                 }, _b[_this.relatedId] = parentId, _b[_this.id] = id, _b[_this.type] = _this.related.entity, _b), _a));
-            var _a, _b;
         });
     };
     return MorphedByMany;
@@ -2506,6 +2506,7 @@ var ProcessStrategy = /** @class */ (function () {
      * morph fields such as `commentable_id` and `commentable_type`.
      */
     ProcessStrategy.generateMorphFields = function (record, parentValue, parent, attr) {
+        var _a;
         if (attr === undefined) {
             return record;
         }
@@ -2516,7 +2517,6 @@ var ProcessStrategy = /** @class */ (function () {
             return record;
         }
         return __assign$5((_a = {}, _a[attr.id] = parentValue.$id, _a[attr.type] = parent.entity, _a), record);
-        var _a;
     };
     return ProcessStrategy;
 }());
@@ -2537,6 +2537,7 @@ var Schema = /** @class */ (function () {
      */
     Schema.one = function (model, schemas, parent, attr) {
         if (schemas === void 0) { schemas = {}; }
+        var _a;
         var noKey = new NoKey();
         var thisSchema = new src_3.Entity(model.entity, {}, {
             idAttribute: IdAttribute.create(noKey, model),
@@ -2545,7 +2546,6 @@ var Schema = /** @class */ (function () {
         var definition = this.definition(model, __assign$6({}, schemas, (_a = {}, _a[model.entity] = thisSchema, _a)));
         thisSchema.define(definition);
         return thisSchema;
-        var _a;
     };
     /**
      * Create an array schema for the given model.
@@ -3330,6 +3330,7 @@ var Query = /** @class */ (function () {
      * Update the state by id.
      */
     Query.prototype.updateById = function (data, id) {
+        var _a;
         id = typeof id === 'number' ? id.toString() : id;
         var state = this.state.data[id];
         if (!state) {
@@ -3345,7 +3346,6 @@ var Query = /** @class */ (function () {
         var item = this.item(hookResult);
         this.hook.execute('afterUpdate', item);
         return item;
-        var _a;
     };
     /**
      * Update the state by condition.
@@ -4301,10 +4301,10 @@ var BaseModel = /** @class */ (function () {
     BaseModel.pivotFields = function () {
         var fields = [];
         Utils.forOwn(this.fields(), function (field, key) {
+            var _a;
             if (field instanceof BelongsToMany || field instanceof MorphToMany || field instanceof MorphedByMany) {
                 fields.push((_a = {}, _a[key] = field, _a));
             }
-            var _a;
         });
         return fields;
     };
@@ -4816,8 +4816,8 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
                 case 0: case 1: t = op; break;
                 case 4: _.label++; return { value: op[1], done: false };
