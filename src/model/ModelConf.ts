@@ -1,6 +1,6 @@
 import { replaceAll, clone } from '../support/Utils'
 export interface JsonModelConf {
-  baseUrl: string,
+  baseUrl?: string,
   endpointPath: string,
   methods: MethodConf[]
 }
@@ -28,7 +28,7 @@ export default class ModelConf {
   /**
    * The host/domain of api server
    */
-  public baseUrl: string = ''
+  public baseUrl: string | undefined = ''
   /**
    * The endpoint of model entity
    */

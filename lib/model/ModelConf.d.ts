@@ -1,5 +1,5 @@
 export interface JsonModelConf {
-    baseUrl: string;
+    baseUrl?: string;
     endpointPath: string;
     methods: MethodConf[];
 }
@@ -20,7 +20,7 @@ export default class ModelConf {
     /**
      * The host/domain of api server
      */
-    baseUrl: string;
+    baseUrl: string | undefined;
     /**
      * The endpoint of model entity
      */
