@@ -4603,13 +4603,13 @@
             /**
              * The methods of model
              */
-            this._methods = new Map();
+            this.methods = new Map();
             if (conf) {
                 this.baseUrl = conf.baseUrl;
                 this.endpointPath = conf.endpointPath;
                 if (conf.methods) {
                     conf.methods.forEach(function (method) {
-                        _this._methods.set(method.name, new MethodConf(method));
+                        _this.methods.set(method.name, new MethodConf(method));
                     });
                 }
             }
@@ -4628,13 +4628,13 @@
             }
             if (conf.methods && conf.methods.length) {
                 conf.methods.forEach(function (method) {
-                    var _method = _this._methods.get(method.name);
+                    var _method = _this.methods.get(method.name);
                     if (_method) {
                         _method.assign(method);
                     }
                     /* tslint:disable */
                     else {
-                        _this._methods.set(method.name, new MethodConf(method));
+                        _this.methods.set(method.name, new MethodConf(method));
                     }
                 });
             }
@@ -4646,7 +4646,7 @@
          */
         ModelConf.prototype.method = function (name) {
             var _method;
-            this._methods.forEach(function (method, key) {
+            this.methods.forEach(function (method, key) {
                 if ((method.alias && method.alias.indexOf(name) > -1) || key === name) {
                     _method = method;
                 }
@@ -4662,7 +4662,7 @@
          * @param method the method conf
          */
         ModelConf.prototype.addMethodConf = function (name, method) {
-            this._methods.set(name, method);
+            this.methods.set(name, method);
         };
         return ModelConf;
     }());

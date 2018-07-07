@@ -28,7 +28,7 @@ export default class ModelConf {
     /**
      * The methods of model
      */
-    private _methods;
+    methods: Map<string, MethodConf>;
     /**
      * Create a model's configuration from json
      * @param {JsonModelConf} jsonConfig the json model's configuration

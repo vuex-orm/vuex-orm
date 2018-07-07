@@ -36,7 +36,7 @@ export default class ModelConf {
   /**
    * The methods of model
    */
-  private _methods: Map<string, MethodConf> = new Map<string, MethodConf>()
+  public methods: Map<string, MethodConf> = new Map<string, MethodConf>()
 
   /**
    * Create a model's configuration from json
@@ -48,7 +48,7 @@ export default class ModelConf {
       this.endpointPath = conf.endpointPath
       if(conf.methods) {
         conf.methods.forEach((method: MethodConf) => {
-          this._methods.set(method.name, new MethodConf(method))
+          this.methods.set(method.name, new MethodConf(method))
         })
       }
     }
@@ -67,13 +67,13 @@ export default class ModelConf {
     }
     if (conf.methods && conf.methods.length) {
       conf.methods.forEach((method: MethodConf) => {
-        const _method = this._methods.get(method.name)
+        const _method = this.methods.get(method.name)
         if (_method) {
           _method.assign(method)
         }
         /* tslint:disable */ 
         else {
-          this._methods.set(method.name, new MethodConf(method))
+          this.methods.set(method.name, new MethodConf(method))
         }
       })
     }
@@ -86,7 +86,7 @@ export default class ModelConf {
    */
   public method (name: string): MethodConf | undefined {
     let _method
-    this._methods.forEach(
+    this.methods.forEach(
       (method: MethodConf, key: string) => {
         if((method.alias && method.alias.indexOf(name) > -1) || key === name) {
           _method = method
@@ -106,7 +106,7 @@ export default class ModelConf {
    * @param method the method conf
    */
   public addMethodConf (name: string, method: MethodConf): void {
-    this._methods.set(name, method)
+    this.methods.set(name, method)
   }
 }
 
