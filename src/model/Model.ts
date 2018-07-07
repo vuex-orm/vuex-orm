@@ -340,7 +340,7 @@ export default class Model extends BaseModel {
    * @static
    * @return {string} api's url
    */
-  private static getUrl (conf: MethodConf, ...pathParams: PathParam[]): string {
+  protected static getUrl (conf: MethodConf, ...pathParams: PathParam[]): string {
     let baseUrl = this._conf.baseUrl
     const methodPath = pathParams.length ? conf.http.bindPathParams(pathParams) : conf.http.path
     if(ModuleOptions.resources.baseUrl) {
@@ -360,7 +360,7 @@ export default class Model extends BaseModel {
    * @return {MethodConf} the new method's configuration
    * @throws Error
    */
-  private static checkMethodConf (methodName: string, conf: MethodConf): MethodConf {
+  protected static checkMethodConf (methodName: string, conf: MethodConf): MethodConf {
     const _conf = this._conf as ModelConf
     let _method = _conf.method(methodName)
     if (conf && _method) {
@@ -378,7 +378,7 @@ export default class Model extends BaseModel {
    * @static
    * @return {ModelConf}
    */
-  private static getConf (): ModelConf {
+  protected static getConf (): ModelConf {
     return this._conf as ModelConf
   }
 
@@ -388,7 +388,7 @@ export default class Model extends BaseModel {
    * @static
    * @return {MethodConf}
    */
-  private static getMethodConf (methodName: string): MethodConf {
+  protected static getMethodConf (methodName: string): MethodConf {
     return this.getConf().method(methodName) as MethodConf
   }
 }

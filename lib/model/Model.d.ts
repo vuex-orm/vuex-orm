@@ -3,7 +3,7 @@ import { Record } from '../data';
 import Query, { UpdateClosure } from '../query/Query';
 import EntityCollection from '../query/EntityCollection';
 import { Collection, Item } from '../query';
-import ModelConf, { JsonModelConf, MethodConf } from '../model/ModelConf';
+import ModelConf, { JsonModelConf, MethodConf, PathParam } from '../model/ModelConf';
 export declare type UpdateReturn = Item | Collection | EntityCollection;
 export default class Model extends BaseModel {
     static _conf: ModelConf | JsonModelConf;
@@ -109,7 +109,7 @@ export default class Model extends BaseModel {
      * @static
      * @return {string} api's url
      */
-    private static getUrl;
+    protected static getUrl(conf: MethodConf, ...pathParams: PathParam[]): string;
     /**
      * Check if the method configuration exist and
      * assign the pass method's conf to it
@@ -121,18 +121,18 @@ export default class Model extends BaseModel {
      * @return {MethodConf} the new method's configuration
      * @throws Error
      */
-    private static checkMethodConf;
+    protected static checkMethodConf(methodName: string, conf: MethodConf): MethodConf;
     /**
      * Get the model conf
      * @static
      * @return {ModelConf}
      */
-    private static getConf;
+    protected static getConf(): ModelConf;
     /**
      * Get the method conf by name
      * @param {string} methodName The method's name
      * @static
      * @return {MethodConf}
      */
-    private static getMethodConf;
+    protected static getMethodConf(methodName: string): MethodConf;
 }
