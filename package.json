@@ -41,7 +41,6 @@
   },
   "devDependencies": {
     "@types/sinon": "^4.3.1",
-    "axios": "^0.18.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.4",
     "babel-plugin-transform-runtime": "^6.23.0",
@@ -71,6 +70,9 @@
     "vuex": "^3.0.1",
     "webpack": "^4.5.0",
     "webpack-node-externals": "^1.7.2"
+  },
+  "dependencies": {
+    "axios": "^0.18.0"
   },
   "nyc": {
     "include": [
