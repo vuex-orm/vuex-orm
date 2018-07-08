@@ -4,7 +4,6 @@ export interface JsonModelConf {
   endpointPath: string,
   methods?: MethodConf[]
 }
-
 export enum HttpMethod {
   GET = 'get',
   HEAD = 'head',
@@ -130,7 +129,7 @@ export class MethodConf {
   /**
    * The method's http configuration
    */
-  public http: HttpConf
+  public http?: HttpConf
 
   /**
    * Constructor
@@ -150,7 +149,7 @@ export class MethodConf {
     this.alias = alias
     this.remote = remote
     this.localSync = localSync
-    this.http = new HttpConf(http)
+    this.http = http && new HttpConf(http)
   }
 
   /**
@@ -170,7 +169,7 @@ export class MethodConf {
     this.alias = alias
     this.remote = remote
     this.localSync = localSync
-    this.http = new HttpConf(http)
+    this.http = http &&new HttpConf(http)
   }
 }
 

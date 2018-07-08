@@ -4678,7 +4678,7 @@
             this.alias = alias;
             this.remote = remote;
             this.localSync = localSync;
-            this.http = new HttpConf(http);
+            this.http = http && new HttpConf(http);
         }
         /**
          * Assign the new conf for the method
@@ -4690,7 +4690,7 @@
             this.alias = alias;
             this.remote = remote;
             this.localSync = localSync;
-            this.http = new HttpConf(http);
+            this.http = http && new HttpConf(http);
         };
         return MethodConf;
     }());
@@ -5202,7 +5202,8 @@
                 pathParams[_i - 1] = arguments[_i];
             }
             var baseUrl = this._conf.baseUrl;
-            var methodPath = pathParams.length ? conf.http.bindPathParams(pathParams) : conf.http.path;
+            var methodPath = pathParams.length ?
+                conf.http.bindPathParams(pathParams) : conf.http.path;
             if (ModuleOptions.resources.baseUrl) {
                 baseUrl = ModuleOptions.resources.baseUrl;
             }

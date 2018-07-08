@@ -72,7 +72,7 @@ export declare class MethodConf {
     /**
      * The method's http configuration
      */
-    http: HttpConf;
+    http?: HttpConf;
     /**
      * Constructor
      * @constructor

@@ -80,7 +80,7 @@ export default class Model extends BaseModel {
   public static async fetch (conf: MethodConf = this.getMethodConf('fetch')): Promise<Collection> {
     const _conf = this.checkMethodConf('fetch', conf)
     const url = this.getUrl(_conf)
-    const data = await Http[_conf.http.method as HttpMethod](url)
+    const data = await Http[((_conf.http as any) as any).method as HttpMethod](url)
       .catch((err: Error) => { console.log(err) }) || []
 
     if (_conf.localSync) {
@@ -149,7 +149,7 @@ export default class Model extends BaseModel {
   ): Promise<Item> {
     const _conf = this.checkMethodConf('fetchById', conf)
     const url = this.getUrl(_conf, new PathParam('id', id.toString()))
-    const data = await Http[_conf.http.method as HttpMethod](url)
+    const data = await Http[(_conf.http as any).method as HttpMethod](url)
       .catch((err: Error) => { console.log(err); }) || []
     
     if(_conf.localSync) {
@@ -175,7 +175,7 @@ export default class Model extends BaseModel {
 
     if (_conf.remote) {
       const url = this.getUrl(_conf, new PathParam('id', id.toString()))
-      data = await Http[_conf.http.method as HttpMethod](url)
+      data = await Http[(_conf.http as any).method as HttpMethod](url)
       .catch((err: Error) => { console.log(err); }) || []
     }
     else {
@@ -195,7 +195,7 @@ export default class Model extends BaseModel {
     let data
     
     if (_conf.remote) {
-      data = await Http[_conf.http.method as HttpMethod](this.getUrl(_conf))
+      data = await Http[(_conf.http as any).method as HttpMethod](this.getUrl(_conf))
       .catch((err: Error) => { console.log(err); }) || []
     }
     else {
@@ -219,7 +219,7 @@ export default class Model extends BaseModel {
     const _conf = this.checkMethodConf('create', conf)
     let dataOutput
     if (_conf.remote) {
-      dataOutput = await Http[_conf.http.method as HttpMethod](this.getUrl(_conf), data)
+      dataOutput = await Http[(_conf.http as any).method as HttpMethod](this.getUrl(_conf), data)
       .catch((err: Error) => { console.log(err); }) || []
       
       if(_conf.localSync) {
@@ -252,7 +252,7 @@ export default class Model extends BaseModel {
     let dataOutput
     if (_conf.remote) {
       const url = this.getUrl(_conf, new PathParam('id', id.toString()))
-      dataOutput = await Http[_conf.http.method as HttpMethod](url, data)
+      dataOutput = await Http[(_conf.http as any).method as HttpMethod](url, data)
       .catch((err: Error) => { console.log(err); }) || []
       
       if(_conf.localSync && dataOutput) {
@@ -288,7 +288,7 @@ export default class Model extends BaseModel {
 
     if (_conf.remote) {
       const url = this.getUrl(_conf, new PathParam('id', id.toString()))
-      const dataOutput = await Http[_conf.http.method as HttpMethod](url)
+      const dataOutput = await Http[(_conf.http as any).method as HttpMethod](url)
       .catch((err: Error) => { console.log(err); }) || []
       
       if(_conf.localSync && dataOutput) {
@@ -311,7 +311,7 @@ export default class Model extends BaseModel {
     const _conf = this.checkMethodConf('deleteById', conf)
 
     if (_conf.remote) {
-      const dataOutput = await Http[_conf.http.method as HttpMethod](this.getUrl(_conf))
+      const dataOutput = await Http[(_conf.http as any).method as HttpMethod](this.getUrl(_conf))
       .catch((err: Error) => { console.log(err); }) || []
       
       if(_conf.localSync && dataOutput) {
@@ -342,7 +342,8 @@ export default class Model extends BaseModel {
    */
   protected static getUrl (conf: MethodConf, ...pathParams: PathParam[]): string {
     let baseUrl = this._conf.baseUrl
-    const methodPath = pathParams.length ? conf.http.bindPathParams(pathParams) : conf.http.path
+    const methodPath = pathParams.length ? 
+      (conf.http as any).bindPathParams(pathParams) : (conf.http as any).path
     if(ModuleOptions.resources.baseUrl) {
       baseUrl = ModuleOptions.resources.baseUrl
     }
