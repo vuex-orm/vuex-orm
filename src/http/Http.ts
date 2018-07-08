@@ -1,55 +1,81 @@
+import Axios, { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios'
+
+export type InterceptorRequestClosure = 
+  (record: AxiosRequestConfig) => AxiosRequestConfig | Promise<AxiosRequestConfig>
+
+export type InterceptorResponseClosure = 
+  (record: AxiosResponse) => AxiosResponse<any> | Promise<AxiosResponse<any>>
+
+export type HttpConf = AxiosRequestConfig;
+
 export default class Http {
-  // Default options are marked with *
-  public static defaultOptions: RequestInit = {
-    method: '',
-    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'same-origin', // include, same-origin, *omit
-    headers: {
-      'user-agent': 'Mozilla/4.0 MDN Example',
-      'content-type': 'application/json'
-    },
-    mode: 'cors', // no-cors, cors, *same-origin
-    redirect: 'follow', // *manual, follow, error
-    referrer: 'no-referrer' // *client, no-referrer
+
+  public static defaultConf: AxiosRequestConfig
+
+  public static conf(config: AxiosRequestConfig) {
+    this.defaultConf = config
   }
 
-  public static request <T> (
-    url: string,
-    _query: {},
-    _method: string,
-    _body = {},
-    _headers = {},
-    options = {}
-  ): Promise<T> {
-
-    const _options = { ...this.defaultOptions, ...options }
-    _options.method = _method
-    if (Object.keys(_body).length) {
-      _options.body = JSON.stringify(_body)
-    }
-    return fetch(url, _options as RequestInit)
-      .then(response => {
-        if (!response.ok) {
-          return Promise.reject(new Error('http request failed'))
-        } else {
-          return Promise.resolve(response.json())
-        }
-      }) // parses response to JSON
+  public static registerRequestInterceptor(requestInterceptor: InterceptorRequestClosure) {
+    Axios.interceptors.request.use(requestInterceptor)
   }
 
-  public static get <T> (url: string, params = {}, headers = {}, options = {}): Promise<T> {
-    return this.request<T>(url, params, 'GET', {}, headers, options)
+  public static registerResponseInterceptor(responseInterceptor: InterceptorResponseClosure) {
+    Axios.interceptors.response.use(responseInterceptor)
   }
 
-  public static post <T> (url: string, payload = {}, headers = {}, options = {}): Promise<T> {
-    return this.request<T>(url, {}, 'POST', payload, headers, options)
+  private static mergeConf(config: AxiosRequestConfig) {
+    return { ...this.defaultConf, ...config }
   }
 
-  public static put <T> (url: string, payload = {}, headers = {}, options = {}): Promise<T> {
-    return this.request<T>(url, {}, 'PUT', payload, headers, options)
+  public static head (
+    url: string, 
+    config: AxiosRequestConfig = this.defaultConf
+  ): AxiosPromise<any> {
+    this.mergeConf(config)
+    return Axios.head(url, config);
   }
 
-  public static delete <T> (url: string, payload = {}, headers = {}, options = {}): Promise<T> {
-    return this.request<T>(url, {}, 'DELETE', payload, headers, options)
+  public static get <T> (
+    url: string, 
+    config: AxiosRequestConfig = this.defaultConf
+  ): AxiosPromise<T> {
+    this.mergeConf(config)
+    return Axios.get<T>(url, config);
+  }
+
+  public static post <T> (
+    url: string, 
+    data = {}, 
+    config: AxiosRequestConfig = this.defaultConf
+  ): AxiosPromise<T> {
+    this.mergeConf(config)
+    return Axios.post<T>(url, data, config);
+  }
+
+  public static patch <T> (
+    url: string, 
+    data = {}, 
+    config: AxiosRequestConfig = this.defaultConf
+  ): AxiosPromise<T> {
+    this.mergeConf(config)
+    return Axios.patch<T>(url, data, config);
+  }
+
+  public static put <T> (
+    url: string, 
+    data = {}, 
+    config: AxiosRequestConfig = this.defaultConf
+  ): AxiosPromise<T> {
+    this.mergeConf(config)
+    return Axios.put<T>(url, data, config);
+  }
+
+  public static delete (
+    url: string, 
+    config: AxiosRequestConfig = this.defaultConf
+  ): AxiosPromise<any> {
+    this.mergeConf(config)
+    return Axios.delete(url, config);
   }
 }

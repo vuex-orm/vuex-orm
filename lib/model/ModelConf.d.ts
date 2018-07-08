@@ -1,5 +1,5 @@
 export interface JsonModelConf {
-    baseUrl?: string;
+    baseURL?: string;
     endpointPath: string;
     methods?: MethodConf[];
 }
@@ -20,7 +20,7 @@ export default class ModelConf {
     /**
      * The host/domain of api server
      */
-    baseUrl: string | undefined;
+    baseURL: string | undefined;
     /**
      * The endpoint of model entity
      */
@@ -107,7 +107,7 @@ export declare class HttpConf {
     bindPathParams(params: PathParam[]): string;
 }
 export declare const defaultConf: {
-    "baseUrl": string;
+    "baseURL": string;
     "endpointPath": string;
     "methods": ({
         "name": string;

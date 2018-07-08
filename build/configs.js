@@ -1,5 +1,6 @@
 const path = require('path')
 const nodeResolve = require('rollup-plugin-node-resolve')
+const nodeGlobals = require('rollup-plugin-node-globals')
 const commonjs = require('rollup-plugin-commonjs')
 
 const resolve = _path => path.resolve(__dirname, '../', _path)
@@ -36,6 +37,7 @@ function genConfig (opts) {
 
       plugins: [
         nodeResolve(),
+        nodeGlobals(),
         commonjs()
       ],
 

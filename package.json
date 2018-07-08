@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "@types/sinon": "^4.3.1",
+    "axios": "^0.18.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.4",
     "babel-plugin-transform-runtime": "^6.23.0",
@@ -58,6 +59,7 @@
     "nyc": "^11.6.0",
     "rollup": "^0.57.1",
     "rollup-plugin-commonjs": "^9.1.0",
+    "rollup-plugin-node-globals": "^1.2.1",
     "rollup-plugin-node-resolve": "^3.3.0",
     "sinon": "^4.5.0",
     "ts-loader": "^4.2.0",

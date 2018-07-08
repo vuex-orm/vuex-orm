@@ -1,6 +1,6 @@
 import { replaceAll, clone } from '../support/Utils'
 export interface JsonModelConf {
-  baseUrl?: string,
+  baseURL?: string,
   endpointPath: string,
   methods?: MethodConf[]
 }
@@ -27,7 +27,7 @@ export default class ModelConf {
   /**
    * The host/domain of api server
    */
-  public baseUrl: string | undefined = ''
+  public baseURL: string | undefined = ''
   /**
    * The endpoint of model entity
    */
@@ -43,7 +43,7 @@ export default class ModelConf {
    */
   constructor (conf?: JsonModelConf) {
     if (conf) {
-      this.baseUrl = conf.baseUrl
+      this.baseURL = conf.baseURL
       this.endpointPath = conf.endpointPath
       if(conf.methods) {
         conf.methods.forEach((method: MethodConf) => {
@@ -58,8 +58,8 @@ export default class ModelConf {
    * @param {JsonModelConf} conf a json model's conf
    */
   public extend (conf: JsonModelConf): void {
-    if (conf.baseUrl) {
-      this.baseUrl = conf.baseUrl
+    if (conf.baseURL) {
+      this.baseURL = conf.baseURL
     }
     if (conf.endpointPath) {
       this.endpointPath = conf.endpointPath
@@ -207,7 +207,7 @@ export class HttpConf {
 }
 
 export const defaultConf = {
-  "baseUrl": "http://localhost:3000",
+  "baseURL": "http://localhost:3000",
   "endpointPath": "/{self}",
   "methods": [
     {

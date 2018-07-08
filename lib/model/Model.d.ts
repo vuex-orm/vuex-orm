@@ -1,12 +1,14 @@
 import BaseModel from './BaseModel';
+import { HttpConf } from '../http/Http';
 import { Record } from '../data';
 import Query, { UpdateClosure } from '../query/Query';
 import EntityCollection from '../query/EntityCollection';
 import { Collection, Item } from '../query';
 import ModelConf, { JsonModelConf, MethodConf, PathParam } from '../model/ModelConf';
 export declare type UpdateReturn = Item | Collection | EntityCollection;
+export declare type MethodConfParameter = MethodConf & HttpConf;
 export default class Model extends BaseModel {
-    static _conf: ModelConf | JsonModelConf;
+    static _conf: ModelConf | (JsonModelConf & HttpConf);
     /**
      * Configure a model with default conf and extend or override
      * the default configuration with a custom configuration present on
@@ -24,7 +26,7 @@ export default class Model extends BaseModel {
      * @async
      * @return {Promise<UpdateReturn>} fetched data
      */
-    static fetch(conf?: MethodConf): Promise<Collection>;
+    static fetch(conf?: MethodConfParameter): Promise<Collection>;
     /**
      * Wrap find method
      * @param {MethodConf} conf a method's conf
@@ -32,7 +34,7 @@ export default class Model extends BaseModel {
      * @async
      * @return {Promise<Collection>} list of results
      */
-    static find(conf?: MethodConf): Promise<Collection>;
+    static find(conf?: MethodConfParameter): Promise<Collection>;
     /**
      * Wrap findById method
      * @param {number} id of record to find
@@ -40,7 +42,7 @@ export default class Model extends BaseModel {
      * @static
      * @return {Promise<Item>} result object
      */
-    static findById(id: number, conf?: MethodConf): Promise<Item>;
+    static findById(id: number, conf?: MethodConfParameter): Promise<Item>;
     /**
      * Exec a fetchById api method with the default confs
      * or the pass confs and sync to the local store (optionaly)
@@ -50,7 +52,7 @@ export default class Model extends BaseModel {
      * @async
      * @return {Promise<Item>} fetched item
      */
-    static fetchById(id: number, conf?: MethodConf): Promise<Item>;
+    static fetchById(id: number, conf?: MethodConfParameter): Promise<Item>;
     /**
      * Check if record identified by id param exist
      * @param {number} id of the record to search
@@ -58,14 +60,14 @@ export default class Model extends BaseModel {
      * @static
      * @return {Promise<boolean>} the result
      */
-    static exist(id: number, conf?: MethodConf): Promise<boolean>;
+    static exist(id: number, conf?: MethodConfParameter): Promise<boolean>;
     /**
      * Wrap count method
      * @param {MethodConf} conf a method's conf
      * @static
      * @return {Promise<Number>} number of element
      */
-    static count(conf?: MethodConf): Promise<number>;
+    static count(conf?: MethodConfParameter): Promise<number>;
     /**
      * Wrap create method
      * @param {Record | Record[]} data to create
@@ -73,7 +75,7 @@ export default class Model extends BaseModel {
      * @static
      * @return {Promise<EntityCollection>} the created data
      */
-    static create(data: Record | Record[], conf?: MethodConf): Promise<EntityCollection>;
+    static create(data: Record | Record[], conf?: MethodConfParameter): Promise<EntityCollection>;
     /**
      * Wrap update method
      * @param {number} id of the record to search
@@ -82,20 +84,20 @@ export default class Model extends BaseModel {
      * @static
      * @return {Promise<UpdateReturn>} updated data
      */
-    static update(id: number, data: Record | Record[] | UpdateClosure, conf?: MethodConf): Promise<UpdateReturn>;
+    static update(id: number, data: Record | Record[] | UpdateClosure, conf?: MethodConfParameter): Promise<UpdateReturn>;
     /**
      * Wrap deleteById method
      * @param id of record to delete
      * @param {MethodConf} conf a method's conf
      * @static
      */
-    static deleteById(id: number, conf?: MethodConf): Promise<void>;
+    static deleteById(id: number, conf?: MethodConfParameter): Promise<void>;
     /**
      * Wrap deleteAll method
      * @param {MethodConf} conf a method's conf
      * @static
      */
-    static delete(conf?: MethodConf): Promise<void>;
+    static delete(conf?: MethodConfParameter): Promise<void>;
     /**
      * Wrap query getter
      * @static
@@ -109,7 +111,7 @@ export default class Model extends BaseModel {
      * @static
      * @return {string} api's url
      */
-    protected static getUrl(conf: MethodConf, ...pathParams: PathParam[]): string;
+    protected static getUrl(conf: MethodConfParameter, ...pathParams: PathParam[]): string;
     /**
      * Check if the method configuration exist and
      * assign the pass method's conf to it
@@ -121,7 +123,7 @@ export default class Model extends BaseModel {
      * @return {MethodConf} the new method's configuration
      * @throws Error
      */
-    protected static checkMethodConf(methodName: string, conf: MethodConf): MethodConf;
+    protected static checkMethodConf(methodName: string, conf: MethodConfParameter): MethodConf;
     /**
      * Get the model conf
      * @static
@@ -134,5 +136,5 @@ export default class Model extends BaseModel {
      * @static
      * @return {MethodConf}
      */
-    protected static getMethodConf(methodName: string): MethodConf;
+    protected static getMethodConf(methodName: string): MethodConfParameter;
 }

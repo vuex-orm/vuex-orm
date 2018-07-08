@@ -1,12 +1,20 @@
-export interface ResourcesOptions {
-    baseUrl?: string;
+import { HttpConf, InterceptorRequestClosure, InterceptorResponseClosure } from '../http/Http';
+interface InterceptosClosures {
+    requestInterceptor?: InterceptorRequestClosure;
+    responseInterceptor?: InterceptorResponseClosure;
 }
 export interface Options {
     namespace?: string;
-    resources?: ResourcesOptions;
+    http?: HttpConf & InterceptosClosures;
 }
 export default class ModuleOptions implements Options {
     static namespace: string;
-    static resources: ResourcesOptions;
+    static http: HttpConf & InterceptosClosures;
     static register(options?: Options): void;
+    private static confAxiosModule;
+    static check(): void;
+    static checkBaseUrl(): void;
+    static checkTimeout(): void;
+    static checkHeader(): void;
 }
+export {};
