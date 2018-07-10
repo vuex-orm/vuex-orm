@@ -49,20 +49,20 @@ export default class HasOne extends Relation {
     const related = data[this.related.entity]
 
     // If there's no related record, there's nothing we can do so return here.
-    if (!related) {
+    if (!related || !related[key]) {
       return
     }
 
     // If there is a related record, check if the related record already has
     // proper foreign key value. If it has, that means the user has provided
     // the foreign key themselves so leave it alone and do nothing.
-    if (related[key] && related[key][this.foreignKey] !== undefined) {
+    if (related[key][this.foreignKey] !== undefined) {
       return
     }
 
     // Check if the record has local key set. If not, set the local key to be
     // the id value. This happens if the user defines the custom local key
-    // and didn't include in the data being normalized.
+    // and didn't include it in the data being normalized.
     if (!record[this.localKey]) {
       record[this.localKey] = record.$id
     }

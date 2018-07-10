@@ -83,6 +83,35 @@ describe('Features – Relations – Has One', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
+  it('it can create data containing mixed fields value', () => {
+    const store = createStore([{ model: User }, { model: Phone }])
+
+    store.dispatch('entities/users/create', {
+      data: [
+        {
+          id: 1,
+          phone: { id: 1, user_id: 1 }
+        },
+        {
+          id: 2,
+          phone: null
+        }
+      ]
+    })
+
+    const expected = createState({
+      users: {
+        '1': { $id: 1, id: 1, phone: 1 },
+        '2': { $id: 2, id: 2, phone: null }
+      },
+      phones: {
+        '1': { $id: 1, id: 1, user_id: 1 }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
+
   it('assigns local key if it is not present when creating the record', () => {
     class User extends Model {
       static entity = 'users'
