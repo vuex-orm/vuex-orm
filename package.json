@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.4",
+    "babel-loader": "^7.1.5",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-2": "^6.24.1",
@@ -64,12 +64,12 @@
     "tslint": "^5.10.0",
     "tslint-config-standard": "^7.1.0",
     "typescript": "^2.9.2",
-    "uglify-js": "^3.4.3",
+    "uglify-js": "^3.4.4",
     "vue": "^2.5.16",
-    "vuepress": "^0.10.2",
+    "vuepress": "^0.11.0",
     "vuepress-theme-vue": "^1.0.3",
     "vuex": "^3.0.1",
-    "webpack": "^4.14.0"
+    "webpack": "^4.15.1"
   },
   "nyc": {
     "include": [
