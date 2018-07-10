@@ -86,4 +86,4 @@ const count = store.state.users.count
 store.commit('entities/users/add', 3)
 ```
 
-However, Vuex ORM has predefined getters, actions, and mutations to store, modify and search data. See [Interacting With Store](../interacting-with-store.md) for the usage.
+However, Vuex ORM has predefined getters, actions, and mutations to store, modify and search data. See [Interacting With Store](../store/retrieving-data.md) for the usage.
