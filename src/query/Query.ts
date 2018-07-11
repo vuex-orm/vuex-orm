@@ -53,7 +53,7 @@ export default class Query {
   /**
    * The module being queried.
    */
-  module: Vuex.Module<any,any>
+  module: Vuex.Module<any, any>
 
   /**
    * The where constraints for the query.
