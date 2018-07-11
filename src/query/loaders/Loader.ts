@@ -83,7 +83,7 @@ export default class Loader {
   }
 
   /**
-   * Eager load the relationships for the goven records.
+   * Eager load the relationships for the given records.
    */
   static eagerLoadRelations (query: Query, records: Record[]): void {
     const fields = query.model.getFields()
