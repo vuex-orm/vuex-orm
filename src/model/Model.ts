@@ -24,6 +24,11 @@ export default class Model {
   static primaryKey: string | string[] = 'id'
 
   /**
+   * The cached attribute fields of the model.
+   */
+  static cachedFields?: Fields
+
+  /**
    * Dynamic properties that field data should be assigned at instantiation.
    */
   ;[key: string]: any
@@ -46,10 +51,16 @@ export default class Model {
    * Get the model schema definition by adding additional default fields.
    */
   static getFields (): Fields {
-    return {
+    if (this.cachedFields) {
+      return this.cachedFields
+    }
+
+    this.cachedFields = {
       $id: this.attr(undefined),
       ...this.fields()
     }
+
+    return this.cachedFields
   }
 
   /**
