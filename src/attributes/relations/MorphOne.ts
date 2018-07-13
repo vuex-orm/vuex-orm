@@ -51,8 +51,11 @@ export default class MorphOne extends Relation {
    * Attach the relational key to the given data.
    */
   attach (key: any, record: Record, data: NormalizedData): void {
-    const relatedItems = data[this.related.entity]
-    const relatedItem = relatedItems[key]
+    const relatedItem = data[this.related.entity] && data[this.related.entity][key]
+
+    if (!relatedItem) {
+      return
+    }
 
     relatedItem[this.id] = relatedItem[this.id] || record.$id
     relatedItem[this.type] = relatedItem[this.type] || this.model.entity
