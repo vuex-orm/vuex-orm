@@ -21,11 +21,8 @@ export type HttpConf = AxiosRequestConfig;
 export default class Http {
   private axiosInstance: AxiosInstance
   
-  constructor(
-    config: AxiosRequestConfig & InterceptosClosures, 
-    defaultConfig: AxiosRequestConfig & InterceptosClosures
-  ) {
-    this.axiosInstance = Axios.create(this.mergeConf(config, defaultConfig));
+  constructor(config: AxiosRequestConfig & InterceptosClosures) {
+    this.axiosInstance = Axios.create(config);
     
     if(config.requestInterceptors && Array.isArray(config.requestInterceptors)) {
       config.requestInterceptors.forEach(
@@ -50,10 +47,6 @@ export default class Http {
 
   public static registerResponseInterceptor(responseInterceptor: InterceptorResponseClosure) {
     Axios.interceptors.response.use(responseInterceptor)
-  }
-
-  private mergeConf(config: AxiosRequestConfig, defaultConfig: AxiosRequestConfig) {
-    return { ...defaultConfig, ...config }
   }
 
   public head (

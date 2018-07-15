@@ -1,5 +1,5 @@
 import BaseModel from './BaseModel'
-import Http from '../http/Http'
+import Http, { HttpConf } from '../http/Http'
 import { Record } from '../data'
 import Query, { UpdateClosure } from '../query/Query'
 import EntityCollection from '../query/EntityCollection'
@@ -29,47 +29,45 @@ export default class Model extends BaseModel {
    * @static
    */
   public static conf (parameterConf?: JsonModelConf): void {
-
     const _onModelconf = this._conf as JsonModelConf
+    defaultConf.http = {...defaultConf.http as any, ...ModuleOptions.getDefaultHttpConfig()}
 
+    this.replaceAllUrlSelf(defaultConf as JsonModelConf)
     // instance default conf
-    this._conf = new ModelConf(
-      JSON.parse(
-        replaceAll(
-          JSON.stringify(defaultConf),
-          '{self}',
-          this.entity
-        )
-      )
-    )
+    this._conf = new ModelConf(defaultConf as JsonModelConf)
 
     // check if confs on model are present
     if (_onModelconf) {
-      this._conf.extend(
-        JSON.parse(
-          replaceAll(
-            JSON.stringify(_onModelconf),
-            '{self}',
-            this.entity
-          )
-        )
-      )
+      this.replaceAllUrlSelf(_onModelconf as JsonModelConf)
+      this._conf.extend(_onModelconf)
     }
 
     // check if confs parameter are present
     if (parameterConf) {
-      this._conf.extend(
-        JSON.parse(
-          replaceAll(
-            JSON.stringify(parameterConf),
-            '{self}',
-            this.entity
-          )
-        )
-      )
+      this.replaceAllUrlSelf(parameterConf as JsonModelConf)
+      this._conf.extend(parameterConf)
     }
 
-    this._http = new Http(this._conf.http as any, ModuleOptions.getDefaultHttpConfig());
+    this._http = new Http(this._conf.http as HttpConf);
+  }
+
+  /**
+   * 
+   * @param {JsonModelConf} conf
+   * @static
+   */
+  private static replaceAllUrlSelf(conf: JsonModelConf): void {
+    if(conf.http && conf.http.url) {
+      conf.http.url = replaceAll(conf.http.url, '{self}', this.entity)
+    }
+
+    if(conf.methods && Array.isArray(conf.methods)) {
+      conf.methods.forEach((method: MethodConf) => {
+        if(method.http && method.http.url) {
+          method.http.url = replaceAll(method.http.url, '{self}', this.entity)
+        }
+      })
+    }
   }
 
   /**
