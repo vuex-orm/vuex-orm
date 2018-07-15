@@ -1,9 +1,11 @@
 import { replaceAll, clone } from '../support/Utils'
+import { HttpConf } from 'src/http/Http';
+
 export interface JsonModelConf {
-  baseURL?: string,
-  endpointPath: string,
+  http?: HttpConf,
   methods?: MethodConf[]
 }
+
 export enum HttpMethod {
   GET = 'get',
   HEAD = 'head',
@@ -25,13 +27,9 @@ export class PathParam {
 
 export default class ModelConf {
   /**
-   * The host/domain of api server
+   * The http config
    */
-  public baseURL: string | undefined = ''
-  /**
-   * The endpoint of model entity
-   */
-  public endpointPath: string = ''
+  public http: HttpConf
   /**
    * The methods of model
    */
@@ -43,8 +41,6 @@ export default class ModelConf {
    */
   constructor (conf?: JsonModelConf) {
     if (conf) {
-      this.baseURL = conf.baseURL
-      this.endpointPath = conf.endpointPath
       if(conf.methods) {
         conf.methods.forEach((method: MethodConf) => {
           this.methods.set(method.name, new MethodConf(method))
@@ -58,11 +54,8 @@ export default class ModelConf {
    * @param {JsonModelConf} conf a json model's conf
    */
   public extend (conf: JsonModelConf): void {
-    if (conf.baseURL) {
-      this.baseURL = conf.baseURL
-    }
-    if (conf.endpointPath) {
-      this.endpointPath = conf.endpointPath
+    if (conf.http) {
+      this.http = {...this.http, ...conf.http}
     }
     if (conf.methods && conf.methods.length) {
       conf.methods.forEach((method: MethodConf) => {
@@ -138,7 +131,7 @@ export class MethodConf {
    */
   constructor (
     {
-      name, 
+      name,
       alias = undefined, 
       remote = undefined, 
       localSync = undefined, 
@@ -149,7 +142,7 @@ export class MethodConf {
     this.alias = alias
     this.remote = remote
     this.localSync = localSync
-    this.http = http && new HttpConf(http)
+    this.http = http
   }
 
   /**
@@ -169,27 +162,7 @@ export class MethodConf {
     this.alias = alias
     this.remote = remote
     this.localSync = localSync
-    this.http = http &&new HttpConf(http)
-  }
-}
-
-export class HttpConf {
-  /**
-   * The http path
-   */
-  public path: string
-  /**
-   * The http method
-   */
-  public method: HttpMethod
-
-  /**
-   * @constructor
-   * @param {HttpConf} 
-   */
-  constructor ({path, method}: HttpConf) {
-    this.path = path
-    this.method = method
+    this.http = http
   }
 
   /**
@@ -198,17 +171,23 @@ export class HttpConf {
    * @return {string} path with bind params
    */
   public bindPathParams(params: PathParam[]): string {
-    let _path = clone(this.path)
-    params.forEach(param => {
-      _path = replaceAll(_path, `:${param.name}`, param.value)
-    })
+    let _path = ""
+    if(this.http && this.http.url) {
+      _path = clone(this.http.url)
+
+      params.forEach(param => {
+        _path = replaceAll(_path, `:${param.name}`, param.value)
+      })
+    }
     return _path
   }
 }
 
 export const defaultConf = {
-  "baseURL": "http://localhost:3000",
-  "endpointPath": "/{self}",
+  "http": {
+    "baseURL": "http://localhost:3000",
+    "url": "/{self}",
+  },
   "methods": [
     {
       "name": "find",
@@ -216,7 +195,7 @@ export const defaultConf = {
       "remote": true,
       "localSync": true,
       "http": {
-          "path": "",
+          "url": "",
           "method": "get"
       }
     },
@@ -226,7 +205,7 @@ export const defaultConf = {
       "remote": true,
       "localSync": true,
       "http": {
-          "path": "/:id",
+          "url": "/:id",
           "method": "get"
       }
     },
@@ -234,7 +213,7 @@ export const defaultConf = {
       "name": "exist",
       "remote": true,
       "http": {
-          "path": "/exist/:id",
+          "url": "/exist/:id",
           "method": "get"
       }
     },
@@ -242,7 +221,7 @@ export const defaultConf = {
       "name": "count",
       "remote": true,
       "http": {
-          "path": "/count",
+          "url": "/count",
           "method": "get"
       }
     },
@@ -251,7 +230,7 @@ export const defaultConf = {
       "remote": true,
       "localSync": true,
       "http": {
-          "path": "",
+          "url": "",
           "method": "post"
       }
     },
@@ -260,7 +239,7 @@ export const defaultConf = {
       "remote": true,
       "localSync": true,
       "http": {
-          "path": "/:id",
+          "url": "/:id",
           "method": "put"
       }
     },
@@ -269,7 +248,7 @@ export const defaultConf = {
       "remote": true,
       "localSync": true,
       "http": {
-          "path": "",
+          "url": "",
           "method": "delete"
       }
     },
@@ -278,7 +257,7 @@ export const defaultConf = {
       "remote": true,
       "localSync": true,
       "http": {
-          "path": "/:id",
+          "url": "/:id",
           "method": "delete"
       }
     }

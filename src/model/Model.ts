@@ -1,22 +1,23 @@
 import BaseModel from './BaseModel'
-import Http, { HttpConf }from '../http/Http'
+import Http from '../http/Http'
 import { Record } from '../data'
 import Query, { UpdateClosure } from '../query/Query'
 import EntityCollection from '../query/EntityCollection'
 import { Collection, Item } from '../query'
 import ModelConf, {
   JsonModelConf,
-  defaultConf,
   MethodConf,
+  defaultConf,
   PathParam
 } from '../model/ModelConf'
+import ModuleOptions from '../options/Options'
 import { replaceAll } from '../support/Utils'
 
 export type UpdateReturn = Item | Collection | EntityCollection
-export type MethodConfParameter = MethodConf & HttpConf
 
 export default class Model extends BaseModel {
-  public static _conf: ModelConf | (JsonModelConf & HttpConf)
+  private static _conf: ModelConf | JsonModelConf
+  private static _http: Http
 
   /**
    * Configure a model with default conf and extend or override
@@ -29,7 +30,7 @@ export default class Model extends BaseModel {
    */
   public static conf (parameterConf?: JsonModelConf): void {
 
-    const _onModelconf: JsonModelConf = this._conf as JsonModelConf
+    const _onModelconf = this._conf as JsonModelConf
 
     // instance default conf
     this._conf = new ModelConf(
@@ -67,6 +68,8 @@ export default class Model extends BaseModel {
         )
       )
     }
+
+    this._http = new Http(this._conf.http, ModuleOptions.getDefaultHttpConfig());
   }
 
   /**
@@ -76,15 +79,17 @@ export default class Model extends BaseModel {
    * @async
    * @return {Promise<UpdateReturn>} fetched data
    */
-  public static async fetch (conf: MethodConfParameter = this.getMethodConf('fetch')): Promise<Collection> {
+  public static async fetch (
+    conf: MethodConf = this.getMethodConf('fetch')
+  ): Promise<Collection> {
     const _conf = this.checkMethodConf('fetch', conf)
     const url = this.getUrl(_conf)
-    /* const data = await Http[((_conf.http as any) as any).method as HttpMethod](url)
+    /* const data = await this._this._http[((_conf.http as any) as any).method as HttpMethod](url)
       .catch((err: Error) => { console.log(err) }) || [] */
 
       const method = (_conf.http as any).method as string
-      const data = await Http[method](url)
-      .catch((err: Error) => { console.log(err) }) || []
+      const data = await this._http[method](url, _conf.http)
+        .catch((err: Error) => { console.log(err) }) || []
 
     if (_conf.localSync) {
       await this.dispatch('insertOrUpdate', { data })
@@ -99,7 +104,7 @@ export default class Model extends BaseModel {
    * @async
    * @return {Promise<Collection>} list of results
    */
-  public static async find (conf: MethodConfParameter = this.getMethodConf('find')): Promise<Collection> {
+  public static async find (conf: MethodConf = this.getMethodConf('find')): Promise<Collection> {
     const _conf = this.checkMethodConf('find', conf)
     let data
     if (_conf.remote) {
@@ -122,7 +127,7 @@ export default class Model extends BaseModel {
    */
   public static async findById (
     id: number,
-    conf: MethodConfParameter = this.getMethodConf('findById')
+    conf: MethodConf = this.getMethodConf('findById')
   ): Promise<Item> {
     const _conf = this.checkMethodConf('findById', conf)
     let data
@@ -148,12 +153,12 @@ export default class Model extends BaseModel {
    */
   public static async fetchById (
     id: number, 
-    conf: MethodConfParameter = this.getMethodConf('fetchById')
+    conf: MethodConf = this.getMethodConf('fetchById')
   ): Promise<Item> {
     const _conf = this.checkMethodConf('fetchById', conf)
     const url = this.getUrl(_conf, new PathParam('id', id.toString()))
     const method = (_conf.http as any).method as string
-    const data = await Http[method](url)
+    const data = await this._http[method](url, _conf.http)
       .catch((err: Error) => { console.log(err); }) || []
     
     if(_conf.localSync) {
@@ -172,7 +177,7 @@ export default class Model extends BaseModel {
    */
   public static async exist (
     id: number, 
-    conf: MethodConfParameter = this.getMethodConf('exist')
+    conf: MethodConf = this.getMethodConf('exist')
   ): Promise<boolean> {
     const _conf = this.checkMethodConf('exist', conf)
     let data
@@ -180,7 +185,7 @@ export default class Model extends BaseModel {
     if (_conf.remote) {
       const url = this.getUrl(_conf, new PathParam('id', id.toString()))
       const method = (_conf.http as any).method as string
-      data = await Http[method](url)
+      data = await this._http[method](url, _conf.http)
       .catch((err: Error) => { console.log(err); }) || []
     }
     else {
@@ -195,13 +200,13 @@ export default class Model extends BaseModel {
    * @static
    * @return {Promise<Number>} number of element
    */
-  public static async count (conf: MethodConfParameter = this.getMethodConf('count')): Promise<number> {
+  public static async count (conf: MethodConf = this.getMethodConf('count')): Promise<number> {
     const _conf = this.checkMethodConf('count', conf)
     let data
     
     if (_conf.remote) {
       const method = (_conf.http as any).method as string
-      data = await Http[method](this.getUrl(_conf))
+      data = await this._http[method](this.getUrl(_conf), _conf.http)
       .catch((err: Error) => { console.log(err); }) || []
     }
     else {
@@ -219,14 +224,14 @@ export default class Model extends BaseModel {
    */
   public static async create (
     data: Record | Record[], 
-    conf: MethodConfParameter = this.getMethodConf('create')
+    conf: MethodConf = this.getMethodConf('create')
   ): Promise<EntityCollection> {
 
     const _conf = this.checkMethodConf('create', conf)
     let dataOutput
     if (_conf.remote) {
       const method = (_conf.http as any).method as string
-      dataOutput = await Http[method](this.getUrl(_conf), data)
+      dataOutput = await this._http[method](this.getUrl(_conf), data, _conf.http)
       .catch((err: Error) => { console.log(err); }) || []
       
       if(_conf.localSync) {
@@ -252,7 +257,7 @@ export default class Model extends BaseModel {
   public static async update (
     id: number,
     data: Record | Record[] | UpdateClosure,
-    conf: MethodConfParameter = this.getMethodConf('update')
+    conf: MethodConf = this.getMethodConf('update')
   ): Promise<UpdateReturn> {
 
     const _conf = this.checkMethodConf('update', conf)
@@ -260,7 +265,7 @@ export default class Model extends BaseModel {
     if (_conf.remote) {
       const url = this.getUrl(_conf, new PathParam('id', id.toString()))
       const method = (_conf.http as any).method as string
-      dataOutput = await Http[method](url, data)
+      dataOutput = await this._http[method](url, data, _conf.http)
       .catch((err: Error) => { console.log(err); }) || []
       
       if(_conf.localSync && dataOutput) {
@@ -289,7 +294,7 @@ export default class Model extends BaseModel {
    */
   public static async deleteById (
     id: number, 
-    conf: MethodConfParameter = this.getMethodConf('deleteById')
+    conf: MethodConf = this.getMethodConf('deleteById')
   ): Promise<void> {
 
     const _conf = this.checkMethodConf('deleteById', conf)
@@ -297,7 +302,7 @@ export default class Model extends BaseModel {
     if (_conf.remote) {
       const url = this.getUrl(_conf, new PathParam('id', id.toString()))
       const method = (_conf.http as any).method as string
-      const dataOutput = await Http[method](url)
+      const dataOutput = await this._http[method](url, _conf.http)
       .catch((err: Error) => { console.log(err); }) || []
       
       if(_conf.localSync && dataOutput) {
@@ -315,13 +320,14 @@ export default class Model extends BaseModel {
    * @param {MethodConf} conf a method's conf
    * @static
    */
-  public static async delete (conf: MethodConfParameter = this.getMethodConf('deleteById')): Promise<void> {
+  public static async delete (
+    conf: MethodConf = this.getMethodConf('deleteById')): Promise<void> {
 
     const _conf = this.checkMethodConf('deleteById', conf)
 
     if (_conf.remote) {
       const method = (_conf.http as any).method as string
-      const dataOutput = await Http[method](this.getUrl(_conf))
+      const dataOutput = await this._http[method](this.getUrl(_conf))
       .catch((err: Error) => { console.log(err); }) || []
       
       if(_conf.localSync && dataOutput) {
@@ -350,11 +356,14 @@ export default class Model extends BaseModel {
    * @static
    * @return {string} api's url
    */
-  protected static getUrl (conf: MethodConfParameter, ...pathParams: PathParam[]): string {
+  protected static getUrl (
+    conf: MethodConf, 
+    ...pathParams: PathParam[]
+  ): string {
     const methodPath = pathParams.length ? 
-      (conf.http as any).bindPathParams(pathParams) : (conf.http as any).path
+      conf.bindPathParams(pathParams) : (conf.http as any).url
     
-    return this._conf.endpointPath + methodPath
+    return this._conf.http!.url + methodPath
   }
 
   /**
@@ -368,7 +377,10 @@ export default class Model extends BaseModel {
    * @return {MethodConf} the new method's configuration
    * @throws Error
    */
-  protected static checkMethodConf (methodName: string, conf: MethodConfParameter): MethodConf {
+  protected static checkMethodConf (
+    methodName: string,
+    conf: MethodConf
+  ): MethodConf {
     const _conf = this._conf as ModelConf
     let _method = _conf.method(methodName)
     if (conf && _method) {
@@ -396,7 +408,7 @@ export default class Model extends BaseModel {
    * @static
    * @return {MethodConf}
    */
-  protected static getMethodConf (methodName: string): MethodConfParameter {
-    return this.getConf().method(methodName) as MethodConfParameter
+  protected static getMethodConf (methodName: string): MethodConf {
+    return this.getConf().method(methodName) as MethodConf
   }
 }

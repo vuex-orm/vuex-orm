@@ -1,4 +1,9 @@
-import Axios, { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios'
+import Axios, {
+  AxiosRequestConfig,
+  AxiosPromise,
+  AxiosResponse,
+  AxiosInstance
+} from 'axios'
 
 export type InterceptorRequestClosure = 
   (record: AxiosRequestConfig) => AxiosRequestConfig | Promise<AxiosRequestConfig>
@@ -6,14 +11,37 @@ export type InterceptorRequestClosure =
 export type InterceptorResponseClosure = 
   (record: AxiosResponse) => AxiosResponse<any> | Promise<AxiosResponse<any>>
 
+export interface InterceptosClosures {
+  requestInterceptors?: InterceptorRequestClosure[];
+  responseInterceptors?: InterceptorResponseClosure[]
+}
+
 export type HttpConf = AxiosRequestConfig;
 
 export default class Http {
+  private axiosInstance: AxiosInstance
+  
+  constructor(
+    config: AxiosRequestConfig & InterceptosClosures, 
+    defaultConfig: AxiosRequestConfig & InterceptosClosures
+  ) {
+    this.axiosInstance = Axios.create(this.mergeConf(config, defaultConfig));
+    
+    if(config.requestInterceptors && Array.isArray(config.requestInterceptors)) {
+      config.requestInterceptors.forEach(
+        (value: InterceptorRequestClosure) => {
+          this.axiosInstance.interceptors.request.use(value)
+        }
+      )
+    }
 
-  public static defaultConf: AxiosRequestConfig
-
-  public static conf(config: AxiosRequestConfig) {
-    this.defaultConf = config
+    if(config.responseInterceptors && Array.isArray(config.responseInterceptors)) {
+      config.responseInterceptors.forEach(
+        (value: InterceptorResponseClosure) => {
+          this.axiosInstance.interceptors.response.use(value)
+        }
+      )
+    }
   }
 
   public static registerRequestInterceptor(requestInterceptor: InterceptorRequestClosure) {
@@ -24,58 +52,52 @@ export default class Http {
     Axios.interceptors.response.use(responseInterceptor)
   }
 
-  private static mergeConf(config: AxiosRequestConfig) {
-    return { ...this.defaultConf, ...config }
+  private mergeConf(config: AxiosRequestConfig, defaultConfig: AxiosRequestConfig) {
+    return { ...defaultConfig, ...config }
   }
 
-  public static head (
+  public head (
     url: string, 
-    config: AxiosRequestConfig = this.defaultConf
+    config?: AxiosRequestConfig
   ): AxiosPromise<any> {
-    this.mergeConf(config)
-    return Axios.head(url, config);
+    return this.axiosInstance.head(url, config);
   }
 
-  public static get <T> (
+  public get <T> (
     url: string, 
-    config: AxiosRequestConfig = this.defaultConf
+    config?: AxiosRequestConfig
   ): AxiosPromise<T> {
-    this.mergeConf(config)
-    return Axios.get<T>(url, config);
+    return this.axiosInstance.get<T>(url, config);
   }
 
-  public static post <T> (
-    url: string, 
-    data = {}, 
-    config: AxiosRequestConfig = this.defaultConf
+  public post <T> (
+    url: string,
+    data = {},
+    config?: AxiosRequestConfig
   ): AxiosPromise<T> {
-    this.mergeConf(config)
-    return Axios.post<T>(url, data, config);
+    return this.axiosInstance.post<T>(url, data, config);
   }
 
-  public static patch <T> (
-    url: string, 
-    data = {}, 
-    config: AxiosRequestConfig = this.defaultConf
+  public patch <T> (
+    url: string,
+    data = {},
+    config?: AxiosRequestConfig
   ): AxiosPromise<T> {
-    this.mergeConf(config)
-    return Axios.patch<T>(url, data, config);
+    return this.axiosInstance.patch<T>(url, data, config);
   }
 
-  public static put <T> (
-    url: string, 
-    data = {}, 
-    config: AxiosRequestConfig = this.defaultConf
+  public put <T> (
+    url: string,
+    data = {},
+    config?: AxiosRequestConfig
   ): AxiosPromise<T> {
-    this.mergeConf(config)
-    return Axios.put<T>(url, data, config);
+    return this.axiosInstance.put<T>(url, data, config);
   }
 
-  public static delete (
-    url: string, 
-    config: AxiosRequestConfig = this.defaultConf
+  public delete (
+    url: string,
+    config?: AxiosRequestConfig
   ): AxiosPromise<any> {
-    this.mergeConf(config)
-    return Axios.delete(url, config);
+    return this.axiosInstance.delete(url, config);
   }
 }
