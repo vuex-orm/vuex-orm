@@ -5846,18 +5846,10 @@
 
     var axios$1 = axios_1;
 
-    var __assign$9 = (undefined && undefined.__assign) || Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
     var Http = /** @class */ (function () {
-        function Http(config, defaultConfig) {
+        function Http(config) {
             var _this = this;
-            this.axiosInstance = axios$1.create(this.mergeConf(config, defaultConfig));
+            this.axiosInstance = axios$1.create(config);
             if (config.requestInterceptors && Array.isArray(config.requestInterceptors)) {
                 config.requestInterceptors.forEach(function (value) {
                     _this.axiosInstance.interceptors.request.use(value);
@@ -5874,9 +5866,6 @@
         };
         Http.registerResponseInterceptor = function (responseInterceptor) {
             axios$1.interceptors.response.use(responseInterceptor);
-        };
-        Http.prototype.mergeConf = function (config, defaultConfig) {
-            return __assign$9({}, defaultConfig, config);
         };
         Http.prototype.head = function (url, config) {
             return this.axiosInstance.head(url, config);
@@ -5902,7 +5891,7 @@
         return Http;
     }());
 
-    var __assign$10 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    var __assign$9 = (undefined && undefined.__assign) || Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
             s = arguments[i];
             for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -5959,7 +5948,7 @@
         ModelConf.prototype.extend = function (conf) {
             var _this = this;
             if (conf.http) {
-                this.http = __assign$10({}, this.http, conf.http);
+                this.http = __assign$9({}, this.http, conf.http);
             }
             if (conf.methods && conf.methods.length) {
                 conf.methods.forEach(function (method) {
@@ -6135,6 +6124,14 @@
             d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
         };
     })();
+    var __assign$10 = (undefined && undefined.__assign) || Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
     var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -6186,17 +6183,39 @@
          */
         Model.conf = function (parameterConf) {
             var _onModelconf = this._conf;
+            defaultConf.http = __assign$10({}, defaultConf.http, ModuleOptions.getDefaultHttpConfig());
+            this.replaceAllUrlSelf(defaultConf);
             // instance default conf
-            this._conf = new ModelConf(JSON.parse(replaceAll(JSON.stringify(defaultConf), '{self}', this.entity)));
+            this._conf = new ModelConf(defaultConf);
             // check if confs on model are present
             if (_onModelconf) {
-                this._conf.extend(JSON.parse(replaceAll(JSON.stringify(_onModelconf), '{self}', this.entity)));
+                this.replaceAllUrlSelf(_onModelconf);
+                this._conf.extend(_onModelconf);
             }
             // check if confs parameter are present
             if (parameterConf) {
-                this._conf.extend(JSON.parse(replaceAll(JSON.stringify(parameterConf), '{self}', this.entity)));
+                this.replaceAllUrlSelf(parameterConf);
+                this._conf.extend(parameterConf);
             }
-            this._http = new Http(this._conf.http, ModuleOptions.getDefaultHttpConfig());
+            this._http = new Http(this._conf.http);
+        };
+        /**
+         *
+         * @param {JsonModelConf} conf
+         * @static
+         */
+        Model.replaceAllUrlSelf = function (conf) {
+            var _this = this;
+            if (conf.http && conf.http.url) {
+                conf.http.url = replaceAll(conf.http.url, '{self}', this.entity);
+            }
+            if (conf.methods && Array.isArray(conf.methods)) {
+                conf.methods.forEach(function (method) {
+                    if (method.http && method.http.url) {
+                        method.http.url = replaceAll(method.http.url, '{self}', _this.entity);
+                    }
+                });
+            }
         };
         /**
          * Fetch data from api server and sync to the local store (optionaly)

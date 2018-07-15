@@ -8,10 +8,9 @@ export interface InterceptosClosures {
 export declare type HttpConf = AxiosRequestConfig;
 export default class Http {
     private axiosInstance;
-    constructor(config: AxiosRequestConfig & InterceptosClosures, defaultConfig: AxiosRequestConfig & InterceptosClosures);
+    constructor(config: AxiosRequestConfig & InterceptosClosures);
     static registerRequestInterceptor(requestInterceptor: InterceptorRequestClosure): void;
     static registerResponseInterceptor(responseInterceptor: InterceptorResponseClosure): void;
-    private mergeConf;
     head(url: string, config?: AxiosRequestConfig): AxiosPromise<any>;
     get<T>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>;
     post<T>(url: string, data?: {}, config?: AxiosRequestConfig): AxiosPromise<T>;

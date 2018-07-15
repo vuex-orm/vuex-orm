@@ -20,6 +20,12 @@ export default class Model extends BaseModel {
      */
     static conf(parameterConf?: JsonModelConf): void;
     /**
+     *
+     * @param {JsonModelConf} conf
+     * @static
+     */
+    private static replaceAllUrlSelf;
+    /**
      * Fetch data from api server and sync to the local store (optionaly)
      * @param {MethodConf} conf a method's conf
      * @static
