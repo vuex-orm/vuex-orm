@@ -1,4 +1,5 @@
 import BaseModel from './BaseModel';
+import Http from '../http/Http';
 import { Record } from '../data';
 import Query, { UpdateClosure } from '../query/Query';
 import EntityCollection from '../query/EntityCollection';
@@ -6,8 +7,8 @@ import { Collection, Item } from '../query';
 import ModelConf, { JsonModelConf, MethodConf, PathParam } from '../model/ModelConf';
 export declare type UpdateReturn = Item | Collection | EntityCollection;
 export default class Model extends BaseModel {
-    private static _conf;
-    private static _http;
+    static _conf: ModelConf | JsonModelConf;
+    static _http: Http;
     /**
      * Configure a model with default conf and extend or override
      * the default configuration with a custom configuration present on

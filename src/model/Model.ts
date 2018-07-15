@@ -16,8 +16,8 @@ import { replaceAll } from '../support/Utils'
 export type UpdateReturn = Item | Collection | EntityCollection
 
 export default class Model extends BaseModel {
-  private static _conf: ModelConf | JsonModelConf
-  private static _http: Http
+  public static _conf: ModelConf | JsonModelConf
+  public static _http: Http
 
   /**
    * Configure a model with default conf and extend or override
