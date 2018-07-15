@@ -20,7 +20,7 @@ export default class Model extends BaseModel {
      */
     static conf(parameterConf?: JsonModelConf): void;
     /**
-     *
+     * Replace all {self} in url params
      * @param {JsonModelConf} conf
      * @static
      */

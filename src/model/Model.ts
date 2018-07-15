@@ -29,30 +29,36 @@ export default class Model extends BaseModel {
    * @static
    */
   public static conf (parameterConf?: JsonModelConf): void {
-    const _onModelconf = this._conf as JsonModelConf
-    defaultConf.http = {...defaultConf.http as any, ...ModuleOptions.getDefaultHttpConfig()}
 
-    this.replaceAllUrlSelf(defaultConf as JsonModelConf)
-    // instance default conf
-    this._conf = new ModelConf(defaultConf as JsonModelConf)
+    // if conf alredy instanced
+    if(this._conf instanceof ModelConf) {
+      if (parameterConf) {
+        this.replaceAllUrlSelf(parameterConf as JsonModelConf)
+        this._conf.extend(parameterConf)
+      }
+    } 
+    else {
+      const _onModelconf = this._conf as JsonModelConf
+      defaultConf.http = {...defaultConf.http as any, ...ModuleOptions.getDefaultHttpConfig()}
 
-    // check if confs on model are present
-    if (_onModelconf) {
-      this.replaceAllUrlSelf(_onModelconf as JsonModelConf)
-      this._conf.extend(_onModelconf)
+      this.replaceAllUrlSelf(defaultConf as JsonModelConf)
+      // instance default conf
+      this._conf = new ModelConf(defaultConf as JsonModelConf)
+
+      // check if confs on model are present
+      if (_onModelconf) {
+        this.replaceAllUrlSelf(_onModelconf as JsonModelConf)
+        this._conf.extend(_onModelconf)
+      }
     }
 
-    // check if confs parameter are present
-    if (parameterConf) {
-      this.replaceAllUrlSelf(parameterConf as JsonModelConf)
-      this._conf.extend(parameterConf)
+    if(!(this._http instanceof Http)) {
+      this._http = new Http(this._conf.http as HttpConf);
     }
-
-    this._http = new Http(this._conf.http as HttpConf);
   }
 
   /**
-   * 
+   * Replace all {self} in url params
    * @param {JsonModelConf} conf
    * @static
    */

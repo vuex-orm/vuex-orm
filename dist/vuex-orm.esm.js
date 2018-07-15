@@ -6176,25 +6176,31 @@ var Model = /** @class */ (function (_super) {
      * @static
      */
     Model.conf = function (parameterConf) {
-        var _onModelconf = this._conf;
-        defaultConf.http = __assign$10({}, defaultConf.http, ModuleOptions.getDefaultHttpConfig());
-        this.replaceAllUrlSelf(defaultConf);
-        // instance default conf
-        this._conf = new ModelConf(defaultConf);
-        // check if confs on model are present
-        if (_onModelconf) {
-            this.replaceAllUrlSelf(_onModelconf);
-            this._conf.extend(_onModelconf);
+        // if conf alredy instanced
+        if (this._conf instanceof ModelConf) {
+            if (parameterConf) {
+                this.replaceAllUrlSelf(parameterConf);
+                this._conf.extend(parameterConf);
+            }
         }
-        // check if confs parameter are present
-        if (parameterConf) {
-            this.replaceAllUrlSelf(parameterConf);
-            this._conf.extend(parameterConf);
+        else {
+            var _onModelconf = this._conf;
+            defaultConf.http = __assign$10({}, defaultConf.http, ModuleOptions.getDefaultHttpConfig());
+            this.replaceAllUrlSelf(defaultConf);
+            // instance default conf
+            this._conf = new ModelConf(defaultConf);
+            // check if confs on model are present
+            if (_onModelconf) {
+                this.replaceAllUrlSelf(_onModelconf);
+                this._conf.extend(_onModelconf);
+            }
         }
-        this._http = new Http(this._conf.http);
+        if (!(this._http instanceof Http)) {
+            this._http = new Http(this._conf.http);
+        }
     };
     /**
-     *
+     * Replace all {self} in url params
      * @param {JsonModelConf} conf
      * @static
      */
