@@ -69,7 +69,7 @@ export default class Model extends BaseModel {
       )
     }
 
-    this._http = new Http(this._conf.http, ModuleOptions.getDefaultHttpConfig());
+    this._http = new Http(this._conf.http as any, ModuleOptions.getDefaultHttpConfig());
   }
 
   /**

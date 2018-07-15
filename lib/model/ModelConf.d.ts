@@ -1,6 +1,6 @@
+import { HttpConf } from 'src/http/Http';
 export interface JsonModelConf {
-    baseURL?: string;
-    endpointPath: string;
+    http?: HttpConf;
     methods?: MethodConf[];
 }
 export declare enum HttpMethod {
@@ -18,13 +18,9 @@ export declare class PathParam {
 }
 export default class ModelConf {
     /**
-     * The host/domain of api server
+     * The http config
      */
-    baseURL: string | undefined;
-    /**
-     * The endpoint of model entity
-     */
-    endpointPath: string;
+    http: HttpConf | undefined;
     /**
      * The methods of model
      */
@@ -84,21 +80,6 @@ export declare class MethodConf {
      * @param {MethodConf}
      */
     assign({ name, alias, remote, localSync, http }: MethodConf): void;
-}
-export declare class HttpConf {
-    /**
-     * The http path
-     */
-    path: string;
-    /**
-     * The http method
-     */
-    method: HttpMethod;
-    /**
-     * @constructor
-     * @param {HttpConf}
-     */
-    constructor({ path, method }: HttpConf);
     /**
      * Bind a path param name with the pass value
      * @param {PathParam[]} params array
@@ -107,22 +88,24 @@ export declare class HttpConf {
     bindPathParams(params: PathParam[]): string;
 }
 export declare const defaultConf: {
-    "baseURL": string;
-    "endpointPath": string;
+    "http": {
+        "baseURL": string;
+        "url": string;
+    };
     "methods": ({
         "name": string;
         "alias": string[];
         "remote": boolean;
         "localSync": boolean;
         "http": {
-            "path": string;
+            "url": string;
             "method": string;
         };
     } | {
         "name": string;
         "remote": boolean;
         "http": {
-            "path": string;
+            "url": string;
             "method": string;
         };
         "alias"?: undefined;
@@ -132,7 +115,7 @@ export declare const defaultConf: {
         "remote": boolean;
         "localSync": boolean;
         "http": {
-            "path": string;
+            "url": string;
             "method": string;
         };
         "alias"?: undefined;

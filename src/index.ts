@@ -4,8 +4,13 @@ import install, { Install } from './store/install'
 import use, { Use } from './plugins/use'
 import Database from './database/Database'
 import Model from './model/Model'
-import ModelConf, { MethodConf, HttpConf, HttpMethod, JsonModelConf, PathParam } from './model/ModelConf'
-import Http from './http/Http'
+import ModelConf, { MethodConf, HttpMethod, JsonModelConf, PathParam } from './model/ModelConf'
+import Http, { 
+  HttpConf, 
+  InterceptosClosures, 
+  InterceptorRequestClosure, 
+  InterceptorResponseClosure
+} from './http/Http'
 import Query from './query/Query'
 import Attribute from './attributes/Attribute'
 import Type from './attributes/types/Type'
@@ -65,11 +70,14 @@ export {
   Model,
   ModelConf,
   MethodConf,
-  HttpConf,
   HttpMethod,
   JsonModelConf,
   PathParam,
   Http,
+  HttpConf,
+  InterceptosClosures,
+  InterceptorRequestClosure,
+  InterceptorResponseClosure,
   Query,
   Attribute,
   Type,
@@ -101,7 +109,6 @@ export default {
   Model,
   ModelConf,
   MethodConf,
-  HttpConf,
   HttpMethod,
   Http,
   PathParam,

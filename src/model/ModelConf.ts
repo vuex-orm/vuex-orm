@@ -29,7 +29,7 @@ export default class ModelConf {
   /**
    * The http config
    */
-  public http: HttpConf
+  public http: HttpConf | undefined = undefined
   /**
    * The methods of model
    */
@@ -45,6 +45,9 @@ export default class ModelConf {
         conf.methods.forEach((method: MethodConf) => {
           this.methods.set(method.name, new MethodConf(method))
         })
+      }
+      if (conf.http) {
+        this.http = conf.http 
       }
     }
   }
