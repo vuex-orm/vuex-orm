@@ -32,7 +32,7 @@ export default class Number extends Type {
     }
 
     if (typeof value === 'string') {
-      return parseInt(value, 0)
+      return parseFloat(value)
     }
 
     if (typeof value === 'boolean') {

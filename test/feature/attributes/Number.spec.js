@@ -20,10 +20,12 @@ describe('Feature – Attributes – Number', () => {
       data: [
         { id: 1 },
         { id: 2, num: 1 },
-        { id: 3, num: '2' },
-        { id: 4, num: true },
-        { id: 5, num: false },
-        { id: 6, num: null }
+        { id: 3, num: 1.5 },
+        { id: 4, num: '2' },
+        { id: 5, num: '2.5' },
+        { id: 6, num: true },
+        { id: 7, num: false },
+        { id: 8, num: null }
       ]
     })
 
@@ -31,10 +33,12 @@ describe('Feature – Attributes – Number', () => {
       users: {
         '1': { $id: 1, id: 1, num: 0 },
         '2': { $id: 2, id: 2, num: 1 },
-        '3': { $id: 3, id: 3, num: 2 },
-        '4': { $id: 4, id: 4, num: 1 },
-        '5': { $id: 5, id: 5, num: 0 },
-        '6': { $id: 6, id: 6, num: 0 }
+        '3': { $id: 3, id: 3, num: 1.5 },
+        '4': { $id: 4, id: 4, num: 2 },
+        '5': { $id: 5, id: 5, num: 2.5 },
+        '6': { $id: 6, id: 6, num: 1 },
+        '7': { $id: 7, id: 7, num: 0 },
+        '8': { $id: 8, id: 8, num: 0 }
       }
     })
 
