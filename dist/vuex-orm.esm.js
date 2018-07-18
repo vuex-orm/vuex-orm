@@ -395,7 +395,7 @@ var Number = /** @class */ (function (_super) {
             return value;
         }
         if (typeof value === 'string') {
-            return parseInt(value, 0);
+            return parseFloat(value);
         }
         if (typeof value === 'boolean') {
             return value ? 1 : 0;
@@ -1313,8 +1313,10 @@ var MorphOne = /** @class */ (function (_super) {
      * Attach the relational key to the given data.
      */
     MorphOne.prototype.attach = function (key, record, data) {
-        var relatedItems = data[this.related.entity];
-        var relatedItem = relatedItems[key];
+        var relatedItem = data[this.related.entity] && data[this.related.entity][key];
+        if (!relatedItem) {
+            return;
+        }
         relatedItem[this.id] = relatedItem[this.id] || record.$id;
         relatedItem[this.type] = relatedItem[this.type] || this.model.entity;
     };
@@ -1829,7 +1831,11 @@ var Model = /** @class */ (function () {
      * Get the model schema definition by adding additional default fields.
      */
     Model.getFields = function () {
-        return __assign$3({ $id: this.attr(undefined) }, this.fields());
+        if (this.cachedFields) {
+            return this.cachedFields;
+        }
+        this.cachedFields = __assign$3({ $id: this.attr(undefined) }, this.fields());
+        return this.cachedFields;
     };
     /**
      * Create an attr attribute. The given value will be used as a default
@@ -3446,7 +3452,7 @@ var Loader = /** @class */ (function () {
         });
     };
     /**
-     * Eager load the relationships for the goven records.
+     * Eager load the relationships for the given records.
      */
     Loader.eagerLoadRelations = function (query, records) {
         var fields = query.model.getFields();
