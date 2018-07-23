@@ -31,6 +31,7 @@ describe('Features – Relations – Belongs To Many', () => {
 
       static fields() {
         return {
+          id: this.attr(null),
           role_id: this.attr(null),
           user_id: this.attr(null)
         }
@@ -55,8 +56,8 @@ describe('Features – Relations – Belongs To Many', () => {
         '2': { $id: 2, id: 2 }
       },
       roleUser: {
-        '1_1': { $id: '1_1', role_id: 1, user_id: 1 },
-        '2_1': { $id: '2_1', role_id: 2, user_id: 1 }
+        '1_1': { $id: '1_1', id: 1, role_id: 1, user_id: 1 },
+        '2_1': { $id: '2_1', id: 2, role_id: 2, user_id: 1 }
       }
     })
 
