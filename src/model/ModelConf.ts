@@ -165,7 +165,7 @@ export class MethodConf {
     this.alias = alias
     this.remote = remote
     this.localSync = localSync
-    this.http = http
+    this.http = {...this.http, ...http}
   }
 
   /**

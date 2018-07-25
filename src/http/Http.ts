@@ -49,6 +49,10 @@ export default class Http {
     Axios.interceptors.response.use(responseInterceptor)
   }
 
+  public request<T>(config: AxiosRequestConfig): AxiosPromise<T> {
+    return this.axiosInstance.request<T>(config);
+  }
+
   public head (
     url: string, 
     config?: AxiosRequestConfig
