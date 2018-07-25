@@ -11,6 +11,7 @@ export default class Http {
     constructor(config: AxiosRequestConfig & InterceptosClosures);
     static registerRequestInterceptor(requestInterceptor: InterceptorRequestClosure): void;
     static registerResponseInterceptor(responseInterceptor: InterceptorResponseClosure): void;
+    request<T>(config: AxiosRequestConfig): AxiosPromise<T>;
     head(url: string, config?: AxiosRequestConfig): AxiosPromise<any>;
     get<T>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>;
     post<T>(url: string, data?: {}, config?: AxiosRequestConfig): AxiosPromise<T>;
