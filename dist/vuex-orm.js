@@ -6189,10 +6189,10 @@
             }
             else {
                 var _onModelconf = this._conf;
-                defaultConf.http = __assign$10({}, defaultConf.http, ModuleOptions.getDefaultHttpConfig());
-                this.replaceAllUrlSelf(defaultConf);
+                var _defaultConf = __assign$10({}, defaultConf.http, ModuleOptions.getDefaultHttpConfig());
+                this.replaceAllUrlSelf(_defaultConf);
                 // instance default conf
-                this._conf = new ModelConf(defaultConf);
+                this._conf = new ModelConf(_defaultConf);
                 // check if confs on model are present
                 if (_onModelconf) {
                     this.replaceAllUrlSelf(_onModelconf);

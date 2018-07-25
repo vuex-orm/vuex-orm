@@ -39,11 +39,11 @@ export default class Model extends BaseModel {
     }
     else {
       const _onModelconf = this._conf as JsonModelConf
-      defaultConf.http = { ...defaultConf.http as any, ...ModuleOptions.getDefaultHttpConfig() }
+      const _defaultConf = { ...defaultConf.http as any, ...ModuleOptions.getDefaultHttpConfig() }
       
-      this.replaceAllUrlSelf(defaultConf as JsonModelConf)
+      this.replaceAllUrlSelf(_defaultConf as JsonModelConf)
       // instance default conf
-      this._conf = new ModelConf(defaultConf as JsonModelConf)
+      this._conf = new ModelConf(_defaultConf as JsonModelConf)
       
       // check if confs on model are present
       if (_onModelconf) {
