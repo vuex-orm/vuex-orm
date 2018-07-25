@@ -1,5 +1,5 @@
 import { replaceAll, clone } from '../support/Utils'
-import { HttpConf } from 'src/http/Http';
+import { HttpConf } from '../http/Http';
 
 export interface JsonModelConf {
   http?: HttpConf,
