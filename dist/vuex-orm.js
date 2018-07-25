@@ -6189,7 +6189,8 @@
             }
             else {
                 var _onModelconf = this._conf;
-                var _defaultConf = __assign$10({}, defaultConf.http, ModuleOptions.getDefaultHttpConfig());
+                var _defaultConf = Object.assign({}, defaultConf);
+                _defaultConf.http = __assign$10({}, defaultConf.http, ModuleOptions.getDefaultHttpConfig());
                 this.replaceAllUrlSelf(_defaultConf);
                 // instance default conf
                 this._conf = new ModelConf(_defaultConf);

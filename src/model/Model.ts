@@ -39,7 +39,8 @@ export default class Model extends BaseModel {
     }
     else {
       const _onModelconf = this._conf as JsonModelConf
-      const _defaultConf = { ...defaultConf.http as any, ...ModuleOptions.getDefaultHttpConfig() }
+      let _defaultConf = Object.assign({}, defaultConf)
+      _defaultConf.http = { ...defaultConf.http as any, ...ModuleOptions.getDefaultHttpConfig() }
       
       this.replaceAllUrlSelf(_defaultConf as JsonModelConf)
       // instance default conf
