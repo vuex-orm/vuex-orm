@@ -8,7 +8,7 @@ import ModelConf, {
   JsonModelConf,
   MethodConf,
   defaultConf,
-  PathParam
+  PathParams
 } from '../model/ModelConf'
 import ModuleOptions from '../options/Options'
 import { replaceAll } from '../support/Utils'
@@ -76,7 +76,16 @@ export default class Model extends BaseModel {
     }
   }
 
-  private static async request(conf: MethodConf) {
+  /**
+   * Execute http request
+   * @param {MethodConf} conf 
+   * @param {PathParams} pathParams 
+   * @static
+   * @async
+   * @return {Promise<any>}
+   */
+  public static async httpRequest(conf: MethodConf, pathParams?: PathParams): Promise<any> {
+    conf.http!.url =  this.getUrl(conf, pathParams)
     return await this._http.request(conf.http as HttpConf)
       .catch((err: Error) => { console.log(err) }) || []
   }
@@ -92,7 +101,7 @@ export default class Model extends BaseModel {
     conf: MethodConf = this.getMethodConf('fetch')
   ): Promise<any> {
     const _conf = this.checkMethodConf('fetch', conf)
-    const data = this.request(_conf)
+    const data = this.httpRequest(_conf)
     if (_conf.localSync) {
       await this.dispatch('insertOrUpdate', { data })
     }
@@ -158,8 +167,7 @@ export default class Model extends BaseModel {
     conf: MethodConf = this.getMethodConf('fetchById')
   ): Promise<Item> {
     const _conf = this.checkMethodConf('fetchById', conf)
-    _conf.http!.url =  this.getUrl(_conf, new PathParam('id', id.toString()))
-    const data = this.request(_conf)
+    const data = this.httpRequest(_conf, {'id': id.toString()})
     
     if (_conf.localSync) {
       // await this.update(data)
@@ -183,8 +191,7 @@ export default class Model extends BaseModel {
     let data
     
     if (_conf.remote) {
-      _conf.http!.url =  this.getUrl(_conf, new PathParam('id', id.toString()))
-      data = await this.request(_conf)
+      data = await this.httpRequest(_conf, {'id': id.toString()})
       data = Object.keys(data).length === 0
     }
     else {
@@ -204,7 +211,7 @@ export default class Model extends BaseModel {
     let data
     
     if (_conf.remote) {
-      data = await this.request(_conf)
+      data = await this.httpRequest(_conf)
       data = (data as Array<any>).length
     }
     else {
@@ -228,7 +235,7 @@ export default class Model extends BaseModel {
     const _conf = this.checkMethodConf('create', conf)
     let dataOutput
     if (_conf.remote) {
-      dataOutput = this.request(_conf)
+      dataOutput = this.httpRequest(_conf)
       
       if (_conf.localSync) {
         this.dispatch('insert', { data: dataOutput })
@@ -259,8 +266,7 @@ export default class Model extends BaseModel {
     const _conf = this.checkMethodConf('update', conf)
     let dataOutput
     if (_conf.remote) {
-      _conf.http!.url = this.getUrl(_conf, new PathParam('id', id.toString()))
-      dataOutput = this.request(_conf)
+      dataOutput = this.httpRequest(_conf, {'id': id.toString()})
 
       if (_conf.localSync && dataOutput) {
         this.dispatch('update', {
@@ -294,8 +300,7 @@ export default class Model extends BaseModel {
     const _conf = this.checkMethodConf('deleteById', conf)
     
     if (_conf.remote) {
-      _conf.http!.url = this.getUrl(_conf, new PathParam('id', id.toString()))
-      const dataOutput = this.request(_conf)
+      const dataOutput = this.httpRequest(_conf, {'id': id.toString()})
       
       if (_conf.localSync && dataOutput) {
         this.dispatch('delete', id)
@@ -319,7 +324,7 @@ export default class Model extends BaseModel {
       const _conf = this.checkMethodConf('deleteById', conf)
       
       if (_conf.remote) {
-        const dataOutput = this.request(_conf)
+        const dataOutput = this.httpRequest(_conf)
         if (_conf.localSync && dataOutput) {
           this.dispatch('deleteAll', {})
         }
@@ -342,15 +347,15 @@ export default class Model extends BaseModel {
     * Build a url of api from the global configuration 
     * of model and optionaly the pass params 
     * @param {MethodConf} conf a method's conf
-    * @param {PathParam[]} pathParams a method's path params
+    * @param {PathParams} pathParams a method's path params
     * @static
     * @return {string} api's url
     */
     protected static getUrl(
       conf: MethodConf,
-      ...pathParams: PathParam[]
+      pathParams?: PathParams
     ): string {
-      const methodPath = pathParams.length ?
+      const methodPath = pathParams ?
       conf.bindPathParams(pathParams) : (conf.http as any).url
       
       return this._conf.http!.url + methodPath

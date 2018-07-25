@@ -4,7 +4,7 @@ import install, { Install } from './store/install'
 import use, { Use } from './plugins/use'
 import Database from './database/Database'
 import Model from './model/Model'
-import ModelConf, { MethodConf, HttpMethod, JsonModelConf, PathParam } from './model/ModelConf'
+import ModelConf, { MethodConf, HttpMethod, JsonModelConf, PathParams } from './model/ModelConf'
 import Http, { 
   HttpConf, 
   InterceptosClosures, 
@@ -72,7 +72,7 @@ export {
   MethodConf,
   HttpMethod,
   JsonModelConf,
-  PathParam,
+  PathParams,
   Http,
   HttpConf,
   InterceptosClosures,
@@ -111,7 +111,6 @@ export default {
   MethodConf,
   HttpMethod,
   Http,
-  PathParam,
   Query,
   Type,
   Attribute,

@@ -15,14 +15,8 @@ export enum HttpMethod {
   DELETE = 'delete'
 }
 
-export class PathParam {
-  public name: string
-  public value: string
-
-  constructor (name: string, value: string) {
-    this.value = value
-    this.name = name
-  }
+export interface PathParams {
+  [key: string]: any
 }
 
 export default class ModelConf {
@@ -170,17 +164,19 @@ export class MethodConf {
 
   /**
    * Bind a path param name with the pass value 
-   * @param {PathParam[]} params array 
+   * @param {PathParams} params object key => val 
    * @return {string} path with bind params
    */
-  public bindPathParams(params: PathParam[]): string {
+  public bindPathParams(params: PathParams): string {
     let _path = ""
     if(this.http && this.http.url) {
       _path = clone(this.http.url)
 
-      params.forEach(param => {
-        _path = replaceAll(_path, `:${param.name}`, param.value)
-      })
+      for (const key in params) {
+        if (params.hasOwnProperty(key)) {
+          _path = replaceAll(_path, `:${key}`, params[key])  
+        }
+      }
     }
     return _path
   }

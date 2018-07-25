@@ -4,7 +4,7 @@ import { Record } from '../data';
 import Query, { UpdateClosure } from '../query/Query';
 import EntityCollection from '../query/EntityCollection';
 import { Collection, Item } from '../query';
-import ModelConf, { JsonModelConf, MethodConf, PathParam } from '../model/ModelConf';
+import ModelConf, { JsonModelConf, MethodConf, PathParams } from '../model/ModelConf';
 export declare type UpdateReturn = Item | Collection | EntityCollection;
 export default class Model extends BaseModel {
     static _conf: ModelConf | JsonModelConf;
@@ -25,7 +25,15 @@ export default class Model extends BaseModel {
     * @static
     */
     private static replaceAllUrlSelf;
-    private static request;
+    /**
+     * Execute http request
+     * @param {MethodConf} conf
+     * @param {PathParams} pathParams
+     * @static
+     * @async
+     * @return {Promise<any>}
+     */
+    static httpRequest(conf: MethodConf, pathParams?: PathParams): Promise<any>;
     /**
     * Fetch data from api server and sync to the local store (optionaly)
     * @param {MethodConf} conf a method's conf
@@ -114,11 +122,11 @@ export default class Model extends BaseModel {
     * Build a url of api from the global configuration
     * of model and optionaly the pass params
     * @param {MethodConf} conf a method's conf
-    * @param {PathParam[]} pathParams a method's path params
+    * @param {PathParams} pathParams a method's path params
     * @static
     * @return {string} api's url
     */
-    protected static getUrl(conf: MethodConf, ...pathParams: PathParam[]): string;
+    protected static getUrl(conf: MethodConf, pathParams?: PathParams): string;
     /**
     * Check if the method configuration exist and
     * assign the pass method's conf to it

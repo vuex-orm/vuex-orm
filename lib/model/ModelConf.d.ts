@@ -11,10 +11,8 @@ export declare enum HttpMethod {
     PATCH = "patch",
     DELETE = "delete"
 }
-export declare class PathParam {
-    name: string;
-    value: string;
-    constructor(name: string, value: string);
+export interface PathParams {
+    [key: string]: any;
 }
 export default class ModelConf {
     /**
@@ -82,10 +80,10 @@ export declare class MethodConf {
     assign({ name, alias, remote, localSync, http }: MethodConf): void;
     /**
      * Bind a path param name with the pass value
-     * @param {PathParam[]} params array
+     * @param {PathParams} params object key => val
      * @return {string} path with bind params
      */
-    bindPathParams(params: PathParam[]): string;
+    bindPathParams(params: PathParams): string;
 }
 export declare const defaultConf: {
     "http": {

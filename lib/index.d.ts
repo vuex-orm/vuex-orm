@@ -3,7 +3,7 @@ import install, { Install } from './store/install';
 import use, { Use } from './plugins/use';
 import Database from './database/Database';
 import Model from './model/Model';
-import ModelConf, { MethodConf, HttpMethod, JsonModelConf, PathParam } from './model/ModelConf';
+import ModelConf, { MethodConf, HttpMethod, JsonModelConf, PathParams } from './model/ModelConf';
 import Http, { HttpConf, InterceptosClosures, InterceptorRequestClosure, InterceptorResponseClosure } from './http/Http';
 import Query from './query/Query';
 import Attribute from './attributes/Attribute';
@@ -55,6 +55,6 @@ export interface VuexORMResource {
     subActions: SubActions;
     mutations: Mutations;
 }
-export { install, use, Database, Model, ModelConf, MethodConf, HttpMethod, JsonModelConf, PathParam, Http, HttpConf, InterceptosClosures, InterceptorRequestClosure, InterceptorResponseClosure, Query, Attribute, Type, Attr, Increment, Relation, HasOne, BelongsTo, HasMany, HasManyBy, BelongsToMany, HasManyThrough, MorphTo, MorphOne, MorphMany, MorphToMany, MorphedByMany, rootGetters, subGetters, rootActions, subActions, mutations };
+export { install, use, Database, Model, ModelConf, MethodConf, HttpMethod, JsonModelConf, PathParams, Http, HttpConf, InterceptosClosures, InterceptorRequestClosure, InterceptorResponseClosure, Query, Attribute, Type, Attr, Increment, Relation, HasOne, BelongsTo, HasMany, HasManyBy, BelongsToMany, HasManyThrough, MorphTo, MorphOne, MorphMany, MorphToMany, MorphedByMany, rootGetters, subGetters, rootActions, subActions, mutations };
 declare const _default: VuexORMResource;
 export default _default;

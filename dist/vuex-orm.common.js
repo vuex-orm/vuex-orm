@@ -5907,13 +5907,6 @@ var HttpMethod;
     HttpMethod["PATCH"] = "patch";
     HttpMethod["DELETE"] = "delete";
 })(HttpMethod || (HttpMethod = {}));
-var PathParam = /** @class */ (function () {
-    function PathParam(name, value) {
-        this.value = value;
-        this.name = name;
-    }
-    return PathParam;
-}());
 var ModelConf = /** @class */ (function () {
     /**
      * Create a model's configuration from json
@@ -6017,16 +6010,18 @@ var MethodConf = /** @class */ (function () {
     };
     /**
      * Bind a path param name with the pass value
-     * @param {PathParam[]} params array
+     * @param {PathParams} params object key => val
      * @return {string} path with bind params
      */
     MethodConf.prototype.bindPathParams = function (params) {
         var _path = "";
         if (this.http && this.http.url) {
             _path = clone(this.http.url);
-            params.forEach(function (param) {
-                _path = replaceAll(_path, ":" + param.name, param.value);
-            });
+            for (var key in params) {
+                if (params.hasOwnProperty(key)) {
+                    _path = replaceAll(_path, ":" + key, params[key]);
+                }
+            }
         }
         return _path;
     };
@@ -6222,12 +6217,22 @@ var Model = /** @class */ (function (_super) {
             });
         }
     };
-    Model.request = function (conf) {
+    /**
+     * Execute http request
+     * @param {MethodConf} conf
+     * @param {PathParams} pathParams
+     * @static
+     * @async
+     * @return {Promise<any>}
+     */
+    Model.httpRequest = function (conf, pathParams) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._http.request(conf.http)
-                            .catch(function (err) { console.log(err); })];
+                    case 0:
+                        conf.http.url = this.getUrl(conf, pathParams);
+                        return [4 /*yield*/, this._http.request(conf.http)
+                                .catch(function (err) { console.log(err); })];
                     case 1: return [2 /*return*/, (_a.sent()) || []];
                 }
             });
@@ -6248,7 +6253,7 @@ var Model = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0:
                         _conf = this.checkMethodConf('fetch', conf);
-                        data = this.request(_conf);
+                        data = this.httpRequest(_conf);
                         if (!_conf.localSync) return [3 /*break*/, 2];
                         return [4 /*yield*/, this.dispatch('insertOrUpdate', { data: data })];
                     case 1:
@@ -6332,8 +6337,7 @@ var Model = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0:
                         _conf = this.checkMethodConf('fetchById', conf);
-                        _conf.http.url = this.getUrl(_conf, new PathParam('id', id.toString()));
-                        data = this.request(_conf);
+                        data = this.httpRequest(_conf, { 'id': id.toString() });
                         if (!_conf.localSync) return [3 /*break*/, 2];
                         // await this.update(data)
                         return [4 /*yield*/, this.dispatch('insertOrUpdate', { data: data })];
@@ -6362,8 +6366,7 @@ var Model = /** @class */ (function (_super) {
                     case 0:
                         _conf = this.checkMethodConf('exist', conf);
                         if (!_conf.remote) return [3 /*break*/, 2];
-                        _conf.http.url = this.getUrl(_conf, new PathParam('id', id.toString()));
-                        return [4 /*yield*/, this.request(_conf)];
+                        return [4 /*yield*/, this.httpRequest(_conf, { 'id': id.toString() })];
                     case 1:
                         data = _a.sent();
                         data = Object.keys(data).length === 0;
@@ -6391,7 +6394,7 @@ var Model = /** @class */ (function (_super) {
                     case 0:
                         _conf = this.checkMethodConf('count', conf);
                         if (!_conf.remote) return [3 /*break*/, 2];
-                        return [4 /*yield*/, this.request(_conf)];
+                        return [4 /*yield*/, this.httpRequest(_conf)];
                     case 1:
                         data = _a.sent();
                         data = data.length;
@@ -6418,7 +6421,7 @@ var Model = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 _conf = this.checkMethodConf('create', conf);
                 if (_conf.remote) {
-                    dataOutput = this.request(_conf);
+                    dataOutput = this.httpRequest(_conf);
                     if (_conf.localSync) {
                         this.dispatch('insert', { data: dataOutput });
                     }
@@ -6446,8 +6449,7 @@ var Model = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 _conf = this.checkMethodConf('update', conf);
                 if (_conf.remote) {
-                    _conf.http.url = this.getUrl(_conf, new PathParam('id', id.toString()));
-                    dataOutput = this.request(_conf);
+                    dataOutput = this.httpRequest(_conf, { 'id': id.toString() });
                     if (_conf.localSync && dataOutput) {
                         this.dispatch('update', {
                             where: id,
@@ -6479,8 +6481,7 @@ var Model = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 _conf = this.checkMethodConf('deleteById', conf);
                 if (_conf.remote) {
-                    _conf.http.url = this.getUrl(_conf, new PathParam('id', id.toString()));
-                    dataOutput = this.request(_conf);
+                    dataOutput = this.httpRequest(_conf, { 'id': id.toString() });
                     if (_conf.localSync && dataOutput) {
                         this.dispatch('delete', id);
                     }
@@ -6505,7 +6506,7 @@ var Model = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 _conf = this.checkMethodConf('deleteById', conf);
                 if (_conf.remote) {
-                    dataOutput = this.request(_conf);
+                    dataOutput = this.httpRequest(_conf);
                     if (_conf.localSync && dataOutput) {
                         this.dispatch('deleteAll', {});
                     }
@@ -6529,16 +6530,12 @@ var Model = /** @class */ (function (_super) {
     * Build a url of api from the global configuration
     * of model and optionaly the pass params
     * @param {MethodConf} conf a method's conf
-    * @param {PathParam[]} pathParams a method's path params
+    * @param {PathParams} pathParams a method's path params
     * @static
     * @return {string} api's url
     */
-    Model.getUrl = function (conf) {
-        var pathParams = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            pathParams[_i - 1] = arguments[_i];
-        }
-        var methodPath = pathParams.length ?
+    Model.getUrl = function (conf, pathParams) {
+        var methodPath = pathParams ?
             conf.bindPathParams(pathParams) : conf.http.url;
         return this._conf.http.url + methodPath;
     };
