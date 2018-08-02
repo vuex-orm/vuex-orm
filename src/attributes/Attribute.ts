@@ -1,16 +1,16 @@
 import Record from '../data/Record'
-import Model from '../model/Model'
+import BaseModel from '../model/BaseModel'
 
 export default abstract class Attribute {
   /**
    * The model that this attributes is being registerd.
    */
-  model: typeof Model
+  model: typeof BaseModel
 
   /**
    * Create a new attribute instance.
    */
-  constructor (model: typeof Model) {
+  constructor (model: typeof BaseModel) {
     this.model = model
   }
 
@@ -22,8 +22,8 @@ export default abstract class Attribute {
   abstract fill (value: any): any
 
   /**
-   * Make value to be set to model property. This method is used when
-   * instantiating a model or creating a plain object from a model.
+   * Make value to be set to BaseModel property. This method is used when
+   * instantiating a BaseModel or creating a plain object from a BaseModel.
    */
   abstract make (value: any, parent: Record, key: string): any
 }

@@ -1,5 +1,5 @@
 import { Record, NormalizedData } from '../../data'
-import Model from '../../model/Model'
+import BaseModel from '../../model/BaseModel'
 import Query, { Relation as Load } from '../../query/Query'
 import Relation from './Relation'
 
@@ -7,7 +7,7 @@ export default class BelongsTo extends Relation {
   /**
    * The parent model.
    */
-  parent: typeof Model
+  parent: typeof BaseModel
 
   /**
    * The foregin key of the model.
@@ -22,7 +22,7 @@ export default class BelongsTo extends Relation {
   /**
    * Create a new belongs to instance.
    */
-  constructor (model: typeof Model, parent: typeof Model | string, foreignKey: string, ownerKey: string) {
+  constructor (model: typeof BaseModel, parent: typeof BaseModel | string, foreignKey: string, ownerKey: string) {
     super(model) /* istanbul ignore next */
 
     this.parent = this.model.relation(parent)
@@ -51,7 +51,7 @@ export default class BelongsTo extends Relation {
    * Make value to be set to model property. This method is used when
    * instantiating a model or creating a plain object from a model.
    */
-  make (value: any, _parent: Record, _key: string): Model | null {
+  make (value: any, _parent: Record, _key: string): BaseModel | null {
     if (value === null) {
       return null
     }

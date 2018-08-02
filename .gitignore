@@ -3,6 +3,6 @@
 /coverage
 /docs/_book
 /docs/node_modules
-/lib
 /node_modules
 yarn-error.log
+/example

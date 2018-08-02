@@ -72,8 +72,8 @@
          */
         Connection.prototype.models = function () {
             return this.database.entities.reduce(function (models, entity) {
-                return __assign({}, models, (_a = {}, _a[entity.model.entity] = entity.model, _a));
                 var _a;
+                return __assign({}, models, (_a = {}, _a[entity.model.entity] = entity.model, _a));
             }, {});
         };
         /**
@@ -87,8 +87,8 @@
          */
         Connection.prototype.modules = function () {
             return this.database.entities.reduce(function (modules, entity) {
-                return __assign({}, modules, (_a = {}, _a[entity.model.entity] = entity.module, _a));
                 var _a;
+                return __assign({}, modules, (_a = {}, _a[entity.model.entity] = entity.module, _a));
             }, {});
         };
         /**
@@ -122,14 +122,62 @@
         return Container;
     }());
 
+    var ModuleOptions = /** @class */ (function () {
+        function ModuleOptions() {
+        }
+        ModuleOptions.register = function (options) {
+            if (options === void 0) { options = {}; }
+            if (options.namespace) {
+                this.namespace = options.namespace;
+            }
+            if (options.http) {
+                this.defaultHttpConfig = options.http;
+            }
+            this.check();
+        };
+        ModuleOptions.check = function () {
+            if (!this.defaultHttpConfig) {
+                throw new Error('Vuex orm resources: missing default http conf');
+            }
+            this.checkBaseUrl();
+            this.checkHeader();
+            this.checkTimeout();
+        };
+        ModuleOptions.checkBaseUrl = function () {
+            if (!this.defaultHttpConfig.baseURL) {
+                throw new Error('Vuex orm resources: missing default http baseURL conf');
+            }
+        };
+        ModuleOptions.checkTimeout = function () {
+            if (!this.defaultHttpConfig.timeout) {
+                throw new Error('Vuex orm resources: missing default http timeout conf');
+            }
+        };
+        ModuleOptions.checkHeader = function () {
+            if (!this.defaultHttpConfig.headers) {
+                throw new Error('Vuex orm resources: missing default http headers conf');
+            }
+            if (!this.defaultHttpConfig.headers['Content-Type']) {
+                throw new Error('Vuex orm resources: missing default http Content-Type headers conf');
+            }
+        };
+        ModuleOptions.getDefaultHttpConfig = function () {
+            return this.defaultHttpConfig;
+        };
+        ModuleOptions.namespace = 'entities';
+        return ModuleOptions;
+    }());
+
     var install = (function (database, options) {
-        if (options === void 0) { options = {}; }
-        var namespace = options.namespace || 'entities';
         return function (store) {
-            store.registerModule(namespace, database.createModule(namespace));
+            ModuleOptions.register(options);
+            store.registerModule(ModuleOptions.namespace, database.createModule(ModuleOptions.namespace));
             database.registerStore(store);
-            database.registerNamespace(namespace);
-            Container.register(namespace, database);
+            database.registerNamespace(ModuleOptions.namespace);
+            Container.register(ModuleOptions.namespace, database);
+            database.entities.forEach(function (entity) {
+                entity.model.conf();
+            });
         };
     });
 
@@ -211,6 +259,12 @@
             return records;
         }, {});
     }
+    function replaceAll(source, search, replacement) {
+        return source.replace(new RegExp(search, 'g'), replacement);
+    }
+    function clone(source) {
+        return JSON.parse(JSON.stringify(source));
+    }
     /**
      * The base implementation of `_.sortBy` which uses `comparer` to define the
      * sort order of `array` and replaces criteria objects with their
@@ -271,7 +325,9 @@
         map: map,
         mapValues: mapValues,
         orderBy: orderBy,
-        pickBy: pickBy
+        pickBy: pickBy,
+        replaceAll: replaceAll,
+        clone: clone
     };
 
     var Attribute = /** @class */ (function () {
@@ -343,8 +399,8 @@
             return value !== undefined ? value : this.value;
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         Attr.prototype.make = function (value, _parent, key) {
             return this.mutate(this.fill(value), key);
@@ -387,8 +443,8 @@
             return value + '';
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         String.prototype.make = function (value, _parent, key) {
             return this.mutate(this.fill(value), key);
@@ -437,8 +493,8 @@
             return 0;
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         Number.prototype.make = function (value, _parent, key) {
             return this.mutate(this.fill(value), key);
@@ -491,8 +547,8 @@
             return false;
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         Boolean.prototype.make = function (value, _parent, key) {
             return this.mutate(this.fill(value), key);
@@ -529,8 +585,8 @@
             return typeof value === 'number' ? value : null;
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         Increment.prototype.make = function (value, _parent, _key) {
             return typeof value === 'number' ? value : null;
@@ -1307,8 +1363,8 @@
          */
         Relation.prototype.mapRecords = function (records, key) {
             return records.reduce(function (records, record) {
-                return __assign$1({}, records, (_a = {}, _a[record[key]] = record, _a));
                 var _a;
+                return __assign$1({}, records, (_a = {}, _a[record[key]] = record, _a));
             }, {});
         };
         /**
@@ -1492,8 +1548,8 @@
             return Array.isArray(value) ? value : [];
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         HasMany.prototype.make = function (value, _parent, _key) {
             var _this = this;
@@ -1583,8 +1639,8 @@
             return Array.isArray(value) ? value : [];
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         HasManyBy.prototype.make = function (value, _parent, _key) {
             var _this = this;
@@ -1674,8 +1730,8 @@
             return Array.isArray(value) ? value : [];
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         HasManyThrough.prototype.make = function (value, _parent, _key) {
             var _this = this;
@@ -1780,8 +1836,8 @@
             return Array.isArray(value) ? value : [];
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         BelongsToMany.prototype.make = function (value, _parent, _key) {
             var _this = this;
@@ -1854,11 +1910,11 @@
         BelongsToMany.prototype.createPivotRecord = function (data, record, related) {
             var _this = this;
             related.forEach(function (id) {
+                var _a, _b;
                 var pivotKey = record[_this.parentKey] + "_" + id;
                 data[_this.pivot.entity] = __assign$2({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
                         $id: pivotKey
                     }, _b[_this.foreignPivotKey] = record[_this.parentKey], _b[_this.relatedPivotKey] = id, _b), _a));
-                var _a, _b;
             });
         };
         return BelongsToMany;
@@ -1900,8 +1956,8 @@
             return value;
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         MorphTo.prototype.make = function (value, parent, _key) {
             if (value === null) {
@@ -1914,8 +1970,8 @@
                 return null;
             }
             var related = parent[this.type];
-            var model = this.model.relation(related);
-            return model ? new model(value) : null;
+            var BaseModel = this.model.relation(related);
+            return BaseModel ? new BaseModel(value) : null;
         };
         /**
          * Attach the relational key to the given record.
@@ -1984,8 +2040,8 @@
             return value;
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         MorphOne.prototype.make = function (value, _parent, _key) {
             if (value === null) {
@@ -2055,8 +2111,8 @@
             return Array.isArray(value) ? value : [];
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         MorphMany.prototype.make = function (value, _parent, _key) {
             var _this = this;
@@ -2152,8 +2208,8 @@
             return Array.isArray(value) ? value : [];
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         MorphToMany.prototype.make = function (value, _parent, _key) {
             var _this = this;
@@ -2227,12 +2283,12 @@
         MorphToMany.prototype.createPivotRecord = function (parent, data, record, related) {
             var _this = this;
             related.forEach(function (id) {
+                var _a, _b;
                 var parentId = record[_this.parentKey];
                 var pivotKey = parentId + "_" + id + "_" + parent.entity;
                 data[_this.pivot.entity] = __assign$3({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
                         $id: pivotKey
                     }, _b[_this.relatedId] = id, _b[_this.id] = parentId, _b[_this.type] = parent.entity, _b), _a));
-                var _a, _b;
             });
         };
         return MorphToMany;
@@ -2281,8 +2337,8 @@
             return Array.isArray(value) ? value : [];
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         MorphedByMany.prototype.make = function (value, _parent, _key) {
             var _this = this;
@@ -2356,12 +2412,12 @@
         MorphedByMany.prototype.createPivotRecord = function (data, record, related) {
             var _this = this;
             related.forEach(function (id) {
+                var _a, _b;
                 var parentId = record[_this.parentKey];
                 var pivotKey = id + "_" + parentId + "_" + _this.related.entity;
                 data[_this.pivot.entity] = __assign$4({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
                         $id: pivotKey
                     }, _b[_this.relatedId] = parentId, _b[_this.id] = id, _b[_this.type] = _this.related.entity, _b), _a));
-                var _a, _b;
             });
         };
         return MorphedByMany;
@@ -2481,6 +2537,7 @@
          * morph fields such as `commentable_id` and `commentable_type`.
          */
         ProcessStrategy.generateMorphFields = function (record, parentValue, parent, attr) {
+            var _a;
             if (attr === undefined) {
                 return record;
             }
@@ -2491,7 +2548,6 @@
                 return record;
             }
             return __assign$5((_a = {}, _a[attr.id] = parentValue.$id, _a[attr.type] = parent.entity, _a), record);
-            var _a;
         };
         return ProcessStrategy;
     }());
@@ -2512,6 +2568,7 @@
          */
         Schema.one = function (model, schemas, parent, attr) {
             if (schemas === void 0) { schemas = {}; }
+            var _a;
             var noKey = new NoKey();
             var thisSchema = new src_3.Entity(model.entity, {}, {
                 idAttribute: IdAttribute.create(noKey, model),
@@ -2520,7 +2577,6 @@
             var definition = this.definition(model, __assign$6({}, schemas, (_a = {}, _a[model.entity] = thisSchema, _a)));
             thisSchema.define(definition);
             return thisSchema;
-            var _a;
         };
         /**
          * Create an array schema for the given model.
@@ -3305,6 +3361,7 @@
          * Update the state by id.
          */
         Query.prototype.updateById = function (data, id) {
+            var _a;
             id = typeof id === 'number' ? id.toString() : id;
             var state = this.state.data[id];
             if (!state) {
@@ -3320,7 +3377,6 @@
             var item = this.item(hookResult);
             this.hook.execute('afterUpdate', item);
             return item;
-            var _a;
         };
         /**
          * Update the state by condition.
@@ -3969,8 +4025,8 @@
             return value;
         };
         /**
-         * Make value to be set to model property. This method is used when
-         * instantiating a model or creating a plain object from a model.
+         * Make value to be set to BaseModel property. This method is used when
+         * instantiating a BaseModel or creating a plain object from a BaseModel.
          */
         HasOne.prototype.make = function (value, _parent, _key) {
             if (value === null) {
@@ -4059,157 +4115,157 @@
         return Contract;
     }());
 
-    var Model = /** @class */ (function () {
+    var BaseModel = /** @class */ (function () {
         /**
          * Create a model instance.
          */
-        function Model(record) {
+        function BaseModel(record) {
             this.$fill(record);
         }
         /**
          * The definition of the fields of the model and its relations.
          */
-        Model.fields = function () {
+        BaseModel.fields = function () {
             return {};
         };
         /**
          * Create an attr attribute. The given value will be used as a default
          * value for the field.
          */
-        Model.attr = function (value, mutator) {
+        BaseModel.attr = function (value, mutator) {
             return new Attr(this, value, mutator);
         };
         /**
          * Create a string attribute.
          */
-        Model.string = function (value, mutator) {
+        BaseModel.string = function (value, mutator) {
             return new String$1(this, value, mutator);
         };
         /**
          * Create a number attribute.
          */
-        Model.number = function (value, mutator) {
+        BaseModel.number = function (value, mutator) {
             return new Number(this, value, mutator);
         };
         /**
          * Create a boolean attribute.
          */
-        Model.boolean = function (value, mutator) {
+        BaseModel.boolean = function (value, mutator) {
             return new Boolean(this, value, mutator);
         };
         /**
          * Create an increment attribute. The field with this attribute will
          * automatically increment its value when creating a new record.
          */
-        Model.increment = function () {
+        BaseModel.increment = function () {
             return new Increment(this);
         };
         /**
          * Create a has one relationship.
          */
-        Model.hasOne = function (related, foreignKey, localKey) {
+        BaseModel.hasOne = function (related, foreignKey, localKey) {
             return new HasOne(this, related, foreignKey, this.localKey(localKey));
         };
         /**
          * Create a belongs to relationship.
          */
-        Model.belongsTo = function (parent, foreignKey, ownerKey) {
+        BaseModel.belongsTo = function (parent, foreignKey, ownerKey) {
             return new BelongsTo(this, parent, foreignKey, this.relation(parent).localKey(ownerKey));
         };
         /**
          * Create a has many relationship.
          */
-        Model.hasMany = function (related, foreignKey, localKey) {
+        BaseModel.hasMany = function (related, foreignKey, localKey) {
             return new HasMany(this, related, foreignKey, this.localKey(localKey));
         };
         /**
          * Create a has many by relationship.
          */
-        Model.hasManyBy = function (parent, foreignKey, ownerKey) {
+        BaseModel.hasManyBy = function (parent, foreignKey, ownerKey) {
             return new HasManyBy(this, parent, foreignKey, this.relation(parent).localKey(ownerKey));
         };
         /**
          * Create a has many through relationship.
          */
-        Model.hasManyThrough = function (related, through, firstKey, secondKey, localKey, secondLocalKey) {
+        BaseModel.hasManyThrough = function (related, through, firstKey, secondKey, localKey, secondLocalKey) {
             return new HasManyThrough(this, related, through, firstKey, secondKey, this.localKey(localKey), this.relation(through).localKey(secondLocalKey));
         };
         /**
          * The belongs to many relationship.
          */
-        Model.belongsToMany = function (related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey) {
+        BaseModel.belongsToMany = function (related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey) {
             return new BelongsToMany(this, related, pivot, foreignPivotKey, relatedPivotKey, this.localKey(parentKey), this.relation(related).localKey(relatedKey));
         };
         /**
          * Create a morph to relationship.
          */
-        Model.morphTo = function (id, type) {
+        BaseModel.morphTo = function (id, type) {
             return new MorphTo(this, id, type);
         };
         /**
          * Create a morph one relationship.
          */
-        Model.morphOne = function (related, id, type, localKey) {
+        BaseModel.morphOne = function (related, id, type, localKey) {
             return new MorphOne(this, related, id, type, this.localKey(localKey));
         };
         /**
          * Create a morph many relationship.
          */
-        Model.morphMany = function (related, id, type, localKey) {
+        BaseModel.morphMany = function (related, id, type, localKey) {
             return new MorphMany(this, related, id, type, this.localKey(localKey));
         };
         /**
          * Create a morph to many relationship.
          */
-        Model.morphToMany = function (related, pivot, relatedId, id, type, parentKey, relatedKey) {
+        BaseModel.morphToMany = function (related, pivot, relatedId, id, type, parentKey, relatedKey) {
             return new MorphToMany(this, related, pivot, relatedId, id, type, this.localKey(parentKey), this.relation(related).localKey(relatedKey));
         };
         /**
          * Create a morphed by many relationship.
          */
-        Model.morphedByMany = function (related, pivot, relatedId, id, type, parentKey, relatedKey) {
+        BaseModel.morphedByMany = function (related, pivot, relatedId, id, type, parentKey, relatedKey) {
             return new MorphedByMany(this, related, pivot, relatedId, id, type, this.localKey(parentKey), this.relation(related).localKey(relatedKey));
         };
         /**
          * Mutators to mutate matching fields when instantiating the model.
          */
-        Model.mutators = function () {
+        BaseModel.mutators = function () {
             return {};
         };
         /**
          * Get connection instance out of the container.
          */
-        Model.conn = function () {
+        BaseModel.conn = function () {
             return Container.connection(this.connection);
         };
         /**
          * Get Vuex Store instance out of connection.
          */
-        Model.store = function () {
+        BaseModel.store = function () {
             return this.conn().store();
         };
         /**
          * Get module namespaced path for the model.
          */
-        Model.namespace = function (method) {
+        BaseModel.namespace = function (method) {
             return this.connection + "/" + this.entity + "/" + method;
         };
         /**
          * Dispatch an action.
          */
-        Model.dispatch = function (method, payload) {
+        BaseModel.dispatch = function (method, payload) {
             return this.store().dispatch(this.namespace(method), payload);
         };
         /**
          * Call getetrs.
          */
-        Model.getters = function (method) {
+        BaseModel.getters = function (method) {
             return this.store().getters[this.namespace(method)];
         };
         /**
          * Get the value of the primary key.
          */
-        Model.id = function (record) {
+        BaseModel.id = function (record) {
             var key = this.primaryKey;
             if (typeof key === 'string') {
                 return record[key];
@@ -4219,7 +4275,7 @@
         /**
          * Get local key to pass to the attributes.
          */
-        Model.localKey = function (key) {
+        BaseModel.localKey = function (key) {
             if (key) {
                 return key;
             }
@@ -4228,7 +4284,7 @@
         /**
          * Get a model from the container.
          */
-        Model.relation = function (model) {
+        BaseModel.relation = function (model) {
             if (typeof model !== 'string') {
                 return model;
             }
@@ -4237,7 +4293,7 @@
         /**
          * Get the attribute class for the given attribute name.
          */
-        Model.getAttributeClass = function (name) {
+        BaseModel.getAttributeClass = function (name) {
             switch (name) {
                 case 'increment': return Increment;
                 default:
@@ -4247,7 +4303,7 @@
         /**
          * Get all of the fields that matches the given attribute name.
          */
-        Model.getFields = function (name) {
+        BaseModel.getFields = function (name) {
             var attr = this.getAttributeClass(name);
             var fields = this.fields();
             return Object.keys(fields).reduce(function (newFields, key) {
@@ -4261,39 +4317,39 @@
         /**
          * Get all `increment` fields from the schema.
          */
-        Model.getIncrementFields = function () {
+        BaseModel.getIncrementFields = function () {
             return this.getFields('increment');
         };
         /**
          * Check if fields contains the `increment` field type.
          */
-        Model.hasIncrementFields = function () {
+        BaseModel.hasIncrementFields = function () {
             return Object.keys(this.getIncrementFields()).length > 0;
         };
         /**
          * Get all `belongsToMany` fields from the schema.
          */
-        Model.pivotFields = function () {
+        BaseModel.pivotFields = function () {
             var fields = [];
             Utils.forOwn(this.fields(), function (field, key) {
+                var _a;
                 if (field instanceof BelongsToMany || field instanceof MorphToMany || field instanceof MorphedByMany) {
                     fields.push((_a = {}, _a[key] = field, _a));
                 }
-                var _a;
             });
             return fields;
         };
         /**
          * Check if fields contains the `belongsToMany` field type.
          */
-        Model.hasPivotFields = function () {
+        BaseModel.hasPivotFields = function () {
             return this.pivotFields().length > 0;
         };
         /**
          * Remove any fields not defined in the model schema. This method
          * also fixes any incorrect values as well.
          */
-        Model.fix = function (data, keep, fields) {
+        BaseModel.fix = function (data, keep, fields) {
             var _this = this;
             if (keep === void 0) { keep = ['$id']; }
             var _fields = fields || this.fields();
@@ -4318,7 +4374,7 @@
         /**
          * Fix multiple records.
          */
-        Model.fixMany = function (data, keep) {
+        BaseModel.fixMany = function (data, keep) {
             var _this = this;
             return Object.keys(data).reduce(function (records, id) {
                 records[id] = _this.fix(data[id], keep);
@@ -4329,7 +4385,7 @@
          * Fill any missing fields in the given data with the default
          * value defined in the model schema.
          */
-        Model.hydrate = function (data, keep, fields) {
+        BaseModel.hydrate = function (data, keep, fields) {
             var _this = this;
             if (keep === void 0) { keep = ['$id']; }
             var _fields = fields || this.fields();
@@ -4353,7 +4409,7 @@
         /**
          * Fill multiple records.
          */
-        Model.hydrateMany = function (data, keep) {
+        BaseModel.hydrateMany = function (data, keep) {
             var _this = this;
             return Object.keys(data).reduce(function (records, id) {
                 records[id] = _this.hydrate(data[id], keep);
@@ -4365,7 +4421,7 @@
          * or if the record has any missing fields, each value of the fields will
          * be filled with its default value defined at model fields definition.
          */
-        Model.fill = function (self, record, fields) {
+        BaseModel.fill = function (self, record, fields) {
             var _this = this;
             if (self === void 0) { self = {}; }
             if (record === void 0) { record = {}; }
@@ -4384,49 +4440,49 @@
         /**
          * Get the static class of this model.
          */
-        Model.prototype.$self = function () {
+        BaseModel.prototype.$self = function () {
             return this.constructor;
         };
         /**
          * The definition of the fields of the model and its relations.
          */
-        Model.prototype.$fields = function () {
+        BaseModel.prototype.$fields = function () {
             return this.$self().fields();
         };
         /**
          * Get the value of the primary key.
          */
-        Model.prototype.$id = function () {
+        BaseModel.prototype.$id = function () {
             return this.$self().id(this);
         };
         /**
          * Get the connection instance out of the container.
          */
-        Model.prototype.$conn = function () {
+        BaseModel.prototype.$conn = function () {
             return this.$self().conn();
         };
         /**
          * Get Vuex Store insatnce out of connection.
          */
-        Model.prototype.$store = function () {
+        BaseModel.prototype.$store = function () {
             return this.$self().store();
         };
         /**
          * Get module namespaced path for the model.
          */
-        Model.prototype.$namespace = function (method) {
+        BaseModel.prototype.$namespace = function (method) {
             return this.$self().namespace(method);
         };
         /**
          * Dispatch an action.
          */
-        Model.prototype.$dispatch = function (method, payload) {
+        BaseModel.prototype.$dispatch = function (method, payload) {
             return this.$self().dispatch(method, payload);
         };
         /**
          * Call getetrs.
          */
-        Model.prototype.$getters = function (method) {
+        BaseModel.prototype.$getters = function (method) {
             return this.$self().getters(method);
         };
         /**
@@ -4434,19 +4490,19 @@
          * or if the record has any missing fields, each value of the fields will
          * be filled with its default value defined at model fields definition.
          */
-        Model.prototype.$fill = function (record) {
+        BaseModel.prototype.$fill = function (record) {
             this.$self().fill(this, record);
         };
         /**
          * Serialize field values into json.
          */
-        Model.prototype.$toJson = function () {
+        BaseModel.prototype.$toJson = function () {
             return this.$buildJson(this.$self().fields(), this);
         };
         /**
          * Build Json data.
          */
-        Model.prototype.$buildJson = function (data, field) {
+        BaseModel.prototype.$buildJson = function (data, field) {
             return Utils.mapValues(data, function (attr, key) {
                 if (!field[key]) {
                     return field[key];
@@ -4458,7 +4514,7 @@
                     return field[key].$toJson();
                 }
                 if (attr instanceof HasMany) {
-                    return field[key].map(function (model) { return model.$toJson(); });
+                    return field[key].map(function (BaseModel) { return BaseModel.$toJson(); });
                 }
                 return field[key];
             });
@@ -4466,9 +4522,2073 @@
         /**
          * The primary key to be used for the model.
          */
-        Model.primaryKey = 'id';
-        return Model;
+        BaseModel.primaryKey = 'id';
+        return BaseModel;
     }());
+
+    var bind = function bind(fn, thisArg) {
+      return function wrap() {
+        var args = new Array(arguments.length);
+        for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i];
+        }
+        return fn.apply(thisArg, args);
+      };
+    };
+
+    /*!
+     * Determine if an object is a Buffer
+     *
+     * @author   Feross Aboukhadijeh <https://feross.org>
+     * @license  MIT
+     */
+
+    // The _isBuffer check is for Safari 5-7 support, because it's missing
+    // Object.prototype.constructor. Remove this eventually
+    var isBuffer_1 = function (obj) {
+      return obj != null && (isBuffer(obj) || isSlowBuffer(obj) || !!obj._isBuffer)
+    };
+
+    function isBuffer (obj) {
+      return !!obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
+    }
+
+    // For Node v0.10 support. Remove this eventually.
+    function isSlowBuffer (obj) {
+      return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
+    }
+
+    /*global toString:true*/
+
+    // utils is a library of generic helper functions non-specific to axios
+
+    var toString = Object.prototype.toString;
+
+    /**
+     * Determine if a value is an Array
+     *
+     * @param {Object} val The value to test
+     * @returns {boolean} True if value is an Array, otherwise false
+     */
+    function isArray(val) {
+      return toString.call(val) === '[object Array]';
+    }
+
+    /**
+     * Determine if a value is an ArrayBuffer
+     *
+     * @param {Object} val The value to test
+     * @returns {boolean} True if value is an ArrayBuffer, otherwise false
+     */
+    function isArrayBuffer(val) {
+      return toString.call(val) === '[object ArrayBuffer]';
+    }
+
+    /**
+     * Determine if a value is a FormData
+     *
+     * @param {Object} val The value to test
+     * @returns {boolean} True if value is an FormData, otherwise false
+     */
+    function isFormData(val) {
+      return (typeof FormData !== 'undefined') && (val instanceof FormData);
+    }
+
+    /**
+     * Determine if a value is a view on an ArrayBuffer
+     *
+     * @param {Object} val The value to test
+     * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
+     */
+    function isArrayBufferView(val) {
+      var result;
+      if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+        result = ArrayBuffer.isView(val);
+      } else {
+        result = (val) && (val.buffer) && (val.buffer instanceof ArrayBuffer);
+      }
+      return result;
+    }
+
+    /**
+     * Determine if a value is a String
+     *
+     * @param {Object} val The value to test
+     * @returns {boolean} True if value is a String, otherwise false
+     */
+    function isString(val) {
+      return typeof val === 'string';
+    }
+
+    /**
+     * Determine if a value is a Number
+     *
+     * @param {Object} val The value to test
+     * @returns {boolean} True if value is a Number, otherwise false
+     */
+    function isNumber(val) {
+      return typeof val === 'number';
+    }
+
+    /**
+     * Determine if a value is undefined
+     *
+     * @param {Object} val The value to test
+     * @returns {boolean} True if the value is undefined, otherwise false
+     */
+    function isUndefined(val) {
+      return typeof val === 'undefined';
+    }
+
+    /**
+     * Determine if a value is an Object
+     *
+     * @param {Object} val The value to test
+     * @returns {boolean} True if value is an Object, otherwise false
+     */
+    function isObject(val) {
+      return val !== null && typeof val === 'object';
+    }
+
+    /**
+     * Determine if a value is a Date
+     *
+     * @param {Object} val The value to test
+     * @returns {boolean} True if value is a Date, otherwise false
+     */
+    function isDate(val) {
+      return toString.call(val) === '[object Date]';
+    }
+
+    /**
+     * Determine if a value is a File
+     *
+     * @param {Object} val The value to test
+     * @returns {boolean} True if value is a File, otherwise false
+     */
+    function isFile(val) {
+      return toString.call(val) === '[object File]';
+    }
+
+    /**
+     * Determine if a value is a Blob
+     *
+     * @param {Object} val The value to test
+     * @returns {boolean} True if value is a Blob, otherwise false
+     */
+    function isBlob(val) {
+      return toString.call(val) === '[object Blob]';
+    }
+
+    /**
+     * Determine if a value is a Function
+     *
+     * @param {Object} val The value to test
+     * @returns {boolean} True if value is a Function, otherwise false
+     */
+    function isFunction(val) {
+      return toString.call(val) === '[object Function]';
+    }
+
+    /**
+     * Determine if a value is a Stream
+     *
+     * @param {Object} val The value to test
+     * @returns {boolean} True if value is a Stream, otherwise false
+     */
+    function isStream(val) {
+      return isObject(val) && isFunction(val.pipe);
+    }
+
+    /**
+     * Determine if a value is a URLSearchParams object
+     *
+     * @param {Object} val The value to test
+     * @returns {boolean} True if value is a URLSearchParams object, otherwise false
+     */
+    function isURLSearchParams(val) {
+      return typeof URLSearchParams !== 'undefined' && val instanceof URLSearchParams;
+    }
+
+    /**
+     * Trim excess whitespace off the beginning and end of a string
+     *
+     * @param {String} str The String to trim
+     * @returns {String} The String freed of excess whitespace
+     */
+    function trim(str) {
+      return str.replace(/^\s*/, '').replace(/\s*$/, '');
+    }
+
+    /**
+     * Determine if we're running in a standard browser environment
+     *
+     * This allows axios to run in a web worker, and react-native.
+     * Both environments support XMLHttpRequest, but not fully standard globals.
+     *
+     * web workers:
+     *  typeof window -> undefined
+     *  typeof document -> undefined
+     *
+     * react-native:
+     *  navigator.product -> 'ReactNative'
+     */
+    function isStandardBrowserEnv() {
+      if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+        return false;
+      }
+      return (
+        typeof window !== 'undefined' &&
+        typeof document !== 'undefined'
+      );
+    }
+
+    /**
+     * Iterate over an Array or an Object invoking a function for each item.
+     *
+     * If `obj` is an Array callback will be called passing
+     * the value, index, and complete array for each item.
+     *
+     * If 'obj' is an Object callback will be called passing
+     * the value, key, and complete object for each property.
+     *
+     * @param {Object|Array} obj The object to iterate
+     * @param {Function} fn The callback to invoke for each item
+     */
+    function forEach(obj, fn) {
+      // Don't bother if no value provided
+      if (obj === null || typeof obj === 'undefined') {
+        return;
+      }
+
+      // Force an array if not already something iterable
+      if (typeof obj !== 'object') {
+        /*eslint no-param-reassign:0*/
+        obj = [obj];
+      }
+
+      if (isArray(obj)) {
+        // Iterate over array values
+        for (var i = 0, l = obj.length; i < l; i++) {
+          fn.call(null, obj[i], i, obj);
+        }
+      } else {
+        // Iterate over object keys
+        for (var key in obj) {
+          if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            fn.call(null, obj[key], key, obj);
+          }
+        }
+      }
+    }
+
+    /**
+     * Accepts varargs expecting each argument to be an object, then
+     * immutably merges the properties of each object and returns result.
+     *
+     * When multiple objects contain the same key the later object in
+     * the arguments list will take precedence.
+     *
+     * Example:
+     *
+     * ```js
+     * var result = merge({foo: 123}, {foo: 456});
+     * console.log(result.foo); // outputs 456
+     * ```
+     *
+     * @param {Object} obj1 Object to merge
+     * @returns {Object} Result of all merge properties
+     */
+    function merge(/* obj1, obj2, obj3, ... */) {
+      var result = {};
+      function assignValue(val, key) {
+        if (typeof result[key] === 'object' && typeof val === 'object') {
+          result[key] = merge(result[key], val);
+        } else {
+          result[key] = val;
+        }
+      }
+
+      for (var i = 0, l = arguments.length; i < l; i++) {
+        forEach(arguments[i], assignValue);
+      }
+      return result;
+    }
+
+    /**
+     * Extends object a by mutably adding to it the properties of object b.
+     *
+     * @param {Object} a The object to be extended
+     * @param {Object} b The object to copy properties from
+     * @param {Object} thisArg The object to bind function to
+     * @return {Object} The resulting value of object a
+     */
+    function extend(a, b, thisArg) {
+      forEach(b, function assignValue(val, key) {
+        if (thisArg && typeof val === 'function') {
+          a[key] = bind(val, thisArg);
+        } else {
+          a[key] = val;
+        }
+      });
+      return a;
+    }
+
+    var utils = {
+      isArray: isArray,
+      isArrayBuffer: isArrayBuffer,
+      isBuffer: isBuffer_1,
+      isFormData: isFormData,
+      isArrayBufferView: isArrayBufferView,
+      isString: isString,
+      isNumber: isNumber,
+      isObject: isObject,
+      isUndefined: isUndefined,
+      isDate: isDate,
+      isFile: isFile,
+      isBlob: isBlob,
+      isFunction: isFunction,
+      isStream: isStream,
+      isURLSearchParams: isURLSearchParams,
+      isStandardBrowserEnv: isStandardBrowserEnv,
+      forEach: forEach,
+      merge: merge,
+      extend: extend,
+      trim: trim
+    };
+
+    var normalizeHeaderName = function normalizeHeaderName(headers, normalizedName) {
+      utils.forEach(headers, function processHeader(value, name) {
+        if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
+          headers[normalizedName] = value;
+          delete headers[name];
+        }
+      });
+    };
+
+    /**
+     * Update an Error with the specified config, error code, and response.
+     *
+     * @param {Error} error The error to update.
+     * @param {Object} config The config.
+     * @param {string} [code] The error code (for example, 'ECONNABORTED').
+     * @param {Object} [request] The request.
+     * @param {Object} [response] The response.
+     * @returns {Error} The error.
+     */
+    var enhanceError = function enhanceError(error, config, code, request, response) {
+      error.config = config;
+      if (code) {
+        error.code = code;
+      }
+      error.request = request;
+      error.response = response;
+      return error;
+    };
+
+    /**
+     * Create an Error with the specified message, config, error code, request and response.
+     *
+     * @param {string} message The error message.
+     * @param {Object} config The config.
+     * @param {string} [code] The error code (for example, 'ECONNABORTED').
+     * @param {Object} [request] The request.
+     * @param {Object} [response] The response.
+     * @returns {Error} The created error.
+     */
+    var createError = function createError(message, config, code, request, response) {
+      var error = new Error(message);
+      return enhanceError(error, config, code, request, response);
+    };
+
+    /**
+     * Resolve or reject a Promise based on response status.
+     *
+     * @param {Function} resolve A function that resolves the promise.
+     * @param {Function} reject A function that rejects the promise.
+     * @param {object} response The response.
+     */
+    var settle = function settle(resolve, reject, response) {
+      var validateStatus = response.config.validateStatus;
+      // Note: status is not exposed by XDomainRequest
+      if (!response.status || !validateStatus || validateStatus(response.status)) {
+        resolve(response);
+      } else {
+        reject(createError(
+          'Request failed with status code ' + response.status,
+          response.config,
+          null,
+          response.request,
+          response
+        ));
+      }
+    };
+
+    function encode(val) {
+      return encodeURIComponent(val).
+        replace(/%40/gi, '@').
+        replace(/%3A/gi, ':').
+        replace(/%24/g, '$').
+        replace(/%2C/gi, ',').
+        replace(/%20/g, '+').
+        replace(/%5B/gi, '[').
+        replace(/%5D/gi, ']');
+    }
+
+    /**
+     * Build a URL by appending params to the end
+     *
+     * @param {string} url The base of the url (e.g., http://www.google.com)
+     * @param {object} [params] The params to be appended
+     * @returns {string} The formatted url
+     */
+    var buildURL = function buildURL(url, params, paramsSerializer) {
+      /*eslint no-param-reassign:0*/
+      if (!params) {
+        return url;
+      }
+
+      var serializedParams;
+      if (paramsSerializer) {
+        serializedParams = paramsSerializer(params);
+      } else if (utils.isURLSearchParams(params)) {
+        serializedParams = params.toString();
+      } else {
+        var parts = [];
+
+        utils.forEach(params, function serialize(val, key) {
+          if (val === null || typeof val === 'undefined') {
+            return;
+          }
+
+          if (utils.isArray(val)) {
+            key = key + '[]';
+          } else {
+            val = [val];
+          }
+
+          utils.forEach(val, function parseValue(v) {
+            if (utils.isDate(v)) {
+              v = v.toISOString();
+            } else if (utils.isObject(v)) {
+              v = JSON.stringify(v);
+            }
+            parts.push(encode(key) + '=' + encode(v));
+          });
+        });
+
+        serializedParams = parts.join('&');
+      }
+
+      if (serializedParams) {
+        url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
+      }
+
+      return url;
+    };
+
+    // Headers whose duplicates are ignored by node
+    // c.f. https://nodejs.org/api/http.html#http_message_headers
+    var ignoreDuplicateOf = [
+      'age', 'authorization', 'content-length', 'content-type', 'etag',
+      'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
+      'last-modified', 'location', 'max-forwards', 'proxy-authorization',
+      'referer', 'retry-after', 'user-agent'
+    ];
+
+    /**
+     * Parse headers into an object
+     *
+     * ```
+     * Date: Wed, 27 Aug 2014 08:58:49 GMT
+     * Content-Type: application/json
+     * Connection: keep-alive
+     * Transfer-Encoding: chunked
+     * ```
+     *
+     * @param {String} headers Headers needing to be parsed
+     * @returns {Object} Headers parsed into an object
+     */
+    var parseHeaders = function parseHeaders(headers) {
+      var parsed = {};
+      var key;
+      var val;
+      var i;
+
+      if (!headers) { return parsed; }
+
+      utils.forEach(headers.split('\n'), function parser(line) {
+        i = line.indexOf(':');
+        key = utils.trim(line.substr(0, i)).toLowerCase();
+        val = utils.trim(line.substr(i + 1));
+
+        if (key) {
+          if (parsed[key] && ignoreDuplicateOf.indexOf(key) >= 0) {
+            return;
+          }
+          if (key === 'set-cookie') {
+            parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
+          } else {
+            parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+          }
+        }
+      });
+
+      return parsed;
+    };
+
+    var isURLSameOrigin = (
+      utils.isStandardBrowserEnv() ?
+
+      // Standard browser envs have full support of the APIs needed to test
+      // whether the request URL is of the same origin as current location.
+      (function standardBrowserEnv() {
+        var msie = /(msie|trident)/i.test(navigator.userAgent);
+        var urlParsingNode = document.createElement('a');
+        var originURL;
+
+        /**
+        * Parse a URL to discover it's components
+        *
+        * @param {String} url The URL to be parsed
+        * @returns {Object}
+        */
+        function resolveURL(url) {
+          var href = url;
+
+          if (msie) {
+            // IE needs attribute set twice to normalize properties
+            urlParsingNode.setAttribute('href', href);
+            href = urlParsingNode.href;
+          }
+
+          urlParsingNode.setAttribute('href', href);
+
+          // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+          return {
+            href: urlParsingNode.href,
+            protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+            host: urlParsingNode.host,
+            search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+            hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+            hostname: urlParsingNode.hostname,
+            port: urlParsingNode.port,
+            pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
+                      urlParsingNode.pathname :
+                      '/' + urlParsingNode.pathname
+          };
+        }
+
+        originURL = resolveURL(window.location.href);
+
+        /**
+        * Determine if a URL shares the same origin as the current location
+        *
+        * @param {String} requestURL The URL to test
+        * @returns {boolean} True if URL shares the same origin, otherwise false
+        */
+        return function isURLSameOrigin(requestURL) {
+          var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
+          return (parsed.protocol === originURL.protocol &&
+                parsed.host === originURL.host);
+        };
+      })() :
+
+      // Non standard browser envs (web workers, react-native) lack needed support.
+      (function nonStandardBrowserEnv() {
+        return function isURLSameOrigin() {
+          return true;
+        };
+      })()
+    );
+
+    // btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
+
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+
+    function E() {
+      this.message = 'String contains an invalid character';
+    }
+    E.prototype = new Error;
+    E.prototype.code = 5;
+    E.prototype.name = 'InvalidCharacterError';
+
+    function btoa(input) {
+      var str = String(input);
+      var output = '';
+      for (
+        // initialize result and counter
+        var block, charCode, idx = 0, map = chars;
+        // if the next str index does not exist:
+        //   change the mapping table to "="
+        //   check if d has no fractional digits
+        str.charAt(idx | 0) || (map = '=', idx % 1);
+        // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
+        output += map.charAt(63 & block >> 8 - idx % 1 * 8)
+      ) {
+        charCode = str.charCodeAt(idx += 3 / 4);
+        if (charCode > 0xFF) {
+          throw new E();
+        }
+        block = block << 8 | charCode;
+      }
+      return output;
+    }
+
+    var btoa_1 = btoa;
+
+    var cookies = (
+      utils.isStandardBrowserEnv() ?
+
+      // Standard browser envs support document.cookie
+      (function standardBrowserEnv() {
+        return {
+          write: function write(name, value, expires, path, domain, secure) {
+            var cookie = [];
+            cookie.push(name + '=' + encodeURIComponent(value));
+
+            if (utils.isNumber(expires)) {
+              cookie.push('expires=' + new Date(expires).toGMTString());
+            }
+
+            if (utils.isString(path)) {
+              cookie.push('path=' + path);
+            }
+
+            if (utils.isString(domain)) {
+              cookie.push('domain=' + domain);
+            }
+
+            if (secure === true) {
+              cookie.push('secure');
+            }
+
+            document.cookie = cookie.join('; ');
+          },
+
+          read: function read(name) {
+            var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+            return (match ? decodeURIComponent(match[3]) : null);
+          },
+
+          remove: function remove(name) {
+            this.write(name, '', Date.now() - 86400000);
+          }
+        };
+      })() :
+
+      // Non standard browser env (web workers, react-native) lack needed support.
+      (function nonStandardBrowserEnv() {
+        return {
+          write: function write() {},
+          read: function read() { return null; },
+          remove: function remove() {}
+        };
+      })()
+    );
+
+    var btoa$1 = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || btoa_1;
+
+    var xhr = function xhrAdapter(config) {
+      return new Promise(function dispatchXhrRequest(resolve, reject) {
+        var requestData = config.data;
+        var requestHeaders = config.headers;
+
+        if (utils.isFormData(requestData)) {
+          delete requestHeaders['Content-Type']; // Let the browser set it
+        }
+
+        var request = new XMLHttpRequest();
+        var loadEvent = 'onreadystatechange';
+        var xDomain = false;
+
+        // For IE 8/9 CORS support
+        // Only supports POST and GET calls and doesn't returns the response headers.
+        // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
+        if (process.env.NODE_ENV !== 'test' &&
+            typeof window !== 'undefined' &&
+            window.XDomainRequest && !('withCredentials' in request) &&
+            !isURLSameOrigin(config.url)) {
+          request = new window.XDomainRequest();
+          loadEvent = 'onload';
+          xDomain = true;
+          request.onprogress = function handleProgress() {};
+          request.ontimeout = function handleTimeout() {};
+        }
+
+        // HTTP basic authentication
+        if (config.auth) {
+          var username = config.auth.username || '';
+          var password = config.auth.password || '';
+          requestHeaders.Authorization = 'Basic ' + btoa$1(username + ':' + password);
+        }
+
+        request.open(config.method.toUpperCase(), buildURL(config.url, config.params, config.paramsSerializer), true);
+
+        // Set the request timeout in MS
+        request.timeout = config.timeout;
+
+        // Listen for ready state
+        request[loadEvent] = function handleLoad() {
+          if (!request || (request.readyState !== 4 && !xDomain)) {
+            return;
+          }
+
+          // The request errored out and we didn't get a response, this will be
+          // handled by onerror instead
+          // With one exception: request that using file: protocol, most browsers
+          // will return status as 0 even though it's a successful request
+          if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
+            return;
+          }
+
+          // Prepare the response
+          var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
+          var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
+          var response = {
+            data: responseData,
+            // IE sends 1223 instead of 204 (https://github.com/axios/axios/issues/201)
+            status: request.status === 1223 ? 204 : request.status,
+            statusText: request.status === 1223 ? 'No Content' : request.statusText,
+            headers: responseHeaders,
+            config: config,
+            request: request
+          };
+
+          settle(resolve, reject, response);
+
+          // Clean up request
+          request = null;
+        };
+
+        // Handle low level network errors
+        request.onerror = function handleError() {
+          // Real errors are hidden from us by the browser
+          // onerror should only fire if it's a network error
+          reject(createError('Network Error', config, null, request));
+
+          // Clean up request
+          request = null;
+        };
+
+        // Handle timeout
+        request.ontimeout = function handleTimeout() {
+          reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED',
+            request));
+
+          // Clean up request
+          request = null;
+        };
+
+        // Add xsrf header
+        // This is only done if running in a standard browser environment.
+        // Specifically not if we're in a web worker, or react-native.
+        if (utils.isStandardBrowserEnv()) {
+          var cookies$$1 = cookies;
+
+          // Add xsrf header
+          var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
+              cookies$$1.read(config.xsrfCookieName) :
+              undefined;
+
+          if (xsrfValue) {
+            requestHeaders[config.xsrfHeaderName] = xsrfValue;
+          }
+        }
+
+        // Add headers to the request
+        if ('setRequestHeader' in request) {
+          utils.forEach(requestHeaders, function setRequestHeader(val, key) {
+            if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
+              // Remove Content-Type if data is undefined
+              delete requestHeaders[key];
+            } else {
+              // Otherwise add header to the request
+              request.setRequestHeader(key, val);
+            }
+          });
+        }
+
+        // Add withCredentials to request if needed
+        if (config.withCredentials) {
+          request.withCredentials = true;
+        }
+
+        // Add responseType to request if needed
+        if (config.responseType) {
+          try {
+            request.responseType = config.responseType;
+          } catch (e) {
+            // Expected DOMException thrown by browsers not compatible XMLHttpRequest Level 2.
+            // But, this can be suppressed for 'json' type as it can be parsed by default 'transformResponse' function.
+            if (config.responseType !== 'json') {
+              throw e;
+            }
+          }
+        }
+
+        // Handle progress if needed
+        if (typeof config.onDownloadProgress === 'function') {
+          request.addEventListener('progress', config.onDownloadProgress);
+        }
+
+        // Not all browsers support upload events
+        if (typeof config.onUploadProgress === 'function' && request.upload) {
+          request.upload.addEventListener('progress', config.onUploadProgress);
+        }
+
+        if (config.cancelToken) {
+          // Handle cancellation
+          config.cancelToken.promise.then(function onCanceled(cancel) {
+            if (!request) {
+              return;
+            }
+
+            request.abort();
+            reject(cancel);
+            // Clean up request
+            request = null;
+          });
+        }
+
+        if (requestData === undefined) {
+          requestData = null;
+        }
+
+        // Send the request
+        request.send(requestData);
+      });
+    };
+
+    var DEFAULT_CONTENT_TYPE = {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+
+    function setContentTypeIfUnset(headers, value) {
+      if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
+        headers['Content-Type'] = value;
+      }
+    }
+
+    function getDefaultAdapter() {
+      var adapter;
+      if (typeof XMLHttpRequest !== 'undefined') {
+        // For browsers use XHR adapter
+        adapter = xhr;
+      } else if (typeof process !== 'undefined') {
+        // For node use HTTP adapter
+        adapter = xhr;
+      }
+      return adapter;
+    }
+
+    var defaults = {
+      adapter: getDefaultAdapter(),
+
+      transformRequest: [function transformRequest(data, headers) {
+        normalizeHeaderName(headers, 'Content-Type');
+        if (utils.isFormData(data) ||
+          utils.isArrayBuffer(data) ||
+          utils.isBuffer(data) ||
+          utils.isStream(data) ||
+          utils.isFile(data) ||
+          utils.isBlob(data)
+        ) {
+          return data;
+        }
+        if (utils.isArrayBufferView(data)) {
+          return data.buffer;
+        }
+        if (utils.isURLSearchParams(data)) {
+          setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
+          return data.toString();
+        }
+        if (utils.isObject(data)) {
+          setContentTypeIfUnset(headers, 'application/json;charset=utf-8');
+          return JSON.stringify(data);
+        }
+        return data;
+      }],
+
+      transformResponse: [function transformResponse(data) {
+        /*eslint no-param-reassign:0*/
+        if (typeof data === 'string') {
+          try {
+            data = JSON.parse(data);
+          } catch (e) { /* Ignore */ }
+        }
+        return data;
+      }],
+
+      /**
+       * A timeout in milliseconds to abort a request. If set to 0 (default) a
+       * timeout is not created.
+       */
+      timeout: 0,
+
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+
+      maxContentLength: -1,
+
+      validateStatus: function validateStatus(status) {
+        return status >= 200 && status < 300;
+      }
+    };
+
+    defaults.headers = {
+      common: {
+        'Accept': 'application/json, text/plain, */*'
+      }
+    };
+
+    utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+      defaults.headers[method] = {};
+    });
+
+    utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+      defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
+    });
+
+    var defaults_1 = defaults;
+
+    function InterceptorManager() {
+      this.handlers = [];
+    }
+
+    /**
+     * Add a new interceptor to the stack
+     *
+     * @param {Function} fulfilled The function to handle `then` for a `Promise`
+     * @param {Function} rejected The function to handle `reject` for a `Promise`
+     *
+     * @return {Number} An ID used to remove interceptor later
+     */
+    InterceptorManager.prototype.use = function use(fulfilled, rejected) {
+      this.handlers.push({
+        fulfilled: fulfilled,
+        rejected: rejected
+      });
+      return this.handlers.length - 1;
+    };
+
+    /**
+     * Remove an interceptor from the stack
+     *
+     * @param {Number} id The ID that was returned by `use`
+     */
+    InterceptorManager.prototype.eject = function eject(id) {
+      if (this.handlers[id]) {
+        this.handlers[id] = null;
+      }
+    };
+
+    /**
+     * Iterate over all the registered interceptors
+     *
+     * This method is particularly useful for skipping over any
+     * interceptors that may have become `null` calling `eject`.
+     *
+     * @param {Function} fn The function to call for each interceptor
+     */
+    InterceptorManager.prototype.forEach = function forEach(fn) {
+      utils.forEach(this.handlers, function forEachHandler(h) {
+        if (h !== null) {
+          fn(h);
+        }
+      });
+    };
+
+    var InterceptorManager_1 = InterceptorManager;
+
+    /**
+     * Transform the data for a request or a response
+     *
+     * @param {Object|String} data The data to be transformed
+     * @param {Array} headers The headers for the request or response
+     * @param {Array|Function} fns A single function or Array of functions
+     * @returns {*} The resulting transformed data
+     */
+    var transformData = function transformData(data, headers, fns) {
+      /*eslint no-param-reassign:0*/
+      utils.forEach(fns, function transform(fn) {
+        data = fn(data, headers);
+      });
+
+      return data;
+    };
+
+    var isCancel = function isCancel(value) {
+      return !!(value && value.__CANCEL__);
+    };
+
+    /**
+     * Determines whether the specified URL is absolute
+     *
+     * @param {string} url The URL to test
+     * @returns {boolean} True if the specified URL is absolute, otherwise false
+     */
+    var isAbsoluteURL = function isAbsoluteURL(url) {
+      // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
+      // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
+      // by any combination of letters, digits, plus, period, or hyphen.
+      return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
+    };
+
+    /**
+     * Creates a new URL by combining the specified URLs
+     *
+     * @param {string} baseURL The base URL
+     * @param {string} relativeURL The relative URL
+     * @returns {string} The combined URL
+     */
+    var combineURLs = function combineURLs(baseURL, relativeURL) {
+      return relativeURL
+        ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+        : baseURL;
+    };
+
+    /**
+     * Throws a `Cancel` if cancellation has been requested.
+     */
+    function throwIfCancellationRequested(config) {
+      if (config.cancelToken) {
+        config.cancelToken.throwIfRequested();
+      }
+    }
+
+    /**
+     * Dispatch a request to the server using the configured adapter.
+     *
+     * @param {object} config The config that is to be used for the request
+     * @returns {Promise} The Promise to be fulfilled
+     */
+    var dispatchRequest = function dispatchRequest(config) {
+      throwIfCancellationRequested(config);
+
+      // Support baseURL config
+      if (config.baseURL && !isAbsoluteURL(config.url)) {
+        config.url = combineURLs(config.baseURL, config.url);
+      }
+
+      // Ensure headers exist
+      config.headers = config.headers || {};
+
+      // Transform request data
+      config.data = transformData(
+        config.data,
+        config.headers,
+        config.transformRequest
+      );
+
+      // Flatten headers
+      config.headers = utils.merge(
+        config.headers.common || {},
+        config.headers[config.method] || {},
+        config.headers || {}
+      );
+
+      utils.forEach(
+        ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
+        function cleanHeaderConfig(method) {
+          delete config.headers[method];
+        }
+      );
+
+      var adapter = config.adapter || defaults_1.adapter;
+
+      return adapter(config).then(function onAdapterResolution(response) {
+        throwIfCancellationRequested(config);
+
+        // Transform response data
+        response.data = transformData(
+          response.data,
+          response.headers,
+          config.transformResponse
+        );
+
+        return response;
+      }, function onAdapterRejection(reason) {
+        if (!isCancel(reason)) {
+          throwIfCancellationRequested(config);
+
+          // Transform response data
+          if (reason && reason.response) {
+            reason.response.data = transformData(
+              reason.response.data,
+              reason.response.headers,
+              config.transformResponse
+            );
+          }
+        }
+
+        return Promise.reject(reason);
+      });
+    };
+
+    /**
+     * Create a new instance of Axios
+     *
+     * @param {Object} instanceConfig The default config for the instance
+     */
+    function Axios(instanceConfig) {
+      this.defaults = instanceConfig;
+      this.interceptors = {
+        request: new InterceptorManager_1(),
+        response: new InterceptorManager_1()
+      };
+    }
+
+    /**
+     * Dispatch a request
+     *
+     * @param {Object} config The config specific for this request (merged with this.defaults)
+     */
+    Axios.prototype.request = function request(config) {
+      /*eslint no-param-reassign:0*/
+      // Allow for axios('example/url'[, config]) a la fetch API
+      if (typeof config === 'string') {
+        config = utils.merge({
+          url: arguments[0]
+        }, arguments[1]);
+      }
+
+      config = utils.merge(defaults_1, {method: 'get'}, this.defaults, config);
+      config.method = config.method.toLowerCase();
+
+      // Hook up interceptors middleware
+      var chain = [dispatchRequest, undefined];
+      var promise = Promise.resolve(config);
+
+      this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
+        chain.unshift(interceptor.fulfilled, interceptor.rejected);
+      });
+
+      this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
+        chain.push(interceptor.fulfilled, interceptor.rejected);
+      });
+
+      while (chain.length) {
+        promise = promise.then(chain.shift(), chain.shift());
+      }
+
+      return promise;
+    };
+
+    // Provide aliases for supported request methods
+    utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
+      /*eslint func-names:0*/
+      Axios.prototype[method] = function(url, config) {
+        return this.request(utils.merge(config || {}, {
+          method: method,
+          url: url
+        }));
+      };
+    });
+
+    utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+      /*eslint func-names:0*/
+      Axios.prototype[method] = function(url, data, config) {
+        return this.request(utils.merge(config || {}, {
+          method: method,
+          url: url,
+          data: data
+        }));
+      };
+    });
+
+    var Axios_1 = Axios;
+
+    /**
+     * A `Cancel` is an object that is thrown when an operation is canceled.
+     *
+     * @class
+     * @param {string=} message The message.
+     */
+    function Cancel(message) {
+      this.message = message;
+    }
+
+    Cancel.prototype.toString = function toString() {
+      return 'Cancel' + (this.message ? ': ' + this.message : '');
+    };
+
+    Cancel.prototype.__CANCEL__ = true;
+
+    var Cancel_1 = Cancel;
+
+    /**
+     * A `CancelToken` is an object that can be used to request cancellation of an operation.
+     *
+     * @class
+     * @param {Function} executor The executor function.
+     */
+    function CancelToken(executor) {
+      if (typeof executor !== 'function') {
+        throw new TypeError('executor must be a function.');
+      }
+
+      var resolvePromise;
+      this.promise = new Promise(function promiseExecutor(resolve) {
+        resolvePromise = resolve;
+      });
+
+      var token = this;
+      executor(function cancel(message) {
+        if (token.reason) {
+          // Cancellation has already been requested
+          return;
+        }
+
+        token.reason = new Cancel_1(message);
+        resolvePromise(token.reason);
+      });
+    }
+
+    /**
+     * Throws a `Cancel` if cancellation has been requested.
+     */
+    CancelToken.prototype.throwIfRequested = function throwIfRequested() {
+      if (this.reason) {
+        throw this.reason;
+      }
+    };
+
+    /**
+     * Returns an object that contains a new `CancelToken` and a function that, when called,
+     * cancels the `CancelToken`.
+     */
+    CancelToken.source = function source() {
+      var cancel;
+      var token = new CancelToken(function executor(c) {
+        cancel = c;
+      });
+      return {
+        token: token,
+        cancel: cancel
+      };
+    };
+
+    var CancelToken_1 = CancelToken;
+
+    /**
+     * Syntactic sugar for invoking a function and expanding an array for arguments.
+     *
+     * Common use case would be to use `Function.prototype.apply`.
+     *
+     *  ```js
+     *  function f(x, y, z) {}
+     *  var args = [1, 2, 3];
+     *  f.apply(null, args);
+     *  ```
+     *
+     * With `spread` this example can be re-written.
+     *
+     *  ```js
+     *  spread(function(x, y, z) {})([1, 2, 3]);
+     *  ```
+     *
+     * @param {Function} callback
+     * @returns {Function}
+     */
+    var spread = function spread(callback) {
+      return function wrap(arr) {
+        return callback.apply(null, arr);
+      };
+    };
+
+    /**
+     * Create an instance of Axios
+     *
+     * @param {Object} defaultConfig The default config for the instance
+     * @return {Axios} A new instance of Axios
+     */
+    function createInstance(defaultConfig) {
+      var context = new Axios_1(defaultConfig);
+      var instance = bind(Axios_1.prototype.request, context);
+
+      // Copy axios.prototype to instance
+      utils.extend(instance, Axios_1.prototype, context);
+
+      // Copy context to instance
+      utils.extend(instance, context);
+
+      return instance;
+    }
+
+    // Create the default instance to be exported
+    var axios = createInstance(defaults_1);
+
+    // Expose Axios class to allow class inheritance
+    axios.Axios = Axios_1;
+
+    // Factory for creating new instances
+    axios.create = function create(instanceConfig) {
+      return createInstance(utils.merge(defaults_1, instanceConfig));
+    };
+
+    // Expose Cancel & CancelToken
+    axios.Cancel = Cancel_1;
+    axios.CancelToken = CancelToken_1;
+    axios.isCancel = isCancel;
+
+    // Expose all/spread
+    axios.all = function all(promises) {
+      return Promise.all(promises);
+    };
+    axios.spread = spread;
+
+    var axios_1 = axios;
+
+    // Allow use of default import syntax in TypeScript
+    var default_1 = axios;
+    axios_1.default = default_1;
+
+    var axios$1 = axios_1;
+
+    var Http = /** @class */ (function () {
+        function Http(config) {
+            var _this = this;
+            this.axiosInstance = axios$1.create(config);
+            if (config.requestInterceptors && Array.isArray(config.requestInterceptors)) {
+                config.requestInterceptors.forEach(function (value) {
+                    _this.axiosInstance.interceptors.request.use(value);
+                });
+            }
+            if (config.responseInterceptors && Array.isArray(config.responseInterceptors)) {
+                config.responseInterceptors.forEach(function (value) {
+                    _this.axiosInstance.interceptors.response.use(value);
+                });
+            }
+        }
+        Http.registerRequestInterceptor = function (requestInterceptor) {
+            axios$1.interceptors.request.use(requestInterceptor);
+        };
+        Http.registerResponseInterceptor = function (responseInterceptor) {
+            axios$1.interceptors.response.use(responseInterceptor);
+        };
+        Http.prototype.request = function (config) {
+            return this.axiosInstance.request(config);
+        };
+        Http.prototype.head = function (url, config) {
+            return this.axiosInstance.head(url, config);
+        };
+        Http.prototype.get = function (url, config) {
+            return this.axiosInstance.get(url, config);
+        };
+        Http.prototype.post = function (url, data, config) {
+            if (data === void 0) { data = {}; }
+            return this.axiosInstance.post(url, data, config);
+        };
+        Http.prototype.patch = function (url, data, config) {
+            if (data === void 0) { data = {}; }
+            return this.axiosInstance.patch(url, data, config);
+        };
+        Http.prototype.put = function (url, data, config) {
+            if (data === void 0) { data = {}; }
+            return this.axiosInstance.put(url, data, config);
+        };
+        Http.prototype.delete = function (url, config) {
+            return this.axiosInstance.delete(url, config);
+        };
+        return Http;
+    }());
+
+    var __assign$9 = (undefined && undefined.__assign) || Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    var HttpMethod;
+    (function (HttpMethod) {
+        HttpMethod["GET"] = "get";
+        HttpMethod["HEAD"] = "head";
+        HttpMethod["POST"] = "post";
+        HttpMethod["PUT"] = "put";
+        HttpMethod["PATCH"] = "patch";
+        HttpMethod["DELETE"] = "delete";
+    })(HttpMethod || (HttpMethod = {}));
+    var ModelConf = /** @class */ (function () {
+        /**
+         * Create a model's configuration from json
+         * @param {JsonModelConf} jsonConfig the json model's configuration
+         */
+        function ModelConf(conf) {
+            var _this = this;
+            /**
+             * The http config
+             */
+            this.http = undefined;
+            /**
+             * The methods of model
+             */
+            this.methods = new Map();
+            if (conf) {
+                if (conf.methods) {
+                    conf.methods.forEach(function (method) {
+                        _this.methods.set(method.name, new MethodConf(method));
+                    });
+                }
+                if (conf.http) {
+                    this.http = conf.http;
+                }
+            }
+        }
+        /**
+         * Extend a current model's conf with the conf pass
+         * @param {JsonModelConf} conf a json model's conf
+         */
+        ModelConf.prototype.extend = function (conf) {
+            var _this = this;
+            if (conf.http) {
+                this.http = __assign$9({}, this.http, conf.http);
+            }
+            if (conf.methods && conf.methods.length) {
+                conf.methods.forEach(function (method) {
+                    var _method = _this.methods.get(method.name);
+                    if (_method) {
+                        _method.assign(method);
+                    }
+                    /* tslint:disable */
+                    else {
+                        _this.methods.set(method.name, new MethodConf(method));
+                    }
+                });
+            }
+        };
+        /**
+         * Get a method by name or alias
+         * @param {string} name the method's name to find
+         * @return {MethodConf | undefined} return the method fint
+         */
+        ModelConf.prototype.method = function (name) {
+            var _method;
+            this.methods.forEach(function (method, key) {
+                if ((method.alias && method.alias.indexOf(name) > -1) || key === name) {
+                    _method = method;
+                }
+            });
+            if (!_method) {
+                throw new Error(name + ": method configuration not found");
+            }
+            return _method;
+        };
+        /**
+         * Add a model method
+         * @param name the method name
+         * @param method the method conf
+         */
+        ModelConf.prototype.addMethodConf = function (name, method) {
+            this.methods.set(name, method);
+        };
+        return ModelConf;
+    }());
+    var MethodConf = /** @class */ (function () {
+        /**
+         * Constructor
+         * @constructor
+         * @param {MethodConf}
+         */
+        function MethodConf(_a) {
+            var name = _a.name, _b = _a.alias, alias = _b === void 0 ? undefined : _b, _c = _a.remote, remote = _c === void 0 ? undefined : _c, _d = _a.localSync, localSync = _d === void 0 ? undefined : _d, http = _a.http;
+            this.name = name;
+            this.alias = alias;
+            this.remote = remote;
+            this.localSync = localSync;
+            this.http = http;
+        }
+        /**
+         * Assign the new conf for the method
+         * @param {MethodConf}
+         */
+        MethodConf.prototype.assign = function (_a) {
+            var _b = _a.name, name = _b === void 0 ? this.name : _b, _c = _a.alias, alias = _c === void 0 ? this.alias : _c, _d = _a.remote, remote = _d === void 0 ? this.remote : _d, _e = _a.localSync, localSync = _e === void 0 ? this.localSync : _e, _f = _a.http, http = _f === void 0 ? this.http : _f;
+            this.name = name;
+            this.alias = alias;
+            this.remote = remote;
+            this.localSync = localSync;
+            this.http = __assign$9({}, this.http, http);
+        };
+        /**
+         * Bind a path param name with the pass value
+         * @param {PathParams} params object key => val
+         * @return {string} path with bind params
+         */
+        MethodConf.prototype.bindPathParams = function (params) {
+            var _path = "";
+            if (this.http && this.http.url) {
+                _path = clone(this.http.url);
+                for (var key in params) {
+                    if (params.hasOwnProperty(key)) {
+                        _path = replaceAll(_path, ":" + key, params[key]);
+                    }
+                }
+            }
+            return _path;
+        };
+        return MethodConf;
+    }());
+    var defaultConf = {
+        "http": {
+            "baseURL": "http://localhost:3000",
+            "url": "/{self}",
+        },
+        "methods": [
+            {
+                "name": "find",
+                "alias": ["fetch"],
+                "remote": true,
+                "localSync": true,
+                "http": {
+                    "url": "",
+                    "method": "get"
+                }
+            },
+            {
+                "name": "findById",
+                "alias": ["fetchById"],
+                "remote": true,
+                "localSync": true,
+                "http": {
+                    "url": "/:id",
+                    "method": "get"
+                }
+            },
+            {
+                "name": "exist",
+                "remote": true,
+                "http": {
+                    "url": "/exist/:id",
+                    "method": "get"
+                }
+            },
+            {
+                "name": "count",
+                "remote": true,
+                "http": {
+                    "url": "/count",
+                    "method": "get"
+                }
+            },
+            {
+                "name": "create",
+                "remote": true,
+                "localSync": true,
+                "http": {
+                    "url": "",
+                    "method": "post"
+                }
+            },
+            {
+                "name": "update",
+                "remote": true,
+                "localSync": true,
+                "http": {
+                    "url": "/:id",
+                    "method": "put"
+                }
+            },
+            {
+                "name": "delete",
+                "remote": true,
+                "localSync": true,
+                "http": {
+                    "url": "",
+                    "method": "delete"
+                }
+            },
+            {
+                "name": "deleteById",
+                "remote": true,
+                "localSync": true,
+                "http": {
+                    "url": "/:id",
+                    "method": "delete"
+                }
+            }
+        ]
+    };
+
+    var __extends$18 = (undefined && undefined.__extends) || (function () {
+        var extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return function (d, b) {
+            extendStatics(d, b);
+            function __() { this.constructor = d; }
+            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+        };
+    })();
+    var __assign$10 = (undefined && undefined.__assign) || Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    };
+    var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+        function verb(n) { return function (v) { return step([n, v]); }; }
+        function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_) try {
+                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [op[0] & 2, t.value];
+                switch (op[0]) {
+                    case 0: case 1: t = op; break;
+                    case 4: _.label++; return { value: op[1], done: false };
+                    case 5: _.label++; y = op[1]; op = [0]; continue;
+                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                    default:
+                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                        if (t[2]) _.ops.pop();
+                        _.trys.pop(); continue;
+                }
+                op = body.call(thisArg, _);
+            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+        }
+    };
+    var Model = /** @class */ (function (_super) {
+        __extends$18(Model, _super);
+        function Model() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        /**
+        * Configure a model with default conf and extend or override
+        * the default configuration with a custom configuration present on
+        * model class or on parameter.
+        * Priority confs:
+        * default -> custom on model class -> custom on conf() parameter
+        * @param {parameterConf} parameterConf optionaly a json model's conf
+        * @static
+        */
+        Model.conf = function (parameterConf) {
+            // if conf alredy instanced
+            if (this._conf instanceof ModelConf) {
+                if (parameterConf) {
+                    this.replaceAllUrlSelf(parameterConf);
+                    this._conf.extend(parameterConf);
+                }
+            }
+            else {
+                var _onModelconf = this._conf;
+                var _defaultConf = Object.assign({}, defaultConf);
+                _defaultConf.http = __assign$10({}, defaultConf.http, ModuleOptions.getDefaultHttpConfig());
+                this.replaceAllUrlSelf(_defaultConf);
+                // instance default conf
+                this._conf = new ModelConf(_defaultConf);
+                // check if confs on model are present
+                if (_onModelconf) {
+                    this.replaceAllUrlSelf(_onModelconf);
+                    this._conf.extend(_onModelconf);
+                }
+            }
+            if (!(this._http instanceof Http)) {
+                this._http = new Http(this._conf.http);
+            }
+        };
+        /**
+        * Replace all {self} in url params
+        * @param {JsonModelConf} conf
+        * @static
+        */
+        Model.replaceAllUrlSelf = function (conf) {
+            var _this = this;
+            if (conf.http && conf.http.url) {
+                conf.http.url = replaceAll(conf.http.url, '{self}', this.entity);
+            }
+            if (conf.methods && Array.isArray(conf.methods)) {
+                conf.methods.forEach(function (method) {
+                    if (method.http && method.http.url) {
+                        method.http.url = replaceAll(method.http.url, '{self}', _this.entity);
+                    }
+                });
+            }
+        };
+        /**
+         * Execute http request
+         * @param {MethodConf} conf
+         * @param {PathParams} pathParams
+         * @static
+         * @async
+         * @return {Promise<any>}
+         */
+        Model.httpRequest = function (conf, pathParams) {
+            return __awaiter(this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            conf.http.url = this.getUrl(conf, pathParams);
+                            return [4 /*yield*/, this._http.request(conf.http)
+                                    .catch(function (err) { console.log(err); })];
+                        case 1: return [2 /*return*/, (_a.sent()) || []];
+                    }
+                });
+            });
+        };
+        /**
+        * Fetch data from api server and sync to the local store (optionaly)
+        * @param {MethodConf} conf a method's conf
+        * @static
+        * @async
+        * @return {Promise<UpdateReturn>} fetched data
+        */
+        Model.fetch = function (conf) {
+            if (conf === void 0) { conf = this.getMethodConf('fetch'); }
+            return __awaiter(this, void 0, void 0, function () {
+                var _conf, data;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            _conf = this.checkMethodConf('fetch', conf);
+                            data = this.httpRequest(_conf);
+                            if (!_conf.localSync) return [3 /*break*/, 2];
+                            return [4 /*yield*/, this.dispatch('insertOrUpdate', { data: data })];
+                        case 1:
+                            _a.sent();
+                            _a.label = 2;
+                        case 2: return [2 /*return*/, data];
+                    }
+                });
+            });
+        };
+        /**
+        * Wrap find method
+        * @param {MethodConf} conf a method's conf
+        * @static
+        * @async
+        * @return {Promise<Collection>} list of results
+        */
+        Model.find = function (conf) {
+            if (conf === void 0) { conf = this.getMethodConf('find'); }
+            return __awaiter(this, void 0, void 0, function () {
+                var _conf, data;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            _conf = this.checkMethodConf('find', conf);
+                            if (!_conf.remote) return [3 /*break*/, 2];
+                            return [4 /*yield*/, this.fetch(conf)];
+                        case 1:
+                            data = _a.sent();
+                            return [3 /*break*/, 3];
+                        case 2:
+                            data = this.query().all();
+                            _a.label = 3;
+                        case 3: return [2 /*return*/, data];
+                    }
+                });
+            });
+        };
+        /**
+        * Wrap findById method
+        * @param {number} id of record to find
+        * @param {MethodConf} conf a method's conf
+        * @static
+        * @return {Promise<Item>} result object
+        */
+        Model.findById = function (id, conf) {
+            if (conf === void 0) { conf = this.getMethodConf('findById'); }
+            return __awaiter(this, void 0, void 0, function () {
+                var _conf, data;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            _conf = this.checkMethodConf('findById', conf);
+                            if (!_conf.remote) return [3 /*break*/, 2];
+                            return [4 /*yield*/, this.fetchById(id, conf)];
+                        case 1:
+                            data = _a.sent();
+                            return [3 /*break*/, 3];
+                        case 2:
+                            data = this.query().find(id);
+                            _a.label = 3;
+                        case 3: return [2 /*return*/, data];
+                    }
+                });
+            });
+        };
+        /**
+        * Exec a fetchById api method with the default confs
+        * or the pass confs and sync to the local store (optionaly)
+        * @param {number} id of the fetching record
+        * @param {MethodConf} conf a method's conf
+        * @static
+        * @async
+        * @return {Promise<Item>} fetched item
+        */
+        Model.fetchById = function (id, conf) {
+            if (conf === void 0) { conf = this.getMethodConf('fetchById'); }
+            return __awaiter(this, void 0, void 0, function () {
+                var _conf, data;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            _conf = this.checkMethodConf('fetchById', conf);
+                            data = this.httpRequest(_conf, { 'id': id.toString() });
+                            if (!_conf.localSync) return [3 /*break*/, 2];
+                            // await this.update(data)
+                            return [4 /*yield*/, this.dispatch('insertOrUpdate', { data: data })];
+                        case 1:
+                            // await this.update(data)
+                            _a.sent();
+                            _a.label = 2;
+                        case 2: return [2 /*return*/, data];
+                    }
+                });
+            });
+        };
+        /**
+        * Check if record identified by id param exist
+        * @param {number} id of the record to search
+        * @param {MethodConf} conf a method's conf
+        * @static
+        * @return {Promise<boolean>} the result
+        */
+        Model.exist = function (id, conf) {
+            if (conf === void 0) { conf = this.getMethodConf('exist'); }
+            return __awaiter(this, void 0, void 0, function () {
+                var _conf, data;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            _conf = this.checkMethodConf('exist', conf);
+                            if (!_conf.remote) return [3 /*break*/, 2];
+                            return [4 /*yield*/, this.httpRequest(_conf, { 'id': id.toString() })];
+                        case 1:
+                            data = _a.sent();
+                            data = Object.keys(data).length === 0;
+                            return [3 /*break*/, 3];
+                        case 2:
+                            data = this.query().find(id) !== null;
+                            _a.label = 3;
+                        case 3: return [2 /*return*/, data];
+                    }
+                });
+            });
+        };
+        /**
+        * Wrap count method
+        * @param {MethodConf} conf a method's conf
+        * @static
+        * @return {Promise<Number>} number of element
+        */
+        Model.count = function (conf) {
+            if (conf === void 0) { conf = this.getMethodConf('count'); }
+            return __awaiter(this, void 0, void 0, function () {
+                var _conf, data;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            _conf = this.checkMethodConf('count', conf);
+                            if (!_conf.remote) return [3 /*break*/, 2];
+                            return [4 /*yield*/, this.httpRequest(_conf)];
+                        case 1:
+                            data = _a.sent();
+                            data = data.length;
+                            return [3 /*break*/, 3];
+                        case 2:
+                            data = this.query().count();
+                            _a.label = 3;
+                        case 3: return [2 /*return*/, data];
+                    }
+                });
+            });
+        };
+        /**
+        * Wrap create method
+        * @param {Record | Record[]} data to create
+        * @param {MethodConf} conf a method's conf
+        * @static
+        * @return {Promise<EntityCollection>} the created data
+        */
+        Model.create = function (data, conf) {
+            if (conf === void 0) { conf = this.getMethodConf('create'); }
+            return __awaiter(this, void 0, void 0, function () {
+                var _conf, dataOutput;
+                return __generator(this, function (_a) {
+                    _conf = this.checkMethodConf('create', conf);
+                    if (_conf.remote) {
+                        dataOutput = this.httpRequest(_conf);
+                        if (_conf.localSync) {
+                            this.dispatch('insert', { data: dataOutput });
+                        }
+                    }
+                    /* tslint:disable */
+                    else {
+                        dataOutput = this.dispatch('create', data);
+                    }
+                    return [2 /*return*/, dataOutput];
+                });
+            });
+        };
+        /**
+        * Wrap update method
+        * @param {number} id of the record to search
+        * @param {Record | Record[] | UpdateClosure} data to update
+        * @param {MethodConf} conf a method's conf
+        * @static
+        * @return {Promise<UpdateReturn>} updated data
+        */
+        Model.update = function (id, data, conf) {
+            if (conf === void 0) { conf = this.getMethodConf('update'); }
+            return __awaiter(this, void 0, void 0, function () {
+                var _conf, dataOutput;
+                return __generator(this, function (_a) {
+                    _conf = this.checkMethodConf('update', conf);
+                    if (_conf.remote) {
+                        dataOutput = this.httpRequest(_conf, { 'id': id.toString() });
+                        if (_conf.localSync && dataOutput) {
+                            this.dispatch('update', {
+                                where: id,
+                                data: dataOutput
+                            });
+                        }
+                    }
+                    /* tslint:disable */
+                    else {
+                        dataOutput = this.dispatch('update', {
+                            where: id,
+                            data: data
+                        });
+                    }
+                    return [2 /*return*/, dataOutput];
+                });
+            });
+        };
+        /**
+        * Wrap deleteById method
+        * @param id of record to delete
+        * @param {MethodConf} conf a method's conf
+        * @static
+        */
+        Model.deleteById = function (id, conf) {
+            if (conf === void 0) { conf = this.getMethodConf('deleteById'); }
+            return __awaiter(this, void 0, void 0, function () {
+                var _conf, dataOutput;
+                return __generator(this, function (_a) {
+                    _conf = this.checkMethodConf('deleteById', conf);
+                    if (_conf.remote) {
+                        dataOutput = this.httpRequest(_conf, { 'id': id.toString() });
+                        if (_conf.localSync && dataOutput) {
+                            this.dispatch('delete', id);
+                        }
+                    }
+                    /* tslint:disable */
+                    else {
+                        this.dispatch('delete', id);
+                    }
+                    return [2 /*return*/];
+                });
+            });
+        };
+        /**
+        * Wrap deleteAll method
+        * @param {MethodConf} conf a method's conf
+        * @static
+        */
+        Model.delete = function (conf) {
+            if (conf === void 0) { conf = this.getMethodConf('deleteById'); }
+            return __awaiter(this, void 0, void 0, function () {
+                var _conf, dataOutput;
+                return __generator(this, function (_a) {
+                    _conf = this.checkMethodConf('deleteById', conf);
+                    if (_conf.remote) {
+                        dataOutput = this.httpRequest(_conf);
+                        if (_conf.localSync && dataOutput) {
+                            this.dispatch('deleteAll', {});
+                        }
+                    }
+                    /* tslint:disable */
+                    else {
+                        this.dispatch('deleteAll', {});
+                    }
+                    return [2 /*return*/];
+                });
+            });
+        };
+        /**
+        * Wrap query getter
+        * @static
+        */
+        Model.query = function () {
+            return this.getters('query')();
+        };
+        /**
+        * Build a url of api from the global configuration
+        * of model and optionaly the pass params
+        * @param {MethodConf} conf a method's conf
+        * @param {PathParams} pathParams a method's path params
+        * @static
+        * @return {string} api's url
+        */
+        Model.getUrl = function (conf, pathParams) {
+            var methodPath = pathParams ?
+                conf.bindPathParams(pathParams) : conf.http.url;
+            return this._conf.http.url + methodPath;
+        };
+        /**
+        * Check if the method configuration exist and
+        * assign the pass method's conf to it
+        * Return a new method's configuration
+        * @param {string} methodName a method's name
+        * @param {ModelConf} conf a method's conf
+        * @private
+        * @static
+        * @return {MethodConf} the new method's configuration
+        * @throws Error
+        */
+        Model.checkMethodConf = function (methodName, conf) {
+            var _conf = this._conf;
+            var _method = _conf.method(methodName);
+            if (conf && _method) {
+                _method = new MethodConf(_method);
+                _method.assign(conf);
+            }
+            if (!_method) {
+                throw new Error(methodName + " configuration not found");
+            }
+            if (!_method.http) {
+                throw new Error(methodName + " http configuration not found");
+            }
+            return _method;
+        };
+        /**
+        * Get the model conf
+        * @static
+        * @return {ModelConf}
+        */
+        Model.getConf = function () {
+            return this._conf;
+        };
+        /**
+        * Get the method conf by name
+        * @param {string} methodName The method's name
+        * @static
+        * @return {MethodConf}
+        */
+        Model.getMethodConf = function (methodName) {
+            return this.getConf().method(methodName);
+        };
+        return Model;
+    }(BaseModel));
 
     var rootGetters = {
         /**
@@ -4571,7 +6691,7 @@
         }
     };
 
-    var __assign$9 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    var __assign$11 = (undefined && undefined.__assign) || Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
             s = arguments[i];
             for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -4587,7 +6707,7 @@
          */
         create: function (_a, payload) {
             var dispatch = _a.dispatch, state = _a.state;
-            return dispatch(state.$connection + "/create", __assign$9({ entity: state.$name }, payload), { root: true });
+            return dispatch(state.$connection + "/create", __assign$11({ entity: state.$name }, payload), { root: true });
         },
         /**
          * Insert given data to the state. Unlike `create`, this method will not
@@ -4596,7 +6716,7 @@
          */
         insert: function (_a, payload) {
             var dispatch = _a.dispatch, state = _a.state;
-            return dispatch(state.$connection + "/insert", __assign$9({ entity: state.$name }, payload), { root: true });
+            return dispatch(state.$connection + "/insert", __assign$11({ entity: state.$name }, payload), { root: true });
         },
         /**
          * Update data in the store.
@@ -4607,7 +6727,7 @@
             if (where === undefined || data === undefined) {
                 return dispatch(state.$connection + "/update", { entity: state.$name, data: payload }, { root: true });
             }
-            return dispatch(state.$connection + "/update", __assign$9({ entity: state.$name }, payload), { root: true });
+            return dispatch(state.$connection + "/update", __assign$11({ entity: state.$name }, payload), { root: true });
         },
         /**
          * Insert or update given data to the state. Unlike `insert`, this method
@@ -4616,7 +6736,7 @@
          */
         insertOrUpdate: function (_a, payload) {
             var dispatch = _a.dispatch, state = _a.state;
-            return dispatch(state.$connection + "/insertOrUpdate", __assign$9({ entity: state.$name }, payload), { root: true });
+            return dispatch(state.$connection + "/insertOrUpdate", __assign$11({ entity: state.$name }, payload), { root: true });
         },
         /**
          * Delete data from the store.
@@ -4747,7 +6867,7 @@
         plugin.install(components, options);
     }
 
-    var __assign$10 = (undefined && undefined.__assign) || Object.assign || function(t) {
+    var __assign$12 = (undefined && undefined.__assign) || Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
             s = arguments[i];
             for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -4796,10 +6916,10 @@
                 }; };
                 tree.modules[name] = {
                     namespaced: true,
-                    state: __assign$10({}, (typeof module.state === 'function' ? module.state() : module.state), _this.state(), { $connection: namespace, $name: name })
+                    state: __assign$12({}, (typeof module.state === 'function' ? module.state() : module.state), _this.state(), { $connection: namespace, $name: name })
                 };
-                tree.modules[name]['getters'] = __assign$10({}, subGetters, module.getters);
-                tree.modules[name]['actions'] = __assign$10({}, subActions, module.actions);
+                tree.modules[name]['getters'] = __assign$12({}, subGetters, module.getters);
+                tree.modules[name]['actions'] = __assign$12({}, subActions, module.actions);
                 tree.modules[name]['mutations'] = module.mutations || {};
             });
             return tree;

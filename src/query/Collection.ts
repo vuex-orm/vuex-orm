@@ -1,6 +1,6 @@
 import Record from '../data/Record'
-import Model from '../model/Model'
+import BaseModel from '../model/BaseModel'
 
-export type Collection = (Model | Record)[]
+export type Collection = (BaseModel | Record)[]
 
 export default Collection

@@ -1,23 +1,23 @@
 import { Record, NormalizedData } from '../../data'
-import Model from '../../model/Model'
+import BaseModel from '../../model/BaseModel'
 import Query, { Relation as Load } from '../../query/Query'
 import Relation from './Relation'
 
-export type Entity = typeof Model | string
+export type Entity = typeof BaseModel | string
 
 export default class MorphOne extends Relation {
   /**
-   * The related model.
+   * The related BaseModel.
    */
-  related: typeof Model
+  related: typeof BaseModel
 
   /**
-   * The field name that contains id of the parent model.
+   * The field name that contains id of the parent BaseModel.
    */
   id: string
 
   /**
-   * The field name fthat contains type of the parent model.
+   * The field name fthat contains type of the parent BaseModel.
    */
   type: string
 
@@ -29,7 +29,7 @@ export default class MorphOne extends Relation {
   /**
    * Create a new belongs to instance.
    */
-  constructor (model: typeof Model, related: Entity, id: string, type: string, localKey: string) {
+  constructor (model: typeof BaseModel, related: Entity, id: string, type: string, localKey: string) {
     super(model) /* istanbul ignore next */
 
     this.related = this.model.relation(related)
@@ -56,10 +56,10 @@ export default class MorphOne extends Relation {
   }
 
   /**
-   * Make value to be set to model property. This method is used when
-   * instantiating a model or creating a plain object from a model.
+   * Make value to be set to BaseModel property. This method is used when
+   * instantiating a BaseModel or creating a plain object from a BaseModel.
    */
-  make (value: any, _parent: Record, _key: string): Model | null {
+  make (value: any, _parent: Record, _key: string): BaseModel | null {
     if (value === null) {
       return null
     }

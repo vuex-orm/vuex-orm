@@ -1,20 +1,20 @@
 import { Record, NormalizedData } from '../../data'
-import Model from '../../model/Model'
+import BaseModel from '../../model/BaseModel'
 import Query, { Relation as Load } from '../../query/Query'
 import Relation from './Relation'
 
-export type Entity = typeof Model | string
+export type Entity = typeof BaseModel | string
 
 export default class HasManyThrough extends Relation {
   /**
-   * The related model.
+   * The related BaseModel.
    */
-  related: typeof Model
+  related: typeof BaseModel
 
   /**
-   * The "through" parent model.
+   * The "through" parent BaseModel.
    */
-  through: typeof Model
+  through: typeof BaseModel
 
   /**
    * The near key on the relationship.
@@ -32,7 +32,7 @@ export default class HasManyThrough extends Relation {
   localKey: string
 
   /**
-   * The local key on the intermediary model.
+   * The local key on the intermediary BaseModel.
    */
   secondLocalKey: string
 
@@ -40,7 +40,7 @@ export default class HasManyThrough extends Relation {
    * Create a new has many through instance.
    */
   constructor (
-    model: typeof Model,
+    model: typeof BaseModel,
     related: Entity,
     through: Entity,
     firstKey: string,
@@ -68,10 +68,10 @@ export default class HasManyThrough extends Relation {
   }
 
   /**
-   * Make value to be set to model property. This method is used when
-   * instantiating a model or creating a plain object from a model.
+   * Make value to be set to BaseModel property. This method is used when
+   * instantiating a BaseModel or creating a plain object from a BaseModel.
    */
-  make (value: any, _parent: Record, _key: string): Model[] {
+  make (value: any, _parent: Record, _key: string): BaseModel[] {
     if (value === null) {
       return []
     }

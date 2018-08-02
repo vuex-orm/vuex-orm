@@ -58,6 +58,9 @@
     "nyc": "^11.6.0",
     "rollup": "^0.57.1",
     "rollup-plugin-commonjs": "^9.1.0",
+    "rollup-plugin-json": "^3.0.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.2.1",
     "rollup-plugin-node-resolve": "^3.3.0",
     "sinon": "^4.5.0",
     "ts-loader": "^4.2.0",
@@ -69,6 +72,9 @@
     "vuex": "^3.0.1",
     "webpack": "^4.5.0",
     "webpack-node-externals": "^1.7.2"
+  },
+  "dependencies": {
+    "axios": "^0.18.0"
   },
   "nyc": {
     "include": [

@@ -1,5 +1,5 @@
 import Utils from '../../support/Utils'
-import Model from '../../model/Model'
+import BaseModel from '../../model/BaseModel'
 import Attrs, { Fields, Relation } from '../../attributes/contracts/Contract'
 import Attribute from '../../attributes/Attribute'
 import Record from '../Record'
@@ -11,7 +11,7 @@ export default class ProcessStrategy {
   /**
    * Create the process strategy.
    */
-  static create (noKey: NoKey, model: typeof Model, parent?: typeof Model, attr?: Relation): Strategy {
+  static create (noKey: NoKey, model: typeof BaseModel, parent?: typeof BaseModel, attr?: Relation): Strategy {
     return (value: any, parentValue: any, key: string) => {
       let record: Record = { ...value }
 
@@ -28,7 +28,7 @@ export default class ProcessStrategy {
   /**
    * Normalize individual records.
    */
-  static fix (record: Record, model: typeof Model): Record {
+  static fix (record: Record, model: typeof BaseModel): Record {
     return this.processFix(record, model.fields())
   }
 
@@ -58,7 +58,7 @@ export default class ProcessStrategy {
   /**
    * Set id field to the record.
    */
-  static setId (record: Record, model: typeof Model, noKey: NoKey, key: string): Record {
+  static setId (record: Record, model: typeof BaseModel, noKey: NoKey, key: string): Record {
     const id = model.id(record)
 
     return { ...record, $id: id !== undefined ? id : noKey.increment(key) }
@@ -68,7 +68,7 @@ export default class ProcessStrategy {
    * Generate morph fields. This method will generate fileds needed for the
    * morph fields such as `commentable_id` and `commentable_type`.
    */
-  static generateMorphFields (record: Record, parentValue: any, parent?: typeof Model, attr?: Relation): Record {
+  static generateMorphFields (record: Record, parentValue: any, parent?: typeof BaseModel, attr?: Relation): Record {
     if (attr === undefined) {
       return record
     }

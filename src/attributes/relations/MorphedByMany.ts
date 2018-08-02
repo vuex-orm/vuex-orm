@@ -1,44 +1,44 @@
 import Utils from '../../support/Utils'
 import { Record, NormalizedData } from '../../data'
-import Model from '../../model/Model'
+import BaseModel from '../../model/BaseModel'
 import Query, { Relation as Load } from '../../query/Query'
 import Relation from './Relation'
 
-export type Entity = typeof Model | string
+export type Entity = typeof BaseModel | string
 
 export default class MorphedByMany extends Relation {
   /**
-   * The related model.
+   * The related BaseModel.
    */
-  related: typeof Model
+  related: typeof BaseModel
 
   /**
-   * The pivot model.
+   * The pivot BaseModel.
    */
-  pivot: typeof Model
+  pivot: typeof BaseModel
 
   /**
-   * The field name that conatins id of the related model.
+   * The field name that conatins id of the related BaseModel.
    */
   relatedId: string
 
   /**
-   * The field name that contains id of the parent model.
+   * The field name that contains id of the parent BaseModel.
    */
   id: string
 
   /**
-   * The field name fthat contains type of the parent model.
+   * The field name fthat contains type of the parent BaseModel.
    */
   type: string
 
   /**
-   * The key name of the parent model.
+   * The key name of the parent BaseModel.
    */
   parentKey: string
 
   /**
-   * The key name of the related model.
+   * The key name of the related BaseModel.
    */
   relatedKey: string
 
@@ -46,7 +46,7 @@ export default class MorphedByMany extends Relation {
    * Create a new belongs to instance.
    */
   constructor (
-    model: typeof Model,
+    model: typeof BaseModel,
     related: Entity,
     pivot: Entity,
     relatedId: string,
@@ -76,10 +76,10 @@ export default class MorphedByMany extends Relation {
   }
 
   /**
-   * Make value to be set to model property. This method is used when
-   * instantiating a model or creating a plain object from a model.
+   * Make value to be set to BaseModel property. This method is used when
+   * instantiating a BaseModel or creating a plain object from a BaseModel.
    */
-  make (value: any, _parent: Record, _key: string): Model[] {
+  make (value: any, _parent: Record, _key: string): BaseModel[] {
     if (value === null) {
       return []
     }
@@ -150,7 +150,7 @@ export default class MorphedByMany extends Relation {
   /**
    * Create pivot records for the given records if needed.
    */
-  createPivots (parent: typeof Model, data: NormalizedData): NormalizedData {
+  createPivots (parent: typeof BaseModel, data: NormalizedData): NormalizedData {
     Utils.forOwn(data[parent.entity], (record) => {
       const related = record[this.related.entity]
 

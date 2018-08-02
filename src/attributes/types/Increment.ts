@@ -17,8 +17,8 @@ export default class Increment extends Type {
   }
 
   /**
-   * Make value to be set to model property. This method is used when
-   * instantiating a model or creating a plain object from a model.
+   * Make value to be set to BaseModel property. This method is used when
+   * instantiating a BaseModel or creating a plain object from a BaseModel.
    */
   make (value: any, _parent: Record, _key: string): number | null {
     return typeof value === 'number' ? value : null

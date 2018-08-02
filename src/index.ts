@@ -4,6 +4,13 @@ import install, { Install } from './store/install'
 import use, { Use } from './plugins/use'
 import Database from './database/Database'
 import Model from './model/Model'
+import ModelConf, { MethodConf, HttpMethod, JsonModelConf, PathParams } from './model/ModelConf'
+import Http, { 
+  HttpConf, 
+  InterceptosClosures, 
+  InterceptorRequestClosure, 
+  InterceptorResponseClosure
+} from './http/Http'
 import Query from './query/Query'
 import Attribute from './attributes/Attribute'
 import Type from './attributes/types/Type'
@@ -27,7 +34,7 @@ import rootActions, { RootActions } from './modules/rootActions'
 import subActions, { SubActions } from './modules/subActions'
 import mutations, { Mutations } from './modules/mutations'
 
-export interface VuexORM {
+export interface VuexORMResource {
   install: Install
   use: Use
   Database: typeof Database
@@ -61,6 +68,16 @@ export {
   use,
   Database,
   Model,
+  ModelConf,
+  MethodConf,
+  HttpMethod,
+  JsonModelConf,
+  PathParams,
+  Http,
+  HttpConf,
+  InterceptosClosures,
+  InterceptorRequestClosure,
+  InterceptorResponseClosure,
   Query,
   Attribute,
   Type,
@@ -90,6 +107,10 @@ export default {
   use,
   Database,
   Model,
+  ModelConf,
+  MethodConf,
+  HttpMethod,
+  Http,
   Query,
   Type,
   Attribute,
@@ -112,4 +133,4 @@ export default {
   rootActions,
   subActions,
   mutations
-} as VuexORM
+} as VuexORMResource

@@ -102,6 +102,14 @@ export function groupBy (collection: any[], iteratee: (record: any) => any): any
   }, {} as any)
 }
 
+export function replaceAll (source: string, search: string, replacement: string) {
+  return source.replace(new RegExp(search, 'g'), replacement)
+}
+
+export function clone (source: string) {
+  return JSON.parse(JSON.stringify(source))
+}
+
 /**
  * The base implementation of `_.sortBy` which uses `comparer` to define the
  * sort order of `array` and replaces criteria objects with their
@@ -176,5 +184,7 @@ export default {
   map,
   mapValues,
   orderBy,
-  pickBy
+  pickBy,
+  replaceAll,
+  clone
 }
