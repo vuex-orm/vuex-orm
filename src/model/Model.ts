@@ -87,7 +87,7 @@ export default class Model extends BaseModel {
    */
   public static async httpRequest(conf: MethodConf, pathParams?: PathParams): Promise<any> {
     conf.http!.url =  this.getUrl(conf, pathParams)
-    return await this._http.request(conf.http as HttpConf)
+    return this._http.request(conf.http as HttpConf)
       .catch((err: Error) => { console.log(err) }) || []
   }
   
@@ -102,7 +102,7 @@ export default class Model extends BaseModel {
     conf: MethodConf = this.getMethodConf('fetch')
   ): Promise<any> {
     const _conf = this.checkMethodConf('fetch', conf)
-    const data = this.httpRequest(_conf)
+    const data = await this.httpRequest(_conf)
     if (_conf.localSync) {
       await this.dispatch('insertOrUpdate', { data })
     }
@@ -168,7 +168,7 @@ export default class Model extends BaseModel {
     conf: MethodConf = this.getMethodConf('fetchById')
   ): Promise<Item> {
     const _conf = this.checkMethodConf('fetchById', conf)
-    const data = this.httpRequest(_conf, {'id': id.toString()})
+    const data = await this.httpRequest(_conf, {'id': id.toString()})
     
     if (_conf.localSync) {
       // await this.update(data)
@@ -236,7 +236,7 @@ export default class Model extends BaseModel {
     const _conf = this.checkMethodConf('create', conf)
     let dataOutput
     if (_conf.remote) {
-      dataOutput = this.httpRequest(_conf)
+      dataOutput = await this.httpRequest(_conf)
       
       if (_conf.localSync) {
         this.dispatch('insert', { data: dataOutput })
@@ -267,7 +267,7 @@ export default class Model extends BaseModel {
     const _conf = this.checkMethodConf('update', conf)
     let dataOutput
     if (_conf.remote) {
-      dataOutput = this.httpRequest(_conf, {'id': id.toString()})
+      dataOutput = await this.httpRequest(_conf, {'id': id.toString()})
 
       if (_conf.localSync && dataOutput) {
         this.dispatch('update', {
@@ -301,7 +301,7 @@ export default class Model extends BaseModel {
     const _conf = this.checkMethodConf('deleteById', conf)
     
     if (_conf.remote) {
-      const dataOutput = this.httpRequest(_conf, {'id': id.toString()})
+      const dataOutput = await this.httpRequest(_conf, {'id': id.toString()})
       
       if (_conf.localSync && dataOutput) {
         this.dispatch('delete', id)
@@ -325,7 +325,7 @@ export default class Model extends BaseModel {
       const _conf = this.checkMethodConf('deleteById', conf)
       
       if (_conf.remote) {
-        const dataOutput = this.httpRequest(_conf)
+        const dataOutput = await this.httpRequest(_conf)
         if (_conf.localSync && dataOutput) {
           this.dispatch('deleteAll', {})
         }
