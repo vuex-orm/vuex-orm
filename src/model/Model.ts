@@ -236,6 +236,7 @@ export default class Model extends BaseModel {
     const _conf = this.checkMethodConf('create', conf)
     let dataOutput
     if (_conf.remote) {
+      _conf.http!.data = data;
       dataOutput = await this.httpRequest(_conf)
       
       if (_conf.localSync) {
@@ -267,6 +268,7 @@ export default class Model extends BaseModel {
     const _conf = this.checkMethodConf('update', conf)
     let dataOutput
     if (_conf.remote) {
+      _conf.http!.data = data;
       dataOutput = await this.httpRequest(_conf, {'id': id.toString()})
 
       if (_conf.localSync && dataOutput) {
