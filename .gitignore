@@ -6,3 +6,5 @@
 /node_modules
 yarn-error.log
 /example
+/lib
+/dist
