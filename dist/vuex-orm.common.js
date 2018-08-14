@@ -1168,6 +1168,8 @@ var BelongsToMany = /** @class */ (function (_super) {
      */
     BelongsToMany.prototype.createPivots = function (parent, data, key) {
         var _this = this;
+        if (this.pivot.primaryKey instanceof Array === false)
+            return data;
         Utils.forOwn(data[parent.entity], function (record) {
             var related = record[key];
             if (related === undefined || related.length === 0) {
