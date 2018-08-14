@@ -243,6 +243,13 @@ export default class Query {
   }
 
   /**
+   * Get the sum value of the specified filed.
+   */
+  static sum (state: RootState, entity: string, field: string, wrap?: boolean): number {
+    return (new this(state, entity, wrap)).sum(field)
+  }
+
+  /**
    * Delete a record from the state.
    */
   static delete (state: RootState, entity: string, condition: Condition): Data.Item | Data.Collection {
@@ -978,6 +985,19 @@ export default class Query {
     }, [])
 
     return numbers.length === 0 ? 0 : Math.min(...numbers)
+  }
+
+  /**
+   * Get the sum value of the specified filed.
+   */
+  sum (field: string): number {
+    return this.plain().get().reduce<number>((sum, item) => {
+      if (typeof item[field] === 'number') {
+        sum += item[field]
+      }
+
+      return sum
+    }, 0)
   }
 
   /**

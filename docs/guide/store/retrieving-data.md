@@ -209,7 +209,7 @@ const user = store.getters['entities/users/query']()
 
 ### Aggregates
 
-The query builder also provides aggregate methods. Available methods are `count`, `max` and `min`.
+The query builder also provides aggregate methods. Available methods are `count`, `max`, `min` and `sum`.
 
 ```js
 const users = store.getters['entities/users/query']().count()
@@ -217,6 +217,8 @@ const users = store.getters['entities/users/query']().count()
 const mostLiked = store.getters['entities/posts/query']().max('like')
 
 const cheapest = store.getters['entities/orders/query']().min('price')
+
+const total = store.getters['entities/orders/query']().sum('price')
 ```
 
 Of course, you may combine these methos with other clauses.
