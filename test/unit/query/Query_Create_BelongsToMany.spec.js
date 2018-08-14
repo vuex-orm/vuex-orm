@@ -102,6 +102,8 @@ describe('Query – Create – Belongs To Many', () => {
     class RoleUser extends Model {
       static entity = 'roleUser'
 
+      static primaryKey = ['role_id', 'user_id']
+
       static fields () {
         return {
           id: this.increment(),
@@ -138,8 +140,8 @@ describe('Query – Create – Belongs To Many', () => {
         '3': { $id: 3, id: 3, users: [] }
       }},
       roleUser: { data: {
-        '1': { $id: 1, id: 1, user_id: 1, role_id: 2  },
-        '2': { $id: 2, id: 2, user_id: 1, role_id: 3 }
+        '2_1': { $id: '2_1', id: 1, user_id: 1, role_id: 2  },
+        '3_1': { $id: '3_1', id: 2, user_id: 1, role_id: 3 }
       }}
     }
 
