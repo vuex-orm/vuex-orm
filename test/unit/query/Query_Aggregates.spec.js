@@ -28,7 +28,8 @@ describe('Query – Aggregates', () => {
       users: { data: {
         '1': { id: 8, role: 'admin' },
         '2': { id: 12, role: 'user' },
-        '3': { id: 11, role: 'admin' }
+        '3': { id: 11, role: 'admin' },
+        '4': { id: 'A', role: 'admin' }
       }}
     }
 
@@ -43,7 +44,8 @@ describe('Query – Aggregates', () => {
       users: { data: {
         '1': { id: 8, role: 'admin' },
         '2': { id: 12, role: 'user' },
-        '3': { id: 11, role: 'admin' }
+        '3': { id: 11, role: 'admin' },
+        '4': { id: 'A', role: 'admin' }
       }}
     }
 
@@ -58,7 +60,8 @@ describe('Query – Aggregates', () => {
       users: { data: {
         '1': { id: 8, role: 'admin' },
         '2': { id: 12, role: 'user' },
-        '3': { id: 11, role: 'admin' }
+        '3': { id: 11, role: 'admin' },
+        '4': { id: 'A', role: 'admin' }
       }}
     }
 
