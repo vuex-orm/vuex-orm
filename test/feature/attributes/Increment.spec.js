@@ -1,4 +1,4 @@
-import { createStore, createState } from 'test/support/Helpers'
+import { createStore, createState, refreshNoKey } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Feature – Attributes – Increment', () => {
@@ -57,8 +57,8 @@ describe('Feature – Attributes – Increment', () => {
       data: {
         id: 1,
         posts: [
-          { id: null, user_id: 1 },
-          { id: null, user_id: 1 }
+          { id: '', user_id: 1 },
+          { id: '', user_id: 2 }
         ]
       }
     })
@@ -69,7 +69,7 @@ describe('Feature – Attributes – Increment', () => {
       },
       posts: {
         '1': { $id: 1, id: 1, user_id: 1 },
-        '2': { $id: 2, id: 2, user_id: 1 }
+        '2': { $id: 2, id: 2, user_id: 2 }
       }
     })
 

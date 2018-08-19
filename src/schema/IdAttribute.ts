@@ -10,8 +10,7 @@ export default class IdAttribute {
   static create (model: typeof Model): Attribute {
     return (value: any, _parent: any, _key: string) => {
       const id = model.id(value)
-
-      return id !== undefined ? id : NoKey.get()
+      return id === undefined || id === null || id === '' ? NoKey.get() : id
     }
   }
 }
