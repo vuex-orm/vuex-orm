@@ -28,7 +28,8 @@ describe('Query – Aggregates', () => {
       users: { data: {
         '1': { id: 8, role: 'admin' },
         '2': { id: 12, role: 'user' },
-        '3': { id: 11, role: 'admin' }
+        '3': { id: 11, role: 'admin' },
+        '4': { id: 'A', role: 'admin' }
       }}
     }
 
@@ -43,12 +44,29 @@ describe('Query – Aggregates', () => {
       users: { data: {
         '1': { id: 8, role: 'admin' },
         '2': { id: 12, role: 'user' },
-        '3': { id: 11, role: 'admin' }
+        '3': { id: 11, role: 'admin' },
+        '4': { id: 'A', role: 'admin' }
       }}
     }
 
     expect(Query.min(state, 'users', 'id')).toBe(8)
     expect(Query.query(state, 'users').min('id')).toBe(8)
     expect(Query.query(state, 'users').where('role', 'admin').min('id')).toBe(8)
+  })
+
+  it('can get sum value of the specified field', () => {
+    const state = {
+      $name: 'entities',
+      users: { data: {
+        '1': { id: 8, role: 'admin' },
+        '2': { id: 12, role: 'user' },
+        '3': { id: 11, role: 'admin' },
+        '4': { id: 'A', role: 'admin' }
+      }}
+    }
+
+    expect(Query.sum(state, 'users', 'id')).toBe(31)
+    expect(Query.query(state, 'users').sum('id')).toBe(31)
+    expect(Query.query(state, 'users').where('role', 'admin').sum('id')).toBe(19)
   })
 })
