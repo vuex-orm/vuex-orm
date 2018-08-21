@@ -21,6 +21,6 @@ export default class ProcessStrategy {
   static getId (model: typeof Model, value: any): string {
     const id = model.id(value)
 
-    return id === undefined || id === null || id === ''  ? NoKey.increment() : id
+    return id === undefined || id === null || id === '' ? NoKey.increment() : id
   }
 }
