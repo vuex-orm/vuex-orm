@@ -1,4 +1,4 @@
-import { createStore, createState } from 'test/support/Helpers'
+import { createStore, createState, refreshNoKey } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Feature – Attributes – Increment', () => {
@@ -7,10 +7,26 @@ describe('Feature – Attributes – Increment', () => {
 
     static fields () {
       return {
-        id: this.increment()
+        id: this.increment(),
+        posts: this.hasMany(Post, 'user_id')
       }
     }
   }
+
+  class Post extends Model {
+    static entity = 'posts'
+
+    static fields () {
+      return {
+        id: this.increment(),
+        user_id: this.attr(null),
+      }
+    }
+  }
+
+  beforeEach(() => {
+    refreshNoKey()
+  })
 
   it('converts a non-number value to the `null` when creating a record', async () => {
     const store = createStore([{ model: User }])
@@ -21,7 +37,7 @@ describe('Feature – Attributes – Increment', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1 },
+        '1': { $id: 1, id: 1, posts: []},
       }
     })
 
@@ -32,5 +48,31 @@ describe('Feature – Attributes – Increment', () => {
     const user = new User({ id: 'Not number' })
 
     expect(user.id).toBe(null)
+  })
+
+  it('create auto increment with nested object', async () => {
+    const store = createStore([{ model: User }, { model: Post }])
+
+    store.dispatch('entities/users/create', {
+      data: {
+        id: 1,
+        posts: [
+          { id: '', user_id: 1 },
+          { id: '', user_id: 2 }
+        ]
+      }
+    })
+
+    const expected = createState({
+      users: {
+        '1': { $id: 1, id: 1, posts: ['_no_key_1', '_no_key_2'] }
+      },
+      posts: {
+        '1': { $id: 1, id: 1, user_id: 1 },
+        '2': { $id: 2, id: 2, user_id: 2 }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
   })
 })
