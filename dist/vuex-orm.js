@@ -5134,7 +5134,7 @@
         IdAttribute.create = function (model) {
             return function (value, _parent, _key) {
                 var id = model.id(value);
-                return id !== undefined ? id : NoKey.get();
+                return id === undefined || id === null || id === '' ? NoKey.get() : id;
             };
         };
         return IdAttribute;
@@ -5169,7 +5169,7 @@
          */
         ProcessStrategy.getId = function (model, value) {
             var id = model.id(value);
-            return id !== undefined ? id : NoKey.increment();
+            return id === undefined || id === null || id === '' ? NoKey.increment() : id;
         };
         return ProcessStrategy;
     }());
