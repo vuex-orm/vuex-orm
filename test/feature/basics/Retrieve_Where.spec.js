@@ -211,7 +211,7 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the the orWhere query', () => {
+  it('can retrieve records that matches the orWhere query', () => {
     const store = createStore([{ model: User }])
 
     store.dispatch('entities/users/create', {
@@ -326,6 +326,42 @@ describe('Feature – Retrieve – Where', () => {
     const users = store.getters['entities/users/query']()
       .where((_user, query) => {
         query.where('age', 20).orWhere('age', 21);
+      })
+      .where((_user, query) => {
+        query.where('active', true);
+      })
+      .get();
+
+    expect(users).toEqual(expected);
+  });
+
+  it('can retrieve records that matches the where query several nested query builders', () => {
+    const store = createStore([{ model: User }]);
+
+    store.dispatch('entities/users/create', {
+      data: [
+        { id: 1, name: 'John', age: 21, active: true },
+        { id: 2, name: 'Jane', age: 20, active: true },
+        { id: 3, name: 'Johnny', age: 24, active: true },
+        { id: 4, name: 'James', age: 21, active: false },
+        { id: 5, name: 'Jimmy', age: 22, active: true },
+        { id: 6, name: 'Jim', age: 22, active: true },
+        { id: 7, name: 'Jules', age: 22, active: false }
+      ]
+    });
+
+    const expected = [
+      { $id: 1, id: 1, name: 'John', age: 21, active: true },
+      { $id: 2, id: 2, name: 'Jane', age: 20, active: true },
+      { $id: 5, id: 5, name: 'Jimmy', age: 22, active: true }
+    ];
+
+    // (A || B || (E && F)) && (C || D)
+    const users = store.getters['entities/users/query']()
+      .where((_user, query) => {
+        query.where('age', 20).orWhere('age', 21).orWhere((_user2, q) => {
+          q.where('age', 22).where(u => { return u.name.indexOf('Jimm') === 0 })
+        })
       })
       .where((_user, query) => {
         query.where('active', true);
