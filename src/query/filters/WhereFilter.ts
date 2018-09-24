@@ -39,13 +39,19 @@ export default class WhereFilter {
       // Function with Record and Query as argument.
       if (typeof where.field === 'function') {
         const newQuery = new Query(query.rootState, query.entity)
-        const result = this.executeWhereClosure(query, record, where.field)
+        const result = this.executeWhereClosure(newQuery, record, where.field)
 
         if (typeof result === 'boolean') {
           return result
         }
 
-        return !Utils.isEmpty(newQuery.where('$id', record['$id']).get())
+        // If closure returns undefined, we need to execute the local query
+        const matchingRecords = newQuery.get()
+
+        // And check if current record is part of the resul
+        return !Utils.isEmpty(matchingRecords.filter((rec: Record): boolean => { 
+          return rec['$id'] === record['$id']
+        }))
       }
 
       // Function with Record value as argument.
