@@ -256,4 +256,82 @@ describe('Feature – Retrieve – Where', () => {
 
     expect(users).toEqual(expected)
   })
+
+  it('can retrieve records that matches the where query with 2 nested query builders, starting with orWhere', () => {
+    const store = createStore([
+      {
+        model: User
+      }
+    ]);
+
+    store.dispatch('entities/users/create', {
+      data: [
+        {
+          id: 1,
+          name: 'John',
+          age: 24,
+          active: false
+        },
+        {
+          id: 2,
+          name: 'Jane',
+          age: 20,
+          active: true
+        },
+        {
+          id: 3,
+          name: 'Johnny',
+          age: 24,
+          active: true
+        }
+      ]
+    });
+
+    const expected = [
+      { $id: 1, id: 1, name: 'John', age: 24, active: false },
+      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+    ];
+
+    // (A && B) || (C && D)
+    const users = store.getters['entities/users/query']()
+      .where((_user, query) => {
+        query.where('age', 20).where('active', true);
+      })
+      .orWhere((_user, query) => {
+        query.where('age', 24).where('active', false);
+      })
+      .get();
+
+    expect(users).toEqual(expected);
+  });
+
+  it('can retrieve records that matches the where query with 2 nested query builders, starting with where', () => {
+    const store = createStore([{ model: User }]);
+
+    store.dispatch('entities/users/create', {
+      data: [
+        { id: 1, name: 'John', age: 21, active: true },
+        { id: 2, name: 'Jane', age: 20, active: true },
+        { id: 3, name: 'Johnny', age: 24, active: true },
+        { id: 4, name: 'James', age: 21, active: false }
+      ]
+    });
+
+    const expected = [
+      { $id: 1, id: 1, name: 'John', age: 21, active: true },
+      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+    ];
+
+    // (A || B) && (C || D)
+    const users = store.getters['entities/users/query']()
+      .where((_user, query) => {
+        query.where('age', 20).orWhere('age', 21);
+      })
+      .where((_user, query) => {
+        query.where('active', true);
+      })
+      .get();
+
+    expect(users).toEqual(expected);
+  });
 })
