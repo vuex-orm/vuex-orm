@@ -16,7 +16,7 @@ module.exports = {
     rules: [].concat(
       isCoverage ? {
         test: /\.(js|ts)/,
-        include: `${rootDir}/src`,
+        include: path.resolve(rootDir, 'src'),
         loader: 'istanbul-instrumenter-loader',
         query: {
           esModules: true
@@ -26,8 +26,8 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         include: [
-          `${rootDir}/src`,
-          `${rootDir}/test`,
+          path.resolve(rootDir, 'src'),
+          path.resolve(rootDir, 'test'),
         ],
         options: {
           cacheDirectory: true
@@ -36,7 +36,7 @@ module.exports = {
       {
         test: /\.ts$/,
         loader: 'ts-loader',
-        include: `${rootDir}/src`,
+        include: path.resolve(rootDir, 'src'),
         options: {
           transpileOnly: true
         }
@@ -46,16 +46,16 @@ module.exports = {
 
   resolve: {
     alias: {
-      app: `${rootDir}/src`,
-      test: `${rootDir}/test`
+      app: path.resolve(rootDir, 'src'),
+      test: path.resolve(rootDir, 'test')
     },
     extensions: ['.js', '.ts']
   },
 
   plugins: [
     new ForkTsCheckerWebpackPlugin({
-      tsconfig: `${rootDir}/tsconfig.json`,
-      watch: [`${rootDir}/src`]
+      tsconfig: path.resolve(rootDir, 'tsconfig.json'),
+      watch: [path.resolve(rootDir, 'src')]
     })
   ]
 }
