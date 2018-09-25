@@ -3376,11 +3376,16 @@
                 // Function with Record and Query as argument.
                 if (typeof where.field === 'function') {
                     var newQuery = new Query(query.rootState, query.entity);
-                    var result = _this.executeWhereClosure(query, record, where.field);
+                    var result = _this.executeWhereClosure(newQuery, record, where.field);
                     if (typeof result === 'boolean') {
                         return result;
                     }
-                    return !Utils.isEmpty(newQuery.where('$id', record['$id']).get());
+                    // If closure returns undefined, we need to execute the local query
+                    var matchingRecords = newQuery.get();
+                    // And check if current record is part of the resul
+                    return !Utils.isEmpty(matchingRecords.filter(function (rec) {
+                        return rec['$id'] === record['$id'];
+                    }));
                 }
                 // Function with Record value as argument.
                 if (typeof where.value === 'function') {
