@@ -49,7 +49,7 @@ export default class WhereFilter {
         const matchingRecords = newQuery.get()
 
         // And check if current record is part of the resul
-        return !Utils.isEmpty(matchingRecords.filter((rec: Record): boolean => { 
+        return !Utils.isEmpty(matchingRecords.filter((rec: Record): boolean => {
           return rec['$id'] === record['$id']
         }))
       }
