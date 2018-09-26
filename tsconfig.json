@@ -1,9 +1,13 @@
 {
   "compilerOptions": {
     "target": "es5",
+    "module": "esnext",
     "strict": true,
-    "module": "es2015",
+    "importHelpers": true,
     "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
     "rootDir": "src",
     "outDir": "lib",
     "declaration": true,
@@ -17,11 +21,10 @@
     "suppressImplicitAnyIndexErrors": true,
 
     "lib": [
+      "esnext",
       "dom",
       "es2017"
     ],
-
-    "baseUrl": ".",
 
     "paths": {
       "*": ["*"]

@@ -1,5 +1,8 @@
 {
-  "presets": ["env", "stage-2"],
+  "presets": ["@babel/env"],
 
-  "plugins": ["transform-runtime"]
+  "plugins": [
+    "@babel/plugin-transform-runtime",
+    ["@babel/plugin-proposal-class-properties", { "loose": false }],
+  ]
 }

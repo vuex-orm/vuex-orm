@@ -27,7 +27,7 @@ module.exports = {
         loader: 'babel-loader',
         include: [
           path.resolve(rootDir, 'src'),
-          path.resolve(rootDir, 'test'),
+          path.resolve(rootDir, 'test')
         ],
         options: {
           cacheDirectory: true
