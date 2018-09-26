@@ -35,7 +35,7 @@ Vuex ORM lets you create "normalized" data schema within Vuex Store with relatio
 
 ## Questions & Discussions
 
-Join us on our [Slack Channel](https://join.slack.com/t/vuex-orm/shared_invite/enQtMzMxMTY4MzcwOTYzLTYwZDFjNTgzZDk4MDJlODJmMzk5NmNmZDBiYjIyMTVjMDk1MGRkYTEyYmNkMGM4MjRkNGJmYTBhNTIxYTA5OWI) for any questions and discussions.
+Join us on our [Slack Channel](https://join.slack.com/t/vuex-orm/shared_invite/enQtNDQ0NjE3NTgyOTY2LTI0YjE5YmNmMDIxNWZlNmJhM2EyMDg1MDRkODA4YmQwMDU5OWRkZmNhN2RmOTZkZGZkODQxZTRkYjhmYmJiNTY) for any questions and discussions.
 
 While there is the Slack Channel, do not hesitate to open an [issue](https://github.com/vuex-orm/vuex-orm/issues) for any question you might have. We're always more than happy to hear any feedback, and we don't care what kind of form they are.
 
