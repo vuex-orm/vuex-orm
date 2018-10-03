@@ -1,7 +1,7 @@
 import Collection from './Collection'
 
-export interface EntityCollection {
+export interface Collections {
   [entity: string]: Collection
 }
 
-export default EntityCollection
+export default Collections

@@ -157,7 +157,7 @@ export default class Query {
    * state. If you want to keep existing data while saving new data,
    * use `insert` instead.
    */
-  static create (state: RootState, entity: string, data: Data.Record | Data.Record[], options: PersistOptions): Data.EntityCollection {
+  static create (state: RootState, entity: string, data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
     return (new this(state, entity)).create(data, options)
   }
 
@@ -173,7 +173,7 @@ export default class Query {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  static insert (state: RootState, entity: string, data: Data.Record | Data.Record[], options: PersistOptions): Data.EntityCollection {
+  static insert (state: RootState, entity: string, data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
     return (new this(state, entity)).insert(data, options)
   }
 
@@ -394,7 +394,7 @@ export default class Query {
    * state. If you want to keep existing data while saving new data,
    * use `insert` instead.
    */
-  create (data: Data.Record | Data.Record[], options: PersistOptions): Data.EntityCollection {
+  create (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
     return this.persist(data, 'create', options)
   }
 
@@ -426,7 +426,7 @@ export default class Query {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert (data: Data.Record | Data.Record[], options: PersistOptions): Data.EntityCollection {
+  insert (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
     return this.persist(data, 'insert', options)
   }
 
@@ -456,7 +456,7 @@ export default class Query {
   /**
    * Update data in the state.
    */
-  update (data: Data.Record | Data.Record[] | UpdateClosure, condition?: Condition, options?: PersistOptions): Data.Item | Data.Collection | Data.EntityCollection {
+  update (data: Data.Record | Data.Record[] | UpdateClosure, condition?: Condition, options?: PersistOptions): Data.Item | Data.Collection | Data.Collections {
     // If the data is array, normalize the data and update them.
     if (Array.isArray(data)) {
       return this.persist(data, 'update', options)
@@ -614,7 +614,7 @@ export default class Query {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  insertOrUpdate (data: Data.Record | Data.Record[], options: PersistOptions): Data.EntityCollection {
+  insertOrUpdate (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
     return this.persist(data, 'insertOrUpdate', options)
   }
 
@@ -644,7 +644,7 @@ export default class Query {
   /**
    * Persist data into the state.
    */
-  persist (data: Data.Record | Data.Record[], method: string, options: PersistOptions = {}): Data.EntityCollection {
+  persist (data: Data.Record | Data.Record[], method: string, options: PersistOptions = {}): Data.Collections {
     data = this.normalize(data)
 
     if (Utils.isEmpty(data)) {
@@ -664,7 +664,7 @@ export default class Query {
       }
 
       return collection
-    }, {} as Data.EntityCollection)
+    }, {} as Data.Collections)
   }
 
   /**

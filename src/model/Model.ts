@@ -6,7 +6,7 @@ import Record from '../data/Record'
 import Records from '../data/Records'
 import Item from '../data/Item'
 import Collection from '../data/Collection'
-import EntityCollection from '../data/EntityCollection'
+import Collections from '../data/Collections'
 import * as Attributes from '../attributes'
 import Query from '../query/Query'
 import * as Payloads from '../modules/payloads/Actions'
@@ -286,28 +286,28 @@ export default class Model {
   /**
    * Create records.
    */
-  static async create (payload: Payloads.Create): Promise<EntityCollection> {
+  static async create (payload: Payloads.Create): Promise<Collections> {
     return this.dispatch('create', payload)
   }
 
   /**
    * Insert records.
    */
-  static async insert (payload: Payloads.Insert): Promise<EntityCollection> {
+  static async insert (payload: Payloads.Insert): Promise<Collections> {
     return this.dispatch('insert', payload)
   }
 
   /**
    * Update records.
    */
-  static async update (payload: Payloads.Update): Promise<EntityCollection> {
+  static async update (payload: Payloads.Update): Promise<Collections> {
     return this.dispatch('update', payload)
   }
 
   /**
    * Insert or update records.
    */
-  static async insertOrUpdate (payload: Payloads.InsertOrUpdate): Promise<EntityCollection> {
+  static async insertOrUpdate (payload: Payloads.InsertOrUpdate): Promise<Collections> {
     return this.dispatch('insertOrUpdate', payload)
   }
 
@@ -595,21 +595,21 @@ export default class Model {
   /**
    * Create records.
    */
-  async $create (payload: Payloads.Create): Promise<EntityCollection> {
+  async $create (payload: Payloads.Create): Promise<Collections> {
     return this.$dispatch('create', payload)
   }
 
   /**
    * Create records.
    */
-  async $insert (payload: Payloads.Insert): Promise<EntityCollection> {
+  async $insert (payload: Payloads.Insert): Promise<Collections> {
     return this.$dispatch('insert', payload)
   }
 
   /**
    * Update records.
    */
-  async $update (payload: Payloads.Update): Promise<EntityCollection> {
+  async $update (payload: Payloads.Update): Promise<Collections> {
     if (Array.isArray(payload)) {
       return this.$dispatch('update', payload)
     }
@@ -628,7 +628,7 @@ export default class Model {
   /**
    * Insert or update records.
    */
-  async $insertOrUpdate (payload: Payloads.InsertOrUpdate): Promise<EntityCollection> {
+  async $insertOrUpdate (payload: Payloads.InsertOrUpdate): Promise<Collections> {
     return this.$dispatch('insertOrUpdate', payload)
   }
 

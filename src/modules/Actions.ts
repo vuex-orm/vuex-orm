@@ -1,6 +1,6 @@
 import Item from '../data/Item'
 import Collection from '../data/Collection'
-import EntityCollection from '../data/EntityCollection'
+import Collections from '../data/Collections'
 import ActionsContract from './contracts/Actions'
 import ActionContext from './contracts/ActionContext'
 import * as Payloads from './payloads/Actions'
@@ -11,7 +11,7 @@ const Actions: ActionsContract = {
    * state. If you want to keep existing data while saving new data,
    * use `insert` instead.
    */
-  async create (context: ActionContext, payload: Payloads.Create): Promise<EntityCollection> {
+  async create (context: ActionContext, payload: Payloads.Create): Promise<Collections> {
     const state = context.state
     const entity = state.$name
 
@@ -23,7 +23,7 @@ const Actions: ActionsContract = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  async insert (context: ActionContext, payload: Payloads.Insert): Promise<EntityCollection> {
+  async insert (context: ActionContext, payload: Payloads.Insert): Promise<Collections> {
     const state = context.state
     const entity = state.$name
 
@@ -33,7 +33,7 @@ const Actions: ActionsContract = {
   /**
    * Update data in the store.
    */
-  async update (context: ActionContext, payload: Payloads.Update): Promise<EntityCollection> {
+  async update (context: ActionContext, payload: Payloads.Update): Promise<Collections> {
     const state = context.state
     const entity = state.$name
 
@@ -59,7 +59,7 @@ const Actions: ActionsContract = {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  async insertOrUpdate (context: ActionContext, payload: Payloads.Insert): Promise<EntityCollection> {
+  async insertOrUpdate (context: ActionContext, payload: Payloads.Insert): Promise<Collections> {
     const state = context.state
     const entity = state.$name
 
