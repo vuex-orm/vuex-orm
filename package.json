@@ -77,7 +77,7 @@
       "src/**/*.ts"
     ],
     "exclude": [
-      "src/support/polyfills.ts",
+      "src/polyfills/index.ts",
       "src/support/Utils.ts"
     ],
     "instrument": false,
