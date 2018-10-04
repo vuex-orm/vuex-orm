@@ -51,6 +51,10 @@ export default class MorphMany extends Relation {
    * Attach the relational key to the given data.
    */
   attach (key: any, record: Record, data: NormalizedData): void {
+    if (!Array.isArray(key)) {
+      return
+    }
+
     const relatedItems = data[this.related.entity]
 
     key.forEach((id: any) => {
