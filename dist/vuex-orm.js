@@ -64,6 +64,77 @@
         };
     });
 
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
+
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
+
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
+    ***************************************************************************** */
+    /* global Reflect, Promise */
+
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
+    function __extends(d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    }
+
+    var __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+        }
+        return t;
+    };
+
+    function __awaiter(thisArg, _arguments, P, generator) {
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    }
+
+    function __generator(thisArg, body) {
+        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+        function verb(n) { return function (v) { return step([n, v]); }; }
+        function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_) try {
+                if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [0, t.value];
+                switch (op[0]) {
+                    case 0: case 1: t = op; break;
+                    case 4: _.label++; return { value: op[1], done: false };
+                    case 5: _.label++; y = op[1]; op = [0]; continue;
+                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                    default:
+                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                        if (t[2]) _.ops.pop();
+                        _.trys.pop(); continue;
+                }
+                op = body.call(thisArg, _);
+            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+        }
+    }
+
     /**
      * Check if the given array or object is empty.
      */
@@ -215,19 +286,6 @@
         return Attribute;
     }());
 
-    var __extends = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
     var Type = /** @class */ (function (_super) {
         __extends(Type, _super);
         /**
@@ -248,21 +306,8 @@
         return Type;
     }(Attribute));
 
-    var __extends$1 = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
     var Attr = /** @class */ (function (_super) {
-        __extends$1(Attr, _super);
+        __extends(Attr, _super);
         /**
          * Create a new attr instance.
          */
@@ -289,21 +334,8 @@
         return Attr;
     }(Type));
 
-    var __extends$2 = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
     var Increment = /** @class */ (function (_super) {
-        __extends$2(Increment, _super);
+        __extends(Increment, _super);
         /**
          * Create a new increment instance.
          */
@@ -333,21 +365,8 @@
         return Increment;
     }(Type));
 
-    var __extends$3 = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
     var String$1 = /** @class */ (function (_super) {
-        __extends$3(String, _super);
+        __extends(String, _super);
         /**
          * Create a new string instance.
          */
@@ -380,21 +399,8 @@
         return String;
     }(Type));
 
-    var __extends$4 = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
     var Number = /** @class */ (function (_super) {
-        __extends$4(Number, _super);
+        __extends(Number, _super);
         /**
          * Create a new number instance.
          */
@@ -433,21 +439,8 @@
         return Number;
     }(Type));
 
-    var __extends$5 = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
     var Boolean = /** @class */ (function (_super) {
-        __extends$5(Boolean, _super);
+        __extends(Boolean, _super);
         /**
          * Create a new number instance.
          */
@@ -490,21 +483,8 @@
         return Boolean;
     }(Type));
 
-    var __extends$6 = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
     var Relation = /** @class */ (function (_super) {
-        __extends$6(Relation, _super);
+        __extends(Relation, _super);
         function Relation() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
@@ -585,21 +565,8 @@
         return Relation;
     }(Attribute));
 
-    var __extends$7 = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
     var HasOne = /** @class */ (function (_super) {
-        __extends$7(HasOne, _super);
+        __extends(HasOne, _super);
         /**
          * Create a new has one instance.
          */
@@ -677,21 +644,8 @@
         return HasOne;
     }(Relation));
 
-    var __extends$8 = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
     var BelongsTo = /** @class */ (function (_super) {
-        __extends$8(BelongsTo, _super);
+        __extends(BelongsTo, _super);
         /**
          * Create a new belongs to instance.
          */
@@ -755,21 +709,8 @@
         return BelongsTo;
     }(Relation));
 
-    var __extends$9 = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
     var HasMany = /** @class */ (function (_super) {
-        __extends$9(HasMany, _super);
+        __extends(HasMany, _super);
         /**
          * Create a new has many instance.
          */
@@ -849,21 +790,8 @@
         return HasMany;
     }(Relation));
 
-    var __extends$a = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
     var HasManyBy = /** @class */ (function (_super) {
-        __extends$a(HasManyBy, _super);
+        __extends(HasManyBy, _super);
         /**
          * Create a new has many by instance.
          */
@@ -959,21 +887,8 @@
         return HasManyBy;
     }(Relation));
 
-    var __extends$b = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
     var HasManyThrough = /** @class */ (function (_super) {
-        __extends$b(HasManyThrough, _super);
+        __extends(HasManyThrough, _super);
         /**
          * Create a new has many through instance.
          */
@@ -1080,32 +995,8 @@
         return HasManyThrough;
     }(Relation));
 
-    var __extends$c = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
-    var __assign = (undefined && undefined.__assign) || function () {
-        __assign = Object.assign || function(t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                    t[p] = s[p];
-            }
-            return t;
-        };
-        return __assign.apply(this, arguments);
-    };
     var BelongsToMany = /** @class */ (function (_super) {
-        __extends$c(BelongsToMany, _super);
+        __extends(BelongsToMany, _super);
         /**
          * Create a new belongs to instance.
          */
@@ -1244,21 +1135,8 @@
         return BelongsToMany;
     }(Relation));
 
-    var __extends$d = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
     var MorphTo = /** @class */ (function (_super) {
-        __extends$d(MorphTo, _super);
+        __extends(MorphTo, _super);
         /**
          * Create a new morph to instance.
          */
@@ -1333,21 +1211,8 @@
         return MorphTo;
     }(Relation));
 
-    var __extends$e = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
     var MorphOne = /** @class */ (function (_super) {
-        __extends$e(MorphOne, _super);
+        __extends(MorphOne, _super);
         /**
          * Create a new belongs to instance.
          */
@@ -1415,21 +1280,8 @@
         return MorphOne;
     }(Relation));
 
-    var __extends$f = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
     var MorphMany = /** @class */ (function (_super) {
-        __extends$f(MorphMany, _super);
+        __extends(MorphMany, _super);
         /**
          * Create a new belongs to instance.
          */
@@ -1452,6 +1304,9 @@
          */
         MorphMany.prototype.attach = function (key, record, data) {
             var _this = this;
+            if (!Array.isArray(key)) {
+                return;
+            }
             var relatedItems = data[this.related.entity];
             key.forEach(function (id) {
                 var relatedItem = relatedItems[id];
@@ -1512,32 +1367,8 @@
         return MorphMany;
     }(Relation));
 
-    var __extends$g = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
-    var __assign$1 = (undefined && undefined.__assign) || function () {
-        __assign$1 = Object.assign || function(t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                    t[p] = s[p];
-            }
-            return t;
-        };
-        return __assign$1.apply(this, arguments);
-    };
     var MorphToMany = /** @class */ (function (_super) {
-        __extends$g(MorphToMany, _super);
+        __extends(MorphToMany, _super);
         /**
          * Create a new belongs to instance.
          */
@@ -1665,7 +1496,7 @@
                 var _a, _b;
                 var parentId = record[_this.parentKey];
                 var pivotKey = parentId + "_" + id + "_" + parent.entity;
-                data[_this.pivot.entity] = __assign$1({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
+                data[_this.pivot.entity] = __assign({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
                         $id: pivotKey
                     },
                     _b[_this.relatedId] = id,
@@ -1677,32 +1508,8 @@
         return MorphToMany;
     }(Relation));
 
-    var __extends$h = (undefined && undefined.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
-    var __assign$2 = (undefined && undefined.__assign) || function () {
-        __assign$2 = Object.assign || function(t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                    t[p] = s[p];
-            }
-            return t;
-        };
-        return __assign$2.apply(this, arguments);
-    };
     var MorphedByMany = /** @class */ (function (_super) {
-        __extends$h(MorphedByMany, _super);
+        __extends(MorphedByMany, _super);
         /**
          * Create a new belongs to instance.
          */
@@ -1830,7 +1637,7 @@
                 var _a, _b;
                 var parentId = record[_this.parentKey];
                 var pivotKey = id + "_" + parentId + "_" + _this.related.entity;
-                data[_this.pivot.entity] = __assign$2({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
+                data[_this.pivot.entity] = __assign({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
                         $id: pivotKey
                     },
                     _b[_this.relatedId] = parentId,
@@ -1842,52 +1649,6 @@
         return MorphedByMany;
     }(Relation));
 
-    var __assign$3 = (undefined && undefined.__assign) || function () {
-        __assign$3 = Object.assign || function(t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                    t[p] = s[p];
-            }
-            return t;
-        };
-        return __assign$3.apply(this, arguments);
-    };
-    var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
-    var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
-        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-        function verb(n) { return function (v) { return step([n, v]); }; }
-        function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_) try {
-                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-                if (y = 0, t) op = [op[0] & 2, t.value];
-                switch (op[0]) {
-                    case 0: case 1: t = op; break;
-                    case 4: _.label++; return { value: op[1], done: false };
-                    case 5: _.label++; y = op[1]; op = [0]; continue;
-                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                    default:
-                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                        if (t[2]) _.ops.pop();
-                        _.trys.pop(); continue;
-                }
-                op = body.call(thisArg, _);
-            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-        }
-    };
     var Model = /** @class */ (function () {
         /**
          * Create a model instance.
@@ -1908,7 +1669,7 @@
             if (this.cachedFields) {
                 return this.cachedFields;
             }
-            this.cachedFields = __assign$3({ $id: this.attr(undefined) }, this.fields());
+            this.cachedFields = __assign({ $id: this.attr(undefined) }, this.fields());
             return this.cachedFields;
         };
         /**
@@ -3282,17 +3043,6 @@
         return Attacher;
     }());
 
-    var __assign$4 = (undefined && undefined.__assign) || function () {
-        __assign$4 = Object.assign || function(t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                    t[p] = s[p];
-            }
-            return t;
-        };
-        return __assign$4.apply(this, arguments);
-    };
     var IdFixer = /** @class */ (function () {
         function IdFixer() {
         }
@@ -3319,7 +3069,7 @@
                     newRecords[id] = record;
                     return newRecords;
                 }
-                newRecords[newStringId] = __assign$4({}, record, { $id: newId });
+                newRecords[newStringId] = __assign({}, record, { $id: newId });
                 return newRecords;
             }, {});
         };
@@ -3711,17 +3461,6 @@
         return Hook;
     }());
 
-    var __assign$5 = (undefined && undefined.__assign) || function () {
-        __assign$5 = Object.assign || function(t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                    t[p] = s[p];
-            }
-            return t;
-        };
-        return __assign$5.apply(this, arguments);
-    };
     var Query = /** @class */ (function () {
         /**
          * Create a new Query instance.
@@ -3980,7 +3719,7 @@
                 callback();
                 return;
             }
-            payload = __assign$5({ entity: this.entity }, payload);
+            payload = __assign({ entity: this.entity }, payload);
             this.actionContext.commit(this.rootState.$name + "/" + method, payload, { root: true });
         };
         /**
@@ -4048,7 +3787,7 @@
         Query.prototype.commitInsert = function (data) {
             var _this = this;
             this.commit('commitInsert', { data: data }, function () {
-                _this.state.data = __assign$5({}, _this.state.data, data);
+                _this.state.data = __assign({}, _this.state.data, data);
             });
         };
         /**
@@ -4164,7 +3903,7 @@
         Query.prototype.commitUpdate = function (data) {
             var _this = this;
             this.commit('commitUpdate', { data: data }, function () {
-                _this.state.data = __assign$5({}, _this.state.data, data);
+                _this.state.data = __assign({}, _this.state.data, data);
             });
         };
         /**
@@ -4266,7 +4005,7 @@
             if (!record) {
                 return null;
             }
-            return this.item(__assign$5({}, record));
+            return this.item(__assign({}, record));
         };
         /**
          * Returns all record of the query chain result.
@@ -4297,7 +4036,7 @@
          */
         Query.prototype.records = function (records) {
             var theRecords = records || this.state.data;
-            return Object.keys(theRecords).map(function (id) { return (__assign$5({}, theRecords[id])); });
+            return Object.keys(theRecords).map(function (id) { return (__assign({}, theRecords[id])); });
         };
         /**
          * Add a and where clause to the query.
@@ -4661,52 +4400,6 @@
         }; }
     };
 
-    var __assign$6 = (undefined && undefined.__assign) || function () {
-        __assign$6 = Object.assign || function(t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                    t[p] = s[p];
-            }
-            return t;
-        };
-        return __assign$6.apply(this, arguments);
-    };
-    var __awaiter$1 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
-    var __generator$1 = (undefined && undefined.__generator) || function (thisArg, body) {
-        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-        function verb(n) { return function (v) { return step([n, v]); }; }
-        function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_) try {
-                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-                if (y = 0, t) op = [op[0] & 2, t.value];
-                switch (op[0]) {
-                    case 0: case 1: t = op; break;
-                    case 4: _.label++; return { value: op[1], done: false };
-                    case 5: _.label++; y = op[1]; op = [0]; continue;
-                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                    default:
-                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                        if (t[2]) _.ops.pop();
-                        _.trys.pop(); continue;
-                }
-                op = body.call(thisArg, _);
-            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-        }
-    };
     var Actions = {
         /**
          * Save new data to the state. It will remove all existing data in the
@@ -4714,12 +4407,12 @@
          * use `insert` instead.
          */
         create: function (context, payload) {
-            return __awaiter$1(this, void 0, void 0, function () {
+            return __awaiter(this, void 0, void 0, function () {
                 var state, entity;
-                return __generator$1(this, function (_a) {
+                return __generator(this, function (_a) {
                     state = context.state;
                     entity = state.$name;
-                    return [2 /*return*/, context.dispatch(state.$connection + "/create", __assign$6({ entity: entity }, payload), { root: true })];
+                    return [2 /*return*/, context.dispatch(state.$connection + "/create", __assign({ entity: entity }, payload), { root: true })];
                 });
             });
         },
@@ -4729,12 +4422,12 @@
          * with the same primary key.
          */
         insert: function (context, payload) {
-            return __awaiter$1(this, void 0, void 0, function () {
+            return __awaiter(this, void 0, void 0, function () {
                 var state, entity;
-                return __generator$1(this, function (_a) {
+                return __generator(this, function (_a) {
                     state = context.state;
                     entity = state.$name;
-                    return [2 /*return*/, context.dispatch(state.$connection + "/insert", __assign$6({ entity: entity }, payload), { root: true })];
+                    return [2 /*return*/, context.dispatch(state.$connection + "/insert", __assign({ entity: entity }, payload), { root: true })];
                 });
             });
         },
@@ -4742,9 +4435,9 @@
          * Update data in the store.
          */
         update: function (context, payload) {
-            return __awaiter$1(this, void 0, void 0, function () {
+            return __awaiter(this, void 0, void 0, function () {
                 var state, entity;
-                return __generator$1(this, function (_a) {
+                return __generator(this, function (_a) {
                     state = context.state;
                     entity = state.$name;
                     // If the payload is an array, then the payload should be an array of
@@ -4759,7 +4452,7 @@
                         return [2 /*return*/, context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true })];
                     }
                     // Else destructure the payload and let root action handle it.
-                    return [2 /*return*/, context.dispatch(state.$connection + "/update", __assign$6({ entity: entity }, payload), { root: true })];
+                    return [2 /*return*/, context.dispatch(state.$connection + "/update", __assign({ entity: entity }, payload), { root: true })];
                 });
             });
         },
@@ -4769,12 +4462,12 @@
          * the submitted data with the same primary key.
          */
         insertOrUpdate: function (context, payload) {
-            return __awaiter$1(this, void 0, void 0, function () {
+            return __awaiter(this, void 0, void 0, function () {
                 var state, entity;
-                return __generator$1(this, function (_a) {
+                return __generator(this, function (_a) {
                     state = context.state;
                     entity = state.$name;
-                    return [2 /*return*/, context.dispatch(state.$connection + "/insertOrUpdate", __assign$6({ entity: entity }, payload), { root: true })];
+                    return [2 /*return*/, context.dispatch(state.$connection + "/insertOrUpdate", __assign({ entity: entity }, payload), { root: true })];
                 });
             });
         },
@@ -4782,9 +4475,9 @@
          * Delete data from the store.
          */
         delete: function (context, payload) {
-            return __awaiter$1(this, void 0, void 0, function () {
+            return __awaiter(this, void 0, void 0, function () {
                 var state, entity, where;
-                return __generator$1(this, function (_a) {
+                return __generator(this, function (_a) {
                     state = context.state;
                     entity = state.$name;
                     where = typeof payload === 'object' ? payload.where : payload;
@@ -4796,9 +4489,9 @@
          * Delete all data from the store.
          */
         deleteAll: function (context) {
-            return __awaiter$1(this, void 0, void 0, function () {
+            return __awaiter(this, void 0, void 0, function () {
                 var state, entity;
-                return __generator$1(this, function (_a) {
+                return __generator(this, function (_a) {
                     state = context.state;
                     entity = state.$name;
                     return [2 /*return*/, context.dispatch(state.$connection + "/deleteAll", { entity: entity }, { root: true })];
@@ -4845,41 +4538,6 @@
         return OptionsBuilder;
     }());
 
-    var __awaiter$2 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
-    var __generator$2 = (undefined && undefined.__generator) || function (thisArg, body) {
-        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-        function verb(n) { return function (v) { return step([n, v]); }; }
-        function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_) try {
-                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-                if (y = 0, t) op = [op[0] & 2, t.value];
-                switch (op[0]) {
-                    case 0: case 1: t = op; break;
-                    case 4: _.label++; return { value: op[1], done: false };
-                    case 5: _.label++; y = op[1]; op = [0]; continue;
-                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                    default:
-                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                        if (t[2]) _.ops.pop();
-                        _.trys.pop(); continue;
-                }
-                op = body.call(thisArg, _);
-            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-        }
-    };
     var RootActions = {
         /**
          * Save new data to the state. It will remove all existing data in the
@@ -4887,9 +4545,9 @@
          * use `insert` instead.
          */
         create: function (context, payload) {
-            return __awaiter$2(this, void 0, void 0, function () {
+            return __awaiter(this, void 0, void 0, function () {
                 var state, entity, data, options;
-                return __generator$2(this, function (_a) {
+                return __generator(this, function (_a) {
                     state = context.state;
                     entity = payload.entity;
                     data = payload.data;
@@ -4904,9 +4562,9 @@
          * with the same primary key.
          */
         insert: function (context, payload) {
-            return __awaiter$2(this, void 0, void 0, function () {
+            return __awaiter(this, void 0, void 0, function () {
                 var state, entity, data, options;
-                return __generator$2(this, function (_a) {
+                return __generator(this, function (_a) {
                     state = context.state;
                     entity = payload.entity;
                     data = payload.data;
@@ -4919,9 +4577,9 @@
          * Update data in the store.
          */
         update: function (context, payload) {
-            return __awaiter$2(this, void 0, void 0, function () {
+            return __awaiter(this, void 0, void 0, function () {
                 var state, entity, data, where, options;
-                return __generator$2(this, function (_a) {
+                return __generator(this, function (_a) {
                     state = context.state;
                     entity = payload.entity;
                     data = payload.data;
@@ -4937,9 +4595,9 @@
          * the submitted data with the same primary key.
          */
         insertOrUpdate: function (context, payload) {
-            return __awaiter$2(this, void 0, void 0, function () {
+            return __awaiter(this, void 0, void 0, function () {
                 var state, entity, data, options;
-                return __generator$2(this, function (_a) {
+                return __generator(this, function (_a) {
                     state = context.state;
                     entity = payload.entity;
                     data = payload.data;
@@ -4952,9 +4610,9 @@
          * Delete data from the store.
          */
         delete: function (context, payload) {
-            return __awaiter$2(this, void 0, void 0, function () {
+            return __awaiter(this, void 0, void 0, function () {
                 var state, entity, where;
-                return __generator$2(this, function (_a) {
+                return __generator(this, function (_a) {
                     state = context.state;
                     entity = payload.entity;
                     where = payload.where;
@@ -4966,9 +4624,9 @@
          * Delete all data from the store.
          */
         deleteAll: function (context, payload) {
-            return __awaiter$2(this, void 0, void 0, function () {
+            return __awaiter(this, void 0, void 0, function () {
                 var entity;
-                return __generator$2(this, function (_a) {
+                return __generator(this, function (_a) {
                     entity = payload ? payload.entity : undefined;
                     return [2 /*return*/, context.commit('deleteAll', { entity: entity })];
                 });
@@ -5145,17 +4803,6 @@
         return IdAttribute;
     }());
 
-    var __assign$7 = (undefined && undefined.__assign) || function () {
-        __assign$7 = Object.assign || function(t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                    t[p] = s[p];
-            }
-            return t;
-        };
-        return __assign$7.apply(this, arguments);
-    };
     var ProcessStrategy = /** @class */ (function () {
         function ProcessStrategy() {
         }
@@ -5166,7 +4813,7 @@
             var _this = this;
             return function (value, _parentValue, _key) {
                 var id = _this.getId(model, value);
-                return __assign$7({}, value, { $id: id });
+                return __assign({}, value, { $id: id });
             };
         };
         /**
@@ -5245,17 +4892,6 @@
         return Schema;
     }());
 
-    var __assign$8 = (undefined && undefined.__assign) || function () {
-        __assign$8 = Object.assign || function(t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                    t[p] = s[p];
-            }
-            return t;
-        };
-        return __assign$8.apply(this, arguments);
-    };
     var Builder = /** @class */ (function () {
         function Builder() {
         }
@@ -5286,8 +4922,8 @@
                 tree.getters[name] = function (_state, getters, _rootState, _rootGetters) { return function () {
                     return getters.query(name);
                 }; };
-                tree.modules[name].getters = __assign$8({}, Getters, module.getters);
-                tree.modules[name].actions = __assign$8({}, Actions, module.actions);
+                tree.modules[name].getters = __assign({}, Getters, module.getters);
+                tree.modules[name].actions = __assign({}, Actions, module.actions);
                 tree.modules[name].mutations = module.mutations || {};
             });
             return tree;
@@ -5297,7 +4933,7 @@
          */
         Builder.createState = function (namespace, name, module) {
             var state = typeof module.state === 'function' ? module.state() : module.state;
-            return __assign$8({}, state, { $connection: namespace, $name: name, data: {} });
+            return __assign({}, state, { $connection: namespace, $name: name, data: {} });
         };
         return Builder;
     }());
