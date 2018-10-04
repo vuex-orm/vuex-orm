@@ -66,8 +66,8 @@
     "tslint-config-standard": "^8.0.1",
     "typescript": "^3.1.1",
     "uglify-js": "^3.4.9",
-    "vue": "^2.5.17",
-    "vuepress": "^0.14.4",
+    "vue": "2.5.16",
+    "vuepress": "^1.0.0-alpha.3",
     "vuepress-theme-vue": "^1.1.0",
     "vuex": "^3.0.1",
     "webpack": "^4.20.2"
