@@ -554,7 +554,7 @@ export default class Query {
 
     const record = JSON.parse(JSON.stringify(state))
 
-    typeof data === 'function' ? data(record) : this.merge(this.model.fix(data), record)
+    typeof data === 'function' ? (data as UpdateClosure)(record) : this.merge(this.model.fix(data), record)
 
     const hookResult = this.hook.execute('beforeUpdate', record)
 
@@ -584,7 +584,7 @@ export default class Query {
 
       const state = JSON.parse(JSON.stringify(record))
 
-      typeof data === 'function' ? data(state) : this.merge(this.model.fix(data), state)
+      typeof data === 'function' ? (data as UpdateClosure)(state) : this.merge(this.model.fix(data), state)
 
       toBeUpdated[id] = state
     })
