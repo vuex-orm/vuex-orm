@@ -64,7 +64,6 @@ export interface Options {
 }
 
 export interface Plugin {
-  install (components: Components, options: Options): void
   [key: string]: any
 }
 
