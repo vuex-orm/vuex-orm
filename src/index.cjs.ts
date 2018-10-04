@@ -1,4 +1,4 @@
-import './support/polyfills'
+import './polyfills'
 
 import install, { Install } from './store/install'
 import use, { Use } from './plugins/use'
