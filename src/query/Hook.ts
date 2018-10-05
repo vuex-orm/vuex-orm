@@ -133,7 +133,7 @@ export default class Hook {
       return data
     }
 
-    const result = hook(this.query.actionContext, data)
+    const result = hook({}, data)
 
     if (result === false) {
       return false

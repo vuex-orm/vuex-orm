@@ -105,11 +105,6 @@ export default class Query {
   wrap: boolean
 
   /**
-   * The Vuex Action context.
-   */
-  actionContext: Vuex.ActionContext<RootState, any> | null = null
-
-  /**
    * Create a new Query instance.
    */
   constructor (state: RootState, entity: string, wrap: boolean = true) {
@@ -287,7 +282,7 @@ export default class Query {
    * Create a new query instance.
    */
   newQuery (entity: string): Query {
-    return (new Query(this.rootState, entity)).setActionContext(this.actionContext)
+    return (new Query(this.rootState, entity))
   }
 
   /**
@@ -352,15 +347,6 @@ export default class Query {
    */
   plain (): Query {
     this.wrap = false
-
-    return this
-  }
-
-  /**
-   * Set Vuex Action Context to the query.
-   */
-  setActionContext (context: Vuex.ActionContext<RootState, any> | null): Query {
-    this.actionContext = context
 
     return this
   }
