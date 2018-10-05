@@ -313,7 +313,7 @@ export default class Query {
   /**
    * Get all models from the container.
    */
-  getModels (): { [name: string]: typeof Model } {
+  getModels (): Models {
     return this.self().getModels()
   }
 
@@ -329,7 +329,7 @@ export default class Query {
   /**
    * Get all modules from the container.
    */
-  getModules (): { [name: string]: Vuex.Module<State, any> } {
+  getModules (): Modules {
     return this.self().getModules()
   }
 
