@@ -249,38 +249,39 @@ export default class Model {
   }
 
   /**
-   * Get database out of the container.
+   * Get the database instance from the container.
    */
   static database (): Database {
     return Container.database
   }
 
   /**
-   * Get Vuex Store instance out of connection.
+   * Get the store instance from the container.
    */
   static store (): Vuex.Store<any> {
     return this.database().store
   }
 
   /**
-   * Get module namespaced path for the model.
+   * Create a namespaced method name for Vuex Module from the given
+   * method name.
    */
   static namespace (method: string): string {
     return `${this.database().namespace}/${this.entity}/${method}`
   }
 
   /**
-   * Dispatch an action.
-   */
-  static dispatch (method: string, payload: any): Promise<any> {
-    return this.store().dispatch(this.namespace(method), payload)
-  }
-
-  /**
-   * Call getetrs.
+   * Call Vuex Getters.
    */
   static getters (method: string): any {
     return this.store().getters[this.namespace(method)]
+  }
+
+  /**
+   * Dispatch Vuex Action.
+   */
+  static dispatch (method: string, payload: any): Promise<any> {
+    return this.store().dispatch(this.namespace(method), payload)
   }
 
   /**
@@ -551,7 +552,7 @@ export default class Model {
   }
 
   /**
-   * Get the static class of this model.
+   * Get the constructor of this model.
    */
   $self (): typeof Model {
     return this.constructor as typeof Model
@@ -565,31 +566,32 @@ export default class Model {
   }
 
   /**
-   * Get Vuex Store insatnce out of connection.
+   * Get the store instance from the container.
    */
   $store (): Vuex.Store<any> {
     return this.$self().store()
   }
 
   /**
-   * Get module namespaced path for the model.
+   * Create a namespaced method name for Vuex Module from the given
+   * method name.
    */
   $namespace (method: string): string {
     return this.$self().namespace(method)
   }
 
   /**
-   * Dispatch an action.
-   */
-  $dispatch (method: string, payload: any): Promise<any> {
-    return this.$self().dispatch(method, payload)
-  }
-
-  /**
-   * Call getetrs.
+   * Call Vuex Getetrs.
    */
   $getters (method: string): any {
     return this.$self().getters(method)
+  }
+
+  /**
+   * Dispatch Vuex Action.
+   */
+  $dispatch (method: string, payload: any): Promise<any> {
+    return this.$self().dispatch(method, payload)
   }
 
   /**
