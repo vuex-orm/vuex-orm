@@ -11,6 +11,7 @@ import Fields from '../model/Fields'
 import State from '../modules/contracts/State'
 import RootState from '../modules/contracts/RootState'
 import PersistOptions from '../modules/payloads/PersistOptions'
+import Result from './contracts/Result'
 import * as Options from './options'
 import Processor from './processors/Processor'
 import Filter from './filters/Filter'
@@ -88,6 +89,17 @@ export default class Query {
   hook: Hook
 
   /**
+   * The object that holds mutated records. This object is used to retrieve the
+   * mutated records in actions.
+   *
+   * Since mutations can't return any value, actions will pass an object to
+   * Query through mutations, and let Query store any returning values to the
+   * object. This way, actions can retrieve mutated records after committing
+   * the mutations.
+   */
+  result: Result = { data: null }
+
+  /**
    * Whether to wrap returing record with class or to return as plain object.
    */
   wrap: boolean
@@ -162,13 +174,6 @@ export default class Query {
   }
 
   /**
-   * Commit `create` to the state.
-   */
-  static commitCreate (state: RootState, entity: string, records: Data.Records): void {
-    (new this(state, entity)).commitCreate(records)
-  }
-
-  /**
    * Insert given data to the state. Unlike `create`, this method will not
    * remove existing data within the state, but it will update the data
    * with the same primary key.
@@ -178,24 +183,10 @@ export default class Query {
   }
 
   /**
-   * Commit `insert` to the state.
-   */
-  static commitInsert (state: RootState, entity: string, data: Data.Records): void {
-    (new this(state, entity)).commitInsert(data)
-  }
-
-  /**
    * Update data in the state.
    */
   static update (state: RootState, entity: string, data: Data.Record | Data.Record[] | UpdateClosure, condition?: Condition, options?: PersistOptions): Data.Item | Data.Collection {
     return (new this(state, entity)).update(data, condition, options)
-  }
-
-  /**
-   * Commit `update` to the state.
-   */
-  static commitUpdate (state: RootState, entity: string, data: Data.Records): void {
-    (new this(state, entity)).commitUpdate(data)
   }
 
   /**
@@ -269,13 +260,6 @@ export default class Query {
     Utils.forOwn(models, (_model, name) => {
       state[name] && (new this(state, name)).deleteAll()
     })
-  }
-
-  /**
-   * Commit `delete` to the state.
-   */
-  static commitDelete (state: RootState, entity: string, ids: string[]): void {
-    (new Query(state, entity)).commitDelete(ids)
   }
 
   /**
@@ -355,20 +339,12 @@ export default class Query {
   }
 
   /**
-   * Commit changes to the state. This method will call mutation name of
-   * `method` with `payload` if the method is called from an action to
-   * avoid mutating state change outside of mutation handler.
+   * Set the result.
    */
-  commit (method: string, payload: any, callback: Function): void {
-    if (!this.actionContext) {
-      callback()
+  setResult (result: Result): this {
+    this.result = result
 
-      return
-    }
-
-    payload = { entity: this.entity, ...payload }
-
-    this.actionContext.commit(`${this.rootState.$name}/${method}`, payload, { root: true })
+    return this
   }
 
   /**
@@ -405,20 +381,11 @@ export default class Query {
     records = this.model.hydrateMany(records)
     records = this.hook.executeOnRecords('beforeCreate', records)
 
-    this.commitCreate(records)
+    this.state.data = records
 
     const collection = this.collect(this.records(records))
 
     return this.hook.executeOnCollection('afterCreate', collection)
-  }
-
-  /**
-   * Commit `create` to the state.
-   */
-  commitCreate (data: Data.Records): void {
-    this.commit('commitCreate', { data }, () => {
-      this.state.data = data
-    })
   }
 
   /**
@@ -437,20 +404,11 @@ export default class Query {
     records = this.model.hydrateMany(records)
     records = this.hook.executeOnRecords('beforeCreate', records)
 
-    this.commitInsert(records)
+    this.state.data = { ...this.state.data, ...records }
 
     const collection = this.collect(this.records(records))
 
     return this.hook.executeOnCollection('afterCreate', collection)
-  }
-
-  /**
-   * Commit `insert` to the state.
-   */
-  commitInsert (data: Data.Records): void {
-    this.commit('commitInsert', { data }, () => {
-      this.state.data = { ...this.state.data, ...data }
-    })
   }
 
   /**
@@ -604,9 +562,7 @@ export default class Query {
    * Commit `update` to the state.
    */
   commitUpdate (data: Data.Records): void {
-    this.commit('commitUpdate', { data }, () => {
-      this.state.data = { ...this.state.data, ...data }
-    })
+    this.state.data = { ...this.state.data, ...data }
   }
 
   /**
@@ -648,12 +604,14 @@ export default class Query {
     data = this.normalize(data)
 
     if (Utils.isEmpty(data)) {
-      method === 'create' && this.commitCreate({})
+      if (method === 'create') {
+        this.state.data = {}
+      }
 
       return {}
     }
 
-    return Object.keys(data).reduce((collection, entity) => {
+    this.result.data = Object.keys(data).reduce((collection, entity) => {
       const query = this.newQuery(entity)
       const persistMethod = this.getPersistMethod(entity, method, options)
 
@@ -665,6 +623,8 @@ export default class Query {
 
       return collection
     }, {} as Data.Collections)
+
+    return this.result.data
   }
 
   /**
@@ -1104,10 +1064,14 @@ export default class Query {
    */
   delete (condition: Condition): Data.Item | Data.Collection {
     if (typeof condition === 'function') {
-      return this.deleteByCondition(condition)
+      this.result.data = this.deleteByCondition(condition)
+
+      return this.result
     }
 
-    return this.deleteById(condition)
+    this.result.data = this.deleteById(condition)
+
+    return this.result
   }
 
   /**
@@ -1165,7 +1129,7 @@ export default class Query {
   /**
    * Delete all records from the state.
    */
-  deleteAll (): Data.Collection {
+  deleteAll (): void {
     let toBeDeleted = this.state.data
 
     toBeDeleted = this.hook.executeOnRecords('beforeDelete', toBeDeleted)
@@ -1175,22 +1139,18 @@ export default class Query {
     const collection = this.collect(this.records(toBeDeleted))
 
     this.hook.executeOnCollection('afterDelete', collection)
-
-    return collection
   }
 
   /**
    * Commit `delete` to the state.
    */
   commitDelete (ids: string[]): void {
-    this.commit('commitDelete', { ids }, () => {
-      this.state.data = Object.keys(this.state.data).reduce((state, id) => {
-        if (!ids.includes(id)) {
-          state[id] = this.state.data[id]
-        }
+    this.state.data = Object.keys(this.state.data).reduce((state, id) => {
+      if (!ids.includes(id)) {
+        state[id] = this.state.data[id]
+      }
 
-        return state
-      }, {} as Data.Record)
-    })
+      return state
+    }, {} as Data.Record)
   }
 }

@@ -1,6 +1,8 @@
 import Query from '../query/Query'
+import OptionsBuilder from './support/OptionsBuilder'
 import RootState from './contracts/RootState'
 import MutationsContract from './contracts/RootMutations'
+import * as Payloads from './payloads/RootMutations'
 
 const RootMutations: MutationsContract = {
   /**
@@ -8,15 +10,15 @@ const RootMutations: MutationsContract = {
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.
    */
-  create (state: RootState, { entity, data, create, insert, update, insertOrUpdate }) {
-    Query.create(state, entity, data, { create, insert, update, insertOrUpdate })
-  },
+  create (state: RootState, payload: Payloads.Create): void {
+    const entity = payload.entity
+    const data = payload.data
+    const result = payload.result
+    const options = OptionsBuilder.createPersistOptions(payload)
 
-  /**
-   * Commit `create` to the state.
-   */
-  commitCreate (state: RootState, { entity, data }) {
-    Query.commitCreate(state, entity, data)
+    const query = new Query(state, entity)
+
+    query.setResult(result).create(data, options)
   },
 
   /**
@@ -24,29 +26,30 @@ const RootMutations: MutationsContract = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert (state: RootState, { entity, data, create, insert, update, insertOrUpdate }) {
-    Query.insert(state, entity, data, { create, insert, update, insertOrUpdate })
-  },
+  insert (state: RootState, payload: Payloads.Insert): void {
+    const entity = payload.entity
+    const data = payload.data
+    const result = payload.result
+    const options = OptionsBuilder.createPersistOptions(payload)
 
-  /**
-   * Commit `insert` to the state.
-   */
-  commitInsert (state: RootState, { entity, data }) {
-    Query.commitInsert(state, entity, data)
+    const query = new Query(state, entity)
+
+    query.setResult(result).insert(data, options)
   },
 
   /**
    * Update data in the store.
    */
-  update (state: RootState, { entity, data, where, create, insert, update, insertOrUpdate }) {
-    Query.update(state, entity, data, where, { create, insert, update, insertOrUpdate })
-  },
+  update (state: RootState, payload: Payloads.Update): void {
+    const entity = payload.entity
+    const data = payload.data
+    const where = payload.where
+    const result = payload.result
+    const options = OptionsBuilder.createPersistOptions(payload)
 
-  /**
-   * Commit `create` to the state.
-   */
-  commitUpdate (state: RootState, { entity, data }) {
-    Query.commitUpdate(state, entity, data)
+    const query = new Query(state, entity)
+
+    query.setResult(result).update(data, where, options)
   },
 
   /**
@@ -54,35 +57,41 @@ const RootMutations: MutationsContract = {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  insertOrUpdate (state: RootState, { entity, data, create }) {
-    Query.insertOrUpdate(state, entity, data, create)
+  insertOrUpdate (state: RootState, payload: Payloads.InsertOrUpdate): void {
+    const entity = payload.entity
+    const data = payload.data
+    const result = payload.result
+    const options = OptionsBuilder.createPersistOptions(payload)
+
+    const query = new Query(state, entity)
+
+    query.setResult(result).insertOrUpdate(data, options)
   },
 
   /**
    * Delete data from the store.
    */
-  delete (state: RootState, { entity, where }) {
-    Query.delete(state, entity, where)
+  delete (state: RootState, payload: Payloads.Delete): void {
+    const entity = payload.entity
+    const where = payload.where
+    const result = payload.result
+
+    const query = new Query(state, entity)
+
+    query.setResult(result).delete(where)
   },
 
   /**
    * Delete all data from the store.
    */
-  deleteAll (state: RootState, payload?) {
+  deleteAll (state: RootState, payload?: Payloads.DeleteAll): void {
     if (payload && payload.entity) {
-      Query.deleteAll(state, payload.entity)
+      (new Query(state, payload.entity)).deleteAll()
 
       return
     }
 
     Query.deleteAll(state)
-  },
-
-  /**
-   * Commit `delete` to the state.
-   */
-  commitDelete (state: RootState, { entity, ids }) {
-    Query.commitDelete(state, entity, ids)
   }
 }
 

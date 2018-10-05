@@ -11,11 +11,11 @@ const Actions: ActionsContract = {
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.
    */
-  async create (context: ActionContext, payload: Payloads.Create): Promise<Collections> {
+  create (context: ActionContext, payload: Payloads.Create): Promise<Collections> {
     const state = context.state
     const entity = state.$name
 
-    return context.dispatch(`${state.$connection}/create`, { entity, ...payload }, { root: true })
+    return context.dispatch(`${state.$connection}/create`, { ...payload, entity }, { root: true })
   },
 
   /**
@@ -23,17 +23,17 @@ const Actions: ActionsContract = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  async insert (context: ActionContext, payload: Payloads.Insert): Promise<Collections> {
+  insert (context: ActionContext, payload: Payloads.Insert): Promise<Collections> {
     const state = context.state
     const entity = state.$name
 
-    return context.dispatch(`${state.$connection}/insert`, { entity, ...payload }, { root: true })
+    return context.dispatch(`${state.$connection}/insert`, { ...payload, entity }, { root: true })
   },
 
   /**
    * Update data in the store.
    */
-  async update (context: ActionContext, payload: Payloads.Update): Promise<Collections> {
+  update (context: ActionContext, payload: Payloads.Update): Promise<Item | Collection | Collections> {
     const state = context.state
     const entity = state.$name
 
@@ -59,7 +59,7 @@ const Actions: ActionsContract = {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  async insertOrUpdate (context: ActionContext, payload: Payloads.Insert): Promise<Collections> {
+  insertOrUpdate (context: ActionContext, payload: Payloads.InsertOrUpdate): Promise<Collections> {
     const state = context.state
     const entity = state.$name
 
@@ -69,7 +69,7 @@ const Actions: ActionsContract = {
   /**
    * Delete data from the store.
    */
-  async delete (context: ActionContext, payload: Payloads.Delete): Promise<Item | Collection> {
+  delete (context: ActionContext, payload: Payloads.Delete): Promise<Item | Collection> {
     const state = context.state
     const entity = state.$name
     const where = typeof payload === 'object' ? payload.where : payload
@@ -80,7 +80,7 @@ const Actions: ActionsContract = {
   /**
    * Delete all data from the store.
    */
-  async deleteAll (context: ActionContext): Promise<Collection | void> {
+  deleteAll (context: ActionContext): Promise<void> {
     const state = context.state
     const entity = state.$name
 

@@ -1,8 +1,7 @@
 import Item from '../data/Item'
 import Collection from '../data/Collection'
 import Collections from '../data/Collections'
-import Query from '../query/Query'
-import OptionsBuilder from './support/OptionsBuilder'
+import Result from '../query/contracts/Result'
 import ActionsContract from './contracts/RootActions'
 import ActionContext from './contracts/RootActionContext'
 import * as Payloads from './payloads/RootActions'
@@ -14,12 +13,11 @@ const RootActions: ActionsContract = {
    * use the `insert` method instead.
    */
   async create (context: ActionContext, payload: Payloads.Create): Promise<Collections> {
-    const state = context.state
-    const entity = payload.entity
-    const data = payload.data
-    const options = OptionsBuilder.createPersistOptions(payload)
+    const result: Result = { data: {} }
 
-    return (new Query(state, entity)).setActionContext(context).create(data, options)
+    context.commit('create', { ...payload, result })
+
+    return result.data
   },
 
   /**
@@ -28,25 +26,22 @@ const RootActions: ActionsContract = {
    * with the same primary key.
    */
   async insert (context: ActionContext, payload: Payloads.Insert): Promise<Collections> {
-    const state = context.state
-    const entity = payload.entity
-    const data = payload.data
-    const options = OptionsBuilder.createPersistOptions(payload)
+    const result: Result = { data: {} }
 
-    return (new Query(state, entity)).setActionContext(context).insert(data, options)
+    context.commit('insert', { ...payload, result })
+
+    return result.data
   },
 
   /**
    * Update data in the store.
    */
   async update (context: ActionContext, payload: Payloads.Update): Promise<Item | Collection | Collections> {
-    const state = context.state
-    const entity = payload.entity
-    const data = payload.data
-    const where = payload.where
-    const options = OptionsBuilder.createPersistOptions(payload)
+    const result: Result = { data: {} }
 
-    return (new Query(state, entity)).setActionContext(context).update(data, where, options)
+    context.commit('update', { ...payload, result })
+
+    return result.data
   },
 
   /**
@@ -55,32 +50,35 @@ const RootActions: ActionsContract = {
    * the submitted data with the same primary key.
    */
   async insertOrUpdate (context: ActionContext, payload: Payloads.InsertOrUpdate): Promise<Collections> {
-    const state = context.state
-    const entity = payload.entity
-    const data = payload.data
-    const options = OptionsBuilder.createPersistOptions(payload)
+    const result: Result = { data: {} }
 
-    return (new Query(state, entity)).setActionContext(context).insertOrUpdate(data, options)
+    context.commit('insertOrUpdate', { ...payload, result })
+
+    return result.data
   },
 
   /**
    * Delete data from the store.
    */
   async delete (context: ActionContext, payload: Payloads.Delete): Promise<Item | Collection> {
-    const state = context.state
-    const entity = payload.entity
-    const where = payload.where
+    const result: Result = { data: {} }
 
-    return (new Query(state, entity)).setActionContext(context).delete(where)
+    context.commit('delete', { ...payload, result })
+
+    return result.data
   },
 
   /**
    * Delete all data from the store.
    */
   async deleteAll (context: ActionContext, payload?: Payloads.DeleteAll): Promise<void> {
-    const entity = payload ? payload.entity : undefined
+    if (payload && payload.entity) {
+      context.commit('deleteAll', { entity: payload.entity })
 
-    return context.commit('deleteAll', { entity })
+      return
+    }
+
+    context.commit('deleteAll')
   }
 }
 

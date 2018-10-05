@@ -86,10 +86,6 @@ export default class Hook {
    * Get the action hook.
    */
   getActionHook (name: string): Function | null {
-    if (!this.query.actionContext) {
-      return null
-    }
-
     const hook = this.query.module.actions && this.query.module.actions[name] as Function
 
     return hook || null
@@ -131,10 +127,6 @@ export default class Hook {
    * Execute the action hook.
    */
   executeActionHook (on: string, data: any): any {
-    if (!this.query.actionContext) {
-      return data
-    }
-
     const hook = this.getActionHook(on)
 
     if (!hook) {
