@@ -38,7 +38,7 @@ describe('Features – Relations – Has Many By', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, posts: [1, 2] }
+        '1': { $id: 1, id: 1, posts: [] }
       },
       posts: {
         '1': { $id: 1, id: 1 },
@@ -56,7 +56,8 @@ describe('Features – Relations – Has Many By', () => {
       static fields () {
         return {
           id: this.attr(null),
-          posts: this.hasManyBy(Post, 'posts')
+          post_ids: this.attr([]),
+          posts: this.hasManyBy(Post, 'post_ids')
         }
       }
     }
@@ -86,6 +87,7 @@ describe('Features – Relations – Has Many By', () => {
     const expected = {
       $id: 1,
       id: 1,
+      post_ids: [1, 2],
       posts: [
         { $id: 1, id: 1 },
         { $id: 2, id: 2 }

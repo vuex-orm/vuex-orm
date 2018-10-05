@@ -65,7 +65,7 @@ describe('Feature – Attributes – Increment', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, posts: ['_no_key_1', '_no_key_2'] }
+        '1': { $id: 1, id: 1, posts: [] }
       },
       posts: {
         '1': { $id: 1, id: 1, user_id: 1 },

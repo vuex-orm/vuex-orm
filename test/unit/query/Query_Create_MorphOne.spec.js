@@ -54,7 +54,7 @@ describe('Query – Create – Morph One', () => {
 
     const expected = createState({
       posts: {
-        '1': { $id: 1, id: 1, comment: 2 }
+        '1': { $id: 1, id: 1, comment: null }
       },
       videos: {},
       comments: {
@@ -124,8 +124,8 @@ describe('Query – Create – Morph One', () => {
 
     const expected = createState({
       posts: {
-        '1': { $id: 1, id: 1, comment: 2 },
-        '2': { $id: 2, id: 2, comment: 4 }
+        '1': { $id: 1, id: 1, comment: null },
+        '2': { $id: 2, id: 2, comment: null }
       },
       videos: {},
       comments: {
@@ -190,7 +190,7 @@ describe('Query – Create – Morph One', () => {
 
     const expected = createState({
       posts: {
-        '1': { $id: 1, id: 1, comment: 2 }
+        '1': { $id: 1, id: 1, comment: null }
       },
       videos: {},
       comments: {
@@ -254,7 +254,7 @@ describe('Query – Create – Morph One', () => {
 
     const expected = createState({
       posts: {
-        '1': { $id: 1, id: 1, comment: 2 }
+        '1': { $id: 1, id: 1, comment: null }
       },
       videos: {},
       comments: {
@@ -398,10 +398,10 @@ describe('Query – Create – Morph One', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, posts: [5] }
+        '1': { $id: 1, id: 1, posts: [] }
       },
       posts: {
-        '5': { $id: 5, id: 5, user_id: 1, comment: 2 }
+        '5': { $id: 5, id: 5, user_id: 1, comment: null }
       },
       videos: {},
       comments: {

@@ -57,13 +57,15 @@ describe('Features – Relations – Persist – Nested Morph', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, comments: [1] }
+        '1': { $id: 1, id: 1, comments: [] }
       },
       posts: {
         '1': { $id: 1, id: 1 }
       },
       comments: {
-        '1': { $id: 1, id: 1, user_id: 1, commentable_type: 'posts', commentable_id: 1, commentable: null }
+        '1': { $id: 1, id: 1, user_id: 1, commentable_type: 'posts', commentable_id: 1, commentable: {
+          $id: undefined, id: 1
+        }}
       }
     })
 

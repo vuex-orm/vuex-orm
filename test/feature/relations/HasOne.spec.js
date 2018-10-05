@@ -36,7 +36,7 @@ describe('Features – Relations – Has One', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, phone: 1 }
+        '1': { $id: 1, id: 1, phone: null }
       },
       phones: {
         '1': { $id: 1, id: 1, user_id: 1 }
@@ -101,7 +101,7 @@ describe('Features – Relations – Has One', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, phone: 1 },
+        '1': { $id: 1, id: 1, phone: null },
         '2': { $id: 2, id: 2, phone: null }
       },
       phones: {
@@ -136,7 +136,7 @@ describe('Features – Relations – Has One', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, local_key: 1, phone: 1 }
+        '1': { $id: 1, id: 1, local_key: 1, phone: null }
       },
       phones: {
         '1': { $id: 1, id: 1, user_id: 1 }

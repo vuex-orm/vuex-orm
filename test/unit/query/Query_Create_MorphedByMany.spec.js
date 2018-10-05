@@ -76,7 +76,7 @@ describe('Query – Create – Morphed By Many', () => {
         '4': { $id: 4, id: 4 }
       },
       tags: {
-        '1': { $id: 1, id: 1, name: 'news', posts: [1, 2], videos: [3, 4] }
+        '1': { $id: 1, id: 1, name: 'news', posts: [], videos: [] }
       },
       taggables: {
         '1_1_posts': { $id: '1_1_posts', id: null, tag_id: 1, taggable_id: 1, taggable_type: 'posts' },
@@ -174,8 +174,8 @@ describe('Query – Create – Morphed By Many', () => {
         '5': { $id: 5, id: 5 }
       },
       tags: {
-        '1': { $id: 1, id: 1, name: 'news', posts: [1, 2], videos: [3, 4] },
-        '2': { $id: 2, id: 2, name: 'cast', posts: [2, 3], videos: [3, 5] }
+        '1': { $id: 1, id: 1, name: 'news', posts: [], videos: [] },
+        '2': { $id: 2, id: 2, name: 'cast', posts: [], videos: [] }
       },
       taggables: {
         '1_1_posts': { $id: '1_1_posts', id: null, tag_id: 1, taggable_id: 1, taggable_type: 'posts' },

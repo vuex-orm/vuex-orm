@@ -68,7 +68,7 @@ describe('Query – Create – Morph To', () => {
           body: 'comment1',
           commentable_id: 2,
           commentable_type: 'posts',
-          commentable: null
+          commentable: { $id: undefined, comment: null, id: 2 }
         }
       }
     })
@@ -154,7 +154,7 @@ describe('Query – Create – Morph To', () => {
           body: 'comment1',
           commentable_id: 2,
           commentable_type: 'posts',
-          commentable: null
+          commentable: { $id: undefined, comment: null, id: 2 }
         },
         '2': {
           $id: 2,
@@ -162,7 +162,7 @@ describe('Query – Create – Morph To', () => {
           body: 'comment2',
           commentable_id: 2,
           commentable_type: 'videos',
-          commentable: null
+          commentable: { $id: undefined, comment: null, id: 2 }
         }
       }
     })

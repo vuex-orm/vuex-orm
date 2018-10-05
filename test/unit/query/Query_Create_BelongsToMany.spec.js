@@ -59,7 +59,7 @@ describe('Query – Create – Belongs To Many', () => {
     const expected = {
       $name: 'entities',
       users: { data: {
-        '1': { $id: 1, id: 1, roles: [2, 3] }
+        '1': { $id: 1, id: 1, roles: [] }
       }},
       roles: { data: {
         '2': { $id: 2, id: 2, users: [] },
@@ -133,7 +133,7 @@ describe('Query – Create – Belongs To Many', () => {
     const expected = {
       $name: 'entities',
       users: { data: {
-        '1': { $id: 1, id: 1, roles: [2, 3] }
+        '1': { $id: 1, id: 1, roles: [] }
       }},
       roles: { data: {
         '2': { $id: 2, id: 2, users: [] },
@@ -223,10 +223,10 @@ describe('Query – Create – Belongs To Many', () => {
     const expected = {
       $name: 'entities',
       teams: { data: {
-        '1': { $id: 1, id: 1, users: [1] }
+        '1': { $id: 1, id: 1, users: [] }
       }},
       users: { data: {
-        '1': { $id: 1, id: 1, team_id: 1, roles: [2, 3] }
+        '1': { $id: 1, id: 1, team_id: 1, roles: [] }
       }},
       roles: { data: {
         '2': { $id: 2, id: 2, users: [] },

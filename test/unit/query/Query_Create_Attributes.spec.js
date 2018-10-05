@@ -310,7 +310,7 @@ describe('Query – Create – Attributes', () => {
     const expected = {
       $name: 'entities',
       users: { data: {
-        '1': { $id: 1, id: 1, name: 'John', posts: ['_no_key_2', '_no_key_3'] }
+        '1': { $id: 1, id: 1, name: 'John', posts: [] }
       }},
       posts: { data: {
         '1': { $id: 1, id: 1, user_id: 1, title: 'Title 01' },
@@ -521,7 +521,7 @@ describe('Query – Create – Attributes', () => {
     const expected = {
       $name: 'entities',
       users: { data: {
-        '1': { $id: 1, id: 1, name: 'John', posts: ['_no_key_2', '_no_key_3'] }
+        '1': { $id: 1, id: 1, name: 'John', posts: [] }
       }},
       posts: { data: {
         '1': { $id: 1, id: 1, user_id: 1, title: 'Title 01' },

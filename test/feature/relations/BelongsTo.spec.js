@@ -40,7 +40,7 @@ describe('Features – Relations – Belongs To', () => {
         '1': { $id: 1, id: 1 }
       },
       posts: {
-        '1': { $id: 1, id: 1, user_id: 1, user: 1 }
+        '1': { $id: 1, id: 1, user_id: 1, user: null }
       }
     })
 
@@ -83,7 +83,7 @@ describe('Features – Relations – Belongs To', () => {
         '1': { $id: 1, id: 1 }
       },
       posts: {
-        '1': { $id: 1, id: 1, user_id: 1, user: 1 }
+        '1': { $id: 1, id: 1, user_id: 1, user: null }
       }
     })
 

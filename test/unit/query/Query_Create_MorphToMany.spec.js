@@ -69,7 +69,7 @@ describe('Query – Create – Morph To Many', () => {
 
     const expected = createState({
       posts: {
-        '1': { $id: 1, id: 1, tags: [2, 3] }
+        '1': { $id: 1, id: 1, tags: [] }
       },
       videos: {},
       tags: {
@@ -162,8 +162,8 @@ describe('Query – Create – Morph To Many', () => {
 
     const expected = createState({
       posts: {
-        '1': { $id: 1, id: 1, tags: [2, 3] },
-        '2': { $id: 2, id: 2, tags: [2, 5] }
+        '1': { $id: 1, id: 1, tags: [] },
+        '2': { $id: 2, id: 2, tags: [] }
       },
       videos: {},
       tags: {

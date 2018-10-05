@@ -52,8 +52,9 @@ describe('Feature – Basics – Update', () => {
 
     store.dispatch('entities/users/update', { user_id: 1, age: 24 })
 
-    const user = store.getters['entities/users/find'](1)
+    const user = store.state.entities.users.data['1']
 
+    expect(user).toBeInstanceOf(User)
     expect(user.name).toBe('John Doe')
     expect(user.age).toBe(24)
   })
@@ -186,8 +187,9 @@ describe('Feature – Basics – Update', () => {
       data: { age: 24 }
     })
 
-    const user = store.getters['entities/users/find'](1)
+    const user = store.state.entities.users.data['1']
 
+    expect(user).toBeInstanceOf(User)
     expect(user.name).toBe('John Doe')
     expect(user.age).toBe(24)
   })
@@ -222,11 +224,14 @@ describe('Feature – Basics – Update', () => {
       data: { age: 24 }
     })
 
-    const users = store.getters['entities/users/all']()
+    const users = store.state.entities.users.data
 
-    expect(users[0].age).toBe(24)
-    expect(users[1].age).toBe(24)
-    expect(users[2].age).toBe(20)
+    expect(users['1']).toBeInstanceOf(User)
+    expect(users['2']).toBeInstanceOf(User)
+    expect(users['3']).toBeInstanceOf(User)
+    expect(users['1'].age).toBe(24)
+    expect(users['2'].age).toBe(24)
+    expect(users['3'].age).toBe(20)
   })
 
   it('can update record by specifying data with closure', () => {
@@ -478,7 +483,11 @@ describe('Feature – Basics – Update', () => {
         data: { age: 24 }
       })
     } catch (e) {
-      expect(e.message).toBe('You can not specify `where` value when you have a composite key defined in your model. Please include composite keys to the `data` fields.')
+      expect(e.message).toBe(`
+        You can't specify \`where\` value as \`string\` or \`number\` when you
+        have a composite key defined in your model. Please include composite
+        keys to the \`data\` fields.
+      `)
     }
   })
 

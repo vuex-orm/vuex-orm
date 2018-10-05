@@ -180,7 +180,7 @@ export default class Query {
   /**
    * Update data in the state.
    */
-  static update (state: RootState, entity: string, data: Data.Record | Data.Record[] | UpdateClosure, condition?: Condition, options?: PersistOptions): Data.Item | Data.Collection {
+  static update (state: RootState, entity: string, data: Data.Record | Data.Record[] | UpdateClosure, condition?: Condition, options?: PersistOptions): Data.Item | Data.Collection | Data.Collections {
     return (new this(state, entity)).update(data, condition, options)
   }
 
@@ -189,7 +189,7 @@ export default class Query {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  static insertOrUpdate (state: RootState, entity: string, data: Data.Record | Data.Record[], options: PersistOptions): Data.Item | Data.Collection {
+  static insertOrUpdate (state: RootState, entity: string, data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
     return (new this(state, entity)).insertOrUpdate(data, options)
   }
 
@@ -364,14 +364,13 @@ export default class Query {
    * Create records to the state.
    */
   createMany (records: Data.Records): Data.Collection {
-    records = this.model.hydrateMany(records)
-    records = this.hook.executeOnRecords('beforeCreate', records)
+    const instances = this.hydrateMany(records)
 
-    this.state.data = records
+    this.commit('create', instances, () => {
+      this.state.data = instances
+    })
 
-    const collection = this.collect(this.records(records))
-
-    return this.hook.executeOnCollection('afterCreate', collection)
+    return this.map(instances)
   }
 
   /**
@@ -387,34 +386,34 @@ export default class Query {
    * Insert list of records in the state.
    */
   insertMany (records: Data.Records): Data.Collection {
-    records = this.model.hydrateMany(records)
-    records = this.hook.executeOnRecords('beforeCreate', records)
+    const instances = this.hydrateMany(records)
 
-    this.state.data = { ...this.state.data, ...records }
+    this.commit('create', instances, () => {
+      this.state.data = { ...this.state.data, ...instances }
+    })
 
-    const collection = this.collect(this.records(records))
-
-    return this.hook.executeOnCollection('afterCreate', collection)
+    return this.map(instances)
   }
 
   /**
    * Update data in the state.
    */
   update (data: Data.Record | Data.Record[] | UpdateClosure, condition?: Condition, options?: PersistOptions): Data.Item | Data.Collection | Data.Collections {
-    // If the data is array, normalize the data and update them.
+    // If the data is array, simply normalize the data and update them.
     if (Array.isArray(data)) {
       return this.persist(data, 'update', options)
     }
 
-    // Let's see what we can do if `data` is closure.
+    // OK, the data is not an array. Now let's check `data` to see what we can
+    // do if it is a closure.
     if (typeof data === 'function') {
-      // If the data is closure, but there's no condition, we will not know
-      // what record to update so raise an error an abort.
+      // If the data is closure, but if there's no condition, we wouldn't know
+      // what record to update so raise an error and abort.
       if (!condition) {
         throw new Error('You must specify `where` to update records by specifying `data` as a closure.')
       }
 
-      // If the condition is closure, update records by the closure.
+      // If the condition is a closure, then update records by the closure.
       if (typeof condition === 'function') {
         return this.updateByCondition(data, condition)
       }
@@ -440,12 +439,15 @@ export default class Query {
     // model's primary key is not a composite key. If yes, we can't set the
     // condition as ID value for the record so throw an error and abort.
     if (Array.isArray(this.model.primaryKey)) {
-      throw new Error('You can not specify `where` value when you have a composite key defined in your model. Please include composite keys to the `data` fields.')
+      throw new Error(`
+        You can't specify \`where\` value as \`string\` or \`number\` when you
+        have a composite key defined in your model. Please include composite
+        keys to the \`data\` fields.
+      `)
     }
 
-    // Finally,let's add condition as the primary key of the object and
+    // Finally, let's add condition as the primary key of the object and
     // then normalize them to update the records.
-
     data[this.model.primaryKey] = condition
 
     return this.persist(data, 'update', options)
@@ -455,33 +457,9 @@ export default class Query {
    * Update all records.
    */
   updateMany (records: Data.Records): Data.Collection {
-    let toBeUpdated: Data.Records = {}
+    const instances = this.combine(records)
 
-    records = this.model.fixMany(records, [])
-
-    Utils.forOwn(records, (record, id) => {
-      const state = this.state.data[id]
-
-      if (!state) {
-        return
-      }
-
-      const newState = JSON.parse(JSON.stringify(state))
-
-      this.merge(record, newState)
-
-      toBeUpdated[id] = newState
-    })
-
-    toBeUpdated = this.hook.executeOnRecords('beforeUpdate', toBeUpdated)
-
-    this.commitUpdate(toBeUpdated)
-
-    const collection = this.collect(this.records(toBeUpdated))
-
-    this.hook.executeOnCollection('afterUpdate', collection)
-
-    return collection
+    return this.commitUpdate(instances)
   }
 
   /**
@@ -490,65 +468,62 @@ export default class Query {
   updateById (data: Data.Record | UpdateClosure, id: string | number): Data.Item {
     id = typeof id === 'number' ? id.toString() : id
 
-    const state = this.state.data[id]
+    const instance = this.state.data[id]
 
-    if (!state) {
+    if (!instance) {
       return null
     }
 
-    const record = JSON.parse(JSON.stringify(state))
-
-    typeof data === 'function' ? (data as UpdateClosure)(record) : this.merge(this.model.fix(data), record)
-
-    const hookResult = this.hook.execute('beforeUpdate', record)
-
-    if (hookResult === false) {
-      return null
+    const instances: Data.Instances = {
+      [id]: this.processUpdate(data, instance)
     }
 
-    this.commitUpdate({ [id]: hookResult })
+    this.commitUpdate(instances)
 
-    const item = this.item(hookResult)
-
-    this.hook.execute('afterUpdate', item)
-
-    return item
+    return instances[id]
   }
 
   /**
    * Update the state by condition.
    */
   updateByCondition (data: Data.Record | UpdateClosure, condition: Predicate): Data.Collection {
-    let toBeUpdated: Data.Records = {}
+    const instances = Object.keys(this.state.data).reduce<Data.Instances>((instances, id) => {
+      const instance = this.state.data[id]
 
-    Utils.forOwn(this.state.data, (record, id) => {
-      if (!condition(record)) {
-        return
+      if (!condition(instance)) {
+        return instances
       }
 
-      const state = JSON.parse(JSON.stringify(record))
+      instances[id] = this.processUpdate(data, instance)
 
-      typeof data === 'function' ? (data as UpdateClosure)(state) : this.merge(this.model.fix(data), state)
+      return instances
+    }, {})
 
-      toBeUpdated[id] = state
-    })
+    return this.commitUpdate(instances)
+  }
 
-    toBeUpdated = this.hook.executeOnRecords('beforeUpdate', toBeUpdated)
+  /**
+   * Update the given record with given data.
+   */
+  processUpdate (data: Data.Record | UpdateClosure, instance: Data.Instance): Data.Instance {
+    if (typeof data === 'function') {
+      (data as UpdateClosure)(instance)
 
-    this.commitUpdate(toBeUpdated)
+      return instance
+    }
 
-    const collection = this.collect(this.records(toBeUpdated))
-
-    this.hook.executeOnCollection('afterUpdate', collection)
-
-    return collection
+    return this.hydrate({ ...instance, ...data })
   }
 
   /**
    * Commit `update` to the state.
    */
-  commitUpdate (data: Data.Records): void {
-    this.state.data = { ...this.state.data, ...data }
+  commitUpdate (instances: Data.Instances): Data.Collection {
+    this.commit('update', instances, () => {
+      this.state.data = { ...this.state.data, ...instances }
+    })
+
+    return this.map(instances)
   }
 
   /**
@@ -567,7 +542,9 @@ export default class Query {
     let toBeInserted: Data.Records = {}
     let toBeUpdated: Data.Records = {}
 
-    Utils.forOwn(records, (record, id) => {
+    Object.keys(records).forEach((id) => {
+      const record = records[id]
+
       if (this.state.data[id]) {
         toBeUpdated[id] = record
 
@@ -577,10 +554,10 @@ export default class Query {
       toBeInserted[id] = record
     })
 
-    return this.collect([
+    return [
       ...this.insertMany(toBeInserted),
       ...this.updateMany(toBeUpdated)
-    ])
+    ]
   }
 
   /**
@@ -660,6 +637,71 @@ export default class Query {
 
       this.merge(value, state[key], field)
     })
+  }
+
+  /**
+   * Convert given record to the model instance.
+   */
+  hydrate (record: Data.Record): Data.Instance {
+    const model = this.model
+
+    return new model(record)
+  }
+
+  /**
+   * Convert all given records to model instances.
+   */
+  hydrateMany (records: Data.Records): Data.Instances {
+    return Object.keys(records).reduce<Data.Instances>((instances, id) => {
+      const record = records[id]
+
+      instances[id] = this.hydrate(record)
+
+      return instances
+    }, {})
+  }
+
+  /**
+   * Convert given records to instances by merging existing record. If there's
+   * no existing record, that record will not be included in the result.
+   */
+  combine (records: Data.Records): Data.Instances {
+    return Object.keys(records).reduce<Data.Instances>((instances, id) => {
+      const instance = this.state.data[id]
+
+      if (!instance) {
+        return instances
+      }
+
+      const record = records[id]
+
+      instances[id] = this.hydrate({ ...instance, ...record })
+
+      return instances
+    }, {})
+  }
+
+  /**
+   * Convert all given instances to collections.
+   */
+  map (instances: Data.Instances): Data.Collection {
+    return Object.keys(instances).map(id => instances[id])
+  }
+
+  /**
+   * Execute given callback by executing before and after hooks of the specified
+   * method to the given instances. The method name should be something like
+   * `create` or `update`, then it will be converted to `beforeCreate` ,
+   * `afterCreate` and so on.
+   */
+  commit (method: string, instances: Data.Instances, callback: Function): void {
+    const name = `${method.charAt(0).toUpperCase()}${method.slice(1)}`
+
+    this.hook.executeOnRecords(`before${name}`, instances)
+
+    callback()
+
+    this.hook.executeOnRecords(`after${name}`, instances)
   }
 
   /**
@@ -956,7 +998,7 @@ export default class Query {
 
     Loader.eagerLoadRelations(this, [item])
 
-    return this.model.make(item, !this.wrap)
+    return this.model.make(item, !this.wrap) as Data.Item
   }
 
   /**
@@ -969,7 +1011,7 @@ export default class Query {
 
     Loader.eagerLoadRelations(this, collection)
 
-    return collection.map(record => this.model.make(record, !this.wrap))
+    return collection.map(record => this.model.make(record, !this.wrap) as Model)
   }
 
   /**
@@ -1052,12 +1094,12 @@ export default class Query {
     if (typeof condition === 'function') {
       this.result.data = this.deleteByCondition(condition)
 
-      return this.result
+      return this.result.data
     }
 
     this.result.data = this.deleteById(condition)
 
-    return this.result
+    return this.result.data
   }
 
   /**
@@ -1066,77 +1108,63 @@ export default class Query {
   deleteById (id: string | number): Data.Item {
     id = typeof id === 'number' ? id.toString() : id
 
-    const state = this.state.data[id]
+    const instance = this.state.data[id]
 
-    if (!state) {
+    if (!instance) {
       return null
     }
 
-    const hookResult = this.hook.execute('beforeDelete', state)
+    const instances = { [id]: instance }
 
-    if (hookResult === false) {
-      return null
-    }
+    const collection = this.commitDelete(instances)
 
-    this.commitDelete([id])
-
-    const item = this.item(hookResult)
-
-    this.hook.execute('afterDelete', item)
-
-    return item
+    return collection[0]
   }
 
   /**
    * Delete record by condition.
    */
   deleteByCondition (condition: Predicate): Data.Collection {
-    let toBeDeleted: Data.Records = {}
+    const instances = Object.keys(this.state.data).reduce<Data.Instances>((records, id) => {
+      const instance = this.state.data[id]
 
-    Utils.forOwn(this.state.data, (record, id) => {
-      if (!condition(record)) {
-        return
+      if (!condition(instance)) {
+        return records
       }
 
-      toBeDeleted[id] = record
-    })
+      records[id] = instance
 
-    toBeDeleted = this.hook.executeOnRecords('beforeDelete', toBeDeleted)
+      return records
+    }, {})
 
-    this.commitDelete(Object.keys(toBeDeleted))
-
-    const collection = this.collect(this.records(toBeDeleted))
-
-    this.hook.executeOnCollection('afterDelete', collection)
-
-    return collection
+    return this.commitDelete(instances)
   }
 
   /**
    * Delete all records from the state.
    */
   deleteAll (): void {
-    let toBeDeleted = this.state.data
+    const instances = this.state.data
 
-    toBeDeleted = this.hook.executeOnRecords('beforeDelete', toBeDeleted)
-
-    this.commitDelete(Object.keys(toBeDeleted))
-
-    const collection = this.collect(this.records(toBeDeleted))
-
-    this.hook.executeOnCollection('afterDelete', collection)
+    this.commitDelete(instances)
   }
 
   /**
    * Commit `delete` to the state.
    */
-  commitDelete (ids: string[]): void {
-    this.state.data = Object.keys(this.state.data).reduce((state, id) => {
-      if (!ids.includes(id)) {
-        state[id] = this.state.data[id]
-      }
+  commitDelete (instances: Data.Instances): Data.Collection {
+    this.commit('delete', instances, () => {
+      const ids = Object.keys(instances)
 
-      return state
-    }, {} as Data.Record)
+      this.state.data = Object.keys(this.state.data).reduce<Data.Instances>((instances, id) => {
+        if (!ids.includes(id)) {
+          instances[id] = this.state.data[id]
+        }
+
+        return instances
+      }, {})
+    })
+
+    return this.map(instances)
   }
 }

@@ -24,6 +24,7 @@ describe('Feature – Basics – Create', () => {
       '1': { $id: 1, id: 1, name: 'John Doe' }
     }
 
+    expect(store.state.entities.users.data[1]).toBeInstanceOf(User)
     expect(store.state.entities.users.data).toEqual(expected)
   })
 

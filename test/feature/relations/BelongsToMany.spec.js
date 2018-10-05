@@ -48,7 +48,7 @@ describe('Features – Relations – Belongs To Many', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, permissions: [1, 2] }
+        '1': { $id: 1, id: 1, permissions: [] }
       },
       roles: {
         '1': { $id: 1, id: 1 },
@@ -247,7 +247,7 @@ describe('Features – Relations – Belongs To Many', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, name: 'Jane Doe', roleUsers: [1,2,3], roles: [1,2] }
+        '1': { $id: 1, id: 1, name: 'Jane Doe', roleUsers: [], roles: [] }
       },
       roles: {
         '1': { $id: 1, id: 1, roleUsers: [], users: [] },
