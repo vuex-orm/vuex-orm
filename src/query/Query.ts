@@ -54,7 +54,7 @@ export default class Query {
   /**
    * The module being queried.
    */
-  module: Vuex.Module<any, any>
+  module: Vuex.Module<State, any>
 
   /**
    * The where constraints for the query.
@@ -148,7 +148,7 @@ export default class Query {
   /**
    * Get module of given name from the container.
    */
-  static getModule (name: string): Vuex.Module<any, any> {
+  static getModule (name: string): Vuex.Module<State, any> {
     return this.database().module(name)
   }
 
@@ -320,7 +320,7 @@ export default class Query {
   /**
    * Get module of given name from the container.
    */
-  getModule (name?: string): Vuex.Module<any, any> {
+  getModule (name?: string): Vuex.Module<State, any> {
     const entity = name || this.entity
 
     return this.self().getModule(entity)
@@ -329,7 +329,7 @@ export default class Query {
   /**
    * Get all modules from the container.
    */
-  getModules (): { [name: string]: Vuex.Module<any, any> } {
+  getModules (): { [name: string]: Vuex.Module<State, any> } {
     return this.self().getModules()
   }
 
