@@ -153,9 +153,9 @@ export default class Query {
   }
 
   /**
-   * Save new data to the state. It will remove all existing data in the
-   * state. If you want to keep existing data while saving new data,
-   * use `insert` instead.
+   * Save given data to the store by replacing all existing records in the
+   * store. If you want to save data without replacing existing records,
+   * use the `insert` method instead.
    */
   static create (state: RootState, entity: string, data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
     return (new this(state, entity)).create(data, options)
@@ -390,9 +390,9 @@ export default class Query {
   }
 
   /**
-   * Save new data to the state. It will remove all existing data in the
-   * state. If you want to keep existing data while saving new data,
-   * use `insert` instead.
+   * Save given data to the store by replacing all existing records in the
+   * store. If you want to save data without replacing existing records,
+   * use the `insert` method instead.
    */
   create (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
     return this.persist(data, 'create', options)

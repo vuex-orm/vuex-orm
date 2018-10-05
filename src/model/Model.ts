@@ -285,7 +285,9 @@ export default class Model {
   }
 
   /**
-   * Create records.
+   * Save given data to the store by replacing all existing records in the
+   * store. If you want to save data without replacing existing records,
+   * use the `insert` method instead.
    */
   static async create (payload: Payloads.Create): Promise<Collections> {
     return this.dispatch('create', payload)

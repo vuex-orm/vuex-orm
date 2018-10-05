@@ -4,9 +4,9 @@ import MutationsContract from './contracts/RootMutations'
 
 const RootMutations: MutationsContract = {
   /**
-   * Save new data to the state. It will remove all existing data in the
-   * state. If you want to keep existing data while saving new data,
-   * use `insert` instead.
+   * Save given data to the store by replacing all existing records in the
+   * store. If you want to save data without replacing existing records,
+   * use the `insert` method instead.
    */
   create (state: RootState, { entity, data, create, insert, update, insertOrUpdate }) {
     Query.create(state, entity, data, { create, insert, update, insertOrUpdate })

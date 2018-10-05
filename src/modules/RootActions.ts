@@ -9,9 +9,9 @@ import * as Payloads from './payloads/RootActions'
 
 const RootActions: ActionsContract = {
   /**
-   * Save new data to the state. It will remove all existing data in the
-   * state. If you want to keep existing data while saving new data,
-   * use `insert` instead.
+   * Save given data to the store by replacing all existing records in the
+   * store. If you want to save data without replacing existing records,
+   * use the `insert` method instead.
    */
   async create (context: ActionContext, payload: Payloads.Create): Promise<Collections> {
     const state = context.state
