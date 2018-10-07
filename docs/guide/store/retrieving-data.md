@@ -1,6 +1,6 @@
 # Retrieving Data
 
-You can use getters to retrieve data from the Vuex Store. Not only it fetches the data, but Vuex ORM will convert those fetched data into a model class instance.
+You can use getters to retrieve data from the Vuex Store. Not only does it fetch the data, but Vuex ORM will convert the fetched data into a model class instance.
 
 ```js
 const user = store.getters['entities/users/find'](1)
@@ -38,7 +38,7 @@ const users = store.getters['entities/users/find'](1)
 
 ## Query Builder
 
-The `query` getter will return the query builder that provides fluent API to search and fetch data from the store. You can use the query builder to construct the more complex query conditions.
+The `query` getter will return the query builder that provides fluent API to search and fetch data from the store. You can use the query builder to construct more complex query conditions.
 
 You can obtain query builder by calling `query` getter.
 
@@ -46,7 +46,7 @@ You can obtain query builder by calling `query` getter.
 const query = store.getters['entities/users/query']()
 ```
 
-Or you may omit `query` and directly call module. This is just a shorthand for the `query` getter.
+Or you may omit `query` and directly call the module. This is just a shorthand for the `query` getter.
 
 ```js
 const query = store.getters['entities/users']()
@@ -54,7 +54,7 @@ const query = store.getters['entities/users']()
 
 ### Get All Data
 
-Use `get` method to fetch all data for the entity. The result is going to be an array containing a list of model instances.
+Use the `get` method to fetch all data for the entity. The result is going to be an array containing a list of model instances.
 
 ```js
 const users = store.getters['entities/users/query']().get()
@@ -64,7 +64,7 @@ const users = store.getters['entities/users/query']().get()
 
 ### Get A Single Data
 
-Use `first` method to fetch a single data for the entity. It will return the very first item in the state.
+Use the `first` method to fetch a single data for the entity. It will return the very first item in the state.
 
 ```js
 const user = store.getters['entities/users/query']().first()
@@ -84,7 +84,7 @@ const user = store.getters['entities/users/query']().last()
 
 #### Simple Where Clauses
 
-You may use the `where` method on a query chain to add where conditions. For example, here is a query that fetches all users that have "age" value of "20".
+You may use the `where` method on a query chain to add where conditions. For example, here is a query that fetches all users that have an "age" value of "20".
 
 ```js
 const user = store.getters['entities/users/query']().where('age', 20).get()
@@ -92,7 +92,7 @@ const user = store.getters['entities/users/query']().where('age', 20).get()
 // [User { id: 1, age: 20 }, User { id: 2, age: 20 }]
 ```
 
-You may pass a closure to the 2nd argument when you need more powerful constraint. The argument is the value of the field.
+You may pass a closure to the 2nd argument when you need more powerful constraints. The argument is the value of the field.
 
 ```js
 const user = store.getters['entities/users/query']().where('age', value => value > 20).get()
@@ -148,7 +148,7 @@ const user = store.getters['entities/users/query']()
 
 #### Or Statement
 
-You may chain where constraints together as well as add `or` condition to the query. The `orWhere` method accepts the same arguments as the where method.
+You may chain where constraints together as well as add `or` conditions to the query. The `orWhere` method accepts the same arguments as the `where` method.
 
 ```js
 const user = store.getters['entities/users/query']()
@@ -161,7 +161,7 @@ const user = store.getters['entities/users/query']()
 
 ### Order By
 
-The `orderBy` method allows you to sort the result of the query by a given field. The first argument to the orderBy method should be the column you wish to sort by, while the second argument controls the direction of the sort and may be either `asc` or `desc`. If there is no 2nd argument, the direction is going to be `asc`.
+The `orderBy` method allows you to sort the result of the query by a given field. The first argument to the orderBy method should be the column you wish to sort by, while the second argument controls the direction of the sort, and may be either `asc` or `desc`. If there is no 2nd argument, the direction is going to be `asc`.
 
 ```js
 // Order users by name.
@@ -228,4 +228,3 @@ const users = store.getters['entities/users/query']()
   .where('role', 'user')
   .count()
 ```
-

@@ -1,6 +1,6 @@
 # Deleting Data
 
-You can delete data by `delete` action. The action must take `where` condition which can be `String`, `Number` or `Function`. 
+You can delete data by `delete` action. The action must take `where` condition which can be `String`, `Number` or `Function`.
 
 If you specify `String` or `Number` to the `where` condition, a record that matches the condition with its primary key is going to be deleted.
 

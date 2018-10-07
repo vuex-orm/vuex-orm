@@ -1,6 +1,6 @@
 # Serialization
 
-## Serializing To Json
+## Serializing to JSON
 
 To convert a model to JSON – Plain Object –, you can use `$toJson` method. The `$toJson` method is recursive, so all attributes and relations are going to be converted to JSON as well.
 

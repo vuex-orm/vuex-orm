@@ -2,11 +2,11 @@
 
 Many APIs return JSON data that has deeply nested objects. Using data in this kind of structure can be very difficult for JavaScript applications, especially those using the single tree state management system such as [Vuex](https://vuex.vuejs.org) or [Redux](http://redux.js.org).
 
-To nicely handle such "deeply nested objects", one approach is to split those nested data into each module and decouple them from each other.
+To nicely handle such "deeply nested objects", one approach is to split the nested data into separate modules and decouple them from each other.
 
-Simply put, it kind of likes treating a portion of your store as if it were a database, and keep that data in a normalized form.
+Simply put, it's kind of like treating a portion of your store as if it were a database, and keep that data in a normalized form.
 
-[This is an excellent article](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) that describes the hardness of the nested data structure. It also explains how to design normalized state.
+[This is an excellent article](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) that describes the difficulty of nested data structures. It also explains how to design normalized state.
 
 ## What Is It Like To Use Vuex ORM
 
@@ -31,7 +31,7 @@ const post = [
         author: { id: 2, username: "user2", name: "User 2" },
         comment: "....."
       }
-    ]    
+    ]
   },
   {
     id: 2,
@@ -53,7 +53,7 @@ const post = [
         author: { id: 3, username: "user3", name: "User 3" },
         comment: "....."
       }
-    ]    
+    ]
   }
   // and so on...
 ]
@@ -61,7 +61,7 @@ const post = [
 
 See there are lots of `author` fields and some of them are the exact same authors. If you save this data to the store as is, it's going to be very hard to update those authors or comments.
 
-When you store above posts data using Vuex ORM, the look of the Vuex Store State is going to be as below.
+When you store the above posts data using Vuex ORM, the look of the Vuex Store State is going to be as below.
 
 ```js
 // Save data using Vuex Action.
@@ -106,7 +106,7 @@ store.dispatch('entities/posts/create', { data: posts })
           id: 1,
           body: "......",
           author: "1",
-          comments: ["1", "2"]  
+          comments: ["1", "2"]
         },
         "2": {
           id: 2,
@@ -122,12 +122,12 @@ store.dispatch('entities/posts/create', { data: posts })
         "1": {
           id: 1,
           username: "user1",
-          name: "User 1" 
+          name: "User 1"
         },
         "2": {
           id: 2,
           username: "user2",
-          name: "User 2" 
+          name: "User 2"
         },
         "3": {
           id: 3,
@@ -140,7 +140,7 @@ store.dispatch('entities/posts/create', { data: posts })
 }
 ```
 
-See how each data is decoupled and deduplicated. Then you can fetch these data using Vuex Getters. These getters are also built in by Vuex ORM.
+See how each data is now decoupled and deduplicated. Then you can fetch these data using Vuex Getters. These getters are also built in by Vuex ORM.
 
 ```js
 // Fetch only posts.
@@ -164,7 +164,7 @@ const posts = store.getters['entities/posts/query']().with('author').get()
       author: {
         id: 1,
         username: "user1",
-        name: "User 1" 
+        name: "User 1"
       }
     },
     {
@@ -173,7 +173,7 @@ const posts = store.getters['entities/posts/query']().with('author').get()
       author: {
         id: 2,
         username: "user2",
-        name: "User 2" 
+        name: "User 2"
       }
     }
   ]
@@ -193,14 +193,14 @@ const posts = store.getters['entities/posts/query']()
       author: {
         id: 1,
         username: "user1",
-        name: "User 1" 
+        name: "User 1"
       }
     }
   ]
 */
 ```
 
-Not only fetching saved data, but Vuex ORM also lets you create Model Class for each data structure. So when you retrieve data from the store by getters, those become a class instance.
+Besides fetching saved data, Vuex ORM also lets you create Model Classes for each data structure. So when you retrieve data from the store by getters, these become a class instance.
 
 ```js
 {

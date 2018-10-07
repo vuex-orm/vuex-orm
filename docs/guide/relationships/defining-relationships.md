@@ -38,7 +38,7 @@ class Post extends Model {
 }
 ```
 
-By defining the relationship, Vuex ORM is going to use those relationships to construct data when storing, modifying and fetching data from Vuex Store.
+By defining the relationship, Vuex ORM is going to use those relationships to construct data when storing, modifying, and fetching data from the Vuex Store.
 
 ## One To One
 
@@ -71,7 +71,7 @@ class User extends Model {
 }
 ```
 
-The first argument of `this.hasOne` is the related model, which is, in this case, are Profile model. The second argument is the "foreign key" which holds the primary key of the User model. For this example, the foreign key is the `user_id` at Profile model.
+The first argument of `this.hasOne` is the related model, which in this case is the Profile model. The second argument is the "foreign key" which holds the primary key of the User model. In this example, the foreign key is the `user_id` of the Profile model.
 
 Additionally, Vuex ORM assumes that the foreign key should have a value matching the id (or the custom `static primaryKey`) field of the parent. In other words, Vuex ORM will look for the value of the user's id column in the user_id column of the Profile record. If you would like the relationship to use a value other than id, you may pass the third argument to the hasOne method specifying your custom key:
 
@@ -92,7 +92,7 @@ class User extends Model {
 
 ## One To One Inverse
 
-To define an inverse relationship of one-to-one, you can do so with `this.belongsTo()` attribute.
+To define an inverse relationship of one-to-one, you can do so with the `this.belongsTo()` attribute.
 
 ```js
 class Profile extends Model {
@@ -121,9 +121,9 @@ class User extends Model {
 }
 ```
 
-Now the above Profile model has belongs to relationship to the User model. The arguments are pretty much same with `this.hasOne`. The first argument is the related model, and second is the "foreign key", but of course this time the foreign key exists in the Profile model.
+Now the above Profile model has a belongs to relationship to the User model. The arguments are pretty much the same with `this.hasOne`. The first argument is the related model, and second is the "foreign key", but of course this time the foreign key exists in the Profile model.
 
-If your parent model – User in this case – does not use id as its primary key, or you wish to join the child model to a different field, you may pass the third argument to the belongsTo method specifying your parent table's custom key:
+If your parent model – User in this case – does not use id as its primary key, or you wish to join the child model to a different field, you may pass the third argument to the `belongsTo` method specifying your parent table's custom key:
 
 ```js
 class Profile extends Model {
@@ -172,7 +172,7 @@ class Post extends Model {
 }
 ```
 
-For this example, Post has many Comments. The arguments for the `this.hasMany` is again pretty much same as the others. The first argument is the model, and second is the 'foreign key' of the related model.
+For this example, Post has many Comments. The arguments for the `this.hasMany` is again pretty much the same as the others. The first argument is the model, and second is the 'foreign key' of the related model.
 
 Then of course, the 3rd argument can override which id to look up on parent model, which is Post in this case.
 
@@ -194,7 +194,7 @@ class Post extends Model {
 
 ## Has Many By
 
-In some case, the model itself has all the keys of the related model. Like below example.
+In some cases, the model itself has all the keys of the related model. Like below example.
 
 ```js
 {
@@ -211,7 +211,7 @@ In some case, the model itself has all the keys of the related model. Like below
 }
 ```
 
-As you can see, clusters want to have `hasMany` relationship with nodes, but nodes do not have `cluster_id`. You cannot use `this.hasMany` in this case because there is no foreign key to look for. In such case, you may use `this.hasManyBy` relationship.
+As you can see, clusters wants to have `hasMany` relationship with nodes, but nodes do not have `cluster_id`. You cannot use `this.hasMany` in this case because there is no foreign key to look for. In such cases, you may use `this.hasManyBy` relationship.
 
 ```js
 class Node extends Model {
@@ -254,12 +254,12 @@ class Cluster extends Model {
 
 ## Many To Many
 
-Many-to-many relations are slightly more complicated than other relationships. An example of such a relationship is a user with many roles, where the roles are also shared by other users. For example, many users may have the role of "Admin". To define this relationship, three models are needed: User, Role, and RoleUser. 
+Many-to-many relations are slightly more complicated than other relationships. An example of such a relationship is a user with many roles, where the roles are also shared by other users. For example, many users may have the role of "Admin". To define this relationship, three models are needed: User, Role, and RoleUser.
 The RoleUser contains the fields to hold id of User and Role model. We'll define `user_id` and `role_id` fields here.
 
-The name of RoleUser model coud be anything but for this example, we'll keep it this way to make it easy to understand.
+The name of RoleUser model could be anything, but for this example, we'll keep it this way to make it easy to understand.
 
-Many-to-many relationships are defined by defining attribute of the `belongsToMany`. 
+Many-to-many relationships are defined by defining attributes of the `belongsToMany`.
 
 ```js
 class User extends Model {
@@ -297,12 +297,12 @@ class RoleUser extends Model {
 }
 ```
 
-The argument order of the `belongsToMany` attribute is;
+The argument order of the `belongsToMany` attribute is:
 
 1. The Related model which is in this case Role.
-2. Intermidiate pivot model which is RoleUser.
-3. Field of the pivot model that holds id value of the parent – User – model.
-3. Field of the pivot model that holds id value of the related – Role – model.
+2. Intermediate pivot model which is RoleUser.
+3. Field of the pivot model that holds the id value of the parent – User – model.
+4. Field of the pivot model that holds the id value of the related – Role – model.
 
 You may also define custom local key at 4th and 5th argument.
 
@@ -328,7 +328,7 @@ class User extends Model {
 
 ### Defining The Inverse Of The Relationship
 
-To define the inverse of a many-to-many relationship, you place another `belongsToMany` attribute on your related model. To continue our user roles example, let's define the users method on the Role model:
+To define the inverse of a many-to-many relationship, you can place another `belongsToMany` attribute on your related model. To continue our user roles example, let's define the users method on the Role model:
 
 ```js
 class User extends Model {
@@ -370,7 +370,7 @@ As you can see, the relationship is defined the same as its User counterpart, ex
 
 ## Has Many Through
 
-The "has-many-through" relationship provides a convenient shortcut for accessing distant relations via an intermediate relation. For example, a Country might have many Post through an intermediate User. In this example, you could easily gather all posts for a given country. Let's look at the models required to define this relationship:
+The "has-many-through" relationship provides a convenient shortcut for accessing distant relations via an intermediate relation. For example, a Country might have many Posts through an intermediate User. In this example, you could easily gather all posts for a given country. Let's look at the models required to define this relationship:
 
 ```js
 class Country extends Model {
@@ -471,7 +471,7 @@ class Comment extends Model {
 
 Two important fields to note are the `commentable_id` and `commentable_type` on the Comment model. The `commentable_id` field will contain the ID value of the Post or Video, while the `commentable_type` field will contain the entity name of the owning model. The `commentable_type` field is how the Vuex ORM determines which "type" of owning model to return when accessing the commentable relation.
 
-`this.morphMany` method defined at both Post and Video model is the definition of the relationship. Now you may fetch comment for the model as usual.
+`this.morphMany` method defined at both Post and Video model is the definition of the relationship. Now you may fetch comments for the model as usual.
 
 ```js
 store.getters['entities/posts/query'].with('comments').find(1)
@@ -487,7 +487,7 @@ store.getters['entities/posts/query'].with('comments').find(1)
 */
 ```
 
-You may also retrieve the owner of a polymorphic relation from the polymorphic model by defining `morphTo` attribute.
+You may also retrieve the owner of a polymorphic relation from the polymorphic model by defining the `morphTo` attribute.
 
 ```js
 class Comment extends Model {
@@ -532,7 +532,7 @@ store.getters['entities/comments/query'].with('commentable').get()
 
 ### One To One Polymorphic Relation
 
-You can use `morphOne` method to define the one-to-one polymorphic relation.
+You can use the `morphOne` method to define the one-to-one polymorphic relation.
 
 ```js
 class Post extends Model {
@@ -551,7 +551,7 @@ class Post extends Model {
 
 In addition to traditional polymorphic relations, you may also define "many-to-many" polymorphic relations. For example, a blog Post and Video model could share a polymorphic relation to a Tag model. Using a many-to-many polymorphic relation allows you to have a single list of unique tags that are shared across blog posts and videos.
 
-You can define many-to-many polymorphic relations by using `this.morphToMany` attribute.
+You can define many-to-many polymorphic relations by using the `this.morphToMany` attribute.
 
 ```js
 class Post extends Model {
@@ -603,7 +603,7 @@ class Taggable extends Model {
 
 ### Defining The Inverse Of The Relationship
 
-To define the inverse relation to fetch related record – for this example it's for Tag model – you can use `this.morphedByMany` attribute.
+To define the inverse relation to fetch related record – for this example it's for Tag model – you can use the `this.morphedByMany` attribute.
 
 ```js
 class Tag extends Model {

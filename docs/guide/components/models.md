@@ -19,11 +19,11 @@ class User extends Model {
 
 ## Model Conventions
 
-There are 2 required properties you must set when defining a model, `static entity` and `static fields()`.
+There are 2 required properties you _must_ set when defining a model, `static entity` and `static fields()`.
 
 ### Entity Name
 
-`static entity` will be used as state name of Vuex Store.
+`static entity` will be used as the state name of the Vuex Store.
 
 ```js
 import { Model } from '@vuex-orm/core'
@@ -33,7 +33,7 @@ class User extends Model {
 }
 ```
 
-In above example, state for the User model will be accessible by `store.state.entities.users`. Notice there is `entities` state. This state is created by Vuex ORM automatically, and all of the Model data will be stored in this namespace. Please take a look at [Modules And Store](modules-and-store.md) to learn more about how Vuex ORM interact with Vuex Store.
+In the above example, state for the User model will be accessible by `store.state.entities.users`. Notice there is an `entities` state. This state is created by Vuex ORM automatically, and all of the Model data will be stored in this namespace. Please take a look at [Modules And Store](modules-and-store.md) to learn more about how Vuex ORM interacts with the Vuex Store.
 
 ### Fields
 
@@ -56,7 +56,7 @@ class User extends Model {
 
 For this example, User model has `id` and `name` fields. The key represents the name of the field (as database's column) and value represents its type of the field. The User model uses `this.attr()` for both id and name. This is the most generic type of the field and the argument is the default value that will be used when instantiating the model class.
 
-These fields are going to be attached as instance property when instantiating the model.
+These fields are going to be attached as instance properties when instantiating the model.
 
 ```js
 const user = new User({ id: 1, name: 'John Doe' })
@@ -88,7 +88,7 @@ class User extends Model {
 }
 ```
 
-You can also define a composite primary key by passing array of keys.
+You can also define a composite primary key by passing an array of keys.
 
 ```js
 import { Model } from '@vuex-orm/core'
@@ -161,4 +161,4 @@ class User extends Model {
 
 ## Relationships
 
-You can a relationship between deferent models. To learn more, please take a look at [Defining Relationships](../relationships/defining-relationships.md).
+You can define a relationship between different models. To learn more, please take a look at [Defining Relationships](../relationships/defining-relationships.md).

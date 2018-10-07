@@ -1,23 +1,23 @@
 # Query Class
 
-Query class is responsible for fetching data from Vuex Store. When you fetch data through Vuex getters such as `store.getters['entities/users/find'](1)`, it's using the Query class underneath to find and filter data.
+The Query class is responsible for fetching data from the Vuex Store. When you fetch data through Vuex getters, such as `store.getters['entities/users/find'](1)`, it uses the Query class underneath to find and filter data.
 
-Usually, you won't need to care about Query class as long as you keep using getters. However, when you would like to add global features when querying data, it might be useful to use lifecycle hook. This is especially useful when you want to create a plugin for the Vuex ORM.
+Usually, you won't need to care about the Query class as long as you keep using getters. However, when you would like to add global features when querying data, it might be useful to use lifecycle hooks. This is especially useful when you want to create a plugin for the Vuex ORM.
 
 ## Lifecycle Hook Types
 
-Query class comes with following lifecycle hooks.
+Query class comes with the following lifecycle hooks.
 
-- `beforeProcess` – Called before data get filtered.
-- `afterWhere` – Called right after the data get filtered by `where` clause.
-- `afterOrderBy` – Called right after the data get sorted by `orderBy` clause.
-- `afterLimit` – Called right after the data get limited by `limit` and `offset` clause.
+- `beforeProcess` – Called before data gets filtered.
+- `afterWhere` – Called right after the data gets filtered by `where` clause.
+- `afterOrderBy` – Called right after the data gets sorted by `orderBy` clause.
+- `afterLimit` – Called right after the data gets limited by `limit` and `offset` clause.
 
 By registering callbacks to each hook, you can manipulate the result from the getter call.
 
 ### Lifecycle Hook Methods
 
-Like javascript events, you can use the **Query.on()** to register a hook, and **Query.off()** to remove the hook.
+Like JavaScript events, you can use the **Query.on()** to register a hook, and **Query.off()** to remove the hook.
 
 ```js
 const hookId = Query.on('afterWhere', callback())
@@ -27,13 +27,13 @@ Query.off(hookId)
 
 #### Lifecycle Hook Scope
 
-By default, all hooks are registered globally within the Query class and ran on all instances within your application.
+By default, all hooks are registered globally within the Query class and run on all instances within your application.
 
 If you only want to register a hook to be available for the next query() call, you can add the third optional parameter **true** to have the Query class automatically remove your hook after the next query() method call.
 
 ```js
 Query.on('beforeProcess', callback(), true)
-``` 
+```
 
 ### Lifecycle API
 
@@ -46,7 +46,7 @@ Query.on('beforeProcess', callback(), true)
 
 ### Examples
 
-**Register a beforeProcess hook to map all records** 
+**Register a beforeProcess hook to map all records**
 
 ```js
 import { Query } from 'vuex-orm/core'
