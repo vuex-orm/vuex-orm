@@ -199,34 +199,6 @@ export default class Query {
   }
 
   /**
-   * Get the count of the retrieved data.
-   */
-  static count (state: RootState, entity: string, wrap?: boolean): number {
-    return (new this(state, entity, wrap)).count()
-  }
-
-  /**
-   * Get the max value of the specified filed.
-   */
-  static max (state: RootState, entity: string, field: string, wrap?: boolean): number {
-    return (new this(state, entity, wrap)).max(field)
-  }
-
-  /**
-   * Get the min value of the specified filed.
-   */
-  static min (state: RootState, entity: string, field: string, wrap?: boolean): number {
-    return (new this(state, entity, wrap)).min(field)
-  }
-
-  /**
-   * Get the sum value of the specified filed.
-   */
-  static sum (state: RootState, entity: string, field: string, wrap?: boolean): number {
-    return (new this(state, entity, wrap)).sum(field)
-  }
-
-  /**
    * Delete all records from the state.
    */
   static deleteAll (state: RootState): void {
@@ -349,7 +321,7 @@ export default class Query {
       return null
     }
 
-    return this.item({ ...record })
+    return this.item(record)
   }
 
   /**
@@ -376,20 +348,14 @@ export default class Query {
   last (): Data.Item {
     const records = this.process()
 
-    const last = records.length - 1
-
-    return this.item(records[last])
+    return this.item(records[records.length - 1])
   }
 
   /**
    * Get all the records from the state and convert them into the array.
-   * If you pass records, it will create an array out of that records
-   * instead of the store state.
    */
-  records (records?: Data.Records): Data.Record[] {
-    const theRecords = records || this.state.data
-
-    return Object.keys(theRecords).map(id => ({ ...theRecords[id] }))
+  records (): Data.Collection {
+    return Object.keys(this.state.data).map(id => this.state.data[id])
   }
 
   /**
@@ -517,8 +483,8 @@ export default class Query {
   /**
    * Process the query and filter data.
    */
-  process (): Data.Record[] {
-    let records: Data.Record[] = this.records()
+  process (): Data.Collection {
+    let records: Data.Collection = this.records()
 
     // Process `beforeProcess` hook.
     records = this.hook.execute('beforeProcess', records)
@@ -547,21 +513,21 @@ export default class Query {
   /**
    * Filter the given data by registered where clause.
    */
-  filterWhere (records: Data.Record[]): Data.Record[] {
+  filterWhere (records: Data.Collection): Data.Collection {
     return Filter.where(this, records)
   }
 
   /**
    * Sort the given data by registered orders.
    */
-  filterOrderBy (records: Data.Record[]): Data.Record[] {
+  filterOrderBy (records: Data.Collection): Data.Collection {
     return Filter.orderBy(this, records)
   }
 
   /**
    * Limit the given records by the lmilt and offset.
    */
-  filterLimit (records: Data.Record[]): Data.Record[] {
+  filterLimit (records: Data.Collection): Data.Collection {
     return Filter.limit(this, records)
   }
 
@@ -618,27 +584,35 @@ export default class Query {
   /**
    * Create a item from given record.
    */
-  item (item?: Data.Record | null): Data.Item {
+  item (item?: Data.Instance | null): Data.Item {
     if (!item) {
       return null
     }
 
-    Loader.eagerLoadRelations(this, [item])
+    if (Object.keys(this.load).length > 0) {
+      item = new this.model(item)
 
-    return this.model.make(item, !this.wrap) as Data.Item
+      Loader.eagerLoadRelations(this, [item])
+    }
+
+    return item
   }
 
   /**
    * Create a collection (array) from given records.
    */
-  collect (collection: Data.Record[]): Data.Collection {
-    if (Utils.isEmpty(collection)) {
+  collect (collection: Data.Collection): Data.Collection {
+    if (collection.length < 1) {
       return []
     }
 
-    Loader.eagerLoadRelations(this, collection)
+    if (Object.keys(this.load).length > 0) {
+      collection = collection.map(item => new this.model(item))
 
-    return collection.map(record => this.model.make(record, !this.wrap) as Model)
+      Loader.eagerLoadRelations(this, collection)
+    }
+
+    return collection
   }
 
   /**

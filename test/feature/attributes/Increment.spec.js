@@ -31,7 +31,7 @@ describe('Feature – Attributes – Increment', () => {
   it('converts a non-number value to the `null` when creating a record', async () => {
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: { id: 'Not number' }
     })
 
@@ -53,7 +53,7 @@ describe('Feature – Attributes – Increment', () => {
   it('create auto increment with nested object', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
+    await User.create({
       data: {
         id: 1,
         posts: [

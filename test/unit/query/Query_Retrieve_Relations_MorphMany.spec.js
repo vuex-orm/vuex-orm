@@ -59,67 +59,9 @@ describe('Query – Retrieve – Relations – Morph Many', () => {
 
     const post = Query.query(state, 'posts').with('comments').find(1)
 
-    expect(post).toBeInstanceOf(Post)
     expect(post.comments.length).toBe(2)
-    expect(post.comments[0]).toBeInstanceOf(Comment)
     expect(post.comments[0].body).toBe('comment1')
-    expect(post.comments[1]).toBeInstanceOf(Comment)
     expect(post.comments[1].body).toBe('comment3')
-  })
-
-  it('can resolve empty morph many relation', () => {
-    class Post extends Model {
-      static entity = 'posts'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
-        }
-      }
-    }
-
-    class Video extends Model {
-      static entity = 'videos'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
-        }
-      }
-    }
-
-    class Comment extends Model {
-      static entity = 'comments'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          body: this.attr(''),
-          commentable_id: this.attr(null),
-          commentable_type: this.attr(null)
-        }
-      }
-    }
-
-    createStore([{ model: Post }, { model: Video }, { model: Comment }])
-
-    const state = createState({
-      posts: {
-        '1': { $id: 1, id: 1 },
-        '5': { $id: 5, id: 5 }
-      },
-      videos: {
-        '3': { $id: 3, id: 3 },
-      },
-      comments: {}
-    })
-
-    const post = Query.query(state, 'posts').with('comments').find(1)
-
-    expect(post).toBeInstanceOf(Post)
-    expect(post.comments.length).toBe(0)
   })
 
   it('can resolve morph many relation with custom primary key', () => {
@@ -180,11 +122,8 @@ describe('Query – Retrieve – Relations – Morph Many', () => {
 
     const post = Query.query(state, 'posts').with('comments').find(1)
 
-    expect(post).toBeInstanceOf(Post)
     expect(post.comments.length).toBe(2)
-    expect(post.comments[0]).toBeInstanceOf(Comment)
     expect(post.comments[0].body).toBe('comment1')
-    expect(post.comments[1]).toBeInstanceOf(Comment)
     expect(post.comments[1].body).toBe('comment3')
   })
 
@@ -245,11 +184,8 @@ describe('Query – Retrieve – Relations – Morph Many', () => {
 
     const post = Query.query(state, 'posts').with('comments').find(2)
 
-    expect(post).toBeInstanceOf(Post)
     expect(post.comments.length).toBe(2)
-    expect(post.comments[0]).toBeInstanceOf(Comment)
     expect(post.comments[0].body).toBe('comment1')
-    expect(post.comments[1]).toBeInstanceOf(Comment)
     expect(post.comments[1].body).toBe('comment3')
   })
 })

@@ -59,10 +59,7 @@ describe('Query – Retrieve – Relations – Belongs To Many', () => {
 
     const user = Query.query(state, 'users').with('roles').find(1)
 
-    expect(user).toBeInstanceOf(User)
     expect(user.roles.length).toBe(2)
-    expect(user.roles[0]).toBeInstanceOf(Role)
-    expect(user.roles[1]).toBeInstanceOf(Role)
     expect(user.roles[0].id).toBe(2)
     expect(user.roles[1].id).toBe(3)
   })
@@ -84,9 +81,7 @@ describe('Query – Retrieve – Relations – Belongs To Many', () => {
 
     const role = Query.query(state, 'roles').with('users').find(2)
 
-    expect(role).toBeInstanceOf(Role)
     expect(role.users.length).toBe(1)
-    expect(role.users[0]).toBeInstanceOf(User)
     expect(role.users[0].id).toBe(1)
   })
 

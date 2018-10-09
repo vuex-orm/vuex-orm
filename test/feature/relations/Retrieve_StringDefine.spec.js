@@ -2,8 +2,8 @@ import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 import Query from 'app/query/Query'
 
-describe('Query – Retrieve – Relations - String Define', () => {
-  it('can define related model via string', () => {
+describe('Feature – Relations - String Define', () => {
+  it('can define related model via string', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -28,17 +28,15 @@ describe('Query – Retrieve – Relations - String Define', () => {
 
     createStore([{ model: User }, { model: Post }])
 
-    const state = {
-      $name: 'entities',
-      users: { data: {
-        '1': { $id: 1, id: 1 }
-      }},
-      posts: { data: {
-        '2': { $id: 2, id: 2, user_id: 1 }
-      }}
-    }
+    await User.create({
+      data: { id: 1 }
+    })
 
-    const user = Query.query(state, 'users').with('posts').find(1)
+    await Post.create({
+      data: { id: 2, user_id: 1 }
+    })
+
+    const user = User.query().with('posts').find(1)
 
     expect(user).toBeInstanceOf(User)
     expect(user.id).toBe(1)

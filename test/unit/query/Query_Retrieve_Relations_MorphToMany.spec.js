@@ -73,85 +73,9 @@ describe('Query – Retrieve – Relations – Morph To Many', () => {
 
     const post = Query.query(state, 'posts').with('tags').find(1)
 
-    expect(post).toBeInstanceOf(Post)
     expect(post.tags.length).toBe(2)
-    expect(post.tags[0]).toBeInstanceOf(Tag)
     expect(post.tags[0].name).toBe('news')
-    expect(post.tags[1]).toBeInstanceOf(Tag)
     expect(post.tags[1].name).toBe('cast')
-  })
-
-  it('can resolve empty morph to many relation', () => {
-    class Post extends Model {
-      static entity = 'posts'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
-        }
-      }
-    }
-
-    class Video extends Model {
-      static entity = 'videos'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
-        }
-      }
-    }
-
-    class Tag extends Model {
-      static entity = 'tags'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          name: this.attr('')
-        }
-      }
-    }
-
-    class Taggable extends Model {
-      static entity = 'taggables'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          tag_id: this.attr(null),
-          taggable_id: this.attr(null),
-          taggable_type: this.attr(null)
-        }
-      }
-    }
-
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
-
-    const state = createState({
-      posts: {
-        '1': { $id: 1, id: 1 },
-        '5': { $id: 5, id: 5 }
-      },
-      videos: {
-        '3': { $id: 3, id: 3 },
-      },
-      tags: {
-        '1': { $id: 1, id: 1, name: 'news' },
-        '2': { $id: 2, id: 2, name: 'cast' }
-      },
-      taggables: {
-        '2': { $id: 2, id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos' }
-      }
-    })
-
-    const post = Query.query(state, 'posts').with('tags').find(1)
-
-    expect(post).toBeInstanceOf(Post)
-    expect(post.tags.length).toBe(0)
-    expect(post.tags).toEqual([])
   })
 
   it('can resolve morph to many relation with custom primary key', () => {
@@ -226,11 +150,8 @@ describe('Query – Retrieve – Relations – Morph To Many', () => {
 
     const post = Query.query(state, 'posts').with('tags').find(1)
 
-    expect(post).toBeInstanceOf(Post)
     expect(post.tags.length).toBe(2)
-    expect(post.tags[0]).toBeInstanceOf(Tag)
     expect(post.tags[0].name).toBe('news')
-    expect(post.tags[1]).toBeInstanceOf(Tag)
     expect(post.tags[1].name).toBe('cast')
   })
 
@@ -305,11 +226,8 @@ describe('Query – Retrieve – Relations – Morph To Many', () => {
 
     const post = Query.query(state, 'posts').with('tags').find(1)
 
-    expect(post).toBeInstanceOf(Post)
     expect(post.tags.length).toBe(2)
-    expect(post.tags[0]).toBeInstanceOf(Tag)
     expect(post.tags[0].name).toBe('news')
-    expect(post.tags[1]).toBeInstanceOf(Tag)
     expect(post.tags[1].name).toBe('cast')
   })
 
@@ -385,11 +303,8 @@ describe('Query – Retrieve – Relations – Morph To Many', () => {
 
     const post = Query.query(state, 'posts').with('tags').find(1)
 
-    expect(post).toBeInstanceOf(Post)
     expect(post.tags.length).toBe(2)
-    expect(post.tags[0]).toBeInstanceOf(Tag)
     expect(post.tags[0].name).toBe('news')
-    expect(post.tags[1]).toBeInstanceOf(Tag)
     expect(post.tags[1].name).toBe('cast')
   })
 })

@@ -59,8 +59,6 @@ describe('Query – Retrieve – Relations – Morph One', () => {
 
     const post = Query.query(state, 'posts').with('comment').find(1)
 
-    expect(post).toBeInstanceOf(Post)
-    expect(post.comment).toBeInstanceOf(Comment)
     expect(post.comment.body).toBe('comment1')
   })
 
@@ -115,7 +113,6 @@ describe('Query – Retrieve – Relations – Morph One', () => {
 
     const post = Query.query(state, 'posts').with('comment').find(1)
 
-    expect(post).toBeInstanceOf(Post)
     expect(post.comments).toBe(null)
   })
 
@@ -177,8 +174,6 @@ describe('Query – Retrieve – Relations – Morph One', () => {
 
     const post = Query.query(state, 'posts').with('comment').find(1)
 
-    expect(post).toBeInstanceOf(Post)
-    expect(post.comment).toBeInstanceOf(Comment)
     expect(post.comment.body).toBe('comment1')
   })
 
@@ -239,8 +234,6 @@ describe('Query – Retrieve – Relations – Morph One', () => {
 
     const post = Query.query(state, 'posts').with('comment').find(2)
 
-    expect(post).toBeInstanceOf(Post)
-    expect(post.comment).toBeInstanceOf(Comment)
     expect(post.comment.body).toBe('comment1')
   })
 })
