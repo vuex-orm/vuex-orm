@@ -178,13 +178,6 @@ export default class Query {
   }
 
   /**
-   * Update data in the state.
-   */
-  static update (state: RootState, entity: string, data: Data.Record | Data.Record[] | UpdateClosure, condition?: Condition, options?: PersistOptions): Data.Item | Data.Collection | Data.Collections {
-    return (new this(state, entity)).update(data, condition, options)
-  }
-
-  /**
    * Insert or update given data to the state. Unlike `insert`, this method
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
@@ -236,20 +229,9 @@ export default class Query {
   }
 
   /**
-   * Delete a record from the state.
-   */
-  static delete (state: RootState, entity: string, condition: Condition): Data.Item | Data.Collection {
-    return (new this(state, entity)).delete(condition)
-  }
-
-  /**
    * Delete all records from the state.
    */
-  static deleteAll (state: RootState, entity?: string): Data.Collection | void {
-    if (entity) {
-      return (new this(state, entity)).deleteAll()
-    }
-
+  static deleteAll (state: RootState): void {
     const models = this.getModels()
 
     Utils.forOwn(models, (_model, name) => {

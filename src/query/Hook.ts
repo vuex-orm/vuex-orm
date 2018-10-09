@@ -1,5 +1,4 @@
 import Instances from '../data/Instances'
-import Collection from '../data/Collection'
 import Query from './Query'
 
 export interface GlobalHook {
@@ -194,18 +193,5 @@ export default class Hook {
         delete records[id]
       }
     })
-  }
-
-  /**
-   * Execute the callback for the given collection.
-   */
-  executeOnCollection (on: string, collection: Collection): Collection {
-    if (!this.has(on)) {
-      return collection
-    }
-
-    collection.map(item => { this.execute(on, item) })
-
-    return collection
   }
 }
