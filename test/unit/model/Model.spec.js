@@ -255,4 +255,24 @@ describe('Unit – Model', () => {
     expect(json.posts[1]).not.toBeInstanceOf(Post)
     expect(json).toEqual(expected)
   })
+
+  it('can serialize the array field', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          array: this.attr([])
+        }
+      }
+    }
+
+    const user = new User({ $id: 1, id: 1, array: [1, 2] })
+
+    const json = user.$toJson()
+
+    expect(json).not.toBeInstanceOf(User)
+    expect(json).toEqual({ id: 1, array: [1, 2] })
+  })
 })

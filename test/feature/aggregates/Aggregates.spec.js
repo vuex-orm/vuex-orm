@@ -42,6 +42,7 @@ describe('Feature – Aggregates', () => {
     })
 
     expect(User.query().max('id')).toBe(12)
+    expect(User.query().max('role')).toBe(0)
     expect(User.query().where('role', 'admin').max('id')).toBe(11)
   })
 
@@ -56,6 +57,7 @@ describe('Feature – Aggregates', () => {
     })
 
     expect(User.query().min('id')).toBe(8)
+    expect(User.query().min('role')).toBe(0)
     expect(User.query().where('role', 'admin').min('id')).toBe(8)
   })
 

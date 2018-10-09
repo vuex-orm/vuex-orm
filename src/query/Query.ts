@@ -98,28 +98,15 @@ export default class Query {
   result: Result = { data: null }
 
   /**
-   * Whether to wrap returing record with class or to return as plain object.
-   */
-  wrap: boolean
-
-  /**
    * Create a new Query instance.
    */
-  constructor (state: RootState, entity: string, wrap: boolean = true) {
+  constructor (state: RootState, entity: string) {
     this.rootState = state
     this.state = state[entity]
     this.entity = entity
     this.model = this.getModel(entity)
     this.module = this.getModule(entity)
     this.hook = new Hook(this)
-    this.wrap = wrap
-  }
-
-  /**
-   * Create a new query instance
-   */
-  static query (state: RootState, name: string, wrap?: boolean): Query {
-    return new this(state, name, wrap)
   }
 
   /**
@@ -158,47 +145,6 @@ export default class Query {
   }
 
   /**
-   * Save given data to the store by replacing all existing records in the
-   * store. If you want to save data without replacing existing records,
-   * use the `insert` method instead.
-   */
-  static create (state: RootState, entity: string, data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
-    return (new this(state, entity)).create(data, options)
-  }
-
-  /**
-   * Insert given data to the state. Unlike `create`, this method will not
-   * remove existing data within the state, but it will update the data
-   * with the same primary key.
-   */
-  static insert (state: RootState, entity: string, data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
-    return (new this(state, entity)).insert(data, options)
-  }
-
-  /**
-   * Insert or update given data to the state. Unlike `insert`, this method
-   * will not replace existing data within the state, but it will update only
-   * the submitted data with the same primary key.
-   */
-  static insertOrUpdate (state: RootState, entity: string, data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
-    return (new this(state, entity)).insertOrUpdate(data, options)
-  }
-
-  /**
-   * Get all data of the given entity from the state.
-   */
-  static all (state: RootState, entity: string, wrap?: boolean): Data.Collection {
-    return (new this(state, entity, wrap)).get()
-  }
-
-  /**
-   * Get the record of the given id.
-   */
-  static find (state: RootState, entity: string, id: string | number, wrap?: boolean): Data.Item {
-    return (new this(state, entity, wrap)).find(id)
-  }
-
-  /**
    * Delete all records from the state.
    */
   static deleteAll (state: RootState): void {
@@ -233,17 +179,10 @@ export default class Query {
   /**
    * Create a new query instance.
    */
-  newQuery (entity: string): Query {
-    return (new Query(this.rootState, entity))
-  }
-
-  /**
-   * Create a new query instance with wrap property set to false.
-   */
-  newPlainQuery (entity?: string): Query {
+  newQuery (entity?: string): Query {
     entity = entity || this.entity
 
-    return (new Query(this.rootState, entity)).plain()
+    return (new Query(this.rootState, entity))
   }
 
   /**
@@ -295,15 +234,6 @@ export default class Query {
   }
 
   /**
-   * Set wrap flag to false.
-   */
-  plain (): Query {
-    this.wrap = false
-
-    return this
-  }
-
-  /**
    * Returns all record of the query chain result. This method is alias
    * of the `get` method.
    */
@@ -315,20 +245,14 @@ export default class Query {
    * Get the record of the given id.
    */
   find (id: number | string): Data.Item {
-    const record = this.state.data[id]
-
-    if (!record) {
-      return null
-    }
-
-    return this.item(record)
+    return this.item(this.state.data[id])
   }
 
   /**
    * Returns all record of the query chain result.
    */
   get (): Data.Collection {
-    const records = this.process()
+    const records = this.select()
 
     return this.collect(records)
   }
@@ -337,7 +261,7 @@ export default class Query {
    * Returns the first record of the query chain result.
    */
   first (): Data.Item {
-    const records = this.process()
+    const records = this.select()
 
     return this.item(records[0])
   }
@@ -346,7 +270,7 @@ export default class Query {
    * Returns the last single record of the query chain result.
    */
   last (): Data.Item {
-    const records = this.process()
+    const records = this.select()
 
     return this.item(records[records.length - 1])
   }
@@ -483,11 +407,11 @@ export default class Query {
   /**
    * Process the query and filter data.
    */
-  process (): Data.Collection {
+  select (): Data.Collection {
     let records: Data.Collection = this.records()
 
     // Process `beforeProcess` hook.
-    records = this.hook.execute('beforeProcess', records)
+    records = this.hook.execute('beforeSelect', records)
 
     // Let's filter the records at first by the where clauses.
     records = this.filterWhere(records)
@@ -535,14 +459,14 @@ export default class Query {
    * Get the count of the retrieved data.
    */
   count (): number {
-    return this.plain().get().length
+    return this.get().length
   }
 
   /**
    * Get the max value of the specified filed.
    */
   max (field: string): number {
-    const numbers = this.plain().get().reduce<number[]>((numbers, item) => {
+    const numbers = this.get().reduce<number[]>((numbers, item) => {
       if (typeof item[field] === 'number') {
         numbers.push(item[field])
       }
@@ -557,7 +481,7 @@ export default class Query {
    * Get the min value of the specified filed.
    */
   min (field: string): number {
-    const numbers = this.plain().get().reduce<number[]>((numbers, item) => {
+    const numbers = this.get().reduce<number[]>((numbers, item) => {
       if (typeof item[field] === 'number') {
         numbers.push(item[field])
       }
@@ -572,7 +496,7 @@ export default class Query {
    * Get the sum value of the specified filed.
    */
   sum (field: string): number {
-    return this.plain().get().reduce<number>((sum, item) => {
+    return this.get().reduce<number>((sum, item) => {
       if (typeof item[field] === 'number') {
         sum += item[field]
       }
@@ -584,7 +508,7 @@ export default class Query {
   /**
    * Create a item from given record.
    */
-  item (item?: Data.Instance | null): Data.Item {
+  item (item?: Data.Instance): Data.Item {
     if (!item) {
       return null
     }
@@ -637,7 +561,7 @@ export default class Query {
       _constraint = record => record.length <= count
     }
 
-    const data = (new Query(this.rootState, this.entity, false)).with(name).get()
+    const data = this.newQuery().with(name).get()
 
     let ids: string[] = []
 
@@ -670,7 +594,7 @@ export default class Query {
    * Get all id of the record that matches the relation constraints.
    */
   matchesWhereHasRelation (name: string, constraint: Constraint, existence: boolean = true): string[] {
-    const data = this.newPlainQuery().with(name, constraint).get()
+    const data = this.newQuery().with(name, constraint).get()
 
     let ids: string[] = []
 

@@ -3,7 +3,7 @@ import Model from 'app/model/Model'
 import Query from 'app/query/Query'
 import Hook from 'app/query/Hook'
 
-describe('Query – Hooks', () => {
+describe('Feature – Hooks – Global', () => {
   afterEach(() => {
     Hook.hooks = {}
     Hook.lastHookId = 0
@@ -113,19 +113,19 @@ describe('Query – Hooks', () => {
     store.getters['entities/users/all']()
     expect(Hook.hooks.afterWhere.length).toBe(1)
 
-    const persistedHookId__2 = Query.on('beforeProcess', callbackFunction)
-    expect(Hook.hooks.beforeProcess.length).toBe(1)
+    const persistedHookId__2 = Query.on('beforeSelect', callbackFunction)
+    expect(Hook.hooks.beforeSelect.length).toBe(1)
 
     store.getters['entities/users/all']()
-    expect(Hook.hooks.beforeProcess.length).toBe(1)
+    expect(Hook.hooks.beforeSelect.length).toBe(1)
 
-    Query.on('beforeProcess', callbackFunction, true)
-    Query.on('beforeProcess', callbackFunction, true)
-    Query.on('beforeProcess', callbackFunction, true)
-    expect(Hook.hooks.beforeProcess.length).toBe(4)
+    Query.on('beforeSelect', callbackFunction, true)
+    Query.on('beforeSelect', callbackFunction, true)
+    Query.on('beforeSelect', callbackFunction, true)
+    expect(Hook.hooks.beforeSelect.length).toBe(4)
 
     store.getters['entities/users/all']()
-    expect(Hook.hooks.beforeProcess.length).toBe(1)
+    expect(Hook.hooks.beforeSelect.length).toBe(1)
 
     const removed_1 = Query.off(persistedHookId__1)
     expect(removed_1).toBe(true)
@@ -133,6 +133,6 @@ describe('Query – Hooks', () => {
 
     const removed_2 = Query.off(persistedHookId__2)
     expect(removed_2).toBe(true)
-    expect(Hook.hooks.beforeProcess.length).toBe(0)
+    expect(Hook.hooks.beforeSelect.length).toBe(0)
   })
 })

@@ -8,22 +8,22 @@ const RootGetters: GettersContract = {
   /**
    * Create a new Query instance.
    */
-  query: (state: RootState) => (entity: string, wrap?: boolean): Query => {
-    return Query.query(state, entity, wrap)
+  query: (state: RootState) => (entity: string,): Query => {
+    return new Query(state, entity)
   },
 
   /**
    * Get all data of given entity.
    */
-  all: (state: RootState) => (entity: string, wrap?: boolean): Collection => {
-    return Query.all(state, entity, wrap)
+  all: (state: RootState) => (entity: string): Collection => {
+    return (new Query(state, entity)).all()
   },
 
   /**
    * Find a data of the given entity by given id.
    */
-  find: (state: RootState) => (entity: string, id: string | number, wrap?: boolean): Item => {
-    return Query.find(state, entity, id, wrap)
+  find: (state: RootState) => (entity: string, id: string | number): Item => {
+    return (new Query(state, entity)).find(id)
   }
 }
 

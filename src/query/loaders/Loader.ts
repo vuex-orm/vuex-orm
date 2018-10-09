@@ -1,4 +1,4 @@
-import Record from '../../data/Record'
+import Collection from '../../data/Collection'
 import Relation from '../../attributes/relations/Relation'
 import Constraint from '../options/Constraint'
 import Query from '../Query'
@@ -83,16 +83,16 @@ export default class Loader {
   }
 
   /**
-   * Eager load the relationships for the given records.
+   * Eager load the relationships for the given collection.
    */
-  static eagerLoadRelations (query: Query, records: Record[]): void {
+  static eagerLoadRelations (query: Query, collection: Collection): void {
     const fields = query.model.getFields()
 
     for (const name in query.load) {
       const relation = fields[name]
 
       if (relation instanceof Relation) {
-        relation.load(query, records, name)
+        relation.load(query, collection, name)
       }
     }
   }

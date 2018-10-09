@@ -108,7 +108,7 @@ export default class HasManyThrough extends Relation {
   load (query: Query, collection: Record[], key: string): void {
     const relatedQuery = this.getRelation(query, this.related.entity)
 
-    const throughQuery = query.newPlainQuery(this.through.entity)
+    const throughQuery = query.newQuery(this.through.entity)
 
     this.addEagerConstraintForThrough(throughQuery, collection)
 

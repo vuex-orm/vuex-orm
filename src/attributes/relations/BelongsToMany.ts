@@ -118,7 +118,7 @@ export default class BelongsToMany extends Relation {
   load (query: Query, collection: Record[], key: string): void {
     const relatedQuery = this.getRelation(query, this.related.entity)
 
-    const pivotQuery = query.newPlainQuery(this.pivot.entity)
+    const pivotQuery = query.newQuery(this.pivot.entity)
 
     this.addEagerConstraintForPivot(pivotQuery, collection)
 

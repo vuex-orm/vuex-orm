@@ -25,7 +25,7 @@ export default abstract class Relation extends Attribute {
    * Get relation query instance with constraint attached.
    */
   getRelation (query: Query, name: string): Query {
-    const relation = query.newPlainQuery(name)
+    const relation = query.newQuery(name)
 
     this.addEagerConstraint(query, relation)
 

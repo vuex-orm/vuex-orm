@@ -9,7 +9,7 @@ export default class IdFixer {
    */
   static process (query: Query, data: NormalizedData): NormalizedData {
     return Utils.mapValues(data, (records, entity) => {
-      const newQuery = query.newPlainQuery(entity)
+      const newQuery = query.newQuery(entity)
 
       return this.processRecords(records, newQuery)
     })
