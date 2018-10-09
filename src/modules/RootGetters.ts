@@ -8,7 +8,7 @@ const RootGetters: GettersContract = {
   /**
    * Create a new Query instance.
    */
-  query: (state: RootState) => (entity: string,): Query => {
+  query: (state: RootState) => (entity: string): Query => {
     return new Query(state, entity)
   },
 
