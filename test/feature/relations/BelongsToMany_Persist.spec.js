@@ -1,7 +1,7 @@
 import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
-describe('Feature – Relations – Belongs To Many', () => {
+describe('Feature – Relations – Belongs To Many – Persist', () => {
   it('can create a data with belongs to many relation', async () => {
     class User extends Model {
       static entity = "users"
@@ -240,6 +240,8 @@ describe('Feature – Relations – Belongs To Many', () => {
     expect(store.state.entities.roleUser.data['2_1'].$id).toBe('2_1')
     expect(store.state.entities.roleUser.data['3_1'].$id).toBe('3_1')
   })
+
+
 
   it('can retrieve data by filtering with `whereHas`', async () => {
     class User extends Model {

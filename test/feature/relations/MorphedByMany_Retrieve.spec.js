@@ -1,9 +1,8 @@
-import { createStore, createState } from 'test/support/Helpers'
+import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Query from 'app/query/Query'
 
-describe('Query – Retrieve – Relations – Morphed By Many', () => {
-  it('can resolve morphed by many relation', () => {
+describe('Feature – Relations – Morphed By Many – Retrieve', () => {
+  it('can resolve morphed by many relation', async () => {
     class Post extends Model {
       static entity = 'posts'
 
@@ -50,36 +49,36 @@ describe('Query – Retrieve – Relations – Morphed By Many', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
-    const state = createState({
-      posts: {
-        '1': { $id: 1, id: 1 },
-        '5': { $id: 5, id: 5 }
-      },
-      videos: {
-        '3': { $id: 3, id: 3 },
-        '4': { $id: 4, id: 4 },
-        '5': { $id: 5, id: 5 },
-      },
-      tags: {
-        '1': { $id: 1, id: 1, name: 'news' }
-      },
-      taggables: {
-        '1': { $id: 1, id: 1, tag_id: 1, taggable_id: 1, taggable_type: 'posts' },
-        '2': { $id: 2, id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos' },
-        '3': { $id: 3, id: 3, tag_id: 1, taggable_id: 5, taggable_type: 'posts' },
-        '4': { $id: 4, id: 4, tag_id: 1, taggable_id: 4, taggable_type: 'videos' }
-      }
+    await Post.create({
+      data: [{ id: 1 }, { id: 5 }]
     })
 
-    const tag = Query.query(state, 'tags').with('posts').with('videos').find(1)
+    await Video.create({
+      data: [{ id: 3 }, { id: 4 }, { id: 5 }]
+    })
+
+    await Tag.create({
+      data: { id: 1, name: 'news' }
+    })
+
+    await Taggable.create({
+      data: [
+        { id: 1, tag_id: 1, taggable_id: 1, taggable_type: 'posts' },
+        { id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos' },
+        { id: 3, tag_id: 1, taggable_id: 5, taggable_type: 'posts' },
+        { id: 4, tag_id: 1, taggable_id: 4, taggable_type: 'videos' }
+      ]
+    })
+
+    const tag = Tag.query().with('posts').with('videos').find(1)
 
     expect(tag.posts.length).toBe(2)
     expect(tag.videos.length).toBe(1)
   })
 
-  it('can resolve morphed by many relation with custom primary key', () => {
+  it('can resolve morphed by many relation with custom primary key', async () => {
     class Post extends Model {
       static entity = 'posts'
 
@@ -130,36 +129,36 @@ describe('Query – Retrieve – Relations – Morphed By Many', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
-    const state = createState({
-      posts: {
-        '1': { $id: 1, post_id: 1 },
-        '5': { $id: 5, post_id: 5 }
-      },
-      videos: {
-        '3': { $id: 3, id: 3 },
-        '4': { $id: 4, id: 4 },
-        '5': { $id: 5, id: 5 },
-      },
-      tags: {
-        '1': { $id: 1, tag_id: 1, name: 'news' }
-      },
-      taggables: {
-        '1': { $id: 1, id: 1, tag_id: 1, taggable_id: 1, taggable_type: 'posts' },
-        '2': { $id: 2, id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos' },
-        '3': { $id: 3, id: 3, tag_id: 1, taggable_id: 5, taggable_type: 'posts' },
-        '4': { $id: 4, id: 4, tag_id: 1, taggable_id: 4, taggable_type: 'videos' }
-      }
+    await Post.create({
+      data: [{ post_id: 1 }, { post_id: 5 }]
     })
 
-    const tag = Query.query(state, 'tags').with('posts').with('videos').find(1)
+    await Video.create({
+      data: [{ id: 3 }, { id: 4 }, { id: 5 }]
+    })
+
+    await Tag.create({
+      data: { tag_id: 1, name: 'news' }
+    })
+
+    await Taggable.create({
+      data: [
+        { id: 1, tag_id: 1, taggable_id: 1, taggable_type: 'posts' },
+        { id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos' },
+        { id: 3, tag_id: 1, taggable_id: 5, taggable_type: 'posts' },
+        { id: 4, tag_id: 1, taggable_id: 4, taggable_type: 'videos' }
+      ]
+    })
+
+    const tag = Tag.query().with('posts').with('videos').find(1)
 
     expect(tag.posts.length).toBe(2)
     expect(tag.videos.length).toBe(1)
   })
 
-  it('can resolve morphed by many relation with custom local and related key', () => {
+  it('can resolve morphed by many relation with custom local and related key', async () => {
     class Post extends Model {
       static entity = 'posts'
 
@@ -208,30 +207,33 @@ describe('Query – Retrieve – Relations – Morphed By Many', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
-    const state = createState({
-      posts: {
-        '1': { $id: 1, id: 1, post_id: 100 },
-        '5': { $id: 5, id: 5, post_id: 105 }
-      },
-      videos: {
-        '3': { $id: 3, id: 3 },
-        '4': { $id: 4, id: 4 },
-        '5': { $id: 5, id: 5 },
-      },
-      tags: {
-        '1': { $id: 1, id: 1, tag_id: 200, name: 'news' }
-      },
-      taggables: {
-        '1': { $id: 1, id: 1, tag_id: 200, taggable_id: 100, taggable_type: 'posts' },
-        '2': { $id: 2, id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos' },
-        '3': { $id: 3, id: 3, tag_id: 200, taggable_id: 105, taggable_type: 'posts' },
-        '4': { $id: 4, id: 4, tag_id: 200, taggable_id: 4, taggable_type: 'videos' }
-      }
+    await Post.create({
+      data: [
+        { id: 1, post_id: 100 },
+        { id: 5, post_id: 105 }
+      ]
     })
 
-    const tag = Query.query(state, 'tags').with('posts').with('videos').find(1)
+    await Video.create({
+      data: [{ id: 3 }, { id: 4 }, { id: 5 }]
+    })
+
+    await Tag.create({
+      data: { id: 1, tag_id: 200, name: 'news' }
+    })
+
+    await Taggable.create({
+      data: [
+        { id: 1, tag_id: 200, taggable_id: 100, taggable_type: 'posts' },
+        { id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos' },
+        { id: 3, tag_id: 200, taggable_id: 105, taggable_type: 'posts' },
+        { id: 4, tag_id: 200, taggable_id: 4, taggable_type: 'videos' }
+      ]
+    })
+
+    const tag = Tag.query().with('posts').with('videos').find(1)
 
     expect(tag.posts.length).toBe(2)
     expect(tag.videos.length).toBe(1)

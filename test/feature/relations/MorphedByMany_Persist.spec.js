@@ -1,7 +1,7 @@
 import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
-describe('Feature – Relations – Morphed By Many', () => {
+describe('Feature – Relations – Morphed By Many – Persist', () => {
   it('can create a morphed by many relation data', async () => {
     class Post extends Model {
       static entity = 'posts'
