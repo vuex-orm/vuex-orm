@@ -1,4 +1,4 @@
-# Inserting And Updating Data
+# Inserting and Updating Data
 
 To insert or update data, you can dispatch corresponding actions through modules. Let's see what kind of actions are available.
 
@@ -18,9 +18,9 @@ store.dispatch('entities/users/insert', {
 })
 ```
 
-The difference between `create` and `insert` action is whether to keep existing data or not.
+The difference between the `create` and `insert` actions is whether to keep existing data or not.
 
-The `create` method is going to replace all existing data in store and replace with given data.
+The `create` method is going to replace all existing data in the store and replace with the given data.
 
 ```js
 // Initial State.
@@ -51,7 +51,7 @@ store.dispatch('entities/users/create', {
 }
 ```
 
-The `insert` method is going to insert data into the store while keeping existing data. If the inserting data has the same primary key as existing data, that data is going to be replaced by the new one.
+The `insert` method is going to insert data into the store while keeping existing data. If the inserting data has the same primary key as existing data, that data will be replaced with the new one.
 
 ```js
 // Initial State.
@@ -140,7 +140,7 @@ store.dispatch('entities/users/create', {
 
 ### Get Newly Inserted Data
 
-Both `create` and `insert` will return the created data as Promise so that you can get them as a return value. The return value will contain all of the data that was created.
+Both `create` and `insert` will return the created data as a Promise so that you can get them as a return value. The return value will contain all of the data that was created.
 
 ```js
 store.dispatch('entities/users/create', {
@@ -174,11 +174,11 @@ console.log(entities)
 
 ### Inserting Relationships
 
-If you pass data with relationships inside to the `create` or `insert` action, those relationships will be normalized and inserted to the store. Please see [Inserting Relationships](/relationships/inserting-relationships.md) for more detail.
+If you pass data with relationships inside to the `create` or `insert` action, those relationships will be normalized and inserted to the store. Please see [Inserting Relationships](../relationships/inserting-relationships.md) for more detail.
 
 ## Updates
 
-To update existing data, you can do so with `update` action. `update` action takes `where` condition and `data` as payload.
+To update existing data, you can do so with the `update` action. The `update` action takes `where` condition and `data` as payload.
 
 ```js
 store.dispatch('entities/users/update', {
@@ -187,7 +187,7 @@ store.dispatch('entities/users/update', {
 })
 ```
 
-`where` condition can be a `Number` or a `String` representing the value of the primary key of the model or can be a `Function` to determine the target data. `Function` takes the record as the argument and must return `Boolean`.
+`where` condition can be a `Number` or a `String` representing the value of the primary key of the model or can be a `Function` to determine the target data. A `Function` takes the record as the argument and must return `Boolean`.
 
 `data` is the data you want to update. `data` also could be just a plain object, or a `Function`.
 
@@ -221,7 +221,7 @@ store.dispatch('entities/users/update', {
 }
 ```
 
-You can pass a function to the `where` to get more control. Remember to return boolean in this case.
+You can pass a function to the `where` method to get more control. Remember to return boolean in this case.
 
 ```js
 store.dispatch('entities/users/update', {
@@ -233,7 +233,7 @@ store.dispatch('entities/users/update', {
 })
 ```
 
-Alternatively, you may pass whole data object as a payload. In this case, the primary key must exist in the data object.
+Alternatively, you may pass the whole data object as a payload. In this case, the primary key must exist in the data object.
 
 ```js
 store.dispatch('entities/users/update', {
@@ -257,7 +257,7 @@ store.dispatch('entities/users/update', {
 })
 ```
 
-Finally, you can pass `Function` to the `data`. The `Function` will receive target record as an argument. Then you can modify any properties. This is especially useful when you want to interact with the field that contains `Array` or `Object`.
+Finally, you can pass `Function` to the `data`. The `Function` will receive the target record as an argument. Then you can modify any properties. This is especially useful when you want to interact with the field that contains `Array` or `Object`.
 
 ```js
 store.dispatch('entities/users/update', {
@@ -271,7 +271,7 @@ store.dispatch('entities/users/update', {
 
 ### Updating Multiple Data
 
-When specifying `where` condition by a function, it's possible to update multiple records at once.
+When specifying a `where` condition by a function, it's possible to update multiple records at once.
 
 ```js
 // Initial State.
@@ -308,7 +308,7 @@ store.dispatch('entities/users/update', {
 
 ### Get Updated Data
 
-As same as `insert` or `create`, the `update` action also returns updated data as a Promise. However, the data structure that will be returned is change depending on the use of the `update` action.
+The same as `insert` or `create`, the `update` action also returns updated data as a Promise. However, the data structure that will be returned is changed depending on the use of the `update` action.
 
 If you pass the whole object to the `update` action, it will return all updated entities.
 
@@ -338,7 +338,7 @@ store.dispatch('entities/users/update', {
 // User { id: 1, name: 'John Doe', age: 24 },
 ```
 
-When updating many records by specifying closure to the `where` property, the returned data will always be an array containing all updated data.
+When updating many records by specifying a closure to the `where` property, the returned data will always be an array containing all updated data.
 
 ```js
 store.dispatch('entities/users/update', {
@@ -380,7 +380,7 @@ For those cases you can use the `insertOrUpdate` action:
 // records (see `update`). Also accepts a single item as data.
 store.dispatch('entities/users/insertOrUpdate', {
   data: [
-    { id: 1, name: 'Peter' }, 
+    { id: 1, name: 'Peter' },
     { id: 2, name: 'Hank' }
   ]
 })
@@ -391,7 +391,7 @@ store.dispatch('entities/users/insertOrUpdate', {
   entities: {
     users: {
       data: {
-        '1': { id: 1, name: 'Peter', roles: [3] }, 
+        '1': { id: 1, name: 'Peter', roles: [3] },
         '2': { id: 2, name: 'Hank', roles: [] }
       }
     }
@@ -408,9 +408,9 @@ store.dispatch('entities/create', { entity: 'users', data: { ... } })
 
 // Above is equivalent to this.
 store.dispatch('entities/users/create', { data: { ... } })
-``` 
+```
 
-Note that since root module needs `entity`, you can't dispatch `update` action through root by passing condition directly.
+Note that since the root module needs `entity`, you can't dispatch `update` action through root by passing the condition directly.
 
 ```js
 // This would not work.

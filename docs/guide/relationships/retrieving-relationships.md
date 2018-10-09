@@ -1,6 +1,6 @@
 # Retrieving Relationships
 
-You can use `with` method to load related model when querying data. The argument to the `with` method should be the name of the field that defines the relationship, not the entity name of the related model.
+You can use the `with` method to load related model when querying data. The argument to the `with` method should be the name of the field that defines the relationship, _not_ the entity name of the related model.
 
 ```js
 const user = store.getters['entities/users/query']()
@@ -12,7 +12,7 @@ const user = store.getters['entities/users/query']()
   User {
     id: 1,
     name: 'john',
-    
+
     profile: Profile {
       id: 1,
       user_id: 1,
@@ -29,7 +29,7 @@ const user = store.getters['entities/users/query']()
 
 ## Load Nested Relation
 
-You can load nested relation with dot syntax.
+You can load nested relations with dot syntax.
 
 ```js
 const user = store.getters['entities/users/query']()
@@ -78,7 +78,7 @@ const user = store.getters['entities/users/query']()
 
 ## Load All Relations
 
-You can load all Relations with using the `withAll` method.
+You can load all relations using the `withAll` method.
 
 ```js
 const user = store.getters['entities/users/query']()
@@ -142,7 +142,7 @@ const user = store.getters['entities/users/query']()
       user_id: 1,
       age: 24
     },
-    
+
     posts: [
       Post: {
         id: 1,
@@ -172,7 +172,7 @@ const user = store.getters['entities/users/query']()
 
 ## Relation Constraints
 
-To filter the result of relation loaded by `with` method, you can pass a closure to the second argument to define additional constraints to the query.
+To filter the result of relation loaded by the `with` method, you can pass a closure to the second argument to define additional constraints to the query.
 
 ```js
 // Get all users with posts that have `published` field value of `true`.
@@ -206,7 +206,7 @@ const user = store.getters['entities/users/query']().with('posts.comments', (que
 */
 ```
 
-If you need to add constraints to each relations, you could always nest constraints. This is the most flexible way of defining constraints to the relationships.
+If you need to add constraints to each relation, you could always nest constraints. This is the most flexible way of defining constraints to the relationships.
 
 ```js
 const user = store.getters['entities/users/query']().with('posts.comments', (query) => {
@@ -218,7 +218,7 @@ const user = store.getters['entities/users/query']().with('posts.comments', (que
 
 ## Querying Relationship Existence
 
-When querying the record, you may wish to limit your results based on the existence of a relationship. For example, imagine you want to retrieve all blog posts that have at least one comment. To do so, you may pass the name of the relationship to the has methods.
+When querying the record, you may wish to limit your results based on the existence of a relationship. For example, imagine you want to retrieve all blog posts that have at least one comment. To do so, you may pass the name of the relationship to the `has` methods.
 
 ```js
 // Retrieve all posts that have at least one comment.
@@ -242,7 +242,7 @@ store.getters['entities/posts/query']().has('comments', '>', 2).get()
 store.getters['entities/posts/query']().has('comments', '<=', 2).get()
 ```
 
-If you need even more power, you may use the `whereHas` method to put "where" conditions on your `has` queries. This method allow you to add customized constraints to a relationship constraint, such as checking the content of a comment.
+If you need even more power, you may use the `whereHas` method to put "where" conditions on your `has` queries. This method allows you to add customized constraints to a relationship constraint, such as checking the content of a comment.
 
 ```js
 // Retrieve all posts that have comment from user_id 1.
@@ -253,7 +253,7 @@ store.getters['entities/posts/query']().whereHas('comments', (query) => {
 
 ## Querying Relationship Absence
 
-To retrieve records depending on absence of the relationship, use `hasNot` and `whereHasNot` method. These method will work same as `has` and `whereHas` but in opposite result.
+To retrieve records depending on the absence of the relationship, use the `hasNot` and `whereHasNot` methods. These methods will work the same as `has` and `whereHas` but with the opposite result.
 
 ```js
 // Retrieve all posts that doesn't have comments.

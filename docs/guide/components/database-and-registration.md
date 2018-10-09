@@ -1,6 +1,6 @@
-# Database And Registration
+# Database and Registration
 
-To register Models and Modules to the Vuex, you must first create Database, register Models along with Modules to the Database, and then register Database to the Vuex through Vuex ORM `install` method.
+To register Models and Modules with the Vuex store, you must first create a Database, register Models along with Modules with this Database, and then register the Database to the Vuex with the Vuex ORM `install` method.
 
 ```js
 import Vue from 'vue'
@@ -29,11 +29,11 @@ const store = new Vuex.Store({
 export default store
 ```
 
-## Changing The Namespace
+## Changing the Namespace
 
-By default, Vuex ORM creates a module named `entities` in Vuex Store. All modules and data handled by Vuex ORM are going to be stored under this namespace.
+By default, Vuex ORM creates a module named `entities` in the Vuex Store. All modules and data handled by Vuex ORM will be stored under this namespace.
 
-If you would like to change the module name, pass `namespace` option to the `install` method when registering Vuex ORM as a plugin.
+If you would like to change the module name, pass the `namespace` option to the `install` method when registering Vuex ORM as a plugin.
 
 ```js
 const store = Vuex.Store({
@@ -41,4 +41,4 @@ const store = Vuex.Store({
 })
 ```
 
-With above example, you can access the Vuex Store with `store.state.my_entities`.
+With the above example, you can access the Vuex Store with `store.state.my_entities`.
