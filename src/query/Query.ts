@@ -660,7 +660,7 @@ export default class Query {
         return
       }
 
-      ids.push(item.$id)
+      ids.push(item.$id as string)
     })
 
     return ids
@@ -682,7 +682,7 @@ export default class Query {
         return
       }
 
-      ids.push(item.$id)
+      ids.push(item.$id as string)
     })
 
     return ids

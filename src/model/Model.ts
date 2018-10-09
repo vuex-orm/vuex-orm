@@ -29,6 +29,11 @@ export default class Model {
   static cachedFields?: Fields
 
   /**
+   * The ID value of the store index.
+   */
+  $id: string | null = null
+
+  /**
    * Dynamic properties that field data should be assigned at instantiation.
    */
   ;[key: string]: any
@@ -661,6 +666,10 @@ export default class Model {
    * Insert or update records.
    */
   async $delete (condition?: Payloads.Delete): Promise<Item | Collection> {
+    if (this.$id === null) {
+      return null
+    }
+
     condition = condition === undefined ? this.$id : condition
 
     return this.$dispatch('delete', condition)
