@@ -16,7 +16,7 @@ describe('Feature – Basics – Insert', () => {
   it('can create a data', async () => {
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/insert', {
+    await User.insert({
       data: { id: 1, name: 'John Doe' }
     })
 
@@ -26,5 +26,15 @@ describe('Feature – Basics – Insert', () => {
 
     expect(store.state.entities.users.data[1]).toBeInstanceOf(User)
     expect(store.state.entities.users.data).toEqual(expected)
+  })
+
+  it('Does nothing if an empty object is passed', async () => {
+    const store = createStore([{ model: User }])
+
+    await  User.insert({
+      data: {}
+    })
+
+    expect(store.state.entities.users.data).toEqual({})
   })
 })

@@ -43,7 +43,7 @@ const RootMutations: MutationsContract = {
   update (state: RootState, payload: Payloads.Update): void {
     const entity = payload.entity
     const data = payload.data
-    const where = payload.where
+    const where = payload.where || null
     const result = payload.result
     const options = OptionsBuilder.createPersistOptions(payload)
 

@@ -20,7 +20,9 @@ export type UpdateClosure = (record: Data.Record) => void
 
 export type Predicate = (item: Data.Record) => boolean
 
-export type Condition = number | string | Predicate
+export type UpdateCondition = number | string | Predicate | null
+
+export type DeleteCondition = number | string | Predicate
 
 export type Buildable = Data.Record | Data.Record[] | null
 
@@ -659,7 +661,7 @@ export default class Query {
   /**
    * Update data in the state.
    */
-  update (data: Data.Record | Data.Record[] | UpdateClosure, condition?: Condition, options?: PersistOptions): Data.Item | Data.Collection | Data.Collections {
+  update (data: Data.Record | Data.Record[] | UpdateClosure, condition: UpdateCondition, options: PersistOptions): Data.Item | Data.Collection | Data.Collections {
     // If the data is array, simply normalize the data and update them.
     if (Array.isArray(data)) {
       return this.persist(data, 'update', options)
@@ -824,7 +826,7 @@ export default class Query {
   /**
    * Persist data into the state.
    */
-  persist (data: Data.Record | Data.Record[], method: string, options: PersistOptions = {}): Data.Collections {
+  persist (data: Data.Record | Data.Record[], method: string, options: PersistOptions): Data.Collections {
     data = this.normalize(data)
 
     if (Utils.isEmpty(data)) {
@@ -877,7 +879,7 @@ export default class Query {
   /**
    * Delete records from the state.
    */
-  delete (condition: Condition): Data.Item | Data.Collection {
+  delete (condition: DeleteCondition): Data.Item | Data.Collection {
     if (typeof condition === 'function') {
       this.result.data = this.deleteByCondition(condition)
 

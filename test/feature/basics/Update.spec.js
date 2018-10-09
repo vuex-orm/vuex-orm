@@ -89,7 +89,7 @@ describe('Feature – Basics – Update', () => {
     expect(user.age).toBe(24)
   })
 
-  it('can update record passing array', () => {
+  it('can update record by passing an array', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -125,7 +125,7 @@ describe('Feature – Basics – Update', () => {
     expect(user1.age).toBe(30)
   })
 
-  it('can update record passing array as a data', () => {
+  it('can update record by passing an array as a data', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -185,6 +185,39 @@ describe('Feature – Basics – Update', () => {
     store.dispatch('entities/users/update', {
       where: 1,
       data: { age: 24 }
+    })
+
+    const user = store.state.entities.users.data['1']
+
+    expect(user).toBeInstanceOf(User)
+    expect(user.name).toBe('John Doe')
+    expect(user.age).toBe(24)
+  })
+
+  it('can update record by specifying condition with id of string', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: { id: 1, name: 'John Doe', age: 30 }
+    })
+
+    store.dispatch('entities/users/update', {
+      where: '1',
+      data (user) {
+        user.age = 24
+      }
     })
 
     const user = store.state.entities.users.data['1']
@@ -269,6 +302,40 @@ describe('Feature – Basics – Update', () => {
 
     expect(user.name).toBe('John Doe')
     expect(user.age).toBe(24)
+  })
+
+  it('does nothing if the specified id can not be found', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: [
+        { id: 1, name: 'JD', age: 30 }
+      ]
+    })
+
+    store.dispatch('entities/users/update', {
+      where: 2,
+      data (user) {
+        user.name = 'John Doe'
+        user.age = 24
+      }
+    })
+
+    const user = store.getters['entities/users/find'](2)
+
+    expect(user).toBe(null)
   })
 
   it('can update record by specifying data and where with closure', () => {
