@@ -59,10 +59,7 @@ export default class Model {
       return this.cachedFields
     }
 
-    this.cachedFields = {
-      $id: this.attr(null),
-      ...this.fields()
-    }
+    this.cachedFields = this.fields()
 
     return this.cachedFields
   }
@@ -595,12 +592,56 @@ export default class Model {
 
       this[key] = field.make(value, data, key)
     })
+
+    if (data.$id !== undefined) {
+      this.$id = data.$id
+    }
   }
 
   /**
    * Serialize field values into json.
    */
-  // $toJson (): Record {
-  //
-  // }
+  $toJson (): Record {
+    const fields = this.$fields()
+
+    return Object.keys(fields).reduce<Record>((record, key) => {
+      const value = this[key]
+
+      if (value instanceof Model) {
+        record[key] = this.serializeItem(value)
+
+        return record
+      }
+
+      if (Array.isArray(value)) {
+        record[key] = this.serializeCollection(value)
+
+        return record
+      }
+
+      record[key] = value
+
+      return record
+    }, {})
+  }
+
+  /**
+   * Serialize an item into json.
+   */
+  serializeItem (item: Model): Record {
+    return item.$toJson()
+  }
+
+  /**
+   * Serialize a collection into json.
+   */
+  serializeCollection (collection: (Model | any)[]): (Record | any)[] {
+    return collection.map((item) => {
+      if (item instanceof Model) {
+        return item.$toJson()
+      }
+
+      return item
+    })
+  }
 }

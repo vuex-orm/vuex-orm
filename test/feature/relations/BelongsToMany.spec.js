@@ -1,7 +1,7 @@
 import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
-describe('Features – Relations – Belongs To Many', () => {
+describe('Feature – Relations – Belongs To Many', () => {
   it('can create a data with belongs to many relation', async () => {
     class User extends Model {
       static entity = "users"
@@ -111,6 +111,134 @@ describe('Features – Relations – Belongs To Many', () => {
     })
 
     expect(store.state.entities).toEqual(expected)
+  })
+
+  it('can create a belongs to many relation data with increment id', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          roles: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
+        }
+      }
+    }
+
+    class Role extends Model {
+      static entity = 'roles'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          users: this.belongsToMany(User, RoleUser, 'role_id', 'user_id')
+        }
+      }
+    }
+
+    class RoleUser extends Model {
+      static entity = 'roleUser'
+
+      static primaryKey = ['role_id', 'user_id']
+
+      static fields () {
+        return {
+          id: this.increment(),
+          role_id: this.attr(null),
+          user_id: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+
+    await User.create({
+      data: {
+        id: 1,
+        roles: [
+          { id: 2 },
+          { id: 3 }
+        ]
+      }
+    })
+
+    expect(store.state.entities.users.data['1'].id).toBe(1)
+    expect(store.state.entities.roles.data['2'].id).toBe(2)
+    expect(store.state.entities.roles.data['3'].id).toBe(3)
+    expect(store.state.entities.roleUser.data['2_1'].id).toBe(1)
+    expect(store.state.entities.roleUser.data['3_1'].id).toBe(2)
+  })
+
+  it('can create a belongs to many relation data from nested data', async () => {
+    class Team extends Model {
+      static entity = 'teams'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          users: this.hasMany(User, 'team_id')
+        }
+      }
+    }
+
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          team_id: this.attr(null),
+          roles: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
+        }
+      }
+    }
+
+    class Role extends Model {
+      static entity = 'roles'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          users: this.belongsToMany(User, RoleUser, 'role_id', 'user_id')
+        }
+      }
+    }
+
+    class RoleUser extends Model {
+      static entity = 'roleUser'
+
+      static primaryKey = ['role_id', 'user_id']
+
+      static fields () {
+        return {
+          role_id: this.attr(null),
+          user_id: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: Team }, { model: User }, { model: Role }, { model: RoleUser }])
+
+    await Team.create({
+      data: {
+        id: 1,
+        users: [{
+          team_id: 1,
+          id: 1,
+          roles: [
+            { id: 2 },
+            { id: 3 }
+          ]
+        }]
+      }
+    })
+
+    expect(store.state.entities.teams.data['1'].id).toBe(1)
+    expect(store.state.entities.users.data['1'].id).toBe(1)
+    expect(store.state.entities.roles.data['2'].id).toBe(2)
+    expect(store.state.entities.roles.data['3'].id).toBe(3)
+    expect(store.state.entities.roleUser.data['2_1'].$id).toBe('2_1')
+    expect(store.state.entities.roleUser.data['3_1'].$id).toBe('3_1')
   })
 
   it('can retrieve data by filtering with `whereHas`', async () => {
