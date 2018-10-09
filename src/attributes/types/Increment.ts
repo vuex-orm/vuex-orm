@@ -16,19 +16,9 @@ export default class Increment extends Type {
   }
 
   /**
-   * Transform given data to the appropriate value. This method will be called
-   * during data normalization to fix field that has an incorrect value,
-   * or add a missing field with the appropriate default value.
+   * Convert given value to the appropriate value for the attribute.
    */
-  fill (value: any): number {
-    return value
-  }
-
-  /**
-   * Make value to be set to model property. This method is used when
-   * instantiating a model or creating a plain object from a model.
-   */
-  make (value: any, _parent: Record, _key: string, _plain?: boolean): number | null {
+  make (value: any, _parent: Record, _key: string): number | null {
     return typeof value === 'number' ? value : null
   }
 }

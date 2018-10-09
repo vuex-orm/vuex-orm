@@ -27,50 +27,49 @@ describe('Feature – Basics – Delete', () => {
     return createStore([{ model: User }, { model: Post }])
   }
 
-  it('can delete a record', async () => {
+  it('can delete a record by specifying the id', async () => {
     const store = getStore()
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    await store.dispatch('entities/users/delete', 1)
+    await User.delete(1)
 
-    const expected = createState({
-      users: {
-        '2': { $id: 2, id: 2, name: '' }
-      },
-      posts: {}
-    })
-
-    expect(store.state.entities).toEqual(expected)
+    expect(store.state.entities.users.data['1']).toBe(undefined)
+    expect(store.state.entities.users.data['2'].id).toBe(2)
   })
 
-  it('can delete a record where property', async () => {
+  it('can delete a record by specifying id as a string', async () => {
     const store = getStore()
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    await store.dispatch('entities/users/delete', {
-      where: 1
-    })
+    await User.delete('2')
 
-    const expected = createState({
-      users: {
-        '2': { $id: 2, id: 2, name: '' }
-      },
-      posts: {}
-    })
-
-    expect(store.state.entities).toEqual(expected)
+    expect(store.state.entities.users.data['1'].id).toBe(1)
+    expect(store.state.entities.users.data['2']).toBe(undefined)
   })
 
-  it('can delete records by closure', async () => {
+  it('can delete a record by specifying the id at `where` option', async () => {
     const store = getStore()
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
+      data: [{ id: 1 }, { id: 2 }]
+    })
+
+    await User.delete({ where: 1 })
+
+    expect(store.state.entities.users.data['1']).toBe(undefined)
+    expect(store.state.entities.users.data['2'].id).toBe(2)
+  })
+
+  it('can delete records by specifying a closure', async () => {
+    const store = getStore()
+
+    await User.create({
       data: [
         { id: 1, name: 'John Doe' },
         { id: 2, name: 'Jane Doe' },
@@ -78,22 +77,17 @@ describe('Feature – Basics – Delete', () => {
       ]
     })
 
-    await store.dispatch('entities/users/delete', user => user.name === 'Jane Doe')
+    await User.delete(user => user.name === 'Jane Doe')
 
-    const expected = createState({
-      users: {
-        '1': { $id: 1, id: 1, name: 'John Doe' }
-      },
-      posts: {}
-    })
-
-    expect(store.state.entities).toEqual(expected)
+    expect(store.state.entities.users.data['1'].id).toBe(1)
+    expect(store.state.entities.users.data['2']).toBe(undefined)
+    expect(store.state.entities.users.data['3']).toBe(undefined)
   })
 
-  it('can delete records by specifying closure to the where property', async () => {
+  it('can delete records by specifying closure to the `where` option', async () => {
     const store = getStore()
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: [
         { id: 1, name: 'John Doe' },
         { id: 2, name: 'Jane Doe' },
@@ -101,79 +95,48 @@ describe('Feature – Basics – Delete', () => {
       ]
     })
 
-    await store.dispatch('entities/users/delete', {
+    await User.delete({
       where (user) {
         return user.name === 'Jane Doe'
       }
     })
 
-    const expected = createState({
-      users: {
-        '1': { $id: 1, id: 1, name: 'John Doe' }
-      },
-      posts: {}
-    })
-
-    expect(store.state.entities).toEqual(expected)
-  })
-
-  it('can delete record id by specifying id as string', async () => {
-    const store = getStore()
-
-    await store.dispatch('entities/users/create', {
-      data: [{ id: 1 }, { id: 2 }]
-    })
-
-    await store.dispatch('entities/users/delete', '3')
-
-    const expected = createState({
-      users: {
-        '1': { $id: 1, id: 1, name: '' },
-        '2': { $id: 2, id: 2, name: '' }
-      },
-      posts: {}
-    })
-
-    expect(store.state.entities).toEqual(expected)
+    expect(store.state.entities.users.data['1'].id).toBe(1)
+    expect(store.state.entities.users.data['2']).toBe(undefined)
+    expect(store.state.entities.users.data['3']).toBe(undefined)
   })
 
   it('does nothing if the specified id does not exist', async () => {
     const store = getStore()
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    await store.dispatch('entities/users/delete', 3)
+    await User.delete(3)
 
-    const expected = createState({
-      users: {
-        '1': { $id: 1, id: 1, name: '' },
-        '2': { $id: 2, id: 2, name: '' }
-      },
-      posts: {}
-    })
-
-    expect(store.state.entities).toEqual(expected)
+    expect(store.state.entities.users.data['1'].id).toBe(1)
+    expect(store.state.entities.users.data['2'].id).toBe(2)
   })
 
   it('returns deleted item', async () => {
     const store = getStore()
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    const user = await store.dispatch('entities/users/delete', 1)
+    const user = await User.delete(1)
 
     expect(user).toBeInstanceOf(User)
     expect(user.id).toBe(1)
+    expect(store.state.entities.users.data['1']).toBe(undefined)
   })
 
-  it('returns all deleted records as collection when using closure', async () => {
+  it('returns all deleted records as a collection when specifying a closure', async () => {
     const store = getStore()
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: [
         { id: 1, name: 'John Doe' },
         { id: 2, name: 'Jane Doe' },
@@ -181,50 +144,114 @@ describe('Feature – Basics – Delete', () => {
       ]
     })
 
-    const users = await store.dispatch('entities/users/delete', user => user.name === 'Jane Doe')
+    const users = await User.delete(user => user.name === 'Jane Doe')
 
     expect(users.length).toBe(2)
     expect(users[0]).toBeInstanceOf(User)
     expect(users[0].id).toBe(2)
     expect(users[1]).toBeInstanceOf(User)
     expect(users[1].id).toBe(3)
+    expect(store.state.entities.users.data['1'].id).toBe(1)
+    expect(store.state.entities.users.data['2']).toBe(undefined)
+    expect(store.state.entities.users.data['3']).toBe(undefined)
+  })
+
+  it('deletes itself if a condition is not specified when calling as an instance method', async () => {
+    const store = getStore()
+
+    await User.create({
+      data: [
+        { id: 1, name: 'John Doe' },
+        { id: 2, name: 'Jane Doe' }
+      ]
+    })
+
+    const user = User.find(2)
+
+    user.$delete()
+
+    expect(store.state.entities.users.data['1'].id).toBe(1)
+    expect(store.state.entities.users.data['2']).toBe(undefined)
+  })
+
+  it('does nothing if trying to delete itself when $id value is not yet assigned', async () => {
+    const store = getStore()
+
+    await User.create({
+      data: [
+        { id: 1, name: 'John Doe' },
+        { id: 2, name: 'Jane Doe' }
+      ]
+    })
+
+    const user = new User()
+
+    user.$delete()
+
+    expect(store.state.entities.users.data['1'].id).toBe(1)
+    expect(store.state.entities.users.data['2'].id).toBe(2)
+  })
+
+  it('deletes a record specified by the condition when calling as an instance method', async () => {
+    const store = getStore()
+
+    await User.create({
+      data: [
+        { id: 1, name: 'John Doe' },
+        { id: 2, name: 'Jane Doe' }
+      ]
+    })
+
+    const user = User.find(1)
+
+    user.$delete(2)
+
+    expect(store.state.entities.users.data['1'].id).toBe(1)
+    expect(store.state.entities.users.data['2']).toBe(undefined)
   })
 
   it('can delete all records in the entity', async () => {
     const store = getStore()
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    await store.dispatch('entities/users/deleteAll')
+    await User.deleteAll()
 
-    const expected = createState({
-      users: {},
-      posts: {}
+    expect(store.state.entities.users.data['1']).toBe(undefined)
+    expect(store.state.entities.users.data['2']).toBe(undefined)
+  })
+
+  it('can delete all records in the entity by the instance method', async () => {
+    const store = getStore()
+
+    await User.create({
+      data: [{ id: 1 }, { id: 2 }]
     })
 
-    expect(store.state.entities).toEqual(expected)
+    await (new User()).$deleteAll()
+
+    expect(store.state.entities.users.data['1']).toBe(undefined)
+    expect(store.state.entities.users.data['2']).toBe(undefined)
   })
 
   it('can delete all records in the entire entities', async () => {
     const store = getStore()
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    await store.dispatch('entities/posts/create', {
-      data: [{ id: 1 }, { id: 2 }]
+    await Post.create({
+      data: [{ id: 3 }, { id: 4 }]
     })
 
     await store.dispatch('entities/deleteAll')
 
-    const expected = createState({
-      users: {},
-      posts: {}
-    })
-
-    expect(store.state.entities).toEqual(expected)
+    expect(store.state.entities.users.data['1']).toBe(undefined)
+    expect(store.state.entities.users.data['2']).toBe(undefined)
+    expect(store.state.entities.users.data['1']).toBe(undefined)
+    expect(store.state.entities.users.data['2']).toBe(undefined)
   })
 })

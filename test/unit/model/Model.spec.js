@@ -1,13 +1,12 @@
 import Model from 'app/model/Model'
 
-describe('Model', () => {
+describe('Unit – Model', () => {
   it('can fetch empty fields when model fields is not declared', () => {
     class User extends Model {
       static entity = 'users'
     }
 
     expect(User.fields()).toEqual({})
-    expect((new User).$fields()).toEqual({})
   })
 
   it('should set default field values as a property on instanciation', () => {
@@ -111,43 +110,7 @@ describe('Model', () => {
     expect(user.name).toBe('JOHN DOE')
   })
 
-  it('can make a new model instance', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          name: this.attr('')
-        }
-      }
-    }
-
-    const user = User.make({ id: 1, name: 'John Doe' })
-
-    expect(user).toBeInstanceOf(User)
-    expect(user.id).toBe(1)
-    expect(user.name).toBe('John Doe')
-  })
-
-  it('can make a plain model record', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null)
-        }
-      }
-    }
-
-    const user = User.makePlain({ id: 1 })
-
-    expect(user).not.toBeInstanceOf(User)
-    expect(user.id).toBe(1)
-  })
-
-  it('can serialize own fields into json', () => {
+  it.skip('can serialize own fields into json', () => {
     class User extends Model {
       static entity = 'users'
 

@@ -46,7 +46,7 @@ describe('Features – Relations – Morph To', () => {
       },
       comments: {
         '1': { $id: 1, id: 1, body: 'The Body', commentable_type: 'posts', commentable_id: 1, commentable: {
-          $id: undefined, comment: null, id: 1
+          $id: null, comment: null, id: 1
         }}
       }
     })

@@ -76,17 +76,9 @@ export default class HasManyThrough extends Relation {
   }
 
   /**
-   * Validate the given value to be a valid value for the relationship.
+   * Convert given value to the appropriate value for the attribute.
    */
-  fill (value: any): (string | number)[] {
-    return this.fillMany(value)
-  }
-
-  /**
-   * Make value to be set to model property. This method is used when
-   * instantiating a model or creating a plain object from a model.
-   */
-  make (value: any, _parent: Record, _key: string, plain: boolean = false): Model[] | Record[] {
+  make (value: any, _parent: Record, _key: string): Model[] {
     if (value === null) {
       return []
     }
@@ -106,7 +98,7 @@ export default class HasManyThrough extends Relation {
     return value.filter((record) => {
       return record && typeof record === 'object'
     }).map((record) => {
-      return this.related.make(record, plain)
+      return new this.related(record)
     })
   }
 

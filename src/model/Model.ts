@@ -3,7 +3,6 @@ import Utils from '../support/Utils'
 import Container from '../container/Container'
 import Database from '../database/Database'
 import Record from '../data/Record'
-import Records from '../data/Records'
 import Item from '../data/Item'
 import Collection from '../data/Collection'
 import Collections from '../data/Collections'
@@ -39,7 +38,7 @@ export default class Model {
   ;[key: string]: any
 
   /**
-   * Create a model instance.
+   * Create a new model instance.
    */
   constructor (record?: Record) {
     this.$fill(record)
@@ -61,7 +60,7 @@ export default class Model {
     }
 
     this.cachedFields = {
-      $id: this.attr(undefined),
+      $id: this.attr(null),
       ...this.fields()
     }
 
@@ -285,38 +284,8 @@ export default class Model {
   /**
    * Dispatch Vuex Action.
    */
-  static dispatch (method: string, payload: any): Promise<any> {
+  static dispatch (method: string, payload?: any): Promise<any> {
     return this.store().dispatch(this.namespace(method), payload)
-  }
-
-  /**
-   * Save given data to the store by replacing all existing records in the
-   * store. If you want to save data without replacing existing records,
-   * use the `insert` method instead.
-   */
-  static async create (payload: Payloads.Create): Promise<Collections> {
-    return this.dispatch('create', payload)
-  }
-
-  /**
-   * Insert records.
-   */
-  static async insert (payload: Payloads.Insert): Promise<Collections> {
-    return this.dispatch('insert', payload)
-  }
-
-  /**
-   * Update records.
-   */
-  static async update (payload: Payloads.Update): Promise<Collections> {
-    return this.dispatch('update', payload)
-  }
-
-  /**
-   * Insert or update records.
-   */
-  static async insertOrUpdate (payload: Payloads.InsertOrUpdate): Promise<Collections> {
-    return this.dispatch('insertOrUpdate', payload)
   }
 
   /**
@@ -341,10 +310,47 @@ export default class Model {
   }
 
   /**
+   * Save given data to the store by replacing all existing records in the
+   * store. If you want to save data without replacing existing records,
+   * use the `insert` method instead.
+   */
+  static create (payload: Payloads.Create): Promise<Collections> {
+    return this.dispatch('create', payload)
+  }
+
+  /**
+   * Insert records.
+   */
+  static insert (payload: Payloads.Insert): Promise<Collections> {
+    return this.dispatch('insert', payload)
+  }
+
+  /**
+   * Update records.
+   */
+  static update (payload: Payloads.Update): Promise<Collections> {
+    return this.dispatch('update', payload)
+  }
+
+  /**
    * Insert or update records.
    */
-  static async delete (condition: Payloads.Delete): Promise<Item | Collection> {
-    return this.dispatch('delete', condition)
+  static insertOrUpdate (payload: Payloads.InsertOrUpdate): Promise<Collections> {
+    return this.dispatch('insertOrUpdate', payload)
+  }
+
+  /**
+   * Delete records that matches the given condition.
+   */
+  static delete (payload: Payloads.Delete): Promise<Item | Collection> {
+    return this.dispatch('delete', payload)
+  }
+
+  /**
+   * Delete all records.
+   */
+  static deleteAll (): Promise<void> {
+    return this.dispatch('deleteAll')
   }
 
   /**
@@ -449,116 +455,6 @@ export default class Model {
   }
 
   /**
-   * Create a new model instance.
-   */
-  static make (data: Record, plain: boolean = false): Model | Record {
-    if (!plain) {
-      return new this(data)
-    }
-
-    return this.fill({}, data, true)
-  }
-
-  /**
-   * Create a new plain model record.
-   */
-  static makePlain (data: Record): Record {
-    return this.make(data, true)
-  }
-
-  /**
-   * Remove any fields not defined in the model schema. This method
-   * also fixes any incorrect values as well.
-   */
-  static fix (data: Record, keep: string[] = ['$id']): Record {
-    const fields = this.getFields()
-
-    return Object.keys(data).reduce((record, key) => {
-      const value = data[key]
-      const field = fields[key]
-
-      if (keep.includes(key)) {
-        record[key] = value
-
-        return record
-      }
-
-      if (!field) {
-        return record
-      }
-
-      record[key] = field.fill(value)
-
-      return record
-    }, {} as Record)
-  }
-
-  /**
-   * Fix multiple records.
-   */
-  static fixMany (data: Records, keep?: string[]): Records {
-    return Object.keys(data).reduce((records, id) => {
-      records[id] = this.fix(data[id], keep)
-
-      return records
-    }, {} as Records)
-  }
-
-  /**
-   * Fill any missing fields in the given data with the default
-   * value defined in the model schema.
-   */
-  static hydrate (data: Record, keep: string[] = ['$id']): Record {
-    const fields = this.getFields()
-
-    const record = Object.keys(fields).reduce((record, key) => {
-      const field = fields[key]
-      const value = data[key]
-
-      record[key] = field.fill(value)
-
-      return record
-    }, {} as Record)
-
-    return Object.keys(data).reduce((record, key) => {
-      if (keep.includes(key) && data[key] !== undefined) {
-        record[key] = data[key]
-      }
-
-      return record
-    }, record)
-  }
-
-  /**
-   * Fill multiple records.
-   */
-  static hydrateMany (data: Records, keep?: string[]): Records {
-    return Object.keys(data).reduce((records, id) => {
-      records[id] = this.hydrate(data[id], keep)
-
-      return records
-    }, {} as Records)
-  }
-
-  /**
-   * Fill the given obejct with the given record. If no record were passed,
-   * or if the record has any missing fields, each value of the fields will
-   * be filled with its default value defined at model fields definition.
-   */
-  static fill (self: Model | Record = {}, record: Record = {}, plain: boolean = false): Model | Record {
-    const fields = this.getFields()
-
-    return Object.keys(fields).reduce((target, key) => {
-      const field = fields[key]
-      const value = record[key]
-
-      target[key] = field.make(value, record, key, plain)
-
-      return target
-    }, self)
-  }
-
-  /**
    * Get the constructor of this model.
    */
   $self (): typeof Model {
@@ -569,7 +465,7 @@ export default class Model {
    * The definition of the fields of the model and its relations.
    */
   $fields (): Fields {
-    return this.$self().fields()
+    return this.$self().getFields()
   }
 
   /**
@@ -597,8 +493,29 @@ export default class Model {
   /**
    * Dispatch Vuex Action.
    */
-  $dispatch (method: string, payload: any): Promise<any> {
+  async $dispatch (method: string, payload?: any): Promise<any> {
     return this.$self().dispatch(method, payload)
+  }
+
+  /**
+   * Get all records.
+   */
+  $all (): Collection {
+    return this.$getters('all')()
+  }
+
+  /**
+   * Find a record.
+   */
+  $find (id: string | number): Item {
+    return this.$getters('find')(id)
+  }
+
+  /**
+   * Get query instance.
+   */
+  $query (): Query {
+    return this.$getters('query')()
   }
 
   /**
@@ -642,37 +559,25 @@ export default class Model {
   }
 
   /**
-   * Get all records.
-   */
-  $all (): Collection {
-    return this.$getters('all')()
-  }
-
-  /**
-   * Find a record.
-   */
-  $find (id: string | number): Item {
-    return this.$getters('find')(id)
-  }
-
-  /**
-   * Get query instance.
-   */
-  $query (): Query {
-    return this.$getters('query')()
-  }
-
-  /**
-   * Insert or update records.
+   * Delete records that matches the given condition.
    */
   async $delete (condition?: Payloads.Delete): Promise<Item | Collection> {
+    if (condition) {
+      return this.$dispatch('delete', condition)
+    }
+
     if (this.$id === null) {
       return null
     }
 
-    condition = condition === undefined ? this.$id : condition
+    return this.$dispatch('delete', this.$id)
+  }
 
-    return this.$dispatch('delete', condition)
+  /**
+   * Delete all records.
+   */
+  async $deleteAll (): Promise<void> {
+    return this.$dispatch('deleteAll')
   }
 
   /**
@@ -681,13 +586,21 @@ export default class Model {
    * be filled with its default value defined at model fields definition.
    */
   $fill (record?: Record): void {
-    this.$self().fill(this, record)
+    const data = record || {}
+    const fields = this.$fields()
+
+    Object.keys(fields).forEach((key) => {
+      const field = fields[key]
+      const value = data[key]
+
+      this[key] = field.make(value, data, key)
+    })
   }
 
   /**
    * Serialize field values into json.
    */
-  $toJson (): Record {
-    return this.$self().makePlain(this)
-  }
+  // $toJson (): Record {
+  //
+  // }
 }

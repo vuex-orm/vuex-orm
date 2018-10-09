@@ -18,11 +18,16 @@ export default class String extends Type {
   }
 
   /**
-   * Transform given data to the appropriate value. This method will be called
-   * during data normalization to fix field that has an incorrect value,
-   * or add a missing field with the appropriate default value.
+   * Convert given value to the appropriate value for the attribute.
    */
-  fill (value: any): string {
+  make (value: any, _parent: Record, key: string): any {
+    return this.mutate(this.fix(value), key)
+  }
+
+  /**
+   * Convert given value to the string.
+   */
+  fix (value: any): string {
     if (value === undefined) {
       return this.value
     }
@@ -32,13 +37,5 @@ export default class String extends Type {
     }
 
     return value + ''
-  }
-
-  /**
-   * Make value to be set to model property. This method is used when
-   * instantiating a model or creating a plain object from a model.
-   */
-  make (value: any, _parent: Record, key: string, _plain?: boolean): any {
-    return this.mutate(this.fill(value), key)
   }
 }
