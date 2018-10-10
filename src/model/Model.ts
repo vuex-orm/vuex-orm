@@ -657,6 +657,19 @@ export default class Model {
     }, {})
   }
 
+  $save (): Model {
+    const fields = this.$fields()
+    const record = Object.keys(fields).reduce((record, key) => {
+      record[key] = this[key]
+      return record
+    }, {} as Record)
+
+    this.$dispatch('insertOrUpdate', { data: record }).catch((err) => {
+      throw err
+    })
+    return this
+  }
+
   /**
    * Serialize an item into json.
    */
