@@ -71,4 +71,22 @@ describe('Model – Relations – Morph To', () => {
     expect(comment.id).toBe(1)
     expect(comment.commentable).toEqual(null)
   })
+
+  it('resolves unkown model to null', () => {
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
+
+    const comment = new Comment({
+      id: 1,
+      body: 'comment1',
+      commentable_id: 1,
+      commentable_type: 'Unkown',
+      commentable: {
+        id: 1
+      }
+    })
+
+    expect(comment).toBeInstanceOf(Comment)
+    expect(comment.id).toBe(1)
+    expect(comment.commentable).toEqual(null)
+  })
 })

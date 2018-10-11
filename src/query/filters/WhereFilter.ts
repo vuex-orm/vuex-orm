@@ -1,5 +1,6 @@
 import Utils from '../../support/Utils'
-import Record from '../../data/Record'
+import Instance from '../../data/Instance'
+import Collection from '../../data/Collection'
 import * as Options from '../options'
 import Query from '../Query'
 
@@ -7,7 +8,7 @@ export default class WhereFilter {
   /**
    * Filter the given data by registered where clause.
    */
-  static filter (query: Query, records: Record[]): Record[] {
+  static filter (query: Query, records: Collection): Collection {
     if (query.wheres.length === 0) {
       return records
     }
@@ -18,7 +19,7 @@ export default class WhereFilter {
   /**
    * Checks if given Record matches the registered where clause.
    */
-  static check (query: Query, record: Record): boolean {
+  static check (query: Query, record: Instance): boolean {
     const whereTypes = Utils.groupBy(query.wheres, where => where.boolean)
     const comparator = this.getComparator(query, record)
 
@@ -34,7 +35,7 @@ export default class WhereFilter {
   /**
    * Get comparator for the where clause.
    */
-  static getComparator (query: Query, record: Record): (where: Options.Where) => boolean {
+  static getComparator (query: Query, record: Instance): (where: Options.Where) => boolean {
     return (where: Options.Where) => {
       // Function with Record and Query as argument.
       if (typeof where.field === 'function') {
@@ -49,7 +50,7 @@ export default class WhereFilter {
         const matchingRecords = newQuery.get()
 
         // And check if current record is part of the resul
-        return !Utils.isEmpty(matchingRecords.filter((rec: Record): boolean => {
+        return !Utils.isEmpty(matchingRecords.filter((rec: Instance): boolean => {
           return rec['$id'] === record['$id']
         }))
       }
@@ -72,7 +73,7 @@ export default class WhereFilter {
   /**
    * Execute where closure.
    */
-  static executeWhereClosure (query: Query, record: Record, closure: Options.WherePrimaryClosure): boolean | void {
+  static executeWhereClosure (query: Query, record: Instance, closure: Options.WherePrimaryClosure): boolean | void {
     if (closure.length !== 3) {
       return closure(record, query)
     }

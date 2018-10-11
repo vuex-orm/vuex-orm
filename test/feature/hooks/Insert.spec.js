@@ -18,7 +18,7 @@ describe('Hooks – Insert', () => {
     const users = {
       actions: {
         beforeCreate (context, record) {
-          return { ...record, age: 30 }
+          record.age = 30
         }
       }
     }
@@ -66,7 +66,9 @@ describe('Hooks – Insert', () => {
     const users = {
       actions: {
         beforeCreate (context, record) {
-          return record.age === 20 ? false : record
+          if (record.age === 20) {
+            return false
+          }
         }
       }
     }

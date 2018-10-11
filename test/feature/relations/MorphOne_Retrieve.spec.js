@@ -1,9 +1,8 @@
-import { createStore, createState } from 'test/support/Helpers'
+import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Query from 'app/query/Query'
 
-describe('Query – Retrieve – Relations – Morph One', () => {
-  it('can resolve morph one relation', () => {
+describe('Feature – Relations – Morph One – Retrieve', () => {
+  it('can resolve morph one relation', async () => {
     class Post extends Model {
       static entity = 'posts'
 
@@ -39,32 +38,31 @@ describe('Query – Retrieve – Relations – Morph One', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Comment }])
+    const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState({
-      posts: {
-        '1': { $id: 1, id: 1 },
-        '5': { $id: 5, id: 5 }
-      },
-      videos: {
-        '3': { $id: 3, id: 3 },
-      },
-      comments: {
-        '1': { $id: '1', id: '1', body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
-        '2': { $id: '2', id: '2', body: 'comment2', commentable_id: 3, commentable_type: 'videos' },
-        '3': { $id: '3', id: '3', body: 'comment3', commentable_id: 2, commentable_type: 'posts' },
-        '4': { $id: '4', id: '4', body: 'comment4', commentable_id: 5, commentable_type: 'posts' }
-      }
+    await Post.create({
+      data: [{ id: 1 }, { id: 5 }]
     })
 
-    const post = Query.query(state, 'posts').with('comment').find(1)
+    await Video.create({
+      data: { id: 3 }
+    })
 
-    expect(post).toBeInstanceOf(Post)
-    expect(post.comment).toBeInstanceOf(Comment)
+    await Comment.create({
+      data: [
+        { $id: '1', id: '1', body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
+        { $id: '2', id: '2', body: 'comment2', commentable_id: 3, commentable_type: 'videos' },
+        { $id: '3', id: '3', body: 'comment3', commentable_id: 2, commentable_type: 'posts' },
+        { $id: '4', id: '4', body: 'comment4', commentable_id: 5, commentable_type: 'posts' }
+      ]
+    })
+
+    const post = Post.query().with('comment').find(1)
+
     expect(post.comment.body).toBe('comment1')
   })
 
-  it('can resolve empty morph one relation', () => {
+  it('can resolve empty morph one relation', async () => {
     class Post extends Model {
       static entity = 'posts'
 
@@ -100,26 +98,22 @@ describe('Query – Retrieve – Relations – Morph One', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Comment }])
+    const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState({
-      posts: {
-        '1': { $id: 1, id: 1 },
-        '5': { $id: 5, id: 5 }
-      },
-      videos: {
-        '3': { $id: 3, id: 3 },
-      },
-      comments: {}
+    await Post.create({
+      data: [{ id: 1 }, { id: 5 }]
     })
 
-    const post = Query.query(state, 'posts').with('comment').find(1)
+    await Video.create({
+      data: { id: 3 }
+    })
 
-    expect(post).toBeInstanceOf(Post)
+    const post = Post.query().with('comments').find(1)
+
     expect(post.comments).toBe(null)
   })
 
-  it('can resolve morph one relation with custom primary key', () => {
+  it('can resolve morph one relation with custom primary key', async () => {
     class Post extends Model {
       static entity = 'posts'
 
@@ -157,32 +151,31 @@ describe('Query – Retrieve – Relations – Morph One', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Comment }])
+    const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState({
-      posts: {
-        '1': { $id: 1, post_id: 1 },
-        '5': { $id: 5, post_id: 5 }
-      },
-      videos: {
-        '3': { $id: 3, id: 3 },
-      },
-      comments: {
-        '1': { $id: '1', id: '1', body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
-        '2': { $id: '2', id: '2', body: 'comment2', commentable_id: 3, commentable_type: 'videos' },
-        '3': { $id: '3', id: '3', body: 'comment3', commentable_id: 2, commentable_type: 'posts' },
-        '4': { $id: '4', id: '4', body: 'comment4', commentable_id: 5, commentable_type: 'posts' }
-      }
+    await Post.create({
+      data: [{ post_id: 1 }, { post_id: 5 }]
     })
 
-    const post = Query.query(state, 'posts').with('comment').find(1)
+    await Video.create({
+      data: { id: 3 }
+    })
 
-    expect(post).toBeInstanceOf(Post)
-    expect(post.comment).toBeInstanceOf(Comment)
+    await Comment.create({
+      data: [
+        { $id: '1', id: '1', body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
+        { $id: '2', id: '2', body: 'comment2', commentable_id: 3, commentable_type: 'videos' },
+        { $id: '3', id: '3', body: 'comment3', commentable_id: 2, commentable_type: 'posts' },
+        { $id: '4', id: '4', body: 'comment4', commentable_id: 5, commentable_type: 'posts' }
+      ]
+    })
+
+    const post = Post.query().with('comment').find(1)
+
     expect(post.comment.body).toBe('comment1')
   })
 
-  it('can resolve morph one relation with custom local key', () => {
+  it('can resolve morph one relation with custom local key', async () => {
     class Post extends Model {
       static entity = 'posts'
 
@@ -219,28 +212,27 @@ describe('Query – Retrieve – Relations – Morph One', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Comment }])
+    const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    const state = createState({
-      posts: {
-        '2': { $id: 2, id: 2, post_id: 1 },
-        '3': { $id: 5, id: 3, post_id: 5 }
-      },
-      videos: {
-        '3': { $id: 3, id: 3 },
-      },
-      comments: {
-        '1': { $id: '1', id: '1', body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
-        '2': { $id: '2', id: '2', body: 'comment2', commentable_id: 3, commentable_type: 'videos' },
-        '3': { $id: '3', id: '3', body: 'comment3', commentable_id: 2, commentable_type: 'posts' },
-        '4': { $id: '4', id: '4', body: 'comment4', commentable_id: 5, commentable_type: 'posts' }
-      }
+    await Post.create({
+      data: [{ id: 2, post_id: 1 }, { id: 3, post_id: 5 }]
     })
 
-    const post = Query.query(state, 'posts').with('comment').find(2)
+    await Video.create({
+      data: { id: 3 }
+    })
 
-    expect(post).toBeInstanceOf(Post)
-    expect(post.comment).toBeInstanceOf(Comment)
+    await Comment.create({
+      data: [
+        { $id: '1', id: '1', body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
+        { $id: '2', id: '2', body: 'comment2', commentable_id: 3, commentable_type: 'videos' },
+        { $id: '3', id: '3', body: 'comment3', commentable_id: 2, commentable_type: 'posts' },
+        { $id: '4', id: '4', body: 'comment4', commentable_id: 5, commentable_type: 'posts' }
+      ]
+    })
+
+    const post = Post.query().with('comment').find(2)
+
     expect(post.comment.body).toBe('comment1')
   })
 })

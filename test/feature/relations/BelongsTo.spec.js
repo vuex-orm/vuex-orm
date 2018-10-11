@@ -40,7 +40,7 @@ describe('Features – Relations – Belongs To', () => {
         '1': { $id: 1, id: 1 }
       },
       posts: {
-        '1': { $id: 1, id: 1, user_id: 1, user: 1 }
+        '1': { $id: 1, id: 1, user_id: 1, user: null }
       }
     })
 
@@ -83,7 +83,7 @@ describe('Features – Relations – Belongs To', () => {
         '1': { $id: 1, id: 1 }
       },
       posts: {
-        '1': { $id: 1, id: 1, user_id: 1, user: 1 }
+        '1': { $id: 1, id: 1, user_id: 1, user: null }
       }
     })
 
@@ -127,6 +127,28 @@ describe('Features – Relations – Belongs To', () => {
         $id:1,
         id: 1
       }
+    }
+
+    const post = store.getters['entities/posts/query']().with('user').find(1)
+
+    expect(post).toEqual(expected)
+  })
+
+  it('resolves to null if there is no belongs to relation', () => {
+    const store = createStore([{ model: User }, { model: Post }])
+
+    store.dispatch('entities/posts/create', {
+      data: {
+        id: 1,
+        user_id: 1
+      }
+    })
+
+    const expected = {
+      $id: 1,
+      id: 1,
+      user_id: 1,
+      user: null
     }
 
     const post = store.getters['entities/posts/query']().with('user').find(1)

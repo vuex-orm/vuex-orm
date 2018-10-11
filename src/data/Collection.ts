@@ -1,6 +1,5 @@
-import Record from '../data/Record'
-import Model from '../model/Model'
+import Instance from '../data/Instance'
 
-export type Collection = (Model | Record)[]
+export type Collection = Instance[]
 
 export default Collection

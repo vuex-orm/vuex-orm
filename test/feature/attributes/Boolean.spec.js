@@ -16,7 +16,7 @@ describe('Feature – Attributes – Boolean', () => {
   it('casts the value to `Boolean` when creating data', async () => {
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: [
         { id: 1 },
         { id: 2, bool: '' },
@@ -48,7 +48,7 @@ describe('Feature – Attributes – Boolean', () => {
   it('casts the value to `Boolean` when retrieving data', async () => {
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: [
         { id: 1 },
         { id: 2, bool: '' },
@@ -61,7 +61,7 @@ describe('Feature – Attributes – Boolean', () => {
       ]
     })
 
-    const users = store.getters['entities/users/all']()
+    const users = User.all()
 
     expect(users[0].bool).toEqual(true)
     expect(users[1].bool).toEqual(false)

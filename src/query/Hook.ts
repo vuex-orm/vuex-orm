@@ -1,5 +1,4 @@
-import Records from '../data/Records'
-import Collection from '../data/Collection'
+import Instances from '../data/Instances'
 import Query from './Query'
 
 export interface GlobalHook {
@@ -180,35 +179,19 @@ export default class Hook {
   /**
    * Execute the callback for all given records.
    */
-  executeOnRecords (on: string, records: Records): Records {
+  executeOnRecords (on: string, records: Instances): void {
     if (!this.has(on)) {
-      return records
+      return
     }
 
-    return Object.keys(records).reduce((newRecords, id) => {
+    Object.keys(records).forEach((id) => {
       const record = records[id]
+
       const result = this.execute(on, record)
 
       if (result === false) {
-        return newRecords
+        delete records[id]
       }
-
-      newRecords[id] = result
-
-      return newRecords
-    }, {} as Records)
-  }
-
-  /**
-   * Execute the callback for the given collection.
-   */
-  executeOnCollection (on: string, collection: Collection): Collection {
-    if (!this.has(on)) {
-      return collection
-    }
-
-    collection.map(item => { this.execute(on, item) })
-
-    return collection
+    })
   }
 }

@@ -52,8 +52,9 @@ describe('Feature – Basics – Update', () => {
 
     store.dispatch('entities/users/update', { user_id: 1, age: 24 })
 
-    const user = store.getters['entities/users/find'](1)
+    const user = store.state.entities.users.data['1']
 
+    expect(user).toBeInstanceOf(User)
     expect(user.name).toBe('John Doe')
     expect(user.age).toBe(24)
   })
@@ -88,7 +89,7 @@ describe('Feature – Basics – Update', () => {
     expect(user.age).toBe(24)
   })
 
-  it('can update record passing array', () => {
+  it('can update record by passing an array', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -124,7 +125,7 @@ describe('Feature – Basics – Update', () => {
     expect(user1.age).toBe(30)
   })
 
-  it('can update record passing array as a data', () => {
+  it('can update record by passing an array as a data', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -186,8 +187,42 @@ describe('Feature – Basics – Update', () => {
       data: { age: 24 }
     })
 
-    const user = store.getters['entities/users/find'](1)
+    const user = store.state.entities.users.data['1']
 
+    expect(user).toBeInstanceOf(User)
+    expect(user.name).toBe('John Doe')
+    expect(user.age).toBe(24)
+  })
+
+  it('can update record by specifying condition with id of string', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: { id: 1, name: 'John Doe', age: 30 }
+    })
+
+    store.dispatch('entities/users/update', {
+      where: '1',
+      data (user) {
+        user.age = 24
+      }
+    })
+
+    const user = store.state.entities.users.data['1']
+
+    expect(user).toBeInstanceOf(User)
     expect(user.name).toBe('John Doe')
     expect(user.age).toBe(24)
   })
@@ -222,11 +257,14 @@ describe('Feature – Basics – Update', () => {
       data: { age: 24 }
     })
 
-    const users = store.getters['entities/users/all']()
+    const users = store.state.entities.users.data
 
-    expect(users[0].age).toBe(24)
-    expect(users[1].age).toBe(24)
-    expect(users[2].age).toBe(20)
+    expect(users['1']).toBeInstanceOf(User)
+    expect(users['2']).toBeInstanceOf(User)
+    expect(users['3']).toBeInstanceOf(User)
+    expect(users['1'].age).toBe(24)
+    expect(users['2'].age).toBe(24)
+    expect(users['3'].age).toBe(20)
   })
 
   it('can update record by specifying data with closure', () => {
@@ -264,6 +302,40 @@ describe('Feature – Basics – Update', () => {
 
     expect(user.name).toBe('John Doe')
     expect(user.age).toBe(24)
+  })
+
+  it('does nothing if the specified id can not be found', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: [
+        { id: 1, name: 'JD', age: 30 }
+      ]
+    })
+
+    store.dispatch('entities/users/update', {
+      where: 2,
+      data (user) {
+        user.name = 'John Doe'
+        user.age = 24
+      }
+    })
+
+    const user = store.getters['entities/users/find'](2)
+
+    expect(user).toBe(null)
   })
 
   it('can update record by specifying data and where with closure', () => {
@@ -478,7 +550,11 @@ describe('Feature – Basics – Update', () => {
         data: { age: 24 }
       })
     } catch (e) {
-      expect(e.message).toBe('You can not specify `where` value when you have a composite key defined in your model. Please include composite keys to the `data` fields.')
+      expect(e.message).toBe(`
+        You can't specify \`where\` value as \`string\` or \`number\` when you
+        have a composite key defined in your model. Please include composite
+        keys to the \`data\` fields.
+      `)
     }
   })
 

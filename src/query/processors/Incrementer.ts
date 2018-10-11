@@ -9,7 +9,7 @@ export default class Incrementer {
    */
   static process (query: Query, data: NormalizedData): NormalizedData {
     return Utils.mapValues(data, (records, entity) => {
-      const newQuery = query.newPlainQuery(entity)
+      const newQuery = query.newQuery(entity)
 
       // If the entity doesn't have increment attribute, do nothing and
       // just return immediately.

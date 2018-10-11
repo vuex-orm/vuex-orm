@@ -1,6 +1,5 @@
-import Record from '../data/Record'
-import Model from '../model/Model'
+import Instance from '../data/Instance'
 
-export type Item = Model | Record | null
+export type Item = Instance | null
 
 export default Item

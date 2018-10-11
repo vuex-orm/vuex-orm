@@ -46,6 +46,7 @@ export default class HasManyBy extends Relation {
     if (key.length === 0) {
       return
     }
+
     if (record[this.foreignKey] !== undefined) {
       return
     }
@@ -54,38 +55,10 @@ export default class HasManyBy extends Relation {
   }
 
   /**
-   * Validate the given value to be a valid value for the relationship.
+   * Convert given value to the appropriate value for the attribute.
    */
-  fill (value: any): (string | number)[] {
-    return this.fillMany(value)
-  }
-
-  /**
-   * Make value to be set to model property. This method is used when
-   * instantiating a model or creating a plain object from a model.
-   */
-  make (value: any, _parent: Record, _key: string, plain: boolean = false): Model[] | Record[] {
-    if (value === null) {
-      return []
-    }
-
-    if (value === undefined) {
-      return []
-    }
-
-    if (!Array.isArray(value)) {
-      return []
-    }
-
-    if (value.length === 0) {
-      return []
-    }
-
-    return value.filter((record) => {
-      return record && typeof record === 'object'
-    }).map((record) => {
-      return this.parent.make(record, plain)
-    })
+  make (value: any, _parent: Record, _key: string): Model[] | Record[] {
+    return this.makeManyRelation(value, this.parent)
   }
 
   /**

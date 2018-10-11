@@ -73,22 +73,15 @@ export default class HasOne extends Relation {
   }
 
   /**
-   * Validate the given value to be a valid value for the relationship.
-   */
-  fill (value: any): string | number | null {
-    return this.fillOne(value)
-  }
-
-  /**
    * Make value to be set to model property. This method is used when
    * instantiating a model or creating a plain object from a model.
    */
-  make (value: any, _parent: Record, _key: string, plain: boolean = false): Model | Record | null {
+  make (value: any, _parent: Record, _key: string): Model | null {
     if (!this.isOneRelation(value)) {
       return null
     }
 
-    return this.related.make(value, plain)
+    return new this.related(value)
   }
 
   /**

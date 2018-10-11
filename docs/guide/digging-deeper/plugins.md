@@ -58,10 +58,10 @@ The following components are included within the `components` argument.
 - MorphMany
 - MorphToMany
 - MorphedByMany
-- RootGetters
 - Getters
-- RootActions
+- RootGetters
 - Actions
+- RootActions
 - RootMutations
 
 ## Using a Plugin

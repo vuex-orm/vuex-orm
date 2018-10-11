@@ -18,7 +18,7 @@ describe('Hooks – Update', () => {
     const users = {
       actions: {
         beforeUpdate (context, record) {
-          return { ...record, age: 30 }
+          record.age = 30
         }
       }
     }

@@ -1,12 +1,12 @@
 import Utils from '../../support/Utils'
-import Record from '../../data/Record'
+import Collection from '../../data/Collection'
 import Query from '../Query'
 
 export default class OrderByFilter {
   /**
    * Sort the given data by registered orders.
    */
-  static filter (query: Query, records: Record[]): Record[] {
+  static filter (query: Query, records: Collection): Collection {
     if (query.orders.length === 0) {
       return records
     }

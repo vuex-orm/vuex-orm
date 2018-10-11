@@ -15,41 +15,40 @@ To get started with lifecycle hooks, you can define the action with one of each 
 
 ```js
 const actions = {
-  beforeCreate (record) {
+  beforeCreate (context, record) {
     // Do something.
   },
 
-  afterDelete (record) {
+  afterDelete (context, record) {
     // Do something.
   }
 }
 ```
 
-The first argument passed to the action is the action context that contains usual `state`, `commit` or `dispatch`. The second argument is the record that is to be created or has been created. All of the `after` hooks receive the record as a model instance.
+The first argument passed to the action is the action context that contains usual `state`, `commit` or `dispatch`. The second argument is the record that is to be created or has been created. Note that the `record` is an instance of a model.
 
 ## Modify the Record to be Saved
 
-When in `beforeCreate` or `beforeUpdate`, you can modify the record to be saved to the state by returning a new record.
+When in `beforeCreate` or `beforeUpdate`, you can modify the record directly.
 
 ```js
 const actions = {
-  beforeCreate (context, record) {
-    return {
-      ...record,
-      published: true
-    }
+  beforeCreate (context, model) {
+    model.published = true
   }
 }
 ```
 
 ## Cancel the Mutation
 
-If you pass `false` in `before` hooks, that record will not be persisted to the state.
+If you return false from `before` hooks, that record will not be persisted to the state.
 
 ```js
 const actions = {
   beforeCreate (context, record) {
-    return false
+    if (record.doNotModify) {
+      return false
+    }
   }
 }
 ```

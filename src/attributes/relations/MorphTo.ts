@@ -44,17 +44,9 @@ export default class MorphTo extends Relation {
   }
 
   /**
-   * Validate the given value to be a valid value for the relationship.
+   * Convert given value to the appropriate value for the attribute.
    */
-  fill (value: any): string | number | null {
-    return this.fillOne(value)
-  }
-
-  /**
-   * Make value to be set to model property. This method is used when
-   * instantiating a model or creating a plain object from a model.
-   */
-  make (value: any, parent: Record, _key: string, plain: boolean = false): Model | Record | null {
+  make (value: any, parent: Record, _key: string): Model | null {
     if (!this.isOneRelation(value)) {
       return null
     }
@@ -62,7 +54,7 @@ export default class MorphTo extends Relation {
     const related: string = parent[this.type]
     const model = this.model.relation(related)
 
-    return model ? model.make(value, plain) : null
+    return model ? new model(value) : null
   }
 
   /**

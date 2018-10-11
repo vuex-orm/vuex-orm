@@ -63,23 +63,6 @@ describe('Feature – Retrieve', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve all records as a plain object', () => {
-    const store = createStore([{ model: User }])
-
-    store.dispatch('entities/users/create', {
-      data: [{ id: 1 }, { id: 2 }]
-    })
-
-    const expected = [{ $id: 1, id: 1 }, { $id: 2, id: 2 }]
-
-    const users = store.getters['entities/users/query']().plain().get()
-
-    expect(users.length).toBe(2)
-    expect(users[0]).not.toBeInstanceOf(User)
-    expect(users[1]).not.toBeInstanceOf(User)
-    expect(users).toEqual(expected)
-  })
-
   it('returns empty array when multiple record can not be found', () => {
     const store = createStore([{ model: User }])
 

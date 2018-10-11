@@ -1,16 +1,15 @@
 import Model from 'app/model/Model'
 
-describe('Model', () => {
+describe('Unit – Model', () => {
   it('can fetch empty fields when model fields is not declared', () => {
     class User extends Model {
       static entity = 'users'
     }
 
     expect(User.fields()).toEqual({})
-    expect((new User).$fields()).toEqual({})
   })
 
-  it('should set default field values as a property on instanciation', () => {
+  it('should set default field values as a property on instantiation', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -28,7 +27,7 @@ describe('Model', () => {
     expect(user.email).toBe('john@example.com')
   })
 
-  it('should set given field values as a property on instanciation', () => {
+  it('should set given field values as a property on instanctiation', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -111,61 +110,6 @@ describe('Model', () => {
     expect(user.name).toBe('JOHN DOE')
   })
 
-  it('can make a new model instance', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          name: this.attr('')
-        }
-      }
-    }
-
-    const user = User.make({ id: 1, name: 'John Doe' })
-
-    expect(user).toBeInstanceOf(User)
-    expect(user.id).toBe(1)
-    expect(user.name).toBe('John Doe')
-  })
-
-  it('can make a plain model record', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null)
-        }
-      }
-    }
-
-    const user = User.makePlain({ id: 1 })
-
-    expect(user).not.toBeInstanceOf(User)
-    expect(user.id).toBe(1)
-  })
-
-  it('can serialize own fields into json', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          name: this.attr('')
-        }
-      }
-    }
-
-    const data = { $id: 1, id: 1, name: 'John Doe' }
-
-    const user = new User(data)
-
-    expect(user.$toJson()).toEqual(data)
-  })
-
   it('can get a value of the primary key', () => {
     class User extends Model {
       static fields () {
@@ -227,5 +171,108 @@ describe('Model', () => {
     }
 
     expect(() => { User.getAttributeClass('blah') }).toThrow()
+  })
+
+  it('can serialize own fields into json', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('')
+        }
+      }
+    }
+
+    const user = new User({ $id: 1, id: 1, name: 'John Doe' })
+
+    const json = user.$toJson()
+
+    expect(json).not.toBeInstanceOf(User)
+    expect(json).toEqual({ id: 1, name: 'John Doe' })
+  })
+
+  it('can serialize nested fields into json', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          phone: this.hasOne(Phone, 'user_id'),
+          posts: this.hasMany(Post, 'user_id')
+        }
+      }
+    }
+
+    class Phone extends Model {
+      static entity = 'phones'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null)
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null)
+        }
+      }
+    }
+
+    const user = new User({
+      $id: 1,
+      id: 1,
+      phone: { $id: 2, id: 2, user_id: 1 },
+      posts: [
+        { $id: 3, id: 3, user_id: 1 },
+        { $id: 4, id: 4, user_id: 1 }
+      ]
+    })
+
+    const json = user.$toJson()
+
+    const expected = {
+      id: 1,
+      phone: { id: 2, user_id: 1 },
+      posts: [
+        { id: 3, user_id: 1 },
+        { id: 4, user_id: 1 }
+      ]
+    }
+
+    expect(json).not.toBeInstanceOf(User)
+    expect(json.phone).not.toBeInstanceOf(Phone)
+    expect(json.posts[0]).not.toBeInstanceOf(Post)
+    expect(json.posts[1]).not.toBeInstanceOf(Post)
+    expect(json).toEqual(expected)
+  })
+
+  it('can serialize the array field', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          array: this.attr([])
+        }
+      }
+    }
+
+    const user = new User({ $id: 1, id: 1, array: [1, 2] })
+
+    const json = user.$toJson()
+
+    expect(json).not.toBeInstanceOf(User)
+    expect(json).toEqual({ id: 1, array: [1, 2] })
   })
 })

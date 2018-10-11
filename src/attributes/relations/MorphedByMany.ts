@@ -84,38 +84,11 @@ export default class MorphedByMany extends Relation {
   }
 
   /**
-   * Validate the given value to be a valid value for the relationship.
-   */
-  fill (value: any): (string | number)[] {
-    return this.fillMany(value)
-  }
-
-  /**
    * Make value to be set to model property. This method is used when
    * instantiating a model or creating a plain object from a model.
    */
-  make (value: any, _parent: Record, _key: string, plain: boolean = false): Model[] | Record[] {
-    if (value === null) {
-      return []
-    }
-
-    if (value === undefined) {
-      return []
-    }
-
-    if (!Array.isArray(value)) {
-      return []
-    }
-
-    if (value.length === 0) {
-      return []
-    }
-
-    return value.filter((record) => {
-      return record && typeof record === 'object'
-    }).map((record) => {
-      return this.related.make(record, plain)
-    })
+  make (value: any, _parent: Record, _key: string): Model[] {
+    return this.makeManyRelation(value, this.related)
   }
 
   /**
@@ -124,7 +97,7 @@ export default class MorphedByMany extends Relation {
   load (query: Query, collection: Record[], key: string): void {
     const relatedQuery = this.getRelation(query, this.related.entity)
 
-    const pivotQuery = query.newPlainQuery(this.pivot.entity)
+    const pivotQuery = query.newQuery(this.pivot.entity)
 
     this.addEagerConstraintForPivot(pivotQuery, collection, this.related.entity)
 
@@ -170,9 +143,7 @@ export default class MorphedByMany extends Relation {
 
       const related = relateds[record[this.id]]
 
-      if (related) {
-        records[id] = records[id].concat(related)
-      }
+      records[id] = records[id].concat(related)
 
       return records
     }, {} as Records)
@@ -185,7 +156,7 @@ export default class MorphedByMany extends Relation {
     Utils.forOwn(data[parent.entity], (record) => {
       const related = record[key]
 
-      if (related.length === 0) {
+      if (!Array.isArray(related)) {
         return
       }
 

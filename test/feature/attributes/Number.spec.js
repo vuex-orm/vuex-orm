@@ -16,7 +16,7 @@ describe('Feature – Attributes – Number', () => {
   it('casts the value to `Number` when creating data', async () => {
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: [
         { id: 1 },
         { id: 2, num: 1 },
@@ -48,7 +48,7 @@ describe('Feature – Attributes – Number', () => {
   it('casts the value to `Number` when retrieving data', async () => {
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: [
         { id: 1 },
         { id: 2, num: 1 },
@@ -59,7 +59,7 @@ describe('Feature – Attributes – Number', () => {
       ]
     })
 
-    const users = store.getters['entities/users/all']()
+    const users = User.all()
 
     expect(users[0].num).toEqual(0)
     expect(users[1].num).toEqual(1)

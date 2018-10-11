@@ -16,7 +16,7 @@ describe('Feature – Attributes – String', () => {
   it('casts the value to `String` when creating data', async () => {
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: [
         { id: 1 },
         { id: 2, str: 'value' },
@@ -42,7 +42,7 @@ describe('Feature – Attributes – String', () => {
   it('casts the value to `String` when retrieving data', async () => {
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: [
         { id: 1 },
         { id: 2, str: 'value' },
@@ -52,7 +52,7 @@ describe('Feature – Attributes – String', () => {
       ]
     })
 
-    const users = store.getters['entities/users/all']()
+    const users = User.all()
 
     expect(users[0].str).toEqual('default')
     expect(users[1].str).toEqual('value')

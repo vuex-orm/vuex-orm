@@ -1,6 +1,7 @@
 import { Schema as NormalizrSchema } from 'normalizr'
 import Schema from '../../schema/Schema'
-import { Record, Records, NormalizedData } from '../../data'
+import { Record, Records, NormalizedData, Collection } from '../../data'
+import Model from '../../model/Model'
 import Query from '../../query/Query'
 import Attribute from '../Attribute'
 
@@ -17,30 +18,6 @@ export default abstract class Relation extends Attribute {
   abstract attach (key: any, record: Record, data: NormalizedData): void
 
   /**
-   * Fill given value for the single item relationship such as
-   * `hasOne` and `belongsTo`.
-   */
-  fillOne (value: any): string | number | null {
-    if (value === undefined) {
-      return null
-    }
-
-    if (typeof value === 'object') {
-      return null
-    }
-
-    return value
-  }
-
-  /**
-   * Fill given value for the multi-item relationship such as
-   * `hasMany` and `belongsToMany`.
-   */
-  fillMany (value: any): (string | number)[] {
-    return Array.isArray(value) ? value : []
-  }
-
-  /**
    * Load relationship records.
    */
   abstract load (query: Query, collection: Record[], key: string): void
@@ -49,7 +26,7 @@ export default abstract class Relation extends Attribute {
    * Get relation query instance with constraint attached.
    */
   getRelation (query: Query, name: string): Query {
-    const relation = query.newPlainQuery(name)
+    const relation = query.newQuery(name)
 
     this.addEagerConstraint(query, relation)
 
@@ -111,5 +88,35 @@ export default abstract class Relation extends Attribute {
     }
 
     return false
+  }
+
+  /**
+   * Check if the given value is a single relation, which is the Object.
+   */
+  isManyRelation (records: any): boolean {
+    if (!Array.isArray(records)) {
+      return false
+    }
+
+    if (records.length < 1) {
+      return false
+    }
+
+    return true
+  }
+
+  /**
+   * Convert given records to the collection.
+   */
+  makeManyRelation (records: any, model: typeof Model): Collection {
+    if (!this.isManyRelation(records)) {
+      return []
+    }
+
+    return records.filter((record: any) => {
+      return this.isOneRelation(record)
+    }).map((record: Record) => {
+      return new model(record)
+    })
   }
 }
