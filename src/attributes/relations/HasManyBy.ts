@@ -46,6 +46,7 @@ export default class HasManyBy extends Relation {
     if (key.length === 0) {
       return
     }
+
     if (record[this.foreignKey] !== undefined) {
       return
     }
@@ -57,27 +58,7 @@ export default class HasManyBy extends Relation {
    * Convert given value to the appropriate value for the attribute.
    */
   make (value: any, _parent: Record, _key: string): Model[] | Record[] {
-    if (value === null) {
-      return []
-    }
-
-    if (value === undefined) {
-      return []
-    }
-
-    if (!Array.isArray(value)) {
-      return []
-    }
-
-    if (value.length === 0) {
-      return []
-    }
-
-    return value.filter((record) => {
-      return record && typeof record === 'object'
-    }).map((record) => {
-      return new this.parent(record)
-    })
+    return this.makeManyRelation(value, this.parent)
   }
 
   /**

@@ -134,6 +134,28 @@ describe('Features – Relations – Belongs To', () => {
     expect(post).toEqual(expected)
   })
 
+  it('resolves to null if there is no belongs to relation', () => {
+    const store = createStore([{ model: User }, { model: Post }])
+
+    store.dispatch('entities/posts/create', {
+      data: {
+        id: 1,
+        user_id: 1
+      }
+    })
+
+    const expected = {
+      $id: 1,
+      id: 1,
+      user_id: 1,
+      user: null
+    }
+
+    const post = store.getters['entities/posts/query']().with('user').find(1)
+
+    expect(post).toEqual(expected)
+  })
+
   it('can resolve belongs to relation which its id is 0', () => {
     const store = createStore([{ model: User }, { model: Post }])
 

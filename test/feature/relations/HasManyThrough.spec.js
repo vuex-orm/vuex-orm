@@ -139,6 +139,51 @@ describe('Features – Relations – Has Many Through', () => {
     expect(country.posts[2].id).toBe(2)
   })
 
+  it('can resolve empty has many through relationship', async () => {
+    class Country extends Model {
+      static entity = 'countries'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          posts: this.hasManyThrough(Post, User, 'country_id', 'user_id')
+        }
+      }
+    }
+
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          country_id: this.attr(null)
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: Country }, { model: User }, { model: Post }])
+
+    await store.dispatch('entities/countries/create', {
+      data: [{ id: 1 }]
+    })
+
+    const country = store.getters['entities/countries/query']().with('posts').find(1)
+
+    expect(country.posts.length).toBe(0)
+  })
+
   it('can resolve has many through relationship with custom primary keys', async () => {
     class Country extends Model {
       static entity = 'countries'

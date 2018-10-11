@@ -69,27 +69,7 @@ export default class MorphMany extends Relation {
    * Convert given value to the appropriate value for the attribute.
    */
   make (value: any, _parent: Record, _key: string): Model[] {
-    if (value === null) {
-      return []
-    }
-
-    if (value === undefined) {
-      return []
-    }
-
-    if (!Array.isArray(value)) {
-      return []
-    }
-
-    if (value.length === 0) {
-      return []
-    }
-
-    return value.filter((record) => {
-      return record && typeof record === 'object'
-    }).map((record) => {
-      return new this.related(record)
-    })
+    return this.makeManyRelation(value, this.related)
   }
 
   /**

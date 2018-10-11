@@ -121,4 +121,55 @@ describe('Features – Relations – Morph To', () => {
     expect(comments[2]).toBeInstanceOf(Comment)
     expect(comments[2].commentable).toBeInstanceOf(Video)
   })
+
+  it('can resolve empty morph to relations', async () => {
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+        }
+      }
+    }
+
+    class Video extends Model {
+      static entity = 'videos'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+        }
+      }
+    }
+
+    class Comment extends Model {
+      static entity = 'comments'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          body: this.attr(''),
+          commentable_id: this.attr(null),
+          commentable_type: this.attr(null),
+          commentable: this.morphTo('commentable_id', 'commentable_type')
+        }
+      }
+    }
+
+    const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
+
+    await store.dispatch('entities/comments/insert', {
+      data: {
+        id: 1,
+        body: 'Body 01'
+      }
+    })
+
+    const comment = store.getters['entities/comments/query']().with('commentable').find(1)
+
+    expect(comment.commentable).toBe(null)
+  })
 })

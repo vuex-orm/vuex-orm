@@ -49,6 +49,47 @@ describe('Features – Relations – Has Many By', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
+  it('can create data containing empty has many by relation', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          posts: this.hasManyBy(Post, 'posts')
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }, { model: Post }])
+
+    store.dispatch('entities/users/create', {
+      data: {
+        id: 1,
+        posts: []
+      }
+    })
+
+    const expected = createState({
+      users: {
+        '1': { $id: 1, id: 1, posts: [] }
+      },
+      posts: {}
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
+
   it('can resolve the has many by relation', () => {
     class User extends Model {
       static entity = 'users'

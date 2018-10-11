@@ -2,7 +2,7 @@ import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Feature – Relations – Retrieve – With', () => {
-  it('can resolve relation constraint', () => {
+  it('can resolve all relations', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -39,43 +39,49 @@ describe('Feature – Relations – Retrieve – With', () => {
 
     const store = createStore([{ model: User }, { model: Phone }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
-      data: [{ id: 1 }, { id: 2 }, { id: 3 }]
+    await User.create({
+      data: {
+        id: 1,
+        phone: { id: 2, user_id: 1 },
+        posts: [
+          { id: 3, user_id: 1 },
+          { id: 4, user_id: 1 }
+        ]
+      }
     })
 
-    store.dispatch('entities/phones/create', {
-      data: [{ id: 1, user_id: 1, }, { id: 2, user_id: 2, }, { id: 3, user_id: 3, }]
-    })
+    const user1 = User.query().with('*').first()
+    const user2 = User.query().withAll().first()
 
-    store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1, }, { id: 2, user_id: 1, }, { id: 3, user_id: 2, }]
-    })
+    expect(user1.phone.id).toBe(2)
+    expect(user1.posts[0].id).toBe(3)
+    expect(user1.posts[1].id).toBe(4)
 
-    const expected = {
-      $id: 1,
-      id: 1,
-      phone: { $id: 1, id: 1, user_id: 1 },
-      posts: [
-        { $id: 1, id: 1, user_id: 1 },
-        { $id: 2, id: 2, user_id: 1 }
-      ]
-    }
-
-    const users1 = store.getters['entities/users/query']().withAll().find(1)
-    const users2 = store.getters['entities/users/query']().with('*').find(1)
-
-    expect(users1).toEqual(expected)
-    expect(users2).toEqual(expected)
+    expect(user2.phone.id).toBe(2)
+    expect(user2.posts[0].id).toBe(3)
+    expect(user2.posts[1].id).toBe(4)
   })
 
-  it('can resolve all relations recursively', () => {
+  it('can resolve all relations recursively', async () => {
     class User extends Model {
       static entity = 'users'
 
       static fields () {
         return {
           id: this.attr(null),
+          phone: this.hasOne(Phone, 'user_id'),
           posts: this.hasMany(Post, 'user_id')
+        }
+      }
+    }
+
+    class Phone extends Model {
+      static entity = 'phones'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null)
         }
       }
     }
@@ -87,88 +93,46 @@ describe('Feature – Relations – Retrieve – With', () => {
         return {
           id: this.attr(null),
           user_id: this.attr(null),
-          comments: this.hasMany(Comment, 'post_id')
+          user: this.belongsTo(User, 'user_id')
         }
       }
     }
 
-    class Comment extends Model {
-      static entity = 'comments'
+    const store = createStore([{ model: User }, { model: Phone }, { model: Post }])
 
-      static fields () {
-        return {
-          id: this.attr(null),
-          post_id: this.attr(null),
-          likes: this.hasMany(Like, 'comment_id')
-        }
-      }
-    }
-
-    class Like extends Model {
-      static entity = 'likes'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          comment_id: this.attr(null)
-        }
-      }
-    }
-
-    const store = createStore([{ model: User }, { model: Post }, { model: Comment }, { model: Like }])
-
-    store.dispatch('entities/users/create', {
+    await User.create({
       data: {
         id: 1,
+        phone: { id: 2, user_id: 1 },
         posts: [
           {
-            id: 1,
+            id: 3,
             user_id: 1,
-            comments: [
-              { id: 1, post_id: 1, likes: [{ id: 1, comment_id: 1 }] },
-              { id: 2, post_id: 1, likes: [{ id: 2, comment_id: 2 }] }
-            ]
+            user: { id: 1 }
           },
           {
-            id: 2,
+            id: 4,
             user_id: 1,
-            comments: [
-              { id: 3, post_id: 2, likes: [{ id: 3, comment_id: 3 }] },
-              { id: 4, post_id: 2, likes: [{ id: 4, comment_id: 4 }] }
-            ]
+            user: { id: 1 }
           }
         ]
       }
     })
 
-    const expected = {
-      $id: 1,
-      id: 1,
-      posts: [
-        {
-          $id: 1,
-          id: 1,
-          user_id: 1,
-          comments: [
-            { $id: 1, id: 1, post_id: 1, likes: [{ $id: 1, id: 1, comment_id: 1 }] },
-            { $id: 2, id: 2, post_id: 1, likes: [{ $id: 2, id: 2, comment_id: 2 }] }
-          ]
-        },
-        {
-          $id: 2,
-          id: 2,
-          user_id: 1,
-          comments: [
-            { $id: 3, id: 3, post_id: 2, likes: [{ $id: 3, id: 3, comment_id: 3 }] },
-            { $id: 4, id: 4, post_id: 2, likes: [{ $id: 4, id: 4, comment_id: 4 }] }
-          ]
-        }
-      ]
-    }
+    const user1 = User.query().withAllRecursive().first()
+    const user2 = User.query().withAllRecursive(0).first()
 
-    const users = store.getters['entities/users/query']().withAllRecursive(2).find(1)
+    expect(user1.phone.id).toBe(2)
+    expect(user1.posts[0].id).toBe(3)
+    expect(user1.posts[0].user.id).toBe(1)
+    expect(user1.posts[1].id).toBe(4)
+    expect(user1.posts[1].user.id).toBe(1)
 
-    expect(users).toEqual(expected)
+    expect(user2.phone.id).toBe(2)
+    expect(user2.posts[0].id).toBe(3)
+    expect(user2.posts[0].user).toBe(null)
+    expect(user2.posts[1].id).toBe(4)
+    expect(user2.posts[1].user).toBe(null)
   })
 
   it('can resolve child relation', () => {

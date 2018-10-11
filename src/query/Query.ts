@@ -341,8 +341,8 @@ export default class Query {
   /**
    * Query all relations.
    */
-  withAll (constraint: Options.Constraint = () => null): this {
-    Loader.withAll(this, constraint)
+  withAll (): this {
+    Loader.withAll(this)
 
     return this
   }
@@ -360,7 +360,7 @@ export default class Query {
    * Set where constraint based on relationship existence.
    */
   has (name: string, constraint?: number | string, count?: number): this {
-    return this.addHasConstraint(name, constraint, count, true)
+    return this.addHasConstraint(name, constraint, count)
   }
 
   /**
@@ -385,7 +385,7 @@ export default class Query {
    * Add where has condition.
    */
   whereHas (name: string, constraint: Constraint): this {
-    return this.addWhereHasConstraint(name, constraint, true)
+    return this.addWhereHasConstraint(name, constraint)
   }
 
   /**
@@ -561,6 +561,8 @@ export default class Query {
       _constraint = record => record.length < count
     } else if (constraint === '<=' && typeof count === 'number') {
       _constraint = record => record.length <= count
+    } else {
+      _constraint = record => record.length >= 1
     }
 
     const data = this.newQuery().with(name).get()
@@ -572,9 +574,7 @@ export default class Query {
 
       let result: boolean = false
 
-      if (!target) {
-        result = false
-      } else if (Array.isArray(target) && target.length < 1) {
+      if (Array.isArray(target) && target.length < 1) {
         result = false
       } else if (Array.isArray(target)) {
         result = _constraint(target)

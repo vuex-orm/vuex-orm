@@ -108,7 +108,7 @@ describe('Feature – Relations – Morph One – Retrieve', () => {
       data: { id: 3 }
     })
 
-    const post = Post.query().with('comment').find(1)
+    const post = Post.query().with('comments').find(1)
 
     expect(post.comments).toBe(null)
   })
