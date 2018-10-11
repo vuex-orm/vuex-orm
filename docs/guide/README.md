@@ -31,7 +31,7 @@ Vuex ORM lets you create a "normalized" data schema within a Vuex Store, with re
   - [Query Class](digging-deeper/query-class.md)
   - [Plugins](digging-deeper/plugins.md)
 - API Reference
-  - [Model](api/model.md)
+  - [Model](../api/model.md)
 
 ## Questions & Discussions
 
