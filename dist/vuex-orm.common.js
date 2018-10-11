@@ -313,19 +313,12 @@ var Attr = /** @class */ (function (_super) {
         return _this;
     }
     /**
-     * Transform given data to the appropriate value. This method will be called
-     * during data normalization to fix field that has an incorrect value,
-     * or add a missing field with the appropriate default value.
-     */
-    Attr.prototype.fill = function (value) {
-        return value !== undefined ? value : this.value;
-    };
-    /**
      * Make value to be set to model property. This method is used when
      * instantiating a model or creating a plain object from a model.
      */
-    Attr.prototype.make = function (value, _parent, key, _plain) {
-        return this.mutate(this.fill(value), key);
+    Attr.prototype.make = function (value, _parent, key) {
+        value = value !== undefined ? value : this.value;
+        return this.mutate(value, key);
     };
     return Attr;
 }(Type));
@@ -344,18 +337,9 @@ var Increment = /** @class */ (function (_super) {
         return _this;
     }
     /**
-     * Transform given data to the appropriate value. This method will be called
-     * during data normalization to fix field that has an incorrect value,
-     * or add a missing field with the appropriate default value.
+     * Convert given value to the appropriate value for the attribute.
      */
-    Increment.prototype.fill = function (value) {
-        return value;
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    Increment.prototype.make = function (value, _parent, _key, _plain) {
+    Increment.prototype.make = function (value, _parent, _key) {
         return typeof value === 'number' ? value : null;
     };
     return Increment;
@@ -372,11 +356,15 @@ var String$1 = /** @class */ (function (_super) {
         return _this;
     }
     /**
-     * Transform given data to the appropriate value. This method will be called
-     * during data normalization to fix field that has an incorrect value,
-     * or add a missing field with the appropriate default value.
+     * Convert given value to the appropriate value for the attribute.
      */
-    String.prototype.fill = function (value) {
+    String.prototype.make = function (value, _parent, key) {
+        return this.mutate(this.fix(value), key);
+    };
+    /**
+     * Convert given value to the string.
+     */
+    String.prototype.fix = function (value) {
         if (value === undefined) {
             return this.value;
         }
@@ -384,13 +372,6 @@ var String$1 = /** @class */ (function (_super) {
             return value;
         }
         return value + '';
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    String.prototype.make = function (value, _parent, key, _plain) {
-        return this.mutate(this.fill(value), key);
     };
     return String;
 }(Type));
@@ -406,11 +387,15 @@ var Number = /** @class */ (function (_super) {
         return _this;
     }
     /**
-     * Transform given data to the appropriate value. This method will be called
-     * during data normalization to fix field that has an incorrect value,
-     * or add a missing field with the appropriate default value.
+     * Convert given value to the appropriate value for the attribute.
      */
-    Number.prototype.fill = function (value) {
+    Number.prototype.make = function (value, _parent, key) {
+        return this.mutate(this.fix(value), key);
+    };
+    /**
+     * Transform given data to the number.
+     */
+    Number.prototype.fix = function (value) {
         if (value === undefined) {
             return this.value;
         }
@@ -424,13 +409,6 @@ var Number = /** @class */ (function (_super) {
             return value ? 1 : 0;
         }
         return 0;
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    Number.prototype.make = function (value, _parent, key, _plain) {
-        return this.mutate(this.fill(value), key);
     };
     return Number;
 }(Type));
@@ -446,11 +424,15 @@ var Boolean = /** @class */ (function (_super) {
         return _this;
     }
     /**
-     * Transform given data to the appropriate value. This method will be called
-     * during data normalization to fix field that has an incorrect value,
-     * or add a missing field with the appropriate default value.
+     * Convert given value to the appropriate value for the attribute.
      */
-    Boolean.prototype.fill = function (value) {
+    Boolean.prototype.make = function (value, _parent, key) {
+        return this.mutate(this.fix(value), key);
+    };
+    /**
+     * Transform given data to the boolean.
+     */
+    Boolean.prototype.fix = function (value) {
         if (value === undefined) {
             return this.value;
         }
@@ -469,13 +451,6 @@ var Boolean = /** @class */ (function (_super) {
         }
         return false;
     };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    Boolean.prototype.make = function (value, _parent, key, _plain) {
-        return this.mutate(this.fill(value), key);
-    };
     return Boolean;
 }(Type));
 
@@ -485,30 +460,10 @@ var Relation = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     /**
-     * Fill given value for the single item relationship such as
-     * `hasOne` and `belongsTo`.
-     */
-    Relation.prototype.fillOne = function (value) {
-        if (value === undefined) {
-            return null;
-        }
-        if (typeof value === 'object') {
-            return null;
-        }
-        return value;
-    };
-    /**
-     * Fill given value for the multi-item relationship such as
-     * `hasMany` and `belongsToMany`.
-     */
-    Relation.prototype.fillMany = function (value) {
-        return Array.isArray(value) ? value : [];
-    };
-    /**
      * Get relation query instance with constraint attached.
      */
     Relation.prototype.getRelation = function (query, name) {
-        var relation = query.newPlainQuery(name);
+        var relation = query.newQuery(name);
         this.addEagerConstraint(query, relation);
         return relation;
     };
@@ -557,6 +512,32 @@ var Relation = /** @class */ (function (_super) {
             return true;
         }
         return false;
+    };
+    /**
+     * Check if the given value is a single relation, which is the Object.
+     */
+    Relation.prototype.isManyRelation = function (records) {
+        if (!Array.isArray(records)) {
+            return false;
+        }
+        if (records.length < 1) {
+            return false;
+        }
+        return true;
+    };
+    /**
+     * Convert given records to the collection.
+     */
+    Relation.prototype.makeManyRelation = function (records, model) {
+        var _this = this;
+        if (!this.isManyRelation(records)) {
+            return [];
+        }
+        return records.filter(function (record) {
+            return _this.isOneRelation(record);
+        }).map(function (record) {
+            return new model(record);
+        });
     };
     return Relation;
 }(Attribute));
@@ -608,21 +589,14 @@ var HasOne = /** @class */ (function (_super) {
         related[key][this.foreignKey] = record[this.localKey];
     };
     /**
-     * Validate the given value to be a valid value for the relationship.
-     */
-    HasOne.prototype.fill = function (value) {
-        return this.fillOne(value);
-    };
-    /**
      * Make value to be set to model property. This method is used when
      * instantiating a model or creating a plain object from a model.
      */
-    HasOne.prototype.make = function (value, _parent, _key, plain) {
-        if (plain === void 0) { plain = false; }
+    HasOne.prototype.make = function (value, _parent, _key) {
         if (!this.isOneRelation(value)) {
             return null;
         }
-        return this.related.make(value, plain);
+        return new this.related(value);
     };
     /**
      * Load the has one relationship for the collection.
@@ -673,21 +647,13 @@ var BelongsTo = /** @class */ (function (_super) {
         record[this.foreignKey] = key;
     };
     /**
-     * Validate the given value to be a valid value for the relationship.
+     * Convert given value to the appropriate value for the attribute.
      */
-    BelongsTo.prototype.fill = function (value) {
-        return this.fillOne(value);
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    BelongsTo.prototype.make = function (value, _parent, _key, plain) {
-        if (plain === void 0) { plain = false; }
+    BelongsTo.prototype.make = function (value, _parent, _key) {
         if (!this.isOneRelation(value)) {
             return null;
         }
-        return this.parent.make(value, plain);
+        return new this.parent(value);
     };
     /**
      * Load the belongs to relationship for the collection.
@@ -695,7 +661,7 @@ var BelongsTo = /** @class */ (function (_super) {
     BelongsTo.prototype.load = function (query, collection, key) {
         var _this = this;
         var relatedQuery = this.getRelation(query, this.parent.entity);
-        query.where(this.ownerKey, this.getKeys(collection, this.foreignKey));
+        relatedQuery.where(this.ownerKey, this.getKeys(collection, this.foreignKey));
         var relations = this.mapSingleRelations(relatedQuery.get(), this.ownerKey);
         collection.forEach(function (item) {
             var related = relations[item[_this.foreignKey]];
@@ -740,35 +706,10 @@ var HasMany = /** @class */ (function (_super) {
         });
     };
     /**
-     * Validate the given value to be a valid value for the relationship.
+     * Convert given value to the appropriate value for the attribute.
      */
-    HasMany.prototype.fill = function (value) {
-        return this.fillMany(value);
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    HasMany.prototype.make = function (value, _parent, _key, plain) {
-        var _this = this;
-        if (plain === void 0) { plain = false; }
-        if (value === null) {
-            return [];
-        }
-        if (value === undefined) {
-            return [];
-        }
-        if (!Array.isArray(value)) {
-            return [];
-        }
-        if (value.length === 0) {
-            return [];
-        }
-        return value.filter(function (record) {
-            return record && typeof record === 'object';
-        }).map(function (record) {
-            return _this.related.make(record, plain);
-        });
+    HasMany.prototype.make = function (value, _parent, _key) {
+        return this.makeManyRelation(value, this.related);
     };
     /**
      * Load the has many relationship for the collection.
@@ -817,35 +758,10 @@ var HasManyBy = /** @class */ (function (_super) {
         record[this.foreignKey] = key;
     };
     /**
-     * Validate the given value to be a valid value for the relationship.
+     * Convert given value to the appropriate value for the attribute.
      */
-    HasManyBy.prototype.fill = function (value) {
-        return this.fillMany(value);
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    HasManyBy.prototype.make = function (value, _parent, _key, plain) {
-        var _this = this;
-        if (plain === void 0) { plain = false; }
-        if (value === null) {
-            return [];
-        }
-        if (value === undefined) {
-            return [];
-        }
-        if (!Array.isArray(value)) {
-            return [];
-        }
-        if (value.length === 0) {
-            return [];
-        }
-        return value.filter(function (record) {
-            return record && typeof record === 'object';
-        }).map(function (record) {
-            return _this.parent.make(record, plain);
-        });
+    HasManyBy.prototype.make = function (value, _parent, _key) {
+        return this.makeManyRelation(value, this.parent);
     };
     /**
      * Load the has many by relationship for the collection.
@@ -912,35 +828,10 @@ var HasManyThrough = /** @class */ (function (_super) {
         return;
     };
     /**
-     * Validate the given value to be a valid value for the relationship.
+     * Convert given value to the appropriate value for the attribute.
      */
-    HasManyThrough.prototype.fill = function (value) {
-        return this.fillMany(value);
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    HasManyThrough.prototype.make = function (value, _parent, _key, plain) {
-        var _this = this;
-        if (plain === void 0) { plain = false; }
-        if (value === null) {
-            return [];
-        }
-        if (value === undefined) {
-            return [];
-        }
-        if (!Array.isArray(value)) {
-            return [];
-        }
-        if (value.length === 0) {
-            return [];
-        }
-        return value.filter(function (record) {
-            return record && typeof record === 'object';
-        }).map(function (record) {
-            return _this.related.make(record, plain);
-        });
+    HasManyThrough.prototype.make = function (value, _parent, _key) {
+        return this.makeManyRelation(value, this.related);
     };
     /**
      * Load the has many through relationship for the collection.
@@ -948,14 +839,14 @@ var HasManyThrough = /** @class */ (function (_super) {
     HasManyThrough.prototype.load = function (query, collection, key) {
         var _this = this;
         var relatedQuery = this.getRelation(query, this.related.entity);
-        var throughQuery = query.newPlainQuery(this.through.entity);
+        var throughQuery = query.newQuery(this.through.entity);
         this.addEagerConstraintForThrough(throughQuery, collection);
         var throughs = throughQuery.get();
         this.addEagerConstraintForRelated(relatedQuery, throughs);
         var relateds = this.mapThroughRelations(throughs, relatedQuery);
         collection.forEach(function (item) {
             var related = relateds[item[_this.localKey]];
-            item[key] = related;
+            item[key] = related || [];
         });
     };
     /**
@@ -982,9 +873,7 @@ var HasManyThrough = /** @class */ (function (_super) {
                 records[id] = [];
             }
             var related = relateds[record[_this.secondLocalKey]];
-            if (related) {
-                records[id] = records[id].concat(related);
-            }
+            records[id] = records[id].concat(related);
             return records;
         }, {});
     };
@@ -1020,35 +909,10 @@ var BelongsToMany = /** @class */ (function (_super) {
         return;
     };
     /**
-     * Validate the given value to be a valid value for the relationship.
+     * Convert given value to the appropriate value for the attribute.
      */
-    BelongsToMany.prototype.fill = function (value) {
-        return this.fillMany(value);
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    BelongsToMany.prototype.make = function (value, _parent, _key, plain) {
-        var _this = this;
-        if (plain === void 0) { plain = false; }
-        if (value === null) {
-            return [];
-        }
-        if (value === undefined) {
-            return [];
-        }
-        if (!Array.isArray(value)) {
-            return [];
-        }
-        if (value.length === 0) {
-            return [];
-        }
-        return value.filter(function (record) {
-            return record && typeof record === 'object';
-        }).map(function (record) {
-            return _this.related.make(record, plain);
-        });
+    BelongsToMany.prototype.make = function (value, _parent, _key) {
+        return this.makeManyRelation(value, this.related);
     };
     /**
      * Load the belongs to relationship for the record.
@@ -1056,7 +920,7 @@ var BelongsToMany = /** @class */ (function (_super) {
     BelongsToMany.prototype.load = function (query, collection, key) {
         var _this = this;
         var relatedQuery = this.getRelation(query, this.related.entity);
-        var pivotQuery = query.newPlainQuery(this.pivot.entity);
+        var pivotQuery = query.newQuery(this.pivot.entity);
         this.addEagerConstraintForPivot(pivotQuery, collection);
         var pivots = pivotQuery.get();
         this.addEagerConstraintForRelated(relatedQuery, pivots);
@@ -1157,23 +1021,15 @@ var MorphTo = /** @class */ (function (_super) {
         return;
     };
     /**
-     * Validate the given value to be a valid value for the relationship.
+     * Convert given value to the appropriate value for the attribute.
      */
-    MorphTo.prototype.fill = function (value) {
-        return this.fillOne(value);
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    MorphTo.prototype.make = function (value, parent, _key, plain) {
-        if (plain === void 0) { plain = false; }
+    MorphTo.prototype.make = function (value, parent, _key) {
         if (!this.isOneRelation(value)) {
             return null;
         }
         var related = parent[this.type];
         var model = this.model.relation(related);
-        return model ? model.make(value, plain) : null;
+        return model ? new model(value) : null;
     };
     /**
      * Load the morph to relationship for the collection.
@@ -1238,21 +1094,13 @@ var MorphOne = /** @class */ (function (_super) {
         relatedItem[this.type] = relatedItem[this.type] || this.model.entity;
     };
     /**
-     * Validate the given value to be a valid value for the relationship.
+     * Convert given value to the appropriate value for the attribute.
      */
-    MorphOne.prototype.fill = function (value) {
-        return this.fillOne(value);
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    MorphOne.prototype.make = function (value, _parent, _key, plain) {
-        if (plain === void 0) { plain = false; }
+    MorphOne.prototype.make = function (value, _parent, _key) {
         if (!this.isOneRelation(value)) {
             return null;
         }
-        return this.related.make(value, plain);
+        return new this.related(value);
     };
     /**
      * Load the morph many relationship for the record.
@@ -1311,35 +1159,10 @@ var MorphMany = /** @class */ (function (_super) {
         });
     };
     /**
-     * Validate the given value to be a valid value for the relationship.
+     * Convert given value to the appropriate value for the attribute.
      */
-    MorphMany.prototype.fill = function (value) {
-        return this.fillMany(value);
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    MorphMany.prototype.make = function (value, _parent, _key, plain) {
-        var _this = this;
-        if (plain === void 0) { plain = false; }
-        if (value === null) {
-            return [];
-        }
-        if (value === undefined) {
-            return [];
-        }
-        if (!Array.isArray(value)) {
-            return [];
-        }
-        if (value.length === 0) {
-            return [];
-        }
-        return value.filter(function (record) {
-            return record && typeof record === 'object';
-        }).map(function (record) {
-            return _this.related.make(record, plain);
-        });
+    MorphMany.prototype.make = function (value, _parent, _key) {
+        return this.makeManyRelation(value, this.related);
     };
     /**
      * Load the morph many relationship for the record.
@@ -1393,35 +1216,10 @@ var MorphToMany = /** @class */ (function (_super) {
         return;
     };
     /**
-     * Validate the given value to be a valid value for the relationship.
+     * Convert given value to the appropriate value for the attribute.
      */
-    MorphToMany.prototype.fill = function (value) {
-        return this.fillMany(value);
-    };
-    /**
-     * Make value to be set to model property. This method is used when
-     * instantiating a model or creating a plain object from a model.
-     */
-    MorphToMany.prototype.make = function (value, _parent, _key, plain) {
-        var _this = this;
-        if (plain === void 0) { plain = false; }
-        if (value === null) {
-            return [];
-        }
-        if (value === undefined) {
-            return [];
-        }
-        if (!Array.isArray(value)) {
-            return [];
-        }
-        if (value.length === 0) {
-            return [];
-        }
-        return value.filter(function (record) {
-            return record && typeof record === 'object';
-        }).map(function (record) {
-            return _this.related.make(record, plain);
-        });
+    MorphToMany.prototype.make = function (value, _parent, _key) {
+        return this.makeManyRelation(value, this.related);
     };
     /**
      * Load the morph to many relationship for the collection.
@@ -1429,7 +1227,7 @@ var MorphToMany = /** @class */ (function (_super) {
     MorphToMany.prototype.load = function (query, collection, key) {
         var _this = this;
         var relatedQuery = this.getRelation(query, this.related.entity);
-        var pivotQuery = query.newPlainQuery(this.pivot.entity);
+        var pivotQuery = query.newQuery(this.pivot.entity);
         this.addEagerConstraintForPivot(pivotQuery, collection, query.entity);
         var pivots = pivotQuery.get();
         this.addEagerConstraintForRelated(relatedQuery, pivots);
@@ -1463,9 +1261,7 @@ var MorphToMany = /** @class */ (function (_super) {
                 records[id] = [];
             }
             var related = relateds[record[_this.relatedId]];
-            if (related) {
-                records[id] = records[id].concat(related);
-            }
+            records[id] = records[id].concat(related);
             return records;
         }, {});
     };
@@ -1534,35 +1330,11 @@ var MorphedByMany = /** @class */ (function (_super) {
         return;
     };
     /**
-     * Validate the given value to be a valid value for the relationship.
-     */
-    MorphedByMany.prototype.fill = function (value) {
-        return this.fillMany(value);
-    };
-    /**
      * Make value to be set to model property. This method is used when
      * instantiating a model or creating a plain object from a model.
      */
-    MorphedByMany.prototype.make = function (value, _parent, _key, plain) {
-        var _this = this;
-        if (plain === void 0) { plain = false; }
-        if (value === null) {
-            return [];
-        }
-        if (value === undefined) {
-            return [];
-        }
-        if (!Array.isArray(value)) {
-            return [];
-        }
-        if (value.length === 0) {
-            return [];
-        }
-        return value.filter(function (record) {
-            return record && typeof record === 'object';
-        }).map(function (record) {
-            return _this.related.make(record, plain);
-        });
+    MorphedByMany.prototype.make = function (value, _parent, _key) {
+        return this.makeManyRelation(value, this.related);
     };
     /**
      * Load the morph many relationship for the record.
@@ -1570,7 +1342,7 @@ var MorphedByMany = /** @class */ (function (_super) {
     MorphedByMany.prototype.load = function (query, collection, key) {
         var _this = this;
         var relatedQuery = this.getRelation(query, this.related.entity);
-        var pivotQuery = query.newPlainQuery(this.pivot.entity);
+        var pivotQuery = query.newQuery(this.pivot.entity);
         this.addEagerConstraintForPivot(pivotQuery, collection, this.related.entity);
         var pivots = pivotQuery.get();
         this.addEagerConstraintForRelated(relatedQuery, pivots);
@@ -1604,9 +1376,7 @@ var MorphedByMany = /** @class */ (function (_super) {
                 records[id] = [];
             }
             var related = relateds[record[_this.id]];
-            if (related) {
-                records[id] = records[id].concat(related);
-            }
+            records[id] = records[id].concat(related);
             return records;
         }, {});
     };
@@ -1617,7 +1387,7 @@ var MorphedByMany = /** @class */ (function (_super) {
         var _this = this;
         Utils.forOwn(data[parent.entity], function (record) {
             var related = record[key];
-            if (related.length === 0) {
+            if (!Array.isArray(related)) {
                 return;
             }
             _this.createPivotRecord(data, record, related);
@@ -1647,9 +1417,13 @@ var MorphedByMany = /** @class */ (function (_super) {
 
 var Model = /** @class */ (function () {
     /**
-     * Create a model instance.
+     * Create a new model instance.
      */
     function Model(record) {
+        /**
+         * The ID value of the store index.
+         */
+        this.$id = null;
         this.$fill(record);
     }
     /**
@@ -1665,7 +1439,7 @@ var Model = /** @class */ (function () {
         if (this.cachedFields) {
             return this.cachedFields;
         }
-        this.cachedFields = __assign({ $id: this.attr(undefined) }, this.fields());
+        this.cachedFields = this.fields();
         return this.cachedFields;
     };
     /**
@@ -1773,74 +1547,35 @@ var Model = /** @class */ (function () {
         return {};
     };
     /**
-     * Get database out of the container.
+     * Get the database instance from the container.
      */
     Model.database = function () {
         return Container.database;
     };
     /**
-     * Get Vuex Store instance out of connection.
+     * Get the store instance from the container.
      */
     Model.store = function () {
         return this.database().store;
     };
     /**
-     * Get module namespaced path for the model.
+     * Create a namespaced method name for Vuex Module from the given
+     * method name.
      */
     Model.namespace = function (method) {
         return this.database().namespace + "/" + this.entity + "/" + method;
     };
     /**
-     * Dispatch an action.
-     */
-    Model.dispatch = function (method, payload) {
-        return this.store().dispatch(this.namespace(method), payload);
-    };
-    /**
-     * Call getetrs.
+     * Call Vuex Getters.
      */
     Model.getters = function (method) {
         return this.store().getters[this.namespace(method)];
     };
     /**
-     * Create records.
+     * Dispatch Vuex Action.
      */
-    Model.create = function (payload) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, this.dispatch('create', payload)];
-            });
-        });
-    };
-    /**
-     * Insert records.
-     */
-    Model.insert = function (payload) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, this.dispatch('insert', payload)];
-            });
-        });
-    };
-    /**
-     * Update records.
-     */
-    Model.update = function (payload) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, this.dispatch('update', payload)];
-            });
-        });
-    };
-    /**
-     * Insert or update records.
-     */
-    Model.insertOrUpdate = function (payload) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, this.dispatch('insertOrUpdate', payload)];
-            });
-        });
+    Model.dispatch = function (method, payload) {
+        return this.store().dispatch(this.namespace(method), payload);
     };
     /**
      * Get all records.
@@ -1861,14 +1596,42 @@ var Model = /** @class */ (function () {
         return this.getters('query')();
     };
     /**
+     * Save given data to the store by replacing all existing records in the
+     * store. If you want to save data without replacing existing records,
+     * use the `insert` method instead.
+     */
+    Model.create = function (payload) {
+        return this.dispatch('create', payload);
+    };
+    /**
+     * Insert records.
+     */
+    Model.insert = function (payload) {
+        return this.dispatch('insert', payload);
+    };
+    /**
+     * Update records.
+     */
+    Model.update = function (payload) {
+        return this.dispatch('update', payload);
+    };
+    /**
      * Insert or update records.
      */
-    Model.delete = function (condition) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, this.dispatch('delete', condition)];
-            });
-        });
+    Model.insertOrUpdate = function (payload) {
+        return this.dispatch('insertOrUpdate', payload);
+    };
+    /**
+     * Delete records that matches the given condition.
+     */
+    Model.delete = function (payload) {
+        return this.dispatch('delete', payload);
+    };
+    /**
+     * Delete all records.
+     */
+    Model.deleteAll = function () {
+        return this.dispatch('deleteAll');
     };
     /**
      * Get the value of the primary key.
@@ -1954,101 +1717,7 @@ var Model = /** @class */ (function () {
         return this.pivotFields().length > 0;
     };
     /**
-     * Create a new model instance.
-     */
-    Model.make = function (data, plain) {
-        if (plain === void 0) { plain = false; }
-        if (!plain) {
-            return new this(data);
-        }
-        return this.fill({}, data, true);
-    };
-    /**
-     * Create a new plain model record.
-     */
-    Model.makePlain = function (data) {
-        return this.make(data, true);
-    };
-    /**
-     * Remove any fields not defined in the model schema. This method
-     * also fixes any incorrect values as well.
-     */
-    Model.fix = function (data, keep) {
-        if (keep === void 0) { keep = ['$id']; }
-        var fields = this.getFields();
-        return Object.keys(data).reduce(function (record, key) {
-            var value = data[key];
-            var field = fields[key];
-            if (keep.includes(key)) {
-                record[key] = value;
-                return record;
-            }
-            if (!field) {
-                return record;
-            }
-            record[key] = field.fill(value);
-            return record;
-        }, {});
-    };
-    /**
-     * Fix multiple records.
-     */
-    Model.fixMany = function (data, keep) {
-        var _this = this;
-        return Object.keys(data).reduce(function (records, id) {
-            records[id] = _this.fix(data[id], keep);
-            return records;
-        }, {});
-    };
-    /**
-     * Fill any missing fields in the given data with the default
-     * value defined in the model schema.
-     */
-    Model.hydrate = function (data, keep) {
-        if (keep === void 0) { keep = ['$id']; }
-        var fields = this.getFields();
-        var record = Object.keys(fields).reduce(function (record, key) {
-            var field = fields[key];
-            var value = data[key];
-            record[key] = field.fill(value);
-            return record;
-        }, {});
-        return Object.keys(data).reduce(function (record, key) {
-            if (keep.includes(key) && data[key] !== undefined) {
-                record[key] = data[key];
-            }
-            return record;
-        }, record);
-    };
-    /**
-     * Fill multiple records.
-     */
-    Model.hydrateMany = function (data, keep) {
-        var _this = this;
-        return Object.keys(data).reduce(function (records, id) {
-            records[id] = _this.hydrate(data[id], keep);
-            return records;
-        }, {});
-    };
-    /**
-     * Fill the given obejct with the given record. If no record were passed,
-     * or if the record has any missing fields, each value of the fields will
-     * be filled with its default value defined at model fields definition.
-     */
-    Model.fill = function (self, record, plain) {
-        if (self === void 0) { self = {}; }
-        if (record === void 0) { record = {}; }
-        if (plain === void 0) { plain = false; }
-        var fields = this.getFields();
-        return Object.keys(fields).reduce(function (target, key) {
-            var field = fields[key];
-            var value = record[key];
-            target[key] = field.make(value, record, key, plain);
-            return target;
-        }, self);
-    };
-    /**
-     * Get the static class of this model.
+     * Get the constructor of this model.
      */
     Model.prototype.$self = function () {
         return this.constructor;
@@ -2057,31 +1726,54 @@ var Model = /** @class */ (function () {
      * The definition of the fields of the model and its relations.
      */
     Model.prototype.$fields = function () {
-        return this.$self().fields();
+        return this.$self().getFields();
     };
     /**
-     * Get Vuex Store insatnce out of connection.
+     * Get the store instance from the container.
      */
     Model.prototype.$store = function () {
         return this.$self().store();
     };
     /**
-     * Get module namespaced path for the model.
+     * Create a namespaced method name for Vuex Module from the given
+     * method name.
      */
     Model.prototype.$namespace = function (method) {
         return this.$self().namespace(method);
     };
     /**
-     * Dispatch an action.
-     */
-    Model.prototype.$dispatch = function (method, payload) {
-        return this.$self().dispatch(method, payload);
-    };
-    /**
-     * Call getetrs.
+     * Call Vuex Getetrs.
      */
     Model.prototype.$getters = function (method) {
         return this.$self().getters(method);
+    };
+    /**
+     * Dispatch Vuex Action.
+     */
+    Model.prototype.$dispatch = function (method, payload) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.$self().dispatch(method, payload)];
+            });
+        });
+    };
+    /**
+     * Get all records.
+     */
+    Model.prototype.$all = function () {
+        return this.$getters('all')();
+    };
+    /**
+     * Find a record.
+     */
+    Model.prototype.$find = function (id) {
+        return this.$getters('find')(id);
+    };
+    /**
+     * Get query instance.
+     */
+    Model.prototype.$query = function () {
+        return this.$getters('query')();
     };
     /**
      * Create records.
@@ -2133,31 +1825,28 @@ var Model = /** @class */ (function () {
         });
     };
     /**
-     * Get all records.
-     */
-    Model.prototype.$all = function () {
-        return this.$getters('all')();
-    };
-    /**
-     * Find a record.
-     */
-    Model.prototype.$find = function (id) {
-        return this.$getters('find')(id);
-    };
-    /**
-     * Get query instance.
-     */
-    Model.prototype.$query = function () {
-        return this.$getters('query')();
-    };
-    /**
-     * Insert or update records.
+     * Delete records that matches the given condition.
      */
     Model.prototype.$delete = function (condition) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                condition = condition === undefined ? this.$id : condition;
-                return [2 /*return*/, this.$dispatch('delete', condition)];
+                if (condition) {
+                    return [2 /*return*/, this.$dispatch('delete', condition)];
+                }
+                if (this.$id === null) {
+                    return [2 /*return*/, null];
+                }
+                return [2 /*return*/, this.$dispatch('delete', this.$id)];
+            });
+        });
+    };
+    /**
+     * Delete all records.
+     */
+    Model.prototype.$deleteAll = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.$dispatch('deleteAll')];
             });
         });
     };
@@ -2167,13 +1856,54 @@ var Model = /** @class */ (function () {
      * be filled with its default value defined at model fields definition.
      */
     Model.prototype.$fill = function (record) {
-        this.$self().fill(this, record);
+        var _this = this;
+        var data = record || {};
+        var fields = this.$fields();
+        Object.keys(fields).forEach(function (key) {
+            var field = fields[key];
+            var value = data[key];
+            _this[key] = field.make(value, data, key);
+        });
+        if (data.$id !== undefined) {
+            this.$id = data.$id;
+        }
     };
     /**
      * Serialize field values into json.
      */
     Model.prototype.$toJson = function () {
-        return this.$self().makePlain(this);
+        var _this = this;
+        var fields = this.$fields();
+        return Object.keys(fields).reduce(function (record, key) {
+            var value = _this[key];
+            if (value instanceof Model) {
+                record[key] = _this.serializeItem(value);
+                return record;
+            }
+            if (Array.isArray(value)) {
+                record[key] = _this.serializeCollection(value);
+                return record;
+            }
+            record[key] = value;
+            return record;
+        }, {});
+    };
+    /**
+     * Serialize an item into json.
+     */
+    Model.prototype.serializeItem = function (item) {
+        return item.$toJson();
+    };
+    /**
+     * Serialize a collection into json.
+     */
+    Model.prototype.serializeCollection = function (collection) {
+        return collection.map(function (item) {
+            if (item instanceof Model) {
+                return item.$toJson();
+            }
+            return item;
+        });
     };
     /**
      * The primary key to be used for the model.
@@ -2182,21 +1912,6 @@ var Model = /** @class */ (function () {
     return Model;
 }());
 
-function unwrapExports (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-}
-
-function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
-
-var ImmutableUtils = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.isImmutable = isImmutable;
-exports.denormalizeImmutable = denormalizeImmutable;
 /**
  * Helpers to enable Immutable compatibility *without* bringing in
  * the 'immutable' package as a dependency.
@@ -2211,8 +1926,7 @@ exports.denormalizeImmutable = denormalizeImmutable;
  */
 function isImmutable(object) {
   return !!(object && typeof object.hasOwnProperty === 'function' && (object.hasOwnProperty('__ownerID') || // Immutable.Map
-  object._map && object._map.hasOwnProperty('__ownerID') // Immutable.Record
-  ));
+  object._map && object._map.hasOwnProperty('__ownerID'))); // Immutable.Record
 }
 
 /**
@@ -2237,37 +1951,106 @@ function denormalizeImmutable(schema, input, unvisit) {
     }
   }, input);
 }
-});
 
-unwrapExports(ImmutableUtils);
-var ImmutableUtils_1 = ImmutableUtils.isImmutable;
-var ImmutableUtils_2 = ImmutableUtils.denormalizeImmutable;
-
-var Entity = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
 
 
 
-var ImmutableUtils$$1 = _interopRequireWildcard(ImmutableUtils);
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+
+
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+var createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
+
+
+
+
+
+
+
+var _extends = Object.assign || function (target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i];
+
+    for (var key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        target[key] = source[key];
+      }
+    }
+  }
+
+  return target;
+};
+
+
+
+var inherits = function (subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+};
+
+
+
+
+
+
+
+
+
+
+
+var possibleConstructorReturn = function (self, call) {
+  if (!self) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return call && (typeof call === "object" || typeof call === "function") ? call : self;
+};
 
 var getDefaultGetId = function getDefaultGetId(idAttribute) {
   return function (input) {
-    return ImmutableUtils$$1.isImmutable(input) ? input.get(idAttribute) : input[idAttribute];
+    return isImmutable(input) ? input.get(idAttribute) : input[idAttribute];
   };
 };
 
@@ -2275,8 +2058,7 @@ var EntitySchema = function () {
   function EntitySchema(key) {
     var definition = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    _classCallCheck(this, EntitySchema);
+    classCallCheck(this, EntitySchema);
 
     if (!key || typeof key !== 'string') {
       throw new Error('Expected a string key for Entity, but found ' + key + '.');
@@ -2302,92 +2084,71 @@ var EntitySchema = function () {
     this.define(definition);
   }
 
-  _createClass(EntitySchema, [{
-    key: 'define',
-    value: function define(definition) {
-      this.schema = Object.keys(definition).reduce(function (entitySchema, key) {
-        var schema = definition[key];
-        return _extends({}, entitySchema, _defineProperty({}, key, schema));
-      }, this.schema || {});
-    }
-  }, {
-    key: 'getId',
-    value: function getId(input, parent, key) {
-      return this._getId(input, parent, key);
-    }
-  }, {
-    key: 'merge',
-    value: function merge(entityA, entityB) {
-      return this._mergeStrategy(entityA, entityB);
-    }
-  }, {
-    key: 'normalize',
-    value: function normalize(input, parent, key, visit, addEntity) {
-      var _this = this;
+  EntitySchema.prototype.define = function define(definition) {
+    this.schema = Object.keys(definition).reduce(function (entitySchema, key) {
+      var _babelHelpers$extends;
 
-      var processedEntity = this._processStrategy(input, parent, key);
-      Object.keys(this.schema).forEach(function (key) {
-        if (processedEntity.hasOwnProperty(key) && _typeof(processedEntity[key]) === 'object') {
-          var schema = _this.schema[key];
-          processedEntity[key] = visit(processedEntity[key], processedEntity, key, schema, addEntity);
-        }
-      });
+      var schema = definition[key];
+      return _extends({}, entitySchema, (_babelHelpers$extends = {}, _babelHelpers$extends[key] = schema, _babelHelpers$extends));
+    }, this.schema || {});
+  };
 
-      addEntity(this, processedEntity, input, parent, key);
-      return this.getId(input, parent, key);
-    }
-  }, {
-    key: 'denormalize',
-    value: function denormalize(entity, unvisit) {
-      var _this2 = this;
+  EntitySchema.prototype.getId = function getId(input, parent, key) {
+    return this._getId(input, parent, key);
+  };
 
-      if (ImmutableUtils$$1.isImmutable(entity)) {
-        return ImmutableUtils$$1.denormalizeImmutable(this.schema, entity, unvisit);
+  EntitySchema.prototype.merge = function merge(entityA, entityB) {
+    return this._mergeStrategy(entityA, entityB);
+  };
+
+  EntitySchema.prototype.normalize = function normalize(input, parent, key, visit, addEntity) {
+    var _this = this;
+
+    var processedEntity = this._processStrategy(input, parent, key);
+    Object.keys(this.schema).forEach(function (key) {
+      if (processedEntity.hasOwnProperty(key) && _typeof(processedEntity[key]) === 'object') {
+        var schema = _this.schema[key];
+        processedEntity[key] = visit(processedEntity[key], processedEntity, key, schema, addEntity);
       }
+    });
 
-      Object.keys(this.schema).forEach(function (key) {
-        if (entity.hasOwnProperty(key)) {
-          var schema = _this2.schema[key];
-          entity[key] = unvisit(entity[key], schema);
-        }
-      });
-      return entity;
+    addEntity(this, processedEntity, input, parent, key);
+    return this.getId(input, parent, key);
+  };
+
+  EntitySchema.prototype.denormalize = function denormalize(entity, unvisit) {
+    var _this2 = this;
+
+    if (isImmutable(entity)) {
+      return denormalizeImmutable(this.schema, entity, unvisit);
     }
-  }, {
+
+    Object.keys(this.schema).forEach(function (key) {
+      if (entity.hasOwnProperty(key)) {
+        var schema = _this2.schema[key];
+        entity[key] = unvisit(entity[key], schema);
+      }
+    });
+    return entity;
+  };
+
+  createClass(EntitySchema, [{
     key: 'key',
-    get: function get() {
+    get: function get$$1() {
       return this._key;
     }
   }, {
     key: 'idAttribute',
-    get: function get() {
+    get: function get$$1() {
       return this._idAttribute;
     }
   }]);
-
   return EntitySchema;
 }();
 
-exports.default = EntitySchema;
-});
-
-unwrapExports(Entity);
-
-var Polymorphic = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 var PolymorphicSchema = function () {
   function PolymorphicSchema(definition, schemaAttribute) {
-    _classCallCheck(this, PolymorphicSchema);
+    classCallCheck(this, PolymorphicSchema);
 
     if (schemaAttribute) {
       this._schemaAttribute = typeof schemaAttribute === 'string' ? function (input) {
@@ -2397,197 +2158,106 @@ var PolymorphicSchema = function () {
     this.define(definition);
   }
 
-  _createClass(PolymorphicSchema, [{
-    key: 'define',
-    value: function define(definition) {
-      this.schema = definition;
-    }
-  }, {
-    key: 'getSchemaAttribute',
-    value: function getSchemaAttribute(input, parent, key) {
-      return !this.isSingleSchema && this._schemaAttribute(input, parent, key);
-    }
-  }, {
-    key: 'inferSchema',
-    value: function inferSchema(input, parent, key) {
-      if (this.isSingleSchema) {
-        return this.schema;
-      }
+  PolymorphicSchema.prototype.define = function define(definition) {
+    this.schema = definition;
+  };
 
-      var attr = this.getSchemaAttribute(input, parent, key);
-      return this.schema[attr];
+  PolymorphicSchema.prototype.getSchemaAttribute = function getSchemaAttribute(input, parent, key) {
+    return !this.isSingleSchema && this._schemaAttribute(input, parent, key);
+  };
+
+  PolymorphicSchema.prototype.inferSchema = function inferSchema(input, parent, key) {
+    if (this.isSingleSchema) {
+      return this.schema;
     }
-  }, {
-    key: 'normalizeValue',
-    value: function normalizeValue(value, parent, key, visit, addEntity) {
-      var schema = this.inferSchema(value, parent, key);
-      if (!schema) {
-        return value;
-      }
-      var normalizedValue = visit(value, parent, key, schema, addEntity);
-      return this.isSingleSchema || normalizedValue === undefined || normalizedValue === null ? normalizedValue : { id: normalizedValue, schema: this.getSchemaAttribute(value, parent, key) };
+
+    var attr = this.getSchemaAttribute(input, parent, key);
+    return this.schema[attr];
+  };
+
+  PolymorphicSchema.prototype.normalizeValue = function normalizeValue(value, parent, key, visit, addEntity) {
+    var schema = this.inferSchema(value, parent, key);
+    if (!schema) {
+      return value;
     }
-  }, {
-    key: 'denormalizeValue',
-    value: function denormalizeValue(value, unvisit) {
-      var schemaKey = (0, ImmutableUtils.isImmutable)(value) ? value.get('schema') : value.schema;
-      if (!this.isSingleSchema && !schemaKey) {
-        return value;
-      }
-      var id = (0, ImmutableUtils.isImmutable)(value) ? value.get('id') : value.id;
-      var schema = this.isSingleSchema ? this.schema : this.schema[schemaKey];
-      return unvisit(id || value, schema);
+    var normalizedValue = visit(value, parent, key, schema, addEntity);
+    return this.isSingleSchema || normalizedValue === undefined || normalizedValue === null ? normalizedValue : { id: normalizedValue, schema: this.getSchemaAttribute(value, parent, key) };
+  };
+
+  PolymorphicSchema.prototype.denormalizeValue = function denormalizeValue(value, unvisit) {
+    var schemaKey = isImmutable(value) ? value.get('schema') : value.schema;
+    if (!this.isSingleSchema && !schemaKey) {
+      return value;
     }
-  }, {
+    var id = isImmutable(value) ? value.get('id') : value.id;
+    var schema = this.isSingleSchema ? this.schema : this.schema[schemaKey];
+    return unvisit(id || value, schema);
+  };
+
+  createClass(PolymorphicSchema, [{
     key: 'isSingleSchema',
-    get: function get() {
+    get: function get$$1() {
       return !this._schemaAttribute;
     }
   }]);
-
   return PolymorphicSchema;
 }();
 
-exports.default = PolymorphicSchema;
-});
-
-unwrapExports(Polymorphic);
-
-var Union = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-
-
-var _Polymorphic2 = _interopRequireDefault(Polymorphic);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 var UnionSchema = function (_PolymorphicSchema) {
-  _inherits(UnionSchema, _PolymorphicSchema);
+  inherits(UnionSchema, _PolymorphicSchema);
 
   function UnionSchema(definition, schemaAttribute) {
-    _classCallCheck(this, UnionSchema);
+    classCallCheck(this, UnionSchema);
 
     if (!schemaAttribute) {
       throw new Error('Expected option "schemaAttribute" not found on UnionSchema.');
     }
-    return _possibleConstructorReturn(this, (UnionSchema.__proto__ || Object.getPrototypeOf(UnionSchema)).call(this, definition, schemaAttribute));
+    return possibleConstructorReturn(this, _PolymorphicSchema.call(this, definition, schemaAttribute));
   }
 
-  _createClass(UnionSchema, [{
-    key: 'normalize',
-    value: function normalize(input, parent, key, visit, addEntity) {
-      return this.normalizeValue(input, parent, key, visit, addEntity);
-    }
-  }, {
-    key: 'denormalize',
-    value: function denormalize(input, unvisit) {
-      return this.denormalizeValue(input, unvisit);
-    }
-  }]);
+  UnionSchema.prototype.normalize = function normalize(input, parent, key, visit, addEntity) {
+    return this.normalizeValue(input, parent, key, visit, addEntity);
+  };
+
+  UnionSchema.prototype.denormalize = function denormalize(input, unvisit) {
+    return this.denormalizeValue(input, unvisit);
+  };
 
   return UnionSchema;
-}(_Polymorphic2.default);
-
-exports.default = UnionSchema;
-});
-
-unwrapExports(Union);
-
-var Values = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-
-
-var _Polymorphic2 = _interopRequireDefault(Polymorphic);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+}(PolymorphicSchema);
 
 var ValuesSchema = function (_PolymorphicSchema) {
-  _inherits(ValuesSchema, _PolymorphicSchema);
+  inherits(ValuesSchema, _PolymorphicSchema);
 
   function ValuesSchema() {
-    _classCallCheck(this, ValuesSchema);
-
-    return _possibleConstructorReturn(this, (ValuesSchema.__proto__ || Object.getPrototypeOf(ValuesSchema)).apply(this, arguments));
+    classCallCheck(this, ValuesSchema);
+    return possibleConstructorReturn(this, _PolymorphicSchema.apply(this, arguments));
   }
 
-  _createClass(ValuesSchema, [{
-    key: 'normalize',
-    value: function normalize(input, parent, key, visit, addEntity) {
-      var _this2 = this;
+  ValuesSchema.prototype.normalize = function normalize(input, parent, key, visit, addEntity) {
+    var _this2 = this;
 
-      return Object.keys(input).reduce(function (output, key, index) {
-        var value = input[key];
-        return value !== undefined && value !== null ? _extends({}, output, _defineProperty({}, key, _this2.normalizeValue(value, input, key, visit, addEntity))) : output;
-      }, {});
-    }
-  }, {
-    key: 'denormalize',
-    value: function denormalize(input, unvisit) {
-      var _this3 = this;
+    return Object.keys(input).reduce(function (output, key, index) {
+      var _babelHelpers$extends;
 
-      return Object.keys(input).reduce(function (output, key) {
-        var entityOrId = input[key];
-        return _extends({}, output, _defineProperty({}, key, _this3.denormalizeValue(entityOrId, unvisit)));
-      }, {});
-    }
-  }]);
+      var value = input[key];
+      return value !== undefined && value !== null ? _extends({}, output, (_babelHelpers$extends = {}, _babelHelpers$extends[key] = _this2.normalizeValue(value, input, key, visit, addEntity), _babelHelpers$extends)) : output;
+    }, {});
+  };
+
+  ValuesSchema.prototype.denormalize = function denormalize(input, unvisit) {
+    var _this3 = this;
+
+    return Object.keys(input).reduce(function (output, key) {
+      var _babelHelpers$extends2;
+
+      var entityOrId = input[key];
+      return _extends({}, output, (_babelHelpers$extends2 = {}, _babelHelpers$extends2[key] = _this3.denormalizeValue(entityOrId, unvisit), _babelHelpers$extends2));
+    }, {});
+  };
 
   return ValuesSchema;
-}(_Polymorphic2.default);
-
-exports.default = ValuesSchema;
-});
-
-unwrapExports(Values);
-
-var _Array = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.denormalize = exports.normalize = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-
-
-var _Polymorphic2 = _interopRequireDefault(Polymorphic);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+}(PolymorphicSchema);
 
 var validateSchema = function validateSchema(definition) {
   var isArray = Array.isArray(definition);
@@ -2604,7 +2274,7 @@ var getValues = function getValues(input) {
   });
 };
 
-var normalize = exports.normalize = function normalize(schema, input, parent, key, visit, addEntity) {
+var normalize = function normalize(schema, input, parent, key, visit, addEntity) {
   schema = validateSchema(schema);
 
   var values = getValues(input);
@@ -2616,76 +2286,36 @@ var normalize = exports.normalize = function normalize(schema, input, parent, ke
   });
 };
 
-var denormalize = exports.denormalize = function denormalize(schema, input, unvisit) {
-  schema = validateSchema(schema);
-  return input && input.map ? input.map(function (entityOrId) {
-    return unvisit(entityOrId, schema);
-  }) : input;
-};
-
 var ArraySchema = function (_PolymorphicSchema) {
-  _inherits(ArraySchema, _PolymorphicSchema);
+  inherits(ArraySchema, _PolymorphicSchema);
 
   function ArraySchema() {
-    _classCallCheck(this, ArraySchema);
-
-    return _possibleConstructorReturn(this, (ArraySchema.__proto__ || Object.getPrototypeOf(ArraySchema)).apply(this, arguments));
+    classCallCheck(this, ArraySchema);
+    return possibleConstructorReturn(this, _PolymorphicSchema.apply(this, arguments));
   }
 
-  _createClass(ArraySchema, [{
-    key: 'normalize',
-    value: function normalize(input, parent, key, visit, addEntity) {
-      var _this2 = this;
+  ArraySchema.prototype.normalize = function normalize(input, parent, key, visit, addEntity) {
+    var _this2 = this;
 
-      var values = getValues(input);
+    var values = getValues(input);
 
-      return values.map(function (value, index) {
-        return _this2.normalizeValue(value, parent, key, visit, addEntity);
-      }).filter(function (value) {
-        return value !== undefined && value !== null;
-      });
-    }
-  }, {
-    key: 'denormalize',
-    value: function denormalize(input, unvisit) {
-      var _this3 = this;
+    return values.map(function (value, index) {
+      return _this2.normalizeValue(value, parent, key, visit, addEntity);
+    }).filter(function (value) {
+      return value !== undefined && value !== null;
+    });
+  };
 
-      return input && input.map ? input.map(function (value) {
-        return _this3.denormalizeValue(value, unvisit);
-      }) : input;
-    }
-  }]);
+  ArraySchema.prototype.denormalize = function denormalize(input, unvisit) {
+    var _this3 = this;
+
+    return input && input.map ? input.map(function (value) {
+      return _this3.denormalizeValue(value, unvisit);
+    }) : input;
+  };
 
   return ArraySchema;
-}(_Polymorphic2.default);
-
-exports.default = ArraySchema;
-});
-
-unwrapExports(_Array);
-var _Array_1 = _Array.denormalize;
-var _Array_2 = _Array.normalize;
-
-var _Object = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.denormalize = exports.normalize = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-
-
-var ImmutableUtils$$1 = _interopRequireWildcard(ImmutableUtils);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+}(PolymorphicSchema);
 
 var _normalize = function _normalize(schema, input, parent, key, visit, addEntity) {
   var object = _extends({}, input);
@@ -2701,10 +2331,9 @@ var _normalize = function _normalize(schema, input, parent, key, visit, addEntit
   return object;
 };
 
-exports.normalize = _normalize;
 var _denormalize = function _denormalize(schema, input, unvisit) {
-  if (ImmutableUtils$$1.isImmutable(input)) {
-    return ImmutableUtils$$1.denormalizeImmutable(schema, input, unvisit);
+  if (isImmutable(input)) {
+    return denormalizeImmutable(schema, input, unvisit);
   }
 
   var object = _extends({}, input);
@@ -2716,91 +2345,40 @@ var _denormalize = function _denormalize(schema, input, unvisit) {
   return object;
 };
 
-exports.denormalize = _denormalize;
-
 var ObjectSchema = function () {
   function ObjectSchema(definition) {
-    _classCallCheck(this, ObjectSchema);
+    classCallCheck(this, ObjectSchema);
 
     this.define(definition);
   }
 
-  _createClass(ObjectSchema, [{
-    key: 'define',
-    value: function define(definition) {
-      this.schema = Object.keys(definition).reduce(function (entitySchema, key) {
-        var schema = definition[key];
-        return _extends({}, entitySchema, _defineProperty({}, key, schema));
-      }, this.schema || {});
-    }
-  }, {
-    key: 'normalize',
-    value: function normalize() {
-      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
+  ObjectSchema.prototype.define = function define(definition) {
+    this.schema = Object.keys(definition).reduce(function (entitySchema, key) {
+      var _babelHelpers$extends;
 
-      return _normalize.apply(undefined, [this.schema].concat(args));
-    }
-  }, {
-    key: 'denormalize',
-    value: function denormalize() {
-      for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        args[_key2] = arguments[_key2];
-      }
+      var schema = definition[key];
+      return _extends({}, entitySchema, (_babelHelpers$extends = {}, _babelHelpers$extends[key] = schema, _babelHelpers$extends));
+    }, this.schema || {});
+  };
 
-      return _denormalize.apply(undefined, [this.schema].concat(args));
+  ObjectSchema.prototype.normalize = function normalize() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
     }
-  }]);
+
+    return _normalize.apply(undefined, [this.schema].concat(args));
+  };
+
+  ObjectSchema.prototype.denormalize = function denormalize() {
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
+
+    return _denormalize.apply(undefined, [this.schema].concat(args));
+  };
 
   return ObjectSchema;
 }();
-
-exports.default = ObjectSchema;
-});
-
-unwrapExports(_Object);
-var _Object_1 = _Object.denormalize;
-var _Object_2 = _Object.normalize;
-
-var src = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.denormalize = exports.normalize = exports.schema = undefined;
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-
-
-var _Entity2 = _interopRequireDefault(Entity);
-
-
-
-var _Union2 = _interopRequireDefault(Union);
-
-
-
-var _Values2 = _interopRequireDefault(Values);
-
-
-
-var ArrayUtils = _interopRequireWildcard(_Array);
-
-
-
-var ObjectUtils = _interopRequireWildcard(_Object);
-
-
-
-var ImmutableUtils$$1 = _interopRequireWildcard(ImmutableUtils);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var visit = function visit(value, parent, key, schema, addEntity) {
   if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object' || !value) {
@@ -2808,7 +2386,7 @@ var visit = function visit(value, parent, key, schema, addEntity) {
   }
 
   if ((typeof schema === 'undefined' ? 'undefined' : _typeof(schema)) === 'object' && (!schema.normalize || typeof schema.normalize !== 'function')) {
-    var method = Array.isArray(schema) ? ArrayUtils.normalize : ObjectUtils.normalize;
+    var method = Array.isArray(schema) ? normalize : _normalize;
     return method(schema, value, parent, key, visit, addEntity);
   }
 
@@ -2832,15 +2410,15 @@ var addEntities = function addEntities(entities) {
   };
 };
 
-var schema = exports.schema = {
-  Array: ArrayUtils.default,
-  Entity: _Entity2.default,
-  Object: ObjectUtils.default,
-  Union: _Union2.default,
-  Values: _Values2.default
+var schema = {
+  Array: ArraySchema,
+  Entity: EntitySchema,
+  Object: ObjectSchema,
+  Union: UnionSchema,
+  Values: ValuesSchema
 };
 
-var normalize = exports.normalize = function normalize(input, schema) {
+var normalize$1 = function normalize$$1(input, schema) {
   if (!input || (typeof input === 'undefined' ? 'undefined' : _typeof(input)) !== 'object') {
     throw new Error('Unexpected input given to normalize. Expected type to be "object", found "' + (typeof input === 'undefined' ? 'undefined' : _typeof(input)) + '".');
   }
@@ -2851,77 +2429,6 @@ var normalize = exports.normalize = function normalize(input, schema) {
   var result = visit(input, input, null, schema, addEntity);
   return { entities: entities, result: result };
 };
-
-var unvisitEntity = function unvisitEntity(id, schema, unvisit, getEntity, cache) {
-  var entity = getEntity(id, schema);
-  if ((typeof entity === 'undefined' ? 'undefined' : _typeof(entity)) !== 'object' || entity === null) {
-    return entity;
-  }
-
-  if (!cache[schema.key]) {
-    cache[schema.key] = {};
-  }
-
-  if (!cache[schema.key][id]) {
-    // Ensure we don't mutate it non-immutable objects
-    var entityCopy = ImmutableUtils$$1.isImmutable(entity) ? entity : _extends({}, entity);
-
-    // Need to set this first so that if it is referenced further within the
-    // denormalization the reference will already exist.
-    cache[schema.key][id] = entityCopy;
-    cache[schema.key][id] = schema.denormalize(entityCopy, unvisit);
-  }
-
-  return cache[schema.key][id];
-};
-
-var getUnvisit = function getUnvisit(entities) {
-  var cache = {};
-  var getEntity = getEntities(entities);
-
-  return function unvisit(input, schema) {
-    if ((typeof schema === 'undefined' ? 'undefined' : _typeof(schema)) === 'object' && (!schema.denormalize || typeof schema.denormalize !== 'function')) {
-      var method = Array.isArray(schema) ? ArrayUtils.denormalize : ObjectUtils.denormalize;
-      return method(schema, input, unvisit);
-    }
-
-    if (input === undefined || input === null) {
-      return input;
-    }
-
-    if (schema instanceof _Entity2.default) {
-      return unvisitEntity(input, schema, unvisit, getEntity, cache);
-    }
-
-    return schema.denormalize(input, unvisit);
-  };
-};
-
-var getEntities = function getEntities(entities) {
-  var isImmutable = ImmutableUtils$$1.isImmutable(entities);
-
-  return function (entityOrId, schema) {
-    var schemaKey = schema.key;
-
-    if ((typeof entityOrId === 'undefined' ? 'undefined' : _typeof(entityOrId)) === 'object') {
-      return entityOrId;
-    }
-
-    return isImmutable ? entities.getIn([schemaKey, entityOrId.toString()]) : entities[schemaKey][entityOrId];
-  };
-};
-
-var denormalize = exports.denormalize = function denormalize(input, schema, entities) {
-  if (typeof input !== 'undefined') {
-    return getUnvisit(entities)(input, schema);
-  }
-};
-});
-
-unwrapExports(src);
-var src_1 = src.denormalize;
-var src_2 = src.normalize;
-var src_3 = src.schema;
 
 var Normalizer = /** @class */ (function () {
     function Normalizer() {
@@ -2934,8 +2441,8 @@ var Normalizer = /** @class */ (function () {
             return {};
         }
         var entity = query.database().schemas[query.model.entity];
-        var schema = Array.isArray(record) ? [entity] : entity;
-        return src_2(record, schema).entities;
+        var schema$$1 = Array.isArray(record) ? [entity] : entity;
+        return normalize$1(record, schema$$1).entities;
     };
     return Normalizer;
 }());
@@ -2970,7 +2477,7 @@ var Incrementer = /** @class */ (function () {
     Incrementer.process = function (query, data) {
         var _this = this;
         return Utils.mapValues(data, function (records, entity) {
-            var newQuery = query.newPlainQuery(entity);
+            var newQuery = query.newQuery(entity);
             // If the entity doesn't have increment attribute, do nothing and
             // just return immediately.
             if (!newQuery.model.hasIncrementFields()) {
@@ -3048,7 +2555,7 @@ var IdFixer = /** @class */ (function () {
     IdFixer.process = function (query, data) {
         var _this = this;
         return Utils.mapValues(data, function (records, entity) {
-            var newQuery = query.newPlainQuery(entity);
+            var newQuery = query.newQuery(entity);
             return _this.processRecords(records, newQuery);
         });
     };
@@ -3280,14 +2787,14 @@ var Loader = /** @class */ (function () {
         });
     };
     /**
-     * Eager load the relationships for the given records.
+     * Eager load the relationships for the given collection.
      */
-    Loader.eagerLoadRelations = function (query, records) {
+    Loader.eagerLoadRelations = function (query, collection) {
         var fields = query.model.getFields();
         for (var name_1 in query.load) {
             var relation = fields[name_1];
             if (relation instanceof Relation) {
-                relation.load(query, records, name_1);
+                relation.load(query, collection, name_1);
             }
         }
     };
@@ -3341,9 +2848,6 @@ var Hook = /** @class */ (function () {
      * Get the action hook.
      */
     Hook.prototype.getActionHook = function (name) {
-        if (!this.query.actionContext) {
-            return null;
-        }
         var hook = this.query.module.actions && this.query.module.actions[name];
         return hook || null;
     };
@@ -3377,14 +2881,11 @@ var Hook = /** @class */ (function () {
      * Execute the action hook.
      */
     Hook.prototype.executeActionHook = function (on, data) {
-        if (!this.query.actionContext) {
-            return data;
-        }
         var hook = this.getActionHook(on);
         if (!hook) {
             return data;
         }
-        var result = hook(this.query.actionContext, data);
+        var result = hook({}, data);
         if (result === false) {
             return false;
         }
@@ -3423,28 +2924,15 @@ var Hook = /** @class */ (function () {
     Hook.prototype.executeOnRecords = function (on, records) {
         var _this = this;
         if (!this.has(on)) {
-            return records;
+            return;
         }
-        return Object.keys(records).reduce(function (newRecords, id) {
+        Object.keys(records).forEach(function (id) {
             var record = records[id];
             var result = _this.execute(on, record);
             if (result === false) {
-                return newRecords;
+                delete records[id];
             }
-            newRecords[id] = result;
-            return newRecords;
-        }, {});
-    };
-    /**
-     * Execute the callback for the given collection.
-     */
-    Hook.prototype.executeOnCollection = function (on, collection) {
-        var _this = this;
-        if (!this.has(on)) {
-            return collection;
-        }
-        collection.map(function (item) { _this.execute(on, item); });
-        return collection;
+        });
     };
     /**
      * Global lifecycle hooks for the query.
@@ -3461,8 +2949,7 @@ var Query = /** @class */ (function () {
     /**
      * Create a new Query instance.
      */
-    function Query(state, entity, wrap) {
-        if (wrap === void 0) { wrap = true; }
+    function Query(state, entity) {
         /**
          * The where constraints for the query.
          */
@@ -3486,23 +2973,22 @@ var Query = /** @class */ (function () {
          */
         this.load = {};
         /**
-         * The Vuex Action context.
+         * The object that holds mutated records. This object is used to retrieve the
+         * mutated records in actions.
+         *
+         * Since mutations can't return any value, actions will pass an object to
+         * Query through mutations, and let Query store any returning values to the
+         * object. This way, actions can retrieve mutated records after committing
+         * the mutations.
          */
-        this.actionContext = null;
+        this.result = { data: null };
         this.rootState = state;
         this.state = state[entity];
         this.entity = entity;
         this.model = this.getModel(entity);
         this.module = this.getModule(entity);
         this.hook = new Hook(this);
-        this.wrap = wrap;
     }
-    /**
-     * Create a new query instance
-     */
-    Query.query = function (state, name, wrap) {
-        return new this(state, name, wrap);
-    };
     /**
      * Get the database from the container.
      */
@@ -3534,113 +3020,14 @@ var Query = /** @class */ (function () {
         return this.database().modules();
     };
     /**
-     * Save new data to the state. It will remove all existing data in the
-     * state. If you want to keep existing data while saving new data,
-     * use `insert` instead.
-     */
-    Query.create = function (state, entity, data, options) {
-        return (new this(state, entity)).create(data, options);
-    };
-    /**
-     * Commit `create` to the state.
-     */
-    Query.commitCreate = function (state, entity, records) {
-        (new this(state, entity)).commitCreate(records);
-    };
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    Query.insert = function (state, entity, data, options) {
-        return (new this(state, entity)).insert(data, options);
-    };
-    /**
-     * Commit `insert` to the state.
-     */
-    Query.commitInsert = function (state, entity, data) {
-        (new this(state, entity)).commitInsert(data);
-    };
-    /**
-     * Update data in the state.
-     */
-    Query.update = function (state, entity, data, condition, options) {
-        return (new this(state, entity)).update(data, condition, options);
-    };
-    /**
-     * Commit `update` to the state.
-     */
-    Query.commitUpdate = function (state, entity, data) {
-        (new this(state, entity)).commitUpdate(data);
-    };
-    /**
-     * Insert or update given data to the state. Unlike `insert`, this method
-     * will not replace existing data within the state, but it will update only
-     * the submitted data with the same primary key.
-     */
-    Query.insertOrUpdate = function (state, entity, data, options) {
-        return (new this(state, entity)).insertOrUpdate(data, options);
-    };
-    /**
-     * Get all data of the given entity from the state.
-     */
-    Query.all = function (state, entity, wrap) {
-        return (new this(state, entity, wrap)).get();
-    };
-    /**
-     * Get the record of the given id.
-     */
-    Query.find = function (state, entity, id, wrap) {
-        return (new this(state, entity, wrap)).find(id);
-    };
-    /**
-     * Get the count of the retrieved data.
-     */
-    Query.count = function (state, entity, wrap) {
-        return (new this(state, entity, wrap)).count();
-    };
-    /**
-     * Get the max value of the specified filed.
-     */
-    Query.max = function (state, entity, field, wrap) {
-        return (new this(state, entity, wrap)).max(field);
-    };
-    /**
-     * Get the min value of the specified filed.
-     */
-    Query.min = function (state, entity, field, wrap) {
-        return (new this(state, entity, wrap)).min(field);
-    };
-    /**
-     * Get the sum value of the specified filed.
-     */
-    Query.sum = function (state, entity, field, wrap) {
-        return (new this(state, entity, wrap)).sum(field);
-    };
-    /**
-     * Delete a record from the state.
-     */
-    Query.delete = function (state, entity, condition) {
-        return (new this(state, entity)).delete(condition);
-    };
-    /**
      * Delete all records from the state.
      */
-    Query.deleteAll = function (state, entity) {
+    Query.deleteAll = function (state) {
         var _this = this;
-        if (entity) {
-            return (new this(state, entity)).deleteAll();
-        }
         var models = this.getModels();
         Utils.forOwn(models, function (_model, name) {
             state[name] && (new _this(state, name)).deleteAll();
         });
-    };
-    /**
-     * Commit `delete` to the state.
-     */
-    Query.commitDelete = function (state, entity, ids) {
-        (new Query(state, entity)).commitDelete(ids);
     };
     /**
      * Register a callback. It Returns unique ID for registered callback.
@@ -3664,14 +3051,8 @@ var Query = /** @class */ (function () {
      * Create a new query instance.
      */
     Query.prototype.newQuery = function (entity) {
-        return (new Query(this.rootState, entity)).setActionContext(this.actionContext);
-    };
-    /**
-     * Create a new query instance with wrap property set to false.
-     */
-    Query.prototype.newPlainQuery = function (entity) {
         entity = entity || this.entity;
-        return (new Query(this.rootState, entity)).plain();
+        return (new Query(this.rootState, entity));
     };
     /**
      * Get the database from the container.
@@ -3706,285 +3087,11 @@ var Query = /** @class */ (function () {
         return this.self().getModules();
     };
     /**
-     * Commit changes to the state. This method will call mutation name of
-     * `method` with `payload` if the method is called from an action to
-     * avoid mutating state change outside of mutation handler.
+     * Set the result.
      */
-    Query.prototype.commit = function (method, payload, callback) {
-        if (!this.actionContext) {
-            callback();
-            return;
-        }
-        payload = __assign({ entity: this.entity }, payload);
-        this.actionContext.commit(this.rootState.$name + "/" + method, payload, { root: true });
-    };
-    /**
-     * Set wrap flag to false.
-     */
-    Query.prototype.plain = function () {
-        this.wrap = false;
+    Query.prototype.setResult = function (result) {
+        this.result = result;
         return this;
-    };
-    /**
-     * Set Vuex Action Context to the query.
-     */
-    Query.prototype.setActionContext = function (context) {
-        this.actionContext = context;
-        return this;
-    };
-    /**
-     * Save new data to the state. It will remove all existing data in the
-     * state. If you want to keep existing data while saving new data,
-     * use `insert` instead.
-     */
-    Query.prototype.create = function (data, options) {
-        return this.persist(data, 'create', options);
-    };
-    /**
-     * Create records to the state.
-     */
-    Query.prototype.createMany = function (records) {
-        records = this.model.hydrateMany(records);
-        records = this.hook.executeOnRecords('beforeCreate', records);
-        this.commitCreate(records);
-        var collection = this.collect(this.records(records));
-        return this.hook.executeOnCollection('afterCreate', collection);
-    };
-    /**
-     * Commit `create` to the state.
-     */
-    Query.prototype.commitCreate = function (data) {
-        var _this = this;
-        this.commit('commitCreate', { data: data }, function () {
-            _this.state.data = data;
-        });
-    };
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    Query.prototype.insert = function (data, options) {
-        return this.persist(data, 'insert', options);
-    };
-    /**
-     * Insert list of records in the state.
-     */
-    Query.prototype.insertMany = function (records) {
-        records = this.model.hydrateMany(records);
-        records = this.hook.executeOnRecords('beforeCreate', records);
-        this.commitInsert(records);
-        var collection = this.collect(this.records(records));
-        return this.hook.executeOnCollection('afterCreate', collection);
-    };
-    /**
-     * Commit `insert` to the state.
-     */
-    Query.prototype.commitInsert = function (data) {
-        var _this = this;
-        this.commit('commitInsert', { data: data }, function () {
-            _this.state.data = __assign({}, _this.state.data, data);
-        });
-    };
-    /**
-     * Update data in the state.
-     */
-    Query.prototype.update = function (data, condition, options) {
-        // If the data is array, normalize the data and update them.
-        if (Array.isArray(data)) {
-            return this.persist(data, 'update', options);
-        }
-        // Let's see what we can do if `data` is closure.
-        if (typeof data === 'function') {
-            // If the data is closure, but there's no condition, we will not know
-            // what record to update so raise an error an abort.
-            if (!condition) {
-                throw new Error('You must specify `where` to update records by specifying `data` as a closure.');
-            }
-            // If the condition is closure, update records by the closure.
-            if (typeof condition === 'function') {
-                return this.updateByCondition(data, condition);
-            }
-            // Else the condition is either String or Number, so let's
-            // update the record by ID.
-            return this.updateById(data, condition);
-        }
-        // Now the data is not a closure, and it's not an array, so it should be an object.
-        // If the condition is closure, we can't normalize the data so let's update
-        // records using the closure.
-        if (typeof condition === 'function') {
-            return this.updateByCondition(data, condition);
-        }
-        // If there's no condition, let's normalize the data and update them.
-        if (!condition) {
-            return this.persist(data, 'update', options);
-        }
-        // Now since the condition is either String or Number, let's check if the
-        // model's primary key is not a composite key. If yes, we can't set the
-        // condition as ID value for the record so throw an error and abort.
-        if (Array.isArray(this.model.primaryKey)) {
-            throw new Error('You can not specify `where` value when you have a composite key defined in your model. Please include composite keys to the `data` fields.');
-        }
-        // Finally,let's add condition as the primary key of the object and
-        // then normalize them to update the records.
-        data[this.model.primaryKey] = condition;
-        return this.persist(data, 'update', options);
-    };
-    /**
-     * Update all records.
-     */
-    Query.prototype.updateMany = function (records) {
-        var _this = this;
-        var toBeUpdated = {};
-        records = this.model.fixMany(records, []);
-        Utils.forOwn(records, function (record, id) {
-            var state = _this.state.data[id];
-            if (!state) {
-                return;
-            }
-            var newState = JSON.parse(JSON.stringify(state));
-            _this.merge(record, newState);
-            toBeUpdated[id] = newState;
-        });
-        toBeUpdated = this.hook.executeOnRecords('beforeUpdate', toBeUpdated);
-        this.commitUpdate(toBeUpdated);
-        var collection = this.collect(this.records(toBeUpdated));
-        this.hook.executeOnCollection('afterUpdate', collection);
-        return collection;
-    };
-    /**
-     * Update the state by id.
-     */
-    Query.prototype.updateById = function (data, id) {
-        var _a;
-        id = typeof id === 'number' ? id.toString() : id;
-        var state = this.state.data[id];
-        if (!state) {
-            return null;
-        }
-        var record = JSON.parse(JSON.stringify(state));
-        typeof data === 'function' ? data(record) : this.merge(this.model.fix(data), record);
-        var hookResult = this.hook.execute('beforeUpdate', record);
-        if (hookResult === false) {
-            return null;
-        }
-        this.commitUpdate((_a = {}, _a[id] = hookResult, _a));
-        var item = this.item(hookResult);
-        this.hook.execute('afterUpdate', item);
-        return item;
-    };
-    /**
-     * Update the state by condition.
-     */
-    Query.prototype.updateByCondition = function (data, condition) {
-        var _this = this;
-        var toBeUpdated = {};
-        Utils.forOwn(this.state.data, function (record, id) {
-            if (!condition(record)) {
-                return;
-            }
-            var state = JSON.parse(JSON.stringify(record));
-            typeof data === 'function' ? data(state) : _this.merge(_this.model.fix(data), state);
-            toBeUpdated[id] = state;
-        });
-        toBeUpdated = this.hook.executeOnRecords('beforeUpdate', toBeUpdated);
-        this.commitUpdate(toBeUpdated);
-        var collection = this.collect(this.records(toBeUpdated));
-        this.hook.executeOnCollection('afterUpdate', collection);
-        return collection;
-    };
-    /**
-     * Commit `update` to the state.
-     */
-    Query.prototype.commitUpdate = function (data) {
-        var _this = this;
-        this.commit('commitUpdate', { data: data }, function () {
-            _this.state.data = __assign({}, _this.state.data, data);
-        });
-    };
-    /**
-     * Insert or update given data to the state. Unlike `insert`, this method
-     * will not replace existing data within the state, but it will update only
-     * the submitted data with the same primary key.
-     */
-    Query.prototype.insertOrUpdate = function (data, options) {
-        return this.persist(data, 'insertOrUpdate', options);
-    };
-    /**
-     * Insert or update the records.
-     */
-    Query.prototype.insertOrUpdateMany = function (records) {
-        var _this = this;
-        var toBeInserted = {};
-        var toBeUpdated = {};
-        Utils.forOwn(records, function (record, id) {
-            if (_this.state.data[id]) {
-                toBeUpdated[id] = record;
-                return;
-            }
-            toBeInserted[id] = record;
-        });
-        return this.collect(this.insertMany(toBeInserted).concat(this.updateMany(toBeUpdated)));
-    };
-    /**
-     * Persist data into the state.
-     */
-    Query.prototype.persist = function (data, method, options) {
-        var _this = this;
-        if (options === void 0) { options = {}; }
-        data = this.normalize(data);
-        if (Utils.isEmpty(data)) {
-            method === 'create' && this.commitCreate({});
-            return {};
-        }
-        return Object.keys(data).reduce(function (collection, entity) {
-            var query = _this.newQuery(entity);
-            var persistMethod = _this.getPersistMethod(entity, method, options);
-            var records = query[persistMethod + "Many"](data[entity]);
-            if (records.length > 0) {
-                collection[entity] = records;
-            }
-            return collection;
-        }, {});
-    };
-    /**
-     * Get method for the persist.
-     */
-    Query.prototype.getPersistMethod = function (entity, method, options) {
-        if (options.create && options.create.includes(entity)) {
-            return 'create';
-        }
-        if (options.insert && options.insert.includes(entity)) {
-            return 'insert';
-        }
-        if (options.update && options.update.includes(entity)) {
-            return 'update';
-        }
-        if (options.insertOrUpdate && options.insertOrUpdate.includes(entity)) {
-            return 'insertOrUpdate';
-        }
-        return method;
-    };
-    /**
-     * Normalize the given data.
-     */
-    Query.prototype.normalize = function (data) {
-        return Processor.normalize(this, data);
-    };
-    /**
-     * Update the state value by merging the given record and state.
-     */
-    Query.prototype.merge = function (data, state, fields) {
-        var _this = this;
-        var theFields = fields || this.model.getFields();
-        Utils.forOwn(data, function (value, key) {
-            var field = theFields[key];
-            if (field instanceof Attribute) {
-                state[key] = value;
-                return;
-            }
-            _this.merge(value, state[key], field);
-        });
     };
     /**
      * Returns all record of the query chain result. This method is alias
@@ -3997,42 +3104,35 @@ var Query = /** @class */ (function () {
      * Get the record of the given id.
      */
     Query.prototype.find = function (id) {
-        var record = this.state.data[id];
-        if (!record) {
-            return null;
-        }
-        return this.item(__assign({}, record));
+        return this.item(this.state.data[id]);
     };
     /**
      * Returns all record of the query chain result.
      */
     Query.prototype.get = function () {
-        var records = this.process();
+        var records = this.select();
         return this.collect(records);
     };
     /**
      * Returns the first record of the query chain result.
      */
     Query.prototype.first = function () {
-        var records = this.process();
+        var records = this.select();
         return this.item(records[0]);
     };
     /**
      * Returns the last single record of the query chain result.
      */
     Query.prototype.last = function () {
-        var records = this.process();
-        var last = records.length - 1;
-        return this.item(records[last]);
+        var records = this.select();
+        return this.item(records[records.length - 1]);
     };
     /**
      * Get all the records from the state and convert them into the array.
-     * If you pass records, it will create an array out of that records
-     * instead of the store state.
      */
-    Query.prototype.records = function (records) {
-        var theRecords = records || this.state.data;
-        return Object.keys(theRecords).map(function (id) { return (__assign({}, theRecords[id])); });
+    Query.prototype.records = function () {
+        var _this = this;
+        return Object.keys(this.state.data).map(function (id) { return _this.state.data[id]; });
     };
     /**
      * Add a and where clause to the query.
@@ -4081,9 +3181,8 @@ var Query = /** @class */ (function () {
     /**
      * Query all relations.
      */
-    Query.prototype.withAll = function (constraint) {
-        if (constraint === void 0) { constraint = function () { return null; }; }
-        Loader.withAll(this, constraint);
+    Query.prototype.withAll = function () {
+        Loader.withAll(this);
         return this;
     };
     /**
@@ -4098,7 +3197,7 @@ var Query = /** @class */ (function () {
      * Set where constraint based on relationship existence.
      */
     Query.prototype.has = function (name, constraint, count) {
-        return this.addHasConstraint(name, constraint, count, true);
+        return this.addHasConstraint(name, constraint, count);
     };
     /**
      * Set where constraint based on relationship absence.
@@ -4118,7 +3217,7 @@ var Query = /** @class */ (function () {
      * Add where has condition.
      */
     Query.prototype.whereHas = function (name, constraint) {
-        return this.addWhereHasConstraint(name, constraint, true);
+        return this.addWhereHasConstraint(name, constraint);
     };
     /**
      * Add where has not condition.
@@ -4137,10 +3236,10 @@ var Query = /** @class */ (function () {
     /**
      * Process the query and filter data.
      */
-    Query.prototype.process = function () {
+    Query.prototype.select = function () {
         var records = this.records();
         // Process `beforeProcess` hook.
-        records = this.hook.execute('beforeProcess', records);
+        records = this.hook.execute('beforeSelect', records);
         // Let's filter the records at first by the where clauses.
         records = this.filterWhere(records);
         // Process `afterWhere` hook.
@@ -4177,13 +3276,13 @@ var Query = /** @class */ (function () {
      * Get the count of the retrieved data.
      */
     Query.prototype.count = function () {
-        return this.plain().get().length;
+        return this.get().length;
     };
     /**
      * Get the max value of the specified filed.
      */
     Query.prototype.max = function (field) {
-        var numbers = this.plain().get().reduce(function (numbers, item) {
+        var numbers = this.get().reduce(function (numbers, item) {
             if (typeof item[field] === 'number') {
                 numbers.push(item[field]);
             }
@@ -4195,7 +3294,7 @@ var Query = /** @class */ (function () {
      * Get the min value of the specified filed.
      */
     Query.prototype.min = function (field) {
-        var numbers = this.plain().get().reduce(function (numbers, item) {
+        var numbers = this.get().reduce(function (numbers, item) {
             if (typeof item[field] === 'number') {
                 numbers.push(item[field]);
             }
@@ -4207,7 +3306,7 @@ var Query = /** @class */ (function () {
      * Get the sum value of the specified filed.
      */
     Query.prototype.sum = function (field) {
-        return this.plain().get().reduce(function (sum, item) {
+        return this.get().reduce(function (sum, item) {
             if (typeof item[field] === 'number') {
                 sum += item[field];
             }
@@ -4221,19 +3320,25 @@ var Query = /** @class */ (function () {
         if (!item) {
             return null;
         }
-        Loader.eagerLoadRelations(this, [item]);
-        return this.model.make(item, !this.wrap);
+        if (Object.keys(this.load).length > 0) {
+            item = new this.model(item);
+            Loader.eagerLoadRelations(this, [item]);
+        }
+        return item;
     };
     /**
      * Create a collection (array) from given records.
      */
     Query.prototype.collect = function (collection) {
         var _this = this;
-        if (Utils.isEmpty(collection)) {
+        if (collection.length < 1) {
             return [];
         }
-        Loader.eagerLoadRelations(this, collection);
-        return collection.map(function (record) { return _this.model.make(record, !_this.wrap); });
+        if (Object.keys(this.load).length > 0) {
+            collection = collection.map(function (item) { return new _this.model(item); });
+            Loader.eagerLoadRelations(this, collection);
+        }
+        return collection;
     };
     /**
      * Check if the given collection has given relationship.
@@ -4262,15 +3367,15 @@ var Query = /** @class */ (function () {
         else if (constraint === '<=' && typeof count === 'number') {
             _constraint = function (record) { return record.length <= count; };
         }
-        var data = (new Query(this.rootState, this.entity, false)).with(name).get();
+        else {
+            _constraint = function (record) { return record.length >= 1; };
+        }
+        var data = this.newQuery().with(name).get();
         var ids = [];
         data.forEach(function (item) {
             var target = item[name];
             var result = false;
-            if (!target) {
-                result = false;
-            }
-            else if (Array.isArray(target) && target.length < 1) {
+            if (Array.isArray(target) && target.length < 1) {
                 result = false;
             }
             else if (Array.isArray(target)) {
@@ -4291,7 +3396,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.matchesWhereHasRelation = function (name, constraint, existence) {
         if (existence === void 0) { existence = true; }
-        var data = this.newPlainQuery().with(name, constraint).get();
+        var data = this.newQuery().with(name, constraint).get();
         var ids = [];
         data.forEach(function (item) {
             var target = item[name];
@@ -4304,73 +3409,332 @@ var Query = /** @class */ (function () {
         return ids;
     };
     /**
+     * Save given data to the store by replacing all existing records in the
+     * store. If you want to save data without replacing existing records,
+     * use the `insert` method instead.
+     */
+    Query.prototype.create = function (data, options) {
+        return this.persist(data, 'create', options);
+    };
+    /**
+     * Create records to the state.
+     */
+    Query.prototype.createMany = function (records) {
+        var _this = this;
+        var instances = this.hydrateMany(records);
+        this.commit('create', instances, function () {
+            _this.state.data = instances;
+        });
+        return this.map(instances);
+    };
+    /**
+     * Insert given data to the state. Unlike `create`, this method will not
+     * remove existing data within the state, but it will update the data
+     * with the same primary key.
+     */
+    Query.prototype.insert = function (data, options) {
+        return this.persist(data, 'insert', options);
+    };
+    /**
+     * Insert list of records in the state.
+     */
+    Query.prototype.insertMany = function (records) {
+        var _this = this;
+        var instances = this.hydrateMany(records);
+        this.commit('create', instances, function () {
+            _this.state.data = __assign({}, _this.state.data, instances);
+        });
+        return this.map(instances);
+    };
+    /**
+     * Update data in the state.
+     */
+    Query.prototype.update = function (data, condition, options) {
+        // If the data is array, simply normalize the data and update them.
+        if (Array.isArray(data)) {
+            return this.persist(data, 'update', options);
+        }
+        // OK, the data is not an array. Now let's check `data` to see what we can
+        // do if it is a closure.
+        if (typeof data === 'function') {
+            // If the data is closure, but if there's no condition, we wouldn't know
+            // what record to update so raise an error and abort.
+            if (!condition) {
+                throw new Error('You must specify `where` to update records by specifying `data` as a closure.');
+            }
+            // If the condition is a closure, then update records by the closure.
+            if (typeof condition === 'function') {
+                return this.updateByCondition(data, condition);
+            }
+            // Else the condition is either String or Number, so let's
+            // update the record by ID.
+            return this.updateById(data, condition);
+        }
+        // Now the data is not a closure, and it's not an array, so it should be an object.
+        // If the condition is closure, we can't normalize the data so let's update
+        // records using the closure.
+        if (typeof condition === 'function') {
+            return this.updateByCondition(data, condition);
+        }
+        // If there's no condition, let's normalize the data and update them.
+        if (!condition) {
+            return this.persist(data, 'update', options);
+        }
+        // Now since the condition is either String or Number, let's check if the
+        // model's primary key is not a composite key. If yes, we can't set the
+        // condition as ID value for the record so throw an error and abort.
+        if (Array.isArray(this.model.primaryKey)) {
+            throw new Error("\n        You can't specify `where` value as `string` or `number` when you\n        have a composite key defined in your model. Please include composite\n        keys to the `data` fields.\n      ");
+        }
+        // Finally, let's add condition as the primary key of the object and
+        // then normalize them to update the records.
+        data[this.model.primaryKey] = condition;
+        return this.persist(data, 'update', options);
+    };
+    /**
+     * Update all records.
+     */
+    Query.prototype.updateMany = function (records) {
+        var instances = this.combine(records);
+        return this.commitUpdate(instances);
+    };
+    /**
+     * Update the state by id.
+     */
+    Query.prototype.updateById = function (data, id) {
+        var _a;
+        id = typeof id === 'number' ? id.toString() : id;
+        var instance = this.state.data[id];
+        if (!instance) {
+            return null;
+        }
+        var instances = (_a = {},
+            _a[id] = this.processUpdate(data, instance),
+            _a);
+        this.commitUpdate(instances);
+        return instances[id];
+    };
+    /**
+     * Update the state by condition.
+     */
+    Query.prototype.updateByCondition = function (data, condition) {
+        var _this = this;
+        var instances = Object.keys(this.state.data).reduce(function (instances, id) {
+            var instance = _this.state.data[id];
+            if (!condition(instance)) {
+                return instances;
+            }
+            instances[id] = _this.processUpdate(data, instance);
+            return instances;
+        }, {});
+        return this.commitUpdate(instances);
+    };
+    /**
+     * Update the given record with given data.
+     */
+    Query.prototype.processUpdate = function (data, instance) {
+        if (typeof data === 'function') {
+            data(instance);
+            return instance;
+        }
+        return this.hydrate(__assign({}, instance, data));
+    };
+    /**
+     * Commit `update` to the state.
+     */
+    Query.prototype.commitUpdate = function (instances) {
+        var _this = this;
+        this.commit('update', instances, function () {
+            _this.state.data = __assign({}, _this.state.data, instances);
+        });
+        return this.map(instances);
+    };
+    /**
+     * Insert or update given data to the state. Unlike `insert`, this method
+     * will not replace existing data within the state, but it will update only
+     * the submitted data with the same primary key.
+     */
+    Query.prototype.insertOrUpdate = function (data, options) {
+        return this.persist(data, 'insertOrUpdate', options);
+    };
+    /**
+     * Insert or update the records.
+     */
+    Query.prototype.insertOrUpdateMany = function (records) {
+        var _this = this;
+        var toBeInserted = {};
+        var toBeUpdated = {};
+        Object.keys(records).forEach(function (id) {
+            var record = records[id];
+            if (_this.state.data[id]) {
+                toBeUpdated[id] = record;
+                return;
+            }
+            toBeInserted[id] = record;
+        });
+        return this.insertMany(toBeInserted).concat(this.updateMany(toBeUpdated));
+    };
+    /**
+     * Persist data into the state.
+     */
+    Query.prototype.persist = function (data, method, options) {
+        var _this = this;
+        data = this.normalize(data);
+        if (Utils.isEmpty(data)) {
+            if (method === 'create') {
+                this.state.data = {};
+            }
+            return {};
+        }
+        this.result.data = Object.keys(data).reduce(function (collection, entity) {
+            var query = _this.newQuery(entity);
+            var persistMethod = _this.getPersistMethod(entity, method, options);
+            var records = query[persistMethod + "Many"](data[entity]);
+            if (records.length > 0) {
+                collection[entity] = records;
+            }
+            return collection;
+        }, {});
+        return this.result.data;
+    };
+    /**
+     * Get method for the persist.
+     */
+    Query.prototype.getPersistMethod = function (entity, method, options) {
+        if (options.create && options.create.includes(entity)) {
+            return 'create';
+        }
+        if (options.insert && options.insert.includes(entity)) {
+            return 'insert';
+        }
+        if (options.update && options.update.includes(entity)) {
+            return 'update';
+        }
+        if (options.insertOrUpdate && options.insertOrUpdate.includes(entity)) {
+            return 'insertOrUpdate';
+        }
+        return method;
+    };
+    /**
      * Delete records from the state.
      */
     Query.prototype.delete = function (condition) {
         if (typeof condition === 'function') {
-            return this.deleteByCondition(condition);
+            this.result.data = this.deleteByCondition(condition);
+            return this.result.data;
         }
-        return this.deleteById(condition);
+        this.result.data = this.deleteById(condition);
+        return this.result.data;
     };
     /**
      * Delete a record by id.
      */
     Query.prototype.deleteById = function (id) {
+        var _a;
         id = typeof id === 'number' ? id.toString() : id;
-        var state = this.state.data[id];
-        if (!state) {
+        var instance = this.state.data[id];
+        if (!instance) {
             return null;
         }
-        var hookResult = this.hook.execute('beforeDelete', state);
-        if (hookResult === false) {
-            return null;
-        }
-        this.commitDelete([id]);
-        var item = this.item(hookResult);
-        this.hook.execute('afterDelete', item);
-        return item;
+        var instances = (_a = {}, _a[id] = instance, _a);
+        var collection = this.commitDelete(instances);
+        return collection[0];
     };
     /**
      * Delete record by condition.
      */
     Query.prototype.deleteByCondition = function (condition) {
-        var toBeDeleted = {};
-        Utils.forOwn(this.state.data, function (record, id) {
-            if (!condition(record)) {
-                return;
+        var _this = this;
+        var instances = Object.keys(this.state.data).reduce(function (records, id) {
+            var instance = _this.state.data[id];
+            if (!condition(instance)) {
+                return records;
             }
-            toBeDeleted[id] = record;
-        });
-        toBeDeleted = this.hook.executeOnRecords('beforeDelete', toBeDeleted);
-        this.commitDelete(Object.keys(toBeDeleted));
-        var collection = this.collect(this.records(toBeDeleted));
-        this.hook.executeOnCollection('afterDelete', collection);
-        return collection;
+            records[id] = instance;
+            return records;
+        }, {});
+        return this.commitDelete(instances);
     };
     /**
      * Delete all records from the state.
      */
     Query.prototype.deleteAll = function () {
-        var toBeDeleted = this.state.data;
-        toBeDeleted = this.hook.executeOnRecords('beforeDelete', toBeDeleted);
-        this.commitDelete(Object.keys(toBeDeleted));
-        var collection = this.collect(this.records(toBeDeleted));
-        this.hook.executeOnCollection('afterDelete', collection);
-        return collection;
+        var instances = this.state.data;
+        this.commitDelete(instances);
     };
     /**
      * Commit `delete` to the state.
      */
-    Query.prototype.commitDelete = function (ids) {
+    Query.prototype.commitDelete = function (instances) {
         var _this = this;
-        this.commit('commitDelete', { ids: ids }, function () {
-            _this.state.data = Object.keys(_this.state.data).reduce(function (state, id) {
+        this.commit('delete', instances, function () {
+            var ids = Object.keys(instances);
+            _this.state.data = Object.keys(_this.state.data).reduce(function (instances, id) {
                 if (!ids.includes(id)) {
-                    state[id] = _this.state.data[id];
+                    instances[id] = _this.state.data[id];
                 }
-                return state;
+                return instances;
             }, {});
         });
+        return this.map(instances);
+    };
+    /**
+     * Normalize the given data.
+     */
+    Query.prototype.normalize = function (data) {
+        return Processor.normalize(this, data);
+    };
+    /**
+     * Convert given record to the model instance.
+     */
+    Query.prototype.hydrate = function (record) {
+        var model = this.model;
+        return new model(record);
+    };
+    /**
+     * Convert all given records to model instances.
+     */
+    Query.prototype.hydrateMany = function (records) {
+        var _this = this;
+        return Object.keys(records).reduce(function (instances, id) {
+            var record = records[id];
+            instances[id] = _this.hydrate(record);
+            return instances;
+        }, {});
+    };
+    /**
+     * Convert given records to instances by merging existing record. If there's
+     * no existing record, that record will not be included in the result.
+     */
+    Query.prototype.combine = function (records) {
+        var _this = this;
+        return Object.keys(records).reduce(function (instances, id) {
+            var instance = _this.state.data[id];
+            if (!instance) {
+                return instances;
+            }
+            var record = records[id];
+            instances[id] = _this.hydrate(__assign({}, instance, record));
+            return instances;
+        }, {});
+    };
+    /**
+     * Convert all given instances to collections.
+     */
+    Query.prototype.map = function (instances) {
+        return Object.keys(instances).map(function (id) { return instances[id]; });
+    };
+    /**
+     * Execute given callback by executing before and after hooks of the specified
+     * method to the given instances. The method name should be something like
+     * `create` or `update`, then it will be converted to `beforeCreate` ,
+     * `afterCreate` and so on.
+     */
+    Query.prototype.commit = function (method, instances, callback) {
+        var name = "" + method.charAt(0).toUpperCase() + method.slice(1);
+        this.hook.executeOnRecords("before" + name, instances);
+        callback();
+        this.hook.executeOnRecords("after" + name, instances);
     };
     return Query;
 }());
@@ -4379,36 +3743,127 @@ var Getters = {
     /**
      * Create a new Query instance.
      */
-    query: function (state, _getters, _rootState, rootGetters) { return function (wrap) {
-        return rootGetters[state.$connection + "/query"](state.$name, wrap);
+    query: function (state, _getters, _rootState, rootGetters) { return function () {
+        return rootGetters[state.$connection + "/query"](state.$name);
     }; },
     /**
      * Get all data of given entity.
      */
-    all: function (state, _getters, _rootState, rootGetters) { return function (wrap) {
-        return rootGetters[state.$connection + "/all"](state.$name, wrap);
+    all: function (state, _getters, _rootState, rootGetters) { return function () {
+        return rootGetters[state.$connection + "/all"](state.$name);
     }; },
     /**
      * Find a data of the given entity by given id.
      */
-    find: function (state, _getters, _rootState, rootGetters) { return function (id, wrap) {
-        return rootGetters[state.$connection + "/find"](state.$name, id, wrap);
+    find: function (state, _getters, _rootState, rootGetters) { return function (id) {
+        return rootGetters[state.$connection + "/find"](state.$name, id);
     }; }
 };
 
 var Actions = {
     /**
-     * Save new data to the state. It will remove all existing data in the
-     * state. If you want to keep existing data while saving new data,
-     * use `insert` instead.
+     * Save given data to the store by replacing all existing records in the
+     * store. If you want to save data without replacing existing records,
+     * use the `insert` method instead.
+     */
+    create: function (context, payload) {
+        var state = context.state;
+        var entity = state.$name;
+        return context.dispatch(state.$connection + "/create", __assign({}, payload, { entity: entity }), { root: true });
+    },
+    /**
+     * Insert given data to the state. Unlike `create`, this method will not
+     * remove existing data within the state, but it will update the data
+     * with the same primary key.
+     */
+    insert: function (context, payload) {
+        var state = context.state;
+        var entity = state.$name;
+        return context.dispatch(state.$connection + "/insert", __assign({}, payload, { entity: entity }), { root: true });
+    },
+    /**
+     * Update data in the store.
+     */
+    update: function (context, payload) {
+        var state = context.state;
+        var entity = state.$name;
+        // If the payload is an array, then the payload should be an array of
+        // data so let's pass the whole payload as data.
+        if (Array.isArray(payload)) {
+            return context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true });
+        }
+        // If the payload doesn't have `data` property, we'll assume that
+        // the user has passed the object as the payload so let's define
+        // the whole payload as a data.
+        if (payload.data === undefined) {
+            return context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true });
+        }
+        // Else destructure the payload and let root action handle it.
+        return context.dispatch(state.$connection + "/update", __assign({ entity: entity }, payload), { root: true });
+    },
+    /**
+     * Insert or update given data to the state. Unlike `insert`, this method
+     * will not replace existing data within the state, but it will update only
+     * the submitted data with the same primary key.
+     */
+    insertOrUpdate: function (context, payload) {
+        var state = context.state;
+        var entity = state.$name;
+        return context.dispatch(state.$connection + "/insertOrUpdate", __assign({ entity: entity }, payload), { root: true });
+    },
+    /**
+     * Delete data from the store.
+     */
+    delete: function (context, payload) {
+        var state = context.state;
+        var entity = state.$name;
+        var where = typeof payload === 'object' ? payload.where : payload;
+        return context.dispatch(state.$connection + "/delete", { entity: entity, where: where }, { root: true });
+    },
+    /**
+     * Delete all data from the store.
+     */
+    deleteAll: function (context) {
+        var state = context.state;
+        var entity = state.$name;
+        return context.dispatch(state.$connection + "/deleteAll", { entity: entity }, { root: true });
+    }
+};
+
+var RootGetters = {
+    /**
+     * Create a new Query instance.
+     */
+    query: function (state) { return function (entity) {
+        return new Query(state, entity);
+    }; },
+    /**
+     * Get all data of given entity.
+     */
+    all: function (state) { return function (entity) {
+        return (new Query(state, entity)).all();
+    }; },
+    /**
+     * Find a data of the given entity by given id.
+     */
+    find: function (state) { return function (entity, id) {
+        return (new Query(state, entity)).find(id);
+    }; }
+};
+
+var RootActions = {
+    /**
+     * Save given data to the store by replacing all existing records in the
+     * store. If you want to save data without replacing existing records,
+     * use the `insert` method instead.
      */
     create: function (context, payload) {
         return __awaiter(this, void 0, void 0, function () {
-            var state, entity;
+            var result;
             return __generator(this, function (_a) {
-                state = context.state;
-                entity = state.$name;
-                return [2 /*return*/, context.dispatch(state.$connection + "/create", __assign({ entity: entity }, payload), { root: true })];
+                result = { data: {} };
+                context.commit('create', __assign({}, payload, { result: result }));
+                return [2 /*return*/, result.data];
             });
         });
     },
@@ -4419,11 +3874,11 @@ var Actions = {
      */
     insert: function (context, payload) {
         return __awaiter(this, void 0, void 0, function () {
-            var state, entity;
+            var result;
             return __generator(this, function (_a) {
-                state = context.state;
-                entity = state.$name;
-                return [2 /*return*/, context.dispatch(state.$connection + "/insert", __assign({ entity: entity }, payload), { root: true })];
+                result = { data: {} };
+                context.commit('insert', __assign({}, payload, { result: result }));
+                return [2 /*return*/, result.data];
             });
         });
     },
@@ -4432,23 +3887,11 @@ var Actions = {
      */
     update: function (context, payload) {
         return __awaiter(this, void 0, void 0, function () {
-            var state, entity;
+            var result;
             return __generator(this, function (_a) {
-                state = context.state;
-                entity = state.$name;
-                // If the payload is an array, then the payload should be an array of
-                // data so let's pass the whole payload as data.
-                if (Array.isArray(payload)) {
-                    return [2 /*return*/, context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true })];
-                }
-                // If the payload doesn't have `data` property, we'll assume that
-                // the user has passed the object as the payload so let's define
-                // the whole payload as a data.
-                if (payload.data === undefined) {
-                    return [2 /*return*/, context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true })];
-                }
-                // Else destructure the payload and let root action handle it.
-                return [2 /*return*/, context.dispatch(state.$connection + "/update", __assign({ entity: entity }, payload), { root: true })];
+                result = { data: {} };
+                context.commit('update', __assign({}, payload, { result: result }));
+                return [2 /*return*/, result.data];
             });
         });
     },
@@ -4459,11 +3902,11 @@ var Actions = {
      */
     insertOrUpdate: function (context, payload) {
         return __awaiter(this, void 0, void 0, function () {
-            var state, entity;
+            var result;
             return __generator(this, function (_a) {
-                state = context.state;
-                entity = state.$name;
-                return [2 /*return*/, context.dispatch(state.$connection + "/insertOrUpdate", __assign({ entity: entity }, payload), { root: true })];
+                result = { data: {} };
+                context.commit('insertOrUpdate', __assign({}, payload, { result: result }));
+                return [2 /*return*/, result.data];
             });
         });
     },
@@ -4472,49 +3915,29 @@ var Actions = {
      */
     delete: function (context, payload) {
         return __awaiter(this, void 0, void 0, function () {
-            var state, entity, where;
+            var result;
             return __generator(this, function (_a) {
-                state = context.state;
-                entity = state.$name;
-                where = typeof payload === 'object' ? payload.where : payload;
-                return [2 /*return*/, context.dispatch(state.$connection + "/delete", { entity: entity, where: where }, { root: true })];
+                result = { data: {} };
+                context.commit('delete', __assign({}, payload, { result: result }));
+                return [2 /*return*/, result.data];
             });
         });
     },
     /**
      * Delete all data from the store.
      */
-    deleteAll: function (context) {
+    deleteAll: function (context, payload) {
         return __awaiter(this, void 0, void 0, function () {
-            var state, entity;
             return __generator(this, function (_a) {
-                state = context.state;
-                entity = state.$name;
-                return [2 /*return*/, context.dispatch(state.$connection + "/deleteAll", { entity: entity }, { root: true })];
+                if (payload && payload.entity) {
+                    context.commit('deleteAll', { entity: payload.entity });
+                    return [2 /*return*/];
+                }
+                context.commit('deleteAll');
+                return [2 /*return*/];
             });
         });
     }
-};
-
-var RootGetters = {
-    /**
-     * Create a new Query instance.
-     */
-    query: function (state) { return function (entity, wrap) {
-        return Query.query(state, entity, wrap);
-    }; },
-    /**
-     * Get all data of given entity.
-     */
-    all: function (state) { return function (entity, wrap) {
-        return Query.all(state, entity, wrap);
-    }; },
-    /**
-     * Find a data of the given entity by given id.
-     */
-    find: function (state) { return function (entity, id, wrap) {
-        return Query.find(state, entity, id, wrap);
-    }; }
 };
 
 var OptionsBuilder = /** @class */ (function () {
@@ -4534,181 +3957,77 @@ var OptionsBuilder = /** @class */ (function () {
     return OptionsBuilder;
 }());
 
-var RootActions = {
-    /**
-     * Save new data to the state. It will remove all existing data in the
-     * state. If you want to keep existing data while saving new data,
-     * use `insert` instead.
-     */
-    create: function (context, payload) {
-        return __awaiter(this, void 0, void 0, function () {
-            var state, entity, data, options;
-            return __generator(this, function (_a) {
-                state = context.state;
-                entity = payload.entity;
-                data = payload.data;
-                options = OptionsBuilder.createPersistOptions(payload);
-                return [2 /*return*/, (new Query(state, entity)).setActionContext(context).create(data, options)];
-            });
-        });
-    },
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    insert: function (context, payload) {
-        return __awaiter(this, void 0, void 0, function () {
-            var state, entity, data, options;
-            return __generator(this, function (_a) {
-                state = context.state;
-                entity = payload.entity;
-                data = payload.data;
-                options = OptionsBuilder.createPersistOptions(payload);
-                return [2 /*return*/, (new Query(state, entity)).setActionContext(context).insert(data, options)];
-            });
-        });
-    },
-    /**
-     * Update data in the store.
-     */
-    update: function (context, payload) {
-        return __awaiter(this, void 0, void 0, function () {
-            var state, entity, data, where, options;
-            return __generator(this, function (_a) {
-                state = context.state;
-                entity = payload.entity;
-                data = payload.data;
-                where = payload.where;
-                options = OptionsBuilder.createPersistOptions(payload);
-                return [2 /*return*/, (new Query(state, entity)).setActionContext(context).update(data, where, options)];
-            });
-        });
-    },
-    /**
-     * Insert or update given data to the state. Unlike `insert`, this method
-     * will not replace existing data within the state, but it will update only
-     * the submitted data with the same primary key.
-     */
-    insertOrUpdate: function (context, payload) {
-        return __awaiter(this, void 0, void 0, function () {
-            var state, entity, data, options;
-            return __generator(this, function (_a) {
-                state = context.state;
-                entity = payload.entity;
-                data = payload.data;
-                options = OptionsBuilder.createPersistOptions(payload);
-                return [2 /*return*/, (new Query(state, entity)).setActionContext(context).insertOrUpdate(data, options)];
-            });
-        });
-    },
-    /**
-     * Delete data from the store.
-     */
-    delete: function (context, payload) {
-        return __awaiter(this, void 0, void 0, function () {
-            var state, entity, where;
-            return __generator(this, function (_a) {
-                state = context.state;
-                entity = payload.entity;
-                where = payload.where;
-                return [2 /*return*/, (new Query(state, entity)).setActionContext(context).delete(where)];
-            });
-        });
-    },
-    /**
-     * Delete all data from the store.
-     */
-    deleteAll: function (context, payload) {
-        return __awaiter(this, void 0, void 0, function () {
-            var entity;
-            return __generator(this, function (_a) {
-                entity = payload ? payload.entity : undefined;
-                return [2 /*return*/, context.commit('deleteAll', { entity: entity })];
-            });
-        });
-    }
-};
-
 var RootMutations = {
     /**
-     * Save new data to the state. It will remove all existing data in the
-     * state. If you want to keep existing data while saving new data,
-     * use `insert` instead.
+     * Save given data to the store by replacing all existing records in the
+     * store. If you want to save data without replacing existing records,
+     * use the `insert` method instead.
      */
-    create: function (state, _a) {
-        var entity = _a.entity, data = _a.data, create = _a.create, insert = _a.insert, update = _a.update, insertOrUpdate = _a.insertOrUpdate;
-        Query.create(state, entity, data, { create: create, insert: insert, update: update, insertOrUpdate: insertOrUpdate });
-    },
-    /**
-     * Commit `create` to the state.
-     */
-    commitCreate: function (state, _a) {
-        var entity = _a.entity, data = _a.data;
-        Query.commitCreate(state, entity, data);
+    create: function (state, payload) {
+        var entity = payload.entity;
+        var data = payload.data;
+        var result = payload.result;
+        var options = OptionsBuilder.createPersistOptions(payload);
+        var query = new Query(state, entity);
+        query.setResult(result).create(data, options);
     },
     /**
      * Insert given data to the state. Unlike `create`, this method will not
      * remove existing data within the state, but it will update the data
      * with the same primary key.
      */
-    insert: function (state, _a) {
-        var entity = _a.entity, data = _a.data, create = _a.create, insert = _a.insert, update = _a.update, insertOrUpdate = _a.insertOrUpdate;
-        Query.insert(state, entity, data, { create: create, insert: insert, update: update, insertOrUpdate: insertOrUpdate });
-    },
-    /**
-     * Commit `insert` to the state.
-     */
-    commitInsert: function (state, _a) {
-        var entity = _a.entity, data = _a.data;
-        Query.commitInsert(state, entity, data);
+    insert: function (state, payload) {
+        var entity = payload.entity;
+        var data = payload.data;
+        var result = payload.result;
+        var options = OptionsBuilder.createPersistOptions(payload);
+        var query = new Query(state, entity);
+        query.setResult(result).insert(data, options);
     },
     /**
      * Update data in the store.
      */
-    update: function (state, _a) {
-        var entity = _a.entity, data = _a.data, where = _a.where, create = _a.create, insert = _a.insert, update = _a.update, insertOrUpdate = _a.insertOrUpdate;
-        Query.update(state, entity, data, where, { create: create, insert: insert, update: update, insertOrUpdate: insertOrUpdate });
-    },
-    /**
-     * Commit `create` to the state.
-     */
-    commitUpdate: function (state, _a) {
-        var entity = _a.entity, data = _a.data;
-        Query.commitUpdate(state, entity, data);
+    update: function (state, payload) {
+        var entity = payload.entity;
+        var data = payload.data;
+        var where = payload.where || null;
+        var result = payload.result;
+        var options = OptionsBuilder.createPersistOptions(payload);
+        var query = new Query(state, entity);
+        query.setResult(result).update(data, where, options);
     },
     /**
      * Insert or update given data to the state. Unlike `insert`, this method
      * will not replace existing data within the state, but it will update only
      * the submitted data with the same primary key.
      */
-    insertOrUpdate: function (state, _a) {
-        var entity = _a.entity, data = _a.data, create = _a.create;
-        Query.insertOrUpdate(state, entity, data, create);
+    insertOrUpdate: function (state, payload) {
+        var entity = payload.entity;
+        var data = payload.data;
+        var result = payload.result;
+        var options = OptionsBuilder.createPersistOptions(payload);
+        var query = new Query(state, entity);
+        query.setResult(result).insertOrUpdate(data, options);
     },
     /**
      * Delete data from the store.
      */
-    delete: function (state, _a) {
-        var entity = _a.entity, where = _a.where;
-        Query.delete(state, entity, where);
+    delete: function (state, payload) {
+        var entity = payload.entity;
+        var where = payload.where;
+        var result = payload.result;
+        var query = new Query(state, entity);
+        query.setResult(result).delete(where);
     },
     /**
      * Delete all data from the store.
      */
     deleteAll: function (state, payload) {
         if (payload && payload.entity) {
-            Query.deleteAll(state, payload.entity);
+            (new Query(state, payload.entity)).deleteAll();
             return;
         }
         Query.deleteAll(state);
-    },
-    /**
-     * Commit `delete` to the state.
-     */
-    commitDelete: function (state, _a) {
-        var entity = _a.entity, ids = _a.ids;
-        Query.commitDelete(state, entity, ids);
     }
 };
 
@@ -4850,7 +4169,7 @@ var Schema = /** @class */ (function () {
         if (this.schemas[model.entity]) {
             return this.schemas[model.entity];
         }
-        var schema$$1 = new src_3.Entity(model.entity, {}, {
+        var schema$$1 = new schema.Entity(model.entity, {}, {
             idAttribute: IdAttribute.create(model),
             processStrategy: ProcessStrategy.create(model)
         });
@@ -4863,13 +4182,13 @@ var Schema = /** @class */ (function () {
      * Create an array schema for the given model.
      */
     Schema.prototype.many = function (model) {
-        return new src_3.Array(this.one(model));
+        return new schema.Array(this.one(model));
     };
     /**
      * Create an union schema for the given model.
      */
     Schema.prototype.union = function (callback) {
-        return new src_3.Union(this.schemas, callback);
+        return new schema.Union(this.schemas, callback);
     };
     /**
      * Create a dfinition for the given model.
