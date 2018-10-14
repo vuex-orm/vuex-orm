@@ -657,17 +657,23 @@ export default class Model {
     }, {})
   }
 
-  $save (): Model {
+  /**
+   * Save record.
+   */
+  async $save (): Promise<Item> {
     const fields = this.$fields()
     const record = Object.keys(fields).reduce((record, key) => {
       record[key] = this[key]
       return record
     }, {} as Record)
 
-    this.$dispatch('insertOrUpdate', { data: record }).catch((err) => {
-      throw err
-    })
-    return this
+    return this.$dispatch('insertOrUpdate', { data: record })
+      .then(record => {
+        return record[this.$self().entity][0]
+      })
+      .catch(err => {
+        throw err
+      })
   }
 
   /**
