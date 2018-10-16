@@ -5,6 +5,7 @@ Vuex ORM supports several different types of relationships:
 - [One To One](#one-to-one)
 - [One To Many](#one-to-many)
 - [Many To Many](#many-to-many)
+- [Has Many By](#has-many-by)
 - [Has Many Through](#has-many-through)
 - [Polymorphic Relations](#polymorphic-relations)
 - [Many To Many Polymorphic Relations](#many-to-many-polymorphic-relations)
@@ -205,13 +206,13 @@ In some cases, the model itself has all the keys of the related model. Like belo
   clusters: {
     '1': {
       id: 1,
-      nodes: [1, 2]
+      node_ids: [1, 2]
     }
   }
 }
 ```
 
-As you can see, clusters wants to have `hasMany` relationship with nodes, but nodes do not have `cluster_id`. You cannot use `this.hasMany` in this case because there is no foreign key to look for. In such cases, you may use `this.hasManyBy` relationship.
+As you can see, clusters wants to have `hasMany` relationship with nodes, but nodes do not have `cluster_id`. You can't use `this.hasMany` in this case because there is no foreign key to look for. In such cases, you may use `this.hasManyBy` relationship.
 
 ```js
 class Node extends Model {
@@ -231,13 +232,14 @@ class Cluster extends Model {
   static field () {
     return {
       id: this.attr(null),
-      nodes: this.hasManyBy(Node, 'nodes')
+      node_ids: this.attr(null),
+      nodes: this.hasManyBy(Node, 'node_ids')
     }
   }
 }
 ```
 
-Now the cluster model is going to look for nodes using ids at clusters own `nodes` attributes. As always, you can pass the third argument to specify which id to look for.
+Now the cluster model is going to look for nodes using ids at clusters own `node_ids` attributes. As always, you can pass the third argument to specify which id to look for.
 
 ```js
 class Cluster extends Model {
@@ -246,7 +248,8 @@ class Cluster extends Model {
   static field () {
     return {
       id: this.attr(null),
-      nodes: this.hasManyBy(Node, 'nodes', 'other_key')
+      node_ids: this.attr(null),
+      nodes: this.hasManyBy(Node, 'node_ids', 'other_key')
     }
   }
 }
