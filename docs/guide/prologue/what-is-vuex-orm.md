@@ -2,17 +2,15 @@
 
 Many APIs return JSON data that has deeply nested objects. Using data in this kind of structure can be very difficult for JavaScript applications, especially those using the single tree state management system such as [Vuex](https://vuex.vuejs.org) or [Redux](http://redux.js.org).
 
-To nicely handle such "deeply nested objects", one approach is to split the nested data into separate modules and decouple them from each other.
+To nicely handle such "deeply nested objects", one approach is to split the nested data into separate modules and decouple them from each other. Simply put, it's kind of like treating a portion of your store as if it were a database, and keep that data in a normalized form.
 
-Simply put, it's kind of like treating a portion of your store as if it were a database, and keep that data in a normalized form.
-
-[This is an excellent article](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) that describes the difficulty of nested data structures. It also explains how to design normalized state.
+[This is an excellent article](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) that describes the difficulty of nested data structures. It also explains how to design normalized state, and Vuex ORM is heavily inspired by it.
 
 ## What Is It Like To Use Vuex ORM
 
-Here we show how it would look like to be using Vuex ORM on your application.
+Here, let us show how it would look and feel like to be using Vuex ORM on your application.
 
-Let's say you fetch posts data from a server and the response is something like below.
+Let's say you fetch posts data from a backend server. In most of the cases, the response would look something like below.
 
 ```js
 const post = [
@@ -59,15 +57,15 @@ const post = [
 ]
 ```
 
-See there are lots of `author` fields and some of them are the exact same authors. If you save this data to the store as is, it's going to be very hard to update those authors or comments.
+The data contains lots of `author` fields. Some of them are the exact same author. If you save this data to the store as is, it's going to be very hard to update the authors since there's going to be multiple, but the same author in the state.
 
-When you store the above posts data using Vuex ORM, the look of the Vuex Store State is going to be as below.
+When you store the above posts data using Vuex ORM, it will be "normalized" before saving them to the Vuex Store. After saving, Vuex Store State would look like below.
 
 ```js
 // Save data using Vuex Action.
-store.dispatch('entities/posts/create', { data: posts })
+store.dispatch('entities/posts/insert', { data: posts })
 
-// Then inside Vuex State becomes like this.
+// Then inside Vuex Store State becomes like this.
 {
   entities: {
     comments: {
@@ -140,10 +138,12 @@ store.dispatch('entities/posts/create', { data: posts })
 }
 ```
 
-See how each data is now decoupled and deduplicated. Then you can fetch these data using Vuex Getters. These getters are also built in by Vuex ORM.
+See how each data is now decoupled and deduplicated. This is what "normalize" means.
+
+Now, you can fetch these data using Vuex Getters. These getters are also built in to Vuex ORM.
 
 ```js
-// Fetch only posts.
+// Fetch all posts.
 const posts = store.getters['entities/posts/all']()
 
 /*
@@ -153,7 +153,7 @@ const posts = store.getters['entities/posts/all']()
   ]
 */
 
-// Fetch posts with relation.
+// Fetch all posts with its relation.
 const posts = store.getters['entities/posts/query']().with('author').get()
 
 /*
@@ -200,7 +200,7 @@ const posts = store.getters['entities/posts/query']()
 */
 ```
 
-Besides fetching saved data, Vuex ORM also lets you create Model Classes for each data structure. So when you retrieve data from the store by getters, these become a class instance.
+Besides fetching data, Vuex ORM lets you create Model Classes for each data structure. When you retrieve data from the store, the records is actually a class instance.
 
 ```js
 {
@@ -235,4 +235,14 @@ user.last_name  // Doe
 user.fullName() // John Doe
 ```
 
-Now, are you ready to start using Vuex ORM? [Let's get started](getting-started.md).
+As you might have guessed, Model provides all the CRUD actions as well. You can create or retrieve data through Model instead of Vuex actions and getters if you wish.
+
+```js
+// Save data.
+User.insert({ data: { ... } })
+
+// Fetch data.
+User.find(1)
+```
+
+Cool, isn't it? Are you ready to start using Vuex ORM? [Let's get started](getting-started.md).
