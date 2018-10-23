@@ -173,6 +173,71 @@ describe('Unit – Model', () => {
     expect(() => { User.getAttributeClass('blah') }).toThrow()
   })
 
+  it('can hydrate given record', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('Default Doe')
+        }
+      }
+    }
+
+    const record = User.hydrate({ id: 1, age: 24 })
+
+    expect(record).toEqual({ id: 1, name: 'Default Doe' })
+  })
+
+  it('can hydrate without passing any record', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('Default Doe')
+        }
+      }
+    }
+
+    const record = User.hydrate()
+
+    expect(record).toEqual({ id: null, name: 'Default Doe' })
+  })
+
+  it('ignores any relationship records when hydrating a record', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          posts: this.hasMany(Post, 'user_id')
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null)
+        }
+      }
+    }
+
+    const record = User.hydrate({
+      id: 1,
+      posts: [{ id: 1 }, { id: 2 }]
+    })
+
+    expect(record).toEqual({ id: 1 })
+  })
+
   it('can serialize own fields into json', () => {
     class User extends Model {
       static entity = 'users'
