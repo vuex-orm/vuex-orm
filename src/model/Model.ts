@@ -453,22 +453,10 @@ export default class Model {
 
   /**
    * Fill any missing fields in the given record with the default value defined
-   * in the model schema. This method will ignore any "relationship" fields
-   * such as `hasMany` or `belongsTo` and return only non-relational fields.
+   * in the model schema.
    */
-  static hydrate (record: Record = {}): Record {
-    const fields = this.getFields()
-
-    return Object.keys(fields).reduce<Record>((newRecord, key) => {
-      const field = fields[key]
-      const value = record[key]
-
-      if (field instanceof Attributes.Type) {
-        newRecord[key] = field.make(value, record, key)
-      }
-
-      return newRecord
-    }, {})
+  static hydrate (record?: Record): Record {
+    return (new this(record)).$toJson()
   }
 
   /**
