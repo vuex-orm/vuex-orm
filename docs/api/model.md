@@ -44,6 +44,43 @@
   // 'entities/users/create'
   ```
 
+### hydrate
+
+- **`hydrate(record?: Record): Record`**
+
+  Fill any missing fields in the given record with the default value defined in the model schema. Note that the returned object is not Model instance, it's plain object.
+
+  ```js
+  User.hydrate({ id: 1 })
+
+  // { id: 1, name: 'Default Name' }
+  ```
+
+  If you pass relational data, those will be hydrated as well.
+
+  ```js
+  User.hydrate({
+    id: 1,
+    posts: [
+      { id: 1, user_id: 1 },
+      { id: 2, user_id: 1 }
+    ]
+  })
+
+  /*
+    {
+      id: 1,
+      name: 'Default Name',
+      posts: [
+        { id: 1, user_id: 1, title: 'Default Title' },
+        { id: 2, user_id: 1, title: 'Default Title' }
+      ]
+    }
+  */
+  ```
+
+  > **NOTE:** `hydrate` method will not "normalize" the given data. It will fill any missing field, but it wouldn't attach correct id value to the foreign field, for example adding `id` value of the user to the `user_id` field of the post, or increment the value specified by `increment` attribute.
+
 ## Instance Methods
 
 ### $store
