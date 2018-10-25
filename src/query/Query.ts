@@ -278,10 +278,19 @@ export default class Query {
   }
 
   /**
-   * Get all the records from the state and convert them into the array.
+   * Get all records from the state and convert them into the array. It will
+   * check if the record is an instance of Model and if not, it will
+   * instantiate before returning them.
+   *
+   * This is needed to support SSR, that when the state is hydrated at server
+   * side, it will be converted to the plain record at the client side.
    */
   records (): Data.Collection {
-    return Object.keys(this.state.data).map(id => this.state.data[id])
+    return Object.keys(this.state.data).map((id) => {
+      const item = this.state.data[id]
+
+      return item instanceof Model ? item : this.hydrate(item)
+    })
   }
 
   /**
