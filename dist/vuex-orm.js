@@ -1600,6 +1600,12 @@
             return this.getters('query')();
         };
         /**
+         * Create new data with all fields filled by default values.
+         */
+        Model.new = function () {
+            return this.dispatch('new');
+        };
+        /**
          * Save given data to the store by replacing all existing records in the
          * store. If you want to save data without replacing existing records,
          * use the `insert` method instead.
@@ -1719,6 +1725,13 @@
          */
         Model.hasPivotFields = function () {
             return this.pivotFields().length > 0;
+        };
+        /**
+         * Fill any missing fields in the given record with the default value defined
+         * in the model schema.
+         */
+        Model.hydrate = function (record) {
+            return (new this(record)).$toJson();
         };
         /**
          * Get the constructor of this model.
@@ -3132,11 +3145,19 @@
             return this.item(records[records.length - 1]);
         };
         /**
-         * Get all the records from the state and convert them into the array.
+         * Get all records from the state and convert them into the array. It will
+         * check if the record is an instance of Model and if not, it will
+         * instantiate before returning them.
+         *
+         * This is needed to support SSR, that when the state is hydrated at server
+         * side, it will be converted to the plain record at the client side.
          */
         Query.prototype.records = function () {
             var _this = this;
-            return Object.keys(this.state.data).map(function (id) { return _this.state.data[id]; });
+            return Object.keys(this.state.data).map(function (id) {
+                var item = _this.state.data[id];
+                return item instanceof Model ? item : _this.hydrate(item);
+            });
         };
         /**
          * Add a and where clause to the query.
@@ -3411,6 +3432,15 @@
                 ids.push(item.$id);
             });
             return ids;
+        };
+        /**
+         * Create new data with all fields filled by default values.
+         */
+        Query.prototype.new = function () {
+            var record = (new this.model()).$toJson();
+            var result = this.insert(record, {});
+            this.result.data = result[this.entity][0];
+            return this.result.data;
         };
         /**
          * Save given data to the store by replacing all existing records in the
@@ -3766,6 +3796,14 @@
 
     var Actions = {
         /**
+         * Create new data with all fields filled by default values.
+         */
+        new: function (context) {
+            var state = context.state;
+            var entity = state.$name;
+            return context.dispatch(state.$connection + "/new", { entity: entity }, { root: true });
+        },
+        /**
          * Save given data to the store by replacing all existing records in the
          * store. If you want to save data without replacing existing records,
          * use the `insert` method instead.
@@ -3856,6 +3894,14 @@
     };
 
     var RootActions = {
+        /**
+         * Create new data with all fields filled by default values.
+         */
+        new: function (context, payload) {
+            var result = { data: {} };
+            context.commit('new', __assign({}, payload, { result: result }));
+            return result.data;
+        },
         /**
          * Save given data to the store by replacing all existing records in the
          * store. If you want to save data without replacing existing records,
@@ -3962,6 +4008,15 @@
     }());
 
     var RootMutations = {
+        /**
+         * Create new data with all fields filled by default values.
+         */
+        new: function (state, payload) {
+            var entity = payload.entity;
+            var result = payload.result;
+            var query = new Query(state, entity);
+            query.setResult(result).new();
+        },
         /**
          * Save given data to the store by replacing all existing records in the
          * store. If you want to save data without replacing existing records,
@@ -4280,9 +4335,10 @@
             this.createSchema();
         };
         /**
-         * Register a model and module to the entities list.
+         * Register a model and a module to Database.
          */
         Database.prototype.register = function (model, module) {
+            if (module === void 0) { module = {}; }
             this.entities.push({
                 name: model.entity,
                 model: model,
