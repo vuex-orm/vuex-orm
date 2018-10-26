@@ -4,13 +4,16 @@ Modules are simple [Vuex Modules](https://vuex.vuejs.org/en/modules.html) that c
 
 ## Defining Modules
 
-Vuex ORM doesn't require defining any specific module. You can leave them empty when registering to the database.
+Vuex ORM doesn't require defining any specific module. You can leave them empty, or even not to create any when registering to the database.
 
 ```js
 // users module.
 const users = {}
 
 database.register(User, users)
+
+// Or just omit passing module.
+database.register(User)
 ```
 
 However, you may add additional state, getters, actions, and mutations.

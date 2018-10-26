@@ -43,7 +43,7 @@ export default class Database {
   }
 
   /**
-   * Register a model and module to the entities list.
+   * Register a model and a module to Database.
    */
   register (model: typeof Model, module: Vuex.Module<any, any> = {}): void {
     this.entities.push({

@@ -57,6 +57,7 @@ const sidebars = {
   ],
 
   api: [
+    '/api/database',
     '/api/model'
   ]
 }
@@ -73,7 +74,7 @@ module.exports = {
 
     nav: [
       { text: 'Guide', link: '/guide/prologue/what-is-vuex-orm' },
-      { text: 'API Reference', link: '/api/model' },
+      { text: 'API Reference', link: '/api/database' },
       { text: 'Release Notes', link: 'https://github.com/vuex-orm/vuex-orm/releases' }
     ],
 
