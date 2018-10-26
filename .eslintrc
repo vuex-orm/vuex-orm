@@ -1,0 +1,12 @@
+{
+  "extends": "standard",
+  "parser": "babel-eslint",
+  "overrides": [
+    {
+      "files": "**/*.spec.js",
+      "env": {
+        "jest": true
+      }
+    }
+  ]
+}
