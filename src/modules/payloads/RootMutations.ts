@@ -4,6 +4,11 @@ import PersistOptions from './PersistOptions'
 
 export type Condition = (record: Record) => boolean
 
+export interface New extends PersistOptions {
+  entity: string
+  result: Result
+}
+
 export interface Create extends PersistOptions {
   entity: string
   data: Record | Record[]

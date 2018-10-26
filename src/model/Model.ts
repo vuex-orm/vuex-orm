@@ -307,6 +307,13 @@ export default class Model {
   }
 
   /**
+   * Create new data with all fields filled by default values.
+   */
+  static new (): Promise<Model> {
+    return this.dispatch('new')
+  }
+
+  /**
    * Save given data to the store by replacing all existing records in the
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.

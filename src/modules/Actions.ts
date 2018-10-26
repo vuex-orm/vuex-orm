@@ -1,11 +1,22 @@
 import Item from '../data/Item'
 import Collection from '../data/Collection'
 import Collections from '../data/Collections'
+import Model from '../model/Model'
 import ActionsContract from './contracts/Actions'
 import ActionContext from './contracts/ActionContext'
 import * as Payloads from './payloads/Actions'
 
 const Actions: ActionsContract = {
+  /**
+   * Create new data with all fields filled by default values.
+   */
+  new (context: ActionContext): Promise<Model> {
+    const state = context.state
+    const entity = state.$name
+
+    return context.dispatch(`${state.$connection}/new`, { entity }, { root: true })
+  },
+
   /**
    * Save given data to the store by replacing all existing records in the
    * store. If you want to save data without replacing existing records,

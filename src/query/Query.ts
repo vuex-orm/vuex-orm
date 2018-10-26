@@ -624,6 +624,19 @@ export default class Query {
   }
 
   /**
+   * Create new data with all fields filled by default values.
+   */
+  new (): Model {
+    const record = (new this.model()).$toJson()
+
+    const result = this.insert(record, {})
+
+    this.result.data = result[this.entity][0]
+
+    return this.result.data
+  }
+
+  /**
    * Save given data to the store by replacing all existing records in the
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.
