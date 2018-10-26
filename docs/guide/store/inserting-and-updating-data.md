@@ -4,7 +4,7 @@ To insert or update data, you can dispatch corresponding actions through modules
 
 ## Inserts
 
-To create a new data in the store, you can use `create` and `insert` action. You should pass an object with data key to the payload.
+To create a new data in the store, you can use `create`, `insert` and `new` action. For `create` and `insert`, you should pass an object with data key to the payload.
 
 ```js
 store.dispatch('entities/users/create', {
@@ -80,6 +80,23 @@ store.dispatch('entities/users/insert', {
       data: {
         '1': { id: 1, name: 'John' },
         '2': { id: 2, name: 'Jane' }
+      }
+    }
+  }
+}
+```
+
+Finally, with the `new` method, you can create a new record with all fields filled by default values.
+
+```js
+store.dispatch('entities/users/new')
+
+// State after `new`
+{
+  entities: {
+    users: {
+      data: {
+        '1': { id: 1, name: 'Default Name' }
       }
     }
   }
@@ -170,6 +187,14 @@ console.log(entities)
     users: [User { id: 1, name: 'John Doe' }]
   }
 */
+```
+
+The `new` method will also return the newly created record, but it'll return only one since it's obvious that there's no relational data.
+
+```js
+const user = await store.dispatch('entities/users/new')
+
+// User { id: 1, name: 'Default Name' }
 ```
 
 ### Inserting Relationships

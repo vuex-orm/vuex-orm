@@ -6,6 +6,18 @@ import * as Payloads from './payloads/RootMutations'
 
 const RootMutations: MutationsContract = {
   /**
+   * Create new data with all fields filled by default values.
+   */
+  new (state: RootState, payload: Payloads.New): void {
+    const entity = payload.entity
+    const result = payload.result
+
+    const query = new Query(state, entity)
+
+    query.setResult(result).new()
+  },
+
+  /**
    * Save given data to the store by replacing all existing records in the
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.
