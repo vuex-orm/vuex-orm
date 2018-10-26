@@ -31,6 +31,21 @@ describe('Feature – Vuex ORM', () => {
     expect(store.state.entities.posts.$name).toBe('posts')
   })
 
+  it('can omit modules', () => {
+    const database = new VuexORM.Database()
+
+    database.register(User)
+    database.register(Post)
+
+    const store = new Vuex.Store({
+      plugins: [VuexORM.install(database)]
+    })
+
+    expect(store.state.entities.$name).toBe('entities')
+    expect(store.state.entities.users.$name).toBe('users')
+    expect(store.state.entities.posts.$name).toBe('posts')
+  })
+
   it('can install Vuex ORM to the Vuex under a custom namespace', () => {
     const database = new VuexORM.Database()
 
