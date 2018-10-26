@@ -452,6 +452,14 @@ export default class Model {
   }
 
   /**
+   * Fill any missing fields in the given record with the default value defined
+   * in the model schema.
+   */
+  static hydrate (record?: Record): Record {
+    return (new this(record)).$toJson()
+  }
+
+  /**
    * Get the constructor of this model.
    */
   $self (): typeof Model {

@@ -173,6 +173,95 @@ describe('Unit – Model', () => {
     expect(() => { User.getAttributeClass('blah') }).toThrow()
   })
 
+  it('can hydrate given record', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('Default Doe')
+        }
+      }
+    }
+
+    const record = User.hydrate({ id: 1, age: 24 })
+
+    expect(record).toEqual({ id: 1, name: 'Default Doe' })
+  })
+
+  it('can hydrate without passing any record', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('Default Doe')
+        }
+      }
+    }
+
+    const record = User.hydrate()
+
+    expect(record).toEqual({ id: null, name: 'Default Doe' })
+  })
+
+  it('can hydrate relationship data', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          phone: this.hasOne(Phone, 'user_id'),
+          posts: this.hasMany(Post, 'user_id')
+        }
+      }
+    }
+
+    class Phone extends Model {
+      static entity = 'phones'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null),
+          number: this.attr('12-3456-7891')
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null),
+          title: this.attr('Default Title')
+        }
+      }
+    }
+
+    const record = User.hydrate({
+      id: 1,
+      phone: { id: 1 },
+      posts: [{ id: 1, title: 'Title 001' }, { id: 2 }]
+    })
+
+    const expected = {
+      id: 1,
+      phone: { id: 1, user_id: null, number: '12-3456-7891' },
+      posts: [
+        { id: 1, user_id: null, title: 'Title 001' },
+        { id: 2, user_id: null, title: 'Default Title' }
+      ]
+    }
+
+    expect(record).toEqual(expected)
+  })
+
   it('can serialize own fields into json', () => {
     class User extends Model {
       static entity = 'users'
