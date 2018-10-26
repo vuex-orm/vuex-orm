@@ -79,7 +79,7 @@ The same as actions, getters in the model is also namespaced automatically.
 
 ## Dispatching Persist Method
 
-The model can dispatch all of the persist methods, which are `create`, `insert`, `update` and `insertOrUpdate`. You may call them through static and instance methods. Note that you need to prefix the method name with `$` when dispatching methods by the instance method.
+The model can dispatch all of the persist methods, which are `create`, `insert`, `new`, `update` and `insertOrUpdate`. You may call them through static and instance methods. Note that you need to prefix the method name with `$` when dispatching methods by the instance method.
 
 ```js
 // As static method.
