@@ -114,11 +114,9 @@ Vue.use(Vuex)
 // Create a new database instance.
 const database = new VuexORM.Database()
 
-// Register Models to the database. The first argument is the Model. You could
-// pass Vuex Module as the second argument, but for now we'll just pass an
-// empty object.
-database.register(User, {})
-database.register(Post, {})
+// Register Models to the database.
+database.register(User)
+database.register(Post)
 
 // Create Vuex Store and register database through Vuex ORM.
 const store = new Vuex.Store({

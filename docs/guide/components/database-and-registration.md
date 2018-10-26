@@ -29,6 +29,13 @@ const store = new Vuex.Store({
 export default store
 ```
 
+You may omit passing modules to the Database's `register` method if you don't have any specific feature defined at modules.
+
+```js
+database.register(User)
+database.register(Post)
+```
+
 ## Changing the Namespace
 
 By default, Vuex ORM creates a module named `entities` in the Vuex Store. All modules and data handled by Vuex ORM will be stored under this namespace.

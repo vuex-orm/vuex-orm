@@ -95,8 +95,8 @@ Modules are just simple [Vuex Modules](https://vuex.vuejs.org/en/modules.html) t
 Vuex ORM is going to add any necessary states, getters, actions, and mutations, so you do not have to add anything to the modules, but if you want you can. When you do, just treat them as standard Vuex Modules.
 
 ```js
-// The users module. If you do not need any specific features, you can
-// leave it an empty object.
+// The users module. If you don't need any specific features, you can leave it
+// as an empty object, or just don't create any.
 export default {}
 
 // The posts module. You can add any additional things you want.
