@@ -1,6 +1,5 @@
 import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
-import Query from 'app/query/Query'
 
 describe('Feature – Basics – Create', () => {
   class User extends Model {

@@ -12,17 +12,6 @@ describe('Model – Relations – MorphMany', () => {
     }
   }
 
-  class Video extends Model {
-    static entity = 'videos'
-
-    static fields () {
-      return {
-        id: this.attr(null),
-        comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
-      }
-    }
-  }
-
   class Comment extends Model {
     static entity = 'comments'
 

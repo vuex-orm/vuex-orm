@@ -63,7 +63,7 @@ describe('Performance – Retrieve – Belongs To Many', () => {
 
     const start = new Date()
 
-    const result = store.getters['entities/users/query']().with('roles').get()
+    store.getters['entities/users/query']().with('roles').get()
 
     const end = new Date()
 

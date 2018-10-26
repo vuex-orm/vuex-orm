@@ -50,7 +50,7 @@ describe('Feature – Relations – Morph Many – Persist', () => {
       }
     })
 
-    const expected = createState({
+    createState({
       posts: {
         '1': { $id: 1, id: 1, comments: [] }
       },
@@ -182,7 +182,7 @@ describe('Feature – Relations – Morph Many – Persist', () => {
       }
     })
 
-    const expected = createState({
+    createState({
       posts: {
         '1': { $id: 1, id: 1, comments: [] }
       },
@@ -248,14 +248,6 @@ describe('Feature – Relations – Morph Many – Persist', () => {
       }
     })
 
-    const data = {
-      id: 1,
-      comments: [
-        { id: 2, body: 'comment1', commentable_id: 1 },
-        { id: 3, body: 'comment2', commentable_id: 2 }
-      ]
-    }
-
     expect(store.state.entities.posts.data['1'].id).toBe(1)
     expect(store.state.entities.comments.data['2'].id).toBe(2)
     expect(store.state.entities.comments.data['2'].commentable_type).toBe('posts')
@@ -308,7 +300,7 @@ describe('Feature – Relations – Morph Many – Persist', () => {
       ]
     })
 
-    const expected = createState({
+    createState({
       posts: {},
       videos: {},
       comments: {
@@ -389,7 +381,7 @@ describe('Feature – Relations – Morph Many – Persist', () => {
       }
     })
 
-    const expected = createState({
+    createState({
       users: {
         '1': { $id: 1, id: 1, posts: [] }
       },

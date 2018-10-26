@@ -1,4 +1,4 @@
-import { createStore, createState, refreshNoKey } from 'test/support/Helpers'
+import { createStore, refreshNoKey } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Feature – Attributes – Increment', () => {

@@ -31,7 +31,7 @@ describe('Feature – Basics – New', () => {
   })
 
   it('returns newly created instance', async () => {
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
     const user = await User.new()
 

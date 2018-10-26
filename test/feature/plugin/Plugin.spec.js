@@ -180,10 +180,6 @@ describe('Plugin', () => {
 
     VuexORM.use(plugin, { version: '1.0.0' })
 
-    const store = new Vuex.Store({
-      plugins: [VuexORM.install(database)]
-    })
-
     expect(Query.version()).toBe('1.0.0')
   })
 })

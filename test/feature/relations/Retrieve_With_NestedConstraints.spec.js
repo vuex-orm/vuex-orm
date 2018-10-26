@@ -38,7 +38,7 @@ describe('Feature – Relations – With – Nested Constraints', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Post }, { model: Comment }])
+    createStore([{ model: User }, { model: Post }, { model: Comment }])
 
     User.create({ data: { id: 1 } })
 

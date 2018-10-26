@@ -1,4 +1,4 @@
-import { createStore, createState } from 'test/support/Helpers'
+import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Feature – Relations – Morphed By Many – Persist', () => {
@@ -59,13 +59,6 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
         videos: [{ id: 3 }, { id: 4 }]
       }
     })
-
-    const data = {
-      id: 1,
-      name: 'news',
-      posts: [{ id: 1 }, { id: 2 }],
-      videos: [{ id: 3 }, { id: 4 }]
-    }
 
     expect(store.state.entities.posts.data['1'].id).toBe(1)
     expect(store.state.entities.posts.data['2'].id).toBe(2)
@@ -147,21 +140,6 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
         }
       ]
     })
-
-    const data = [
-      {
-        id: 1,
-        name: 'news',
-        posts: [{ id: 1 }, { id: 2 }],
-        videos: [{ id: 3 }, { id: 4 }]
-      },
-      {
-        id: 2,
-        name: 'cast',
-        posts: [{ id: 2 }, { id: 3 }],
-        videos: [{ id: 3 }, { id: 5 }]
-      }
-    ]
 
     expect(store.state.entities.posts.data['1'].id).toBe(1)
     expect(store.state.entities.posts.data['2'].id).toBe(2)

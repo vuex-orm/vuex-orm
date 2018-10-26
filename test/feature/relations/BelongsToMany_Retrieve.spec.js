@@ -38,7 +38,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
   }
 
   it('can resolve belongs to many relation', async () => {
-    const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+    createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
     await User.create({
       data: { id: 1 }
@@ -63,7 +63,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
   })
 
   it('can resolve inverse belongs to many relation', async () => {
-    const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+    createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
     await User.create({
       data: { id: 1 }
@@ -87,7 +87,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
   })
 
   it('can resolve belongs to many relation with has constraint', async () => {
-    const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+    createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
     await User.create({
       data: { id: 1 }
