@@ -262,7 +262,7 @@ describe('Feature – Retrieve – Where', () => {
       {
         model: User
       }
-    ]);
+    ])
 
     store.dispatch('entities/users/create', {
       data: [
@@ -285,28 +285,28 @@ describe('Feature – Retrieve – Where', () => {
           active: true
         }
       ]
-    });
+    })
 
     const expected = [
       { $id: 1, id: 1, name: 'John', age: 24, active: false },
       { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
-    ];
+    ]
 
     // (A && B) || (C && D)
     const users = store.getters['entities/users/query']()
       .where((_user, query) => {
-        query.where('age', 20).where('active', true);
+        query.where('age', 20).where('active', true)
       })
       .orWhere((_user, query) => {
-        query.where('age', 24).where('active', false);
+        query.where('age', 24).where('active', false)
       })
-      .get();
+      .get()
 
-    expect(users).toEqual(expected);
-  });
+    expect(users).toEqual(expected)
+  })
 
   it('can retrieve records that matches the where query with 2 nested query builders, starting with where', () => {
-    const store = createStore([{ model: User }]);
+    const store = createStore([{ model: User }])
 
     store.dispatch('entities/users/create', {
       data: [
@@ -315,28 +315,28 @@ describe('Feature – Retrieve – Where', () => {
         { id: 3, name: 'Johnny', age: 24, active: true },
         { id: 4, name: 'James', age: 21, active: false }
       ]
-    });
+    })
 
     const expected = [
       { $id: 1, id: 1, name: 'John', age: 21, active: true },
       { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
-    ];
+    ]
 
     // (A || B) && (C || D)
     const users = store.getters['entities/users/query']()
       .where((_user, query) => {
-        query.where('age', 20).orWhere('age', 21);
+        query.where('age', 20).orWhere('age', 21)
       })
       .where((_user, query) => {
-        query.where('active', true);
+        query.where('active', true)
       })
-      .get();
+      .get()
 
-    expect(users).toEqual(expected);
-  });
+    expect(users).toEqual(expected)
+  })
 
   it('can retrieve records that matches the where query several nested query builders', () => {
-    const store = createStore([{ model: User }]);
+    const store = createStore([{ model: User }])
 
     store.dispatch('entities/users/create', {
       data: [
@@ -348,13 +348,13 @@ describe('Feature – Retrieve – Where', () => {
         { id: 6, name: 'Jim', age: 22, active: true },
         { id: 7, name: 'Jules', age: 22, active: false }
       ]
-    });
+    })
 
     const expected = [
       { $id: 1, id: 1, name: 'John', age: 21, active: true },
       { $id: 2, id: 2, name: 'Jane', age: 20, active: true },
       { $id: 5, id: 5, name: 'Jimmy', age: 22, active: true }
-    ];
+    ]
 
     // (A || B || (E && F)) && (C || D)
     const users = store.getters['entities/users/query']()
@@ -364,10 +364,10 @@ describe('Feature – Retrieve – Where', () => {
         })
       })
       .where((_user, query) => {
-        query.where('active', true);
+        query.where('active', true)
       })
-      .get();
+      .get()
 
-    expect(users).toEqual(expected);
-  });
+    expect(users).toEqual(expected)
+  })
 })

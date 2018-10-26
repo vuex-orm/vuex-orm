@@ -20,7 +20,7 @@ describe('Feature – Attributes – Increment', () => {
     static fields () {
       return {
         id: this.increment(),
-        user_id: this.attr(null),
+        user_id: this.attr(null)
       }
     }
   }

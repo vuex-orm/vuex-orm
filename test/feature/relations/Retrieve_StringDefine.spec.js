@@ -21,7 +21,7 @@ describe('Feature – Relations - String Define', () => {
       static fields () {
         return {
           id: this.attr(null),
-          user_id: this.attr(null),
+          user_id: this.attr(null)
         }
       }
     }

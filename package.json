@@ -16,7 +16,7 @@
     "build:main": "node build/build.js",
     "clean": "rm -rf dist && rm -rf lib && rm -rf dist && rm -rf coverage && rm -rf .nyc_output && rm -rf .tmp",
     "lint": "tslint 'src/**/*.ts' -c tslint.json -p . --fix",
-    "lint:js": "yarn eslint --ext js .",
+    "lint:js": "yarn eslint --fix --ext js .",
     "test": "cross-env mocha-webpack --webpack-config test/webpack.config.js --require test/bootstrap.js 'test/{feature,unit}/**/*.spec.js'",
     "test:watch": "cross-env mocha-webpack --webpack-config test/webpack.config.js --watch --require test/bootstrap.js 'test/{feature,unit}/**/*.spec.js'",
     "test:perf": "cross-env mocha-webpack --webpack-config test/webpack.config.js --require test/bootstrap.js 'test/performance/**/*.spec.js'",

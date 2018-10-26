@@ -33,7 +33,7 @@ describe('Feature – Relations – Retrieve – Constraint', () => {
     })
 
     store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1, }, { id: 2, user_id: 1, }, { id: 3, user_id: 2, }]
+      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 1 }, { id: 3, user_id: 2 }]
     })
 
     const expected = {

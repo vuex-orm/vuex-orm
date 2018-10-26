@@ -41,11 +41,11 @@ describe('Performance – Retrieve – Has Many', () => {
     await store.dispatch('entities/users/create', { data: users })
     await store.dispatch('entities/posts/create', { data: posts })
 
-    const start = new Date();
+    const start = new Date()
 
     const result = store.getters['entities/users/query']().with('posts').get()
 
-    const end = new Date();
+    const end = new Date()
 
     expect(end - start).toBeLessThan(300)
     console.info('\x1b[2m%s\x1b[0m', `    -- The test took ${end - start}ms`)

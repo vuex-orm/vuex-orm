@@ -31,7 +31,7 @@ describe('Feature – Basics – Insert', () => {
   it('Does nothing if an empty object is passed', async () => {
     const store = createStore([{ model: User }])
 
-    await  User.insert({
+    await User.insert({
       data: {}
     })
 
