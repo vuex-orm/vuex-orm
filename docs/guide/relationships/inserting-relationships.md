@@ -33,7 +33,7 @@ class Post extends Model {
 And let's say you have the following data that is user object, but has related posts within. This is probably what you would get as a response from the API backend.
 
 ```js
-{
+let state = {
   id: 1,
   name: 'John Doe',
   posts: [
@@ -50,7 +50,7 @@ If you save this data to the store by `create` or `insert` actions, it will be n
 store.dispatch('entities/users/create', { data })
 
 // Inside store.
-{
+let state = {
   entities: {
     users: {
       data: {
@@ -86,13 +86,13 @@ Sometimes you might want the option to choose how Vuex ORM inserts data into the
 ```js
 // `create` users but `insert` posts.
 store.dispatch('entities/users/create', {
-  data: [{ ... }],
+  data: [{ /* ... */ }],
   insert: ['posts']
 })
 
 // `insert` users but `create` posts and `comments`.
 store.dispatch('entities/users/insert', {
-  data: [{ ... }],
+  data: [{ /* ... */ }],
   create: ['posts', 'comments']
 })
 ```
@@ -161,7 +161,7 @@ store.dispatch('entities/countries/create', { data })
 Vuex ORM will normalize the data and save them to the store as below.
 
 ```js
-{
+let state = {
   countries: {
     data: {
       '1': { id: 1 }

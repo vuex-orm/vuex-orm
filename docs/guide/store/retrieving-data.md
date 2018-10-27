@@ -165,15 +165,15 @@ The `orderBy` method allows you to sort the result of the query by a given field
 
 ```js
 // Order users by name.
-const user = store.getters['entities/users/query']().orderBy('name').get()
+const users = store.getters['entities/users/query']().orderBy('name').get()
 
 // [User { id: 2, name: 'Andy' }, { id: 1, name: 'John' }]
 
 // You may also chain orderBy.
-const user = store.getters['entities/users/query']()
-    .orderBy('name')
-    .orderBy('age', 'desc')
-    .get()
+const usersByAge = store.getters['entities/users/query']()
+  .orderBy('name')
+  .orderBy('age', 'desc')
+  .get()
 
 // [User { id: 4, name: 'Andy', age: 32 }, { id: 2, name: 'Andy', age: 27 }]
 ```

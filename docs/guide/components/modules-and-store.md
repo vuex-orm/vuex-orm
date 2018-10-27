@@ -49,7 +49,7 @@ class Post extends Model {
   static entity = 'posts'
 }
 
-store.state
+console.log(store.state)
 
 /*
   {

@@ -36,12 +36,13 @@ export default class User extends Model {
     return {
       id: this.attr(null),
       name: this.attr(''),
-      email: this.attr(''),
+      email: this.attr('')
     }
   }
 }
+```
 
-
+```js
 // Post Model
 import { Model } from '@vuex-orm/core'
 import User from './User'
@@ -74,7 +75,9 @@ class User extends Model {
 }
 
 User.entity = 'users'
+```
 
+```js
 // Or...
 
 class User extends Model {
@@ -98,7 +101,9 @@ Vuex ORM is going to add any necessary states, getters, actions, and mutations, 
 // The users module. If you don't need any specific features, you can leave it
 // as an empty object, or just don't create any.
 export default {}
+```
 
+```js
 // The posts module. You can add any additional things you want.
 export default {
   state: {
@@ -159,7 +164,7 @@ Now you are ready to go. Vuex ORM is going to create an `entities` module in Vue
 The state tree inside Vuex Store is going to be as follows.
 
 ```js
-store.state.entities
+console.log(store.state.entities)
 
 /*
   {
@@ -194,7 +199,7 @@ const posts = [
       email: 'john@example.com'
     }
   }
-}
+]
 
 store.dispatch('entities/posts/create', { data: posts })
 ```
@@ -203,7 +208,7 @@ With above action, Vuex ORM creates the following schema in the Vuex Store.
 
 ```js
 // Inside `store.state.entities`.
-{
+let state = {
   posts: {
     data: {
       '1': {
@@ -235,8 +240,8 @@ See how `posts` and `users` are decoupled from each other. This is what is meant
 To retrieve data, you can just access the store state directly as usual.
 
 ```js
-store.state.entities.posts.data[1].title // <- 'Hello, world!'
-store.state.entities.users.data[1].name // <- 'John Doe'
+console.log(store.state.entities.posts.data[1].title) // <- 'Hello, world!'
+console.log(store.state.entities.users.data[1].name) // <- 'John Doe'
 ```
 
 However, Vuex ORM provides a way to query, and fetch data in an organized way through Vuex Getters.

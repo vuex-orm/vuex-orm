@@ -203,7 +203,7 @@ const posts = store.getters['entities/posts/query']()
 Besides fetching data, Vuex ORM lets you create Model Classes for each data structure. When you retrieve data from the store, the records is actually a class instance.
 
 ```js
-{
+let state = {
   entities: {
     users: {
       data: {
@@ -239,7 +239,7 @@ As you might have guessed, Model provides all the CRUD actions as well. You can 
 
 ```js
 // Save data.
-User.insert({ data: { ... } })
+User.insert({ data: { /* ... */ } })
 
 // Fetch data.
 User.find(1)

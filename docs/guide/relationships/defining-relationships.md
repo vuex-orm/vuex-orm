@@ -198,7 +198,7 @@ class Post extends Model {
 In some cases, the model itself has all the keys of the related model. Like below example.
 
 ```js
-{
+let state = {
   nodes: {
     '1': { id: 1 },
     '2': { id: 1 }
@@ -466,7 +466,7 @@ class Comment extends Model {
       id: this.attr(null),
       body: this.attr(''),
       commentable_id: this.attr(null),
-      commentable_type: this.attr(null),
+      commentable_type: this.attr(null)
     }
   }
 }
@@ -618,6 +618,7 @@ class Tag extends Model {
       name: this.attr(''),
       posts: this.morphedByMany(Post, Taggable, 'tag_id', 'taggable_id', 'taggable_type'),
       videos: this.morphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+
     }
   }
 }
