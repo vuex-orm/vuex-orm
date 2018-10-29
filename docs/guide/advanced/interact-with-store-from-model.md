@@ -3,11 +3,13 @@
 As an alternative to calling store methods directly, you may access the store instance from a model as well to dispatch actions or call getters.
 
 ```js
-let user = User.dispatch('create', { data: { /* ... */ } })
+const user = User.dispatch('create', { data: { /* ... */ } })
+```
 
-// The above code is exactly same as below.
+ The above code is exactly same as below.
 
-user = store.dispatch('entities/users/create', { data: { /* ... */ } })
+```js
+const user = store.dispatch('entities/users/create', { data: { /* ... */ } })
 ```
 
 Also, the model is capable of calling all of the store actions and getters such as `create` and `find`.
@@ -68,8 +70,10 @@ You can call getters via the `getters` method. Be aware that getters in the mode
 ```js
 // As static method.
 
-const user1 = User.getters('find')(1)
+const user = User.getters('find')(1)
+```
 
+```js
 // As instance method.
 
 const user = new User()
