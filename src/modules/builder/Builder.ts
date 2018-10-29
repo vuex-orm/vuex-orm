@@ -1,4 +1,6 @@
 import * as Vuex from 'vuex'
+import Model from '../../model/Model'
+import Models from '../../database/Models'
 import Modules from '../../database/Modules'
 import Module from '../contracts/Module'
 import State from '../contracts/State'
@@ -13,7 +15,7 @@ export default class Builder {
   /**
    * Create module from the given modules.
    */
-  static create (namespace: string, modules: Modules): Module {
+  static create (namespace: string, models: Models, modules: Modules): Module {
     const tree: Module = {
       namespaced: true,
       state: { $name: namespace },
@@ -23,20 +25,21 @@ export default class Builder {
       modules: {}
     }
 
-    return this.createModules(tree, namespace, modules)
+    return this.createModules(tree, namespace, models, modules)
   }
 
   /**
    * Creates module tree to be registered under top level module
    * from the given entities.
    */
-  static createModules (tree: Module, namespace: string, modules: Modules): Module {
+  static createModules (tree: Module, namespace: string, models: Models, modules: Modules): Module {
     Object.keys(modules).forEach((name) => {
+      const model = models[name]
       const module = modules[name]
 
       tree.modules[name] = { namespaced: true }
 
-      tree.modules[name].state = this.createState(namespace, name, module)
+      tree.modules[name].state = this.createState(namespace, name, model, module)
 
       tree.getters[name] = (_state: RootState, getters: any, _rootState: any, _rootGetters: any) => () => {
         return getters.query(name)
@@ -55,11 +58,13 @@ export default class Builder {
   /**
    * Get new state to be registered to the modules.
    */
-  static createState (namespace: string, name: string, module: Vuex.Module<State, any>): State {
-    const state = typeof module.state === 'function' ? module.state() : module.state
+  static createState (namespace: string, name: string, model: typeof Model, module: Vuex.Module<State, any>): State {
+    const modelState = typeof model.state === 'function' ? model.state() : model.state
+    const moduleState = typeof module.state === 'function' ? module.state() : module.state
 
     return {
-      ...state,
+      ...modelState,
+      ...moduleState,
       $connection: namespace,
       $name: name,
       data: {}
