@@ -14,7 +14,7 @@ import * as Options from './options'
 import Processor from './processors/Processor'
 import Filter from './filters/Filter'
 import Loader from './loaders/Loader'
-import Hook from './Hook'
+import Hook from './hooks/Hook'
 
 export type UpdateClosure = (record: Data.Record) => void
 
@@ -422,25 +422,25 @@ export default class Query {
     let records: Data.Collection = this.records()
 
     // Process `beforeProcess` hook.
-    records = this.hook.execute('beforeSelect', records)
+    records = this.hook.executeSelectHook('beforeSelect', records)
 
     // Let's filter the records at first by the where clauses.
     records = this.filterWhere(records)
 
     // Process `afterWhere` hook.
-    records = this.hook.execute('afterWhere', records)
+    records = this.hook.executeSelectHook('afterWhere', records)
 
     // Next, lets sort the data.
     records = this.filterOrderBy(records)
 
     // Process `afterOrderBy` hook.
-    records = this.hook.execute('afterOrderBy', records)
+    records = this.hook.executeSelectHook('afterOrderBy', records)
 
     // Finally, slice the record by limit and offset.
     records = this.filterLimit(records)
 
     // Process `afterLimit` hook.
-    records = this.hook.execute('afterLimit', records)
+    records = this.hook.executeSelectHook('afterLimit', records)
 
     return records
   }
@@ -1044,10 +1044,10 @@ export default class Query {
   commit (method: string, instances: Data.Instances, callback: Function): void {
     const name = `${method.charAt(0).toUpperCase()}${method.slice(1)}`
 
-    this.hook.executeOnRecords(`before${name}`, instances)
+    this.hook.executeMutationHookOnRecords(`before${name}`, instances)
 
     callback()
 
-    this.hook.executeOnRecords(`after${name}`, instances)
+    this.hook.executeMutationHookOnRecords(`after${name}`, instances)
   }
 }

@@ -2,28 +2,24 @@ import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Hooks – Update', () => {
-  class User extends Model {
-    static entity = 'users'
-
-    static fields () {
-      return {
-        id: this.attr(null),
-        name: this.attr(''),
-        age: this.attr(null)
-      }
-    }
-  }
-
   it('can dispatch the `beforeUpdate` hook that modifies the data being updated', async () => {
-    const users = {
-      actions: {
-        beforeUpdate (context, record) {
-          record.age = 30
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
         }
       }
+
+      static beforeUpdate (user) {
+        user.age = 30
+      }
     }
 
-    const store = createStore([{ model: User, module: users }])
+    const store = createStore([{ model: User }])
 
     await store.dispatch('entities/users/insert', {
       data: { id: 1, name: 'John Doe', age: 20 }
@@ -39,15 +35,23 @@ describe('Hooks – Update', () => {
   })
 
   it('it will update the record as is if the `beforeUpdate` hook returns nothing', async () => {
-    const users = {
-      actions: {
-        beforeUpdate (context, record) {
-          // Return nothing.
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
         }
+      }
+
+      static beforeUpdate (user) {
+        // Do nothing.
       }
     }
 
-    const store = createStore([{ model: User, module: users }])
+    const store = createStore([{ model: User }])
 
     await store.dispatch('entities/users/insert', {
       data: { id: 1, name: 'John Doe', age: 20 }
@@ -63,15 +67,23 @@ describe('Hooks – Update', () => {
   })
 
   it('can cancel the update by returing false from `beforeUpdate` hook', async () => {
-    const users = {
-      actions: {
-        beforeUpdate (context, record) {
-          return false
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
         }
+      }
+
+      static beforeUpdate (user) {
+        return false
       }
     }
 
-    const store = createStore([{ model: User, module: users }])
+    const store = createStore([{ model: User }])
 
     const data = [
       { id: 1, name: 'John Doe', age: 20 },
@@ -92,19 +104,27 @@ describe('Hooks – Update', () => {
   it('can dispatch the `afterUpdate` hook', async () => {
     let hit = null
 
-    const users = {
-      actions: {
-        afterUpdate (context, model) {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+
+      static beforeUpdate (user) {
           hit = true
 
-          expect(model).toBeInstanceOf(User)
-          expect(model.id).toBe(1)
-          expect(model.age).toBe(30)
-        }
+          expect(user).toBeInstanceOf(User)
+          expect(user.id).toBe(1)
+          expect(user.age).toBe(30)
       }
     }
 
-    const store = createStore([{ model: User, module: users }])
+    const store = createStore([{ model: User }])
 
     await store.dispatch('entities/users/insert', {
       data: { id: 1, name: 'John Doe', age: 20 }

@@ -2,29 +2,25 @@ import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Hooks – Delete', () => {
-  class User extends Model {
-    static entity = 'users'
-
-    static fields () {
-      return {
-        id: this.attr(null),
-        name: this.attr('')
-      }
-    }
-  }
-
   it('can dispatch the `beforeDelete` hook', async () => {
     let hit = false
 
-    const users = {
-      actions: {
-        beforeDelete (context, record) {
-          hit = true
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('')
         }
+      }
+
+      static beforeDelete () {
+        hit = true
       }
     }
 
-    const store = createStore([{ model: User, module: users }])
+    const store = createStore([{ model: User }])
 
     await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe' }
@@ -38,17 +34,24 @@ describe('Hooks – Delete', () => {
   it('can cancel the delete by returning false from the `beforeDelete` hook', async () => {
     let hit = false
 
-    const users = {
-      actions: {
-        beforeDelete (context, record) {
-          hit = true
+    class User extends Model {
+      static entity = 'users'
 
-          return !(record.name === 'Jane Doe')
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('')
         }
+      }
+
+      static beforeDelete (record) {
+        hit = true
+
+        return !(record.name === 'Jane Doe')
       }
     }
 
-    const store = createStore([{ model: User, module: users }])
+    const store = createStore([{ model: User }])
 
     await store.dispatch('entities/users/create', {
       data: [
@@ -73,15 +76,22 @@ describe('Hooks – Delete', () => {
   it('can dispatch the `afterDelete` hook', async () => {
     let hit = false
 
-    const users = {
-      actions: {
-        afterCreate (context, model) {
-          hit = true
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('')
         }
+      }
+
+      static beforeDelete () {
+        hit = true
       }
     }
 
-    const store = createStore([{ model: User, module: users }])
+    const store = createStore([{ model: User }])
 
     await store.dispatch('entities/users/create', {
       data: [
