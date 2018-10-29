@@ -150,7 +150,7 @@ describe('Features – Relations – Morph One – Persist', () => {
       }
     })
 
-    const expected = createState({
+    createState({
       posts: {
         '1': { $id: 1, id: 1, comment: null }
       },
@@ -280,7 +280,7 @@ describe('Features – Relations – Morph One – Persist', () => {
       }
     })
 
-    const expected = createState({
+    createState({
       users: {
         '1': { $id: 1, id: 1, posts: [] }
       },

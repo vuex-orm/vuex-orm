@@ -33,7 +33,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1, }, { id: 2, user_id: 2, }, { id: 3, user_id: 2, }]
+      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
     })
 
     const expected = [{ $id: 1, id: 1, posts: [] }, { $id: 2, id: 2, posts: [] }]
@@ -51,7 +51,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1, }, { id: 2, user_id: 2, }, { id: 3, user_id: 2, }]
+      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
     })
 
     const expected = [{ $id: 3, id: 3, posts: [] }]
@@ -92,11 +92,11 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1, }, { id: 2, user_id: 2, }, { id: 3, user_id: 2, }]
+      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
     })
 
     store.dispatch('entities/phones/create', {
-      data: [{ id: 1, user_id: 2, }]
+      data: [{ id: 1, user_id: 2 }]
     })
 
     const expected1 = [{ $id: 1, id: 1, phone: null, posts: [] }]
@@ -122,7 +122,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1, }, { id: 2, user_id: 2, }, { id: 3, user_id: 2, }]
+      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
     })
 
     const expected = [{ $id: 2, id: 2, posts: [] }, { $id: 3, id: 3, posts: [] }]
@@ -142,7 +142,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1, }, { id: 2, user_id: 2, }, { id: 3, user_id: 2, }]
+      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
     })
 
     const expected = [{ $id: 2, id: 2, posts: [] }]
@@ -160,7 +160,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1, }, { id: 2, user_id: 2, }, { id: 3, user_id: 2, }]
+      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
     })
 
     const expected = [{ $id: 1, id: 1, posts: [] }, { $id: 3, id: 3, posts: [] }]
@@ -201,11 +201,11 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1, }, { id: 2, user_id: 2, }, { id: 3, user_id: 2, }]
+      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
     })
 
     store.dispatch('entities/phones/create', {
-      data: [{ id: 1, user_id: 1, }]
+      data: [{ id: 1, user_id: 1 }]
     })
 
     expect(store.getters['entities/users/query']().has('posts', 1).get()).toEqual([{ $id: 1, id: 1, phone: null, posts: [] }, { $id: 2, id: 2, phone: null, posts: [] }])
@@ -227,7 +227,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1, }, { id: 2, user_id: 2, }, { id: 3, user_id: 2, }]
+      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
     })
 
     expect(store.getters['entities/users/query']().hasNot('posts', '>', 1).get()).toEqual([{ $id: 1, id: 1, posts: [] }, { $id: 3, id: 3, posts: [] }])

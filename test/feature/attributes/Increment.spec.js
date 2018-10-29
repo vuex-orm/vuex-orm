@@ -1,4 +1,4 @@
-import { createStore, createState, refreshNoKey } from 'test/support/Helpers'
+import { createStore, refreshNoKey } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Feature – Attributes – Increment', () => {
@@ -20,7 +20,7 @@ describe('Feature – Attributes – Increment', () => {
     static fields () {
       return {
         id: this.increment(),
-        user_id: this.attr(null),
+        user_id: this.attr(null)
       }
     }
   }

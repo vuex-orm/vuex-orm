@@ -38,7 +38,7 @@ describe('Feature – Relations – Morph One – Retrieve', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
     await Post.create({
       data: [{ id: 1 }, { id: 5 }]
@@ -98,7 +98,7 @@ describe('Feature – Relations – Morph One – Retrieve', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
     await Post.create({
       data: [{ id: 1 }, { id: 5 }]
@@ -151,7 +151,7 @@ describe('Feature – Relations – Morph One – Retrieve', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
     await Post.create({
       data: [{ post_id: 1 }, { post_id: 5 }]
@@ -212,7 +212,7 @@ describe('Feature – Relations – Morph One – Retrieve', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
     await Post.create({
       data: [{ id: 2, post_id: 1 }, { id: 3, post_id: 5 }]

@@ -46,7 +46,7 @@ describe('Feature – Attributes – Boolean', () => {
   })
 
   it('casts the value to `Boolean` when retrieving data', async () => {
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
     await User.create({
       data: [

@@ -38,17 +38,17 @@ describe('Feature – Relations – With – Nested Constraints', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Post }, { model: Comment }])
+    createStore([{ model: User }, { model: Post }, { model: Comment }])
 
     User.create({ data: { id: 1 } })
 
-    Post.create({ data: { id: 1, user_id: 1, } })
+    Post.create({ data: { id: 1, user_id: 1 } })
 
     Comment.create({ data: [
       { id: 1, post_id: 1, title: 'Title01' },
       { id: 2, post_id: 1, title: 'Title01' },
       { id: 3, post_id: 1, title: 'Title02' }
-    ]})
+    ] })
 
     const user = User.query().with('posts.comments', (query) => {
       query.where('title', 'Title01')

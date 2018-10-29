@@ -187,9 +187,9 @@ describe('Model – Relations', () => {
 
     expect(post).toBeInstanceOf(Post)
     expect(post.id).toBe(1)
-    expect(post.comments).not.toBeNull();
-    expect(post.comments).toBeInstanceOf(Array);
-    expect(post.comments.length).toBe(0);
+    expect(post.comments).not.toBeNull()
+    expect(post.comments).toBeInstanceOf(Array)
+    expect(post.comments.length).toBe(0)
   })
 
   it('can resolve empty has many by relation', () => {
@@ -223,8 +223,8 @@ describe('Model – Relations', () => {
 
     expect(post).toBeInstanceOf(Post)
     expect(post.id).toBe(1)
-    expect(post.comments).not.toBeNull();
-    expect(post.comments).toBeInstanceOf(Array);
-    expect(post.comments.length).toBe(0);
+    expect(post.comments).not.toBeNull()
+    expect(post.comments).toBeInstanceOf(Array)
+    expect(post.comments.length).toBe(0)
   })
 })

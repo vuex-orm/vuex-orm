@@ -37,7 +37,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Phone }, { model: Post }])
+    createStore([{ model: User }, { model: Phone }, { model: Post }])
 
     await User.create({
       data: {
@@ -98,7 +98,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Phone }, { model: Post }])
+    createStore([{ model: User }, { model: Phone }, { model: Post }])
 
     await User.create({
       data: {

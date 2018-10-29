@@ -46,7 +46,7 @@ describe('Feature – Attributes – Number', () => {
   })
 
   it('casts the value to `Number` when retrieving data', async () => {
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
     await User.create({
       data: [

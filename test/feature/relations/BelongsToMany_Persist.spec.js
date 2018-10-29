@@ -4,9 +4,9 @@ import Model from 'app/model/Model'
 describe('Feature – Relations – Belongs To Many – Persist', () => {
   it('can create a data with belongs to many relation', async () => {
     class User extends Model {
-      static entity = "users"
+      static entity = 'users'
 
-      static fields() {
+      static fields () {
         return {
           id: this.attr(null),
           permissions: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
@@ -17,7 +17,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class Role extends Model {
       static entity = 'roles'
 
-      static fields() {
+      static fields () {
         return {
           id: this.attr(null)
         }
@@ -29,7 +29,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
       static primaryKey = ['role_id', 'user_id']
 
-      static fields() {
+      static fields () {
         return {
           role_id: this.attr(null),
           user_id: this.attr(null)
@@ -65,9 +65,9 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
   it('can create a data without relation', async () => {
     class User extends Model {
-      static entity = "users"
+      static entity = 'users'
 
-      static fields() {
+      static fields () {
         return {
           id: this.attr(null),
           roles: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
@@ -78,7 +78,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class Role extends Model {
       static entity = 'roles'
 
-      static fields() {
+      static fields () {
         return {
           id: this.attr(null)
         }
@@ -90,7 +90,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
       static primaryKey = ['role_id', 'user_id']
 
-      static fields() {
+      static fields () {
         return {
           role_id: this.attr(null),
           user_id: this.attr(null)
@@ -241,13 +241,11 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     expect(store.state.entities.roleUser.data['3_1'].$id).toBe('3_1')
   })
 
-
-
   it('can retrieve data by filtering with `whereHas`', async () => {
     class User extends Model {
-      static entity = "users"
+      static entity = 'users'
 
-      static fields() {
+      static fields () {
         return {
           id: this.attr(null),
           roles: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
@@ -258,7 +256,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class Role extends Model {
       static entity = 'roles'
 
-      static fields() {
+      static fields () {
         return {
           id: this.attr(null)
         }
@@ -270,7 +268,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
       static primaryKey = ['role_id', 'user_id']
 
-      static fields() {
+      static fields () {
         return {
           role_id: this.attr(null),
           user_id: this.attr(null)
@@ -371,8 +369,8 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
         roles: [
           { id: 1 },
           { id: 2 }
-        ],
-      },
+        ]
+      }
     })
 
     const expected = createState({

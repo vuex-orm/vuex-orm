@@ -25,8 +25,6 @@ describe('Hooks – Insert', () => {
 
     const store = createStore([{ model: User, module: users }])
 
-    const data = { id: 1, name: 'John Doe', age: 20 }
-
     await store.dispatch('entities/users/insert', {
       data: { id: 1, name: 'John Doe', age: 20 }
     })
@@ -48,8 +46,6 @@ describe('Hooks – Insert', () => {
     }
 
     const store = createStore([{ model: User, module: users }])
-
-    const data = { id: 1, name: 'John Doe', age: 20 }
 
     await store.dispatch('entities/users/insert', {
       data: { id: 1, name: 'John Doe', age: 20 }
@@ -99,8 +95,6 @@ describe('Hooks – Insert', () => {
     }
 
     const store = createStore([{ model: User, module: users }])
-
-    const data = { id: 1, name: 'John Doe', age: 20 }
 
     await store.dispatch('entities/users/insert', {
       data: { id: 1, name: 'John Doe', age: 20 }

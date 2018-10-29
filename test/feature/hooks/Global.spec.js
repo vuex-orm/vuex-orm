@@ -108,12 +108,12 @@ describe('Feature – Hooks – Global', () => {
       return records
     }
 
-    const persistedHookId__1 = Query.on('afterWhere', callbackFunction)
+    const persistedHookId1 = Query.on('afterWhere', callbackFunction)
     expect(Hook.hooks.afterWhere.length).toBe(1)
     store.getters['entities/users/all']()
     expect(Hook.hooks.afterWhere.length).toBe(1)
 
-    const persistedHookId__2 = Query.on('beforeSelect', callbackFunction)
+    const persistedHookId2 = Query.on('beforeSelect', callbackFunction)
     expect(Hook.hooks.beforeSelect.length).toBe(1)
 
     store.getters['entities/users/all']()
@@ -127,12 +127,12 @@ describe('Feature – Hooks – Global', () => {
     store.getters['entities/users/all']()
     expect(Hook.hooks.beforeSelect.length).toBe(1)
 
-    const removed_1 = Query.off(persistedHookId__1)
-    expect(removed_1).toBe(true)
+    const removed1 = Query.off(persistedHookId1)
+    expect(removed1).toBe(true)
     expect(Hook.hooks.afterWhere.length).toBe(0)
 
-    const removed_2 = Query.off(persistedHookId__2)
-    expect(removed_2).toBe(true)
+    const removed2 = Query.off(persistedHookId2)
+    expect(removed2).toBe(true)
     expect(Hook.hooks.beforeSelect.length).toBe(0)
   })
 })

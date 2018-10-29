@@ -18,7 +18,7 @@ describe('Feature – Retrieve – SSR Support', () => {
 
   const users = {
     mutations: {
-      setUsers(state, users) {
+      setUsers (state, users) {
         state.data = users
       }
     }

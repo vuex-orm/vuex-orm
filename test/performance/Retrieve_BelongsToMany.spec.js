@@ -61,11 +61,11 @@ describe('Performance – Retrieve – Belongs To Many', () => {
     await store.dispatch('entities/roles/create', { data: roles })
     await store.dispatch('entities/roleUser/create', { data: roleUser })
 
-    const start = new Date();
+    const start = new Date()
 
-    const result = store.getters['entities/users/query']().with('roles').get()
+    store.getters['entities/users/query']().with('roles').get()
 
-    const end = new Date();
+    const end = new Date()
 
     expect(end - start).toBeLessThan(300)
     console.info('\x1b[2m%s\x1b[0m', `    -- The test took ${end - start}ms`)

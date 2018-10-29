@@ -40,7 +40,7 @@ describe('Feature – Attributes – String', () => {
   })
 
   it('casts the value to `String` when retrieving data', async () => {
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
     await User.create({
       data: [

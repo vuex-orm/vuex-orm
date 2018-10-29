@@ -14,7 +14,7 @@ describe('Feature – Models – Find', () => {
   }
 
   it('can fetch a record via static method', async () => {
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
     await User.insert({
       data: [
@@ -32,7 +32,7 @@ describe('Feature – Models – Find', () => {
   })
 
   it('can fetch a record via instance method', async () => {
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
     await User.insert({
       data: [

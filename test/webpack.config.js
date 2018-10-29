@@ -1,7 +1,7 @@
 const path = require('path')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 
-const isCoverage = process.env.NODE_ENV === 'coverage';
+const isCoverage = process.env.NODE_ENV === 'coverage'
 
 const rootDir = path.join(__dirname, '..')
 
