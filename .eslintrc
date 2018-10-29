@@ -1,4 +1,13 @@
 {
   "extends": "standard",
-  "parser": "babel-eslint"
+
+  "parser": "babel-eslint",
+
+  "globals": {
+    "afterEach": true,
+    "beforeEach": true,
+    "describe": true,
+    "expect": true,
+    "it": true
+  }
 }

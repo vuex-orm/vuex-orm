@@ -58,7 +58,7 @@ describe('Feature – Hooks – Global', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
     Query.on('beforeCreate', (model, entity) => {
       model.role = 'admin'
@@ -86,7 +86,7 @@ describe('Feature – Hooks – Global', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
     Query.on('beforeCreate', (model, entity) => {
       if (model.role === 'admin') {
@@ -206,7 +206,7 @@ describe('Feature – Hooks – Global', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
     Query.on('beforeCreate', (model, entity) => {
       model.role = 'admin'

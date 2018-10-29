@@ -116,11 +116,11 @@ describe('Hooks – Update', () => {
       }
 
       static beforeUpdate (user) {
-          hit = true
+        hit = true
 
-          expect(user).toBeInstanceOf(User)
-          expect(user.id).toBe(1)
-          expect(user.age).toBe(30)
+        expect(user).toBeInstanceOf(User)
+        expect(user.id).toBe(1)
+        expect(user.age).toBe(30)
       }
     }
 
