@@ -194,7 +194,7 @@ const posts = [
       email: 'john@example.com'
     }
   }
-}
+]
 
 store.dispatch('entities/posts/create', { data: posts })
 ```
