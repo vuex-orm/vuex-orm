@@ -28,7 +28,6 @@ Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http
     - [Lifecycle Hooks](advanced/lifecycle-hooks.md)
     - [Serialization](advanced/serialization.md)
 - Digging Deeper
-    - [Query Class](digging-deeper/query-class.md)
     - [Plugins](digging-deeper/plugins.md)
 - API Reference
     - [Database](../api/database.md)
