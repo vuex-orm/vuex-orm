@@ -1,8 +1,14 @@
 import Record from '../../data/Record'
 import Result from '../../query/contracts/Result'
+import State from '../contracts/State'
 import PersistOptions from './PersistOptions'
 
 export type Condition = (record: Record) => boolean
+
+export interface $Mutate {
+  entity: string
+  callback: (state: State) => void
+}
 
 export interface New extends PersistOptions {
   entity: string
