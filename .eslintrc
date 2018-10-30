@@ -3,11 +3,12 @@
 
   "parser": "babel-eslint",
 
-  "globals": {
-    "afterEach": true,
-    "beforeEach": true,
-    "describe": true,
-    "expect": true,
-    "it": true
-  }
+  "overrides": [
+    {
+      "files": ["test/**/*.js"],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
 }
