@@ -11,6 +11,7 @@ import * as Attributes from '../attributes'
 import Query from '../query/Query'
 import * as Payloads from '../modules/payloads/Actions'
 import Fields from './Fields'
+import ModelState from './State'
 
 export default class Model {
   /**
@@ -26,7 +27,7 @@ export default class Model {
   /**
    * Vuex Store state definition.
    */
-  static state: { [key: string]: any } | (() => { [key: string]: any }) = {}
+  static state: ModelState | (() => ModelState) = {}
 
   /**
    * The cached attribute fields of the model.

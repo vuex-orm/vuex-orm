@@ -59,8 +59,8 @@ export default class Builder {
    * Get new state to be registered to the modules.
    */
   static createState (namespace: string, name: string, model: typeof Model, module: Vuex.Module<State, any>): State {
-    const modelState = typeof model.state === 'function' ? model.state() : model.state
-    const moduleState = typeof module.state === 'function' ? module.state() : module.state
+    const modelState = typeof model.state === 'function' ? (model.state as Function)() : model.state
+    const moduleState = typeof module.state === 'function' ? (module.state as Function)() : module.state
 
     return {
       ...modelState,
