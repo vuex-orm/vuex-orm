@@ -196,7 +196,7 @@ const posts = [
   }
 }
 
-store.dispatch('entities/posts/create', { data: posts })
+Post.create({ data: posts })
 ```
 
 With above action, Vuex ORM creates the following schema in the Vuex Store.
@@ -243,7 +243,7 @@ However, Vuex ORM provides a way to query, and fetch data in an organized way th
 
 ```js
 // Fetch all post records. The result will be wrapped with Post model!
-store.getters['entities/posts/all']()
+Post.all()
 
 /*
   [
@@ -254,7 +254,7 @@ store.getters['entities/posts/all']()
 */
 
 // Fetch single record with relation.
-store.getters['entities/posts/query']().with('author').first()
+Post.query().with('author').first()
 
 /*
   Post {

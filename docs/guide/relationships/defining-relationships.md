@@ -477,7 +477,7 @@ Two important fields to note are the `commentable_id` and `commentable_type` on 
 `this.morphMany` method defined at both Post and Video model is the definition of the relationship. Now you may fetch comments for the model as usual.
 
 ```js
-store.getters['entities/posts/query'].with('comments').find(1)
+Post.query().with('comments').find(1)
 
 /*
   Post {
@@ -507,7 +507,7 @@ class Comment extends Model {
   }
 }
 
-store.getters['entities/comments/query'].with('commentable').get()
+Comment.query().with('commentable').get()
 
 /*
   [

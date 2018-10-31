@@ -1,10 +1,12 @@
 # Deleting Data
 
-You can delete data by `delete` action. The action must take `where` condition which can be `String`, `Number` or `Function`. 
+You can delete data from the store by calling the delete Method on the model class or dispatching the `delete` action. Both expecting the first argument to be `String`, `Number`, `Function` or `Object`. 
 
-If you specify `String` or `Number` to the `where` condition, a record that matches the condition with its primary key is going to be deleted.
+If you use `String` or `Number`, a record that matches the condition with its primary key is going to be deleted.
 
-If you specify `Function` to the `where` condition, that function is going to be used to determine which record to delete. The function takes the record as the argument and must return boolean.
+If you use `Function`, that function is going to be used to determine which record to delete. The function takes the record as the argument and must return boolean.
+
+By passing in an `Object` as argument the object is expacted to have a `where` key which have to be `String`, `Number` or `Function` exactly like described above.
 
 ## Delete Data By Primary Key Value
 
@@ -19,7 +21,18 @@ If you specify `Function` to the `where` condition, that function is going to be
   }
 }
 
-// Delete single data by primary key value.
+
+// Delete single data by primary key value with model class.
+User.delete(1);
+
+// Or you can pass obejct as argument as well.
+User.delete({ where: 1 })
+
+// Or you can delete data from an existing model instance.
+const user = await User.find(1)
+user.delete()
+
+// Or you can delete single data by primary key value with vuex action.
 store.dispatch('entities/users/delete', 1)
 
 // Or you can pass obejct as argument as well.
@@ -55,12 +68,12 @@ store.dispatch('entities/users/delete', { where: 1 })
 }
 
 // Delete data by closure.
-store.dispatch('entities/users/delete', (record) => {
+User.delete((record) => {
   return record.id === 1 || record.name === 'Jane'
 })
 
 // Or with object style.
-store.dispatch('entities/users/delete', {
+User.delete({
   where (record) {
     return record.id === 1 || record.name === 'Jane'
   }
@@ -87,7 +100,7 @@ You can delete all data in once by `deleteAll` action.
 
 ```js
 // Delete all data for an entity
-store.dispatch('entities/users/deleteAll')
+User.deleteAll()
 
 // State after `deleteAll`.
 {

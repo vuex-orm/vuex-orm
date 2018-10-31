@@ -1,8 +1,8 @@
 # Query Class
 
-The Query class is responsible for fetching data from the Vuex Store. When you fetch data through Vuex getters, such as `store.getters['entities/users/find'](1)`, it uses the Query class underneath to find and filter data.
+The Query class is responsible for fetching data from the Vuex Store. When you fetch data through Model methods, such as `User.find(1)`, it uses the Query class underneath to find and filter data.
 
-Usually, you won't need to care about the Query class as long as you keep using getters. However, when you would like to add global features when querying data, it might be useful to use lifecycle hooks. This is especially useful when you want to create a plugin for the Vuex ORM.
+Usually, you won't need to care about the Query class as long as you keep using this methods. However, when you would like to add global features when querying data, it might be useful to use lifecycle hooks. This is especially useful when you want to create a plugin for the Vuex ORM.
 
 ## Lifecycle Hook Types
 
@@ -13,7 +13,7 @@ Query class comes with the following lifecycle hooks.
 - `afterOrderBy` – Called right after the data gets sorted by `orderBy` clause.
 - `afterLimit` – Called right after the data gets limited by `limit` and `offset` clause.
 
-By registering callbacks to each hook, you can manipulate the result from the getter call.
+By registering callbacks to each hook, you can manipulate the result from the method call.
 
 ### Lifecycle Hook Methods
 
@@ -59,7 +59,7 @@ const hookMapRecordsId = Query.on('beforeProcess', (records, entity) => {
   })
 })
 
-const result = store.getters['entities/users/all']()
+const result = User.all()
 
 /* result
   [
@@ -84,7 +84,7 @@ const data = [
   { id: 1, name: 'Bob Doe', deletedAt: new Date() }
 ]
 
-store.dispatch('entities/users/create', { data: data })
+User.create({ data: data })
 
 let softDeleteHookId
 
@@ -99,7 +99,7 @@ const deletedRecordsCallback = function (records) {
 softDeleteHookId = Query.on('beforeProcess', softDeleteCallback)
 
 // query data
-const results = store.getters['entities/users/query'].all()
+const results = User.query().all()
 /* results
 [{ id: 1, name: 'John Doe', deletedAt: null }]
  */
@@ -108,7 +108,7 @@ const results = store.getters['entities/users/query'].all()
 Query.off(softDeleteHookId) // remove global callback
 Query.on('beforeProcess', deletedRecordsCallback, true) // run only once
 
-const deletedResults = store.getters['entities/users/query'].all()
+const deletedResults = User.query().all()
 /* deletedResults
 [{ id: 2, name: 'Bob Doe', deletedAt: '2018-03-15TZ00:00:00' }]
  */
