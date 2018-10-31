@@ -20,7 +20,7 @@ However, you may add additional state, getters, actions, and mutations.
 
 ```js
 const users = {
-  state = {
+  state: {
     count: 0
   },
 
@@ -71,7 +71,7 @@ You may interact with the Store as you ordinally would with Vuex. If you have de
 
 ```js
 const users = {
-  state = {
+  state: {
     count: 0
   },
 

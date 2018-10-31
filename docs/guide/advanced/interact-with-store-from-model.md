@@ -137,10 +137,10 @@ user.$delete()
 Within Vuex Store, each Model has a corresponding state tree. For example, if you have User Model, inside Vuex Store would look like this.
 
 ```js
-{
+let state = {
   entities: {
     users: {
-      data: [ ... ]
+      data: [ /* ... */ ]
     }
   }
 }
@@ -161,7 +161,7 @@ class User extends Model {
   }
 
   static fields () {
-    return { ... }
+    return { /* ... */ }
   }
 }
 ```
@@ -181,11 +181,11 @@ class User extends Model {
 With the above definition, the state inside Vuex Store would become like this.
 
 ```js
-{
+let store = {
   entities: {
     users: {
       fetching: false,
-      data: [ ... ]
+      data: [ /* ... */ ]
     }
   }
 }
