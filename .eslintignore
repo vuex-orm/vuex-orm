@@ -1,4 +1,4 @@
-node_modules
+coverage
 dist
 lib
-coverage
+node_modules

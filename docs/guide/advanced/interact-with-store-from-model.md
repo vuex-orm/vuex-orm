@@ -131,3 +131,76 @@ const user = User.find(1)
 
 user.$delete()
 ```
+
+## Interacting With State
+
+Within Vuex Store, each Model has a corresponding state tree. For example, if you have User Model, inside Vuex Store would look like this.
+
+```js
+{
+  entities: {
+    users: {
+      data: [ ... ]
+    }
+  }
+}
+```
+
+You can see there's `data` property under `users`. Here is where all of the user records will be stored. However, you may add any number of state property other than `data` and interact with them through Model method.
+
+### Defining State
+
+To define state, define `static state` property at Model.
+
+```js
+class User extends Model {
+  static entity = 'users'
+
+  static state = {
+    fetching: false
+  }
+
+  static fields () {
+    return { ... }
+  }
+}
+```
+
+State definition can also be declared as a function too.
+
+```js
+class User extends Model {
+  static state () {
+    return {
+      fetching: false
+    }
+  }
+}
+```
+
+With the above definition, the state inside Vuex Store would become like this.
+
+```js
+{
+  entities: {
+    users: {
+      fetching: false,
+      data: [ ... ]
+    }
+  }
+}
+```
+
+### Mutating State
+
+To mutate state, you may use `static commit` method in Model.
+
+```js
+User.commit((state) => {
+  state.fetching = true
+})
+```
+
+The `static commit` method receives `state` object as same as usual Vuex Mutation, and you may mutate any field using the state.
+
+Note that the callback function passed to the `commit` method is called within the Vuex Mutation handler. Which means, the callback should always follow the rule for the mutations that it must be syncronaus.

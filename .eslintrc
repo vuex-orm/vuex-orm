@@ -12,6 +12,12 @@
         "no-console": "off",
         "no-undef": "off"
       }
+    },
+    {
+      "files": ["test/**/*.js"],
+      "env": {
+        "jest": true
+      }
     }
   ]
 }

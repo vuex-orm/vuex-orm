@@ -114,8 +114,8 @@
         function step(op) {
             if (f) throw new TypeError("Generator is already executing.");
             while (_) try {
-                if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-                if (y = 0, t) op = [0, t.value];
+                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [op[0] & 2, t.value];
                 switch (op[0]) {
                     case 0: case 1: t = op; break;
                     case 4: _.label++; return { value: op[1], done: false };
@@ -1582,6 +1582,15 @@
             return this.store().dispatch(this.namespace(method), payload);
         };
         /**
+         * Commit Vuex Mutation.
+         */
+        Model.commit = function (callback) {
+            this.store().commit(this.database().namespace + "/$mutate", {
+                entity: this.entity,
+                callback: callback
+            });
+        };
+        /**
          * Get all records.
          */
         Model.all = function () {
@@ -1926,6 +1935,10 @@
          * The primary key to be used for the model.
          */
         Model.primaryKey = 'id';
+        /**
+         * Vuex Store state definition.
+         */
+        Model.state = {};
         return Model;
     }());
 
@@ -2823,6 +2836,10 @@
          * Create a lidecycle hook instance.
          */
         function Hook(query) {
+            /**
+             * The global hook index to be deleted.
+             */
+            this.indexToBeDeleted = [];
             this.query = query;
         }
         /**
@@ -2862,70 +2879,61 @@
             return this.constructor;
         };
         /**
-         * Get the action hook.
+         * Get the hook for the given name.
          */
-        Hook.prototype.getActionHook = function (name) {
-            var hook = this.query.module.actions && this.query.module.actions[name];
+        Hook.prototype.getHook = function (name) {
+            var hook = this.query.model[name];
             return hook || null;
         };
         /**
          * Get the global hook.
          */
         Hook.prototype.getGlobalHook = function (name) {
-            if (!this.self().hooks[name]) {
-                return null;
-            }
-            return this.self().hooks[name];
+            var hook = this.self().hooks[name];
+            return hook || null;
         };
         /**
          * Check if the given hook exist.
          */
         Hook.prototype.has = function (name) {
-            return !!this.getActionHook(name) || !!this.getGlobalHook(name);
+            return !!this.getHook(name) || !!this.getGlobalHook(name);
         };
         /**
-         * Execute the callback of the given hook.
+         * Execute select hook for the given collection.
          */
-        Hook.prototype.execute = function (on, data) {
+        Hook.prototype.executeSelectHook = function (on, records) {
             if (!this.has(on)) {
-                return data;
+                return records;
             }
-            data = this.executeActionHook(on, data);
-            data = this.executeGlobalHook(on, data);
-            return data;
+            records = this.executeLocalSelectHook(on, records);
+            records = this.executeGlobalSelectHook(on, records);
+            return records;
         };
         /**
-         * Execute the action hook.
+         * Execute select hook against given records.
          */
-        Hook.prototype.executeActionHook = function (on, data) {
-            var hook = this.getActionHook(on);
+        Hook.prototype.executeLocalSelectHook = function (on, records) {
+            var hook = this.getHook(on);
             if (!hook) {
-                return data;
+                return records;
             }
-            var result = hook({}, data);
-            if (result === false) {
-                return false;
-            }
-            return result || data;
+            return hook(records, this.query.entity);
         };
         /**
-         * Execute the global callback of the given hook.
+         * Execute the global select hook against given records.
          */
-        Hook.prototype.executeGlobalHook = function (on, data) {
+        Hook.prototype.executeGlobalSelectHook = function (on, records) {
             var _this = this;
-            if (data === false) {
-                return false;
-            }
             var hooks = this.getGlobalHook(on);
             if (!hooks) {
-                return data;
+                return records;
             }
             // Track indexes to delete.
             var deleteHookIndexes = [];
             // Loop all hooks.
             hooks.forEach(function (hook, hookIndex) {
                 var callback = hook.callback, once = hook.once;
-                data = callback.call(_this.query, data, _this.query.entity);
+                records = callback.call(_this.query, records, _this.query.entity);
                 // Add hook index to delete.
                 once && deleteHookIndexes.push(hookIndex);
             });
@@ -2933,23 +2941,75 @@
             deleteHookIndexes.reverse().forEach(function (hookIndex) {
                 hooks.splice(hookIndex, 1);
             });
-            return data;
+            return records;
         };
         /**
          * Execute the callback for all given records.
          */
-        Hook.prototype.executeOnRecords = function (on, records) {
+        Hook.prototype.executeMutationHookOnRecords = function (on, records) {
             var _this = this;
             if (!this.has(on)) {
                 return;
             }
             Object.keys(records).forEach(function (id) {
-                var record = records[id];
-                var result = _this.execute(on, record);
+                var result = _this.executeMutationHook(on, records[id]);
                 if (result === false) {
                     delete records[id];
                 }
             });
+            this.removeGlobalHook(on);
+        };
+        /**
+         * Execute mutation hook against given model.
+         */
+        Hook.prototype.executeMutationHook = function (on, model) {
+            if (this.executeLocalMutationHook(on, model) === false) {
+                return false;
+            }
+            if (this.executeGlobalMutationHook(on, model) === false) {
+                return false;
+            }
+        };
+        /**
+         * Execute the local mutation hook.
+         */
+        Hook.prototype.executeLocalMutationHook = function (on, model) {
+            var hook = this.getHook(on);
+            if (!hook) {
+                return;
+            }
+            return hook(model, this.query.entity);
+        };
+        /**
+         * Execute the global mutation hook.
+         */
+        Hook.prototype.executeGlobalMutationHook = function (on, model) {
+            var _this = this;
+            var hooks = this.getGlobalHook(on);
+            if (!hooks) {
+                return;
+            }
+            // Track results.
+            var results = [];
+            // Loop all hooks.
+            hooks.forEach(function (hook, index) {
+                results.push(hook.callback.call(_this.query, model, _this.query.entity));
+                // Add hook index to delete.
+                hook.once && _this.indexToBeDeleted.push(index);
+            });
+            if (results.includes(false)) {
+                return false;
+            }
+        };
+        /**
+         * Remove global hooks which are executed and defined as once.
+         */
+        Hook.prototype.removeGlobalHook = function (on) {
+            var hooks = this.getGlobalHook(on);
+            if (!hooks) {
+                return;
+            }
+            this.indexToBeDeleted.reverse().forEach(function (index) { hooks.splice(index, 1); });
         };
         /**
          * Global lifecycle hooks for the query.
@@ -3264,19 +3324,19 @@
         Query.prototype.select = function () {
             var records = this.records();
             // Process `beforeProcess` hook.
-            records = this.hook.execute('beforeSelect', records);
+            records = this.hook.executeSelectHook('beforeSelect', records);
             // Let's filter the records at first by the where clauses.
             records = this.filterWhere(records);
             // Process `afterWhere` hook.
-            records = this.hook.execute('afterWhere', records);
+            records = this.hook.executeSelectHook('afterWhere', records);
             // Next, lets sort the data.
             records = this.filterOrderBy(records);
             // Process `afterOrderBy` hook.
-            records = this.hook.execute('afterOrderBy', records);
+            records = this.hook.executeSelectHook('afterOrderBy', records);
             // Finally, slice the record by limit and offset.
             records = this.filterLimit(records);
             // Process `afterLimit` hook.
-            records = this.hook.execute('afterLimit', records);
+            records = this.hook.executeSelectHook('afterLimit', records);
             return records;
         };
         /**
@@ -3766,9 +3826,9 @@
          */
         Query.prototype.commit = function (method, instances, callback) {
             var name = "" + method.charAt(0).toUpperCase() + method.slice(1);
-            this.hook.executeOnRecords("before" + name, instances);
+            this.hook.executeMutationHookOnRecords("before" + name, instances);
             callback();
-            this.hook.executeOnRecords("after" + name, instances);
+            this.hook.executeMutationHookOnRecords("after" + name, instances);
         };
         return Query;
     }());
@@ -4008,6 +4068,12 @@
     }());
 
     var RootMutations = {
+        /**
+         * Execute generic mutation.
+         */
+        $mutate: function (state, payload) {
+            payload.callback(state[payload.entity]);
+        },
         /**
          * Create new data with all fields filled by default values.
          */
@@ -4272,7 +4338,7 @@
         /**
          * Create module from the given modules.
          */
-        Builder.create = function (namespace, modules) {
+        Builder.create = function (namespace, models, modules) {
             var tree = {
                 namespaced: true,
                 state: { $name: namespace },
@@ -4281,18 +4347,19 @@
                 mutations: RootMutations,
                 modules: {}
             };
-            return this.createModules(tree, namespace, modules);
+            return this.createModules(tree, namespace, models, modules);
         };
         /**
          * Creates module tree to be registered under top level module
          * from the given entities.
          */
-        Builder.createModules = function (tree, namespace, modules) {
+        Builder.createModules = function (tree, namespace, models, modules) {
             var _this = this;
             Object.keys(modules).forEach(function (name) {
+                var model = models[name];
                 var module = modules[name];
                 tree.modules[name] = { namespaced: true };
-                tree.modules[name].state = _this.createState(namespace, name, module);
+                tree.modules[name].state = _this.createState(namespace, name, model, module);
                 tree.getters[name] = function (_state, getters, _rootState, _rootGetters) { return function () {
                     return getters.query(name);
                 }; };
@@ -4305,9 +4372,10 @@
         /**
          * Get new state to be registered to the modules.
          */
-        Builder.createState = function (namespace, name, module) {
-            var state = typeof module.state === 'function' ? module.state() : module.state;
-            return __assign({}, state, { $connection: namespace, $name: name, data: {} });
+        Builder.createState = function (namespace, name, model, module) {
+            var modelState = typeof model.state === 'function' ? model.state() : model.state;
+            var moduleState = typeof module.state === 'function' ? module.state() : module.state;
+            return __assign({}, modelState, moduleState, { $connection: namespace, $name: name, data: {} });
         };
         return Builder;
     }());
@@ -4379,7 +4447,7 @@
          * Create the Vuex Module from registered entities.
          */
         Database.prototype.registerModules = function () {
-            var modules = Builder.create(this.namespace, this.modules());
+            var modules = Builder.create(this.namespace, this.models(), this.modules());
             this.store.registerModule(this.namespace, modules);
         };
         /**

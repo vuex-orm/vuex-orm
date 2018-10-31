@@ -1,7 +1,7 @@
 import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 import Query from 'app/query/Query'
-import Hook from 'app/query/Hook'
+import Hook from 'app/query/hooks/Hook'
 
 describe('Feature – Hooks – Global', () => {
   afterEach(() => {
@@ -44,6 +44,64 @@ describe('Feature – Hooks – Global', () => {
     const removeBoolean = Query.off(hookId)
 
     expect(removeBoolean).toBe(true)
+  })
+
+  it('can process beforeCreate hook', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          role: this.attr('')
+        }
+      }
+    }
+
+    createStore([{ model: User }])
+
+    Query.on('beforeCreate', (model, entity) => {
+      model.role = 'admin'
+    })
+
+    User.create({
+      data: [{ id: 1, role: 'admin' }, { id: 2, role: 'user' }]
+    })
+
+    const results = User.all()
+
+    expect(results[0].role).toBe('admin')
+    expect(results[1].role).toBe('admin')
+  })
+
+  it('can cancel the mutation by returning false from beforeCreate hook', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          role: this.attr('')
+        }
+      }
+    }
+
+    createStore([{ model: User }])
+
+    Query.on('beforeCreate', (model, entity) => {
+      if (model.role === 'admin') {
+        return false
+      }
+    })
+
+    User.create({
+      data: [{ id: 1, role: 'admin' }, { id: 2, role: 'user' }]
+    })
+
+    const results = User.all()
+
+    expect(results.length).toBe(1)
+    expect(results[0].role).toBe('user')
   })
 
   it('can get instance context in hook', () => {
@@ -134,5 +192,42 @@ describe('Feature – Hooks – Global', () => {
     const removed2 = Query.off(persistedHookId2)
     expect(removed2).toBe(true)
     expect(Hook.hooks.beforeSelect.length).toBe(0)
+  })
+
+  it('can process beforeCreate hook only once', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          role: this.attr('')
+        }
+      }
+    }
+
+    createStore([{ model: User }])
+
+    Query.on('beforeCreate', (model, entity) => {
+      model.role = 'admin'
+    }, true)
+
+    User.create({
+      data: [{ id: 1, role: 'admin' }, { id: 2, role: 'user' }]
+    })
+
+    const results1 = User.all()
+
+    expect(results1[0].role).toBe('admin')
+    expect(results1[1].role).toBe('admin')
+
+    User.create({
+      data: [{ id: 1, role: 'admin' }, { id: 2, role: 'user' }]
+    })
+
+    const results2 = User.all()
+
+    expect(results2[0].role).toBe('admin')
+    expect(results2[1].role).toBe('user')
   })
 })

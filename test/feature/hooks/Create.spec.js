@@ -2,28 +2,24 @@ import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Hooks – Create', () => {
-  class User extends Model {
-    static entity = 'users'
-
-    static fields () {
-      return {
-        id: this.attr(null),
-        name: this.attr(''),
-        age: this.attr(null)
-      }
-    }
-  }
-
   it('can dispatch the `beforeCreate` hook that modifies the data being created', async () => {
-    const users = {
-      actions: {
-        beforeCreate (context, record) {
-          record.age = 30
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
         }
       }
+
+      static beforeCreate (record) {
+        record.age = 30
+      }
     }
 
-    const store = createStore([{ model: User, module: users }])
+    const store = createStore([{ model: User }])
 
     await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe', age: 20 }
@@ -37,15 +33,23 @@ describe('Hooks – Create', () => {
   })
 
   it('it will create the record as is if the `beforeCreate` hook returns nothing', async () => {
-    const users = {
-      actions: {
-        beforeCreate (context, record) {
-          // Do nothing.
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
         }
+      }
+
+      static beforeCreate (record) {
+        // Do nothing.
       }
     }
 
-    const store = createStore([{ model: User, module: users }])
+    const store = createStore([{ model: User }])
 
     await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe', age: 20 }
@@ -59,17 +63,25 @@ describe('Hooks – Create', () => {
   })
 
   it('can cancel the create by returing false from `beforeCreate` hook', async () => {
-    const users = {
-      actions: {
-        beforeCreate (context, record) {
-          if (record.age === 20) {
-            return false
-          }
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+
+      static beforeCreate (record) {
+        if (record.age === 20) {
+          return false
         }
       }
     }
 
-    const store = createStore([{ model: User, module: users }])
+    const store = createStore([{ model: User }])
 
     const data = [
       { id: 1, name: 'John Doe', age: 20 },
@@ -85,16 +97,24 @@ describe('Hooks – Create', () => {
   })
 
   it('can dispatch the `afterCreate` hook', async () => {
-    const users = {
-      actions: {
-        afterCreate (context, model) {
-          expect(model).toBeInstanceOf(User)
-          expect(model.id).toBe(1)
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
         }
+      }
+
+      static afterCreate (model) {
+        expect(model).toBeInstanceOf(User)
+        expect(model.id).toBe(1)
       }
     }
 
-    const store = createStore([{ model: User, module: users }])
+    const store = createStore([{ model: User }])
 
     await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe', age: 20 }
