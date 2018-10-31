@@ -6,6 +6,13 @@ import * as Payloads from './payloads/RootMutations'
 
 const RootMutations: MutationsContract = {
   /**
+   * Execute generic mutation.
+   */
+  $mutate (state: RootState, payload: Payloads.$Mutate): void {
+    payload.callback(state[payload.entity])
+  },
+
+  /**
    * Create new data with all fields filled by default values.
    */
   new (state: RootState, payload: Payloads.New): void {

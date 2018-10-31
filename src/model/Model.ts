@@ -6,10 +6,12 @@ import Record from '../data/Record'
 import Item from '../data/Item'
 import Collection from '../data/Collection'
 import Collections from '../data/Collections'
+import State from '../modules/contracts/State'
 import * as Attributes from '../attributes'
 import Query from '../query/Query'
 import * as Payloads from '../modules/payloads/Actions'
 import Fields from './Fields'
+import ModelState from './State'
 
 export default class Model {
   /**
@@ -21,6 +23,11 @@ export default class Model {
    * The primary key to be used for the model.
    */
   static primaryKey: string | string[] = 'id'
+
+  /**
+   * Vuex Store state definition.
+   */
+  static state: ModelState | (() => ModelState) = {}
 
   /**
    * The cached attribute fields of the model.
@@ -283,6 +290,16 @@ export default class Model {
    */
   static dispatch (method: string, payload?: any): Promise<any> {
     return this.store().dispatch(this.namespace(method), payload)
+  }
+
+  /**
+   * Commit Vuex Mutation.
+   */
+  static commit (callback: (state: State) => void) {
+    this.store().commit(`${this.database().namespace}/$mutate`, {
+      entity: this.entity,
+      callback
+    })
   }
 
   /**

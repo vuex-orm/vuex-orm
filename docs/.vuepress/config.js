@@ -50,7 +50,6 @@ const sidebars = {
       title: 'Digging Deeper',
       collapsable: false,
       children: [
-        '/guide/digging-deeper/query-class',
         '/guide/digging-deeper/plugins'
       ]
     }

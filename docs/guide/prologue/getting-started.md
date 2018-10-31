@@ -194,7 +194,7 @@ const posts = [
       email: 'john@example.com'
     }
   }
-}
+]
 
 Post.create({ data: posts })
 ```

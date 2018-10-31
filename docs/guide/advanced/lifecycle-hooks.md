@@ -1,9 +1,14 @@
 # Lifecycle Hooks
 
-Vuex ORM fires several lifecycle hooks while dispatching actions, allowing you to hook into the particular points in a query lifecycle. Lifecycle hooks allows you to easily execute code each time a specific record is saved or updated in the database.
+Vuex ORM fires several lifecycle hooks while interacting with the store, allowing you to hook into the particular points in a query lifecycle. Lifecycle hooks allow you to easily execute code each time a specific record is saved, updated or retrieved from the store.
 
 Supported lifecycle hooks are as follows.
 
+- `beforeSelect`
+- `afterWhere`
+- `afterWhere`
+- `afterOrderBy`
+- `afterLimit`
 - `beforeCreate`
 - `afterCreate`
 - `beforeUpdate`
@@ -11,44 +16,124 @@ Supported lifecycle hooks are as follows.
 - `beforeDelete`
 - `afterDelete`
 
-To get started with lifecycle hooks, you can define the action with one of each name listed above.
+## Defining Lifecycle Hooks
+
+To define lifecycle hooks, you either define them as a static method at Model or register globally to Query class.
+
+To define as a static method at Model, define a method with the corresponding lifecycle hook name.
 
 ```js
-const actions = {
-  beforeCreate (context, record) {
-    // Do something.
-  },
+class User extends Model {
+  static entity = 'users'
 
-  afterDelete (context, record) {
-    // Do something.
+  static fields () {
+    ...
+  }
+
+  beforeCreate (model) {
+    // Do domething.
+  }
+
+  afterDelete (model) {
+    // Do domething.
   }
 }
 ```
 
-The first argument passed to the action is the action context that contains usual `state`, `commit` or `dispatch`. The second argument is the record that is to be created or has been created. Note that the `record` is an instance of a model.
+To define globally at Query class, import Query class and use `on` method.
 
-## Modify the Record to be Saved
+## Select Lifecycle Hooks
 
-When in `beforeCreate` or `beforeUpdate`, you can modify the record directly.
+Select lifecycle hooks are called when you retrieve data from the store. The corresponding hook name are `beforeSelect`, `afterWhere`, `afterOrderBy` and `afterLimit`. Each hook is called on each stage of the retrieving process allowing you to modified the query result as you wish.
+
+- `beforeSelect` is called at the very beginning of the retrieving process. It contains all records that exist in the store.
+- `afterWhere` is called right after `where` clause has been applied.
+- `afterOrderBy` is called right after `orderBy` clause has been applied.
+- `afterLimit` is called right after `limit` and `offset` clause has been applied.
+
+Bellow example is a hook that will filter all non-admin users from the result.
 
 ```js
-const actions = {
-  beforeCreate (context, model) {
+class User extends Model {
+  static entity = 'users'
+
+  static fields () {
+    ...
+  }
+
+  beforeSelect (users) {
+    return users.filter(user => user.admin !== 'admin')
+  }
+}
+```
+
+The first argument passed to the select lifecycle hook is a collection of records (model instances). Note that **you must always return a 
+collection** from the hook.
+
+When defining select lifecycle hook by Query class, you may use the 2nd argument to check on which entity the hooks have been executed.
+
+```js
+Query.on('beforeSelect', (records, entity) => {
+  if (entity === 'users') {
+    return users.filter(user => user.admin !== 'admin')
+  }
+
+  return records
+})
+```
+
+## Mutation Lifecycle Hook
+
+Mutation lifecycle hooks are called when you mutate data in the store. The corresponding hook name are `beforeCreate`, `afterCreate`, `beforeUpdate`, `afterUpdate`, `beforeDelete` and `afterDelete`.
+
+When in `beforeCreate` or `beforeUpdate`, you can modify the record directly to mutate the data to be saved.
+
+```js
+class Post extends Model {
+  static entity = 'posts'
+
+  static fields () {
+    ...
+  }
+
+  static beforeCreate (model) {
     model.published = true
   }
 }
 ```
 
-## Cancel the Mutation
-
 If you return false from `before` hooks, that record will not be persisted to the state.
 
 ```js
-const actions = {
-  beforeCreate (context, record) {
-    if (record.doNotModify) {
-      return false
-    }
+class Post extends Model {
+  static entity = 'posts'
+
+  static fields () {
+    ...
+  }
+
+  static beforeUpdate (model) {
+      if (model.doNotModify) {
+        return false
+      }
   }
 }
+```
+
+## Global Lifecycle Hook
+
+Like JavaScript events, you can use the `Query.on` to register a hook, and `Query.off()` to remove the hook.
+
+```js
+const hookId = Query.on('afterWhere', callback)
+
+Query.off(hookId)
+```
+
+By default, all hooks are registered globally within the Query class and run on all instances within your application.
+
+If you only want to register a hook to be available for the next query call, you can add the third optional parameter `true` to have the Query class automatically remove your hook after the next query method call.
+
+```js
+Query.on('beforeSelect', callback(), true)
 ```

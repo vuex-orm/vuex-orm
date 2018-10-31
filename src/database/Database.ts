@@ -93,7 +93,7 @@ export default class Database {
    * Create the Vuex Module from registered entities.
    */
   registerModules (): void {
-    const modules = ModuleBuilder.create(this.namespace, this.modules())
+    const modules = ModuleBuilder.create(this.namespace, this.models(), this.modules())
 
     this.store.registerModule(this.namespace, modules)
   }

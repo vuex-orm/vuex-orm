@@ -1,4 +1,14 @@
 {
   "extends": "standard",
-  "parser": "babel-eslint"
+
+  "parser": "babel-eslint",
+
+  "overrides": [
+    {
+      "files": ["test/**/*.js"],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
 }
