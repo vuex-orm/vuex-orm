@@ -661,13 +661,12 @@ export default class Model {
    * Save record.
    */
   async $save (): Promise<Item> {
-    const fields = this.$fields()
+    const fields = this.$self().getFields()
     const record = Object.keys(fields).reduce((record, key) => {
-      if (record[key] instanceof Attributes.Type) {
+      if (fields[key] instanceof Attributes.Type) {
         record[key] = this[key]
       }
 
-      record[key] = this[key]
       return record
     }, {} as Record)
 
