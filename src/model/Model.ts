@@ -671,14 +671,9 @@ export default class Model {
       return record
     }, {} as Record)
 
-    return this.$dispatch('insertOrUpdate', { data: record })
-      .then(record => {
-        this.$fill(record[this.$self().entity][0])
-        return this
-      })
-      .catch(err => {
-        throw err
-      })
+    const records = await this.$dispatch('insertOrUpdate', { data: record })
+    this.$fill(records[this.$self().entity][0])
+    return this
   }
 
   /**
