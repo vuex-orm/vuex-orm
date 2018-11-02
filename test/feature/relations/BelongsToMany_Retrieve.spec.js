@@ -109,4 +109,105 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
 
     expect(roles.length).toBe(2)
   })
+
+  it('can resolve nested belongs to relation', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          roles: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
+        }
+      }
+    }
+
+    class Role extends Model {
+      static entity = 'roles'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          permissions: this.belongsToMany(Permission, RolePermission, 'role_id', 'permission_id')
+        }
+      }
+    }
+
+    class Permission extends Model {
+      static entity = 'permissions'
+
+      static fields () {
+        return {
+          id: this.attr(null)
+        }
+      }
+    }
+
+    class RoleUser extends Model {
+      static entity = 'role_users'
+
+      static primaryKey = ['role_id', 'user_id']
+
+      static fields () {
+        return {
+          role_id: this.attr(null),
+          user_id: this.attr(null)
+        }
+      }
+    }
+
+    class RolePermission extends Model {
+      static entity = 'role_permissions'
+
+      static primaryKey = ['role_id', 'permission_id']
+
+      static fields () {
+        return {
+          role_id: this.attr(null),
+          permission_id: this.attr('')
+        }
+      }
+    }
+
+    createStore([{ model: User }, { model: Role }, { model: Permission }, { model: RoleUser }, { model: RolePermission }])
+
+    const data = [
+      {
+        'id': 1,
+        'roles': [
+          {
+            'id': 1,
+            'permissions': [{ 'id': 1 }, { 'id': 2 }, { 'id': 3 }, { 'id': 4 }]
+          }
+        ]
+      },
+      {
+        'id': 2,
+        'roles': [
+          {
+            'id': 2,
+            'permissions': [{ 'id': 1 }, { 'id': 2 }, { 'id': 3 }, { 'id': 4 }]
+          }
+        ]
+      }
+    ]
+
+    await User.create({ data })
+
+    const users = User.query().with('roles.permissions').get()
+
+    expect(users[0].id).toBe(1)
+    expect(users[0].roles.length).toBe(1)
+    expect(users[0].roles[0].id).toBe(1)
+    expect(users[0].roles[0].permissions.length).toBe(4)
+    expect(users[0].roles[0].permissions[0].id).toBe(1)
+    expect(users[0].roles[0].permissions[1].id).toBe(2)
+
+    expect(users[1].id).toBe(2)
+    expect(users[1].roles.length).toBe(1)
+    expect(users[1].roles[0].id).toBe(2)
+    expect(users[1].roles[0].permissions.length).toBe(4)
+    expect(users[1].roles[0].permissions[0].id).toBe(1)
+    expect(users[1].roles[0].permissions[1].id).toBe(2)
+  })
 })
