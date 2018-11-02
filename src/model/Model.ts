@@ -658,6 +658,24 @@ export default class Model {
   }
 
   /**
+   * Save record.
+   */
+  async $save (): Promise<Item> {
+    const fields = this.$self().getFields()
+    const record = Object.keys(fields).reduce((record, key) => {
+      if (fields[key] instanceof Attributes.Type) {
+        record[key] = this[key]
+      }
+
+      return record
+    }, {} as Record)
+
+    const records = await this.$dispatch('insertOrUpdate', { data: record })
+    this.$fill(records[this.$self().entity][0])
+    return this
+  }
+
+  /**
    * Serialize an item into json.
    */
   serializeItem (item: Model): Record {

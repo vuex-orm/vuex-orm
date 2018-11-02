@@ -62,7 +62,10 @@ The data contains lots of `author` fields. Some of them are the exact same autho
 When you store the above posts data using Vuex ORM, it will be "normalized" before saving them to the Vuex Store. After saving, Vuex Store State would look like below.
 
 ```js
-// Save data using Vuex Action.
+// Storing data using The Model instance.
+Post.insert({ data: posts })
+
+// Or storing data using a Vuex action.
 store.dispatch('entities/posts/insert', { data: posts })
 
 // Then inside Vuex Store State becomes like this.
@@ -140,10 +143,15 @@ let state = {
 
 See how each data is now decoupled and deduplicated. This is what "normalize" means.
 
-Now, you can fetch these data using Vuex Getters. These getters are also built in to Vuex ORM.
+Now, you can fetch these data using a Model or Vuex Getters. These getters are also built in to Vuex ORM.
 
 ```js
-// Fetch all posts.
+// Fetch all posts using the Post model.
+const posts = Post.all()
+```
+
+```js
+// Fetch all posts using a Vuex getter.
 const posts = store.getters['entities/posts/all']()
 
 /*
@@ -156,7 +164,7 @@ const posts = store.getters['entities/posts/all']()
 
 ```js
 // Fetch all posts with its relation.
-const posts = store.getters['entities/posts/query']().with('author').get()
+const posts = Post.query().with('author').get()
 
 /*
   [
@@ -184,7 +192,7 @@ const posts = store.getters['entities/posts/query']().with('author').get()
 
 ```js
 // Fetch data matching specific condition.
-const posts = store.getters['entities/posts/query']()
+const posts = Post.query()
   .with('author')
   .where('id', 1) // Id of post.
   .get()
@@ -233,22 +241,12 @@ class User extends Model {
 }
 
 // Fetch user from the store.
-const user = store.getters['entities/users/find'](1)
+const user = User.find(1)
 
 // The `user` is an instance of User class!
 console.log(user.first_name) // John
 console.log(user.last_name) // Doe
 console.log(user.fullName()) // John Doe
-```
-
-As you might have guessed, Model provides all the CRUD actions as well. You can create or retrieve data through Model instead of Vuex actions and getters if you wish.
-
-```js
-// Save data.
-User.insert({ data: { /* ... */ } })
-
-// Fetch data.
-User.find(1)
 ```
 
 Cool, isn't it? Are you ready to start using Vuex ORM? [Let's get started](getting-started.md).

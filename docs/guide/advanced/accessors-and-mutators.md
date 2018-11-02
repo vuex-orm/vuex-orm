@@ -40,7 +40,7 @@ As you can see, these are just ordinary JavaScript class definitions. You are fr
 // Let's say you have following user inside Vuex Store.
 let state = { id: 1, first_name: 'John', last_name: 'Doe' }
 
-const user = store.getters['entities/users/find'](1)
+const user = User.find(1)
 
 console.log(user.full_name) // <- 'John Doe'
 

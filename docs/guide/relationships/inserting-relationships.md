@@ -47,7 +47,7 @@ let state = {
 If you save this data to the store by `create` or `insert` actions, it will be normalized and saved under its corresponding module.
 
 ```js
-store.dispatch('entities/users/create', { data })
+User.create({ data })
 
 // Inside store.
 let state = {
@@ -70,13 +70,13 @@ let state = {
 
 ## Choosing the Insert Method of the Related Records
 
-When you insert data with related records included, all of the related records will be inserted using the base action that was called. For example, if you call `create` action, all of the related records get "created" into the store.
+When you insert data with related records included, all of the related records will be inserted using the base method that was called. For example, if you call the `create` method, all of the related records get "created" into the store.
 
 ```js
-store.dispatch('entities/users/create', { data })
+User.create({ data })
 ```
 
-Sometimes you might want the option to choose how Vuex ORM inserts data into the store depending on the relationship. For example, you might want to "create" users but "insert" posts. You may do so by passing additional options to the action. The available options are:
+Sometimes you might want the option to choose how Vuex ORM inserts data into the store depending on the relationship. For example, you might want to "create" users but "insert" posts. You may do so by passing additional options to the method. The available options are:
 
 - `create`
 - `insert`
@@ -85,13 +85,13 @@ Sometimes you might want the option to choose how Vuex ORM inserts data into the
 
 ```js
 // `create` users but `insert` posts.
-store.dispatch('entities/users/create', {
+User.create({
   data: [{ /* ... */ }],
   insert: ['posts']
 })
 
 // `insert` users but `create` posts and `comments`.
-store.dispatch('entities/users/insert', {
+User.insert({
   data: [{ /* ... */ }],
   create: ['posts', 'comments']
 })
@@ -155,7 +155,7 @@ const data = {
   ]
 }
 
-store.dispatch('entities/countries/create', { data })
+Country.create({ data })
 ```
 
 Vuex ORM will normalize the data and save them to the store as below.
@@ -202,5 +202,5 @@ const data = {
   ]
 }
 
-store.dispatch('entities/countries/create', { data })
+Country.create({ data })
 ```
