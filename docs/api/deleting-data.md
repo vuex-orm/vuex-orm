@@ -12,7 +12,7 @@ By passing in an `Object` as argument the object is expacted to have a `where` k
 
 ```js
 // Initial state.
-{
+let state = {
   entities: {
     users: {
       '1': { id: 1, name: 'John' },
@@ -39,7 +39,7 @@ store.dispatch('entities/users/delete', 1)
 store.dispatch('entities/users/delete', { where: 1 })
 
 // State after `delete`
-{
+state = {
   entities: {
     users: {
       '2': { id: 1, name: 'Jane' }
@@ -52,7 +52,7 @@ store.dispatch('entities/users/delete', { where: 1 })
 
 ```js
 // Initial state.
-{
+let state = {
   entities: {
     users: {
       '1': { id: 1, name: 'John' },
@@ -63,7 +63,7 @@ store.dispatch('entities/users/delete', { where: 1 })
       '1': { id: 1, user_id: 1 },
       '2': { id: 2, user_id: 2 },
       '3': { id: 3, user_id: 3 }
-    },
+    }
   }
 }
 
@@ -80,7 +80,7 @@ User.delete({
 })
 
 // State after `delete`.
-{
+state = {
   entities: {
     users: {
       '3': { id: 1, name: 'George' }
@@ -89,7 +89,7 @@ User.delete({
       '1': { id: 1, user_id: 1 },
       '2': { id: 2, user_id: 2 },
       '3': { id: 3, user_id: 3 }
-    },
+    }
   }
 }
 ```
@@ -103,13 +103,13 @@ You can delete all data in once by `deleteAll` action.
 User.deleteAll()
 
 // State after `deleteAll`.
-{
+let state = {
   entities: {
     users: {},
     posts: {
       '1': { id: 1, user_id: 1 },
       '2': { id: 2, user_id: 2 },
-      '3': { id: 3, user_id: 3 },
+      '3': { id: 3, user_id: 3 }
     }
   }
 }
@@ -118,7 +118,7 @@ User.deleteAll()
 store.dispatch('entities/deleteAll')
 
 // State after `deleteAll`.
-{
+state = {
   entities: {
     users: {},
     posts: {}

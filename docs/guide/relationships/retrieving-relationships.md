@@ -203,7 +203,6 @@ const user = User.query().with('posts.comments', (query) => {
   // This constraint will be applied to the `comments`, not `posts`.
   query.where('type', 'review')
 }).get()
-*/
 ```
 
 If you need to add constraints to each relation, you could always nest constraints. This is the most flexible way of defining constraints to the relationships.

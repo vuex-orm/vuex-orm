@@ -19,7 +19,7 @@
   Dispatch a store action. It will generate module namespace automatically.
 
   ```js
-  User.dispatch('create', { data: ... })
+  User.dispatch('create', { data: { /* ... */ } })
   ```
 
 ### getters
@@ -104,7 +104,7 @@
   ```js
   const user = new User()
 
-  user.$dispatch('create', { data: ... })
+  user.$dispatch('create', { data: { /* ... */ } })
   ```
 
 ### $getters
@@ -147,7 +147,7 @@
 
     static fields () {
       return {
-        id: this.attr(null)
+        id: this.attr(null),
         name: this.attr('')
       }
     }
@@ -176,7 +176,7 @@
 
     static fields () {
       return {
-        username: this.attr(null)
+        username: this.attr(null),
         name: this.attr('')
       }
     }

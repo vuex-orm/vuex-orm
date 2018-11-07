@@ -4,9 +4,11 @@ You can use Model methods or getters to retrieve data from the Vuex Store. Not o
 
 ```js
 const user = User.find(1)
+```
 
-// OR 
+Or: 
 
+```js
 const user = store.getters['entities/users/find'](1)
 
 // both returning the same result: User { id: 1, name: 'name' }
@@ -169,15 +171,15 @@ The `orderBy` method allows you to sort the result of the query by a given field
 
 ```js
 // Order users by name.
-const user = User.query().orderBy('name').get()
+const users = User.query().orderBy('name').get()
 
 // [User { id: 2, name: 'Andy' }, { id: 1, name: 'John' }]
 
 // You may also chain orderBy.
-const user = User.query()
-    .orderBy('name')
-    .orderBy('age', 'desc')
-    .get()
+const usersByAge = User.query()
+  .orderBy('name')
+  .orderBy('age', 'desc')
+  .get()
 
 // [User { id: 4, name: 'Andy', age: 32 }, { id: 2, name: 'Andy', age: 27 }]
 ```

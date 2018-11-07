@@ -27,7 +27,7 @@ class User extends Model {
   static entity = 'users'
 
   static fields () {
-    ...
+    /* ... */
   }
 
   beforeCreate (model) {
@@ -58,7 +58,7 @@ class User extends Model {
   static entity = 'users'
 
   static fields () {
-    ...
+    /* ... */
   }
 
   beforeSelect (users) {
@@ -93,7 +93,7 @@ class Post extends Model {
   static entity = 'posts'
 
   static fields () {
-    ...
+    /* ... */
   }
 
   static beforeCreate (model) {
@@ -109,13 +109,13 @@ class Post extends Model {
   static entity = 'posts'
 
   static fields () {
-    ...
+    /* ... */
   }
 
   static beforeUpdate (model) {
-      if (model.doNotModify) {
-        return false
-      }
+    if (model.doNotModify) {
+      return false
+    }
   }
 }
 ```

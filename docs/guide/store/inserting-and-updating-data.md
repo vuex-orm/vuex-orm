@@ -24,7 +24,7 @@ The `create` method is going to replace all existing data in the store and repla
 
 ```js
 // Initial State.
-{
+let state = {
   entities: {
     users: {
       data: {
@@ -40,7 +40,7 @@ User.create({
 })
 
 // State after `create`.
-{
+state = {
   entities: {
     users: {
       data: {
@@ -55,7 +55,7 @@ The `insert` method is going to insert data into the store while keeping existin
 
 ```js
 // Initial State.
-{
+let state = {
   entities: {
     users: {
       data: {
@@ -74,7 +74,7 @@ User.insert({
 })
 
 // State after `insert`.
-{
+state = {
   entities: {
     users: {
       data: {
@@ -92,7 +92,7 @@ Finally, with the `new` method, you can create a new record with all fields fill
 User.new()
 
 // State after `new`
-{
+let state = {
   entities: {
     users: {
       data: {
@@ -111,7 +111,7 @@ You can pass an array of objects to insert multiple data. It works for both `cre
 User.insert({
   data: [
     { id: 1, name: 'John' },
-    { id: 2, name: 'Jane' },
+    { id: 2, name: 'Jane' }
   ]
 })
 ```
@@ -136,11 +136,11 @@ class User extends Model {
 
 // If you insert object that misses some fields...
 User.create({
-  data: { id: 1, name: 'John Doe '}
+  data: { id: 1, name: 'John Doe ' }
 })
 
 // Missing field will be present with its default value.
-{
+let state = {
   entities: {
     users: {
       data: {
@@ -220,7 +220,7 @@ Let's see some example here to understand how it works.
 
 ```js
 // Initial State.
-{
+let state = {
   entities: {
     users: {
       '1': { id: 1, name: 'John', age: 20 },
@@ -236,7 +236,7 @@ User.update({
 })
 
 // State after `update`
-{
+state = {
   entities: {
     users: {
       '1': { id: 1, name: 'John', age: 20 },
@@ -300,7 +300,7 @@ When specifying a `where` condition by a function, it's possible to update multi
 
 ```js
 // Initial State.
-{
+let state = {
   entities: {
     users: {
       '1': { id: 1, role: 'user', active: true },
@@ -320,7 +320,7 @@ User.update({
 })
 
 // State after `update`.
-{
+state = {
   entities: {
     users: {
       '1': { id: 1, role: 'user', active: false },
@@ -355,8 +355,8 @@ When specifying id value in the `where` property, it will return a single item t
 ```js
 User.update({
   where: 1,
-  data { age: 24 }
-).then((user) => {
+  data: { age: 24 }
+}).then((user) => {
   console.log(user)
 })
 
@@ -368,8 +368,8 @@ When updating many records by specifying a closure to the `where` property, the 
 ```js
 User.update({
   where: record => record.age === 30,
-  data { age: 24 }
-).then((users) => {
+  data: { age: 24 }
+}).then((users) => {
   console.log(users)
 })
 
@@ -391,7 +391,7 @@ For those cases you can use the `insertOrUpdate` method:
 
 ```js
 // Initial State.
-{
+let state = {
   entities: {
     users: {
       data: {
@@ -412,7 +412,7 @@ User.insertorUpdate({
 
 // State after `insertOrUpdate`. Roles for Peter won't be set to empty array
 // The new record is inserted with an empty relationship.
-{
+state = {
   entities: {
     users: {
       data: {
@@ -429,10 +429,10 @@ User.insertorUpdate({
 You can dispatch action from root module as well. With this syntax, you must specify the entity manually by passing `entity` field.
 
 ```js
-store.dispatch('entities/create', { entity: 'users', data: { ... } })
+store.dispatch('entities/create', { entity: 'users', data: { /* ... */ } })
 
 // Above is equivalent to this.
-User.create({ data: { ... } })
+User.create({ data: { /* ... */ } })
 ```
 
 Note that since the root module needs `entity`, you can't dispatch `update` action through root by passing the condition directly.

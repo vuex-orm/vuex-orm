@@ -13,43 +13,43 @@ Here, let us show how it would look and feel like to be using Vuex ORM on your a
 Let's say you fetch posts data from a backend server. In most of the cases, the response would look something like below.
 
 ```js
-const post = [
+const posts = [
   {
     id: 1,
-    body: "......",
-    author: { id: 1, username: "user1", name: "User 1" },
+    body: '......',
+    author: { id: 1, username: 'user1', name: 'User 1' },
     comments: [
       {
-        id : 1,
-        author : { id: 2, username: "user2", name : "User 2" },
-        comment : "....."
+        id: 1,
+        author: { id: 2, username: 'user2', name: 'User 2' },
+        comment: '.....'
       },
       {
         id: 2,
-        author: { id: 2, username: "user2", name: "User 2" },
-        comment: "....."
+        author: { id: 2, username: 'user2', name: 'User 2' },
+        comment: '.....'
       }
     ]
   },
   {
     id: 2,
-    author: { id: 2, username: "user2", name: "User 2" },
-    body: "......",
+    author: { id: 2, username: 'user2', name: 'User 2' },
+    body: '......',
     comments: [
       {
         id: 3,
-        author: { id: 3, username: "user3", name: "User 3" },
-        comment: "....."
+        author: { id: 3, username: 'user3', name: 'User 3' },
+        comment: '.....'
       },
       {
         id: 4,
-        author: { id: 1, username: "user1", name: "User 1" },
-        comment: "....."
+        author: { id: 1, username: 'user1', name: 'User 1' },
+        comment: '.....'
       },
       {
         id: 5,
-        author: { id: 3, username: "user3", name: "User 3" },
-        comment: "....."
+        author: { id: 3, username: 'user3', name: 'User 3' },
+        comment: '.....'
       }
     ]
   }
@@ -69,71 +69,71 @@ Post.insert({ data: posts })
 store.dispatch('entities/posts/insert', { data: posts })
 
 // Then inside Vuex Store State becomes like this.
-{
+let state = {
   entities: {
     comments: {
       data: {
-        "1": {
+        '1': {
           id: 1,
-          author: "2",
-          comment: "....."
+          author: '2',
+          comment: '.....'
         },
-        "2": {
+        '2': {
           id: 2,
-          author: "2",
-          comment: "....."
+          author: '2',
+          comment: '.....'
         },
-        "3": {
+        '3': {
           id: 3,
-          author: "3",
-          comment: "....."
+          author: '3',
+          comment: '.....'
         },
-        "4": {
+        '4': {
           id: 4,
-          author: "1",
-          comment: "....."
+          author: '1',
+          comment: '.....'
         },
-        "5": {
+        '5': {
           id: 5,
-          author: "3",
-          comment: "....."
+          author: '3',
+          comment: '.....'
         }
       }
     },
 
     posts: {
       data: {
-        "1": {
+        '1': {
           id: 1,
-          body: "......",
-          author: "1",
-          comments: ["1", "2"]
+          body: '......',
+          author: '1',
+          comments: ['1', '2']
         },
-        "2": {
+        '2': {
           id: 2,
-          author: ["2"],
-          body: "......",
-          comments: ["3", "4", "5"]
+          author: ['2'],
+          body: '......',
+          comments: ['3', '4', '5']
         }
       }
     },
 
     users: {
       data: {
-        "1": {
+        '1': {
           id: 1,
-          username: "user1",
-          name: "User 1"
+          username: 'user1',
+          name: 'User 1'
         },
-        "2": {
+        '2': {
           id: 2,
-          username: "user2",
-          name: "User 2"
+          username: 'user2',
+          name: 'User 2'
         },
-        "3": {
+        '3': {
           id: 3,
-          username: "user3",
-          name: "User 3"
+          username: 'user3',
+          name: 'User 3'
         }
       }
     }
@@ -148,7 +148,9 @@ Now, you can fetch these data using a Model or Vuex Getters. These getters are a
 ```js
 // Fetch all posts using the Post model.
 const posts = Post.all()
+```
 
+```js
 // Fetch all posts using a Vuex getter.
 const posts = store.getters['entities/posts/all']()
 
@@ -158,7 +160,9 @@ const posts = store.getters['entities/posts/all']()
     { id: 2, body: "......" }
   ]
 */
+```
 
+```js
 // Fetch all posts with its relation.
 const posts = Post.query().with('author').get()
 
@@ -184,7 +188,9 @@ const posts = Post.query().with('author').get()
     }
   ]
 */
+```
 
+```js
 // Fetch data matching specific condition.
 const posts = Post.query()
   .with('author')
@@ -209,11 +215,11 @@ const posts = Post.query()
 Besides fetching data, Vuex ORM lets you create Model Classes for each data structure. When you retrieve data from the store, the records is actually a class instance.
 
 ```js
-{
+let state = {
   entities: {
     users: {
       data: {
-        "1": {
+        '1': {
           id: 1,
           first_name: 'John',
           last_name: 'Doe'
@@ -222,7 +228,9 @@ Besides fetching data, Vuex ORM lets you create Model Classes for each data stru
     }
   }
 }
+``` 
 
+```js
 // Define Model as class.
 import { Model } from '@vuex-orm/core'
 
@@ -236,9 +244,9 @@ class User extends Model {
 const user = User.find(1)
 
 // The `user` is an instance of User class!
-user.first_name // John
-user.last_name  // Doe
-user.fullName() // John Doe
+console.log(user.first_name) // John
+console.log(user.last_name) // Doe
+console.log(user.fullName()) // John Doe
 ```
 
 Cool, isn't it? Are you ready to start using Vuex ORM? [Let's get started](getting-started.md).

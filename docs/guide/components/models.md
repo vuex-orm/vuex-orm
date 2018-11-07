@@ -61,8 +61,8 @@ These fields are going to be attached as instance properties when instantiating 
 ```js
 const user = new User({ id: 1, name: 'John Doe' })
 
-user.id // <- 1
-user.name // <- 'John Doe'
+console.log(user.id) // <- 1
+console.log(user.name) // <- 'John Doe'
 ```
 
 ## Other Optional Fields

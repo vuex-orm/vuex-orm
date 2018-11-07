@@ -38,13 +38,13 @@ As you can see, these are just ordinary JavaScript class definitions. You are fr
 
 ```js
 // Let's say you have following user inside Vuex Store.
-{ id: 1, first_name: 'John', last_name: 'Doe' }
+let state = { id: 1, first_name: 'John', last_name: 'Doe' }
 
 const user = User.find(1)
 
-user.full_name // <- 'John Doe'
+console.log(user.full_name) // <- 'John Doe'
 
-user.prefix('Sir.') // <- 'Sir. John Doe'
+console.log(user.prefix('Sir.')) // <- 'Sir. John Doe'
 ```
 
 ## Defining Mutators
@@ -71,7 +71,7 @@ class User extends Model {
 
 const user = new User({ name: 'john doe' })
 
-user.name // <- JOHN DOE
+console.log(user.name) // <- JOHN DOE
 ```
 
 ### Via Mutators Method
@@ -101,7 +101,7 @@ class User extends Model {
 
 const user = new User({ name: 'john doe' })
 
-user.name // <- JOHN DOE
+console.log(user.name) // <- JOHN DOE
 ```
 
 Note that if you have a mutator defined as the 2nd argument of the `attr`, and also have a mutators method with the same field name, the mutator at `attr` takes precedence.
