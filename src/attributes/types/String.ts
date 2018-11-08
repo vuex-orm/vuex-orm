@@ -9,12 +9,26 @@ export default class String extends Type {
   value: string
 
   /**
+   * Whether if it can accept `null` as a value.
+   */
+  isNullable: boolean = false
+
+  /**
    * Create a new string instance.
    */
   constructor (model: typeof Model, value: string, mutator?: (value: any) => any) {
     super(model, mutator) /* istanbul ignore next */
 
     this.value = value
+  }
+
+  /**
+   * Set `nullable` to be `true`.
+   */
+  nullable (): this {
+    this.isNullable = true
+
+    return this
   }
 
   /**
@@ -27,12 +41,16 @@ export default class String extends Type {
   /**
    * Convert given value to the string.
    */
-  fix (value: any): string {
+  fix (value: any): string | null {
     if (value === undefined) {
       return this.value
     }
 
     if (typeof value === 'string') {
+      return value
+    }
+
+    if (value === null && this.isNullable) {
       return value
     }
 

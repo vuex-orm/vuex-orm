@@ -68,4 +68,39 @@ describe('Feature – Attributes – Number', () => {
     expect(users[4].num).toEqual(0)
     expect(users[5].num).toEqual(0)
   })
+
+  it('can accept `null` when there is `nullable` chain', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          num: this.number(0).nullable()
+        }
+      }
+    }
+
+    createStore([{ model: User }])
+
+    await User.create({
+      data: [
+        { id: 1 },
+        { id: 2, num: 1 },
+        { id: 3, num: '2' },
+        { id: 4, num: true },
+        { id: 5, num: false },
+        { id: 6, num: null }
+      ]
+    })
+
+    const users = User.all()
+
+    expect(users[0].num).toEqual(0)
+    expect(users[1].num).toEqual(1)
+    expect(users[2].num).toEqual(2)
+    expect(users[3].num).toEqual(1)
+    expect(users[4].num).toEqual(0)
+    expect(users[5].num).toEqual(null)
+  })
 })

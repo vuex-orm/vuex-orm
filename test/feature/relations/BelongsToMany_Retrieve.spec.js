@@ -245,7 +245,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+    createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
     await User.create({
       data: { id: 1 }

@@ -72,4 +72,43 @@ describe('Feature – Attributes – Boolean', () => {
     expect(users[6].bool).toEqual(true)
     expect(users[7].bool).toEqual(false)
   })
+
+  it('can accept `null` when there is `nullable` chain', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          bool: this.boolean(true).nullable()
+        }
+      }
+    }
+
+    createStore([{ model: User }])
+
+    await User.create({
+      data: [
+        { id: 1 },
+        { id: 2, bool: '' },
+        { id: 3, bool: 'string' },
+        { id: 4, bool: '0' },
+        { id: 5, bool: 0 },
+        { id: 6, bool: 1 },
+        { id: 7, bool: true },
+        { id: 8, bool: null }
+      ]
+    })
+
+    const users = User.all()
+
+    expect(users[0].bool).toEqual(true)
+    expect(users[1].bool).toEqual(false)
+    expect(users[2].bool).toEqual(true)
+    expect(users[3].bool).toEqual(false)
+    expect(users[4].bool).toEqual(false)
+    expect(users[5].bool).toEqual(true)
+    expect(users[6].bool).toEqual(true)
+    expect(users[7].bool).toEqual(null)
+  })
 })
