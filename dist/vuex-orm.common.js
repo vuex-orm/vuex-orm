@@ -352,9 +352,20 @@ var String$1 = /** @class */ (function (_super) {
      */
     function String(model, value, mutator) {
         var _this = _super.call(this, model, mutator) /* istanbul ignore next */ || this;
+        /**
+         * Whether if it can accept `null` as a value.
+         */
+        _this.isNullable = false;
         _this.value = value;
         return _this;
     }
+    /**
+     * Set `nullable` to be `true`.
+     */
+    String.prototype.nullable = function () {
+        this.isNullable = true;
+        return this;
+    };
     /**
      * Convert given value to the appropriate value for the attribute.
      */
@@ -371,6 +382,9 @@ var String$1 = /** @class */ (function (_super) {
         if (typeof value === 'string') {
             return value;
         }
+        if (value === null && this.isNullable) {
+            return value;
+        }
         return value + '';
     };
     return String;
@@ -383,9 +397,20 @@ var Number = /** @class */ (function (_super) {
      */
     function Number(model, value, mutator) {
         var _this = _super.call(this, model, mutator) /* istanbul ignore next */ || this;
+        /**
+         * Whether if it can accept `null` as a value.
+         */
+        _this.isNullable = false;
         _this.value = value;
         return _this;
     }
+    /**
+     * Set `nullable` to be `true`.
+     */
+    Number.prototype.nullable = function () {
+        this.isNullable = true;
+        return this;
+    };
     /**
      * Convert given value to the appropriate value for the attribute.
      */
@@ -408,6 +433,9 @@ var Number = /** @class */ (function (_super) {
         if (typeof value === 'boolean') {
             return value ? 1 : 0;
         }
+        if (value === null && this.isNullable) {
+            return value;
+        }
         return 0;
     };
     return Number;
@@ -420,9 +448,20 @@ var Boolean = /** @class */ (function (_super) {
      */
     function Boolean(model, value, mutator) {
         var _this = _super.call(this, model, mutator) /* istanbul ignore next */ || this;
+        /**
+         * Whether if it can accept `null` as a value.
+         */
+        _this.isNullable = false;
         _this.value = value;
         return _this;
     }
+    /**
+     * Set `nullable` to be `true`.
+     */
+    Boolean.prototype.nullable = function () {
+        this.isNullable = true;
+        return this;
+    };
     /**
      * Convert given value to the appropriate value for the attribute.
      */
@@ -448,6 +487,9 @@ var Boolean = /** @class */ (function (_super) {
         }
         if (typeof value === 'number') {
             return !!value;
+        }
+        if (value === null && this.isNullable) {
+            return value;
         }
         return false;
     };
@@ -940,7 +982,7 @@ var BelongsToMany = /** @class */ (function (_super) {
      * Set the constraints for the related relation.
      */
     BelongsToMany.prototype.addEagerConstraintForRelated = function (query, collection) {
-        query.where(this.relatedPivotKey, this.getKeys(collection, this.relatedKey));
+        query.where(this.relatedKey, this.getKeys(collection, this.relatedPivotKey));
     };
     /**
      * Create a new indexed map for the pivot relation.
@@ -1909,6 +1951,32 @@ var Model = /** @class */ (function () {
             record[key] = value;
             return record;
         }, {});
+    };
+    /**
+     * Save record.
+     */
+    Model.prototype.$save = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var fields, record, records;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        fields = this.$self().getFields();
+                        record = Object.keys(fields).reduce(function (record, key) {
+                            if (fields[key] instanceof Type) {
+                                record[key] = _this[key];
+                            }
+                            return record;
+                        }, {});
+                        return [4 /*yield*/, this.$dispatch('insertOrUpdate', { data: record })];
+                    case 1:
+                        records = _a.sent();
+                        this.$fill(records[this.$self().entity][0]);
+                        return [2 /*return*/, this];
+                }
+            });
+        });
     };
     /**
      * Serialize an item into json.
