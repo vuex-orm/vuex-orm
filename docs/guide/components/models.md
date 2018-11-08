@@ -128,7 +128,7 @@ class User extends Model {
 
 ## Specific Types
 
-You may use specific type attributes, `this.string()`, `this.number()`, and `this.boolean()` to cast the value to be those types. The argument is the default value.
+You may use specific type attributes, `this.string()`, `this.number()`, and `this.boolean()` to cast the value to be those types. These attributes provide casting that will convert given value to for example `'0'` to be `0` or `1` to be `true`. The argument is the default value.
 
 ```js
 class User extends Model {
@@ -142,7 +142,19 @@ class User extends Model {
 }
 ```
 
-Note that these attributes provide casting. It will convert for example `'0'` to be `0` or `1` to be `true`.
+You may call `nullable` method on these attributes to let them accept `null` as a value.
+
+```js
+class User extends Model {
+  static fields () {
+    return {
+      id: this.number(0).nullable(),
+      name: this.string('John Doe').nullable(),
+      active: this.boolean(true).nullable()
+    }
+  }
+}
+```
 
 ## Auto Increment Type
 
