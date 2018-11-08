@@ -9,12 +9,26 @@ export default class Boolean extends Type {
   value: boolean
 
   /**
+   * Whether if it can accept `null` as a value.
+   */
+  isNullable: boolean = false
+
+  /**
    * Create a new number instance.
    */
   constructor (model: typeof Model, value: boolean, mutator?: (value: any) => any) {
     super(model, mutator) /* istanbul ignore next */
 
     this.value = value
+  }
+
+  /**
+   * Set `nullable` to be `true`.
+   */
+  nullable (): this {
+    this.isNullable = true
+
+    return this
   }
 
   /**
@@ -48,6 +62,10 @@ export default class Boolean extends Type {
 
     if (typeof value === 'number') {
       return !!value
+    }
+
+    if (value === null && this.isNullable) {
+      return value
     }
 
     return false
