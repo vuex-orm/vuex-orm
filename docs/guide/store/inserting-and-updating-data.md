@@ -424,6 +424,51 @@ state = {
 }
 ```
 
+## Save Method
+
+The `$save` method at Model allows you to insert or update the record to the Store.
+
+```js
+const user = new User()
+
+user.name = 'John Doe'
+
+user.$save()
+```
+
+Note that `$save` method will only save the model itself. It wouldn't save any relationships attached to the Model.
+
+Be careful when using the `$save` method, that you might like the syntax due to its consistency with other ORMs such as Laravel Eloquent, remember you should not mutate the record inside the store. Simply put, never mutate the record you fetched by the getters.
+
+```js
+const user = User.find(1)
+
+// Never do this!
+user.name = 'John Doe
+```
+
+The perfect place to use `$save` method is when you need to create a fresh new record inside Vue Component like below example.
+
+```js
+export default {
+  data () {
+    return {
+      user: new User()
+    }
+  },
+
+  methods: {
+    updateName (e) {
+      this.user.name = e.target.value
+    },
+
+    save () {
+      this.user.$save()
+    }
+  }
+}
+```
+
 ## Dispatching Actions from Root Module
 
 You can dispatch action from root module as well. With this syntax, you must specify the entity manually by passing `entity` field.
