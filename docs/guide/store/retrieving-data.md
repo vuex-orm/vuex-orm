@@ -42,6 +42,22 @@ const users = User.find(1)
 // User { id: 1, name: 'John' }
 ```
 
+## Get Mulitple Data by Primary Keys
+
+The `findIn` method is going to fetch array of data from the store. The argument is array of ids – primary key value – for the records.
+
+```js
+// Retrieve array of records by their primary key.
+const users = User.findIn([1,2])
+
+/*
+  [
+    User { id: 1, name: 'John' },
+    User: { id: 2, name: 'Jane' }
+  ]
+*/
+```
+
 ## Query Builder
 
 The `query` method will return the query builder that provides fluent API to search and fetch data from the store. You can use the query builder to construct more complex query conditions.

@@ -251,6 +251,13 @@ export default class Query {
   }
 
   /**
+   * Get the record of the given array of ids.
+   */
+  findIn (idList: Array<number | string>): Data.Collection {
+    return idList.map(id => this.hydrate(this.state.data[id]))
+  }
+
+  /**
    * Returns all record of the query chain result.
    */
   get (): Data.Collection {

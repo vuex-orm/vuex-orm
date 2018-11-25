@@ -87,6 +87,23 @@ describe('Feature – Retrieve', () => {
     expect(user.id).toBe(2)
   })
 
+  it('can retrieve array of items by their ids', () => {
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: [{ id: 1 }, { id: 2 }, { id: 3 }]
+    })
+
+    const expected = [{ $id: 1, id: 1 }, { $id: 3, id: 3 }]
+
+    const users = store.getters['entities/users/findIn']([1, 3])
+
+    expect(users.length).toBe(2)
+    expect(users[0]).toBeInstanceOf(User)
+    expect(users[1]).toBeInstanceOf(User)
+    expect(users).toEqual(expected)
+  })
+
   it('can retrieve a single item by chaind find method', () => {
     const store = createStore([{ model: User }])
 
