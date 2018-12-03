@@ -93,6 +93,6 @@ export default class MorphOne extends Relation {
    * Set the constraints for an eager load of the relation.
    */
   addEagerConstraintForMorphOne (query: Query, collection: Record[], type: string): void {
-    query.where(this.type, type).where(this.id, this.getKeys(collection, this.localKey))
+    query.whereFk(this.type, type).whereFk(this.id, this.getKeys(collection, this.localKey))
   }
 }

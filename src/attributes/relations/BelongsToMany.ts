@@ -119,14 +119,14 @@ export default class BelongsToMany extends Relation {
    * Set the constraints for the pivot relation.
    */
   addEagerConstraintForPivot (query: Query, collection: Record[]): void {
-    query.where(this.foreignPivotKey, this.getKeys(collection, this.parentKey))
+    query.whereFk(this.foreignPivotKey, this.getKeys(collection, this.parentKey))
   }
 
   /**
    * Set the constraints for the related relation.
    */
   addEagerConstraintForRelated (query: Query, collection: Record[]): void {
-    query.where(this.relatedKey, this.getKeys(collection, this.relatedPivotKey))
+    query.whereFk(this.relatedKey, this.getKeys(collection, this.relatedPivotKey))
   }
 
   /**
