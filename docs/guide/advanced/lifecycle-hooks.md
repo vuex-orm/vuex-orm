@@ -30,11 +30,11 @@ class User extends Model {
     /* ... */
   }
 
-  beforeCreate (model) {
+  static beforeCreate (model) {
     // Do domething.
   }
 
-  afterDelete (model) {
+  static afterDelete (model) {
     // Do domething.
   }
 }
@@ -61,7 +61,7 @@ class User extends Model {
     /* ... */
   }
 
-  beforeSelect (users) {
+  static beforeSelect (users) {
     return users.filter(user => user.admin !== 'admin')
   }
 }
