@@ -3132,6 +3132,10 @@ var Query = /** @class */ (function () {
          */
         this.load = {};
         /**
+         * Primary key ids to filter records by
+         */
+        this._idFilter = [];
+        /**
          * The object that holds mutated records. This object is used to retrieve the
          * mutated records in actions.
          *
@@ -3270,7 +3274,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.findIn = function (idList) {
         var _this = this;
-        return this.collect(idList.map(function (id) { return _this.state.data[id]; }));
+        return idList.map(function (id) { return _this.state.data[id]; });
     };
     /**
      * Returns all record of the query chain result.
@@ -3303,7 +3307,8 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.records = function () {
         var _this = this;
-        return Object.keys(this.state.data).map(function (id) {
+        var idList = this._idFilter.length > 0 ? this._idFilter : Object.keys(this.state.data);
+        return idList.map(function (id) {
             var item = _this.state.data[id];
             return item instanceof Model ? item : _this.hydrate(item);
         });
@@ -3405,6 +3410,20 @@ var Query = /** @class */ (function () {
     Query.prototype.addWhereHasConstraint = function (name, constraint, existence) {
         var ids = this.matchesWhereHasRelation(name, constraint, existence);
         this.where('$id', function (value) { return ids.includes(value); });
+        return this;
+    };
+    /**
+     * Filter records by their primary key.
+     */
+    Query.prototype.whereId = function (value) {
+        this._idFilter.push(value);
+        return this;
+    };
+    /**
+     * Filter records by their primary key.
+     */
+    Query.prototype.whereIdIn = function (value) {
+        this._idFilter = this._idFilter.concat(value);
         return this;
     };
     /**

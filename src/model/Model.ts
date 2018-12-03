@@ -319,7 +319,7 @@ export default class Model {
   /**
    * Get the record of the given array of ids.
    */
-  static findIn (idList: Array<number | string>): Collection {
+  static findIn (idList: Array<number | string>): Item[] {
     return this.getters('findIn')(idList)
   }
 

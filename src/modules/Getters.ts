@@ -30,7 +30,7 @@ const Getters: GettersContract = {
   /**
    * Find array of data of the given entity by given ids.
    */
-  findIn: (state: State, _getters: any, _rootState: RootState, rootGetters: any) => (idList: Array<string | number>): Collection => {
+  findIn: (state: State, _getters: any, _rootState: RootState, rootGetters: any) => (idList: Array<string | number>): Item[] => {
     return rootGetters[`${state.$connection}/findIn`](state.$name, idList)
   }
 }

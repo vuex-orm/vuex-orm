@@ -43,6 +43,51 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
+  it('can retrieve records that matches the whereId clause', () => {
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: [
+        { id: 1, name: 'John', age: 20, active: true },
+        { id: 2, name: 'Jane', age: 20, active: true },
+        { id: 3, name: 'Johnny', age: 20, active: false }
+      ]
+    })
+
+    const expected = [
+      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+    ]
+
+    const users = store.getters['entities/users/query']()
+      .whereId(2)
+      .get()
+
+    expect(users).toEqual(expected)
+  })
+
+  it('can retrieve records that matches the whereIdIn clause', () => {
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: [
+        { id: 1, name: 'John', age: 20, active: true },
+        { id: 2, name: 'Jane', age: 20, active: true },
+        { id: 3, name: 'Johnny', age: 20, active: false }
+      ]
+    })
+
+    const expected = [
+      { $id: 2, id: 2, name: 'Jane', age: 20, active: true },
+      { $id: 3, id: 3, name: 'Johnny', age: 20, active: false }
+    ]
+
+    const users = store.getters['entities/users/query']()
+      .whereIdIn([2, 3])
+      .all()
+
+    expect(users).toEqual(expected)
+  })
+
   it('can retrieve records that contains the value in the where clause array', () => {
     const store = createStore([{ model: User }])
 

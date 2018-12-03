@@ -89,6 +89,11 @@ export default class Query {
   hook: Hook
 
   /**
+   * Primary key ids to filter records by. Used for filtering records direct key lookup.
+   */
+  _idFilter: Array<number | string> = []
+
+  /**
    * The object that holds mutated records. This object is used to retrieve the
    * mutated records in actions.
    *
@@ -253,8 +258,8 @@ export default class Query {
   /**
    * Get the record of the given array of ids.
    */
-  findIn (idList: Array<number | string>): Data.Collection {
-    return this.collect(idList.map(id => this.state.data[id]))
+  findIn (idList: Array<number | string>): Data.Item[] {
+    return idList.map(id => this.state.data[id])
   }
 
   /**
@@ -293,7 +298,9 @@ export default class Query {
    * side, it will be converted to the plain record at the client side.
    */
   records (): Data.Collection {
-    return Object.keys(this.state.data).map((id) => {
+    const idList = this._idFilter.length > 0 ? this._idFilter : Object.keys(this.state.data)
+
+    return idList.map((id) => {
       const item = this.state.data[id]
 
       return item instanceof Model ? item : this.hydrate(item)
@@ -419,6 +426,22 @@ export default class Query {
 
     this.where('$id', (value: any) => ids.includes(value))
 
+    return this
+  }
+
+  /**
+   * Filter records by their primary key.
+   */
+  whereId (value: number | string): this {
+    this._idFilter.push(value)
+    return this
+  }
+
+  /**
+   * Filter records by their primary keys.
+   */
+  whereIdIn (value: number[] | string[]): this {
+    this._idFilter = this._idFilter.concat(value)
     return this
   }
 
