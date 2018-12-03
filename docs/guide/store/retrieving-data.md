@@ -33,13 +33,29 @@ const users = User.all()
 
 ## Get Single Data
 
-The `find` method is going to fetch single data from the store. The argument is the id – primary key value – for the record.
+The `find` method is going to fetch single data from the store. The argument is the id – primary key value – for the record. Also see `whereId` to get class instance instead of plain object.
 
 ```js
 // Retrieve a record by its primary key.
 const users = User.find(1)
 
 // User { id: 1, name: 'John' }
+```
+
+## Get Mulitple Data by Primary Keys
+
+The `findIn` method is going to fetch array of data from the store. The argument is array of ids – primary key value – for the records. Also see `whereIdIn` to get class instances instead of plain objects.
+
+```js
+// Retrieve array of records by their primary key.
+const users = User.findIn([1,2])
+
+/*
+  [
+    User { id: 1, name: 'John' },
+    User: { id: 2, name: 'Jane' }
+  ]
+*/
 ```
 
 ## Query Builder
@@ -87,6 +103,26 @@ const user = User.query().last()
 ```
 
 ### Where Clauses
+
+#### Get A Single Data By Id (using key lookup)
+
+Use `whereId` method to fetch a single data by using its id. Filters data faster than other `where` methods using key lookup. The argument is the id – primary key value – for the record.
+
+```js
+const user = User.query().whereId(1).get();
+
+// User { id: 1, name: 'John' }
+```
+
+#### Get Multiple Data By Id (using key lookup)
+
+Use `whereIdIn` method to fetch multiple data by using their ids. Filters data faster than other `where` methods using key lookup. The argument is array of ids – primary key values – for the records.
+
+```js
+const user = User.query().whereIdIn([1,2]).get();
+
+// [User { id: 1, age: 20 }, User { id: 2, age: 20 }]
+```
 
 #### Simple Where Clauses
 

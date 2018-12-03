@@ -80,9 +80,12 @@
     ***************************************************************************** */
     /* global Reflect, Promise */
 
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function(d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
 
     function __extends(d, b) {
         extendStatics(d, b);
@@ -90,12 +93,15 @@
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     }
 
-    var __assign = Object.assign || function __assign(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-        }
-        return t;
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
     };
 
     function __awaiter(thisArg, _arguments, P, generator) {
@@ -1645,6 +1651,12 @@
             return this.getters('find')(id);
         };
         /**
+         * Get the record of the given array of ids.
+         */
+        Model.findIn = function (idList) {
+            return this.getters('findIn')(idList);
+        };
+        /**
          * Get query instance.
          */
         Model.query = function () {
@@ -1836,6 +1848,12 @@
          */
         Model.prototype.$find = function (id) {
             return this.$getters('find')(id);
+        };
+        /**
+         * Find record of the given array of ids.
+         */
+        Model.prototype.$findIn = function (idList) {
+            return this.$getters('findIn')(idList);
         };
         /**
          * Get query instance.
@@ -3118,6 +3136,10 @@
              */
             this.load = {};
             /**
+             * Primary key ids to filter records by
+             */
+            this._idFilter = [];
+            /**
              * The object that holds mutated records. This object is used to retrieve the
              * mutated records in actions.
              *
@@ -3252,6 +3274,13 @@
             return this.item(this.state.data[id]);
         };
         /**
+         * Get the record of the given array of ids.
+         */
+        Query.prototype.findIn = function (idList) {
+            var _this = this;
+            return idList.map(function (id) { return _this.state.data[id]; });
+        };
+        /**
          * Returns all record of the query chain result.
          */
         Query.prototype.get = function () {
@@ -3282,7 +3311,8 @@
          */
         Query.prototype.records = function () {
             var _this = this;
-            return Object.keys(this.state.data).map(function (id) {
+            var idList = this._idFilter.length > 0 ? this._idFilter : Object.keys(this.state.data);
+            return idList.map(function (id) {
                 var item = _this.state.data[id];
                 return item instanceof Model ? item : _this.hydrate(item);
             });
@@ -3384,6 +3414,20 @@
         Query.prototype.addWhereHasConstraint = function (name, constraint, existence) {
             var ids = this.matchesWhereHasRelation(name, constraint, existence);
             this.where('$id', function (value) { return ids.includes(value); });
+            return this;
+        };
+        /**
+         * Filter records by their primary key.
+         */
+        Query.prototype.whereId = function (value) {
+            this._idFilter.push(value);
+            return this;
+        };
+        /**
+         * Filter records by their primary key.
+         */
+        Query.prototype.whereIdIn = function (value) {
+            this._idFilter = this._idFilter.concat(value);
             return this;
         };
         /**
@@ -3919,6 +3963,12 @@
          */
         find: function (state, _getters, _rootState, rootGetters) { return function (id) {
             return rootGetters[state.$connection + "/find"](state.$name, id);
+        }; },
+        /**
+         * Find array of data of the given entity by given ids.
+         */
+        findIn: function (state, _getters, _rootState, rootGetters) { return function (idList) {
+            return rootGetters[state.$connection + "/findIn"](state.$name, idList);
         }; }
     };
 
@@ -4018,6 +4068,12 @@
          */
         find: function (state) { return function (entity, id) {
             return (new Query(state, entity)).find(id);
+        }; },
+        /**
+         * Find a data of the given entity by given id.
+         */
+        findIn: function (state) { return function (entity, idList) {
+            return (new Query(state, entity)).findIn(idList);
         }; }
     };
 

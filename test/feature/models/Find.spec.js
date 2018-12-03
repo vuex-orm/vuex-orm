@@ -50,4 +50,46 @@ describe('Feature – Models – Find', () => {
     expect(user).toEqual(expected)
     expect(user).toBeInstanceOf(User)
   })
+
+  it('can fetch array of records via static method', async () => {
+    createStore([{ model: User }])
+
+    await User.insert({
+      data: [
+        { id: 1, name: 'John Doe' },
+        { id: 2, name: 'Jane Doe' },
+        { id: 3, name: 'Smith Doe' }
+      ]
+    })
+
+    const users = User.findIn([1, 3])
+
+    const expected = [{ $id: 1, id: 1, name: 'John Doe' }, { $id: 3, id: 3, name: 'Smith Doe' }]
+
+    expect(users).toEqual(expected)
+    expect(users[0]).toBeInstanceOf(User)
+    expect(users[1]).toBeInstanceOf(User)
+  })
+
+  it('can fetch array of records via instance method', async () => {
+    createStore([{ model: User }])
+
+    await User.insert({
+      data: [
+        { id: 1, name: 'John Doe' },
+        { id: 2, name: 'Jane Doe' },
+        { id: 3, name: 'Smith Doe' }
+      ]
+    })
+
+    const u = new User()
+
+    const users = u.$findIn([1, 3])
+
+    const expected = [{ $id: 1, id: 1, name: 'John Doe' }, { $id: 3, id: 3, name: 'Smith Doe' }]
+
+    expect(users).toEqual(expected)
+    expect(users[0]).toBeInstanceOf(User)
+    expect(users[1]).toBeInstanceOf(User)
+  })
 })

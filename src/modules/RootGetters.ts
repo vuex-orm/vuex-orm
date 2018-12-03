@@ -24,6 +24,13 @@ const RootGetters: GettersContract = {
    */
   find: (state: RootState) => (entity: string, id: string | number): Item => {
     return (new Query(state, entity)).find(id)
+  },
+
+  /**
+   * Find a data of the given entity by given id.
+   */
+  findIn: (state: RootState) => (entity: string, idList: Array<string | number>): Item[] => {
+    return (new Query(state, entity)).findIn(idList)
   }
 }
 

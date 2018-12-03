@@ -317,6 +317,13 @@ export default class Model {
   }
 
   /**
+   * Get the record of the given array of ids.
+   */
+  static findIn (idList: Array<number | string>): Item[] {
+    return this.getters('findIn')(idList)
+  }
+
+  /**
    * Get query instance.
    */
   static query (): Query {
@@ -538,6 +545,13 @@ export default class Model {
    */
   $find (id: string | number): Item {
     return this.$getters('find')(id)
+  }
+
+  /**
+   * Find record of the given array of ids.
+   */
+  $findIn (idList: Array<number | string>): Collection {
+    return this.$getters('findIn')(idList)
   }
 
   /**
