@@ -90,8 +90,20 @@ export default class Query {
 
   /**
    * Primary key ids to filter records by. Used for filtering records direct key lookup.
+   * Should be cancelled if there is a logic which prevents index usage. (For example an "or" condition which already requires full scan)
    */
-  _idFilter: Array<number | string> = []
+  _idFilter: Set<number | string> | null = null
+
+  /**
+   * Whether to use _idFilter key lookup. True if there is a logic which prevents index usage. (For example an "or" condition which already requires full scan)
+   */
+  _cancelIdFilter: Boolean = false
+
+  /**
+   * Primary key ids to filter joined records. Used for filtering records direct key lookup.
+   * Should NOT be cancelled, because it is free from effects of normal where methods.
+   */
+  _joinedIdFilter: Set<number | string> | null = null
 
   /**
    * The object that holds mutated records. This object is used to retrieve the
@@ -289,6 +301,19 @@ export default class Query {
     return this.item(records[records.length - 1])
   }
 
+  _idList (): Array<string | number> {
+    if (this._idFilter && this._joinedIdFilter) {
+      // Intersect if both have been set.
+      return Array.from(this._idFilter.values()).filter(id => (this._joinedIdFilter as Set<number | string>).has(id))
+    } else if (this._idFilter || this._joinedIdFilter) {
+      // If only one is set, return which one is set.
+      return Array.from((this._idFilter || this._joinedIdFilter as Set<string | number>).values())
+    } else {
+      // If none is set, return all keys.
+      return Object.keys(this.state.data)
+    }
+  }
+
   /**
    * Get all records from the state and convert them into the array. It will
    * check if the record is an instance of Model and if not, it will
@@ -298,9 +323,13 @@ export default class Query {
    * side, it will be converted to the plain record at the client side.
    */
   records (): Data.Collection {
-    const idList = this._idFilter.length > 0 ? this._idFilter : Object.keys(this.state.data)
+    // Fallback if _idFilter is cancelled.
+    if (this._cancelIdFilter && this._idFilter !== null) {
+      this.where(this.model.primaryKey, Array.from(this._idFilter.values()))
+      this._idFilter = null
+    }
 
-    return idList.map((id) => {
+    return this._idList().map((id) => {
       const item = this.state.data[id]
 
       return item instanceof Model ? item : this.hydrate(item)
@@ -311,6 +340,14 @@ export default class Query {
    * Add a and where clause to the query.
    */
   where (field: any, value?: any): this {
+    if (field === this.model.primaryKey && !this._cancelIdFilter) {
+      const values = Array.isArray(value) ? value : [value]
+      // Initialize or get intersection. (because of boolean and: whereIdIn([1,2,3]).whereIdIn([1,2]).get())
+      this._idFilter = new Set(this._idFilter === null
+        ? values
+        : values.filter(value => (this._idFilter as Set<number | string>).has(value)))
+    }
+
     this.wheres.push({ field, value, boolean: 'and' })
 
     return this
@@ -320,6 +357,7 @@ export default class Query {
    * Add a or where clause to the query.
    */
   orWhere (field: any, value?: any): this {
+    this._cancelIdFilter = true // Cacncel filter usage, "or" needs full scan.
     this.wheres.push({ field, value, boolean: 'or' })
 
     return this
@@ -433,15 +471,33 @@ export default class Query {
    * Filter records by their primary key.
    */
   whereId (value: number | string): this {
-    this._idFilter.push(value)
-    return this
+    return this.where(this.model.primaryKey, value)
   }
 
   /**
    * Filter records by their primary keys.
    */
-  whereIdIn (value: number[] | string[]): this {
-    this._idFilter = this._idFilter.concat(value)
+  whereIdIn (values: Array<number | string>): this {
+    return this.where(this.model.primaryKey, values)
+  }
+
+  /**
+   * Fast comparison for foreign keys. If foreign key is primary key, uses object lookup, fallback normal where otherwise.
+   * Why seperate whereFk? Additional logic needed for distinction between where and orWhere in normal queries, but Fk lookups are always "and" type.
+   */
+  whereFk (field: any, fkValues?: any): this {
+    const values = Array.isArray(fkValues) ? fkValues : [fkValues]
+
+    if (field === this.model.primaryKey) {
+      // If lookup filed is primary key. Initialize or get intersection. (because of boolean and: whereId(1).whereId(2).get())
+      this._joinedIdFilter = new Set(this._joinedIdFilter === null
+        ? values
+        : values.filter(value => (this._joinedIdFilter as Set<number | string>).has(value)))
+    } else {
+      // Fallback
+      this.where(field, values)
+    }
+
     return this
   }
 

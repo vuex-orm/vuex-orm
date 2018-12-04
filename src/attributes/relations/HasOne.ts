@@ -90,7 +90,7 @@ export default class HasOne extends Relation {
   load (query: Query, collection: Record[], key: string): void {
     const relation = this.getRelation(query, this.related.entity)
 
-    relation.where(this.foreignKey, this.getKeys(collection, this.localKey))
+    relation.whereFk(this.foreignKey, this.getKeys(collection, this.localKey))
 
     const relations = this.mapSingleRelations(relation.get(), this.foreignKey)
 

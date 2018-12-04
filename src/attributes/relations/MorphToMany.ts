@@ -117,14 +117,14 @@ export default class MorphToMany extends Relation {
    * Set the constraints for the pivot relation.
    */
   addEagerConstraintForPivot (query: Query, collection: Record[], type: string): void {
-    query.where(this.type, type).where(this.id, this.getKeys(collection, this.parentKey))
+    query.whereFk(this.type, type).whereFk(this.id, this.getKeys(collection, this.parentKey))
   }
 
   /**
    * Set the constraints for the related relation.
    */
   addEagerConstraintForRelated (query: Query, collection: Record[]): void {
-    query.where(this.relatedKey, this.getKeys(collection, this.relatedId))
+    query.whereFk(this.relatedKey, this.getKeys(collection, this.relatedId))
   }
 
   /**

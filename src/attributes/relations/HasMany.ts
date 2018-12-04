@@ -71,7 +71,7 @@ export default class HasMany extends Relation {
   load (query: Query, collection: Record[], key: string): void {
     const relatedQuery = this.getRelation(query, this.related.entity)
 
-    relatedQuery.where(this.foreignKey, this.getKeys(collection, this.localKey))
+    relatedQuery.whereFk(this.foreignKey, this.getKeys(collection, this.localKey))
 
     const relations = this.mapManyRelations(relatedQuery.get(), this.foreignKey)
 
