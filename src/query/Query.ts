@@ -490,7 +490,6 @@ export default class Query {
 
     if (field === this.model.primaryKey) {
       // If lookup filed is primary key. Initialize or get intersection. (because of boolean and: whereId(1).whereId(2).get())
-      console.log("<<<<", this.model.entity, this._joinedIdFilter)
       this._joinedIdFilter = new Set(this._joinedIdFilter === null
         ? values
         : values.filter(value => (this._joinedIdFilter as Set<number | string>).has(value)))
