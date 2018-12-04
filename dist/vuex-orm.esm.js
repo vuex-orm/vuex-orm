@@ -74,9 +74,12 @@ and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
 
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+var extendStatics = function(d, b) {
+    extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return extendStatics(d, b);
+};
 
 function __extends(d, b) {
     extendStatics(d, b);
@@ -84,12 +87,15 @@ function __extends(d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 }
 
-var __assign = Object.assign || function __assign(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-    }
-    return t;
+var __assign = function() {
+    __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
 };
 
 function __awaiter(thisArg, _arguments, P, generator) {
@@ -644,7 +650,7 @@ var HasOne = /** @class */ (function (_super) {
     HasOne.prototype.load = function (query, collection, key) {
         var _this = this;
         var relation = this.getRelation(query, this.related.entity);
-        relation.where(this.foreignKey, this.getKeys(collection, this.localKey));
+        relation.whereFk(this.foreignKey, this.getKeys(collection, this.localKey));
         var relations = this.mapSingleRelations(relation.get(), this.foreignKey);
         collection.forEach(function (item) {
             var related = relations[item[_this.localKey]];
@@ -701,7 +707,7 @@ var BelongsTo = /** @class */ (function (_super) {
     BelongsTo.prototype.load = function (query, collection, key) {
         var _this = this;
         var relatedQuery = this.getRelation(query, this.parent.entity);
-        relatedQuery.where(this.ownerKey, this.getKeys(collection, this.foreignKey));
+        relatedQuery.whereFk(this.ownerKey, this.getKeys(collection, this.foreignKey));
         var relations = this.mapSingleRelations(relatedQuery.get(), this.ownerKey);
         collection.forEach(function (item) {
             var related = relations[item[_this.foreignKey]];
@@ -757,7 +763,7 @@ var HasMany = /** @class */ (function (_super) {
     HasMany.prototype.load = function (query, collection, key) {
         var _this = this;
         var relatedQuery = this.getRelation(query, this.related.entity);
-        relatedQuery.where(this.foreignKey, this.getKeys(collection, this.localKey));
+        relatedQuery.whereFk(this.foreignKey, this.getKeys(collection, this.localKey));
         var relations = this.mapManyRelations(relatedQuery.get(), this.foreignKey);
         collection.forEach(function (item) {
             var related = relations[item[_this.localKey]];
@@ -974,13 +980,13 @@ var BelongsToMany = /** @class */ (function (_super) {
      * Set the constraints for the pivot relation.
      */
     BelongsToMany.prototype.addEagerConstraintForPivot = function (query, collection) {
-        query.where(this.foreignPivotKey, this.getKeys(collection, this.parentKey));
+        query.whereFk(this.foreignPivotKey, this.getKeys(collection, this.parentKey));
     };
     /**
      * Set the constraints for the related relation.
      */
     BelongsToMany.prototype.addEagerConstraintForRelated = function (query, collection) {
-        query.where(this.relatedKey, this.getKeys(collection, this.relatedPivotKey));
+        query.whereFk(this.relatedKey, this.getKeys(collection, this.relatedPivotKey));
     };
     /**
      * Create a new indexed map for the pivot relation.
@@ -1159,7 +1165,7 @@ var MorphOne = /** @class */ (function (_super) {
      * Set the constraints for an eager load of the relation.
      */
     MorphOne.prototype.addEagerConstraintForMorphOne = function (query, collection, type) {
-        query.where(this.type, type).where(this.id, this.getKeys(collection, this.localKey));
+        query.whereFk(this.type, type).whereFk(this.id, this.getKeys(collection, this.localKey));
     };
     return MorphOne;
 }(Relation));
@@ -1221,7 +1227,7 @@ var MorphMany = /** @class */ (function (_super) {
      * Set the constraints for an eager load of the relation.
      */
     MorphMany.prototype.addEagerConstraintForMorphMany = function (query, collection, type) {
-        query.where(this.type, type).where(this.id, this.getKeys(collection, this.localKey));
+        query.whereFk(this.type, type).whereFk(this.id, this.getKeys(collection, this.localKey));
     };
     return MorphMany;
 }(Relation));
@@ -1281,13 +1287,13 @@ var MorphToMany = /** @class */ (function (_super) {
      * Set the constraints for the pivot relation.
      */
     MorphToMany.prototype.addEagerConstraintForPivot = function (query, collection, type) {
-        query.where(this.type, type).where(this.id, this.getKeys(collection, this.parentKey));
+        query.whereFk(this.type, type).whereFk(this.id, this.getKeys(collection, this.parentKey));
     };
     /**
      * Set the constraints for the related relation.
      */
     MorphToMany.prototype.addEagerConstraintForRelated = function (query, collection) {
-        query.where(this.relatedKey, this.getKeys(collection, this.relatedId));
+        query.whereFk(this.relatedKey, this.getKeys(collection, this.relatedId));
     };
     /**
      * Create a new indexed map for the pivot relation.
@@ -1396,13 +1402,13 @@ var MorphedByMany = /** @class */ (function (_super) {
      * Set the constraints for the pivot relation.
      */
     MorphedByMany.prototype.addEagerConstraintForPivot = function (query, collection, type) {
-        query.where(this.type, type).where(this.relatedId, this.getKeys(collection, this.parentKey));
+        query.whereFk(this.type, type).whereFk(this.relatedId, this.getKeys(collection, this.parentKey));
     };
     /**
      * Set the constraints for the related relation.
      */
     MorphedByMany.prototype.addEagerConstraintForRelated = function (query, collection) {
-        query.where(this.relatedKey, this.getKeys(collection, this.id));
+        query.whereFk(this.relatedKey, this.getKeys(collection, this.id));
     };
     /**
      * Create a new indexed map for the pivot relation.
@@ -3125,8 +3131,18 @@ var Query = /** @class */ (function () {
         this.load = {};
         /**
          * Primary key ids to filter records by. Used for filtering records direct key lookup.
+         * Should be cancelled if there is a logic which prevents index usage. (For example an "or" condition which already requires full scan)
          */
-        this._idFilter = [];
+        this._idFilter = null;
+        /**
+         * Whether to use _idFilter key lookup. True if there is a logic which prevents index usage. (For example an "or" condition which already requires full scan)
+         */
+        this._cancelIdFilter = false;
+        /**
+         * Primary key ids to filter joined records. Used for filtering records direct key lookup.
+         * Should NOT be cancelled, because it is free from effects of normal where methods.
+         */
+        this._joinedIdFilter = null;
         /**
          * The object that holds mutated records. This object is used to retrieve the
          * mutated records in actions.
@@ -3289,6 +3305,21 @@ var Query = /** @class */ (function () {
         var records = this.select();
         return this.item(records[records.length - 1]);
     };
+    Query.prototype._idList = function () {
+        var _this = this;
+        if (this._idFilter && this._joinedIdFilter) {
+            // Intersect if both have been set.
+            return Array.from(this._idFilter.values()).filter(function (id) { return _this._joinedIdFilter.has(id); });
+        }
+        else if (this._idFilter || this._joinedIdFilter) {
+            // If only one is set, return which one is set.
+            return Array.from((this._idFilter || this._joinedIdFilter).values());
+        }
+        else {
+            // If none is set, return all keys.
+            return Object.keys(this.state.data);
+        }
+    };
     /**
      * Get all records from the state and convert them into the array. It will
      * check if the record is an instance of Model and if not, it will
@@ -3299,8 +3330,12 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.records = function () {
         var _this = this;
-        var idList = this._idFilter.length > 0 ? this._idFilter : Object.keys(this.state.data);
-        return idList.map(function (id) {
+        // Fallback if _idFilter is cancelled.
+        if (this._cancelIdFilter && this._idFilter !== null) {
+            this.where(this.model.primaryKey, Array.from(this._idFilter.values()));
+            this._idFilter = null;
+        }
+        return this._idList().map(function (id) {
             var item = _this.state.data[id];
             return item instanceof Model ? item : _this.hydrate(item);
         });
@@ -3309,6 +3344,14 @@ var Query = /** @class */ (function () {
      * Add a and where clause to the query.
      */
     Query.prototype.where = function (field, value) {
+        var _this = this;
+        if (field === this.model.primaryKey && !this._cancelIdFilter) {
+            var values = Array.isArray(value) ? value : [value];
+            // Initialize or get intersection. (because of boolean and: whereIdIn([1,2,3]).whereIdIn([1,2]).get())
+            this._idFilter = new Set(this._idFilter === null
+                ? values
+                : values.filter(function (value) { return _this._idFilter.has(value); }));
+        }
         this.wheres.push({ field: field, value: value, boolean: 'and' });
         return this;
     };
@@ -3316,6 +3359,7 @@ var Query = /** @class */ (function () {
      * Add a or where clause to the query.
      */
     Query.prototype.orWhere = function (field, value) {
+        this._cancelIdFilter = true; // Cacncel filter usage, "or" needs full scan.
         this.wheres.push({ field: field, value: value, boolean: 'or' });
         return this;
     };
@@ -3408,14 +3452,31 @@ var Query = /** @class */ (function () {
      * Filter records by their primary key.
      */
     Query.prototype.whereId = function (value) {
-        this._idFilter.push(value);
-        return this;
+        return this.where(this.model.primaryKey, value);
     };
     /**
      * Filter records by their primary keys.
      */
-    Query.prototype.whereIdIn = function (value) {
-        this._idFilter = this._idFilter.concat(value);
+    Query.prototype.whereIdIn = function (values) {
+        return this.where(this.model.primaryKey, values);
+    };
+    /**
+     * Fast comparison for foreign keys. If foreign key is primary key, uses object lookup, fallback normal where otherwise.
+     * Why seperate whereFk? Additional logic needed for distinction between where and orWhere in normal queries, but Fk lookups are always "and" type.
+     */
+    Query.prototype.whereFk = function (field, fkValues) {
+        var _this = this;
+        var values = Array.isArray(fkValues) ? fkValues : [fkValues];
+        if (field === this.model.primaryKey) {
+            // If lookup filed is primary key. Initialize or get intersection. (because of boolean and: whereId(1).whereId(2).get())
+            this._joinedIdFilter = new Set(this._joinedIdFilter === null
+                ? values
+                : values.filter(function (value) { return _this._joinedIdFilter.has(value); }));
+        }
+        else {
+            // Fallback
+            this.where(field, values);
+        }
         return this;
     };
     /**
