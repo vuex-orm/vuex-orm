@@ -270,8 +270,8 @@ export default class Query {
   /**
    * Get the record of the given array of ids.
    */
-  findIn (idList: Array<number | string>): Data.Item[] {
-    return idList.map(id => this.state.data[id])
+  findIn (idList: Array<number | string>): Data.Collection {
+    return idList.map(id => this.state.data[id]).filter(item => item !== null && item !== undefined)
   }
 
   /**
