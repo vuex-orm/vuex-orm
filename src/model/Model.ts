@@ -13,6 +13,8 @@ import * as Payloads from '../modules/payloads/Actions'
 import Fields from './Fields'
 import ModelState from './State'
 
+type InstanceOf<T> = T extends new (...args: any[]) => infer R ? R : any
+
 export default class Model {
   /**
    * The name that is going be used as module name in Vuex Store.
@@ -42,7 +44,7 @@ export default class Model {
   /**
    * Dynamic properties that field data should be assigned at instantiation.
    */
-  ;[key: string]: any
+  // ;[key: string]: any
 
   /**
    * Create a new model instance.
@@ -305,28 +307,28 @@ export default class Model {
   /**
    * Get all records.
    */
-  static all (): Collection {
+  static all<T extends typeof Model> (this: T): Collection<InstanceOf<T>> {
     return this.getters('all')()
   }
 
   /**
    * Find a record.
    */
-  static find (id: string | number): Item {
+  static find<T extends typeof Model> (this: T, id: string | number): Item<InstanceOf<T>> {
     return this.getters('find')(id)
   }
 
   /**
    * Get the record of the given array of ids.
    */
-  static findIn (idList: Array<number | string>): Collection {
+  static findIn<T extends typeof Model> (this: T, idList: Array<number | string>): Collection<InstanceOf<T>> {
     return this.getters('findIn')(idList)
   }
 
   /**
    * Get query instance.
    */
-  static query (): Query {
+  static query<T extends typeof Model> (this: T): Query<InstanceOf<T>> {
     return this.getters('query')()
   }
 
@@ -342,35 +344,35 @@ export default class Model {
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.
    */
-  static create (payload: Payloads.Create): Promise<Collections> {
+  static create<T extends typeof Model> (this: T, payload: Payloads.Create): Promise<Collections<InstanceOf<T>>> {
     return this.dispatch('create', payload)
   }
 
   /**
    * Insert records.
    */
-  static insert (payload: Payloads.Insert): Promise<Collections> {
+  static insert<T extends typeof Model> (this: T, payload: Payloads.Insert): Promise<Collections<InstanceOf<T>>> {
     return this.dispatch('insert', payload)
   }
 
   /**
    * Update records.
    */
-  static update (payload: Payloads.Update): Promise<Collections> {
+  static update<T extends typeof Model> (this: T, payload: Payloads.Update): Promise<Collections<InstanceOf<T>>> {
     return this.dispatch('update', payload)
   }
 
   /**
    * Insert or update records.
    */
-  static insertOrUpdate (payload: Payloads.InsertOrUpdate): Promise<Collections> {
+  static insertOrUpdate<T extends typeof Model> (this: T, payload: Payloads.InsertOrUpdate): Promise<Collections<InstanceOf<T>>> {
     return this.dispatch('insertOrUpdate', payload)
   }
 
   /**
    * Delete records that matches the given condition.
    */
-  static delete (payload: Payloads.Delete): Promise<Item | Collection> {
+  static delete<T extends typeof Model> (this: T, payload: Payloads.Delete): Promise<Item<InstanceOf<T>> | Collection<InstanceOf<T>>> {
     return this.dispatch('delete', payload)
   }
 
@@ -536,21 +538,21 @@ export default class Model {
   /**
    * Get all records.
    */
-  $all (): Collection {
+  $all<T extends Model> (this: T): Collection<T> {
     return this.$getters('all')()
   }
 
   /**
    * Find a record.
    */
-  $find (id: string | number): Item {
+  $find<T extends Model> (this: T, id: string | number): Item<T> {
     return this.$getters('find')(id)
   }
 
   /**
    * Find record of the given array of ids.
    */
-  $findIn (idList: Array<number | string>): Collection {
+  $findIn<T extends Model> (this: T, idList: Array<number | string>): Collection<T> {
     return this.$getters('findIn')(idList)
   }
 
@@ -564,21 +566,21 @@ export default class Model {
   /**
    * Create records.
    */
-  async $create (payload: Payloads.Create): Promise<Collections> {
+  async $create<T extends Model> (this: T, payload: Payloads.Create): Promise<Collections<T>> {
     return this.$dispatch('create', payload)
   }
 
   /**
    * Create records.
    */
-  async $insert (payload: Payloads.Insert): Promise<Collections> {
+  async $insert<T extends Model> (this: T, payload: Payloads.Insert): Promise<Collections<T>> {
     return this.$dispatch('insert', payload)
   }
 
   /**
    * Update records.
    */
-  async $update (payload: Payloads.Update): Promise<Collections> {
+  async $update<T extends Model> (this: T, payload: Payloads.Update): Promise<Collections<T>> {
     if (Array.isArray(payload)) {
       return this.$dispatch('update', payload)
     }
@@ -597,14 +599,14 @@ export default class Model {
   /**
    * Insert or update records.
    */
-  async $insertOrUpdate (payload: Payloads.InsertOrUpdate): Promise<Collections> {
+  async $insertOrUpdate<T extends Model> (this: T, payload: Payloads.InsertOrUpdate): Promise<Collections<T>> {
     return this.$dispatch('insertOrUpdate', payload)
   }
 
   /**
    * Delete records that matches the given condition.
    */
-  async $delete (condition?: Payloads.Delete): Promise<Item | Collection> {
+  async $delete<T extends Model> (this: T, condition?: Payloads.Delete): Promise<Item<T> | Collection<T>> {
     if (condition) {
       return this.$dispatch('delete', condition)
     }
@@ -674,7 +676,7 @@ export default class Model {
   /**
    * Save record.
    */
-  async $save (): Promise<Item> {
+  async $save<T extends Model> (this: T): Promise<Item<T>> {
     const fields = this.$self().getFields()
     const record = Object.keys(fields).reduce((record, key) => {
       if (fields[key] instanceof Attributes.Type) {

@@ -30,7 +30,7 @@ export type Constraint = (query: Query) => void | boolean
 
 export type ConstraintCallback = (relationName: string) => Constraint | null
 
-export default class Query {
+export default class Query<T extends Model = Model> {
   /**
    * The root state of the Vuex Store.
    */
@@ -256,49 +256,49 @@ export default class Query {
    * Returns all record of the query chain result. This method is alias
    * of the `get` method.
    */
-  all (): Data.Collection {
+  all (): Data.Collection<T> {
     return this.get()
   }
 
   /**
    * Get the record of the given id.
    */
-  find (id: number | string): Data.Item {
-    return this.item(this.state.data[id])
+  find (id: number | string): Data.Item<T> {
+    return this.item(this.state.data[id]) as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
    * Get the record of the given array of ids.
    */
-  findIn (idList: Array<number | string>): Data.Collection {
-    return idList.map(id => this.state.data[id]).filter(item => item)
+  findIn (idList: Array<number | string>): Data.Collection<T> {
+    return idList.map(id => this.state.data[id]).filter(item => item) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
    * Returns all record of the query chain result.
    */
-  get (): Data.Collection {
+  get (): Data.Collection<T> {
     const records = this.select()
 
-    return this.collect(records)
+    return this.collect(records) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
    * Returns the first record of the query chain result.
    */
-  first (): Data.Item {
+  first (): Data.Item<T> {
     const records = this.select()
 
-    return this.item(records[0])
+    return this.item(records[0]) as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
    * Returns the last single record of the query chain result.
    */
-  last (): Data.Item {
+  last (): Data.Item<T> {
     const records = this.select()
 
-    return this.item(records[records.length - 1])
+    return this.item(records[records.length - 1]) as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   _idList (): Array<string | number> {
@@ -504,8 +504,8 @@ export default class Query {
   /**
    * Process the query and filter data.
    */
-  select (): Data.Collection {
-    let records: Data.Collection = this.records()
+  select (): Data.Collection<T> {
+    let records = this.records()
 
     // Process `beforeProcess` hook.
     records = this.hook.executeSelectHook('beforeSelect', records)
@@ -528,7 +528,7 @@ export default class Query {
     // Process `afterLimit` hook.
     records = this.hook.executeSelectHook('afterLimit', records)
 
-    return records
+    return records as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
@@ -727,21 +727,21 @@ export default class Query {
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.
    */
-  create (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
-    return this.persist(data, 'create', options)
+  create (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections<T> {
+    return this.persist(data, 'create', options) as Data.Collections<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
    * Create records to the state.
    */
-  createMany (records: Data.Records): Data.Collection {
+  createMany (records: Data.Records): Data.Collection<T> {
     const instances = this.hydrateMany(records)
 
     this.commit('create', instances, () => {
       this.state.data = instances
     })
 
-    return this.map(instances)
+    return this.map(instances) as Data.Collection<T>  // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
@@ -749,94 +749,90 @@ export default class Query {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
-    return this.persist(data, 'insert', options)
+  insert (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections<T> {
+    return this.persist(data, 'insert', options) as Data.Collections<T>  // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
    * Insert list of records in the state.
    */
-  insertMany (records: Data.Records): Data.Collection {
+  insertMany (records: Data.Records): Data.Collection<T> {
     const instances = this.hydrateMany(records)
 
     this.commit('create', instances, () => {
       this.state.data = { ...this.state.data, ...instances }
     })
 
-    return this.map(instances)
+    return this.map(instances) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
    * Update data in the state.
    */
-  update (data: Data.Record | Data.Record[] | UpdateClosure, condition: UpdateCondition, options: PersistOptions): Data.Item | Data.Collection | Data.Collections {
+  update (data: Data.Record | Data.Record[] | UpdateClosure, condition: UpdateCondition, options: PersistOptions): Data.Item<T> | Data.Collection<T> | Data.Collections<T> {
+    let result
+
     // If the data is array, simply normalize the data and update them.
     if (Array.isArray(data)) {
-      return this.persist(data, 'update', options)
-    }
+      result = this.persist(data, 'update', options)
+    } else if (typeof data === 'function') {
+      // OK, the data is not an array. Now let's check `data` to see what we can
+      // do if it is a closure.
 
-    // OK, the data is not an array. Now let's check `data` to see what we can
-    // do if it is a closure.
-    if (typeof data === 'function') {
       // If the data is closure, but if there's no condition, we wouldn't know
       // what record to update so raise an error and abort.
       if (!condition) {
         throw new Error('You must specify `where` to update records by specifying `data` as a closure.')
+      } else if (typeof condition === 'function') {
+        // If the condition is a closure, then update records by the closure.
+        result = this.updateByCondition(data, condition)
+      } else {
+        // Else the condition is either String or Number, so let's
+        // update the record by ID.
+        result = this.updateById(data, condition)
       }
+    } else if (typeof condition === 'function') {
+      // Now the data is not a closure, and it's not an array, so it should be an object.
+      // If the condition is closure, we can't normalize the data so let's update
+      // records using the closure.
 
-      // If the condition is a closure, then update records by the closure.
-      if (typeof condition === 'function') {
-        return this.updateByCondition(data, condition)
-      }
-
-      // Else the condition is either String or Number, so let's
-      // update the record by ID.
-      return this.updateById(data, condition)
-    }
-
-    // Now the data is not a closure, and it's not an array, so it should be an object.
-    // If the condition is closure, we can't normalize the data so let's update
-    // records using the closure.
-    if (typeof condition === 'function') {
-      return this.updateByCondition(data, condition)
-    }
-
-    // If there's no condition, let's normalize the data and update them.
-    if (!condition) {
-      return this.persist(data, 'update', options)
-    }
-
-    // Now since the condition is either String or Number, let's check if the
-    // model's primary key is not a composite key. If yes, we can't set the
-    // condition as ID value for the record so throw an error and abort.
-    if (Array.isArray(this.model.primaryKey)) {
+      result = this.updateByCondition(data, condition)
+    } else if (!condition) {
+      // If there's no condition, let's normalize the data and update them.
+      result = this.persist(data, 'update', options)
+    } else if (Array.isArray(this.model.primaryKey)) {
+      // Now since the condition is either String or Number, let's check if the
+      // model's primary key is not a composite key. If yes, we can't set the
+      // condition as ID value for the record so throw an error and abort.
       throw new Error(`
         You can't specify \`where\` value as \`string\` or \`number\` when you
         have a composite key defined in your model. Please include composite
         keys to the \`data\` fields.
       `)
+    } else {
+      // Finally, let's add condition as the primary key of the object and
+      // then normalize them to update the records.
+      data[this.model.primaryKey] = condition
+
+      result = this.persist(data, 'update', options)
     }
 
-    // Finally, let's add condition as the primary key of the object and
-    // then normalize them to update the records.
-    data[this.model.primaryKey] = condition
-
-    return this.persist(data, 'update', options)
+    return result as Data.Item<T> | Data.Collection<T> | Data.Collections<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
    * Update all records.
    */
-  updateMany (records: Data.Records): Data.Collection {
+  updateMany (records: Data.Records): Data.Collection<T> {
     const instances = this.combine(records)
 
-    return this.commitUpdate(instances)
+    return this.commitUpdate(instances) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
    * Update the state by id.
    */
-  updateById (data: Data.Record | UpdateClosure, id: string | number): Data.Item {
+  updateById (data: Data.Record | UpdateClosure, id: string | number): Data.Item<T> {
     id = typeof id === 'number' ? id.toString() : id
 
     const instance = this.state.data[id]
@@ -851,13 +847,13 @@ export default class Query {
 
     this.commitUpdate(instances)
 
-    return instances[id]
+    return instances[id] as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
    * Update the state by condition.
    */
-  updateByCondition (data: Data.Record | UpdateClosure, condition: Predicate): Data.Collection {
+  updateByCondition (data: Data.Record | UpdateClosure, condition: Predicate): Data.Collection<T> {
     const instances = Object.keys(this.state.data).reduce<Data.Instances>((instances, id) => {
       const instance = this.state.data[id]
 
@@ -870,7 +866,7 @@ export default class Query {
       return instances
     }, {})
 
-    return this.commitUpdate(instances)
+    return this.commitUpdate(instances) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
@@ -902,14 +898,14 @@ export default class Query {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  insertOrUpdate (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
-    return this.persist(data, 'insertOrUpdate', options)
+  insertOrUpdate (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections<T> {
+    return this.persist(data, 'insertOrUpdate', options) as Data.Collections<T>  // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
    * Insert or update the records.
    */
-  insertOrUpdateMany (records: Data.Records): Data.Collection {
+  insertOrUpdateMany (records: Data.Records): Data.Collection<T> {
     let toBeInserted: Data.Records = {}
     let toBeUpdated: Data.Records = {}
 
@@ -987,7 +983,7 @@ export default class Query {
   /**
    * Delete records from the state.
    */
-  delete (condition: DeleteCondition): Data.Item | Data.Collection {
+  delete (condition: DeleteCondition): Data.Item<T> | Data.Collection<T> {
     if (typeof condition === 'function') {
       this.result.data = this.deleteByCondition(condition)
 
@@ -1002,7 +998,7 @@ export default class Query {
   /**
    * Delete a record by id.
    */
-  deleteById (id: string | number): Data.Item {
+  deleteById (id: string | number): Data.Item<T> {
     id = typeof id === 'number' ? id.toString() : id
 
     const instance = this.state.data[id]
@@ -1015,13 +1011,13 @@ export default class Query {
 
     const collection = this.commitDelete(instances)
 
-    return collection[0]
+    return collection[0] as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
    * Delete record by condition.
    */
-  deleteByCondition (condition: Predicate): Data.Collection {
+  deleteByCondition (condition: Predicate): Data.Collection<T> {
     const instances = Object.keys(this.state.data).reduce<Data.Instances>((records, id) => {
       const instance = this.state.data[id]
 
@@ -1034,7 +1030,7 @@ export default class Query {
       return records
     }, {})
 
-    return this.commitDelete(instances)
+    return this.commitDelete(instances) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**

@@ -34,6 +34,7 @@ import ActionsContract from './modules/contracts/Actions'
 import RootGettersContract from './modules/contracts/RootGetters'
 import RootActionsContract from './modules/contracts/RootActions'
 import RootMutationsContract from './modules/contracts/RootMutations'
+import Fields from './model/Fields'
 
 export interface VuexORM {
   install: Install
@@ -65,6 +66,7 @@ export interface VuexORM {
   RootGetters: RootGettersContract
   RootActions: RootActionsContract
   RootMutations: RootMutationsContract
+  Fields: Fields
 }
 
 export {
@@ -96,7 +98,8 @@ export {
   Actions,
   RootGetters,
   RootActions,
-  RootMutations
+  RootMutations,
+  Fields
 }
 
 export default {
