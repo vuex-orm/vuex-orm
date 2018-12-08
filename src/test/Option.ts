@@ -1,5 +1,5 @@
 import { Fields, Model } from '../index'
-import Person from './person'
+import Person from './Person'
 
 export default class Option extends Model {
   static entity = 'persons'
