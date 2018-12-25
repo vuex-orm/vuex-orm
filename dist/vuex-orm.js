@@ -80,9 +80,12 @@
     ***************************************************************************** */
     /* global Reflect, Promise */
 
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function(d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
 
     function __extends(d, b) {
         extendStatics(d, b);
@@ -90,12 +93,15 @@
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     }
 
-    var __assign = Object.assign || function __assign(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-        }
-        return t;
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
     };
 
     function __awaiter(thisArg, _arguments, P, generator) {
@@ -1462,6 +1468,10 @@
     }(Relation));
 
     var Model = /** @class */ (function () {
+        /**
+         * Dynamic properties that field data should be assigned at instantiation.
+         */
+        // ;[key: string]: any
         /**
          * Create a new model instance.
          */
@@ -3275,35 +3285,35 @@
          * Get the record of the given id.
          */
         Query.prototype.find = function (id) {
-            return this.item(this.state.data[id]);
+            return this.item(this.state.data[id]); // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Get the record of the given array of ids.
          */
         Query.prototype.findIn = function (idList) {
             var _this = this;
-            return idList.map(function (id) { return _this.state.data[id]; });
+            return idList.map(function (id) { return _this.state.data[id]; }).filter(function (item) { return item; }); // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Returns all record of the query chain result.
          */
         Query.prototype.get = function () {
             var records = this.select();
-            return this.collect(records);
+            return this.collect(records); // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Returns the first record of the query chain result.
          */
         Query.prototype.first = function () {
             var records = this.select();
-            return this.item(records[0]);
+            return this.item(records[0]); // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Returns the last single record of the query chain result.
          */
         Query.prototype.last = function () {
             var records = this.select();
-            return this.item(records[records.length - 1]);
+            return this.item(records[records.length - 1]); // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         Query.prototype._idList = function () {
             var _this = this;
@@ -3498,7 +3508,7 @@
             records = this.filterLimit(records);
             // Process `afterLimit` hook.
             records = this.hook.executeSelectHook('afterLimit', records);
-            return records;
+            return records; // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Filter the given data by registered where clause.
@@ -3669,7 +3679,7 @@
          * use the `insert` method instead.
          */
         Query.prototype.create = function (data, options) {
-            return this.persist(data, 'create', options);
+            return this.persist(data, 'create', options); // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Create records to the state.
@@ -3680,7 +3690,7 @@
             this.commit('create', instances, function () {
                 _this.state.data = instances;
             });
-            return this.map(instances);
+            return this.map(instances); // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Insert given data to the state. Unlike `create`, this method will not
@@ -3688,7 +3698,7 @@
          * with the same primary key.
          */
         Query.prototype.insert = function (data, options) {
-            return this.persist(data, 'insert', options);
+            return this.persist(data, 'insert', options); // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Insert list of records in the state.
@@ -3699,59 +3709,65 @@
             this.commit('create', instances, function () {
                 _this.state.data = __assign({}, _this.state.data, instances);
             });
-            return this.map(instances);
+            return this.map(instances); // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Update data in the state.
          */
         Query.prototype.update = function (data, condition, options) {
+            var result;
             // If the data is array, simply normalize the data and update them.
             if (Array.isArray(data)) {
-                return this.persist(data, 'update', options);
+                result = this.persist(data, 'update', options);
             }
-            // OK, the data is not an array. Now let's check `data` to see what we can
-            // do if it is a closure.
-            if (typeof data === 'function') {
+            else if (typeof data === 'function') {
+                // OK, the data is not an array. Now let's check `data` to see what we can
+                // do if it is a closure.
                 // If the data is closure, but if there's no condition, we wouldn't know
                 // what record to update so raise an error and abort.
                 if (!condition) {
                     throw new Error('You must specify `where` to update records by specifying `data` as a closure.');
                 }
-                // If the condition is a closure, then update records by the closure.
-                if (typeof condition === 'function') {
-                    return this.updateByCondition(data, condition);
+                else if (typeof condition === 'function') {
+                    // If the condition is a closure, then update records by the closure.
+                    result = this.updateByCondition(data, condition);
                 }
-                // Else the condition is either String or Number, so let's
-                // update the record by ID.
-                return this.updateById(data, condition);
+                else {
+                    // Else the condition is either String or Number, so let's
+                    // update the record by ID.
+                    result = this.updateById(data, condition);
+                }
             }
-            // Now the data is not a closure, and it's not an array, so it should be an object.
-            // If the condition is closure, we can't normalize the data so let's update
-            // records using the closure.
-            if (typeof condition === 'function') {
-                return this.updateByCondition(data, condition);
+            else if (typeof condition === 'function') {
+                // Now the data is not a closure, and it's not an array, so it should be an object.
+                // If the condition is closure, we can't normalize the data so let's update
+                // records using the closure.
+                result = this.updateByCondition(data, condition);
             }
-            // If there's no condition, let's normalize the data and update them.
-            if (!condition) {
-                return this.persist(data, 'update', options);
+            else if (!condition) {
+                // If there's no condition, let's normalize the data and update them.
+                result = this.persist(data, 'update', options);
             }
-            // Now since the condition is either String or Number, let's check if the
-            // model's primary key is not a composite key. If yes, we can't set the
-            // condition as ID value for the record so throw an error and abort.
-            if (Array.isArray(this.model.primaryKey)) {
+            else if (Array.isArray(this.model.primaryKey)) {
+                // Now since the condition is either String or Number, let's check if the
+                // model's primary key is not a composite key. If yes, we can't set the
+                // condition as ID value for the record so throw an error and abort.
                 throw new Error("\n        You can't specify `where` value as `string` or `number` when you\n        have a composite key defined in your model. Please include composite\n        keys to the `data` fields.\n      ");
             }
-            // Finally, let's add condition as the primary key of the object and
-            // then normalize them to update the records.
-            data[this.model.primaryKey] = condition;
-            return this.persist(data, 'update', options);
+            else {
+                // Finally, let's add condition as the primary key of the object and
+                // then normalize them to update the records.
+                data[this.model.primaryKey] = condition;
+                result = this.persist(data, 'update', options);
+            }
+            return result; // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Update all records.
          */
         Query.prototype.updateMany = function (records) {
             var instances = this.combine(records);
-            return this.commitUpdate(instances);
+            return this.commitUpdate(instances); // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Update the state by id.
@@ -3767,7 +3783,7 @@
                 _a[id] = this.processUpdate(data, instance),
                 _a);
             this.commitUpdate(instances);
-            return instances[id];
+            return instances[id]; // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Update the state by condition.
@@ -3782,7 +3798,7 @@
                 instances[id] = _this.processUpdate(data, instance);
                 return instances;
             }, {});
-            return this.commitUpdate(instances);
+            return this.commitUpdate(instances); // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Update the given record with given data.
@@ -3810,7 +3826,7 @@
          * the submitted data with the same primary key.
          */
         Query.prototype.insertOrUpdate = function (data, options) {
-            return this.persist(data, 'insertOrUpdate', options);
+            return this.persist(data, 'insertOrUpdate', options); // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Insert or update the records.
@@ -3893,7 +3909,7 @@
             }
             var instances = (_a = {}, _a[id] = instance, _a);
             var collection = this.commitDelete(instances);
-            return collection[0];
+            return collection[0]; // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Delete record by condition.
@@ -3908,7 +3924,7 @@
                 records[id] = instance;
                 return records;
             }, {});
-            return this.commitDelete(instances);
+            return this.commitDelete(instances); // TODO: Delete "as ..." when model type coverage reaches 100%.
         };
         /**
          * Delete all records from the state.
