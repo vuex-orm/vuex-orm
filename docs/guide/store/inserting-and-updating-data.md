@@ -444,7 +444,7 @@ Be careful when using the `$save` method, that you might like the syntax due to 
 const user = User.find(1)
 
 // Never do this!
-user.name = 'John Doe
+user.name = 'John Doe'
 ```
 
 The perfect place to use `$save` method is when you need to create a fresh new record inside Vue Component like below example.
