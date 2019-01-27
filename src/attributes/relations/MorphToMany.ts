@@ -173,6 +173,15 @@ export default class MorphToMany extends Relation {
       const parentId = record[this.parentKey]
       const pivotKey = `${parentId}_${id}_${parent.entity}`
 
+      const query = parent.query().newQuery(this.pivot.entity)
+                                  .where(this.relatedId, id)
+                                  .where(this.id, parentId)
+                                  .where(this.type, parent.entity)
+
+      if (query.count() > 0) {
+        return
+      }
+
       data[this.pivot.entity] = {
         ...data[this.pivot.entity],
 

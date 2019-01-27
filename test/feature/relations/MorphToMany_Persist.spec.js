@@ -207,4 +207,61 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     expect(post.tags[0]).toBeInstanceOf(Tag)
     expect(post.tags[1]).toBeInstanceOf(Tag)
   })
+
+  it('can insert or update records', async () => {
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.increment(),
+          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+        }
+      }
+    }
+
+    class Tag extends Model {
+      static entity = 'tags'
+
+      static fields () {
+        return {
+          id: this.increment(),
+          name: this.string('')
+        }
+      }
+    }
+
+    class Taggable extends Model {
+      static entity = 'taggables'
+
+      static fields () {
+        return {
+          id: this.increment(),
+          tag_id: this.number(0),
+          taggable_id: this.number(0),
+          taggable_type: this.string('')
+        }
+      }
+    }
+
+    createStore([{ model: Post }, { model: Tag }, { model: Taggable }])
+
+    const data = {
+      id: 1,
+      tags: [
+        { id: 1, name: 'news' },
+        { id: 2, name: 'cast' }
+      ]
+    }
+
+    await Post.insertOrUpdate({ data: [data] })
+    await Post.insertOrUpdate({ data: [data] })
+
+    const post = Post.query().with('tags').find(1)
+
+    expect(post).toBeInstanceOf(Post)
+    expect(post.tags.length).toBe(2)
+    expect(post.tags[0]).toBeInstanceOf(Tag)
+    expect(post.tags[1]).toBeInstanceOf(Tag)
+  })
 })
