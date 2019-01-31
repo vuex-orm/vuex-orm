@@ -364,4 +364,24 @@ describe('Unit – Model', () => {
     expect(json).not.toBeInstanceOf(User)
     expect(json).toEqual({ id: 1, array: [1, 2] })
   })
+
+  it('can serialize own fields into json via `toJSON` method', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('')
+        }
+      }
+    }
+
+    const user = new User({ $id: 1, id: 1, name: 'John Doe' })
+
+    const json = user.toJSON()
+
+    expect(json).not.toBeInstanceOf(User)
+    expect(json).toEqual({ id: 1, name: 'John Doe' })
+  })
 })
