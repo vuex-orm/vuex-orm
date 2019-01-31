@@ -1,18 +1,14 @@
 import Record from '../../data/Record'
 import Model from '../../model/Model'
+import Mutator from '../contracts/Mutator'
 import Type from './Type'
 
 export default class Attr extends Type {
   /**
-   * The default value of the field.
-   */
-  value: any
-
-  /**
    * Create a new attr instance.
    */
-  constructor (model: typeof Model, value: any, mutator?: (value: any) => any) {
-    super(model, mutator) /* istanbul ignore next */
+  constructor (model: typeof Model, value: any, mutator?: Mutator<any>) {
+    super(model, value, mutator) /* istanbul ignore next */
 
     this.value = value
   }

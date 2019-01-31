@@ -4,15 +4,10 @@ import Type from './Type'
 
 export default class Increment extends Type {
   /**
-   * The initial count to start incrementing.
-   */
-  value: number = 1
-
-  /**
    * Create a new increment instance.
    */
   constructor (model: typeof Model) {
-    super(model) /* istanbul ignore next */
+    super(model, null) /* istanbul ignore next */
   }
 
   /**

@@ -1,40 +1,20 @@
 import Record from '../../data/Record'
 import Model from '../../model/Model'
+import Mutator from '../contracts/Mutator'
 import Type from './Type'
 
 export default class String extends Type {
   /**
-   * The default value of the field.
-   */
-  value: string
-
-  /**
-   * Whether if it can accept `null` as a value.
-   */
-  isNullable: boolean = false
-
-  /**
    * Create a new string instance.
    */
-  constructor (model: typeof Model, value: string, mutator?: (value: any) => any) {
-    super(model, mutator) /* istanbul ignore next */
-
-    this.value = value
-  }
-
-  /**
-   * Set `nullable` to be `true`.
-   */
-  nullable (): this {
-    this.isNullable = true
-
-    return this
+  constructor (model: typeof Model, value: string | null, mutator?: Mutator<string | null>) {
+    super(model, value, mutator) /* istanbul ignore next */
   }
 
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  make (value: any, _parent: Record, key: string): any {
+  make (value: any, _parent: Record, key: string): string | null {
     return this.mutate(this.fix(value), key)
   }
 
