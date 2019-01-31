@@ -605,6 +605,27 @@ export default class Model {
   }
 
   /**
+   * Save record.
+   */
+  async $save<T extends Model> (this: T): Promise<Item<T>> {
+    const fields = this.$self().getFields()
+
+    const record = Object.keys(fields).reduce((record, key) => {
+      if (fields[key] instanceof Attributes.Type) {
+        record[key] = this[key]
+      }
+
+      return record
+    }, {} as Record)
+
+    const records = await this.$dispatch('insertOrUpdate', { data: record })
+
+    this.$fill(records[this.$self().entity][0])
+
+    return this
+  }
+
+  /**
    * Delete records that matches the given condition.
    */
   async $delete<T extends Model> (this: T, condition?: Payloads.Delete): Promise<Item<T> | Collection<T>> {
@@ -652,24 +673,6 @@ export default class Model {
    */
   $toJson (): Record {
     return Serializer.serialize(this)
-  }
-
-  /**
-   * Save record.
-   */
-  async $save<T extends Model> (this: T): Promise<Item<T>> {
-    const fields = this.$self().getFields()
-    const record = Object.keys(fields).reduce((record, key) => {
-      if (fields[key] instanceof Attributes.Type) {
-        record[key] = this[key]
-      }
-
-      return record
-    }, {} as Record)
-
-    const records = await this.$dispatch('insertOrUpdate', { data: record })
-    this.$fill(records[this.$self().entity][0])
-    return this
   }
 
   /**
