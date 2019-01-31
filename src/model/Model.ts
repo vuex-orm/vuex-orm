@@ -710,4 +710,15 @@ export default class Model {
       return item
     })
   }
+
+  /**
+   * This method is used by Nuxt server-side rendering. It will prevent
+   * `non-POJO` warning when using Vuex ORM with Nuxt universal mode.
+   * The method is not meant to be used publicly by a user.
+   *
+   * See https://github.com/vuex-orm/vuex-orm/issues/255 for more detail.
+   */
+  toJSON (): Record {
+    return this.$toJson()
+  }
 }
