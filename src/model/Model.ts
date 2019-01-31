@@ -43,11 +43,6 @@ export default class Model {
   $id: string | null = null
 
   /**
-   * Dynamic properties that field data should be assigned at instantiation.
-   */
-  // ;[key: string]: any
-
-  /**
    * Create a new model instance.
    */
   constructor (record?: Record) {
