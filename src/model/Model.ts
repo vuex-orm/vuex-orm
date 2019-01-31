@@ -12,6 +12,8 @@ import Query from '../query/Query'
 import * as Payloads from '../modules/payloads/Actions'
 import Fields from './contracts/Fields'
 import ModelState from './contracts/State'
+import Mutator from './contracts/Mutator'
+import Mutators from './contracts/Mutators'
 import Serializer from './Serializer'
 
 type InstanceOf<T> = T extends new (...args: any[]) => infer R ? R : any
@@ -73,28 +75,28 @@ export default class Model {
    * Create an attr attribute. The given value will be used as a default
    * value for the field.
    */
-  static attr (value: any, mutator?: (value: any) => any): Attributes.Attr {
+  static attr (value: any, mutator?: Mutator<any>): Attributes.Attr {
     return new Attributes.Attr(this, value, mutator)
   }
 
   /**
    * Create a string attribute.
    */
-  static string (value: any, mutator?: (value: any) => any): Attributes.String {
+  static string (value: any, mutator?: Mutator<string | null>): Attributes.String {
     return new Attributes.String(this, value, mutator)
   }
 
   /**
    * Create a number attribute.
    */
-  static number (value: any, mutator?: (value: any) => any): Attributes.Number {
+  static number (value: any, mutator?: Mutator<number | null>): Attributes.Number {
     return new Attributes.Number(this, value, mutator)
   }
 
   /**
    * Create a boolean attribute.
    */
-  static boolean (value: any, mutator?: (value: any) => any): Attributes.Boolean {
+  static boolean (value: any, mutator?: Mutator<boolean | null>): Attributes.Boolean {
     return new Attributes.Boolean(this, value, mutator)
   }
 
@@ -250,7 +252,7 @@ export default class Model {
   /**
    * Mutators to mutate matching fields when instantiating the model.
    */
-  static mutators (): { [field: string]: (value: any) => any } {
+  static mutators (): Mutators {
     return {}
   }
 
