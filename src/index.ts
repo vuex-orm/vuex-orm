@@ -4,6 +4,7 @@ import install, { Install } from './store/install'
 import use, { Use } from './plugins/use'
 import Database from './database/Database'
 import Model from './model/Model'
+import Fields from './model/contracts/Fields'
 import Query from './query/Query'
 import Attribute from './attributes/Attribute'
 import Type from './attributes/types/Type'
@@ -34,7 +35,6 @@ import ActionsContract from './modules/contracts/Actions'
 import RootGettersContract from './modules/contracts/RootGetters'
 import RootActionsContract from './modules/contracts/RootActions'
 import RootMutationsContract from './modules/contracts/RootMutations'
-import Fields from './model/Fields'
 
 export interface VuexORM {
   install: Install

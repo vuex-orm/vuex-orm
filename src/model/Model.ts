@@ -10,8 +10,9 @@ import State from '../modules/contracts/State'
 import * as Attributes from '../attributes'
 import Query from '../query/Query'
 import * as Payloads from '../modules/payloads/Actions'
-import Fields from './Fields'
-import ModelState from './State'
+import Fields from './contracts/Fields'
+import ModelState from './contracts/State'
+import Serializer from './Serializer'
 
 type InstanceOf<T> = T extends new (...args: any[]) => infer R ? R : any
 
@@ -650,27 +651,7 @@ export default class Model {
    * Serialize field values into json.
    */
   $toJson (): Record {
-    const fields = this.$fields()
-
-    return Object.keys(fields).reduce<Record>((record, key) => {
-      const value = this[key]
-
-      if (value instanceof Model) {
-        record[key] = this.serializeItem(value)
-
-        return record
-      }
-
-      if (Array.isArray(value)) {
-        record[key] = this.serializeCollection(value)
-
-        return record
-      }
-
-      record[key] = value
-
-      return record
-    }, {})
+    return Serializer.serialize(this)
   }
 
   /**
@@ -689,26 +670,6 @@ export default class Model {
     const records = await this.$dispatch('insertOrUpdate', { data: record })
     this.$fill(records[this.$self().entity][0])
     return this
-  }
-
-  /**
-   * Serialize an item into json.
-   */
-  serializeItem (item: Model): Record {
-    return item.$toJson()
-  }
-
-  /**
-   * Serialize a collection into json.
-   */
-  serializeCollection (collection: (Model | any)[]): (Record | any)[] {
-    return collection.map((item) => {
-      if (item instanceof Model) {
-        return item.$toJson()
-      }
-
-      return item
-    })
   }
 
   /**

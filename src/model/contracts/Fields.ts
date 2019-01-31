@@ -1,4 +1,4 @@
-import Attribute from '../attributes/Attribute'
+import Attribute from '../../attributes/Attribute'
 
 export interface Fields {
   [key: string]: Attribute
