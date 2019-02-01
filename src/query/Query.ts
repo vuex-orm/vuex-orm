@@ -300,59 +300,11 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Returns the last single record of the query chain result.
-   */
-  last (): Data.Item<T> {
-    const records = this.select()
-
-    return this.item(records[records.length - 1]) as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
-  }
-
-  _idList (): Array<string | number> {
-    if (this.idFilter && this.joinedIdFilter) {
-      // Intersect if both have been set.
-      return Array.from(this.idFilter.values()).filter(id => (this.joinedIdFilter as Set<number | string>).has(id))
-    } else if (this.idFilter || this.joinedIdFilter) {
-      // If only one is set, return which one is set.
-      return Array.from((this.idFilter || this.joinedIdFilter as Set<string | number>).values())
-    } else {
-      // If none is set, return all keys.
-      return Object.keys(this.state.data)
-    }
-  }
-
-  /**
-   * Get all records from the state and convert them into the array. It will
-   * check if the record is an instance of Model and if not, it will
-   * instantiate before returning them.
-   *
-   * This is needed to support SSR, that when the state is hydrated at server
-   * side, it will be converted to the plain record at the client side.
-   */
-  records (): Data.Collection {
-    // Fallback if idFilter is cancelled.
-    if (this.cancelIdFilter && this.idFilter !== null) {
-      this.where(this.model.primaryKey, Array.from(this.idFilter.values()))
-      this.idFilter = null
-    }
-
-    return this._idList().map((id) => {
-      const item = this.state.data[id]
-
-      return item instanceof Model ? item : this.hydrate(item)
-    })
-  }
-
-  /**
    * Add a and where clause to the query.
    */
   where (field: any, value?: any): this {
-    if (field === this.model.primaryKey && !this.cancelIdFilter) {
-      const values = Array.isArray(value) ? value : [value]
-      // Initialize or get intersection. (because of boolean and: whereIdIn([1,2,3]).whereIdIn([1,2]).get())
-      this.idFilter = new Set(this.idFilter === null
-        ? values
-        : values.filter(value => (this.idFilter as Set<number | string>).has(value)))
+    if (this.isIdfilterable(field)) {
+      this.setIdFilter(value)
     }
 
     this.wheres.push({ field, value, boolean: 'and' })
@@ -364,7 +316,9 @@ export default class Query<T extends Model = Model> {
    * Add a or where clause to the query.
    */
   orWhere (field: any, value?: any): this {
-    this.cancelIdFilter = true // Cacncel filter usage, "or" needs full scan.
+    // Cacncel id filter usage, since "or" needs full scan.
+    this.cancelIdFilter = true
+
     this.wheres.push({ field, value, boolean: 'or' })
 
     return this
@@ -385,23 +339,73 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Fast comparison for foreign keys. If foreign key is primary key, uses object lookup, fallback normal where otherwise.
-   * Why seperate whereFk? Additional logic needed for distinction between where and orWhere in normal queries, but Fk lookups are always "and" type.
+   * Fast comparison for foreign keys. If the foreign key is the primary key,
+   * it uses object lookup, fallback normal where otherwise.
+   *
+   * Why separate `whereFk` instead of just `where`? Additional logic needed
+   * for the distinction between where and orWhere in normal queries, but
+   * Fk lookups are always "and" type.
    */
-  whereFk (field: any, fkValues?: any): this {
-    const values = Array.isArray(fkValues) ? fkValues : [fkValues]
+  whereFk (field: string, value: string | number | (string | number)[]): this {
+    const values = Array.isArray(value) ? value : [value]
 
+    // If lookup filed is the primary key. Initialize or get intersection,
+    // because boolean and could have a condition such as
+    // `whereId(1).whereId(2).get()`.
     if (field === this.model.primaryKey) {
-      // If lookup filed is primary key. Initialize or get intersection. (because of boolean and: whereId(1).whereId(2).get())
-      this.joinedIdFilter = new Set(this.joinedIdFilter === null
-        ? values
-        : values.filter(value => (this.joinedIdFilter as Set<number | string>).has(value)))
-    } else {
-      // Fallback
-      this.where(field, values)
+      this.setJoinedIdFilter(values)
+
+      return this
     }
 
+    // Else fallback to normal where.
+    this.where(field, values)
+
     return this
+  }
+
+  /**
+   * Check whether the given field and value combination is filterable through
+   * primary key direct look up.
+   */
+  private isIdfilterable (field: any): boolean {
+    return field === this.model.primaryKey && !this.cancelIdFilter
+  }
+
+  /**
+   * Set id filter for the given where condition.
+   */
+  private setIdFilter (value: string | number | (string | number)[]): void {
+    const values = Array.isArray(value) ? value : [value]
+
+    // Initialize or get intersection, because boolean and could have a
+    // condition such as `whereIdIn([1,2,3]).whereIdIn([1,2]).get()`.
+    if (this.idFilter === null) {
+      this.idFilter = new Set(values)
+
+      return
+    }
+
+    this.idFilter = new Set(
+      values.filter(v => (this.idFilter as Set<number | string>).has(v))
+    )
+  }
+
+  /**
+   * Set joined id filter for the given where condition.
+   */
+  private setJoinedIdFilter (values: (string | number)[]): void {
+    // Initialize or get intersection, because boolean and could have a
+    // condition such as `whereId(1).whereId(2).get()`.
+    if (this.joinedIdFilter === null) {
+      this.joinedIdFilter = new Set(values)
+
+      return
+    }
+
+    this.joinedIdFilter = new Set(
+      values.filter(v => (this.joinedIdFilter as Set<number | string>).has(v))
+    )
   }
 
   /**
@@ -506,6 +510,69 @@ export default class Query<T extends Model = Model> {
     this.where('$id', (value: any) => ids.includes(value))
 
     return this
+  }
+
+  /**
+   * Returns the last single record of the query chain result.
+   */
+  last (): Data.Item<T> {
+    const records = this.select()
+
+    return this.item(records[records.length - 1]) as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+  }
+
+  /**
+   * Get all records from the state and convert them into the array. It will
+   * check if the record is an instance of Model and if not, it will
+   * instantiate before returning them.
+   *
+   * This is needed to support SSR, that when the state is hydrated at server
+   * side, it will be converted to the plain record at the client side.
+   */
+  records (): Data.Collection {
+    this.finalizeIdFilter()
+
+    return this.getIdsToLookup().map((id) => {
+      const model = this.state.data[id]
+
+      return model instanceof Model ? model : this.hydrate(model)
+    })
+  }
+
+  /**
+   * Check whether if id filters should on select. If not, clear out id filter.
+   */
+  private finalizeIdFilter (): void {
+    if (!this.cancelIdFilter || this.idFilter === null) {
+      return
+    }
+
+    this.where(this.model.primaryKey, Array.from(this.idFilter.values()))
+
+    this.idFilter = null
+  }
+
+  /**
+   * Get a list of id that should be used to lookup when fetching records
+   * from the state.
+   */
+  private getIdsToLookup (): (string | number)[] {
+    // If both id filter and joined id filter are set, intersect them.
+    if (this.idFilter && this.joinedIdFilter) {
+      return Array.from(this.idFilter.values()).filter((id) => {
+        return (this.joinedIdFilter as Set<number | string>).has(id)
+      })
+    }
+
+    // If only either one is set, return which one is set.
+    if (this.idFilter || this.joinedIdFilter) {
+      return Array.from(
+        (this.idFilter || this.joinedIdFilter as Set<string | number>).values()
+      )
+    }
+
+    // If none is set, return all keys.
+    return Object.keys(this.state.data)
   }
 
   /**
