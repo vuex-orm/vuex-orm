@@ -57,38 +57,6 @@ export default class Query<T extends Model = Model> {
   module: Vuex.Module<State, any>
 
   /**
-   * The where constraints for the query.
-   */
-  wheres: Options.Where[] = []
-
-  /**
-   * The orders of the query result.
-   */
-  orders: Options.Orders[] = []
-
-  /**
-   * Number of results to skip.
-   */
-  _offset: number = 0
-
-  /**
-   * Maximum number of records to return.
-   *
-   * We use polyfill of `Number.MAX_SAFE_INTEGER` for IE11 here.
-   */
-  _limit: number = Math.pow(2, 53) - 1
-
-  /**
-   * The relationships that should be eager loaded with the result.
-   */
-  load: Options.Load = {}
-
-  /**
-   * The lifecycle hook instance.
-   */
-  hook: Hook
-
-  /**
    * Primary key ids to filter records by. Used for filtering records direct key lookup.
    * Should be cancelled if there is a logic which prevents index usage. (For example an "or" condition which already requires full scan)
    */
@@ -104,6 +72,38 @@ export default class Query<T extends Model = Model> {
    * Should NOT be cancelled, because it is free from effects of normal where methods.
    */
   _joinedIdFilter: Set<number | string> | null = null
+
+  /**
+   * The where constraints for the query.
+   */
+  wheres: Options.Where[] = []
+
+  /**
+   * The orders of the query result.
+   */
+  orders: Options.Orders[] = []
+
+  /**
+   * Number of results to skip.
+   */
+  offsetNumber: number = 0
+
+  /**
+   * Maximum number of records to return.
+   *
+   * We use polyfill of `Number.MAX_SAFE_INTEGER` for IE11 here.
+   */
+  limitNumber: number = Math.pow(2, 53) - 1
+
+  /**
+   * The relationships that should be eager loaded with the result.
+   */
+  load: Options.Load = {}
+
+  /**
+   * The lifecycle hook instance.
+   */
+  hook: Hook
 
   /**
    * The object that holds mutated records. This object is used to retrieve the
@@ -364,6 +364,40 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
+   * Filter records by their primary key.
+   */
+  whereId (value: number | string): this {
+    return this.where(this.model.primaryKey, value)
+  }
+
+  /**
+   * Filter records by their primary keys.
+   */
+  whereIdIn (values: (string | number)[]): this {
+    return this.where(this.model.primaryKey, values)
+  }
+
+  /**
+   * Fast comparison for foreign keys. If foreign key is primary key, uses object lookup, fallback normal where otherwise.
+   * Why seperate whereFk? Additional logic needed for distinction between where and orWhere in normal queries, but Fk lookups are always "and" type.
+   */
+  whereFk (field: any, fkValues?: any): this {
+    const values = Array.isArray(fkValues) ? fkValues : [fkValues]
+
+    if (field === this.model.primaryKey) {
+      // If lookup filed is primary key. Initialize or get intersection. (because of boolean and: whereId(1).whereId(2).get())
+      this._joinedIdFilter = new Set(this._joinedIdFilter === null
+        ? values
+        : values.filter(value => (this._joinedIdFilter as Set<number | string>).has(value)))
+    } else {
+      // Fallback
+      this.where(field, values)
+    }
+
+    return this
+  }
+
+  /**
    * Add an order to the query.
    */
   orderBy (field: string, direction: Options.OrderDirection = 'asc'): this {
@@ -376,7 +410,7 @@ export default class Query<T extends Model = Model> {
    * Add an offset to the query.
    */
   offset (offset: number): this {
-    this._offset = offset
+    this.offsetNumber = offset
 
     return this
   }
@@ -385,7 +419,7 @@ export default class Query<T extends Model = Model> {
    * Add limit to the query.
    */
   limit (limit: number): this {
-    this._limit = limit
+    this.limitNumber = limit
 
     return this
   }
@@ -463,40 +497,6 @@ export default class Query<T extends Model = Model> {
     const ids = this.matchesWhereHasRelation(name, constraint, existence)
 
     this.where('$id', (value: any) => ids.includes(value))
-
-    return this
-  }
-
-  /**
-   * Filter records by their primary key.
-   */
-  whereId (value: number | string): this {
-    return this.where(this.model.primaryKey, value)
-  }
-
-  /**
-   * Filter records by their primary keys.
-   */
-  whereIdIn (values: Array<number | string>): this {
-    return this.where(this.model.primaryKey, values)
-  }
-
-  /**
-   * Fast comparison for foreign keys. If foreign key is primary key, uses object lookup, fallback normal where otherwise.
-   * Why seperate whereFk? Additional logic needed for distinction between where and orWhere in normal queries, but Fk lookups are always "and" type.
-   */
-  whereFk (field: any, fkValues?: any): this {
-    const values = Array.isArray(fkValues) ? fkValues : [fkValues]
-
-    if (field === this.model.primaryKey) {
-      // If lookup filed is primary key. Initialize or get intersection. (because of boolean and: whereId(1).whereId(2).get())
-      this._joinedIdFilter = new Set(this._joinedIdFilter === null
-        ? values
-        : values.filter(value => (this._joinedIdFilter as Set<number | string>).has(value)))
-    } else {
-      // Fallback
-      this.where(field, values)
-    }
 
     return this
   }
