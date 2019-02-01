@@ -3,6 +3,7 @@ import Schema from '../../schema/Schema'
 import { Record, NormalizedData } from '../../data'
 import Model from '../../model/Model'
 import Query from '../../query/Query'
+import Constraint from '../../query/options/Constraint'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -60,11 +61,11 @@ export default class MorphTo extends Relation {
   /**
    * Load the morph to relationship for the collection.
    */
-  load (query: Query, collection: Record[], key: string): void {
+  load (query: Query, collection: Record[], name: string, constraints: Constraint[]): void {
     const types = this.getTypes(collection)
 
     const relateds = types.reduce<NormalizedData>((relateds, type) => {
-      const relatedQuery = this.getRelation(query, type)
+      const relatedQuery = this.getRelation(query, type, constraints)
 
       relateds[type] = this.mapSingleRelations(relatedQuery.get(), '$id')
 
@@ -76,7 +77,7 @@ export default class MorphTo extends Relation {
       const type = item[this.type]
       const related = relateds[type][id]
 
-      item[key] = related || null
+      item[name] = related || null
     })
   }
 

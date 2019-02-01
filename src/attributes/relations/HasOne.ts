@@ -3,6 +3,7 @@ import Schema from '../../schema/Schema'
 import { Record, NormalizedData } from '../../data'
 import Model from '../../model/Model'
 import Query from '../../query/Query'
+import Constraint from '../../query/options/Constraint'
 import Relation from './Relation'
 
 export default class HasOne extends Relation {
@@ -87,8 +88,8 @@ export default class HasOne extends Relation {
   /**
    * Load the has one relationship for the collection.
    */
-  load (query: Query, collection: Record[], key: string): void {
-    const relation = this.getRelation(query, this.related.entity)
+  load (query: Query, collection: Record[], name: string, constraints: Constraint[]): void {
+    const relation = this.getRelation(query, this.related.entity, constraints)
 
     relation.whereFk(this.foreignKey, this.getKeys(collection, this.localKey))
 
@@ -97,7 +98,7 @@ export default class HasOne extends Relation {
     collection.forEach((item) => {
       const related = relations[item[this.localKey]]
 
-      item[key] = related || null
+      item[name] = related || null
     })
   }
 }

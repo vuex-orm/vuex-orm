@@ -3,6 +3,7 @@ import Schema from '../../schema/Schema'
 import { Record, Records, NormalizedData, Collection } from '../../data'
 import Model from '../../model/Model'
 import Query from '../../query/Query'
+import Constraint from '../../query/options/Constraint'
 import Attribute from '../Attribute'
 
 export default abstract class Relation extends Attribute {
@@ -20,15 +21,15 @@ export default abstract class Relation extends Attribute {
   /**
    * Load relationship records.
    */
-  abstract load (query: Query, collection: Record[], key: string): void
+  abstract load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void
 
   /**
    * Get relation query instance with constraint attached.
    */
-  getRelation (query: Query, name: string): Query {
+  getRelation (query: Query, name: string, constraints: Constraint[]): Query {
     const relation = query.newQuery(name)
 
-    this.addEagerConstraint(query, relation)
+    constraints.forEach(constraint => { constraint(relation) })
 
     return relation
   }
@@ -38,15 +39,6 @@ export default abstract class Relation extends Attribute {
    */
   getKeys (collection: Record[], key: string): string[] {
     return collection.map(item => item[key])
-  }
-
-  /**
-   * Add eager load constraint to the query.
-   */
-  addEagerConstraint (query: Query, relation: Query): void {
-    for (const name in query.load) {
-      query.load[name].forEach(constraint => { constraint(relation) })
-    }
   }
 
   /**

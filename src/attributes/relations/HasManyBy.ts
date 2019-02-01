@@ -3,6 +3,7 @@ import Schema from '../../schema/Schema'
 import { Record, Records, NormalizedData } from '../../data'
 import Model from '../../model/Model'
 import Query from '../../query/Query'
+import Constraint from '../../query/options/Constraint'
 import Relation from './Relation'
 
 export default class HasManyBy extends Relation {
@@ -64,8 +65,8 @@ export default class HasManyBy extends Relation {
   /**
    * Load the has many by relationship for the collection.
    */
-  load (query: Query, collection: Record[], key: string): void {
-    const relatedQuery = this.getRelation(query, this.parent.entity)
+  load (query: Query, collection: Record[], name: string, constraints: Constraint[]): void {
+    const relatedQuery = this.getRelation(query, this.parent.entity, constraints)
 
     this.addConstraintForHasManyBy(relatedQuery, collection)
 
@@ -74,7 +75,7 @@ export default class HasManyBy extends Relation {
     collection.forEach((item) => {
       const related = this.getRelatedRecords(relations, item[this.foreignKey])
 
-      item[key] = related
+      item[name] = related
     })
   }
 

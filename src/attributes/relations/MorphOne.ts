@@ -3,6 +3,7 @@ import Schema from '../../schema/Schema'
 import { Record, NormalizedData } from '../../data'
 import Model from '../../model/Model'
 import Query from '../../query/Query'
+import Constraint from '../../query/options/Constraint'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -75,8 +76,8 @@ export default class MorphOne extends Relation {
   /**
    * Load the morph many relationship for the record.
    */
-  load (query: Query, collection: Record[], key: string): void {
-    const relatedQuery = this.getRelation(query, this.related.entity)
+  load (query: Query, collection: Record[], name: string, constraints: Constraint[]): void {
+    const relatedQuery = this.getRelation(query, this.related.entity, constraints)
 
     this.addEagerConstraintForMorphOne(relatedQuery, collection, query.entity)
 
@@ -85,7 +86,7 @@ export default class MorphOne extends Relation {
     collection.forEach((item) => {
       const related = relations[item[this.localKey]]
 
-      item[key] = related || null
+      item[name] = related || null
     })
   }
 

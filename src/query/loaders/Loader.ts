@@ -54,20 +54,31 @@ export default class Loader {
    * Parse a list of relations into individuals.
    */
   private static parseWithRelations (query: Query, relations: string[], constraint: Constraint | null): void {
+    // First we'll get the very first relationship from teh whole relations.
+    const relation = relations[0]
+
     // If the first relation has "or" syntax which is `|` for example
     // `posts|videos`, set each of them as separate eager load.
-    relations[0].split('|').forEach((name) => {
-      this.setEagerLoad(query, name)
+    relation.split('|').forEach((name) => {
+      // If there's only one relationship in relations array, that means
+      // there's no nested relationship. So we'll set the given
+      // constraint to the relationship loading.
+      if (relations.length === 1) {
+        this.setEagerLoad(query, name, constraint)
 
-      return
+        return
+      }
+
+      // Else we'll skip adding constraint because the constraint has to be
+      // applied to the nested relationship. We'll let `addNestedWiths`
+      // method to handle that later.
+      this.setEagerLoad(query, name)
     })
 
     // If the given relations only contains a single name, which means it
-    // doesn't have any nested relations such as `posts.comments`, we'll
-    // just set the relation as an eager load.
+    // doesn't have any nested relations such as `posts.comments`, we
+    // don't need go farther so return here.
     if (relations.length === 1) {
-      this.setEagerLoad(query, relations[0], constraint)
-
       return
     }
 
@@ -75,17 +86,15 @@ export default class Loader {
     // of relations as a nested relation.
     relations.shift()
 
-    this.addNestedWiths(query, relations, constraint)
+    this.addNestedWiths(query, relation, relations, constraint)
   }
 
   /**
    * Parse the nested relationships in a relation.
    */
-  private static addNestedWiths (query: Query, relations: string[], constraint: Constraint | null): void {
-    const name = relations.join('.')
-
+  private static addNestedWiths (query: Query, name: string, children: string[], constraint: Constraint | null): void {
     this.setEagerLoad(query, name, (nestedQuery) => {
-      nestedQuery.with(name, constraint)
+      nestedQuery.with(children.join('.'), constraint)
     })
   }
 
@@ -96,10 +105,11 @@ export default class Loader {
     const fields = query.model.getFields()
 
     for (const name in query.load) {
+      const constraints = query.load[name]
       const relation = fields[name]
 
       if (relation instanceof Relation) {
-        relation.load(query, collection, name)
+        relation.load(query, collection, name, constraints)
       }
     }
   }

@@ -4,6 +4,7 @@ import Schema from '../../schema/Schema'
 import { Record, Records, NormalizedData } from '../../data'
 import Model from '../../model/Model'
 import Query from '../../query/Query'
+import Constraint from '../../query/options/Constraint'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -94,8 +95,8 @@ export default class MorphedByMany extends Relation {
   /**
    * Load the morph many relationship for the record.
    */
-  load (query: Query, collection: Record[], key: string): void {
-    const relatedQuery = this.getRelation(query, this.related.entity)
+  load (query: Query, collection: Record[], name: string, constraints: Constraint[]): void {
+    const relatedQuery = this.getRelation(query, this.related.entity, constraints)
 
     const pivotQuery = query.newQuery(this.pivot.entity)
 
@@ -110,7 +111,7 @@ export default class MorphedByMany extends Relation {
     collection.forEach((item) => {
       const related = relateds[item[this.parentKey]]
 
-      item[key] = related
+      item[name] = related
     })
   }
 
