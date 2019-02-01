@@ -15,7 +15,7 @@ describe('Feature – Relations – Retrieve – Self Relation', () => {
       }
     }
 
-    const store = createStore([{ model: Post }])
+    createStore([{ model: Post }])
 
     Post.insert({
       data: { id: 1, parent_id: null }
