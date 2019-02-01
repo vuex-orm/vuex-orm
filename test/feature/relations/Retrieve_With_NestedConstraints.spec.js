@@ -57,6 +57,5 @@ describe('Feature – Relations – With – Nested Constraints', () => {
     expect(user.posts.length).toBe(1)
     expect(user.posts[0].comments.length).toBe(2)
     expect(user.posts[0].comments[0].title).toBe('Title01')
-    expect(user.posts[0].comments[0].title).toBe('Title01')
   })
 })

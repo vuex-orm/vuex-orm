@@ -1,8 +1,9 @@
 import { Schema as NormalizrSchema } from 'normalizr'
 import Schema from '../../schema/Schema'
-import { Record, NormalizedData } from '../../data'
+import { Record, NormalizedData, Collection } from '../../data'
 import Model from '../../model/Model'
 import Query from '../../query/Query'
+import Constraint from '../../query/options/Constraint'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -75,8 +76,8 @@ export default class MorphMany extends Relation {
   /**
    * Load the morph many relationship for the record.
    */
-  load (query: Query, collection: Record[], key: string): void {
-    const relatedQuery = this.getRelation(query, this.related.entity)
+  load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void {
+    const relatedQuery = this.getRelation(query, this.related.entity, constraints)
 
     this.addEagerConstraintForMorphMany(relatedQuery, collection, query.entity)
 
@@ -85,14 +86,14 @@ export default class MorphMany extends Relation {
     collection.forEach((item) => {
       const related = relations[item[this.localKey]]
 
-      item[key] = related
+      item[name] = related
     })
   }
 
   /**
    * Set the constraints for an eager load of the relation.
    */
-  addEagerConstraintForMorphMany (query: Query, collection: Record[], type: string): void {
+  addEagerConstraintForMorphMany (query: Query, collection: Collection, type: string): void {
     query.whereFk(this.type, type).whereFk(this.id, this.getKeys(collection, this.localKey))
   }
 }

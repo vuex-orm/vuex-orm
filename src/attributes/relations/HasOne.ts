@@ -1,8 +1,10 @@
 import { Schema as NormalizrSchema } from 'normalizr'
 import Schema from '../../schema/Schema'
-import { Record, NormalizedData } from '../../data'
+import { Record, NormalizedData, Collection } from '../../data'
 import Model from '../../model/Model'
 import Query from '../../query/Query'
+import Constraint from '../../query/options/Constraint'
+import DictionaryOne from '../contracts/DictionaryOne'
 import Relation from './Relation'
 
 export default class HasOne extends Relation {
@@ -87,17 +89,45 @@ export default class HasOne extends Relation {
   /**
    * Load the has one relationship for the collection.
    */
-  load (query: Query, collection: Record[], key: string): void {
-    const relation = this.getRelation(query, this.related.entity)
+  load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void {
+    const relation = this.getRelation(query, this.related.entity, constraints)
 
+    this.addEagerConstraints(relation, collection)
+
+    this.match(collection, relation.get(), name)
+  }
+
+  /**
+   * Set the constraints for an eager load of the relation.
+   */
+  private addEagerConstraints (relation: Query, collection: Collection): void {
     relation.whereFk(this.foreignKey, this.getKeys(collection, this.localKey))
+  }
 
-    const relations = this.mapSingleRelations(relation.get(), this.foreignKey)
+  /**
+   * Match the eagerly loaded results to their parents.
+   */
+  private match (collection: Collection, relations: Collection, name: string): void {
+    const dictionary = this.buildDictionary(relations)
 
-    collection.forEach((item) => {
-      const related = relations[item[this.localKey]]
+    collection.forEach((model) => {
+      const id = model[this.localKey]
+      const relation = dictionary[id]
 
-      item[key] = related || null
+      model[name] = relation || null
     })
+  }
+
+  /**
+   * Build model dictionary keyed by the relation's foreign key.
+   */
+  private buildDictionary (relations: Collection): DictionaryOne {
+    return relations.reduce<DictionaryOne>((dictionary, relation) => {
+      const key = relation[this.foreignKey]
+
+      dictionary[key] = relation
+
+      return dictionary
+    }, {})
   }
 }
