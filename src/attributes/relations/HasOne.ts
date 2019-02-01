@@ -3,7 +3,7 @@ import Schema from '../../schema/Schema'
 import { Record, NormalizedData, Collection } from '../../data'
 import Model from '../../model/Model'
 import Query from '../../query/Query'
-import Constraint from '../../query/options/Constraint'
+import Constraint from '../../query/contracts/RelationshipConstraint'
 import DictionaryOne from '../contracts/DictionaryOne'
 import Relation from './Relation'
 

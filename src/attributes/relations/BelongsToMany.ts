@@ -4,7 +4,7 @@ import Utils from '../../support/Utils'
 import { Record, Records, NormalizedData, Collection } from '../../data'
 import Model from '../../model/Model'
 import Query from '../../query/Query'
-import Constraint from '../../query/options/Constraint'
+import Constraint from '../../query/contracts/RelationshipConstraint'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string

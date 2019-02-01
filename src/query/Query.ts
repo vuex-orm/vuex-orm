@@ -9,7 +9,7 @@ import Model from '../model/Model'
 import State from '../modules/contracts/State'
 import RootState from '../modules/contracts/RootState'
 import PersistOptions from '../modules/payloads/PersistOptions'
-import Result from './contracts/Result'
+import * as Contracts from './contracts'
 import * as Options from './options'
 import Processor from './processors/Processor'
 import Filter from './filters/Filter'
@@ -114,7 +114,7 @@ export default class Query<T extends Model = Model> {
    * object. This way, actions can retrieve mutated records after committing
    * the mutations.
    */
-  result: Result = { data: null }
+  result: Contracts.Result = { data: null }
 
   /**
    * Create a new Query instance.
@@ -246,7 +246,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Set the result.
    */
-  setResult (result: Result): this {
+  setResult (result: Contracts.Result): this {
     this.result = result
 
     return this
@@ -393,7 +393,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Set the relationships that should be loaded.
    */
-  with (name: string, constraint: Options.Constraint | null = null): this {
+  with (name: string, constraint: Contracts.RelationshipConstraint | null = null): this {
     Loader.with(this, name, constraint)
 
     return this

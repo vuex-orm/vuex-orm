@@ -1,6 +1,6 @@
 import Collection from '../../data/Collection'
 import Relation from '../../attributes/relations/Relation'
-import Constraint from '../options/Constraint'
+import Constraint from '../contracts/RelationshipConstraint'
 import Query from '../Query'
 
 export default class Loader {
