@@ -5,18 +5,7 @@ import Query from '../Query'
 
 export default class Loader {
   /**
-   * Set eager load relation and constraint.
-   */
-  static setEagerLoad (query: Query, relation: string, constraint: Constraint | null = null): void {
-    if (!query.load[relation]) {
-      query.load[relation] = []
-    }
-
-    constraint && query.load[relation].push(constraint)
-  }
-
-  /**
-   * Set the relationships that should be loaded.
+   * Set the relationships that should be eager loaded with the query.
    */
   static with (query: Query, name: string, constraint: Constraint | null): void {
     // If the name of the relation is `*`, we'll load all relationships.
@@ -31,18 +20,18 @@ export default class Loader {
   }
 
   /**
-   * Query all relations.
+   * Set all relationships to be eager loaded with the query.
    */
   static withAll (query: Query, constraint: Constraint = () => null): void {
     const fields = query.model.getFields()
 
-    for (const field in query.model.getFields()) {
+    for (const field in fields) {
       fields[field] instanceof Relation && this.with(query, field, constraint)
     }
   }
 
   /**
-   * Query all relations recursively.
+   * Set relationships to be recursively eager loaded with the query.
    */
   static withAllRecursive (query: Query, depth: number): void {
     this.withAll(query, (relatedQuery) => {
@@ -51,21 +40,39 @@ export default class Loader {
   }
 
   /**
+   * Set eager load relation and constraint.
+   */
+  private static setEagerLoad (query: Query, name: string, constraint: Constraint | null = null): void {
+    if (!query.load[name]) {
+      query.load[name] = []
+    }
+
+    constraint && query.load[name].push(constraint)
+  }
+
+  /**
    * Parse a list of relations into individuals.
    */
-  static parseWithRelations (query: Query, relations: string[], constraint: Constraint | null): void {
-    const relation = relations[0]
-
-    relation.split('|').forEach((name) => {
+  private static parseWithRelations (query: Query, relations: string[], constraint: Constraint | null): void {
+    // If the first relation has "or" syntax which is `|` for example
+    // `posts|videos`, set each of them as separate eager load.
+    relations[0].split('|').forEach((name) => {
       this.setEagerLoad(query, name)
+
+      return
     })
 
+    // If the given relations only contains a single name, which means it
+    // doesn't have any nested relations such as `posts.comments`, we'll
+    // just set the relation as an eager load.
     if (relations.length === 1) {
-      this.setEagerLoad(query, relation, constraint)
+      this.setEagerLoad(query, relations[0], constraint)
 
       return
     }
 
+    // Finally, we shift the first relation from the array and handle lest
+    // of relations as a nested relation.
     relations.shift()
 
     this.addNestedWiths(query, relations, constraint)
@@ -74,11 +81,11 @@ export default class Loader {
   /**
    * Parse the nested relationships in a relation.
    */
-  static addNestedWiths (query: Query, relations: string[], constraint: Constraint | null): void {
-    const relation = relations.join('.')
+  private static addNestedWiths (query: Query, relations: string[], constraint: Constraint | null): void {
+    const name = relations.join('.')
 
-    this.setEagerLoad(query, relation, (nestedQuery) => {
-      nestedQuery.with(relation, constraint)
+    this.setEagerLoad(query, name, (nestedQuery) => {
+      nestedQuery.with(name, constraint)
     })
   }
 
