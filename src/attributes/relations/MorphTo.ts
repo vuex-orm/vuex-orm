@@ -1,6 +1,6 @@
 import { Schema as NormalizrSchema } from 'normalizr'
 import Schema from '../../schema/Schema'
-import { Record, NormalizedData } from '../../data'
+import { Record, NormalizedData, Collection } from '../../data'
 import Model from '../../model/Model'
 import Query from '../../query/Query'
 import Constraint from '../../query/options/Constraint'
@@ -61,7 +61,7 @@ export default class MorphTo extends Relation {
   /**
    * Load the morph to relationship for the collection.
    */
-  load (query: Query, collection: Record[], name: string, constraints: Constraint[]): void {
+  load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void {
     const types = this.getTypes(collection)
 
     const relateds = types.reduce<NormalizedData>((relateds, type) => {
@@ -84,7 +84,7 @@ export default class MorphTo extends Relation {
   /**
    * Get all types from the collection.
    */
-  getTypes (collection: Record[]): string[] {
+  getTypes (collection: Collection): string[] {
     return collection.reduce<string[]>((types, item) => {
       const type = item[this.type]
 

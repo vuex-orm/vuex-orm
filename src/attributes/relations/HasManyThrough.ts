@@ -1,6 +1,6 @@
 import { Schema as NormalizrSchema } from 'normalizr'
 import Schema from '../../schema/Schema'
-import { Record, Records, NormalizedData } from '../../data'
+import { Record, Records, NormalizedData, Collection } from '../../data'
 import Model from '../../model/Model'
 import Query from '../../query/Query'
 import Constraint from '../../query/options/Constraint'
@@ -86,7 +86,7 @@ export default class HasManyThrough extends Relation {
   /**
    * Load the has many through relationship for the collection.
    */
-  load (query: Query, collection: Record[], name: string, constraints: Constraint[]): void {
+  load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void {
     const relatedQuery = this.getRelation(query, this.related.entity, constraints)
 
     const throughQuery = query.newQuery(this.through.entity)
@@ -109,21 +109,21 @@ export default class HasManyThrough extends Relation {
   /**
    * Set the constraints for the through relation.
    */
-  addEagerConstraintForThrough (query: Query, collection: Record[]): void {
+  addEagerConstraintForThrough (query: Query, collection: Collection): void {
     query.where(this.firstKey, this.getKeys(collection, this.localKey))
   }
 
   /**
    * Set the constraints for the related relation.
    */
-  addEagerConstraintForRelated (query: Query, collection: Record[]): void {
+  addEagerConstraintForRelated (query: Query, collection: Collection): void {
     query.where(this.secondKey, this.getKeys(collection, this.secondLocalKey))
   }
 
   /**
    * Create a new indexed map for the through relation.
    */
-  mapThroughRelations (throughs: Record[], relatedQuery: Query): Records {
+  mapThroughRelations (throughs: Collection, relatedQuery: Query): Records {
     const relateds = this.mapManyRelations(relatedQuery.get(), this.secondKey)
 
     return throughs.reduce((records, record) => {

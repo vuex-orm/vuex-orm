@@ -1,9 +1,10 @@
 import { Schema as NormalizrSchema } from 'normalizr'
 import Schema from '../../schema/Schema'
-import { Record, Records, NormalizedData } from '../../data'
+import { Record, NormalizedData, Collection } from '../../data'
 import Model from '../../model/Model'
 import Query from '../../query/Query'
 import Constraint from '../../query/options/Constraint'
+import DictionaryOne from '../contracts/DictionaryOne'
 import Relation from './Relation'
 
 export default class HasManyBy extends Relation {
@@ -65,12 +66,12 @@ export default class HasManyBy extends Relation {
   /**
    * Load the has many by relationship for the collection.
    */
-  load (query: Query, collection: Record[], name: string, constraints: Constraint[]): void {
+  load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void {
     const relatedQuery = this.getRelation(query, this.parent.entity, constraints)
 
     this.addConstraintForHasManyBy(relatedQuery, collection)
 
-    const relations = this.mapSingleRelations(relatedQuery.get(), this.ownerKey)
+    const relations = this.mapSingleRelations(relatedQuery.get(), this.ownerKey) as DictionaryOne
 
     collection.forEach((item) => {
       const related = this.getRelatedRecords(relations, item[this.foreignKey])
@@ -82,7 +83,7 @@ export default class HasManyBy extends Relation {
   /**
    * Set the constraints for an eager load of the relation.
    */
-  addConstraintForHasManyBy (query: Query, collection: Record[]): void {
+  addConstraintForHasManyBy (query: Query, collection: Collection): void {
     const keys = collection.reduce<string[]>((keys, item) => {
       return keys.concat(item[this.foreignKey])
     }, [] as string[])
@@ -93,13 +94,13 @@ export default class HasManyBy extends Relation {
   /**
    * Get related records.
    */
-  getRelatedRecords (records: Records, keys: string[]): Record[] {
-    return keys.reduce<Record[]>((items, id) => {
+  getRelatedRecords (records: DictionaryOne, keys: string[]): Collection {
+    return keys.reduce<Collection>((items, id) => {
       const related = records[id]
 
       related && items.push(related)
 
       return items
-    }, [] as Record[])
+    }, [])
   }
 }

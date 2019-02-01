@@ -1,9 +1,10 @@
 import { Schema as NormalizrSchema } from 'normalizr'
 import Schema from '../../schema/Schema'
-import { Record, NormalizedData } from '../../data'
+import { Record, NormalizedData, Collection } from '../../data'
 import Model from '../../model/Model'
 import Query from '../../query/Query'
 import Constraint from '../../query/options/Constraint'
+import DictionaryMany from '../contracts/DictionaryMany'
 import Relation from './Relation'
 
 export default class HasMany extends Relation {
@@ -69,17 +70,49 @@ export default class HasMany extends Relation {
   /**
    * Load the has many relationship for the collection.
    */
-  load (query: Query, collection: Record[], name: string, constraints: Constraint[]): void {
-    const relatedQuery = this.getRelation(query, this.related.entity, constraints)
+  load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void {
+    const relation = this.getRelation(query, this.related.entity, constraints)
 
-    relatedQuery.whereFk(this.foreignKey, this.getKeys(collection, this.localKey))
+    this.addEagerConstraints(relation, collection)
 
-    const relations = this.mapManyRelations(relatedQuery.get(), this.foreignKey)
+    this.match(collection, relation.get(), name)
+  }
 
-    collection.forEach((item) => {
-      const related = relations[item[this.localKey]]
+  /**
+   * Set the constraints for an eager load of the relation.
+   */
+  private addEagerConstraints (relation: Query, collection: Collection): void {
+    relation.whereFk(this.foreignKey, this.getKeys(collection, this.localKey))
+  }
 
-      item[name] = related || []
+  /**
+   * Match the eagerly loaded results to their parents.
+   */
+  private match (collection: Collection, relations: Collection, name: string): void {
+    const dictionary = this.buildDictionary(relations)
+
+    collection.forEach((model) => {
+      const id = model[this.localKey]
+      const relation = dictionary[id]
+
+      model[name] = relation || []
     })
+  }
+
+  /**
+   * Build model dictionary keyed by the relation's foreign key.
+   */
+  private buildDictionary (relations: Collection): DictionaryMany {
+    return relations.reduce<DictionaryMany>((dictionary, relation) => {
+      const key = relation[this.foreignKey]
+
+      if (!dictionary[key]) {
+        dictionary[key] = []
+      }
+
+      dictionary[key].push(relation)
+
+      return dictionary
+    }, {})
   }
 }

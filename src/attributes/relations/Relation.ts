@@ -26,7 +26,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Get relation query instance with constraint attached.
    */
-  getRelation (query: Query, name: string, constraints: Constraint[]): Query {
+  protected getRelation (query: Query, name: string, constraints: Constraint[]): Query {
     const relation = query.newQuery(name)
 
     constraints.forEach(constraint => { constraint(relation) })
@@ -37,8 +37,8 @@ export default abstract class Relation extends Attribute {
   /**
    * Get specified keys from the given collection.
    */
-  getKeys (collection: Record[], key: string): string[] {
-    return collection.map(item => item[key])
+  protected getKeys (collection: Collection, key: string): string[] {
+    return collection.map(model => model[key])
   }
 
   /**
