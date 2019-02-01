@@ -57,21 +57,28 @@ export default class Query<T extends Model = Model> {
   module: Vuex.Module<State, any>
 
   /**
-   * Primary key ids to filter records by. Used for filtering records direct key lookup.
-   * Should be cancelled if there is a logic which prevents index usage. (For example an "or" condition which already requires full scan)
+   * Primary key ids to filter records by. It is used for filtering records
+   * direct key lookup when a user is trying to fetch records by its
+   * primary key.
+   *
+   * It should not be used if there is a logic which prevents index usage, for
+   * example, an "or" condition which already requires a full scan of records.
    */
-  _idFilter: Set<number | string> | null = null
+  idFilter: Set<number | string> | null = null
 
   /**
-   * Whether to use _idFilter key lookup. True if there is a logic which prevents index usage. (For example an "or" condition which already requires full scan)
+   * Whether to use `idFilter` key lookup. True if there is a logic which
+   * prevents index usage, for example, an "or" condition which already
+   * requires full scan.
    */
-  _cancelIdFilter: Boolean = false
+  cancelIdFilter: Boolean = false
 
   /**
-   * Primary key ids to filter joined records. Used for filtering records direct key lookup.
-   * Should NOT be cancelled, because it is free from effects of normal where methods.
+   * Primary key ids to filter joined records. It is used for filtering
+   * records direct key lookup. It should not be cancelled, because it
+   * is free from the effects of normal where methods.
    */
-  _joinedIdFilter: Set<number | string> | null = null
+  joinedIdFilter: Set<number | string> | null = null
 
   /**
    * The where constraints for the query.
@@ -302,12 +309,12 @@ export default class Query<T extends Model = Model> {
   }
 
   _idList (): Array<string | number> {
-    if (this._idFilter && this._joinedIdFilter) {
+    if (this.idFilter && this.joinedIdFilter) {
       // Intersect if both have been set.
-      return Array.from(this._idFilter.values()).filter(id => (this._joinedIdFilter as Set<number | string>).has(id))
-    } else if (this._idFilter || this._joinedIdFilter) {
+      return Array.from(this.idFilter.values()).filter(id => (this.joinedIdFilter as Set<number | string>).has(id))
+    } else if (this.idFilter || this.joinedIdFilter) {
       // If only one is set, return which one is set.
-      return Array.from((this._idFilter || this._joinedIdFilter as Set<string | number>).values())
+      return Array.from((this.idFilter || this.joinedIdFilter as Set<string | number>).values())
     } else {
       // If none is set, return all keys.
       return Object.keys(this.state.data)
@@ -323,10 +330,10 @@ export default class Query<T extends Model = Model> {
    * side, it will be converted to the plain record at the client side.
    */
   records (): Data.Collection {
-    // Fallback if _idFilter is cancelled.
-    if (this._cancelIdFilter && this._idFilter !== null) {
-      this.where(this.model.primaryKey, Array.from(this._idFilter.values()))
-      this._idFilter = null
+    // Fallback if idFilter is cancelled.
+    if (this.cancelIdFilter && this.idFilter !== null) {
+      this.where(this.model.primaryKey, Array.from(this.idFilter.values()))
+      this.idFilter = null
     }
 
     return this._idList().map((id) => {
@@ -340,12 +347,12 @@ export default class Query<T extends Model = Model> {
    * Add a and where clause to the query.
    */
   where (field: any, value?: any): this {
-    if (field === this.model.primaryKey && !this._cancelIdFilter) {
+    if (field === this.model.primaryKey && !this.cancelIdFilter) {
       const values = Array.isArray(value) ? value : [value]
       // Initialize or get intersection. (because of boolean and: whereIdIn([1,2,3]).whereIdIn([1,2]).get())
-      this._idFilter = new Set(this._idFilter === null
+      this.idFilter = new Set(this.idFilter === null
         ? values
-        : values.filter(value => (this._idFilter as Set<number | string>).has(value)))
+        : values.filter(value => (this.idFilter as Set<number | string>).has(value)))
     }
 
     this.wheres.push({ field, value, boolean: 'and' })
@@ -357,7 +364,7 @@ export default class Query<T extends Model = Model> {
    * Add a or where clause to the query.
    */
   orWhere (field: any, value?: any): this {
-    this._cancelIdFilter = true // Cacncel filter usage, "or" needs full scan.
+    this.cancelIdFilter = true // Cacncel filter usage, "or" needs full scan.
     this.wheres.push({ field, value, boolean: 'or' })
 
     return this
@@ -386,9 +393,9 @@ export default class Query<T extends Model = Model> {
 
     if (field === this.model.primaryKey) {
       // If lookup filed is primary key. Initialize or get intersection. (because of boolean and: whereId(1).whereId(2).get())
-      this._joinedIdFilter = new Set(this._joinedIdFilter === null
+      this.joinedIdFilter = new Set(this.joinedIdFilter === null
         ? values
-        : values.filter(value => (this._joinedIdFilter as Set<number | string>).has(value)))
+        : values.filter(value => (this.joinedIdFilter as Set<number | string>).has(value)))
     } else {
       // Fallback
       this.where(field, values)

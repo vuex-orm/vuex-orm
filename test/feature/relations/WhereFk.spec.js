@@ -31,6 +31,6 @@ describe('Feature – Retrieve – Where', () => {
     query.whereFk('id', [1, 2])
     const expected = [1]
 
-    expect(Array.from(query._joinedIdFilter.values())).toEqual(expected)
+    expect(Array.from(query.joinedIdFilter.values())).toEqual(expected)
   })
 })
