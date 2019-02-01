@@ -17,11 +17,11 @@ describe('Feature – Relations – Retrieve – Self Relation', () => {
 
     const store = createStore([{ model: Post }])
 
-    Post.create({
+    Post.insert({
       data: { id: 1, parent_id: null }
     })
 
-    Post.create({
+    Post.insert({
       data: { id: 2, parent_id: 1 }
     })
 
