@@ -8,7 +8,8 @@ export default class Number extends Type {
    * Create a new number instance.
    */
   constructor (model: typeof Model, value: number | null, mutator?: Mutator<number | null>) {
-    super(model, value, mutator) /* istanbul ignore next */
+    /* istanbul ignore next */
+    super(model, value, mutator)
   }
 
   /**

@@ -7,7 +7,8 @@ export default class Increment extends Type {
    * Create a new increment instance.
    */
   constructor (model: typeof Model) {
-    super(model, null) /* istanbul ignore next */
+    /* istanbul ignore next */
+    super(model, null)
   }
 
   /**

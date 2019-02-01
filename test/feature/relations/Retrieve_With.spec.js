@@ -449,4 +449,43 @@ describe('Feature – Relations – Retrieve – With', () => {
     expect(user1).toEqual(expected)
     expect(user2).toEqual(expected)
   })
+
+  it('ignores any unkown relationship name', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          posts: this.hasMany(Post, 'user_id')
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null)
+        }
+      }
+    }
+
+    createStore([{ model: User }, { model: Post }])
+
+    await User.create({
+      data: {
+        id: 1,
+        posts: [
+          { id: 1, user_id: 1 }
+        ]
+      }
+    })
+
+    const user = User.query().with('unkown').first()
+
+    expect(user.posts.length).toBe(0)
+  })
 })

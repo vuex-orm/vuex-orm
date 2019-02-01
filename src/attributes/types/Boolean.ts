@@ -8,7 +8,8 @@ export default class Boolean extends Type {
    * Create a new number instance.
    */
   constructor (model: typeof Model, value: boolean, mutator?: Mutator<boolean | null>) {
-    super(model, value, mutator) /* istanbul ignore next */
+    /* istanbul ignore next */
+    super(model, value, mutator)
   }
 
   /**

@@ -8,7 +8,8 @@ export default class String extends Type {
    * Create a new string instance.
    */
   constructor (model: typeof Model, value: string | null, mutator?: Mutator<string | null>) {
-    super(model, value, mutator) /* istanbul ignore next */
+    /* istanbul ignore next */
+    super(model, value, mutator)
   }
 
   /**
