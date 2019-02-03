@@ -558,6 +558,35 @@ describe('Feature – Basics – Update', () => {
     }
   })
 
+  it('updates index key when primary key gets updated', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('')
+        }
+      }
+    }
+
+    createStore([{ model: User }])
+
+    User.create({
+      data: { id: 1, name: 'John Doe' }
+    })
+
+    User.update({
+      where: 1,
+      data: { id: 2 }
+    })
+
+    const user = User.find(2)
+
+    expect(user.$id).toBe('2')
+    expect(user.id).toBe(2)
+  })
+
   it('returns a updated object', async () => {
     class User extends Model {
       static entity = 'users'
@@ -607,7 +636,7 @@ describe('Feature – Basics – Update', () => {
       data: { age: 24 }
     })
 
-    expect(result.users[0]).toBeInstanceOf(User)
-    expect(result.users[0].age).toBe(24)
+    expect(result).toBeInstanceOf(User)
+    expect(result.age).toBe(24)
   })
 })
