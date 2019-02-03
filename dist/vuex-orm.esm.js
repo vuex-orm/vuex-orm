@@ -74,9 +74,12 @@ and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
 
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+var extendStatics = function(d, b) {
+    extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return extendStatics(d, b);
+};
 
 function __extends(d, b) {
     extendStatics(d, b);
@@ -84,12 +87,15 @@ function __extends(d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 }
 
-var __assign = Object.assign || function __assign(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-    }
-    return t;
+var __assign = function() {
+    __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
 };
 
 function __awaiter(thisArg, _arguments, P, generator) {
@@ -285,11 +291,23 @@ var Type = /** @class */ (function (_super) {
     /**
      * Create a new type instance.
      */
-    function Type(model, mutator) {
+    function Type(model, value, mutator) {
         var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+        /**
+         * Whether if the attribute can accept `null` as a value.
+         */
+        _this.isNullable = false;
+        _this.value = value;
         _this.mutator = mutator;
         return _this;
     }
+    /**
+     * Set `isNullable` to be `true`.
+     */
+    Type.prototype.nullable = function () {
+        this.isNullable = true;
+        return this;
+    };
     /**
      * Mutate the given value by mutator.
      */
@@ -306,7 +324,7 @@ var Attr = /** @class */ (function (_super) {
      * Create a new attr instance.
      */
     function Attr(model, value, mutator) {
-        var _this = _super.call(this, model, mutator) /* istanbul ignore next */ || this;
+        var _this = _super.call(this, model, value, mutator) /* istanbul ignore next */ || this;
         _this.value = value;
         return _this;
     }
@@ -327,12 +345,8 @@ var Increment = /** @class */ (function (_super) {
      * Create a new increment instance.
      */
     function Increment(model) {
-        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
-        /**
-         * The initial count to start incrementing.
-         */
-        _this.value = 1;
-        return _this;
+        /* istanbul ignore next */
+        return _super.call(this, model, null) || this;
     }
     /**
      * Convert given value to the appropriate value for the attribute.
@@ -349,21 +363,9 @@ var String$1 = /** @class */ (function (_super) {
      * Create a new string instance.
      */
     function String(model, value, mutator) {
-        var _this = _super.call(this, model, mutator) /* istanbul ignore next */ || this;
-        /**
-         * Whether if it can accept `null` as a value.
-         */
-        _this.isNullable = false;
-        _this.value = value;
-        return _this;
+        /* istanbul ignore next */
+        return _super.call(this, model, value, mutator) || this;
     }
-    /**
-     * Set `nullable` to be `true`.
-     */
-    String.prototype.nullable = function () {
-        this.isNullable = true;
-        return this;
-    };
     /**
      * Convert given value to the appropriate value for the attribute.
      */
@@ -394,21 +396,9 @@ var Number = /** @class */ (function (_super) {
      * Create a new number instance.
      */
     function Number(model, value, mutator) {
-        var _this = _super.call(this, model, mutator) /* istanbul ignore next */ || this;
-        /**
-         * Whether if it can accept `null` as a value.
-         */
-        _this.isNullable = false;
-        _this.value = value;
-        return _this;
+        /* istanbul ignore next */
+        return _super.call(this, model, value, mutator) || this;
     }
-    /**
-     * Set `nullable` to be `true`.
-     */
-    Number.prototype.nullable = function () {
-        this.isNullable = true;
-        return this;
-    };
     /**
      * Convert given value to the appropriate value for the attribute.
      */
@@ -445,21 +435,9 @@ var Boolean = /** @class */ (function (_super) {
      * Create a new number instance.
      */
     function Boolean(model, value, mutator) {
-        var _this = _super.call(this, model, mutator) /* istanbul ignore next */ || this;
-        /**
-         * Whether if it can accept `null` as a value.
-         */
-        _this.isNullable = false;
-        _this.value = value;
-        return _this;
+        /* istanbul ignore next */
+        return _super.call(this, model, value, mutator) || this;
     }
-    /**
-     * Set `nullable` to be `true`.
-     */
-    Boolean.prototype.nullable = function () {
-        this.isNullable = true;
-        return this;
-    };
     /**
      * Convert given value to the appropriate value for the attribute.
      */
@@ -502,24 +480,16 @@ var Relation = /** @class */ (function (_super) {
     /**
      * Get relation query instance with constraint attached.
      */
-    Relation.prototype.getRelation = function (query, name) {
+    Relation.prototype.getRelation = function (query, name, constraints) {
         var relation = query.newQuery(name);
-        this.addEagerConstraint(query, relation);
+        constraints.forEach(function (constraint) { constraint(relation); });
         return relation;
     };
     /**
      * Get specified keys from the given collection.
      */
     Relation.prototype.getKeys = function (collection, key) {
-        return collection.map(function (item) { return item[key]; });
-    };
-    /**
-     * Add eager load constraint to the query.
-     */
-    Relation.prototype.addEagerConstraint = function (query, relation) {
-        for (var name_1 in query.load) {
-            query.load[name_1].forEach(function (constraint) { constraint(relation); });
-        }
+        return collection.map(function (model) { return model[key]; });
     };
     /**
      * Create a new indexed map for the single relation by specified key.
@@ -641,15 +611,39 @@ var HasOne = /** @class */ (function (_super) {
     /**
      * Load the has one relationship for the collection.
      */
-    HasOne.prototype.load = function (query, collection, key) {
-        var _this = this;
-        var relation = this.getRelation(query, this.related.entity);
+    HasOne.prototype.load = function (query, collection, name, constraints) {
+        var relation = this.getRelation(query, this.related.entity, constraints);
+        this.addEagerConstraints(relation, collection);
+        this.match(collection, relation.get(), name);
+    };
+    /**
+     * Set the constraints for an eager load of the relation.
+     */
+    HasOne.prototype.addEagerConstraints = function (relation, collection) {
         relation.whereFk(this.foreignKey, this.getKeys(collection, this.localKey));
-        var relations = this.mapSingleRelations(relation.get(), this.foreignKey);
-        collection.forEach(function (item) {
-            var related = relations[item[_this.localKey]];
-            item[key] = related || null;
+    };
+    /**
+     * Match the eagerly loaded results to their parents.
+     */
+    HasOne.prototype.match = function (collection, relations, name) {
+        var _this = this;
+        var dictionary = this.buildDictionary(relations);
+        collection.forEach(function (model) {
+            var id = model[_this.localKey];
+            var relation = dictionary[id];
+            model[name] = relation || null;
         });
+    };
+    /**
+     * Build model dictionary keyed by the relation's foreign key.
+     */
+    HasOne.prototype.buildDictionary = function (relations) {
+        var _this = this;
+        return relations.reduce(function (dictionary, relation) {
+            var key = relation[_this.foreignKey];
+            dictionary[key] = relation;
+            return dictionary;
+        }, {});
     };
     return HasOne;
 }(Relation));
@@ -698,15 +692,39 @@ var BelongsTo = /** @class */ (function (_super) {
     /**
      * Load the belongs to relationship for the collection.
      */
-    BelongsTo.prototype.load = function (query, collection, key) {
+    BelongsTo.prototype.load = function (query, collection, name, constraints) {
+        var relation = this.getRelation(query, this.parent.entity, constraints);
+        this.addEagerConstraints(relation, collection);
+        this.match(collection, relation.get(), name);
+    };
+    /**
+     * Set the constraints for an eager load of the relation.
+     */
+    BelongsTo.prototype.addEagerConstraints = function (relation, collection) {
+        relation.whereFk(this.ownerKey, this.getKeys(collection, this.foreignKey));
+    };
+    /**
+     * Match the eagerly loaded results to their parents.
+     */
+    BelongsTo.prototype.match = function (collection, relations, name) {
         var _this = this;
-        var relatedQuery = this.getRelation(query, this.parent.entity);
-        relatedQuery.whereFk(this.ownerKey, this.getKeys(collection, this.foreignKey));
-        var relations = this.mapSingleRelations(relatedQuery.get(), this.ownerKey);
-        collection.forEach(function (item) {
-            var related = relations[item[_this.foreignKey]];
-            item[key] = related || null;
+        var dictionary = this.buildDictionary(relations);
+        collection.forEach(function (model) {
+            var id = model[_this.foreignKey];
+            var relation = dictionary[id];
+            model[name] = relation || null;
         });
+    };
+    /**
+     * Build model dictionary keyed by the relation's foreign key.
+     */
+    BelongsTo.prototype.buildDictionary = function (relations) {
+        var _this = this;
+        return relations.reduce(function (dictionary, relation) {
+            var key = relation[_this.ownerKey];
+            dictionary[key] = relation;
+            return dictionary;
+        }, {});
     };
     return BelongsTo;
 }(Relation));
@@ -754,15 +772,42 @@ var HasMany = /** @class */ (function (_super) {
     /**
      * Load the has many relationship for the collection.
      */
-    HasMany.prototype.load = function (query, collection, key) {
+    HasMany.prototype.load = function (query, collection, name, constraints) {
+        var relation = this.getRelation(query, this.related.entity, constraints);
+        this.addEagerConstraints(relation, collection);
+        this.match(collection, relation.get(), name);
+    };
+    /**
+     * Set the constraints for an eager load of the relation.
+     */
+    HasMany.prototype.addEagerConstraints = function (relation, collection) {
+        relation.whereFk(this.foreignKey, this.getKeys(collection, this.localKey));
+    };
+    /**
+     * Match the eagerly loaded results to their parents.
+     */
+    HasMany.prototype.match = function (collection, relations, name) {
         var _this = this;
-        var relatedQuery = this.getRelation(query, this.related.entity);
-        relatedQuery.whereFk(this.foreignKey, this.getKeys(collection, this.localKey));
-        var relations = this.mapManyRelations(relatedQuery.get(), this.foreignKey);
-        collection.forEach(function (item) {
-            var related = relations[item[_this.localKey]];
-            item[key] = related || [];
+        var dictionary = this.buildDictionary(relations);
+        collection.forEach(function (model) {
+            var id = model[_this.localKey];
+            var relation = dictionary[id];
+            model[name] = relation || [];
         });
+    };
+    /**
+     * Build model dictionary keyed by the relation's foreign key.
+     */
+    HasMany.prototype.buildDictionary = function (relations) {
+        var _this = this;
+        return relations.reduce(function (dictionary, relation) {
+            var key = relation[_this.foreignKey];
+            if (!dictionary[key]) {
+                dictionary[key] = [];
+            }
+            dictionary[key].push(relation);
+            return dictionary;
+        }, {});
     };
     return HasMany;
 }(Relation));
@@ -806,14 +851,14 @@ var HasManyBy = /** @class */ (function (_super) {
     /**
      * Load the has many by relationship for the collection.
      */
-    HasManyBy.prototype.load = function (query, collection, key) {
+    HasManyBy.prototype.load = function (query, collection, name, constraints) {
         var _this = this;
-        var relatedQuery = this.getRelation(query, this.parent.entity);
+        var relatedQuery = this.getRelation(query, this.parent.entity, constraints);
         this.addConstraintForHasManyBy(relatedQuery, collection);
         var relations = this.mapSingleRelations(relatedQuery.get(), this.ownerKey);
         collection.forEach(function (item) {
             var related = _this.getRelatedRecords(relations, item[_this.foreignKey]);
-            item[key] = related;
+            item[name] = related;
         });
     };
     /**
@@ -876,9 +921,9 @@ var HasManyThrough = /** @class */ (function (_super) {
     /**
      * Load the has many through relationship for the collection.
      */
-    HasManyThrough.prototype.load = function (query, collection, key) {
+    HasManyThrough.prototype.load = function (query, collection, name, constraints) {
         var _this = this;
-        var relatedQuery = this.getRelation(query, this.related.entity);
+        var relatedQuery = this.getRelation(query, this.related.entity, constraints);
         var throughQuery = query.newQuery(this.through.entity);
         this.addEagerConstraintForThrough(throughQuery, collection);
         var throughs = throughQuery.get();
@@ -886,7 +931,7 @@ var HasManyThrough = /** @class */ (function (_super) {
         var relateds = this.mapThroughRelations(throughs, relatedQuery);
         collection.forEach(function (item) {
             var related = relateds[item[_this.localKey]];
-            item[key] = related || [];
+            item[name] = related || [];
         });
     };
     /**
@@ -957,9 +1002,9 @@ var BelongsToMany = /** @class */ (function (_super) {
     /**
      * Load the belongs to relationship for the record.
      */
-    BelongsToMany.prototype.load = function (query, collection, key) {
+    BelongsToMany.prototype.load = function (query, collection, name, constraints) {
         var _this = this;
-        var relatedQuery = this.getRelation(query, this.related.entity);
+        var relatedQuery = this.getRelation(query, this.related.entity, constraints);
         var pivotQuery = query.newQuery(this.pivot.entity);
         this.addEagerConstraintForPivot(pivotQuery, collection);
         var pivots = pivotQuery.get();
@@ -967,7 +1012,7 @@ var BelongsToMany = /** @class */ (function (_super) {
         var relateds = this.mapPivotRelations(pivots, relatedQuery);
         collection.forEach(function (item) {
             var related = relateds[item[_this.parentKey]];
-            item[key] = related;
+            item[name] = related;
         });
     };
     /**
@@ -1074,11 +1119,11 @@ var MorphTo = /** @class */ (function (_super) {
     /**
      * Load the morph to relationship for the collection.
      */
-    MorphTo.prototype.load = function (query, collection, key) {
+    MorphTo.prototype.load = function (query, collection, name, constraints) {
         var _this = this;
         var types = this.getTypes(collection);
         var relateds = types.reduce(function (relateds, type) {
-            var relatedQuery = _this.getRelation(query, type);
+            var relatedQuery = _this.getRelation(query, type, constraints);
             relateds[type] = _this.mapSingleRelations(relatedQuery.get(), '$id');
             return relateds;
         }, {});
@@ -1086,7 +1131,7 @@ var MorphTo = /** @class */ (function (_super) {
             var id = item[_this.id];
             var type = item[_this.type];
             var related = relateds[type][id];
-            item[key] = related || null;
+            item[name] = related || null;
         });
     };
     /**
@@ -1145,14 +1190,14 @@ var MorphOne = /** @class */ (function (_super) {
     /**
      * Load the morph many relationship for the record.
      */
-    MorphOne.prototype.load = function (query, collection, key) {
+    MorphOne.prototype.load = function (query, collection, name, constraints) {
         var _this = this;
-        var relatedQuery = this.getRelation(query, this.related.entity);
+        var relatedQuery = this.getRelation(query, this.related.entity, constraints);
         this.addEagerConstraintForMorphOne(relatedQuery, collection, query.entity);
         var relations = this.mapSingleRelations(relatedQuery.get(), this.id);
         collection.forEach(function (item) {
             var related = relations[item[_this.localKey]];
-            item[key] = related || null;
+            item[name] = related || null;
         });
     };
     /**
@@ -1207,14 +1252,14 @@ var MorphMany = /** @class */ (function (_super) {
     /**
      * Load the morph many relationship for the record.
      */
-    MorphMany.prototype.load = function (query, collection, key) {
+    MorphMany.prototype.load = function (query, collection, name, constraints) {
         var _this = this;
-        var relatedQuery = this.getRelation(query, this.related.entity);
+        var relatedQuery = this.getRelation(query, this.related.entity, constraints);
         this.addEagerConstraintForMorphMany(relatedQuery, collection, query.entity);
         var relations = this.mapManyRelations(relatedQuery.get(), this.id);
         collection.forEach(function (item) {
             var related = relations[item[_this.localKey]];
-            item[key] = related;
+            item[name] = related;
         });
     };
     /**
@@ -1264,9 +1309,9 @@ var MorphToMany = /** @class */ (function (_super) {
     /**
      * Load the morph to many relationship for the collection.
      */
-    MorphToMany.prototype.load = function (query, collection, key) {
+    MorphToMany.prototype.load = function (query, collection, name, constraints) {
         var _this = this;
-        var relatedQuery = this.getRelation(query, this.related.entity);
+        var relatedQuery = this.getRelation(query, this.related.entity, constraints);
         var pivotQuery = query.newQuery(this.pivot.entity);
         this.addEagerConstraintForPivot(pivotQuery, collection, query.entity);
         var pivots = pivotQuery.get();
@@ -1274,7 +1319,7 @@ var MorphToMany = /** @class */ (function (_super) {
         var relateds = this.mapPivotRelations(pivots, relatedQuery);
         collection.forEach(function (item) {
             var related = relateds[item[_this.parentKey]];
-            item[key] = related;
+            item[name] = related;
         });
     };
     /**
@@ -1379,9 +1424,9 @@ var MorphedByMany = /** @class */ (function (_super) {
     /**
      * Load the morph many relationship for the record.
      */
-    MorphedByMany.prototype.load = function (query, collection, key) {
+    MorphedByMany.prototype.load = function (query, collection, name, constraints) {
         var _this = this;
-        var relatedQuery = this.getRelation(query, this.related.entity);
+        var relatedQuery = this.getRelation(query, this.related.entity, constraints);
         var pivotQuery = query.newQuery(this.pivot.entity);
         this.addEagerConstraintForPivot(pivotQuery, collection, this.related.entity);
         var pivots = pivotQuery.get();
@@ -1389,7 +1434,7 @@ var MorphedByMany = /** @class */ (function (_super) {
         var relateds = this.mapPivotRelations(pivots, relatedQuery);
         collection.forEach(function (item) {
             var related = relateds[item[_this.parentKey]];
-            item[key] = related;
+            item[name] = related;
         });
     };
     /**
@@ -1455,11 +1500,54 @@ var MorphedByMany = /** @class */ (function (_super) {
     return MorphedByMany;
 }(Relation));
 
-var Model = /** @class */ (function () {
+var Serializer = /** @class */ (function () {
+    function Serializer() {
+    }
     /**
-     * Dynamic properties that field data should be assigned at instantiation.
+     * Serialize given model fields value to json.
      */
-    // ;[key: string]: any
+    Serializer.serialize = function (model) {
+        var _this = this;
+        var fields = model.$fields();
+        return Object.keys(fields).reduce(function (record, key) {
+            var value = model[key];
+            record[key] = _this.serializeValue(value);
+            return record;
+        }, {});
+    };
+    /**
+     * Serialize given value.
+     */
+    Serializer.serializeValue = function (value) {
+        if (value instanceof Model) {
+            return this.serializeItem(value);
+        }
+        if (Array.isArray(value)) {
+            return this.serializeCollection(value);
+        }
+        return value;
+    };
+    /**
+     * Serialize an item into json.
+     */
+    Serializer.serializeItem = function (item) {
+        return item.$toJson();
+    };
+    /**
+     * Serialize a collection into json.
+     */
+    Serializer.serializeCollection = function (collection) {
+        return collection.map(function (item) {
+            if (item instanceof Model) {
+                return item.$toJson();
+            }
+            return item;
+        });
+    };
+    return Serializer;
+}());
+
+var Model = /** @class */ (function () {
     /**
      * Create a new model instance.
      */
@@ -1903,6 +1991,32 @@ var Model = /** @class */ (function () {
         });
     };
     /**
+     * Save record.
+     */
+    Model.prototype.$save = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var fields, record, records;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        fields = this.$self().getFields();
+                        record = Object.keys(fields).reduce(function (record, key) {
+                            if (fields[key] instanceof Type) {
+                                record[key] = _this[key];
+                            }
+                            return record;
+                        }, {});
+                        return [4 /*yield*/, this.$dispatch('insertOrUpdate', { data: record })];
+                    case 1:
+                        records = _a.sent();
+                        this.$fill(records[this.$self().entity][0]);
+                        return [2 /*return*/, this];
+                }
+            });
+        });
+    };
+    /**
      * Delete records that matches the given condition.
      */
     Model.prototype.$delete = function (condition) {
@@ -1950,64 +2064,17 @@ var Model = /** @class */ (function () {
      * Serialize field values into json.
      */
     Model.prototype.$toJson = function () {
-        var _this = this;
-        var fields = this.$fields();
-        return Object.keys(fields).reduce(function (record, key) {
-            var value = _this[key];
-            if (value instanceof Model) {
-                record[key] = _this.serializeItem(value);
-                return record;
-            }
-            if (Array.isArray(value)) {
-                record[key] = _this.serializeCollection(value);
-                return record;
-            }
-            record[key] = value;
-            return record;
-        }, {});
+        return Serializer.serialize(this);
     };
     /**
-     * Save record.
+     * This method is used by Nuxt server-side rendering. It will prevent
+     * `non-POJO` warning when using Vuex ORM with Nuxt universal mode.
+     * The method is not meant to be used publicly by a user.
+     *
+     * See https://github.com/vuex-orm/vuex-orm/issues/255 for more detail.
      */
-    Model.prototype.$save = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var fields, record, records;
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        fields = this.$self().getFields();
-                        record = Object.keys(fields).reduce(function (record, key) {
-                            if (fields[key] instanceof Type) {
-                                record[key] = _this[key];
-                            }
-                            return record;
-                        }, {});
-                        return [4 /*yield*/, this.$dispatch('insertOrUpdate', { data: record })];
-                    case 1:
-                        records = _a.sent();
-                        this.$fill(records[this.$self().entity][0]);
-                        return [2 /*return*/, this];
-                }
-            });
-        });
-    };
-    /**
-     * Serialize an item into json.
-     */
-    Model.prototype.serializeItem = function (item) {
-        return item.$toJson();
-    };
-    /**
-     * Serialize a collection into json.
-     */
-    Model.prototype.serializeCollection = function (collection) {
-        return collection.map(function (item) {
-            if (item instanceof Model) {
-                return item.$toJson();
-            }
-            return item;
-        });
+    Model.prototype.toJSON = function () {
+        return this.$toJson();
     };
     /**
      * The primary key to be used for the model.
@@ -2797,7 +2864,7 @@ var LimitFilter = /** @class */ (function () {
      * Limit the given records by the lmilt and offset.
      */
     LimitFilter.filter = function (query, records) {
-        return records.slice(query._offset, query._offset + query._limit);
+        return records.slice(query.offsetNumber, query.offsetNumber + query.limitNumber);
     };
     return LimitFilter;
 }());
@@ -2830,17 +2897,7 @@ var Loader = /** @class */ (function () {
     function Loader() {
     }
     /**
-     * Set eager load relation and constraint.
-     */
-    Loader.setEagerLoad = function (query, relation, constraint) {
-        if (constraint === void 0) { constraint = null; }
-        if (!query.load[relation]) {
-            query.load[relation] = [];
-        }
-        constraint && query.load[relation].push(constraint);
-    };
-    /**
-     * Set the relationships that should be loaded.
+     * Set the relationships that should be eager loaded with the query.
      */
     Loader.with = function (query, name, constraint) {
         // If the name of the relation is `*`, we'll load all relationships.
@@ -2852,17 +2909,17 @@ var Loader = /** @class */ (function () {
         this.parseWithRelations(query, name.split('.'), constraint);
     };
     /**
-     * Query all relations.
+     * Set all relationships to be eager loaded with the query.
      */
     Loader.withAll = function (query, constraint) {
         if (constraint === void 0) { constraint = function () { return null; }; }
         var fields = query.model.getFields();
-        for (var field in query.model.getFields()) {
+        for (var field in fields) {
             fields[field] instanceof Relation && this.with(query, field, constraint);
         }
     };
     /**
-     * Query all relations recursively.
+     * Set relationships to be recursively eager loaded with the query.
      */
     Loader.withAllRecursive = function (query, depth) {
         this.withAll(query, function (relatedQuery) {
@@ -2870,28 +2927,54 @@ var Loader = /** @class */ (function () {
         });
     };
     /**
+     * Set eager load relation and constraint.
+     */
+    Loader.setEagerLoad = function (query, name, constraint) {
+        if (constraint === void 0) { constraint = null; }
+        if (!query.load[name]) {
+            query.load[name] = [];
+        }
+        constraint && query.load[name].push(constraint);
+    };
+    /**
      * Parse a list of relations into individuals.
      */
     Loader.parseWithRelations = function (query, relations, constraint) {
         var _this = this;
+        // First we'll get the very first relationship from teh whole relations.
         var relation = relations[0];
+        // If the first relation has "or" syntax which is `|` for example
+        // `posts|videos`, set each of them as separate eager load.
         relation.split('|').forEach(function (name) {
+            // If there's only one relationship in relations array, that means
+            // there's no nested relationship. So we'll set the given
+            // constraint to the relationship loading.
+            if (relations.length === 1) {
+                _this.setEagerLoad(query, name, constraint);
+                return;
+            }
+            // Else we'll skip adding constraint because the constraint has to be
+            // applied to the nested relationship. We'll let `addNestedWiths`
+            // method to handle that later.
             _this.setEagerLoad(query, name);
         });
+        // If the given relations only contains a single name, which means it
+        // doesn't have any nested relations such as `posts.comments`, we
+        // don't need go farther so return here.
         if (relations.length === 1) {
-            this.setEagerLoad(query, relation, constraint);
             return;
         }
+        // Finally, we shift the first relation from the array and handle lest
+        // of relations as a nested relation.
         relations.shift();
-        this.addNestedWiths(query, relations, constraint);
+        this.addNestedWiths(query, relation, relations, constraint);
     };
     /**
      * Parse the nested relationships in a relation.
      */
-    Loader.addNestedWiths = function (query, relations, constraint) {
-        var relation = relations.join('.');
-        this.setEagerLoad(query, relation, function (nestedQuery) {
-            nestedQuery.with(relation, constraint);
+    Loader.addNestedWiths = function (query, name, children, constraint) {
+        this.setEagerLoad(query, name, function (nestedQuery) {
+            nestedQuery.with(children.join('.'), constraint);
         });
     };
     /**
@@ -2900,9 +2983,10 @@ var Loader = /** @class */ (function () {
     Loader.eagerLoadRelations = function (query, collection) {
         var fields = query.model.getFields();
         for (var name_1 in query.load) {
+            var constraints = query.load[name_1];
             var relation = fields[name_1];
             if (relation instanceof Relation) {
-                relation.load(query, collection, name_1);
+                relation.load(query, collection, name_1, constraints);
             }
         }
     };
@@ -3106,6 +3190,27 @@ var Query = /** @class */ (function () {
      */
     function Query(state, entity) {
         /**
+         * Primary key ids to filter records by. It is used for filtering records
+         * direct key lookup when a user is trying to fetch records by its
+         * primary key.
+         *
+         * It should not be used if there is a logic which prevents index usage, for
+         * example, an "or" condition which already requires a full scan of records.
+         */
+        this.idFilter = null;
+        /**
+         * Whether to use `idFilter` key lookup. True if there is a logic which
+         * prevents index usage, for example, an "or" condition which already
+         * requires full scan.
+         */
+        this.cancelIdFilter = false;
+        /**
+         * Primary key ids to filter joined records. It is used for filtering
+         * records direct key lookup. It should not be cancelled, because it
+         * is free from the effects of normal where methods.
+         */
+        this.joinedIdFilter = null;
+        /**
          * The where constraints for the query.
          */
         this.wheres = [];
@@ -3116,31 +3221,17 @@ var Query = /** @class */ (function () {
         /**
          * Number of results to skip.
          */
-        this._offset = 0;
+        this.offsetNumber = 0;
         /**
          * Maximum number of records to return.
          *
          * We use polyfill of `Number.MAX_SAFE_INTEGER` for IE11 here.
          */
-        this._limit = Math.pow(2, 53) - 1;
+        this.limitNumber = Math.pow(2, 53) - 1;
         /**
          * The relationships that should be eager loaded with the result.
          */
         this.load = {};
-        /**
-         * Primary key ids to filter records by. Used for filtering records direct key lookup.
-         * Should be cancelled if there is a logic which prevents index usage. (For example an "or" condition which already requires full scan)
-         */
-        this._idFilter = null;
-        /**
-         * Whether to use _idFilter key lookup. True if there is a logic which prevents index usage. (For example an "or" condition which already requires full scan)
-         */
-        this._cancelIdFilter = false;
-        /**
-         * Primary key ids to filter joined records. Used for filtering records direct key lookup.
-         * Should NOT be cancelled, because it is free from effects of normal where methods.
-         */
-        this._joinedIdFilter = null;
         /**
          * The object that holds mutated records. This object is used to retrieve the
          * mutated records in actions.
@@ -3297,58 +3388,11 @@ var Query = /** @class */ (function () {
         return this.item(records[0]); // TODO: Delete "as ..." when model type coverage reaches 100%.
     };
     /**
-     * Returns the last single record of the query chain result.
-     */
-    Query.prototype.last = function () {
-        var records = this.select();
-        return this.item(records[records.length - 1]); // TODO: Delete "as ..." when model type coverage reaches 100%.
-    };
-    Query.prototype._idList = function () {
-        var _this = this;
-        if (this._idFilter && this._joinedIdFilter) {
-            // Intersect if both have been set.
-            return Array.from(this._idFilter.values()).filter(function (id) { return _this._joinedIdFilter.has(id); });
-        }
-        else if (this._idFilter || this._joinedIdFilter) {
-            // If only one is set, return which one is set.
-            return Array.from((this._idFilter || this._joinedIdFilter).values());
-        }
-        else {
-            // If none is set, return all keys.
-            return Object.keys(this.state.data);
-        }
-    };
-    /**
-     * Get all records from the state and convert them into the array. It will
-     * check if the record is an instance of Model and if not, it will
-     * instantiate before returning them.
-     *
-     * This is needed to support SSR, that when the state is hydrated at server
-     * side, it will be converted to the plain record at the client side.
-     */
-    Query.prototype.records = function () {
-        var _this = this;
-        // Fallback if _idFilter is cancelled.
-        if (this._cancelIdFilter && this._idFilter !== null) {
-            this.where(this.model.primaryKey, Array.from(this._idFilter.values()));
-            this._idFilter = null;
-        }
-        return this._idList().map(function (id) {
-            var item = _this.state.data[id];
-            return item instanceof Model ? item : _this.hydrate(item);
-        });
-    };
-    /**
      * Add a and where clause to the query.
      */
     Query.prototype.where = function (field, value) {
-        var _this = this;
-        if (field === this.model.primaryKey && !this._cancelIdFilter) {
-            var values = Array.isArray(value) ? value : [value];
-            // Initialize or get intersection. (because of boolean and: whereIdIn([1,2,3]).whereIdIn([1,2]).get())
-            this._idFilter = new Set(this._idFilter === null
-                ? values
-                : values.filter(function (value) { return _this._idFilter.has(value); }));
+        if (this.isIdfilterable(field)) {
+            this.setIdFilter(value);
         }
         this.wheres.push({ field: field, value: value, boolean: 'and' });
         return this;
@@ -3357,9 +3401,77 @@ var Query = /** @class */ (function () {
      * Add a or where clause to the query.
      */
     Query.prototype.orWhere = function (field, value) {
-        this._cancelIdFilter = true; // Cacncel filter usage, "or" needs full scan.
+        // Cacncel id filter usage, since "or" needs full scan.
+        this.cancelIdFilter = true;
         this.wheres.push({ field: field, value: value, boolean: 'or' });
         return this;
+    };
+    /**
+     * Filter records by their primary key.
+     */
+    Query.prototype.whereId = function (value) {
+        return this.where(this.model.primaryKey, value);
+    };
+    /**
+     * Filter records by their primary keys.
+     */
+    Query.prototype.whereIdIn = function (values) {
+        return this.where(this.model.primaryKey, values);
+    };
+    /**
+     * Fast comparison for foreign keys. If the foreign key is the primary key,
+     * it uses object lookup, fallback normal where otherwise.
+     *
+     * Why separate `whereFk` instead of just `where`? Additional logic needed
+     * for the distinction between where and orWhere in normal queries, but
+     * Fk lookups are always "and" type.
+     */
+    Query.prototype.whereFk = function (field, value) {
+        var values = Array.isArray(value) ? value : [value];
+        // If lookup filed is the primary key. Initialize or get intersection,
+        // because boolean and could have a condition such as
+        // `whereId(1).whereId(2).get()`.
+        if (field === this.model.primaryKey) {
+            this.setJoinedIdFilter(values);
+            return this;
+        }
+        // Else fallback to normal where.
+        this.where(field, values);
+        return this;
+    };
+    /**
+     * Check whether the given field and value combination is filterable through
+     * primary key direct look up.
+     */
+    Query.prototype.isIdfilterable = function (field) {
+        return field === this.model.primaryKey && !this.cancelIdFilter;
+    };
+    /**
+     * Set id filter for the given where condition.
+     */
+    Query.prototype.setIdFilter = function (value) {
+        var _this = this;
+        var values = Array.isArray(value) ? value : [value];
+        // Initialize or get intersection, because boolean and could have a
+        // condition such as `whereIdIn([1,2,3]).whereIdIn([1,2]).get()`.
+        if (this.idFilter === null) {
+            this.idFilter = new Set(values);
+            return;
+        }
+        this.idFilter = new Set(values.filter(function (v) { return _this.idFilter.has(v); }));
+    };
+    /**
+     * Set joined id filter for the given where condition.
+     */
+    Query.prototype.setJoinedIdFilter = function (values) {
+        var _this = this;
+        // Initialize or get intersection, because boolean and could have a
+        // condition such as `whereId(1).whereId(2).get()`.
+        if (this.joinedIdFilter === null) {
+            this.joinedIdFilter = new Set(values);
+            return;
+        }
+        this.joinedIdFilter = new Set(values.filter(function (v) { return _this.joinedIdFilter.has(v); }));
     };
     /**
      * Add an order to the query.
@@ -3373,14 +3485,14 @@ var Query = /** @class */ (function () {
      * Add an offset to the query.
      */
     Query.prototype.offset = function (offset) {
-        this._offset = offset;
+        this.offsetNumber = offset;
         return this;
     };
     /**
      * Add limit to the query.
      */
     Query.prototype.limit = function (limit) {
-        this._limit = limit;
+        this.limitNumber = limit;
         return this;
     };
     /**
@@ -3447,35 +3559,56 @@ var Query = /** @class */ (function () {
         return this;
     };
     /**
-     * Filter records by their primary key.
+     * Returns the last single record of the query chain result.
      */
-    Query.prototype.whereId = function (value) {
-        return this.where(this.model.primaryKey, value);
+    Query.prototype.last = function () {
+        var records = this.select();
+        return this.item(records[records.length - 1]); // TODO: Delete "as ..." when model type coverage reaches 100%.
     };
     /**
-     * Filter records by their primary keys.
+     * Get all records from the state and convert them into the array. It will
+     * check if the record is an instance of Model and if not, it will
+     * instantiate before returning them.
+     *
+     * This is needed to support SSR, that when the state is hydrated at server
+     * side, it will be converted to the plain record at the client side.
      */
-    Query.prototype.whereIdIn = function (values) {
-        return this.where(this.model.primaryKey, values);
-    };
-    /**
-     * Fast comparison for foreign keys. If foreign key is primary key, uses object lookup, fallback normal where otherwise.
-     * Why seperate whereFk? Additional logic needed for distinction between where and orWhere in normal queries, but Fk lookups are always "and" type.
-     */
-    Query.prototype.whereFk = function (field, fkValues) {
+    Query.prototype.records = function () {
         var _this = this;
-        var values = Array.isArray(fkValues) ? fkValues : [fkValues];
-        if (field === this.model.primaryKey) {
-            // If lookup filed is primary key. Initialize or get intersection. (because of boolean and: whereId(1).whereId(2).get())
-            this._joinedIdFilter = new Set(this._joinedIdFilter === null
-                ? values
-                : values.filter(function (value) { return _this._joinedIdFilter.has(value); }));
+        this.finalizeIdFilter();
+        return this.getIdsToLookup().map(function (id) {
+            var model = _this.state.data[id];
+            return model instanceof Model ? model : _this.hydrate(model);
+        });
+    };
+    /**
+     * Check whether if id filters should on select. If not, clear out id filter.
+     */
+    Query.prototype.finalizeIdFilter = function () {
+        if (!this.cancelIdFilter || this.idFilter === null) {
+            return;
         }
-        else {
-            // Fallback
-            this.where(field, values);
+        this.where(this.model.primaryKey, Array.from(this.idFilter.values()));
+        this.idFilter = null;
+    };
+    /**
+     * Get a list of id that should be used to lookup when fetching records
+     * from the state.
+     */
+    Query.prototype.getIdsToLookup = function () {
+        var _this = this;
+        // If both id filter and joined id filter are set, intersect them.
+        if (this.idFilter && this.joinedIdFilter) {
+            return Array.from(this.idFilter.values()).filter(function (id) {
+                return _this.joinedIdFilter.has(id);
+            });
         }
-        return this;
+        // If only either one is set, return which one is set.
+        if (this.idFilter || this.joinedIdFilter) {
+            return Array.from((this.idFilter || this.joinedIdFilter).values());
+        }
+        // If none is set, return all keys.
+        return Object.keys(this.state.data);
     };
     /**
      * Process the query and filter data.
@@ -3703,52 +3836,45 @@ var Query = /** @class */ (function () {
      * Update data in the state.
      */
     Query.prototype.update = function (data, condition, options) {
-        var result;
         // If the data is array, simply normalize the data and update them.
         if (Array.isArray(data)) {
-            result = this.persist(data, 'update', options);
+            return this.persist(data, 'update', options);
         }
-        else if (typeof data === 'function') {
-            // OK, the data is not an array. Now let's check `data` to see what we can
-            // do if it is a closure.
+        // OK, the data is not an array. Now let's check `data` to see what we can
+        // do if it's a closure.
+        if (typeof data === 'function') {
             // If the data is closure, but if there's no condition, we wouldn't know
             // what record to update so raise an error and abort.
             if (!condition) {
                 throw new Error('You must specify `where` to update records by specifying `data` as a closure.');
             }
-            else if (typeof condition === 'function') {
-                // If the condition is a closure, then update records by the closure.
-                result = this.updateByCondition(data, condition);
+            // If the condition is a closure, then update records by the closure.
+            if (typeof condition === 'function') {
+                return this.updateByCondition(data, condition);
             }
-            else {
-                // Else the condition is either String or Number, so let's
-                // update the record by ID.
-                result = this.updateById(data, condition);
-            }
+            // Else the condition is either String or Number, so let's
+            // update the record by ID.
+            return this.updateById(data, condition);
         }
-        else if (typeof condition === 'function') {
-            // Now the data is not a closure, and it's not an array, so it should be an object.
-            // If the condition is closure, we can't normalize the data so let's update
-            // records using the closure.
-            result = this.updateByCondition(data, condition);
+        // Now the data is not a closure, and it's not an array, so it should be an object.
+        // If the condition is closure, we can't normalize the data so let's update
+        // records using the closure.
+        if (typeof condition === 'function') {
+            return this.updateByCondition(data, condition);
         }
-        else if (!condition) {
-            // If there's no condition, let's normalize the data and update them.
-            result = this.persist(data, 'update', options);
+        // If there's no condition, let's normalize the data and update them.
+        if (!condition) {
+            return this.persist(data, 'update', options);
         }
-        else if (Array.isArray(this.model.primaryKey)) {
-            // Now since the condition is either String or Number, let's check if the
-            // model's primary key is not a composite key. If yes, we can't set the
-            // condition as ID value for the record so throw an error and abort.
+        // Now since the condition is either String or Number, let's check if the
+        // model's primary key is not a composite key. If yes, we can't set the
+        // condition as ID value for the record so throw an error and abort.
+        if (Array.isArray(this.model.primaryKey)) {
             throw new Error("\n        You can't specify `where` value as `string` or `number` when you\n        have a composite key defined in your model. Please include composite\n        keys to the `data` fields.\n      ");
         }
-        else {
-            // Finally, let's add condition as the primary key of the object and
-            // then normalize them to update the records.
-            data[this.model.primaryKey] = condition;
-            result = this.persist(data, 'update', options);
-        }
-        return result; // TODO: Delete "as ..." when model type coverage reaches 100%.
+        // Finally, let's add condition as the primary key of the object and
+        // then normalize them to update the records.
+        return this.updateById(data, condition);
     };
     /**
      * Update all records.
@@ -3771,7 +3897,8 @@ var Query = /** @class */ (function () {
             _a[id] = this.processUpdate(data, instance),
             _a);
         this.commitUpdate(instances);
-        return instances[id]; // TODO: Delete "as ..." when model type coverage reaches 100%.
+        this.result.data = instances[id];
+        return this.result.data;
     };
     /**
      * Update the state by condition.
@@ -3786,7 +3913,8 @@ var Query = /** @class */ (function () {
             instances[id] = _this.processUpdate(data, instance);
             return instances;
         }, {});
-        return this.commitUpdate(instances); // TODO: Delete "as ..." when model type coverage reaches 100%.
+        this.result.data = this.commitUpdate(instances);
+        return this.result.data;
     };
     /**
      * Update the given record with given data.
@@ -3803,10 +3931,29 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.commitUpdate = function (instances) {
         var _this = this;
+        instances = this.updateIndexes(instances);
         this.commit('update', instances, function () {
             _this.state.data = __assign({}, _this.state.data, instances);
         });
         return this.map(instances);
+    };
+    /**
+     * Update the key of the instances. This is needed when a user updates
+     * record's primary key. We must then update the index key to
+     * correspond with new id value.
+     */
+    Query.prototype.updateIndexes = function (instances) {
+        var _this = this;
+        return Object.keys(instances).reduce(function (instances, key) {
+            var instance = instances[key];
+            var id = String(_this.model.id(instance));
+            if (key !== id) {
+                instance.$id = id;
+                instances[id] = instance;
+                delete instances[key];
+            }
+            return instances;
+        }, instances);
     };
     /**
      * Insert or update given data to the state. Unlike `insert`, this method
