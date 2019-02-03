@@ -844,54 +844,56 @@ export default class Query<T extends Model = Model> {
    * Update data in the state.
    */
   update (data: Data.Record | Data.Record[] | UpdateClosure, condition: UpdateCondition, options: PersistOptions): Data.Item<T> | Data.Collection<T> | Data.Collections<T> {
-    let result
-
     // If the data is array, simply normalize the data and update them.
     if (Array.isArray(data)) {
-      result = this.persist(data, 'update', options)
-    } else if (typeof data === 'function') {
-      // OK, the data is not an array. Now let's check `data` to see what we can
-      // do if it is a closure.
+      return this.persist(data, 'update', options) as Data.Collections<T>
+    }
 
+    // OK, the data is not an array. Now let's check `data` to see what we can
+    // do if it's a closure.
+    if (typeof data === 'function') {
       // If the data is closure, but if there's no condition, we wouldn't know
       // what record to update so raise an error and abort.
       if (!condition) {
         throw new Error('You must specify `where` to update records by specifying `data` as a closure.')
-      } else if (typeof condition === 'function') {
-        // If the condition is a closure, then update records by the closure.
-        result = this.updateByCondition(data, condition)
-      } else {
-        // Else the condition is either String or Number, so let's
-        // update the record by ID.
-        result = this.updateById(data, condition)
       }
-    } else if (typeof condition === 'function') {
-      // Now the data is not a closure, and it's not an array, so it should be an object.
-      // If the condition is closure, we can't normalize the data so let's update
-      // records using the closure.
 
-      result = this.updateByCondition(data, condition)
-    } else if (!condition) {
-      // If there's no condition, let's normalize the data and update them.
-      result = this.persist(data, 'update', options)
-    } else if (Array.isArray(this.model.primaryKey)) {
-      // Now since the condition is either String or Number, let's check if the
-      // model's primary key is not a composite key. If yes, we can't set the
-      // condition as ID value for the record so throw an error and abort.
+      // If the condition is a closure, then update records by the closure.
+      if (typeof condition === 'function') {
+        return this.updateByCondition(data, condition)
+      }
+
+      // Else the condition is either String or Number, so let's
+      // update the record by ID.
+      return this.updateById(data, condition)
+    }
+
+    // Now the data is not a closure, and it's not an array, so it should be an object.
+    // If the condition is closure, we can't normalize the data so let's update
+    // records using the closure.
+    if (typeof condition === 'function') {
+      return this.updateByCondition(data, condition)
+    }
+
+    // If there's no condition, let's normalize the data and update them.
+    if (!condition) {
+      return this.persist(data, 'update', options) as Data.Collections<T>
+    }
+
+    // Now since the condition is either String or Number, let's check if the
+    // model's primary key is not a composite key. If yes, we can't set the
+    // condition as ID value for the record so throw an error and abort.
+    if (Array.isArray(this.model.primaryKey)) {
       throw new Error(`
         You can't specify \`where\` value as \`string\` or \`number\` when you
         have a composite key defined in your model. Please include composite
         keys to the \`data\` fields.
       `)
-    } else {
-      // Finally, let's add condition as the primary key of the object and
-      // then normalize them to update the records.
-      data[this.model.primaryKey] = condition
-
-      result = this.persist(data, 'update', options)
     }
 
-    return result as Data.Item<T> | Data.Collection<T> | Data.Collections<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+    // Finally, let's add condition as the primary key of the object and
+    // then normalize them to update the records.
+    return this.updateById(data, condition)
   }
 
   /**
@@ -921,7 +923,9 @@ export default class Query<T extends Model = Model> {
 
     this.commitUpdate(instances)
 
-    return instances[id] as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+    this.result.data = instances[id] as Data.Item<T>
+
+    return this.result.data
   }
 
   /**
@@ -940,7 +944,9 @@ export default class Query<T extends Model = Model> {
       return instances
     }, {})
 
-    return this.commitUpdate(instances) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+    this.result.data = this.commitUpdate(instances) as Data.Collection<T>
+
+    return this.result.data
   }
 
   /**
@@ -960,11 +966,35 @@ export default class Query<T extends Model = Model> {
    * Commit `update` to the state.
    */
   commitUpdate (instances: Data.Instances): Data.Collection {
+    instances = this.updateIndexes(instances)
+
     this.commit('update', instances, () => {
       this.state.data = { ...this.state.data, ...instances }
     })
 
     return this.map(instances)
+  }
+
+  /**
+   * Update the key of the instances. This is needed when a user updates
+   * record's primary key. We must then update the index key to
+   * correspond with new id value.
+   */
+  private updateIndexes (instances: Data.Instances): Data.Instances {
+    return Object.keys(instances).reduce<Data.Instances>((instances, key) => {
+      const instance = instances[key]
+      const id = String(this.model.id(instance))
+
+      if (key !== id) {
+        instance.$id = id
+
+        instances[id] = instance
+
+        delete instances[key]
+      }
+
+      return instances
+    }, instances)
   }
 
   /**

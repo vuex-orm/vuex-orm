@@ -58,9 +58,9 @@ describe('Features – Relations – Has Many', () => {
     })
 
     store.dispatch('entities/users/update', {
-      where: 1,
       insert: ['posts'],
       data: {
+        id: 1,
         posts: [
           { id: 1 },
           { id: 2 }
