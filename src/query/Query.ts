@@ -14,6 +14,7 @@ import * as Options from './options'
 import Processor from './processors/Processor'
 import Filter from './filters/Filter'
 import Loader from './loaders/Loader'
+import Rollcaller from './rollcallers/Rollcaller'
 import Hook from './hooks/Hook'
 
 export type UpdateClosure = (record: Data.Record) => void
@@ -460,41 +461,34 @@ export default class Query<T extends Model = Model> {
    * Set where constraint based on relationship existence.
    */
   has (relation: string, operator?: string | number, count?: number): this {
-    return this.setHas(relation, 'exists', operator, count)
+    Rollcaller.has(this, relation, operator, count)
+
+    return this
   }
 
   /**
    * Set where constraint based on relationship absence.
    */
   hasNot (relation: string, operator?: string | number, count?: number): this {
-    return this.setHas(relation, 'doesntExist', operator, count)
+    Rollcaller.hasNot(this, relation, operator, count)
+
+    return this
   }
 
   /**
    * Add where has condition.
    */
   whereHas (relation: string, constraint: Options.HasConstraint): this {
-    return this.setHas(relation, 'exists', undefined, undefined, constraint)
+    Rollcaller.whereHas(this, relation, constraint)
+
+    return this
   }
 
   /**
    * Add where has not condition.
    */
   whereHasNot (relation: string, constraint: Options.HasConstraint): this {
-    return this.setHas(relation, 'doesntExist', undefined, undefined, constraint)
-  }
-
-  /**
-   * Set `has` condition.
-   */
-  setHas (relation: string, type: string, operator: string | number = '>=', count: number = 1, constraint: Options.HasConstraint | null = null): this {
-    if (typeof operator === 'number') {
-      this.have.push({ relation, type, operator: '>=', count: operator, constraint })
-
-      return this
-    }
-
-    this.have.push({ relation, type, operator, count, constraint })
+    Rollcaller.whereHasNot(this, relation, constraint)
 
     return this
   }
@@ -508,8 +502,6 @@ export default class Query<T extends Model = Model> {
    * side, it will be converted to the plain record at the client side.
    */
   records (): Data.Collection {
-    this.applyHasConstraints()
-
     this.finalizeIdFilter()
 
     return this.getIdsToLookup().map((id) => {
@@ -559,6 +551,10 @@ export default class Query<T extends Model = Model> {
    * Process the query and filter data.
    */
   select (): Data.Collection<T> {
+    // At first, well apply any `has` condition to the query.
+    Rollcaller.applyConstraints(this)
+
+    // Next, get all record as an array and then start filtering it through.
     let records = this.records()
 
     // Process `beforeProcess` hook.
@@ -604,117 +600,6 @@ export default class Query<T extends Model = Model> {
    */
   filterLimit (records: Data.Collection): Data.Collection {
     return Filter.limit(this, records)
-  }
-
-  /**
-   * Convert `has` conditions to where clause. It will check any relationship
-   * existence, or absence for the records then set ids of the records that
-   * matched the condition to `where` clause.
-   *
-   * This way, when the query gets executed, only those records that matched
-   * the `has` condition get retrieved. In the future, once relationship index
-   * mapping is implemented, we can simply do all checks inside the where
-   * filter since we can treat `has` condition as usual `where` condition.
-   *
-   * For now, since we must fetch any relationship by eager loading them, due
-   * to performance concern, we'll apply `has` conditions this way to gain
-   * maximum performance.
-   */
-  private applyHasConstraints (): void {
-    if (this.have.length === 0) {
-      return
-    }
-
-    const query = this.newQuery()
-
-    this.addHasWhereConstraints(query)
-
-    this.addHasConstraints(query.get())
-  }
-
-  /**
-   * Add has constraints to the given query. It's going to set all relationship
-   * as `with` alongside with its closure constraints.
-   */
-  private addHasWhereConstraints (query: Query): void {
-    this.have.forEach((constraint) => {
-      query.with(constraint.relation, constraint.constraint)
-    })
-  }
-
-  /**
-   * Add has constraints as where clause.
-   */
-  private addHasConstraints (collection: Data.Collection): void {
-    const comparators = this.getHasComparators()
-
-    const ids: string[] = []
-
-    collection.forEach((model) => {
-      if (comparators.every(comparator => comparator(model))) {
-        ids.push(model.$id as string)
-      }
-    })
-
-    this.whereIdIn(ids)
-  }
-
-  /**
-   * Get comparators for the has clause.
-   */
-  private getHasComparators (): Contracts.Predicate[] {
-    return this.have.map(constraint => this.getHasComparator(constraint))
-  }
-
-  /**
-   * Get a comparator for the has clause.
-   */
-  private getHasComparator (constraint: Options.Has): Contracts.Predicate {
-    const compare = this.getHasCountComparator(constraint.operator)
-
-    return (model: Model): boolean => {
-      const count = this.getHasRelationshipCount(model[constraint.relation])
-
-      const result = compare(count, constraint.count)
-
-      return constraint.type === 'exists' ? result : !result
-    }
-  }
-
-  /**
-   * Get count of the relationship.
-   */
-  private getHasRelationshipCount (relation: Data.Collection | Data.Item): number {
-    if (Array.isArray(relation)) {
-      return relation.length
-    }
-
-    return relation ? 1 : 0
-  }
-
-  /**
-   * Get comparator function for the `has` clause.
-   */
-  private getHasCountComparator (operator: string): (x: number, y: number) => boolean {
-    switch (operator) {
-      case '=':
-        return (x: number, y: number): boolean => x === y
-
-      case '>':
-        return (x: number, y: number): boolean => x > y
-
-      case '>=':
-        return (x: number, y: number): boolean => x >= y
-
-      case '<':
-        return (x: number, y: number): boolean => x > 0 && x < y
-
-      case '<=':
-        return (x: number, y: number): boolean => x > 0 && x <= y
-
-      default:
-        return (x: number, y: number): boolean => x === y
-    }
   }
 
   /**
