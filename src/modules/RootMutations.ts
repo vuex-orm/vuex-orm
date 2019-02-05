@@ -6,7 +6,8 @@ import * as Payloads from './payloads/RootMutations'
 
 const RootMutations: MutationsContract = {
   /**
-   * Execute generic mutation.
+   * Execute generic mutation. This method is used by `Model.commit` method so
+   * that user can commit any state changes easily through models.
    */
   $mutate (state: RootState, payload: Payloads.$Mutate): void {
     payload.callback(state[payload.entity])
@@ -17,11 +18,10 @@ const RootMutations: MutationsContract = {
    */
   new (state: RootState, payload: Payloads.New): void {
     const entity = payload.entity
+
     const result = payload.result
 
-    const query = new Query(state, entity)
-
-    query.setResult(result).new()
+    result.data = (new Query(state, entity)).new()
   },
 
   /**
@@ -32,12 +32,11 @@ const RootMutations: MutationsContract = {
   create (state: RootState, payload: Payloads.Create): void {
     const entity = payload.entity
     const data = payload.data
-    const result = payload.result
     const options = OptionsBuilder.createPersistOptions(payload)
 
-    const query = new Query(state, entity)
+    const result = payload.result
 
-    query.setResult(result).create(data, options)
+    result.data = (new Query(state, entity)).create(data, options)
   },
 
   /**
@@ -48,12 +47,11 @@ const RootMutations: MutationsContract = {
   insert (state: RootState, payload: Payloads.Insert): void {
     const entity = payload.entity
     const data = payload.data
-    const result = payload.result
     const options = OptionsBuilder.createPersistOptions(payload)
 
-    const query = new Query(state, entity)
+    const result = payload.result
 
-    query.setResult(result).insert(data, options)
+    result.data = (new Query(state, entity)).insert(data, options)
   },
 
   /**
@@ -63,12 +61,11 @@ const RootMutations: MutationsContract = {
     const entity = payload.entity
     const data = payload.data
     const where = payload.where || null
-    const result = payload.result
     const options = OptionsBuilder.createPersistOptions(payload)
 
-    const query = new Query(state, entity)
+    const result = payload.result
 
-    query.setResult(result).update(data, where, options)
+    result.data = (new Query(state, entity)).update(data, where, options)
   },
 
   /**
@@ -79,12 +76,11 @@ const RootMutations: MutationsContract = {
   insertOrUpdate (state: RootState, payload: Payloads.InsertOrUpdate): void {
     const entity = payload.entity
     const data = payload.data
-    const result = payload.result
     const options = OptionsBuilder.createPersistOptions(payload)
 
-    const query = new Query(state, entity)
+    const result = payload.result
 
-    query.setResult(result).insertOrUpdate(data, options)
+    result.data = (new Query(state, entity)).insertOrUpdate(data, options)
   },
 
   /**
@@ -93,11 +89,10 @@ const RootMutations: MutationsContract = {
   delete (state: RootState, payload: Payloads.Delete): void {
     const entity = payload.entity
     const where = payload.where
+
     const result = payload.result
 
-    const query = new Query(state, entity)
-
-    query.setResult(result).delete(where)
+    result.data = (new Query(state, entity)).delete(where)
   },
 
   /**

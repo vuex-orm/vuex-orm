@@ -113,17 +113,6 @@ export default class Query<T extends Model = Model> {
   hook: Hook
 
   /**
-   * The object that holds mutated records. This object is used to retrieve the
-   * mutated records in actions.
-   *
-   * Since mutations can't return any value, actions will pass an object to
-   * Query through mutations, and let Query store any returning values to the
-   * object. This way, actions can retrieve mutated records after committing
-   * the mutations.
-   */
-  result: Contracts.Result = { data: null }
-
-  /**
    * Create a new Query instance.
    */
   constructor (state: RootState, entity: string) {
@@ -248,15 +237,6 @@ export default class Query<T extends Model = Model> {
    */
   getModules (): Modules {
     return this.self().getModules()
-  }
-
-  /**
-   * Set the result.
-   */
-  setResult (result: Contracts.Result): this {
-    this.result = result
-
-    return this
   }
 
   /**
@@ -791,9 +771,7 @@ export default class Query<T extends Model = Model> {
 
     const result = this.insert(record, {})
 
-    this.result.data = result[this.entity][0]
-
-    return this.result.data
+    return result[this.entity][0]
   }
 
   /**
@@ -923,9 +901,7 @@ export default class Query<T extends Model = Model> {
 
     this.commitUpdate(instances)
 
-    this.result.data = instances[id] as Data.Item<T>
-
-    return this.result.data
+    return instances[id] as Data.Item<T>
   }
 
   /**
@@ -944,9 +920,7 @@ export default class Query<T extends Model = Model> {
       return instances
     }, {})
 
-    this.result.data = this.commitUpdate(instances) as Data.Collection<T>
-
-    return this.result.data
+    return this.commitUpdate(instances) as Data.Collection<T>
   }
 
   /**
@@ -1045,7 +1019,7 @@ export default class Query<T extends Model = Model> {
       return {}
     }
 
-    this.result.data = Object.keys(data).reduce((collection, entity) => {
+    return Object.keys(data).reduce((collection, entity) => {
       const query = this.newQuery(entity)
       const persistMethod = this.getPersistMethod(entity, method, options)
 
@@ -1057,8 +1031,6 @@ export default class Query<T extends Model = Model> {
 
       return collection
     }, {} as Data.Collections)
-
-    return this.result.data
   }
 
   /**
@@ -1089,14 +1061,10 @@ export default class Query<T extends Model = Model> {
    */
   delete (condition: DeleteCondition): Data.Item<T> | Data.Collection<T> {
     if (typeof condition === 'function') {
-      this.result.data = this.deleteByCondition(condition)
-
-      return this.result.data
+      return this.deleteByCondition(condition)
     }
 
-    this.result.data = this.deleteById(condition)
-
-    return this.result.data
+    return this.deleteById(condition)
   }
 
   /**

@@ -1,6 +1,6 @@
 import Record from '../../data/Record'
-import Result from '../../query/contracts/Result'
 import State from '../contracts/State'
+import Result from '../contracts/Result'
 import PersistOptions from './PersistOptions'
 
 export type Condition = (record: Record) => boolean

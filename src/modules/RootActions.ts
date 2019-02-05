@@ -1,11 +1,11 @@
 import Item from '../data/Item'
 import Collection from '../data/Collection'
 import Collections from '../data/Collections'
-import Result from '../query/contracts/Result'
 import Model from '../model/Model'
 import ActionsContract from './contracts/RootActions'
 import ActionContext from './contracts/RootActionContext'
 import * as Payloads from './payloads/RootActions'
+import Result from './contracts/Result'
 
 const RootActions: ActionsContract = {
   /**
