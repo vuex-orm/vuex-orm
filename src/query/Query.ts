@@ -86,6 +86,11 @@ export default class Query<T extends Model = Model> {
   wheres: Options.Where[] = []
 
   /**
+   * The has constraints for the query.
+   */
+  have: Options.Has[] = []
+
+  /**
    * The orders of the query result.
    */
   orders: Options.Orders[] = []
@@ -280,6 +285,15 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
+   * Returns the last single record of the query chain result.
+   */
+  last (): Data.Item<T> {
+    const records = this.select()
+
+    return this.item(records[records.length - 1]) as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+  }
+
+  /**
    * Add a and where clause to the query.
    */
   where (field: any, value?: any): this {
@@ -445,60 +459,44 @@ export default class Query<T extends Model = Model> {
   /**
    * Set where constraint based on relationship existence.
    */
-  has (name: string, constraint?: number | string, count?: number): this {
-    return this.addHasConstraint(name, constraint, count)
+  has (relation: string, operator?: string | number, count?: number): this {
+    return this.setHas(relation, 'exists', operator, count)
   }
 
   /**
    * Set where constraint based on relationship absence.
    */
-  hasNot (name: string, constraint?: number | string, count?: number): this {
-    return this.addHasConstraint(name, constraint, count, false)
-  }
-
-  /**
-   * Add where constraints based on has or hasNot condition.
-   */
-  addHasConstraint (name: string, constraint?: number | string, count?: number, existence?: boolean): this {
-    const ids = this.matchesHasRelation(name, constraint, count, existence)
-
-    this.where('$id', (value: any) => ids.includes(value))
-
-    return this
+  hasNot (relation: string, operator?: string | number, count?: number): this {
+    return this.setHas(relation, 'doesntExist', operator, count)
   }
 
   /**
    * Add where has condition.
    */
-  whereHas (name: string, constraint: Constraint): this {
-    return this.addWhereHasConstraint(name, constraint)
+  whereHas (relation: string, constraint: Options.HasConstraint): this {
+    return this.setHas(relation, 'exists', undefined, undefined, constraint)
   }
 
   /**
    * Add where has not condition.
    */
-  whereHasNot (name: string, constraint: Constraint): this {
-    return this.addWhereHasConstraint(name, constraint, false)
+  whereHasNot (relation: string, constraint: Options.HasConstraint): this {
+    return this.setHas(relation, 'doesntExist', undefined, undefined, constraint)
   }
 
   /**
-   * Add where has constraints that only matches the relationship constraint.
+   * Set `has` condition.
    */
-  addWhereHasConstraint (name: string, constraint: Constraint, existence?: boolean): this {
-    const ids = this.matchesWhereHasRelation(name, constraint, existence)
+  setHas (relation: string, type: string, operator: string | number = '>=', count: number = 1, constraint: Options.HasConstraint | null = null): this {
+    if (typeof operator === 'number') {
+      this.have.push({ relation, type, operator: '>=', count: operator, constraint })
 
-    this.where('$id', (value: any) => ids.includes(value))
+      return this
+    }
+
+    this.have.push({ relation, type, operator, count, constraint })
 
     return this
-  }
-
-  /**
-   * Returns the last single record of the query chain result.
-   */
-  last (): Data.Item<T> {
-    const records = this.select()
-
-    return this.item(records[records.length - 1]) as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
@@ -510,6 +508,8 @@ export default class Query<T extends Model = Model> {
    * side, it will be converted to the plain record at the client side.
    */
   records (): Data.Collection {
+    this.applyHasConstraints()
+
     this.finalizeIdFilter()
 
     return this.getIdsToLookup().map((id) => {
@@ -607,6 +607,117 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
+   * Convert `has` conditions to where clause. It will check any relationship
+   * existence, or absence for the records then set ids of the records that
+   * matched the condition to `where` clause.
+   *
+   * This way, when the query gets executed, only those records that matched
+   * the `has` condition get retrieved. In the future, once relationship index
+   * mapping is implemented, we can simply do all checks inside the where
+   * filter since we can treat `has` condition as usual `where` condition.
+   *
+   * For now, since we must fetch any relationship by eager loading them, due
+   * to performance concern, we'll apply `has` conditions this way to gain
+   * maximum performance.
+   */
+  private applyHasConstraints (): void {
+    if (this.have.length === 0) {
+      return
+    }
+
+    const query = this.newQuery()
+
+    this.addHasWhereConstraints(query)
+
+    this.addHasConstraints(query.get())
+  }
+
+  /**
+   * Add has constraints to the given query. It's going to set all relationship
+   * as `with` alongside with its closure constraints.
+   */
+  private addHasWhereConstraints (query: Query): void {
+    this.have.forEach((constraint) => {
+      query.with(constraint.relation, constraint.constraint)
+    })
+  }
+
+  /**
+   * Add has constraints as where clause.
+   */
+  private addHasConstraints (collection: Data.Collection): void {
+    const comparators = this.getHasComparators()
+
+    const ids: string[] = []
+
+    collection.forEach((model) => {
+      if (comparators.every(comparator => comparator(model))) {
+        ids.push(model.$id as string)
+      }
+    })
+
+    this.whereIdIn(ids)
+  }
+
+  /**
+   * Get comparators for the has clause.
+   */
+  private getHasComparators (): Contracts.Predicate[] {
+    return this.have.map(constraint => this.getHasComparator(constraint))
+  }
+
+  /**
+   * Get a comparator for the has clause.
+   */
+  private getHasComparator (constraint: Options.Has): Contracts.Predicate {
+    const compare = this.getHasCountComparator(constraint.operator)
+
+    return (model: Model): boolean => {
+      const count = this.getHasRelationshipCount(model[constraint.relation])
+
+      const result = compare(count, constraint.count)
+
+      return constraint.type === 'exists' ? result : !result
+    }
+  }
+
+  /**
+   * Get count of the relationship.
+   */
+  private getHasRelationshipCount (relation: Data.Collection | Data.Item): number {
+    if (Array.isArray(relation)) {
+      return relation.length
+    }
+
+    return relation ? 1 : 0
+  }
+
+  /**
+   * Get comparator function for the `has` clause.
+   */
+  private getHasCountComparator (operator: string): (x: number, y: number) => boolean {
+    switch (operator) {
+      case '=':
+        return (x: number, y: number): boolean => x === y
+
+      case '>':
+        return (x: number, y: number): boolean => x > y
+
+      case '>=':
+        return (x: number, y: number): boolean => x >= y
+
+      case '<':
+        return (x: number, y: number): boolean => x > 0 && x < y
+
+      case '<=':
+        return (x: number, y: number): boolean => x > 0 && x <= y
+
+      default:
+        return (x: number, y: number): boolean => x === y
+    }
+  }
+
+  /**
    * Get the count of the retrieved data.
    */
   count (): number {
@@ -688,79 +799,6 @@ export default class Query<T extends Model = Model> {
     }
 
     return collection
-  }
-
-  /**
-   * Check if the given collection has given relationship.
-   */
-  matchesHasRelation (name: string, constraint?: number | string, count?: number, existence: boolean = true): string[] {
-    let _constraint: (records: Data.Record[]) => boolean
-
-    if (constraint === undefined) {
-      _constraint = record => record.length >= 1
-    } else if (typeof constraint === 'number') {
-      _constraint = record => record.length >= constraint
-    } else if (constraint === '=' && typeof count === 'number') {
-      _constraint = record => record.length === count
-    } else if (constraint === '>' && typeof count === 'number') {
-      _constraint = record => record.length > count
-    } else if (constraint === '>=' && typeof count === 'number') {
-      _constraint = record => record.length >= count
-    } else if (constraint === '<' && typeof count === 'number') {
-      _constraint = record => record.length < count
-    } else if (constraint === '<=' && typeof count === 'number') {
-      _constraint = record => record.length <= count
-    } else {
-      _constraint = record => record.length >= 1
-    }
-
-    const data = this.newQuery().with(name).get()
-
-    let ids: string[] = []
-
-    data.forEach((item) => {
-      const target = item[name]
-
-      let result: boolean = false
-
-      if (Array.isArray(target) && target.length < 1) {
-        result = false
-      } else if (Array.isArray(target)) {
-        result = _constraint(target)
-      } else if (target) {
-        result = _constraint([target])
-      }
-
-      if (result !== existence) {
-        return
-      }
-
-      ids.push(item.$id as string)
-    })
-
-    return ids
-  }
-
-  /**
-   * Get all id of the record that matches the relation constraints.
-   */
-  matchesWhereHasRelation (name: string, constraint: Constraint, existence: boolean = true): string[] {
-    const data = this.newQuery().with(name, constraint).get()
-
-    let ids: string[] = []
-
-    data.forEach((item) => {
-      const target = item[name]
-      const result = Array.isArray(target) ? !!target.length : !!target
-
-      if (result !== existence) {
-        return
-      }
-
-      ids.push(item.$id as string)
-    })
-
-    return ids
   }
 
   /**
