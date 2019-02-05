@@ -1,3 +1,5 @@
+/*eslint-disable */
+
 if (!String.prototype.startsWith) {
   String.prototype.startsWith = function (search, pos) {
     return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search
@@ -49,13 +51,13 @@ if (!Object.values || !Object.entries) {
   const keys = Reflect.ownKeys
 
   if (!Object.values) {
-    Object.values = function values(O) {
+    Object.values = function values (O) {
       return reduce(keys(O), (v, k) => concat(v, typeof k === 'string' && isEnumerable(O, k) ? [O[k]] : []), [])
     }
   }
 
   if (!Object.entries) {
-    Object.entries = function entries(O) {
+    Object.entries = function entries (O) {
       return reduce(keys(O), (e, k) => concat(e, typeof k === 'string' && isEnumerable(O, k) ? [[k, O[k]]] : []), [])
     }
   }

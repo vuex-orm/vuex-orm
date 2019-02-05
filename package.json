@@ -27,9 +27,9 @@
     "test:coverage": "cross-env mocha-webpack --webpack-config test/webpack.config.js --require test/bootstrap.js 'src/**/*.js' 'test/{feature,unit}/**/*.spec.js'",
     "coverage": "NODE_ENV=coverage nyc --reporter=lcov --reporter=text npm run test:coverage",
     "docs": "vuepress dev docs",
+    "docs:lint": "yarn eslint --ext md .",
     "docs:build": "vuepress build docs",
-    "docs:deploy": "bash ./docs/deploy.sh",
-    "docs:lint": "yarn eslint --ext md ."
+    "docs:deploy": "bash ./docs/deploy.sh"
   },
   "repository": {
     "type": "git",
