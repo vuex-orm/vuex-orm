@@ -148,7 +148,7 @@ const posts = [
   }
 ]
 
-User.insert({ data: posts })
+Post.insert({ data: posts })
 
 // Or...
 
