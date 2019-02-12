@@ -94,7 +94,7 @@ export default class BelongsTo extends Relation {
 
     collection.forEach((model) => {
       const id = model[this.foreignKey]
-      const relation = dictionary[id]
+      const relation = id !== null ? dictionary[id] : null
 
       model[name] = relation || null
     })

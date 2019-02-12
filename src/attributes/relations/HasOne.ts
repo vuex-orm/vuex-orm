@@ -112,7 +112,7 @@ export default class HasOne extends Relation {
 
     collection.forEach((model) => {
       const id = model[this.localKey]
-      const relation = dictionary[id]
+      const relation = id !== null ? dictionary[id] : null
 
       model[name] = relation || null
     })
