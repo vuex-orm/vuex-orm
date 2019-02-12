@@ -488,4 +488,50 @@ describe('Feature – Relations – Retrieve – With', () => {
 
     expect(user.posts.length).toBe(0)
   })
+
+  it('does not retrieve empty relation', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null)
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null),
+          author: this.belongsTo(User, 'user_id')
+        }
+      }
+    }
+
+    createStore([{ model: User }, { model: Post }])
+
+    await User.create({
+      data: {
+        id: 1
+      }
+    })
+    await Post.create({
+      data: {
+        id: 1,
+        user_id: null
+      }
+    })
+
+    const post = Post.query()
+      .with('*')
+      .first()
+
+    expect(post.id).toEqual(1)
+    expect(post.user_id).toEqual(null)
+    expect(post.author).toEqual(null)
+  })
 })
