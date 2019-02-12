@@ -34,9 +34,9 @@ function buildEntry ({ input, output }) {
 
   return rollup.rollup(input)
     .then(bundle => bundle.generate(output))
-    .then(({ code }) => {
+    .then(({ output: [{ code }] }) => {
       if (isProd) {
-        const minified = uglify.minify(code, {
+        var minified = uglify.minify(code, {
           output: {
             ascii_only: true
           }
@@ -70,9 +70,11 @@ function write (dest, code, zip) {
 
           report(' (gzipped: ' + getSize(zipped) + ')')
         })
-      } else {
-        report()
+
+        return
       }
+
+      report()
     })
   })
 }
