@@ -214,7 +214,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
     expect(store.getters['entities/users/query']().has('posts', '>=', 1).get()).toEqual([{ $id: 1, id: 1, phone: null, posts: [] }, { $id: 2, id: 2, phone: null, posts: [] }])
     expect(store.getters['entities/users/query']().has('posts', '<', 2).get()).toEqual([{ $id: 1, id: 1, phone: null, posts: [] }])
     expect(store.getters['entities/users/query']().has('posts', '<=', 2).get()).toEqual([{ $id: 1, id: 1, phone: null, posts: [] }, { $id: 2, id: 2, phone: null, posts: [] }])
-    expect(store.getters['entities/users/query']().has('posts', 'unkown', 1).get()).toEqual([{ $id: 1, id: 1, phone: null, posts: [] }, { $id: 2, id: 2, phone: null, posts: [] }])
+    expect(store.getters['entities/users/query']().has('posts', 'unkown', 1).get()).toEqual([{ $id: 1, id: 1, phone: null, posts: [] }])
 
     expect(store.getters['entities/users/query']().has('phone', '=', 1).get()).toEqual([{ $id: 1, id: 1, phone: null, posts: [] }])
   })

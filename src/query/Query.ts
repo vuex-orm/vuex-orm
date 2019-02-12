@@ -14,6 +14,7 @@ import * as Options from './options'
 import Processor from './processors/Processor'
 import Filter from './filters/Filter'
 import Loader from './loaders/Loader'
+import Rollcaller from './rollcallers/Rollcaller'
 import Hook from './hooks/Hook'
 
 export type UpdateClosure = (record: Data.Record) => void
@@ -84,6 +85,11 @@ export default class Query<T extends Model = Model> {
    * The where constraints for the query.
    */
   wheres: Options.Where[] = []
+
+  /**
+   * The has constraints for the query.
+   */
+  have: Options.Has[] = []
 
   /**
    * The orders of the query result.
@@ -280,6 +286,15 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
+   * Returns the last single record of the query chain result.
+   */
+  last (): Data.Item<T> {
+    const records = this.select()
+
+    return this.item(records[records.length - 1]) as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+  }
+
+  /**
    * Add a and where clause to the query.
    */
   where (field: any, value?: any): this {
@@ -445,24 +460,17 @@ export default class Query<T extends Model = Model> {
   /**
    * Set where constraint based on relationship existence.
    */
-  has (name: string, constraint?: number | string, count?: number): this {
-    return this.addHasConstraint(name, constraint, count)
+  has (relation: string, operator?: string | number, count?: number): this {
+    Rollcaller.has(this, relation, operator, count)
+
+    return this
   }
 
   /**
    * Set where constraint based on relationship absence.
    */
-  hasNot (name: string, constraint?: number | string, count?: number): this {
-    return this.addHasConstraint(name, constraint, count, false)
-  }
-
-  /**
-   * Add where constraints based on has or hasNot condition.
-   */
-  addHasConstraint (name: string, constraint?: number | string, count?: number, existence?: boolean): this {
-    const ids = this.matchesHasRelation(name, constraint, count, existence)
-
-    this.where('$id', (value: any) => ids.includes(value))
+  hasNot (relation: string, operator?: string | number, count?: number): this {
+    Rollcaller.hasNot(this, relation, operator, count)
 
     return this
   }
@@ -470,35 +478,19 @@ export default class Query<T extends Model = Model> {
   /**
    * Add where has condition.
    */
-  whereHas (name: string, constraint: Constraint): this {
-    return this.addWhereHasConstraint(name, constraint)
-  }
-
-  /**
-   * Add where has not condition.
-   */
-  whereHasNot (name: string, constraint: Constraint): this {
-    return this.addWhereHasConstraint(name, constraint, false)
-  }
-
-  /**
-   * Add where has constraints that only matches the relationship constraint.
-   */
-  addWhereHasConstraint (name: string, constraint: Constraint, existence?: boolean): this {
-    const ids = this.matchesWhereHasRelation(name, constraint, existence)
-
-    this.where('$id', (value: any) => ids.includes(value))
+  whereHas (relation: string, constraint: Options.HasConstraint): this {
+    Rollcaller.whereHas(this, relation, constraint)
 
     return this
   }
 
   /**
-   * Returns the last single record of the query chain result.
+   * Add where has not condition.
    */
-  last (): Data.Item<T> {
-    const records = this.select()
+  whereHasNot (relation: string, constraint: Options.HasConstraint): this {
+    Rollcaller.whereHasNot(this, relation, constraint)
 
-    return this.item(records[records.length - 1]) as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+    return this
   }
 
   /**
@@ -559,6 +551,10 @@ export default class Query<T extends Model = Model> {
    * Process the query and filter data.
    */
   select (): Data.Collection<T> {
+    // At first, well apply any `has` condition to the query.
+    Rollcaller.applyConstraints(this)
+
+    // Next, get all record as an array and then start filtering it through.
     let records = this.records()
 
     // Process `beforeProcess` hook.
@@ -688,79 +684,6 @@ export default class Query<T extends Model = Model> {
     }
 
     return collection
-  }
-
-  /**
-   * Check if the given collection has given relationship.
-   */
-  matchesHasRelation (name: string, constraint?: number | string, count?: number, existence: boolean = true): string[] {
-    let _constraint: (records: Data.Record[]) => boolean
-
-    if (constraint === undefined) {
-      _constraint = record => record.length >= 1
-    } else if (typeof constraint === 'number') {
-      _constraint = record => record.length >= constraint
-    } else if (constraint === '=' && typeof count === 'number') {
-      _constraint = record => record.length === count
-    } else if (constraint === '>' && typeof count === 'number') {
-      _constraint = record => record.length > count
-    } else if (constraint === '>=' && typeof count === 'number') {
-      _constraint = record => record.length >= count
-    } else if (constraint === '<' && typeof count === 'number') {
-      _constraint = record => record.length < count
-    } else if (constraint === '<=' && typeof count === 'number') {
-      _constraint = record => record.length <= count
-    } else {
-      _constraint = record => record.length >= 1
-    }
-
-    const data = this.newQuery().with(name).get()
-
-    let ids: string[] = []
-
-    data.forEach((item) => {
-      const target = item[name]
-
-      let result: boolean = false
-
-      if (Array.isArray(target) && target.length < 1) {
-        result = false
-      } else if (Array.isArray(target)) {
-        result = _constraint(target)
-      } else if (target) {
-        result = _constraint([target])
-      }
-
-      if (result !== existence) {
-        return
-      }
-
-      ids.push(item.$id as string)
-    })
-
-    return ids
-  }
-
-  /**
-   * Get all id of the record that matches the relation constraints.
-   */
-  matchesWhereHasRelation (name: string, constraint: Constraint, existence: boolean = true): string[] {
-    const data = this.newQuery().with(name, constraint).get()
-
-    let ids: string[] = []
-
-    data.forEach((item) => {
-      const target = item[name]
-      const result = Array.isArray(target) ? !!target.length : !!target
-
-      if (result !== existence) {
-        return
-      }
-
-      ids.push(item.$id as string)
-    })
-
-    return ids
   }
 
   /**
