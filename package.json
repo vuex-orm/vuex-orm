@@ -78,7 +78,7 @@
     "tslint-config-standard": "^8.0.1",
     "typescript": "^3.2.2",
     "uglify-js": "^3.4.9",
-    "vue": "2.5.16",
+    "vue": "2.5.22",
     "vuepress": "^0.14.8",
     "vuepress-theme-vue": "^1.1.0",
     "vuex": "^3.1.0",
