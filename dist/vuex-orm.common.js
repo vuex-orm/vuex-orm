@@ -1,5 +1,6 @@
 'use strict';
 
+/*eslint-disable */
 if (!String.prototype.startsWith) {
     String.prototype.startsWith = function (search, pos) {
         return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
@@ -37,6 +38,22 @@ if (!Array.prototype.includes) {
         }
         return false;
     };
+}
+if (!Object.values || !Object.entries) {
+    var reduce_1 = Function.bind.call(Function.call, Array.prototype.reduce);
+    var isEnumerable_1 = Function.bind.call(Function.call, Object.prototype.propertyIsEnumerable);
+    var concat_1 = Function.bind.call(Function.call, Array.prototype.concat);
+    var keys_1 = Reflect.ownKeys;
+    if (!Object.values) {
+        Object.values = function values(O) {
+            return reduce_1(keys_1(O), function (v, k) { return concat_1(v, typeof k === 'string' && isEnumerable_1(O, k) ? [O[k]] : []); }, []);
+        };
+    }
+    if (!Object.entries) {
+        Object.entries = function entries(O) {
+            return reduce_1(keys_1(O), function (e, k) { return concat_1(e, typeof k === 'string' && isEnumerable_1(O, k) ? [[k, O[k]]] : []); }, []);
+        };
+    }
 }
 
 var Container = /** @class */ (function () {
@@ -1358,11 +1375,16 @@ var MorphToMany = /** @class */ (function (_super) {
     MorphToMany.prototype.createPivots = function (parent, data, key) {
         var _this = this;
         Utils.forOwn(data[parent.entity], function (record) {
-            var related = record[key];
-            if (!Array.isArray(related) || related.length === 0) {
+            var relatedIds = parent.query().newQuery(_this.pivot.entity)
+                .where(_this.id, record[_this.parentKey])
+                .where(_this.type, parent.entity)
+                .get()
+                .map(function (pivotRecord) { return pivotRecord[_this.parentKey]; });
+            var relateds = (record[key] || []).filter(function (relatedId) { return !relatedIds.includes(relatedId); });
+            if (!Array.isArray(relateds) || relateds.length === 0) {
                 return;
             }
-            _this.createPivotRecord(parent, data, record, related);
+            _this.createPivotRecord(parent, data, record, relateds);
         });
         return data;
     };
@@ -2995,6 +3017,140 @@ var Loader = /** @class */ (function () {
     return Loader;
 }());
 
+var Rollcaller = /** @class */ (function () {
+    function Rollcaller() {
+    }
+    /**
+     * Set where constraint based on relationship existence.
+     */
+    Rollcaller.has = function (query, relation, operator, count) {
+        this.setHas(query, relation, 'exists', operator, count);
+    };
+    /**
+     * Set where constraint based on relationship absence.
+     */
+    Rollcaller.hasNot = function (query, relation, operator, count) {
+        this.setHas(query, relation, 'doesntExist', operator, count);
+    };
+    /**
+     * Add where has condition.
+     */
+    Rollcaller.whereHas = function (query, relation, constraint) {
+        this.setHas(query, relation, 'exists', undefined, undefined, constraint);
+    };
+    /**
+     * Add where has not condition.
+     */
+    Rollcaller.whereHasNot = function (query, relation, constraint) {
+        this.setHas(query, relation, 'doesntExist', undefined, undefined, constraint);
+    };
+    /**
+     * Set `has` condition.
+     */
+    Rollcaller.setHas = function (query, relation, type, operator, count, constraint) {
+        if (operator === void 0) { operator = '>='; }
+        if (count === void 0) { count = 1; }
+        if (constraint === void 0) { constraint = null; }
+        if (typeof operator === 'number') {
+            query.have.push({ relation: relation, type: type, operator: '>=', count: operator, constraint: constraint });
+            return;
+        }
+        query.have.push({ relation: relation, type: type, operator: operator, count: count, constraint: constraint });
+    };
+    /**
+     * Convert `has` conditions to where clause. It will check any relationship
+     * existence, or absence for the records then set ids of the records that
+     * matched the condition to `where` clause.
+     *
+     * This way, when the query gets executed, only those records that matched
+     * the `has` condition get retrieved. In the future, once relationship index
+     * mapping is implemented, we can simply do all checks inside the where
+     * filter since we can treat `has` condition as usual `where` condition.
+     *
+     * For now, since we must fetch any relationship by eager loading them, due
+     * to performance concern, we'll apply `has` conditions this way to gain
+     * maximum performance.
+     */
+    Rollcaller.applyConstraints = function (query) {
+        if (query.have.length === 0) {
+            return;
+        }
+        var newQuery = query.newQuery();
+        this.addHasWhereConstraints(query, newQuery);
+        this.addHasConstraints(query, newQuery.get());
+    };
+    /**
+     * Add has constraints to the given query. It's going to set all relationship
+     * as `with` alongside with its closure constraints.
+     */
+    Rollcaller.addHasWhereConstraints = function (query, newQuery) {
+        query.have.forEach(function (constraint) {
+            newQuery.with(constraint.relation, constraint.constraint);
+        });
+    };
+    /**
+     * Add has constraints as where clause.
+     */
+    Rollcaller.addHasConstraints = function (query, collection) {
+        var comparators = this.getComparators(query);
+        var ids = [];
+        collection.forEach(function (model) {
+            if (comparators.every(function (comparator) { return comparator(model); })) {
+                ids.push(model.$id);
+            }
+        });
+        query.whereIdIn(ids);
+    };
+    /**
+     * Get comparators for the has clause.
+     */
+    Rollcaller.getComparators = function (query) {
+        var _this = this;
+        return query.have.map(function (constraint) { return _this.getComparator(constraint); });
+    };
+    /**
+     * Get a comparator for the has clause.
+     */
+    Rollcaller.getComparator = function (constraint) {
+        var _this = this;
+        var compare = this.getCountComparator(constraint.operator);
+        return function (model) {
+            var count = _this.getRelationshipCount(model[constraint.relation]);
+            var result = compare(count, constraint.count);
+            return constraint.type === 'exists' ? result : !result;
+        };
+    };
+    /**
+     * Get count of the relationship.
+     */
+    Rollcaller.getRelationshipCount = function (relation) {
+        if (Array.isArray(relation)) {
+            return relation.length;
+        }
+        return relation ? 1 : 0;
+    };
+    /**
+     * Get comparator function for the `has` clause.
+     */
+    Rollcaller.getCountComparator = function (operator) {
+        switch (operator) {
+            case '=':
+                return function (x, y) { return x === y; };
+            case '>':
+                return function (x, y) { return x > y; };
+            case '>=':
+                return function (x, y) { return x >= y; };
+            case '<':
+                return function (x, y) { return x > 0 && x < y; };
+            case '<=':
+                return function (x, y) { return x > 0 && x <= y; };
+            default:
+                return function (x, y) { return x === y; };
+        }
+    };
+    return Rollcaller;
+}());
+
 var Hook = /** @class */ (function () {
     /**
      * Create a lidecycle hook instance.
@@ -3217,6 +3373,10 @@ var Query = /** @class */ (function () {
          */
         this.wheres = [];
         /**
+         * The has constraints for the query.
+         */
+        this.have = [];
+        /**
          * The orders of the query result.
          */
         this.orders = [];
@@ -3234,16 +3394,6 @@ var Query = /** @class */ (function () {
          * The relationships that should be eager loaded with the result.
          */
         this.load = {};
-        /**
-         * The object that holds mutated records. This object is used to retrieve the
-         * mutated records in actions.
-         *
-         * Since mutations can't return any value, actions will pass an object to
-         * Query through mutations, and let Query store any returning values to the
-         * object. This way, actions can retrieve mutated records after committing
-         * the mutations.
-         */
-        this.result = { data: null };
         this.rootState = state;
         this.state = state[entity];
         this.entity = entity;
@@ -3349,13 +3499,6 @@ var Query = /** @class */ (function () {
         return this.self().getModules();
     };
     /**
-     * Set the result.
-     */
-    Query.prototype.setResult = function (result) {
-        this.result = result;
-        return this;
-    };
-    /**
      * Returns all record of the query chain result. This method is alias
      * of the `get` method.
      */
@@ -3388,6 +3531,13 @@ var Query = /** @class */ (function () {
     Query.prototype.first = function () {
         var records = this.select();
         return this.item(records[0]); // TODO: Delete "as ..." when model type coverage reaches 100%.
+    };
+    /**
+     * Returns the last single record of the query chain result.
+     */
+    Query.prototype.last = function () {
+        var records = this.select();
+        return this.item(records[records.length - 1]); // TODO: Delete "as ..." when model type coverage reaches 100%.
     };
     /**
      * Add a and where clause to the query.
@@ -3523,49 +3673,30 @@ var Query = /** @class */ (function () {
     /**
      * Set where constraint based on relationship existence.
      */
-    Query.prototype.has = function (name, constraint, count) {
-        return this.addHasConstraint(name, constraint, count);
+    Query.prototype.has = function (relation, operator, count) {
+        Rollcaller.has(this, relation, operator, count);
+        return this;
     };
     /**
      * Set where constraint based on relationship absence.
      */
-    Query.prototype.hasNot = function (name, constraint, count) {
-        return this.addHasConstraint(name, constraint, count, false);
-    };
-    /**
-     * Add where constraints based on has or hasNot condition.
-     */
-    Query.prototype.addHasConstraint = function (name, constraint, count, existence) {
-        var ids = this.matchesHasRelation(name, constraint, count, existence);
-        this.where('$id', function (value) { return ids.includes(value); });
+    Query.prototype.hasNot = function (relation, operator, count) {
+        Rollcaller.hasNot(this, relation, operator, count);
         return this;
     };
     /**
      * Add where has condition.
      */
-    Query.prototype.whereHas = function (name, constraint) {
-        return this.addWhereHasConstraint(name, constraint);
+    Query.prototype.whereHas = function (relation, constraint) {
+        Rollcaller.whereHas(this, relation, constraint);
+        return this;
     };
     /**
      * Add where has not condition.
      */
-    Query.prototype.whereHasNot = function (name, constraint) {
-        return this.addWhereHasConstraint(name, constraint, false);
-    };
-    /**
-     * Add where has constraints that only matches the relationship constraint.
-     */
-    Query.prototype.addWhereHasConstraint = function (name, constraint, existence) {
-        var ids = this.matchesWhereHasRelation(name, constraint, existence);
-        this.where('$id', function (value) { return ids.includes(value); });
+    Query.prototype.whereHasNot = function (relation, constraint) {
+        Rollcaller.whereHasNot(this, relation, constraint);
         return this;
-    };
-    /**
-     * Returns the last single record of the query chain result.
-     */
-    Query.prototype.last = function () {
-        var records = this.select();
-        return this.item(records[records.length - 1]); // TODO: Delete "as ..." when model type coverage reaches 100%.
     };
     /**
      * Get all records from the state and convert them into the array. It will
@@ -3616,6 +3747,9 @@ var Query = /** @class */ (function () {
      * Process the query and filter data.
      */
     Query.prototype.select = function () {
+        // At first, well apply any `has` condition to the query.
+        Rollcaller.applyConstraints(this);
+        // Next, get all record as an array and then start filtering it through.
         var records = this.records();
         // Process `beforeProcess` hook.
         records = this.hook.executeSelectHook('beforeSelect', records);
@@ -3720,81 +3854,12 @@ var Query = /** @class */ (function () {
         return collection;
     };
     /**
-     * Check if the given collection has given relationship.
-     */
-    Query.prototype.matchesHasRelation = function (name, constraint, count, existence) {
-        if (existence === void 0) { existence = true; }
-        var _constraint;
-        if (constraint === undefined) {
-            _constraint = function (record) { return record.length >= 1; };
-        }
-        else if (typeof constraint === 'number') {
-            _constraint = function (record) { return record.length >= constraint; };
-        }
-        else if (constraint === '=' && typeof count === 'number') {
-            _constraint = function (record) { return record.length === count; };
-        }
-        else if (constraint === '>' && typeof count === 'number') {
-            _constraint = function (record) { return record.length > count; };
-        }
-        else if (constraint === '>=' && typeof count === 'number') {
-            _constraint = function (record) { return record.length >= count; };
-        }
-        else if (constraint === '<' && typeof count === 'number') {
-            _constraint = function (record) { return record.length < count; };
-        }
-        else if (constraint === '<=' && typeof count === 'number') {
-            _constraint = function (record) { return record.length <= count; };
-        }
-        else {
-            _constraint = function (record) { return record.length >= 1; };
-        }
-        var data = this.newQuery().with(name).get();
-        var ids = [];
-        data.forEach(function (item) {
-            var target = item[name];
-            var result = false;
-            if (Array.isArray(target) && target.length < 1) {
-                result = false;
-            }
-            else if (Array.isArray(target)) {
-                result = _constraint(target);
-            }
-            else if (target) {
-                result = _constraint([target]);
-            }
-            if (result !== existence) {
-                return;
-            }
-            ids.push(item.$id);
-        });
-        return ids;
-    };
-    /**
-     * Get all id of the record that matches the relation constraints.
-     */
-    Query.prototype.matchesWhereHasRelation = function (name, constraint, existence) {
-        if (existence === void 0) { existence = true; }
-        var data = this.newQuery().with(name, constraint).get();
-        var ids = [];
-        data.forEach(function (item) {
-            var target = item[name];
-            var result = Array.isArray(target) ? !!target.length : !!target;
-            if (result !== existence) {
-                return;
-            }
-            ids.push(item.$id);
-        });
-        return ids;
-    };
-    /**
      * Create new data with all fields filled by default values.
      */
     Query.prototype.new = function () {
         var record = (new this.model()).$toJson();
         var result = this.insert(record, {});
-        this.result.data = result[this.entity][0];
-        return this.result.data;
+        return result[this.entity][0];
     };
     /**
      * Save given data to the store by replacing all existing records in the
@@ -3899,8 +3964,7 @@ var Query = /** @class */ (function () {
             _a[id] = this.processUpdate(data, instance),
             _a);
         this.commitUpdate(instances);
-        this.result.data = instances[id];
-        return this.result.data;
+        return instances[id];
     };
     /**
      * Update the state by condition.
@@ -3915,8 +3979,7 @@ var Query = /** @class */ (function () {
             instances[id] = _this.processUpdate(data, instance);
             return instances;
         }, {});
-        this.result.data = this.commitUpdate(instances);
-        return this.result.data;
+        return this.commitUpdate(instances);
     };
     /**
      * Update the given record with given data.
@@ -3994,7 +4057,7 @@ var Query = /** @class */ (function () {
             }
             return {};
         }
-        this.result.data = Object.keys(data).reduce(function (collection, entity) {
+        return Object.keys(data).reduce(function (collection, entity) {
             var query = _this.newQuery(entity);
             var persistMethod = _this.getPersistMethod(entity, method, options);
             var records = query[persistMethod + "Many"](data[entity]);
@@ -4003,7 +4066,6 @@ var Query = /** @class */ (function () {
             }
             return collection;
         }, {});
-        return this.result.data;
     };
     /**
      * Get method for the persist.
@@ -4028,11 +4090,9 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.delete = function (condition) {
         if (typeof condition === 'function') {
-            this.result.data = this.deleteByCondition(condition);
-            return this.result.data;
+            return this.deleteByCondition(condition);
         }
-        this.result.data = this.deleteById(condition);
-        return this.result.data;
+        return this.deleteById(condition);
     };
     /**
      * Delete a record by id.
@@ -4395,7 +4455,8 @@ var OptionsBuilder = /** @class */ (function () {
 
 var RootMutations = {
     /**
-     * Execute generic mutation.
+     * Execute generic mutation. This method is used by `Model.commit` method so
+     * that user can commit any state changes easily through models.
      */
     $mutate: function (state, payload) {
         payload.callback(state[payload.entity]);
@@ -4406,8 +4467,7 @@ var RootMutations = {
     new: function (state, payload) {
         var entity = payload.entity;
         var result = payload.result;
-        var query = new Query(state, entity);
-        query.setResult(result).new();
+        result.data = (new Query(state, entity)).new();
     },
     /**
      * Save given data to the store by replacing all existing records in the
@@ -4417,10 +4477,9 @@ var RootMutations = {
     create: function (state, payload) {
         var entity = payload.entity;
         var data = payload.data;
-        var result = payload.result;
         var options = OptionsBuilder.createPersistOptions(payload);
-        var query = new Query(state, entity);
-        query.setResult(result).create(data, options);
+        var result = payload.result;
+        result.data = (new Query(state, entity)).create(data, options);
     },
     /**
      * Insert given data to the state. Unlike `create`, this method will not
@@ -4430,10 +4489,9 @@ var RootMutations = {
     insert: function (state, payload) {
         var entity = payload.entity;
         var data = payload.data;
-        var result = payload.result;
         var options = OptionsBuilder.createPersistOptions(payload);
-        var query = new Query(state, entity);
-        query.setResult(result).insert(data, options);
+        var result = payload.result;
+        result.data = (new Query(state, entity)).insert(data, options);
     },
     /**
      * Update data in the store.
@@ -4442,10 +4500,9 @@ var RootMutations = {
         var entity = payload.entity;
         var data = payload.data;
         var where = payload.where || null;
-        var result = payload.result;
         var options = OptionsBuilder.createPersistOptions(payload);
-        var query = new Query(state, entity);
-        query.setResult(result).update(data, where, options);
+        var result = payload.result;
+        result.data = (new Query(state, entity)).update(data, where, options);
     },
     /**
      * Insert or update given data to the state. Unlike `insert`, this method
@@ -4455,10 +4512,9 @@ var RootMutations = {
     insertOrUpdate: function (state, payload) {
         var entity = payload.entity;
         var data = payload.data;
-        var result = payload.result;
         var options = OptionsBuilder.createPersistOptions(payload);
-        var query = new Query(state, entity);
-        query.setResult(result).insertOrUpdate(data, options);
+        var result = payload.result;
+        result.data = (new Query(state, entity)).insertOrUpdate(data, options);
     },
     /**
      * Delete data from the store.
@@ -4467,8 +4523,7 @@ var RootMutations = {
         var entity = payload.entity;
         var where = payload.where;
         var result = payload.result;
-        var query = new Query(state, entity);
-        query.setResult(result).delete(where);
+        result.data = (new Query(state, entity)).delete(where);
     },
     /**
      * Delete all data from the store.
