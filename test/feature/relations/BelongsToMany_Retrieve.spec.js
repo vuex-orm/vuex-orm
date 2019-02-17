@@ -248,7 +248,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
     await User.create({
-      data: { id: 1 }
+      data: [ { id: 1 }, { id: 2} ]
     })
 
     await Role.create({
@@ -264,5 +264,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     expect(users[0].id).toBe(1)
     expect(users[0].roles.length).toBe(1)
     expect(users[0].roles[0].id).toBe(1)
+
+    expect(users[1].roles.length).toBe(0)
   })
 })
