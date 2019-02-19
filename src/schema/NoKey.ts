@@ -1,3 +1,4 @@
+/* istanbul ignore next */
 export default class NoKey {
   /**
    * Count to create a unique id for the record that missing its primary key.

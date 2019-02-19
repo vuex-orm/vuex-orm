@@ -48,15 +48,15 @@
     "url": "https://github.com/vuex-orm/vuex-orm/issues"
   },
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/plugin-proposal-class-properties": "^7.3.0",
+    "@babel/core": "^7.3.3",
+    "@babel/plugin-proposal-class-properties": "^7.3.3",
     "@babel/plugin-transform-runtime": "^7.2.0",
     "@babel/preset-env": "^7.3.1",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
-    "codecov": "^3.1.0",
+    "codecov": "^3.2.0",
     "cross-env": "^5.2.0",
-    "eslint": "^5.13.0",
+    "eslint": "^5.14.1",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-markdown": "^1.0.0",
@@ -66,11 +66,11 @@
     "expect": "^24.1.0",
     "fork-ts-checker-webpack-plugin": "^0.5.2",
     "istanbul-instrumenter-loader": "^3.0.1",
-    "mocha": "^5.2.0",
+    "mocha": "^6.0.0",
     "mocha-webpack": "2.0.0-beta.0",
     "normalizr": "^3.3.0",
-    "nyc": "^13.2.0",
-    "rollup": "^1.1.2",
+    "nyc": "^13.3.0",
+    "rollup": "^1.2.2",
     "rollup-plugin-buble": "^0.19.6",
     "rollup-plugin-commonjs": "^9.2.0",
     "rollup-plugin-node-resolve": "^4.0.0",
@@ -81,10 +81,10 @@
     "typescript": "^3.3.3",
     "uglify-js": "^3.4.9",
     "vue": "2.5.22",
-    "vuepress": "^0.14.8",
+    "vuepress": "^0.14.9",
     "vuepress-theme-vue": "^1.1.0",
     "vuex": "^3.1.0",
-    "webpack": "^4.29.3"
+    "webpack": "^4.29.5"
   },
   "nyc": {
     "include": [
