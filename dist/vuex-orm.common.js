@@ -3835,7 +3835,11 @@ var Query = /** @class */ (function () {
         }
         if (Object.keys(this.load).length > 0) {
             item = new this.model(item);
+            var items = this.hook.executeSelectHook('beforeRelations', [item]);
+            item = items[0];
             Loader.eagerLoadRelations(this, [item]);
+            items = this.hook.executeSelectHook('afterRelations', [item]);
+            item = items[0];
         }
         return item;
     };
@@ -3849,7 +3853,9 @@ var Query = /** @class */ (function () {
         }
         if (Object.keys(this.load).length > 0) {
             collection = collection.map(function (item) { return new _this.model(item); });
+            collection = this.hook.executeSelectHook('beforeRelations', collection);
             Loader.eagerLoadRelations(this, collection);
+            collection = this.hook.executeSelectHook('afterRelations', collection);
         }
         return collection;
     };
