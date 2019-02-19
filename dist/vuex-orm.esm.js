@@ -728,7 +728,7 @@ var BelongsTo = /** @class */ (function (_super) {
         var dictionary = this.buildDictionary(relations);
         collection.forEach(function (model) {
             var id = model[_this.foreignKey];
-            var relation = dictionary[id];
+            var relation = id !== null ? dictionary[id] : null;
             model[name] = relation || null;
         });
     };
@@ -1029,7 +1029,7 @@ var BelongsToMany = /** @class */ (function (_super) {
         var relateds = this.mapPivotRelations(pivots, relatedQuery);
         collection.forEach(function (item) {
             var related = relateds[item[_this.parentKey]];
-            item[name] = related;
+            item[name] = related || [];
         });
     };
     /**
@@ -2638,8 +2638,8 @@ var Normalizer = /** @class */ (function () {
             return {};
         }
         var entity = query.database().schemas[query.model.entity];
-        var schema$$1 = Array.isArray(record) ? [entity] : entity;
-        return normalize$1(record, schema$$1).entities;
+        var schema = Array.isArray(record) ? [entity] : entity;
+        return normalize$1(record, schema).entities;
     };
     return Normalizer;
 }());
@@ -4574,6 +4574,7 @@ function use (plugin, options) {
     plugin.install(components, options);
 }
 
+/* istanbul ignore next */
 var NoKey = /** @class */ (function () {
     function NoKey() {
     }
@@ -4679,14 +4680,14 @@ var Schema = /** @class */ (function () {
         if (this.schemas[model.entity]) {
             return this.schemas[model.entity];
         }
-        var schema$$1 = new schema.Entity(model.entity, {}, {
+        var schema$1 = new schema.Entity(model.entity, {}, {
             idAttribute: IdAttribute.create(model),
             processStrategy: ProcessStrategy.create(model)
         });
-        this.schemas[model.entity] = schema$$1;
+        this.schemas[model.entity] = schema$1;
         var definition = this.definition(model);
-        schema$$1.define(definition);
-        return schema$$1;
+        schema$1.define(definition);
+        return schema$1;
     };
     /**
      * Create an array schema for the given model.
