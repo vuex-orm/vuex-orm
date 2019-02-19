@@ -263,7 +263,7 @@ const cheapest = Order.query().min('price')
 const total = Order.query().sum('price')
 ```
 
-Of course, you may combine these methos with other clauses.
+Of course, you may combine these methods with other clauses.
 
 ```js
 const users = User.query()
