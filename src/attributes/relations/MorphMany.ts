@@ -86,7 +86,7 @@ export default class MorphMany extends Relation {
     collection.forEach((item) => {
       const related = relations[item[this.localKey]]
 
-      item[name] = related
+      item[name] = related || []
     })
   }
 
