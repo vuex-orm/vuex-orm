@@ -41,7 +41,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
     await User.create({
-      data: { id: 1 }
+      data: [ { id: 1 }, { id: 2 } ]
     })
 
     await Role.create({
@@ -60,6 +60,9 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     expect(user.roles.length).toBe(2)
     expect(user.roles[0].id).toBe(2)
     expect(user.roles[1].id).toBe(3)
+
+    const userWithoutRoles = User.query().with('roles').find(2)
+    expect(userWithoutRoles.roles.length).toBe(0)
   })
 
   it('can resolve inverse belongs to many relation', async () => {
@@ -248,7 +251,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
     await User.create({
-      data: [ { id: 1 }, { id: 2 } ]
+      data: [ { id: 1 } ]
     })
 
     await Role.create({
@@ -264,7 +267,5 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     expect(users[0].id).toBe(1)
     expect(users[0].roles.length).toBe(1)
     expect(users[0].roles[0].id).toBe(1)
-
-    expect(users[1].roles.length).toBe(0)
   })
 })
