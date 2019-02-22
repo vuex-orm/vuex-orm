@@ -52,7 +52,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
     createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
     await Post.create({
-      data: [{ id: 1 }, { id: 5 }]
+      data: [{ id: 1 }, { id: 5 }, { id: 6 }]
     })
 
     await Video.create({
@@ -76,6 +76,10 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
     expect(post.tags.length).toBe(2)
     expect(post.tags[0].name).toBe('news')
     expect(post.tags[1].name).toBe('cast')
+
+    const postWithoutTags = Post.query().with('tags').find(6)
+
+    expect(postWithoutTags.tags.length).toBe(0)
   })
 
   it('can resolve morph to many relation with custom primary key', async () => {
