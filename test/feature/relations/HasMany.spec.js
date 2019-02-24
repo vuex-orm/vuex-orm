@@ -160,4 +160,52 @@ describe('Features – Relations – Has Many', () => {
 
     expect(user).toEqual(expected)
   })
+
+  it('can resolve the has many using the local key', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(),
+          local_key: this.attr(),
+          posts: this.hasMany(Post, 'user_id', 'local_key')
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(),
+          user_id: this.attr(null),
+        }
+      }
+    }
+
+    const store = createStore([{model: User}, {model: Post}])
+
+    User.create({
+      data: {
+        id: 1,
+        local_key: 'local_key',
+        posts: [
+          { id: 1 }
+        ]
+      }
+    })
+
+    const expected = createState({
+      users: {
+        '1': { $id: 1, id: 1, local_key: 'local_key', posts: [] }
+      },
+      posts: {
+        '1': { $id: 1, id: 1, user_id: 'local_key' },
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
 })

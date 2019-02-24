@@ -56,7 +56,7 @@ export default class HasMany extends Relation {
         return
       }
 
-      related[index][this.foreignKey] = record.$id
+      related[index][this.foreignKey] = record[this.localKey]
     })
   }
 
