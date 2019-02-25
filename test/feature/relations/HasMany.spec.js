@@ -180,12 +180,12 @@ describe('Features – Relations – Has Many', () => {
       static fields () {
         return {
           id: this.attr(),
-          user_id: this.attr(null),
+          user_id: this.attr(null)
         }
       }
     }
 
-    const store = createStore([{model: User}, {model: Post}])
+    const store = createStore([{ model: User }, { model: Post }])
 
     User.create({
       data: {
@@ -202,7 +202,7 @@ describe('Features – Relations – Has Many', () => {
         '1': { $id: 1, id: 1, local_key: 'local_key', posts: [] }
       },
       posts: {
-        '1': { $id: 1, id: 1, user_id: 'local_key' },
+        '1': { $id: 1, id: 1, user_id: 'local_key' }
       }
     })
 
