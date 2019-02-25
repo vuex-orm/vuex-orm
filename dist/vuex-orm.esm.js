@@ -777,7 +777,7 @@ var HasMany = /** @class */ (function (_super) {
             if (!related || !related[index] || related[index][_this.foreignKey] !== undefined) {
                 return;
             }
-            related[index][_this.foreignKey] = record.$id;
+            related[index][_this.foreignKey] = record[_this.localKey];
         });
     };
     /**
@@ -1276,7 +1276,7 @@ var MorphMany = /** @class */ (function (_super) {
         var relations = this.mapManyRelations(relatedQuery.get(), this.id);
         collection.forEach(function (item) {
             var related = relations[item[_this.localKey]];
-            item[name] = related;
+            item[name] = related || [];
         });
     };
     /**
@@ -1336,7 +1336,7 @@ var MorphToMany = /** @class */ (function (_super) {
         var relateds = this.mapPivotRelations(pivots, relatedQuery);
         collection.forEach(function (item) {
             var related = relateds[item[_this.parentKey]];
-            item[name] = related;
+            item[name] = related || [];
         });
     };
     /**
@@ -1456,7 +1456,7 @@ var MorphedByMany = /** @class */ (function (_super) {
         var relateds = this.mapPivotRelations(pivots, relatedQuery);
         collection.forEach(function (item) {
             var related = relateds[item[_this.parentKey]];
-            item[name] = related;
+            item[name] = related || [];
         });
     };
     /**
