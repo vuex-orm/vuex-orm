@@ -60,7 +60,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
     })
 
     await Tag.create({
-      data: { id: 1, name: 'news' }
+      data: [{ id: 1, name: 'news' }, { id: 3, name: 'without references' }]
     })
 
     await Taggable.create({
@@ -76,6 +76,11 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
 
     expect(tag.posts.length).toBe(2)
     expect(tag.videos.length).toBe(1)
+
+    const tagWithoutReferences = Tag.query().with('posts').with('videos').find(3)
+
+    expect(tagWithoutReferences.videos.length).toBe(0)
+    expect(tagWithoutReferences.posts.length).toBe(0)
   })
 
   it('can resolve morphed by many relation with custom primary key', async () => {

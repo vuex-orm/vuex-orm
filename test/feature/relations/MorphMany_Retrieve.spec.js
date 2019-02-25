@@ -41,7 +41,7 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
     createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
     await Post.create({
-      data: [{ id: 1 }, { id: 5 }]
+      data: [{ id: 1 }, { id: 5 }, { id: 6 }]
     })
 
     await Video.create({
@@ -62,6 +62,10 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
     expect(post.comments.length).toBe(2)
     expect(post.comments[0].body).toBe('comment1')
     expect(post.comments[1].body).toBe('comment3')
+
+    const postWithoutComments = Post.query().with('comments').find(6)
+
+    expect(postWithoutComments.comments.length).toBe(0)
   })
 
   it('can resolve morph many relation with custom primary key', async () => {
@@ -172,7 +176,7 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
     })
 
     await Video.create({
-      data: { id: 3 }
+      data: [{ id: 3 }, { id: 4 }]
     })
 
     await Comment.create({
@@ -189,5 +193,9 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
     expect(post.comments.length).toBe(2)
     expect(post.comments[0].body).toBe('comment1')
     expect(post.comments[1].body).toBe('comment3')
+
+    const video = Video.query().with('comments').find(4)
+
+    expect(video.comments.length).toBe(0)
   })
 })
