@@ -88,4 +88,36 @@ describe('Feature – Retrieve – Order By', () => {
 
     expect(result).toEqual(expected)
   })
+
+  it('can sort by model fields with null', () => {
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: [
+        { id: 1, name: 'Andy' },
+        { id: 2, name: 'John' },
+        { id: 3, name: null }
+      ]
+    })
+
+    const descExpected = [
+      { $id: 2, id: 2, name: 'John' },
+      { $id: 1, id: 1, name: 'Andy' },
+      { $id: 3, id: 3, name: null }
+    ]
+    const descResult = store.getters['entities/users/query']()
+      .orderBy('name', 'desc')
+      .get()
+    expect(descResult).toEqual(descExpected)
+
+    const ascExpected = [
+      { $id: 3, id: 3, name: null },
+      { $id: 1, id: 1, name: 'Andy' },
+      { $id: 2, id: 2, name: 'John' }
+    ]
+    const ascResult = store.getters['entities/users/query']()
+      .orderBy('name', 'asc')
+      .get()
+    expect(ascResult).toEqual(ascExpected)
+  })
 })
