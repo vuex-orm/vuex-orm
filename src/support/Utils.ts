@@ -74,7 +74,7 @@ export function orderBy<T> (collection: T[], keys: string[], directions: string[
   let index = -1
 
   const result = collection.map((value) => {
-    const criteria = keys.map(key => value[key])
+    const criteria = keys.map(key => value[key] || '')
 
     return { criteria: criteria, index: ++index, value: value }
   })
