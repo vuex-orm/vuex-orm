@@ -403,7 +403,7 @@ let state = {
 
 // `insertOrUpdate` is going to add new records and update existing
 // records (see `update`). Also accepts a single item as data.
-User.insertorUpdate({
+User.insertOrUpdate({
   data: [
     { id: 1, name: 'Peter' },
     { id: 2, name: 'Hank' }
