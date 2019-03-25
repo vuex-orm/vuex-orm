@@ -424,7 +424,7 @@ export default class Model {
       case 'increment': return Attributes.Increment
 
       default:
-        throw Error(`The attribute name "${name}" doesn't exists.`)
+        throw Error(`The attribute name "${name}" doesn't exist.`)
     }
   }
 
