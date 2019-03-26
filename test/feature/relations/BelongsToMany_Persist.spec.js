@@ -390,4 +390,87 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
     expect(store.state.entities).toEqual(expected)
   })
+
+  it('can create a data to pivot table with field using composite key', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          roleUsers: this.hasMany(RoleUser, 'user_id'),
+          roles: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
+        }
+      }
+    }
+
+    class Role extends Model {
+      static entity = 'roles'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          roleUsers: this.hasMany(RoleUser, 'role_id'),
+          users: this.belongsToMany(User, RoleUser, 'role_id', 'user_id')
+        }
+      }
+    }
+
+    class RoleUser extends Model {
+      static entity = 'roleUsers'
+      static primaryKey = ['role_id', 'user_id']
+
+      static fields () {
+        return {
+          role_id: this.attr(null),
+          user_id: this.attr(null),
+          type: this.attr(''),
+          user: this.belongsTo(User, 'user_id'),
+          role: this.belongsTo(Role, 'role_id')
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+
+    await store.dispatch('entities/users/insertOrUpdate', {
+      data: {
+        id: 1,
+        name: 'Jane Doe',
+        roleUsers: [
+          {
+            role_id: 1,
+            user_id: 1,
+            type: 'administrator'
+          },
+          {
+            role_id: 2,
+            user_id: 1,
+            type: 'general'
+          }
+        ],
+        roles: [
+          { id: 1 },
+          { id: 2 }
+        ]
+      }
+    })
+
+    const expected = createState({
+      users: {
+        '1': { $id: 1, id: 1, name: 'Jane Doe', roleUsers: [], roles: [] }
+      },
+      roles: {
+        '1': { $id: 1, id: 1, roleUsers: [], users: [] },
+        '2': { $id: 2, id: 2, roleUsers: [], users: [] }
+      },
+      roleUsers: {
+        '1_1': { $id: '1_1', user_id: 1, role_id: 1, type: 'administrator', user: null, role: null },
+        '2_1': { $id: '2_1', user_id: 1, role_id: 2, type: 'general', user: null, role: null }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
 })
