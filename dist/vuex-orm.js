@@ -1091,13 +1091,9 @@
             var _this = this;
             related.forEach(function (id) {
                 var _a, _b;
-                var pivotKey = record[_this.parentKey] + "_" + id;
-                data[_this.pivot.entity] = __assign({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
-                        $id: pivotKey
-                    },
-                    _b[_this.foreignPivotKey] = record[_this.parentKey],
-                    _b[_this.relatedPivotKey] = id,
-                    _b), _a));
+                var pivotKey = id + "_" + record[_this.parentKey];
+                var pivotRecord = data[_this.pivot.entity] ? data[_this.pivot.entity][pivotKey] : {};
+                data[_this.pivot.entity] = __assign({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = __assign({}, pivotRecord, (_b = { $id: pivotKey }, _b[_this.foreignPivotKey] = record[_this.parentKey], _b[_this.relatedPivotKey] = id, _b)), _a));
             });
         };
         return BelongsToMany;
@@ -1849,7 +1845,7 @@
             switch (name) {
                 case 'increment': return Increment;
                 default:
-                    throw Error("The attribute name \"" + name + "\" doesn't exists.");
+                    throw Error("The attribute name \"" + name + "\" doesn't exist.");
             }
         };
         /**

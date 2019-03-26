@@ -1085,13 +1085,9 @@ var BelongsToMany = /** @class */ (function (_super) {
         var _this = this;
         related.forEach(function (id) {
             var _a, _b;
-            var pivotKey = record[_this.parentKey] + "_" + id;
-            data[_this.pivot.entity] = __assign({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
-                    $id: pivotKey
-                },
-                _b[_this.foreignPivotKey] = record[_this.parentKey],
-                _b[_this.relatedPivotKey] = id,
-                _b), _a));
+            var pivotKey = id + "_" + record[_this.parentKey];
+            var pivotRecord = data[_this.pivot.entity] ? data[_this.pivot.entity][pivotKey] : {};
+            data[_this.pivot.entity] = __assign({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = __assign({}, pivotRecord, (_b = { $id: pivotKey }, _b[_this.foreignPivotKey] = record[_this.parentKey], _b[_this.relatedPivotKey] = id, _b)), _a));
         });
     };
     return BelongsToMany;
@@ -1843,7 +1839,7 @@ var Model = /** @class */ (function () {
         switch (name) {
             case 'increment': return Increment;
             default:
-                throw Error("The attribute name \"" + name + "\" doesn't exists.");
+                throw Error("The attribute name \"" + name + "\" doesn't exist.");
         }
     };
     /**
@@ -4883,4 +4879,4 @@ var index = {
 };
 
 export default index;
-export { install, use, Database, Model, Query, Attribute, Type, Attr, String$1 as String, Number, Boolean, Increment, Relation, HasOne, BelongsTo, HasMany, HasManyBy, BelongsToMany, HasManyThrough, MorphTo, MorphOne, MorphMany, MorphToMany, MorphedByMany, Getters, Actions, RootGetters, RootActions, RootMutations };
+export { Actions, Attr, Attribute, BelongsTo, BelongsToMany, Boolean, Database, Getters, HasMany, HasManyBy, HasManyThrough, HasOne, Increment, Model, MorphMany, MorphOne, MorphTo, MorphToMany, MorphedByMany, Number, Query, Relation, RootActions, RootGetters, RootMutations, String$1 as String, Type, install, use };
