@@ -44,7 +44,7 @@ if (!Array.prototype.includes) {
   }
 }
 
-if (!Object.values || !Object.entries) {
+if (!Object.values || !Object.entries || !Object.assign) {
   const reduce = Function.bind.call(Function.call as any, Array.prototype.reduce)
   const isEnumerable = Function.bind.call(Function.call as any, Object.prototype.propertyIsEnumerable)
   const concat = Function.bind.call(Function.call as any, Array.prototype.concat)
@@ -59,6 +59,29 @@ if (!Object.values || !Object.entries) {
   if (!Object.entries) {
     (Object.entries as any) = function entries (O: any) {
       return reduce(keys(O), (e: any, k: any) => concat(e, typeof k === 'string' && isEnumerable(O, k) ? [[k, O[k]]] : []), [])
+    }
+  }
+
+  if (!Object.assign) {
+    (Object.assign as any) = function assign (target: any, _varArgs: any) {
+      if (target == null) {
+        throw new TypeError('Cannot convert undefined or null to object')
+      }
+
+      const to = Object(target)
+
+      for (let index = 1; index < arguments.length; index++) {
+        const nextSource = arguments[index]
+
+        if (nextSource != null) {
+          for (const nextKey in nextSource) {
+            if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+              to[nextKey] = nextSource[nextKey]
+            }
+          }
+        }
+      }
+      return to
     }
   }
 }
