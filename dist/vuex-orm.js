@@ -43,7 +43,7 @@
             return false;
         };
     }
-    if (!Object.values || !Object.entries) {
+    if (!Object.values || !Object.entries || !Object.assign) {
         var reduce_1 = Function.bind.call(Function.call, Array.prototype.reduce);
         var isEnumerable_1 = Function.bind.call(Function.call, Object.prototype.propertyIsEnumerable);
         var concat_1 = Function.bind.call(Function.call, Array.prototype.concat);
@@ -56,6 +56,25 @@
         if (!Object.entries) {
             Object.entries = function entries(O) {
                 return reduce_1(keys_1(O), function (e, k) { return concat_1(e, typeof k === 'string' && isEnumerable_1(O, k) ? [[k, O[k]]] : []); }, []);
+            };
+        }
+        if (!Object.assign) {
+            Object.assign = function assign(target, _varArgs) {
+                if (target == null) {
+                    throw new TypeError('Cannot convert undefined or null to object');
+                }
+                var to = Object(target);
+                for (var index = 1; index < arguments.length; index++) {
+                    var nextSource = arguments[index];
+                    if (nextSource != null) {
+                        for (var nextKey in nextSource) {
+                            if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+                                to[nextKey] = nextSource[nextKey];
+                            }
+                        }
+                    }
+                }
+                return to;
             };
         }
     }
