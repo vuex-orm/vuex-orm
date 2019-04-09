@@ -1,4 +1,5 @@
 /*eslint-disable */
+import 'core-js/stable/reflect/own-keys'
 
 if (!String.prototype.startsWith) {
   String.prototype.startsWith = function (search, pos) {
