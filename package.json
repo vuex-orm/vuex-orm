@@ -52,6 +52,7 @@
     "@babel/plugin-proposal-class-properties": "^7.4.0",
     "@babel/plugin-transform-runtime": "^7.4.3",
     "@babel/preset-env": "^7.4.3",
+    "@types/core-js": "^2.5.0",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
     "codecov": "^3.3.0",
