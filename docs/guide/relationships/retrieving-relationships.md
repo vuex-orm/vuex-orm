@@ -68,11 +68,21 @@ const user = User.query()
 */
 ```
 
-You can load multiple sub relations by separating them with `|`;
+You can load multiple sub relations by separating them with `|` (symbolizing the `or` syntax):
 
 ```js
 const user = User.query()
+  // Fetching all comments & reviews from user.posts
   .with('posts.comments|reviews')
+  .find(1)
+```
+
+Or passing an array of relations (in that case, the full path is needed):
+
+```js
+const user = User.query()
+  // Fetching all comments & reviews from user.posts + user.profile
+  .with(['posts.comments', 'posts.reviews', 'profile'])
   .find(1)
 ```
 
