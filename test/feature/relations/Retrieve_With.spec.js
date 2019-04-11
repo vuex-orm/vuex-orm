@@ -329,7 +329,7 @@ describe('Feature – Relations – Retrieve – With', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can resolve child relations with multiple sub relations', () => {
+  it('can resolve child relations with multiple sub relations with pipe', () => {
     class User extends Model {
       static entity = 'users'
 
@@ -445,6 +445,127 @@ describe('Feature – Relations – Retrieve – With', () => {
 
     const user1 = store.getters['entities/users/query']().with('posts.comments|likes').find(1)
     const user2 = store.getters['entities/users/query']().with('posts.*').find(1)
+
+    expect(user1).toEqual(expected)
+    expect(user2).toEqual(expected)
+  })
+
+  it('can resolve child relations with multiple sub relations in array', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          posts: this.hasMany(Post, 'user_id')
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null),
+          comments: this.hasMany(Comment, 'post_id'),
+          likes: this.hasMany(Like, 'post_id')
+        }
+      }
+    }
+
+    class Comment extends Model {
+      static entity = 'comments'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          post_id: this.attr(null)
+        }
+      }
+    }
+
+    class Like extends Model {
+      static entity = 'likes'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          post_id: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }, { model: Post }, { model: Comment }, { model: Like }])
+
+    store.dispatch('entities/users/create', {
+      data: {
+        id: 1,
+        posts: [
+          {
+            id: 1,
+            user_id: 1,
+            comments: [
+              { id: 1, post_id: 1 },
+              { id: 2, post_id: 1 }
+            ],
+            likes: [
+              { id: 1, post_id: 1 },
+              { id: 2, post_id: 1 }
+            ]
+          },
+          {
+            id: 2,
+            user_id: 1,
+            comments: [
+              { id: 3, post_id: 2 },
+              { id: 4, post_id: 2 }
+            ],
+            likes: [
+              { id: 3, post_id: 2 },
+              { id: 4, post_id: 2 }
+            ]
+          }
+        ]
+      }
+    })
+
+    const expected = {
+      $id: 1,
+      id: 1,
+      posts: [
+        {
+          $id: 1,
+          id: 1,
+          user_id: 1,
+          comments: [
+            { $id: 1, id: 1, post_id: 1 },
+            { $id: 2, id: 2, post_id: 1 }
+          ],
+          likes: [
+            { $id: 1, id: 1, post_id: 1 },
+            { $id: 2, id: 2, post_id: 1 }
+          ]
+        },
+        {
+          $id: 2,
+          id: 2,
+          user_id: 1,
+          comments: [
+            { $id: 3, id: 3, post_id: 2 },
+            { $id: 4, id: 4, post_id: 2 }
+          ],
+          likes: [
+            { $id: 3, id: 3, post_id: 2 },
+            { $id: 4, id: 4, post_id: 2 }
+          ]
+        }
+      ]
+    }
+
+    const user1 = store.getters['entities/users/query']().with(['posts.comments', 'posts.likes']).find(1)
+    const user2 = store.getters['entities/users/query']().with(['posts.*']).find(1)
 
     expect(user1).toEqual(expected)
     expect(user2).toEqual(expected)
