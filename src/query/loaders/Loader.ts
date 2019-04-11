@@ -7,7 +7,7 @@ export default class Loader {
   /**
    * Set the relationships that should be eager loaded with the query.
    */
-  static with (query: Query, name: string, constraint: Constraint | null): void {
+  static with (query: Query, name: string | string[], constraint: Constraint | null): void {
     // If the name of the relation is `*`, we'll load all relationships.
     if (name === '*') {
       this.withAll(query)
@@ -15,8 +15,13 @@ export default class Loader {
       return
     }
 
-    // Else parse relations and set appropriate constraints.
-    this.parseWithRelations(query, name.split('.'), constraint)
+    // If we passed an array, we dispatch the bits to with queries
+    if (name instanceof Array) {
+      name.forEach(relationName => this.with(query, relationName, constraint))
+    } else {
+      // Else parse relations and set appropriate constraints.
+      this.parseWithRelations(query, name.split('.'), constraint)
+    }
   }
 
   /**
