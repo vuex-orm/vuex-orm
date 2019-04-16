@@ -2943,13 +2943,20 @@
          * Set the relationships that should be eager loaded with the query.
          */
         Loader.with = function (query, name, constraint) {
+            var _this = this;
             // If the name of the relation is `*`, we'll load all relationships.
             if (name === '*') {
                 this.withAll(query);
                 return;
             }
-            // Else parse relations and set appropriate constraints.
-            this.parseWithRelations(query, name.split('.'), constraint);
+            // If we passed an array, we dispatch the bits to with queries
+            if (name instanceof Array) {
+                name.forEach(function (relationName) { return _this.with(query, relationName, constraint); });
+            }
+            else {
+                // Else parse relations and set appropriate constraints.
+                this.parseWithRelations(query, name.split('.'), constraint);
+            }
         };
         /**
          * Set all relationships to be eager loaded with the query.
