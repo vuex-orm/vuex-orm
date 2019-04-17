@@ -27,6 +27,26 @@ describe('Unit – Model', () => {
     expect(user.email).toBe('john@example.com')
   })
 
+  it('should set default field values using a closure', () => {
+    let counter = 0;
+
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(() => counter++)
+        }
+      }
+    }
+
+    const user = new User()
+    const user2 = new User()
+
+    expect(user.id).toBe(0)
+    expect(user2.id).toBe(1)
+  })
+
   it('should set given field values as a property on instanctiation', () => {
     class User extends Model {
       static entity = 'users'
@@ -44,7 +64,7 @@ describe('Unit – Model', () => {
     expect(user.name).toBe('Jane Doe')
     expect(user.email).toBe('john@example.com')
     expect(user.age).toBe(undefined)
-  })
+  }) 
 
   it('should mutate data if closure was given to the attr when instantiating', () => {
     class User extends Model {
