@@ -89,6 +89,18 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     expect(role.users[0].id).toBe(1)
   })
 
+  it('returns empty collection if the relation is not found', () => {
+    createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+
+    User.create({
+      data: { id: 1 }
+    })
+
+    const user = User.query().with('roles').first()
+
+    expect(user.roles).toEqual([])
+  })
+
   it('can resolve belongs to many relation with has constraint', async () => {
     createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
