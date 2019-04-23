@@ -94,7 +94,7 @@ describe('Features – Relations – Belongs To', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields() {
+      static fields () {
         return {
           id: this.attr(null)
         }
@@ -105,7 +105,7 @@ describe('Features – Relations – Belongs To', () => {
       static entity = 'posts'
       static primaryKey = ['id', 'user_id']
 
-      static fields() {
+      static fields () {
         return {
           id: this.attr(null),
           user_id: this.attr(null),

@@ -21,9 +21,9 @@ export default class Attr extends Type {
     value = value !== undefined ? value : this.value
 
     // Default Value might be a function (taking no parameter)
-    let localValue = value;
+    let localValue = value
     if (typeof value === 'function') {
-      localValue = value();
+      localValue = value()
     }
 
     return this.mutate(localValue, key)

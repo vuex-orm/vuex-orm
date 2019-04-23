@@ -28,7 +28,7 @@ describe('Unit – Model', () => {
   })
 
   it('should set default field values using a closure', () => {
-    let counter = 0;
+    let counter = 0
 
     class User extends Model {
       static entity = 'users'
@@ -64,7 +64,7 @@ describe('Unit – Model', () => {
     expect(user.name).toBe('Jane Doe')
     expect(user.email).toBe('john@example.com')
     expect(user.age).toBe(undefined)
-  }) 
+  })
 
   it('should mutate data if closure was given to the attr when instantiating', () => {
     class User extends Model {

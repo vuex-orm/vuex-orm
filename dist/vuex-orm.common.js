@@ -1,40 +1,89 @@
 'use strict';
 
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
+var _global = createCommonjsModule(function (module) {
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
-var global = typeof window == 'object' && window && window.Math == Math ? window
-  : typeof self == 'object' && self && self.Math == Math ? self
+var global = module.exports = typeof window != 'undefined' && window.Math == Math
+  ? window : typeof self != 'undefined' && self.Math == Math ? self
   // eslint-disable-next-line no-new-func
   : Function('return this')();
+if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
+});
 
-var fails = function (exec) {
+var _core = createCommonjsModule(function (module) {
+var core = module.exports = { version: '2.6.5' };
+if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
+});
+var _core_1 = _core.version;
+
+var _isObject = function (it) {
+  return typeof it === 'object' ? it !== null : typeof it === 'function';
+};
+
+var _anObject = function (it) {
+  if (!_isObject(it)) throw TypeError(it + ' is not an object!');
+  return it;
+};
+
+var _fails = function (exec) {
   try {
     return !!exec();
-  } catch (error) {
+  } catch (e) {
     return true;
   }
 };
 
 // Thank's IE8 for his funny defineProperty
-var descriptors = !fails(function () {
+var _descriptors = !_fails(function () {
   return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
 });
 
-var nativePropertyIsEnumerable = {}.propertyIsEnumerable;
-var nativeGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+var document = _global.document;
+// typeof document.createElement is 'object' in old IE
+var is = _isObject(document) && _isObject(document.createElement);
+var _domCreate = function (it) {
+  return is ? document.createElement(it) : {};
+};
 
-// Nashorn ~ JDK8 bug
-var NASHORN_BUG = nativeGetOwnPropertyDescriptor && !nativePropertyIsEnumerable.call({ 1: 2 }, 1);
+var _ie8DomDefine = !_descriptors && !_fails(function () {
+  return Object.defineProperty(_domCreate('div'), 'a', { get: function () { return 7; } }).a != 7;
+});
 
-var f = NASHORN_BUG ? function propertyIsEnumerable(V) {
-  var descriptor = nativeGetOwnPropertyDescriptor(this, V);
-  return !!descriptor && descriptor.enumerable;
-} : nativePropertyIsEnumerable;
+// 7.1.1 ToPrimitive(input [, PreferredType])
 
-var objectPropertyIsEnumerable = {
+// instead of the ES6 spec version, we didn't implement @@toPrimitive case
+// and the second argument - flag - preferred type is a string
+var _toPrimitive = function (it, S) {
+  if (!_isObject(it)) return it;
+  var fn, val;
+  if (S && typeof (fn = it.toString) == 'function' && !_isObject(val = fn.call(it))) return val;
+  if (typeof (fn = it.valueOf) == 'function' && !_isObject(val = fn.call(it))) return val;
+  if (!S && typeof (fn = it.toString) == 'function' && !_isObject(val = fn.call(it))) return val;
+  throw TypeError("Can't convert object to primitive value");
+};
+
+var dP = Object.defineProperty;
+
+var f = _descriptors ? Object.defineProperty : function defineProperty(O, P, Attributes) {
+  _anObject(O);
+  P = _toPrimitive(P, true);
+  _anObject(Attributes);
+  if (_ie8DomDefine) try {
+    return dP(O, P, Attributes);
+  } catch (e) { /* empty */ }
+  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');
+  if ('value' in Attributes) O[P] = Attributes.value;
+  return O;
+};
+
+var _objectDp = {
 	f: f
 };
 
-var createPropertyDescriptor = function (bitmap, value) {
+var _propertyDesc = function (bitmap, value) {
   return {
     enumerable: !(bitmap & 1),
     configurable: !(bitmap & 2),
@@ -43,297 +92,192 @@ var createPropertyDescriptor = function (bitmap, value) {
   };
 };
 
-var toString = {}.toString;
-
-var classofRaw = function (it) {
-  return toString.call(it).slice(8, -1);
-};
-
-// fallback for non-array-like ES3 and non-enumerable old V8 strings
-
-
-var split = ''.split;
-
-var indexedObject = fails(function () {
-  // throws an error in rhino, see https://github.com/mozilla/rhino/issues/346
-  // eslint-disable-next-line no-prototype-builtins
-  return !Object('z').propertyIsEnumerable(0);
-}) ? function (it) {
-  return classofRaw(it) == 'String' ? split.call(it, '') : Object(it);
-} : Object;
-
-// `RequireObjectCoercible` abstract operation
-// https://tc39.github.io/ecma262/#sec-requireobjectcoercible
-var requireObjectCoercible = function (it) {
-  if (it == undefined) throw TypeError("Can't call method on " + it);
-  return it;
-};
-
-// toObject with fallback for non-array-like ES3 strings
-
-
-
-var toIndexedObject = function (it) {
-  return indexedObject(requireObjectCoercible(it));
-};
-
-var isObject = function (it) {
-  return typeof it === 'object' ? it !== null : typeof it === 'function';
-};
-
-// 7.1.1 ToPrimitive(input [, PreferredType])
-
-// instead of the ES6 spec version, we didn't implement @@toPrimitive case
-// and the second argument - flag - preferred type is a string
-var toPrimitive = function (it, S) {
-  if (!isObject(it)) return it;
-  var fn, val;
-  if (S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;
-  if (typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it))) return val;
-  if (!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;
-  throw TypeError("Can't convert object to primitive value");
-};
-
-var hasOwnProperty = {}.hasOwnProperty;
-
-var has = function (it, key) {
-  return hasOwnProperty.call(it, key);
-};
-
-var document = global.document;
-// typeof document.createElement is 'object' in old IE
-var exist = isObject(document) && isObject(document.createElement);
-
-var documentCreateElement = function (it) {
-  return exist ? document.createElement(it) : {};
-};
-
-// Thank's IE8 for his funny defineProperty
-var ie8DomDefine = !descriptors && !fails(function () {
-  return Object.defineProperty(documentCreateElement('div'), 'a', {
-    get: function () { return 7; }
-  }).a != 7;
-});
-
-var nativeGetOwnPropertyDescriptor$1 = Object.getOwnPropertyDescriptor;
-
-var f$1 = descriptors ? nativeGetOwnPropertyDescriptor$1 : function getOwnPropertyDescriptor(O, P) {
-  O = toIndexedObject(O);
-  P = toPrimitive(P, true);
-  if (ie8DomDefine) try {
-    return nativeGetOwnPropertyDescriptor$1(O, P);
-  } catch (error) { /* empty */ }
-  if (has(O, P)) return createPropertyDescriptor(!objectPropertyIsEnumerable.f.call(O, P), O[P]);
-};
-
-var objectGetOwnPropertyDescriptor = {
-	f: f$1
-};
-
-var anObject = function (it) {
-  if (!isObject(it)) {
-    throw TypeError(String(it) + ' is not an object');
-  } return it;
-};
-
-var nativeDefineProperty = Object.defineProperty;
-
-var f$2 = descriptors ? nativeDefineProperty : function defineProperty(O, P, Attributes) {
-  anObject(O);
-  P = toPrimitive(P, true);
-  anObject(Attributes);
-  if (ie8DomDefine) try {
-    return nativeDefineProperty(O, P, Attributes);
-  } catch (error) { /* empty */ }
-  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported');
-  if ('value' in Attributes) O[P] = Attributes.value;
-  return O;
-};
-
-var objectDefineProperty = {
-	f: f$2
-};
-
-var hide = descriptors ? function (object, key, value) {
-  return objectDefineProperty.f(object, key, createPropertyDescriptor(1, value));
+var _hide = _descriptors ? function (object, key, value) {
+  return _objectDp.f(object, key, _propertyDesc(1, value));
 } : function (object, key, value) {
   object[key] = value;
   return object;
 };
 
-function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
-
-var setGlobal = function (key, value) {
-  try {
-    hide(global, key, value);
-  } catch (error) {
-    global[key] = value;
-  } return value;
+var hasOwnProperty = {}.hasOwnProperty;
+var _has = function (it, key) {
+  return hasOwnProperty.call(it, key);
 };
 
-var shared = createCommonjsModule(function (module) {
+var id = 0;
+var px = Math.random();
+var _uid = function (key) {
+  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
+};
+
+var _shared = createCommonjsModule(function (module) {
 var SHARED = '__core-js_shared__';
-var store = global[SHARED] || setGlobal(SHARED, {});
+var store = _global[SHARED] || (_global[SHARED] = {});
 
 (module.exports = function (key, value) {
   return store[key] || (store[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.0.1',
+  version: _core.version,
   mode: 'global',
   copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
 });
 });
 
-var functionToString = shared('native-function-to-string', Function.toString);
+var _functionToString = _shared('native-function-to-string', Function.toString);
 
-var WeakMap = global.WeakMap;
+var _redefine = createCommonjsModule(function (module) {
+var SRC = _uid('src');
 
-var nativeWeakMap = typeof WeakMap === 'function' && /native code/.test(functionToString.call(WeakMap));
+var TO_STRING = 'toString';
+var TPL = ('' + _functionToString).split(TO_STRING);
 
-var id = 0;
-var postfix = Math.random();
-
-var uid = function (key) {
-  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + postfix).toString(36));
+_core.inspectSource = function (it) {
+  return _functionToString.call(it);
 };
 
-var shared$1 = shared('keys');
-
-
-var sharedKey = function (key) {
-  return shared$1[key] || (shared$1[key] = uid(key));
-};
-
-var hiddenKeys = {};
-
-var WeakMap$1 = global.WeakMap;
-var set, get, has$1;
-
-var enforce = function (it) {
-  return has$1(it) ? get(it) : set(it, {});
-};
-
-var getterFor = function (TYPE) {
-  return function (it) {
-    var state;
-    if (!isObject(it) || (state = get(it)).type !== TYPE) {
-      throw TypeError('Incompatible receiver, ' + TYPE + ' required');
-    } return state;
-  };
-};
-
-if (nativeWeakMap) {
-  var store = new WeakMap$1();
-  var wmget = store.get;
-  var wmhas = store.has;
-  var wmset = store.set;
-  set = function (it, metadata) {
-    wmset.call(store, it, metadata);
-    return metadata;
-  };
-  get = function (it) {
-    return wmget.call(store, it) || {};
-  };
-  has$1 = function (it) {
-    return wmhas.call(store, it);
-  };
-} else {
-  var STATE = sharedKey('state');
-  hiddenKeys[STATE] = true;
-  set = function (it, metadata) {
-    hide(it, STATE, metadata);
-    return metadata;
-  };
-  get = function (it) {
-    return has(it, STATE) ? it[STATE] : {};
-  };
-  has$1 = function (it) {
-    return has(it, STATE);
-  };
-}
-
-var internalState = {
-  set: set,
-  get: get,
-  has: has$1,
-  enforce: enforce,
-  getterFor: getterFor
-};
-
-var redefine = createCommonjsModule(function (module) {
-var getInternalState = internalState.get;
-var enforceInternalState = internalState.enforce;
-var TEMPLATE = String(functionToString).split('toString');
-
-shared('inspectSource', function (it) {
-  return functionToString.call(it);
-});
-
-(module.exports = function (O, key, value, options) {
-  var unsafe = options ? !!options.unsafe : false;
-  var simple = options ? !!options.enumerable : false;
-  var noTargetGet = options ? !!options.noTargetGet : false;
-  if (typeof value == 'function') {
-    if (typeof key == 'string' && !has(value, 'name')) hide(value, 'name', key);
-    enforceInternalState(value).source = TEMPLATE.join(typeof key == 'string' ? key : '');
-  }
-  if (O === global) {
-    if (simple) O[key] = value;
-    else setGlobal(key, value);
-    return;
-  } else if (!unsafe) {
+(module.exports = function (O, key, val, safe) {
+  var isFunction = typeof val == 'function';
+  if (isFunction) _has(val, 'name') || _hide(val, 'name', key);
+  if (O[key] === val) return;
+  if (isFunction) _has(val, SRC) || _hide(val, SRC, O[key] ? '' + O[key] : TPL.join(String(key)));
+  if (O === _global) {
+    O[key] = val;
+  } else if (!safe) {
     delete O[key];
-  } else if (!noTargetGet && O[key]) {
-    simple = true;
+    _hide(O, key, val);
+  } else if (O[key]) {
+    O[key] = val;
+  } else {
+    _hide(O, key, val);
   }
-  if (simple) O[key] = value;
-  else hide(O, key, value);
 // add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
-})(Function.prototype, 'toString', function toString() {
-  return typeof this == 'function' && getInternalState(this).source || functionToString.call(this);
+})(Function.prototype, TO_STRING, function toString() {
+  return typeof this == 'function' && this[SRC] || _functionToString.call(this);
 });
 });
 
+var _aFunction = function (it) {
+  if (typeof it != 'function') throw TypeError(it + ' is not a function!');
+  return it;
+};
+
+// optional / simple context binding
+
+var _ctx = function (fn, that, length) {
+  _aFunction(fn);
+  if (that === undefined) return fn;
+  switch (length) {
+    case 1: return function (a) {
+      return fn.call(that, a);
+    };
+    case 2: return function (a, b) {
+      return fn.call(that, a, b);
+    };
+    case 3: return function (a, b, c) {
+      return fn.call(that, a, b, c);
+    };
+  }
+  return function (/* ...args */) {
+    return fn.apply(that, arguments);
+  };
+};
+
+var PROTOTYPE = 'prototype';
+
+var $export = function (type, name, source) {
+  var IS_FORCED = type & $export.F;
+  var IS_GLOBAL = type & $export.G;
+  var IS_STATIC = type & $export.S;
+  var IS_PROTO = type & $export.P;
+  var IS_BIND = type & $export.B;
+  var target = IS_GLOBAL ? _global : IS_STATIC ? _global[name] || (_global[name] = {}) : (_global[name] || {})[PROTOTYPE];
+  var exports = IS_GLOBAL ? _core : _core[name] || (_core[name] = {});
+  var expProto = exports[PROTOTYPE] || (exports[PROTOTYPE] = {});
+  var key, own, out, exp;
+  if (IS_GLOBAL) source = name;
+  for (key in source) {
+    // contains in native
+    own = !IS_FORCED && target && target[key] !== undefined;
+    // export native or passed
+    out = (own ? target : source)[key];
+    // bind timers to global for call from export context
+    exp = IS_BIND && own ? _ctx(out, _global) : IS_PROTO && typeof out == 'function' ? _ctx(Function.call, out) : out;
+    // extend global
+    if (target) _redefine(target, key, out, type & $export.U);
+    // export
+    if (exports[key] != out) _hide(exports, key, exp);
+    if (IS_PROTO && expProto[key] != out) expProto[key] = out;
+  }
+};
+_global.core = _core;
+// type bitmap
+$export.F = 1;   // forced
+$export.G = 2;   // global
+$export.S = 4;   // static
+$export.P = 8;   // proto
+$export.B = 16;  // bind
+$export.W = 32;  // wrap
+$export.U = 64;  // safe
+$export.R = 128; // real proto method for `library`
+var _export = $export;
+
+var toString = {}.toString;
+
+var _cof = function (it) {
+  return toString.call(it).slice(8, -1);
+};
+
+// fallback for non-array-like ES3 and non-enumerable old V8 strings
+
+// eslint-disable-next-line no-prototype-builtins
+var _iobject = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
+  return _cof(it) == 'String' ? it.split('') : Object(it);
+};
+
+// 7.2.1 RequireObjectCoercible(argument)
+var _defined = function (it) {
+  if (it == undefined) throw TypeError("Can't call method on  " + it);
+  return it;
+};
+
+// to indexed object, toObject with fallback for non-array-like ES3 strings
+
+
+var _toIobject = function (it) {
+  return _iobject(_defined(it));
+};
+
+// 7.1.4 ToInteger
 var ceil = Math.ceil;
 var floor = Math.floor;
-
-// `ToInteger` abstract operation
-// https://tc39.github.io/ecma262/#sec-tointeger
-var toInteger = function (argument) {
-  return isNaN(argument = +argument) ? 0 : (argument > 0 ? floor : ceil)(argument);
+var _toInteger = function (it) {
+  return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
 };
 
-var min = Math.min;
+// 7.1.15 ToLength
 
-// `ToLength` abstract operation
-// https://tc39.github.io/ecma262/#sec-tolength
-var toLength = function (argument) {
-  return argument > 0 ? min(toInteger(argument), 0x1FFFFFFFFFFFFF) : 0; // 2 ** 53 - 1 == 9007199254740991
+var min = Math.min;
+var _toLength = function (it) {
+  return it > 0 ? min(_toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
 };
 
 var max = Math.max;
 var min$1 = Math.min;
-
-// Helper for a popular repeating case of the spec:
-// Let integer be ? ToInteger(index).
-// If integer < 0, let result be max((length + integer), 0); else let result be min(length, length).
-var toAbsoluteIndex = function (index, length) {
-  var integer = toInteger(index);
-  return integer < 0 ? max(integer + length, 0) : min$1(integer, length);
+var _toAbsoluteIndex = function (index, length) {
+  index = _toInteger(index);
+  return index < 0 ? max(index + length, 0) : min$1(index, length);
 };
 
-// `Array.prototype.{ indexOf, includes }` methods implementation
 // false -> Array#indexOf
-// https://tc39.github.io/ecma262/#sec-array.prototype.indexof
 // true  -> Array#includes
-// https://tc39.github.io/ecma262/#sec-array.prototype.includes
-var arrayIncludes = function (IS_INCLUDES) {
+
+
+
+var _arrayIncludes = function (IS_INCLUDES) {
   return function ($this, el, fromIndex) {
-    var O = toIndexedObject($this);
-    var length = toLength(O.length);
-    var index = toAbsoluteIndex(fromIndex, length);
+    var O = _toIobject($this);
+    var length = _toLength(O.length);
+    var index = _toAbsoluteIndex(fromIndex, length);
     var value;
     // Array#includes uses SameValueZero equality algorithm
     // eslint-disable-next-line no-self-compare
@@ -348,151 +292,68 @@ var arrayIncludes = function (IS_INCLUDES) {
   };
 };
 
-var arrayIndexOf = arrayIncludes(false);
+var shared = _shared('keys');
 
+var _sharedKey = function (key) {
+  return shared[key] || (shared[key] = _uid(key));
+};
 
-var objectKeysInternal = function (object, names) {
-  var O = toIndexedObject(object);
+var arrayIndexOf = _arrayIncludes(false);
+var IE_PROTO = _sharedKey('IE_PROTO');
+
+var _objectKeysInternal = function (object, names) {
+  var O = _toIobject(object);
   var i = 0;
   var result = [];
   var key;
-  for (key in O) !has(hiddenKeys, key) && has(O, key) && result.push(key);
+  for (key in O) if (key != IE_PROTO) _has(O, key) && result.push(key);
   // Don't enum bug & hidden keys
-  while (names.length > i) if (has(O, key = names[i++])) {
+  while (names.length > i) if (_has(O, key = names[i++])) {
     ~arrayIndexOf(result, key) || result.push(key);
   }
   return result;
 };
 
-// IE8- don't enum bug keys
-var enumBugKeys = [
-  'constructor',
-  'hasOwnProperty',
-  'isPrototypeOf',
-  'propertyIsEnumerable',
-  'toLocaleString',
-  'toString',
-  'valueOf'
-];
+// IE 8- don't enum bug keys
+var _enumBugKeys = (
+  'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
+).split(',');
 
 // 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
 
-var hiddenKeys$1 = enumBugKeys.concat('length', 'prototype');
+var hiddenKeys = _enumBugKeys.concat('length', 'prototype');
 
-var f$3 = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
-  return objectKeysInternal(O, hiddenKeys$1);
+var f$1 = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
+  return _objectKeysInternal(O, hiddenKeys);
 };
 
-var objectGetOwnPropertyNames = {
-	f: f$3
+var _objectGopn = {
+	f: f$1
 };
 
-var f$4 = Object.getOwnPropertySymbols;
+var f$2 = Object.getOwnPropertySymbols;
 
-var objectGetOwnPropertySymbols = {
-	f: f$4
+var _objectGops = {
+	f: f$2
 };
-
-var Reflect$1 = global.Reflect;
 
 // all object keys, includes non-enumerable and symbols
-var ownKeys = Reflect$1 && Reflect$1.ownKeys || function ownKeys(it) {
-  var keys = objectGetOwnPropertyNames.f(anObject(it));
-  var getOwnPropertySymbols = objectGetOwnPropertySymbols.f;
-  return getOwnPropertySymbols ? keys.concat(getOwnPropertySymbols(it)) : keys;
+
+
+
+var Reflect$1 = _global.Reflect;
+var _ownKeys = Reflect$1 && Reflect$1.ownKeys || function ownKeys(it) {
+  var keys = _objectGopn.f(_anObject(it));
+  var getSymbols = _objectGops.f;
+  return getSymbols ? keys.concat(getSymbols(it)) : keys;
 };
 
-var copyConstructorProperties = function (target, source) {
-  var keys = ownKeys(source);
-  var defineProperty = objectDefineProperty.f;
-  var getOwnPropertyDescriptor = objectGetOwnPropertyDescriptor.f;
-  for (var i = 0; i < keys.length; i++) {
-    var key = keys[i];
-    if (!has(target, key)) defineProperty(target, key, getOwnPropertyDescriptor(source, key));
-  }
-};
-
-var replacement = /#|\.prototype\./;
-
-var isForced = function (feature, detection) {
-  var value = data[normalize(feature)];
-  return value == POLYFILL ? true
-    : value == NATIVE ? false
-    : typeof detection == 'function' ? fails(detection)
-    : !!detection;
-};
-
-var normalize = isForced.normalize = function (string) {
-  return String(string).replace(replacement, '.').toLowerCase();
-};
-
-var data = isForced.data = {};
-var NATIVE = isForced.NATIVE = 'N';
-var POLYFILL = isForced.POLYFILL = 'P';
-
-var isForced_1 = isForced;
-
-var getOwnPropertyDescriptor = objectGetOwnPropertyDescriptor.f;
+// 26.1.11 Reflect.ownKeys(target)
 
 
+_export(_export.S, 'Reflect', { ownKeys: _ownKeys });
 
-
-
-
-/*
-  options.target      - name of the target object
-  options.global      - target is the global object
-  options.stat        - export as static methods of target
-  options.proto       - export as prototype methods of target
-  options.real        - real prototype method for the `pure` version
-  options.forced      - export even if the native feature is available
-  options.bind        - bind methods to the target, required for the `pure` version
-  options.wrap        - wrap constructors to preventing global pollution, required for the `pure` version
-  options.unsafe      - use the simple assignment of property instead of delete + defineProperty
-  options.sham        - add a flag to not completely full polyfills
-  options.enumerable  - export as enumerable property
-  options.noTargetGet - prevent calling a getter on target
-*/
-var _export = function (options, source) {
-  var TARGET = options.target;
-  var GLOBAL = options.global;
-  var STATIC = options.stat;
-  var FORCED, target, key, targetProperty, sourceProperty, descriptor;
-  if (GLOBAL) {
-    target = global;
-  } else if (STATIC) {
-    target = global[TARGET] || setGlobal(TARGET, {});
-  } else {
-    target = (global[TARGET] || {}).prototype;
-  }
-  if (target) for (key in source) {
-    sourceProperty = source[key];
-    if (options.noTargetGet) {
-      descriptor = getOwnPropertyDescriptor(target, key);
-      targetProperty = descriptor && descriptor.value;
-    } else targetProperty = target[key];
-    FORCED = isForced_1(GLOBAL ? key : TARGET + (STATIC ? '.' : '#') + key, options.forced);
-    // contained in target
-    if (!FORCED && targetProperty !== undefined) {
-      if (typeof sourceProperty === typeof targetProperty) continue;
-      copyConstructorProperties(sourceProperty, targetProperty);
-    }
-    // add a flag to not completely full polyfills
-    if (options.sham || (targetProperty && targetProperty.sham)) {
-      hide(sourceProperty, 'sham', true);
-    }
-    // extend global
-    redefine(target, key, sourceProperty, options);
-  }
-};
-
-// `Reflect.ownKeys` method
-// https://tc39.github.io/ecma262/#sec-reflect.ownkeys
-_export({ target: 'Reflect', stat: true }, { ownKeys: ownKeys });
-
-var path = global;
-
-var ownKeys$1 = path.Reflect.ownKeys;
+var ownKeys = _core.Reflect.ownKeys;
 
 /*eslint-disable */
 if (!String.prototype.startsWith) {
@@ -866,7 +727,12 @@ var Attr = /** @class */ (function (_super) {
      */
     Attr.prototype.make = function (value, _parent, key) {
         value = value !== undefined ? value : this.value;
-        return this.mutate(value, key);
+        // Default Value might be a function (taking no parameter)
+        var localValue = value;
+        if (typeof value === 'function') {
+            localValue = value();
+        }
+        return this.mutate(localValue, key);
     };
     return Attr;
 }(Type));
@@ -2080,6 +1946,46 @@ var Serializer = /** @class */ (function () {
     return Serializer;
 }());
 
+/* istanbul ignore next */
+var NoKey = /** @class */ (function () {
+    function NoKey() {
+    }
+    /**
+     * Set new unique id value.
+     */
+    NoKey.set = function () {
+        this.value = "" + this.prefix + this.count;
+    };
+    /**
+     * Get the current unique id value.
+     */
+    NoKey.get = function () {
+        return this.value;
+    };
+    /**
+     * Increment the count, new unique id value.
+     */
+    NoKey.increment = function () {
+        this.count++;
+        this.set();
+        return this.get();
+    };
+    /**
+     * Count to create a unique id for the record that missing its primary key.
+     */
+    NoKey.count = 0;
+    /**
+     * Prefix string to be used for undefined primary key value.
+     */
+    NoKey.prefix = '_no_key_';
+    /**
+     * The current unique id value. This is the combination of
+     * the `prefix` and the `count`.
+     */
+    NoKey.value = '';
+    return NoKey;
+}());
+
 var Model = /** @class */ (function () {
     /**
      * Create a new model instance.
@@ -2327,7 +2233,7 @@ var Model = /** @class */ (function () {
         if (typeof key === 'string') {
             return record[key];
         }
-        return key.map(function (k) { return record[k]; }).join('_');
+        return key.map(function (k) { return (record[k] || NoKey.increment()); }).join('_');
     };
     /**
      * Get local key to pass to the attributes.
@@ -2982,7 +2888,7 @@ var getValues = function getValues(input) {
   });
 };
 
-var normalize$1 = function normalize(schema, input, parent, key, visit, addEntity) {
+var normalize = function normalize(schema, input, parent, key, visit, addEntity) {
   schema = validateSchema(schema);
 
   var values = getValues(input);
@@ -3094,7 +3000,7 @@ var visit = function visit(value, parent, key, schema, addEntity) {
   }
 
   if ((typeof schema === 'undefined' ? 'undefined' : _typeof(schema)) === 'object' && (!schema.normalize || typeof schema.normalize !== 'function')) {
-    var method = Array.isArray(schema) ? normalize$1 : _normalize;
+    var method = Array.isArray(schema) ? normalize : _normalize;
     return method(schema, value, parent, key, visit, addEntity);
   }
 
@@ -3126,7 +3032,7 @@ var schema = {
   Values: ValuesSchema
 };
 
-var normalize$1$1 = function normalize$$1(input, schema) {
+var normalize$1 = function normalize$$1(input, schema) {
   if (!input || (typeof input === 'undefined' ? 'undefined' : _typeof(input)) !== 'object') {
     throw new Error('Unexpected input given to normalize. Expected type to be "object", found "' + (typeof input === 'undefined' ? 'undefined' : _typeof(input)) + '".');
   }
@@ -3150,7 +3056,7 @@ var Normalizer = /** @class */ (function () {
         }
         var entity = query.database().schemas[query.model.entity];
         var schema = Array.isArray(record) ? [entity] : entity;
-        return normalize$1$1(record, schema).entities;
+        return normalize$1(record, schema).entities;
     };
     return Normalizer;
 }());
@@ -5091,46 +4997,6 @@ function use (plugin, options) {
     };
     plugin.install(components, options);
 }
-
-/* istanbul ignore next */
-var NoKey = /** @class */ (function () {
-    function NoKey() {
-    }
-    /**
-     * Set new unique id value.
-     */
-    NoKey.set = function () {
-        this.value = "" + this.prefix + this.count;
-    };
-    /**
-     * Get the current unique id value.
-     */
-    NoKey.get = function () {
-        return this.value;
-    };
-    /**
-     * Increment the count, new unique id value.
-     */
-    NoKey.increment = function () {
-        this.count++;
-        this.set();
-        return this.get();
-    };
-    /**
-     * Count to create a unique id for the record that missing its primary key.
-     */
-    NoKey.count = 0;
-    /**
-     * Prefix string to be used for undefined primary key value.
-     */
-    NoKey.prefix = '_no_key_';
-    /**
-     * The current unique id value. This is the combination of
-     * the `prefix` and the `count`.
-     */
-    NoKey.value = '';
-    return NoKey;
-}());
 
 var IdAttribute = /** @class */ (function () {
     function IdAttribute() {
