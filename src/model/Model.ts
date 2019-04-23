@@ -15,6 +15,7 @@ import * as Payloads from '../modules/payloads/Actions'
 import Fields from './contracts/Fields'
 import ModelState from './contracts/State'
 import Serializer from './Serializer'
+import NoKey from '../schema/NoKey'
 
 type InstanceOf<T> = T extends new (...args: any[]) => infer R ? R : any
 
@@ -391,7 +392,7 @@ export default class Model {
       return record[key]
     }
 
-    return key.map(k => record[k]).join('_')
+    return key.map(k => (record[k] || NoKey.increment())).join('_')
   }
 
   /**
