@@ -113,14 +113,16 @@ There are several model attributes you can use to define model fields.
 
 ## Generic Type
 
-Use `this.attr()` method to define the most generic field. The argument is the default value of the field which will be used when creating a new data if the field is not present.
+Use `this.attr()` method to define the most generic field. The argument is the default value of the field which will be used when creating a new data if the field is not present.  
+Default value may be a closure creating a default value.
 
 ```js
 class User extends Model {
   static fields () {
     return {
       id: this.attr(null),
-      name: this.attr('John Doe')
+      name: this.attr('John Doe'),
+      rand: this.attr(() => Math.random())
     }
   }
 }

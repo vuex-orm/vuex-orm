@@ -20,6 +20,12 @@ export default class Attr extends Type {
   make (value: any, _parent: Record, key: string): any {
     value = value !== undefined ? value : this.value
 
-    return this.mutate(value, key)
+    // Default Value might be a function (taking no parameter)
+    let localValue = value;
+    if (typeof value === 'function') {
+      localValue = value();
+    }
+
+    return this.mutate(localValue, key)
   }
 }
