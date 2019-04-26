@@ -9,16 +9,16 @@ const sidebars = {
       ]
     },
     {
-      title: 'Core Components',
+      title: 'Model',
       collapsable: false,
       children: [
-        '/guide/components/models',
-        '/guide/components/modules-and-store',
-        '/guide/components/database-and-registration'
+        '/guide/model/defining-models',
+        '/guide/model/defining-relationships',
+        '/guide/model/database-registration'
       ]
     },
     {
-      title: 'Interacting With Store',
+      title: 'Inserting & Updating Data',
       collapsable: false,
       children: [
         '/guide/store/inserting-and-updating-data',
@@ -27,7 +27,16 @@ const sidebars = {
       ]
     },
     {
-      title: 'Relationships',
+      title: 'Retrieving Data',
+      collapsable: false,
+      children: [
+        '/guide/relationships/defining-relationships',
+        '/guide/relationships/inserting-relationships',
+        '/guide/relationships/retrieving-relationships'
+      ]
+    },
+    {
+      title: 'Deleting Data',
       collapsable: false,
       children: [
         '/guide/relationships/defining-relationships',
@@ -48,6 +57,7 @@ const sidebars = {
       title: 'Advanced Usage',
       collapsable: false,
       children: [
+        '/guide/components/modules-and-store',
         '/guide/advanced/interact-with-store-from-model',
         '/guide/advanced/accessors-and-mutators',
         '/guide/advanced/lifecycle-hooks',

@@ -1,29 +1,29 @@
 # Getting Started
 
-This document is a quick start guide to begin using Vuex ORM. It assumes you have a basic understanding of [Vuex](https://github.com/vuejs/vuex/). If you are not familiar with Vuex, please visit [Vuex Documentation](https://vuex.vuejs.org) to learn about Vuex.
+This page is a quick start guide to begin using Vuex ORM. It assumes you have a basic understanding of [Vuex](https://github.com/vuejs/vuex/). If you are not familiar with Vuex, please visit [Vuex Documentation](https://vuex.vuejs.org) to learn about Vuex.
 
 > **NOTE:** We will be using ES2015 syntax for code examples for the rest of the docs. Also, we use "Class Property" to define some property in the class. This syntax requires compilers such as [@babel/plugin-proposal-class-properties](https://babeljs.io/docs/en/babel-plugin-proposal-class-properties).
 
-## Core Architecture
+## Setup
 
-To setup Vuex ORM, you must first create the following components.
+To setup Vuex ORM, you must:
 
-- Models
-- Modules
-- Database
+1. Define Models.
+2. Register Models to Vuex.
 
-You usually first create models and modules, then register them to the database. Finally, install the database to Vuex as a plugin.
+Don't worry. It's much easier than you think.
 
-## Create Models
+### Define Models
 
-Models represent schema of the data which is going to be stored in the Vuex Store. The schema would often be the same as the API response from the server, but it could be whatever you like.
+Models represent schema of the data which is going to be stored in the Vuex Store. The schema would often be similar to the API response from the server, but it could be whatever you like.
 
-Models can also have relationships with other models like any other ORM library. For example, a post belongs to a user, or post has many comments.
+Models can also have relationships with other models like any other ORM library. For example, a Post could *belongs to* a User, or Post *has many* Comments.
 
-Let's declare models by extending Vuex ORM `Model`.
+You can declare models by extending Vuex ORM `Model`.
 
 ```js
 // User Model
+
 import { Model } from '@vuex-orm/core'
 
 export default class User extends Model {
@@ -44,15 +44,16 @@ export default class User extends Model {
 
 ```js
 // Post Model
+
 import { Model } from '@vuex-orm/core'
 import User from './User'
 
 export default class Post extends Model {
   static entity = 'posts'
 
+  // `this.belongsTo` is for belongs to relationship. The first argument is
+  // the Model class, and second is the field name for the foreign key.
   static fields () {
-    // `this.belongsTo` is for belongs to relationship. The first argument
-    // is the Model class, and second is the foreign key.
     return {
       id: this.attr(null),
       user_id: this.attr(null),
@@ -67,9 +68,11 @@ export default class Post extends Model {
 
 The above example shows that there are `User` Model and `Post` Model. `Post` Model has `belongsTo` relationship to User at `author` key.
 
-If you don't want use the "Class Property" syntax such as `static entity`, you can define them differently too.
+By the way, if you don't want to use the "Class Property" syntax such as `static entity`, you can define them differently too.
 
 ```js
+// Assign property afterwords.
+
 class User extends Model {
   // ...
 }
@@ -78,59 +81,20 @@ User.entity = 'users'
 ```
 
 ```js
-// Or...
+// Assign static property as a getter.
 
 class User extends Model {
   static get entity () {
     return 'users'
   }
-
-  // ...
 }
 ```
 
-You can learn more about Models at [Models](../components/models.md).
+You can learn more about Models at [Defining Models](../components/models.md).
 
-## Create Modules
+### Register Models to Vuex
 
-Modules are just simple [Vuex Modules](https://vuex.vuejs.org/en/modules.html) that correspond to the Models. Vuex ORM uses this module to interact with the Vuex Store.
-
-Vuex ORM is going to add any necessary states, getters, actions, and mutations, so you do not have to add anything to the modules, but if you want you can. When you do, just treat them as standard Vuex Modules.
-
-```js
-// The users module. If you don't need any specific features, you can leave it
-// as an empty object, or just don't create any.
-export default {}
-```
-
-```js
-// The posts module. You can add any additional things you want.
-export default {
-  state: {
-    fetched: false
-  },
-
-  actions: {
-    fetch ({ commit }) {
-      commit('fetch')
-    }
-  },
-
-  mutations: {
-    fetch (state) {
-      state.fetched = true
-    }
-  }
-}
-```
-
-You may learn more about modules at [Modules And Store](../components/modules-and-store.md).
-
-### Register Models and Modules to the Vuex Store
-
-Now it is time for you to register Models and Modules to the Vuex. To do so, register Models and Modules you have created to the Database instance, and then register the Database to the Vuex Store as a Vuex plugin.
-
-Use `install` when registering VuexORM as a plugin.
+Now it's time for you to register Models to Vuex. To do so, you should first register Models to Database instance, and then install Database to Vuex as a plugin through Vuex ORM `install` method.
 
 ```js
 import Vue from 'vue'
@@ -138,18 +102,15 @@ import Vuex from 'vuex'
 import VuexORM from '@vuex-orm/core'
 import User from './User'
 import Post from './Post'
-import users from './users'
-import posts from './posts'
 
 Vue.use(Vuex)
 
 // Create new instance of Database.
 const database = new VuexORM.Database()
 
-// Register Model and Module. The First argument is the Model, and
-// second is the Module.
-database.register(User, users)
-database.register(Post, posts)
+// Register Models to Database.
+database.register(User)
+database.register(Post)
 
 // Create Vuex Store and register database through Vuex ORM.
 const store = new Vuex.Store({
@@ -159,32 +120,26 @@ const store = new Vuex.Store({
 export default store
 ```
 
-Now you are ready to go. Vuex ORM is going to create an `entities` module in Vuex Store State, and register any other modules under the `entities` namespace.
-
-The state tree inside Vuex Store is going to be as follows.
+Now you are ready to go. Vuex ORM is going to create an `entities` module in Vuex Store State by default, and register any Models under the `entities` namespace. The state tree inside Vuex Store is going to be as follows.
 
 ```js
-console.log(store.state.entities)
-
-/*
-  {
-    entities: {
-      posts: {
-        data: {}
-      },
-      users: {
-        data: {}
-      }
+{
+  entities: {
+    posts: {
+      data: {}
+    },
+    users: {
+      data: {}
     }
   }
-*/
+}
 ```
 
-Learn more about plugin registration at [Database And Registration](../components/database-and-registration.md).
+Learn more about plugin registration at [Database Registration](../components/database-and-registration.md).
 
-## Creating Data to Vuex Store
+## Inserting Data
 
-You can use the `create` action to create a new record in Vuex Store. Let's say we want to save a single post data to the store.
+You may use the `insert` method to insert a new record in Vuex Store. Let's say we want to save a single post data to the store.
 
 ```js
 // Assuming this data structure is the response from the API backend.
@@ -204,17 +159,17 @@ const posts = [
 // import the Post model class
 import Post from './Post'
 
-Post.create({ data: posts })
+Post.insert({ data: posts })
 ```
 
 With above action, Vuex ORM creates the following schema in the Vuex Store.
 
 ```js
 // Inside `store.state.entities`.
-let state = {
+{
   posts: {
     data: {
-      '1': {
+      1: {
         id: 1,
         user_id: 1,
         title: 'Hello, world!',
@@ -226,7 +181,7 @@ let state = {
 
   users: {
     data: {
-      '1': {
+      1: {
         id: 1,
         name: 'John Doe',
         email: 'john@example.com'
@@ -238,67 +193,45 @@ let state = {
 
 See how `posts` and `users` are decoupled from each other. This is what is meant by "normalizing" the data.
 
-## Retrieving Data from Vuex Store
-
-To retrieve data, you can just access the store state directly as usual.
-
-```js
-console.log(store.state.entities.posts.data[1].title) // <- 'Hello, world!'
-console.log(store.state.entities.users.data[1].name) // <- 'John Doe'
-```
-
-Or using Vuex Getters. However, Vuex ORM provides a way to query, and fetch data in an organized way through predefined Vuex Getters. You can map all these getters using mapGetters or using Model instances.
-
-```js
-import {mapGetters} from 'vuex'
-
-//...
-
-computed: {
-    // use Vuex mapGetters
-    ...mapGetters({
-        allPosts: 'entities/post/all'
-    }),
-    // or get the actual model instance, which is much more sucinct later on
-    User: ()=> this.$store.getters['entities/user']().model // gets the User model
-},
-
-methods: {
-   foo(){
-      this.allPosts // all posts
-      this.User.all() // all users
-   }
-}
-```
-
-Or you can import the Model into the component and refer to that directly as well. This is useful when reading data from outside of a Vue component.
+## Retrieving Data
 
 ```js
 
 // import the Post model
 import Post from './Post'
 
-// Fetch all post records. The result will be wrapped with Post model!
+// Fetch all post records. The result will be wrapped with Post model.
 Post.all()
 
 /*
   [
-    Post { id: 1, user_id: 1, title: 'Hello, world!', body: 'Some awesome body...', author: 1 },
-    Post { id: 2, user_id: 2, title: 'Hello, another world!', body: 'Some another awesome body...', author: 2 },
-    ...
+    {
+      id: 1,
+      user_id: 1,
+      title: 'Hello, world!',
+      body: 'Some awesome body...',
+    },
+    {
+      id: 2,
+      user_id: 2,
+      title: 'Hello, another world!',
+      body: 'Some another awesome body...'
+    }
   ]
 */
+```
 
-// Fetch single record with relation.
+```js
+// Fetch single post with `author`.
 Post.query().with('author').first()
 
 /*
-  Post {
+  {
     id: 1,
     user_id: 1,
     title: 'Hello, world!',
     body: 'Some awesome body...',
-    author: User {
+    author: {
       id: 1,
       name: 'John Doe',
       email: 'john@example.com'
@@ -307,4 +240,11 @@ Post.query().with('author').first()
 */
 ```
 
-Learn more about retrieving data from the Store at [Store: Retrieving Data](../store/retrieving-data.md)
+## What's Next?
+
+Vuex ORM offers a lot more features that help you deal with data. Please read through the documentation to find out more. Here are some good starting points to go from here.
+
+- [Defining Models]()
+- [Inserting and Updating Data]()
+- [Retrieving Data]()
+- [Deleting Data]()

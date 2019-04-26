@@ -1,30 +1,8 @@
 # Defining Relationships
 
-Vuex ORM supports several different types of relationships:
-
-- [One To One](#one-to-one)
-- [One To Many](#one-to-many)
-- [Many To Many](#many-to-many)
-- [Has Many By](#has-many-by)
-- [Has Many Through](#has-many-through)
-- [Polymorphic Relations](#polymorphic-relations)
-- [Many To Many Polymorphic Relations](#many-to-many-polymorphic-relations)
-
-The relationships are defined as attributes in model's `static fields`. The below example shows that the Post has the relationship with Comment of `hasMany`.
+Relationship management is the key strength of Vuex ORM. The relationships may defined as attributes in Model's `static fields`. The below example shows that the Post has the relationship with Comment of `hasMany`.
 
 ```js
-class Comment extends Model {
-  static entity = 'comments'
-
-  static fields () {
-    return {
-      id: this.attr(null),
-      post_id: this.attr(null),
-      body: this.attr('')
-    }
-  }
-}
-
 class Post extends Model {
   static entity = 'posts'
 
@@ -37,15 +15,47 @@ class Post extends Model {
     }
   }
 }
+
+class Comment extends Model {
+  static entity = 'comments'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      post_id: this.attr(null),
+      body: this.attr('')
+    }
+  }
+}
 ```
 
-By defining the relationship, Vuex ORM is going to use those relationships to construct data when storing, modifying, and fetching data from the Vuex Store.
+By defining relationships, Vuex ORM is going to use those relationships to construct data when storing, modifying, and fetching data from the Vuex Store. Vuex ORM supports several different types of relationships:
+
+- [One To One](#one-to-one)
+- [One To Many](#one-to-many)
+- [Many To Many](#many-to-many)
+- [Has Many By](#has-many-by)
+- [Has Many Through](#has-many-through)
+- [Polymorphic Relations](#polymorphic-relations)
+- [Many To Many Polymorphic Relations](#many-to-many-polymorphic-relations)
 
 ## One To One
 
 A one-to-one relationship is defined by `this.hasOne` method. For example, User might have one profile information.
 
 ```js
+class User extends Model {
+  static entity = 'users'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      name: this.attr(''),
+      profile: this.hasOne(Profile, 'user_id')
+    }
+  }
+}
+
 class Profile extends Model {
   static entity = 'profiles'
 
@@ -58,23 +68,11 @@ class Profile extends Model {
     }
   }
 }
-
-class User extends Model {
-  static entity = 'users'
-
-  static fields () {
-    return {
-      id: this.attr(null),
-      name: this.attr(''),
-      profile: this.hasOne(Profile, 'user_id')
-    }
-  }
-}
 ```
 
-The first argument of `this.hasOne` is the related model, which in this case is the Profile model. The second argument is the "foreign key" which holds the primary key of the User model. In this example, the foreign key is the `user_id` of the Profile model.
+The first argument of `this.hasOne()` is the related model, which in this case is the Profile model. The second argument is the "foreign key" which holds the primary key of the User model. In this example, the foreign key is the `user_id` of the Profile model.
 
-Additionally, Vuex ORM assumes that the foreign key should have a value matching the id (or the custom `static primaryKey`) field of the parent. In other words, Vuex ORM will look for the value of the user's id column in the user_id column of the Profile record. If you would like the relationship to use a value other than id, you may pass the third argument to the hasOne method specifying your custom key:
+Additionally, Vuex ORM assumes that the foreign key should have a value matching the id (or the custom `static primaryKey`) field of the parent. In other words, Vuex ORM will look for the value of the User's id column in the user_id column of the Profile record. If you would like the relationship to use a value other than id, you may pass the third argument to the hasOne method specifying your custom key:
 
 ```js
 class User extends Model {
@@ -96,6 +94,17 @@ class User extends Model {
 To define an inverse relationship of one-to-one, you can do so with the `this.belongsTo()` attribute.
 
 ```js
+class User extends Model {
+  static entity = 'users'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      name: this.attr('')
+    }
+  }
+}
+
 class Profile extends Model {
   static entity = 'profiles'
 
@@ -109,24 +118,24 @@ class Profile extends Model {
     }
   }
 }
+```
 
+Now the above Profile model has a belongs to relationship to the User model. The arguments are pretty much the same with `this.hasOne()`. The first argument is the related model, and second is the "foreign key", but of course this time the foreign key exists in the Profile model.
+
+If your parent model – User in this case – does not use id as its primary key, or you wish to join the child model to a different field, you may pass the third argument to the `belongsTo` method specifying your parent table's custom key:
+
+```js
 class User extends Model {
   static entity = 'users'
 
   static fields () {
     return {
-      id: this.attr(null),
+      other_id: this.attr(null),
       name: this.attr('')
     }
   }
 }
-```
 
-Now the above Profile model has a belongs to relationship to the User model. The arguments are pretty much the same with `this.hasOne`. The first argument is the related model, and second is the "foreign key", but of course this time the foreign key exists in the Profile model.
-
-If your parent model – User in this case – does not use id as its primary key, or you wish to join the child model to a different field, you may pass the third argument to the `belongsTo` method specifying your parent table's custom key:
-
-```js
 class Profile extends Model {
   static entity = 'profiles'
 
@@ -144,21 +153,9 @@ class Profile extends Model {
 
 ## One To Many
 
-A one-to-many relationship can be defined by `this.hasMany`.
+A one-to-many relationship can be defined by `this.hasMany()`. For example, a blog post may have an infinite number of comments.
 
 ```js
-class Comment extends Model {
-  static entity = 'comments'
-
-  static fields () {
-    return {
-      id: this.attr(null),
-      post_id: this.attr(null),
-      body: this.attr('')
-    }
-  }
-}
-
 class Post extends Model {
   static entity = 'posts'
 
@@ -171,9 +168,21 @@ class Post extends Model {
     }
   }
 }
+
+class Comment extends Model {
+  static entity = 'comments'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      post_id: this.attr(null),
+      body: this.attr('')
+    }
+  }
+}
 ```
 
-For this example, Post has many Comments. The arguments for the `this.hasMany` is again pretty much the same as the others. The first argument is the model, and second is the 'foreign key' of the related model.
+The arguments for the `this.hasMany()` is again pretty much the same as the others. The first argument is the related model, and second is the 'foreign key' of the related model.
 
 Then of course, the 3rd argument can override which id to look up on parent model, which is Post in this case.
 
@@ -195,16 +204,16 @@ class Post extends Model {
 
 ## Has Many By
 
-In some cases, the model itself has all the keys of the related model. Like below example.
+Has Many By is similar to Has Many relations, but having foreign keys at parent Model as an array. For example, there could be a situation where you must parse data looks something like:
 
 ```js
-let state = {
+{
   nodes: {
-    '1': { id: 1 },
-    '2': { id: 1 }
+    1: { id: 1 },
+    2: { id: 1 }
   },
   clusters: {
-    '1': {
+    1: {
       id: 1,
       node_ids: [1, 2]
     }
@@ -212,7 +221,7 @@ let state = {
 }
 ```
 
-As you can see, clusters wants to have `hasMany` relationship with nodes, but nodes do not have `cluster_id`. You can't use `this.hasMany` in this case because there is no foreign key to look for. In such cases, you may use `this.hasManyBy` relationship.
+As you can see, `clusters` have `hasMany` relationship with `nodes`, but `nodes` do not have `cluster_id`. You can't use `this.hasMany()` in this case because there is no foreign key to look for. In such cases, you may use `this.hasManyBy()` relationship.
 
 ```js
 class Node extends Model {
@@ -239,7 +248,9 @@ class Cluster extends Model {
 }
 ```
 
-Now the cluster model is going to look for nodes using ids at clusters own `node_ids` attributes. As always, you can pass the third argument to specify which id to look for.
+Now the cluster model is going to look for Nodes using ids at Cluster's own `node_ids` attributes.
+
+As always, you can pass the third argument to specify which id to look for.
 
 ```js
 class Cluster extends Model {
@@ -262,7 +273,7 @@ The RoleUser contains the fields to hold id of User and Role model. We'll define
 
 The name of RoleUser model could be anything, but for this example, we'll keep it this way to make it easy to understand.
 
-Many-to-many relationships are defined by defining attributes of the `belongsToMany`.
+Many-to-many relationships are defined by defining `this.belongsToMany()`.
 
 ```js
 class User extends Model {
@@ -307,7 +318,7 @@ The argument order of the `belongsToMany` attribute is:
 3. Field of the pivot model that holds the id value of the parent – User – model.
 4. Field of the pivot model that holds the id value of the related – Role – model.
 
-You may also define custom local key at 4th and 5th argument.
+You may also define custom local key at 5th and 6th argument.
 
 ```js
 class User extends Model {
@@ -414,16 +425,16 @@ Though posts do not contain a country_id column, the `hasManyThrough` relation p
 
 The first argument passed to the `hasManyThrough` method is the final model we wish to access, while the second argument is the intermediate model. The third argument is the name of the foreign key on the intermediate model. The fourth argument is the name of the foreign key on the final model.
 
-If you would like to customize the local key for the models, you could also pass the fifth argument which is the local key, while the sixth argument is the local key of the intermediate model.
+If you would like to customize the local key for the models, you could also pass the 5th argument which is the local key, while the 6th argument is the local key of the intermediate model.
 
 ```js
 this.hasManyThrough(
-  Post, // Final model we wish to access.
-  User, // Intermediate model.
-  'country_id', // Foreign key on User model.
-  'user_id', // Foreign key on Post model.
-  'id', // Local key on Country model.
-  'id' // Local key on User model.
+  Post,               // Final model we wish to access.
+  User,               // Intermediate model.
+  'country_id',       // Foreign key on User model.
+  'user_id',          // Foreign key on Post model.
+  'local_country_id', // Local key on Country model.
+  'local_user_id'     // Local key on User model.
 )
 ```
 
@@ -431,7 +442,126 @@ this.hasManyThrough(
 
 ## Polymorphic Relations
 
-Polymorphic relations allow a model to belong to more than one other model on a single association. For example, imagine users of your application can "comment" both posts and videos. Using polymorphic relationships, you can use a single comments entity for both of these scenarios.
+A polymorphic relationship allows the target Model to belong to more than one type of Model using a single association.
+
+### One To One Polymorphic Relation
+
+A one-to-one polymorphic relation is similar to a simple one-to-one relation; however, the target model can belong to more than one type of model on a single association. For example, a blog Post and a User may share a polymorphic relation to an Image model. Using a one-to-one polymorphic relation allows you to have a single list of unique images that are used for both blog posts and user accounts.
+
+To build these relationships, you need to declare three models.
+
+```js
+class User extends Model {
+  static entity = 'users'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      name: this.string(''),
+      image: this.morphOne(Image, 'imageable_id', 'imageable_type')
+    }
+  }
+}
+
+class Post extends Model {
+  static entity = 'posts'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      title: this.string(''),
+      image: this.morphOne(Image, 'imageable_id', 'imageable_type')
+    }
+  }
+}
+
+class Image extends Model {
+  static entity = 'images'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      url: this.attr(''),
+      imageable_id: this.attr(null),
+      imageable_type: this.attr(null)
+    }
+  }
+}
+```
+
+Take note of the `imageable_id` and `imageable_type` columns on the images table. The `imageable_id` column will contain the ID value of the post or user, while the `imageable_type` column will contain the class name of the parent Model. The `imageable_type` column is used by Eloquent to determine which "type" of parent model to return when accessing the imageable relation.
+
+`this.morphMany` method defined at both User and Post model is the definition of the relationship. Now you may fetch image for the model as usual.
+
+```js
+User.query().with('image').find(1)
+
+/*
+  {
+    id: 1,
+    name: 'John Doe',
+    image: {
+      id: 1,
+      url: '/profile.jpg',
+      imageable_id: 1,
+      imageable_type: 'posts'
+    },
+  }
+*/
+```
+
+You may also retrieve the owner of a polymorphic relation from the polymorphic model by defining the `morphTo` attribute.
+
+```js
+class Image extends Model {
+  static entity = 'images'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      url: this.attr(''),
+      imageable_id: this.attr(null),
+      imageable_type: this.attr(null),
+      imageable: this.morphTo('imageable_id', 'imageable_type')
+    }
+  }
+}
+```
+
+Then you can query the relationship via `with` query chain as same as other relationships.
+
+```js
+Image.query().with('imageable').get()
+
+/*
+  [
+    {
+      id: 1,
+      url: '/profile.jpg',
+      imageable_id: 1,
+      imageable_type: 'posts',
+      imageable: {
+        id: 1,
+        name: 'John Doe'
+      }
+    },
+    {
+      id: 2,
+      url: '/profile.jpg',
+      imageable_id: 1,
+      imageable_type: 'videos'
+      imageable: {
+        id: 1,
+        title: 'Hello, world!'
+      }
+    }
+  ]
+*/
+```
+
+### One To Many Polymorphic Relation
+
+A one-to-many polymorphic relation is similar to a simple one-to-many relation; however, the target model can belong to more than one type of model on a single association. For example, imagine users of your application can "comment" on both posts and videos. Using polymorphic relationships, you may use a single comments table for both of these scenarios. First, let's examine the table structure required to build this relationship:
 
 To build these relationships, you need to declare three models.
 
@@ -442,6 +572,7 @@ class Post extends Model {
   static fields () {
     return {
       id: this.attr(null),
+      post_title: this.string(''),
       comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
     }
   }
@@ -453,6 +584,7 @@ class Video extends Model {
   static fields () {
     return {
       id: this.attr(null),
+      video_link: this.string(''),
       comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
     }
   }
@@ -480,11 +612,12 @@ Two important fields to note are the `commentable_id` and `commentable_type` on 
 Post.query().with('comments').find(1)
 
 /*
-  Post {
+  {
     id: 1,
+    post_title: 'Hello, world!',
     comments: [
-      Comment { id: 1, body: 'comment 1' },
-      Comment { id: 2, body: 'comment 2' }
+      { id: 1, body: 'comment 1', commentable_id: 1, commentable_type: 'posts' },
+      { id: 2, body: 'comment 2', commentable_id: 1, commentable_type: 'posts' }
     ]
   }
 */
@@ -506,48 +639,37 @@ class Comment extends Model {
     }
   }
 }
+```
 
+Then you can query the relationship via `with` query chain as same as other relationships.
+
+```js
 Comment.query().with('commentable').get()
 
 /*
   [
-    Comment {
+    {
       id: 1,
       body: 'comment 1',
       commentable_id: 1,
       commentable_type: 'posts',
-      commentable: Post {
-        id: 1
+      commentable: {
+        id: 1,
+        post_title: 'Hello, world!'
       }
     },
-    Comment {
+    {
       id: 2,
       body: 'comment 2',
-      commentable_id: 5,
+      commentable_id: 1,
       commentable_type: 'videos'
-      commentable: Video {
-        id: 5
+      commentable: {
+        id: 1,
+        video_link: 'https://example.com'
       }
     }
   ]
 */
-```
-
-### One To One Polymorphic Relation
-
-You can use the `morphOne` method to define the one-to-one polymorphic relation.
-
-```js
-class Post extends Model {
-  static entity = 'posts'
-
-  static fields () {
-    return {
-      id: this.attr(null),
-      comments: this.morphOne(Comment, 'commentable_id', 'commentable_type')
-    }
-  }
-}
 ```
 
 ## Many To Many Polymorphic Relations
@@ -606,7 +728,7 @@ class Taggable extends Model {
 
 ### Defining The Inverse Of The Relationship
 
-To define the inverse relation to fetch related record – for this example it's for Tag model – you can use the `this.morphedByMany` attribute.
+To define the inverse relation to fetch related record – for this example it's for Tag model – you can use the `this.morphedByMany()` attribute.
 
 ```js
 class Tag extends Model {
@@ -616,9 +738,12 @@ class Tag extends Model {
     return {
       id: this.attr(null),
       name: this.attr(''),
-      posts: this.morphedByMany(Post, Taggable, 'tag_id', 'taggable_id', 'taggable_type'),
-      videos: this.morphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
-
+      posts: this.morphedByMany(
+        Post, Taggable, 'tag_id', 'taggable_id', 'taggable_type'
+      ),
+      videos: this.morphedByMany(
+        Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type'
+      )
     }
   }
 }
