@@ -1,4 +1,4 @@
-# What Is Vuex ORM?
+# What is Vuex ORM?
 
 Many APIs return JSON data that has deeply nested objects. Using data in this kind of structure can be very difficult for JavaScript applications, especially those using the single tree state management system such as [Vuex](https://vuex.vuejs.org) or [Redux](http://redux.js.org).
 

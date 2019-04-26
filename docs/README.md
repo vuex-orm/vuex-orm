@@ -2,19 +2,19 @@
 
 Vuex ORM is a plugin for [Vuex](https://github.com/vuejs/vuex) to enable Object-Relational Mapping access to the Vuex Store. Vuex ORM lets you create "normalized" data schema within Vuex Store with relationships such as "Has One" and "Belongs To Many" like any other usual ORM library. It also provides fluent API to get, search and update Store state.
 
-Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) and ["Updating Normalized Data"](http://redux.js.org/docs/recipes/reducers/UpdatingNormalizedData.html). Learn more about the concept and motivation of Vuex ORM at [What Is Vuex ORM?](https://vuex-orm.github.io/vuex-orm/guide/prologue/what-is-vuex-orm.html).
+Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) and ["Updating Normalized Data"](http://redux.js.org/docs/recipes/reducers/UpdatingNormalizedData.html). Learn more about the concept and motivation of Vuex ORM at [What is Vuex ORM?](https://vuex-orm.github.io/vuex-orm/guide/prologue/what-is-vuex-orm.html).
 
 ## Table Of Contents
 
 - Prologue
-    - [What Is Vuex ORM?](guide/prologue/what-is-vuex-orm.md)
+    - [What is Vuex ORM?](guide/prologue/what-is-vuex-orm.md)
     - [Installation](guide/prologue/installation.md)
     - [Getting Started](guide/prologue/getting-started.md)
 - Core Components
     - [Models](guide/components/models.md)
     - [Modules and Store](guide/components/modules-and-store.md)
     - [Database and Registration](guide/components/database-and-registration.md)
-- Interacting With Store
+- Interacting with Store
     - [Inserting and Updating Data](guide/store/inserting-and-updating-data.md)
     - [Retrieving Data](guide/store/retrieving-data.md)
     - [Deleting Data](guide/store/deleting-data.md)
@@ -23,7 +23,7 @@ Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http
     - [Inserting Relationships](guide/relationships/inserting-relationships.md)
     - [Retrieving Relationships](guide/relationships/retrieving-relationships.md)
 - Advanced Usage
-    - [Interact With Store From Model](guide/advanced/interact-with-store-from-model.md)
+    - [Interact with Store from Model](guide/advanced/interact-with-store-from-model.md)
     - [Accessors & Mutators](guide/advanced/accessors-and-mutators.md)
     - [Lifecycle Hooks](guide/advanced/lifecycle-hooks.md)
     - [Serialization](guide/advanced/serialization.md)

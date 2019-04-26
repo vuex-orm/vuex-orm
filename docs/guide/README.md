@@ -7,14 +7,14 @@ Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http
 ## Table Of Contents
 
 - Prologue
-    - [What Is Vuex ORM?](prologue/what-is-vuex-orm.md)
+    - [What is Vuex ORM?](prologue/what-is-vuex-orm.md)
     - [Installation](prologue/installation.md)
     - [Getting Started](prologue/getting-started.md)
 - Core Components
     - [Models](components/models.md)
     - [Modules and Store](components/modules-and-store.md)
     - [Database and Registration](components/database-and-registration.md)
-- Interacting With Store
+- Interacting with Store
     - [Inserting and Updating Data](store/inserting-and-updating-data.md)
     - [Retrieving Data](store/retrieving-data.md)
     - [Deleting Data](store/deleting-data.md)
@@ -23,7 +23,7 @@ Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http
     - [Inserting Relationships](relationships/inserting-relationships.md)
     - [Retrieving Relationships](relationships/retrieving-relationships.md)
 - Advanced Usage
-    - [Interact With Store From Model](advanced/interact-with-store-from-model.md)
+    - [Interact with Store from Model](advanced/interact-with-store-from-model.md)
     - [Accessors & Mutators](advanced/accessors-and-mutators.md)
     - [Lifecycle Hooks](advanced/lifecycle-hooks.md)
     - [Serialization](advanced/serialization.md)
