@@ -1,6 +1,6 @@
 # Inserting and Updating Data
 
-To insert or update data, you can call corresponding methods through Models. Let's see what kind of methodss are available.
+To insert or update data, you can call corresponding methods through Models. Let's see what kind of methods are available.
 
 ## Inserts
 
