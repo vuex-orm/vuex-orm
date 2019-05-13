@@ -221,15 +221,15 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
     const expected = createState({
       users: {
-        1: { id: 1, name: 'John Doe', roles: [] }
+        1: { $id: 1, id: 1, name: 'John Doe', roles: [] }
       },
       roles: {
-        1: { id: 1, name: 'view-post', users: [] },
-        2: { id: 2, name: 'view-comment', users: [] }
+        1: { $id: 1, id: 1, name: 'view-post', users: [] },
+        2: { $id: 2, id: 2, name: 'view-comment', users: [] }
       },
       roleUser: {
-        '1_1': { role_id: 1, user_id: 1 },
-        '2_1': { role_id: 2, user_id: 1 }
+        '1_1': { $id: '1_1', role_id: 1, user_id: 1 },
+        '2_1': { $id: '2_1', role_id: 2, user_id: 1 }
       }
     })
 

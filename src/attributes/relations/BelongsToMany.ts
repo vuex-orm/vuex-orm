@@ -177,7 +177,7 @@ export default class BelongsToMany extends Relation {
    */
   createPivotRecord (data: NormalizedData, record: Record, related: any[]): void {
     related.forEach((id) => {
-      const pivotKey = `${id}_${record[this.parentKey]}`
+      const pivotKey = `${data[this.related.entity][id][this.relatedKey]}_${record[this.parentKey]}`
       const pivotRecord = data[this.pivot.entity] ? data[this.pivot.entity][pivotKey] : {}
 
       data[this.pivot.entity] = {
@@ -187,7 +187,7 @@ export default class BelongsToMany extends Relation {
           ...pivotRecord,
           $id: pivotKey,
           [this.foreignPivotKey]: record[this.parentKey],
-          [this.relatedPivotKey]: id
+          [this.relatedPivotKey]: data[this.related.entity][id][this.relatedKey]
         }
       }
     })
