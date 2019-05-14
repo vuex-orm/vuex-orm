@@ -1,4 +1,4 @@
-import { createStore } from 'test/support/Helpers'
+import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Features – Relations – Morph To Many – Persist', () => {
@@ -130,6 +130,161 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     }
 
     expect(store.state.entities.posts.data).toEqual(expected)
+  })
+
+  it('can create a morph to many relation data with increment id set on pivot model', async () => {
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+        }
+      }
+    }
+
+    class Video extends Model {
+      static entity = 'videos'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+        }
+      }
+    }
+
+    class Tag extends Model {
+      static entity = 'tags'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('')
+        }
+      }
+    }
+
+    class Taggable extends Model {
+      static entity = 'taggables'
+
+      static fields () {
+        return {
+          id: this.increment(),
+          tag_id: this.attr(null),
+          taggable_id: this.attr(null),
+          taggable_type: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+
+    await Post.create({
+      data: {
+        id: 1,
+        tags: [
+          { id: 2, name: 'news' },
+          { id: 3, name: 'cast' }
+        ]
+      }
+    })
+
+    const expected = createState({
+      posts: {
+        1: { $id: 1, id: 1, tags: [] }
+      },
+      videos: {},
+      tags: {
+        2: { $id: 2, id: 2, name: 'news' },
+        3: { $id: 3, id: 3, name: 'cast' }
+      },
+      taggables: {
+        1: { $id: 1, id: 1, tag_id: 2, taggable_id: 1, taggable_type: 'posts' },
+        2: { $id: 2, id: 2, tag_id: 3, taggable_id: 1, taggable_type: 'posts' }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
+
+  it('can create a morph to many relation data with increment id set on parent model', async () => {
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.increment(),
+          title: this.attr(''),
+          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+        }
+      }
+    }
+
+    class Video extends Model {
+      static entity = 'videos'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+        }
+      }
+    }
+
+    class Tag extends Model {
+      static entity = 'tags'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('')
+        }
+      }
+    }
+
+    class Taggable extends Model {
+      static entity = 'taggables'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          tag_id: this.attr(null),
+          taggable_id: this.attr(null),
+          taggable_type: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+
+    await Post.create({
+      data: {
+        title: 'Post title.',
+        tags: [
+          { id: 2, name: 'news' },
+          { id: 3, name: 'cast' }
+        ]
+      }
+    })
+
+    const expected = createState({
+      posts: {
+        1: { $id: 1, id: 1, title: 'Post title.', tags: [] }
+      },
+      videos: {},
+      tags: {
+        2: { $id: 2, id: 2, name: 'news' },
+        3: { $id: 3, id: 3, name: 'cast' }
+      },
+      taggables: {
+        '1_2_posts': { $id: '1_2_posts', id: null, tag_id: 2, taggable_id: 1, taggable_type: 'posts' },
+        '1_3_posts': { $id: '1_3_posts', id: null, tag_id: 3, taggable_id: 1, taggable_type: 'posts' }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
   })
 
   it('can resolve a morph to many relation', async () => {
