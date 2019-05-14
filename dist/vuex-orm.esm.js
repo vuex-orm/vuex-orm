@@ -290,6 +290,42 @@ var _arrayIncludes = function (IS_INCLUDES) {
   };
 };
 
+var _wks = createCommonjsModule(function (module) {
+var store = _shared('wks');
+
+var Symbol = _global.Symbol;
+var USE_SYMBOL = typeof Symbol == 'function';
+
+var $exports = module.exports = function (name) {
+  return store[name] || (store[name] =
+    USE_SYMBOL && Symbol[name] || (USE_SYMBOL ? Symbol : _uid)('Symbol.' + name));
+};
+
+$exports.store = store;
+});
+
+// 22.1.3.31 Array.prototype[@@unscopables]
+var UNSCOPABLES = _wks('unscopables');
+var ArrayProto = Array.prototype;
+if (ArrayProto[UNSCOPABLES] == undefined) _hide(ArrayProto, UNSCOPABLES, {});
+var _addToUnscopables = function (key) {
+  ArrayProto[UNSCOPABLES][key] = true;
+};
+
+// https://github.com/tc39/Array.prototype.includes
+
+var $includes = _arrayIncludes(true);
+
+_export(_export.P, 'Array', {
+  includes: function includes(el /* , fromIndex = 0 */) {
+    return $includes(this, el, arguments.length > 1 ? arguments[1] : undefined);
+  }
+});
+
+_addToUnscopables('includes');
+
+var includes = _core.Array.includes;
+
 var shared = _shared('keys');
 
 var _sharedKey = function (key) {
@@ -317,116 +353,160 @@ var _enumBugKeys = (
   'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
 ).split(',');
 
-// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
+// 19.1.2.14 / 15.2.3.14 Object.keys(O)
 
-var hiddenKeys = _enumBugKeys.concat('length', 'prototype');
 
-var f$1 = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
-  return _objectKeysInternal(O, hiddenKeys);
+
+var _objectKeys = Object.keys || function keys(O) {
+  return _objectKeysInternal(O, _enumBugKeys);
 };
 
-var _objectGopn = {
+var f$1 = Object.getOwnPropertySymbols;
+
+var _objectGops = {
 	f: f$1
 };
 
-var f$2 = Object.getOwnPropertySymbols;
+var f$2 = {}.propertyIsEnumerable;
 
-var _objectGops = {
+var _objectPie = {
 	f: f$2
 };
 
-// all object keys, includes non-enumerable and symbols
+// 7.1.13 ToObject(argument)
 
-
-
-var Reflect$1 = _global.Reflect;
-var _ownKeys = Reflect$1 && Reflect$1.ownKeys || function ownKeys(it) {
-  var keys = _objectGopn.f(_anObject(it));
-  var getSymbols = _objectGops.f;
-  return getSymbols ? keys.concat(getSymbols(it)) : keys;
+var _toObject = function (it) {
+  return Object(_defined(it));
 };
 
-// 26.1.11 Reflect.ownKeys(target)
+// 19.1.2.1 Object.assign(target, source, ...)
 
 
-_export(_export.S, 'Reflect', { ownKeys: _ownKeys });
 
-var ownKeys = _core.Reflect.ownKeys;
+
+
+var $assign = Object.assign;
+
+// should work with symbols and should have deterministic property order (V8 bug)
+var _objectAssign = !$assign || _fails(function () {
+  var A = {};
+  var B = {};
+  // eslint-disable-next-line no-undef
+  var S = Symbol();
+  var K = 'abcdefghijklmnopqrst';
+  A[S] = 7;
+  K.split('').forEach(function (k) { B[k] = k; });
+  return $assign({}, A)[S] != 7 || Object.keys($assign({}, B)).join('') != K;
+}) ? function assign(target, source) { // eslint-disable-line no-unused-vars
+  var T = _toObject(target);
+  var aLen = arguments.length;
+  var index = 1;
+  var getSymbols = _objectGops.f;
+  var isEnum = _objectPie.f;
+  while (aLen > index) {
+    var S = _iobject(arguments[index++]);
+    var keys = getSymbols ? _objectKeys(S).concat(getSymbols(S)) : _objectKeys(S);
+    var length = keys.length;
+    var j = 0;
+    var key;
+    while (length > j) if (isEnum.call(S, key = keys[j++])) T[key] = S[key];
+  } return T;
+} : $assign;
+
+// 19.1.3.1 Object.assign(target, source)
+
+
+_export(_export.S + _export.F, 'Object', { assign: _objectAssign });
+
+var assign = _core.Object.assign;
+
+var isEnum = _objectPie.f;
+var _objectToArray = function (isEntries) {
+  return function (it) {
+    var O = _toIobject(it);
+    var keys = _objectKeys(O);
+    var length = keys.length;
+    var i = 0;
+    var result = [];
+    var key;
+    while (length > i) if (isEnum.call(O, key = keys[i++])) {
+      result.push(isEntries ? [key, O[key]] : O[key]);
+    } return result;
+  };
+};
+
+// https://github.com/tc39/proposal-object-values-entries
+
+var $entries = _objectToArray(true);
+
+_export(_export.S, 'Object', {
+  entries: function entries(it) {
+    return $entries(it);
+  }
+});
+
+var entries = _core.Object.entries;
+
+// https://github.com/tc39/proposal-object-values-entries
+
+var $values = _objectToArray(false);
+
+_export(_export.S, 'Object', {
+  values: function values(it) {
+    return $values(it);
+  }
+});
+
+var values = _core.Object.values;
+
+// 7.2.8 IsRegExp(argument)
+
+
+var MATCH = _wks('match');
+var _isRegexp = function (it) {
+  var isRegExp;
+  return _isObject(it) && ((isRegExp = it[MATCH]) !== undefined ? !!isRegExp : _cof(it) == 'RegExp');
+};
+
+// helper for String#{startsWith, endsWith, includes}
+
+
+
+var _stringContext = function (that, searchString, NAME) {
+  if (_isRegexp(searchString)) throw TypeError('String#' + NAME + " doesn't accept regex!");
+  return String(_defined(that));
+};
+
+var MATCH$1 = _wks('match');
+var _failsIsRegexp = function (KEY) {
+  var re = /./;
+  try {
+    '/./'[KEY](re);
+  } catch (e) {
+    try {
+      re[MATCH$1] = false;
+      return !'/./'[KEY](re);
+    } catch (f) { /* empty */ }
+  } return true;
+};
+
+var STARTS_WITH = 'startsWith';
+var $startsWith = ''[STARTS_WITH];
+
+_export(_export.P + _export.F * _failsIsRegexp(STARTS_WITH), 'String', {
+  startsWith: function startsWith(searchString /* , position = 0 */) {
+    var that = _stringContext(this, searchString, STARTS_WITH);
+    var index = _toLength(Math.min(arguments.length > 1 ? arguments[1] : undefined, that.length));
+    var search = String(searchString);
+    return $startsWith
+      ? $startsWith.call(that, search, index)
+      : that.slice(index, index + search.length) === search;
+  }
+});
+
+var startsWith = _core.String.startsWith;
 
 /*eslint-disable */
-if (!String.prototype.startsWith) {
-    String.prototype.startsWith = function (search, pos) {
-        return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
-    };
-}
-if (!Array.prototype.includes) {
-    Array.prototype.includes = function (searchElement) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        var O = Object(this);
-        var len = parseInt(O.length, 10) || 0;
-        if (len === 0) {
-            return false;
-        }
-        var n = args[1] || 0;
-        var k;
-        if (n >= 0) {
-            k = n;
-        }
-        else {
-            k = len + n;
-            if (k < 0) {
-                k = 0;
-            }
-        }
-        var currentElement;
-        while (k < len) {
-            currentElement = O[k];
-            if (searchElement === currentElement || (searchElement !== searchElement && currentElement !== currentElement)) {
-                return true;
-            }
-            k++;
-        }
-        return false;
-    };
-}
-if (!Object.values || !Object.entries || !Object.assign) {
-    var reduce_1 = Function.bind.call(Function.call, Array.prototype.reduce);
-    var isEnumerable_1 = Function.bind.call(Function.call, Object.prototype.propertyIsEnumerable);
-    var concat_1 = Function.bind.call(Function.call, Array.prototype.concat);
-    var keys_1 = Reflect.ownKeys;
-    if (!Object.values) {
-        Object.values = function values(O) {
-            return reduce_1(keys_1(O), function (v, k) { return concat_1(v, typeof k === 'string' && isEnumerable_1(O, k) ? [O[k]] : []); }, []);
-        };
-    }
-    if (!Object.entries) {
-        Object.entries = function entries(O) {
-            return reduce_1(keys_1(O), function (e, k) { return concat_1(e, typeof k === 'string' && isEnumerable_1(O, k) ? [[k, O[k]]] : []); }, []);
-        };
-    }
-    if (!Object.assign) {
-        Object.assign = function assign(target, _varArgs) {
-            if (target == null) {
-                throw new TypeError('Cannot convert undefined or null to object');
-            }
-            var to = Object(target);
-            for (var index = 1; index < arguments.length; index++) {
-                var nextSource = arguments[index];
-                if (nextSource != null) {
-                    for (var nextKey in nextSource) {
-                        if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
-                            to[nextKey] = nextSource[nextKey];
-                        }
-                    }
-                }
-            }
-            return to;
-        };
-    }
-}
 
 var Container = /** @class */ (function () {
     function Container() {
@@ -1464,9 +1544,11 @@ var BelongsToMany = /** @class */ (function (_super) {
         var _this = this;
         related.forEach(function (id) {
             var _a, _b;
-            var pivotKey = id + "_" + record[_this.parentKey];
+            var parentId = record[_this.parentKey];
+            var relatedId = data[_this.related.entity][id][_this.relatedKey];
+            var pivotKey = relatedId + "_" + parentId;
             var pivotRecord = data[_this.pivot.entity] ? data[_this.pivot.entity][pivotKey] : {};
-            data[_this.pivot.entity] = __assign({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = __assign({}, pivotRecord, (_b = { $id: pivotKey }, _b[_this.foreignPivotKey] = record[_this.parentKey], _b[_this.relatedPivotKey] = id, _b)), _a));
+            data[_this.pivot.entity] = __assign({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = __assign({}, pivotRecord, (_b = { $id: pivotKey }, _b[_this.foreignPivotKey] = parentId, _b[_this.relatedPivotKey] = relatedId, _b)), _a));
         });
     };
     return BelongsToMany;
@@ -3198,11 +3280,30 @@ var Processor = /** @class */ (function () {
      * Normalize the given data.
      */
     Processor.normalize = function (query, record) {
+        // First, let's normalize the data.
         var data = Normalizer.process(query, record);
-        data = PivotCreator.process(query, data);
+        // Next, increment any field that defined with `increment` attribute.
         data = Incrementer.process(query, data);
+        // Then, attach any missing foreign keys. For example, if a User has many
+        // Post nested but without foreign key such as `user_id`, we can attach
+        // the `user_id` value to the Post entities.
         data = Attacher.process(query, data);
+        // Now we'll create any missing pivot entities for relationships such as
+        // `belongsTo` or `morphMany`.
+        data = PivotCreator.process(query, data);
+        // There might be new pivot entities now which weren't there before, and
+        // it might contain increment field so we must increment those filed
+        // again here.
+        //
+        // Improvements: This double incrementing process can be improved. Since
+        // currently, we're looping whole records twice. If we could remember the
+        // entities which were already incremented at an earlier stage, we could
+        // only process the newly created entities.
+        data = Incrementer.process(query, data);
+        // Finally, let's fix key id for the entities since the id value might
+        // have changed due to the incrementing process.
         data = IdFixer.process(query, data);
+        // And we'll return the result as a normalized data.
         return data;
     };
     return Processor;
