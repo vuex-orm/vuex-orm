@@ -433,7 +433,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Set the relationships that should be loaded.
    */
-  with (name: string, constraint: Contracts.RelationshipConstraint | null = null): this {
+  with (name: string | string[], constraint: Contracts.RelationshipConstraint | null = null): this {
     Loader.with(this, name, constraint)
 
     return this
