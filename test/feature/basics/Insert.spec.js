@@ -13,35 +13,41 @@ describe('Feature – Basics – Insert', () => {
     }
   }
 
-  it('can create a data', async () => {
+  it('can insert a record', () => {
     const store = createStore([{ model: User }])
 
-    await User.insert({
+    User.insert({
       data: { id: 1, name: 'John Doe' }
     })
 
-    const expected = {
-      '1': { $id: 1, id: 1, name: 'John Doe' }
-    }
+    const expected = createState({
+      users: {
+        1: { $id: 1, id: 1, name: 'John Doe' }
+      }
+    })
 
+    expect(store.state.entities).toEqual(expected)
     expect(store.state.entities.users.data[1]).toBeInstanceOf(User)
-    expect(store.state.entities.users.data).toEqual(expected)
   })
 
-  it('Does nothing if an empty object is passed', async () => {
+  it('does nothing if an empty object is passed', () => {
     const store = createStore([{ model: User }])
 
-    await User.insert({
+    User.insert({
       data: {}
     })
 
-    expect(store.state.entities.users.data).toEqual({})
+    const expected = createState({
+      users: {}
+    })
+
+    expect(store.state.entities).toEqual(expected)
   })
 
-  it('can insert record with primary key value of `null`', async () => {
+  it('can insert record with primary key value of `null`', () => {
     const store = createStore([{ model: User }])
 
-    await User.insert({
+    User.insert({
       data: { id: null, name: 'John Doe' }
     })
 
