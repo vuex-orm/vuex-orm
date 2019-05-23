@@ -1851,11 +1851,12 @@ var MorphToMany = /** @class */ (function (_super) {
         related.forEach(function (id) {
             var _a, _b;
             var parentId = record[_this.parentKey];
+            var relatedId = data[_this.related.entity][id][_this.relatedKey];
             var pivotKey = parentId + "_" + id + "_" + parent.entity;
             data[_this.pivot.entity] = __assign({}, data[_this.pivot.entity], (_a = {}, _a[pivotKey] = (_b = {
                     $id: pivotKey
                 },
-                _b[_this.relatedId] = id,
+                _b[_this.relatedId] = relatedId,
                 _b[_this.id] = parentId,
                 _b[_this.type] = parent.entity,
                 _b), _a));
@@ -3261,8 +3262,8 @@ var IdFixer = /** @class */ (function () {
         return Object.keys(records).reduce(function (newRecords, id) {
             var record = records[id];
             var newId = query.model.id(record);
-            var newStringId = isNaN(newId) ? newId : newId.toString();
-            if (newId === undefined || id === newStringId) {
+            var newStringId = String(newId);
+            if (newId == null || id === newStringId) {
                 newRecords[id] = record;
                 return newRecords;
             }
