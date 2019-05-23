@@ -177,6 +177,7 @@ export default class MorphToMany extends Relation {
   createPivotRecord (parent: typeof Model, data: NormalizedData, record: Record, related: any[]): void {
     related.forEach((id) => {
       const parentId = record[this.parentKey]
+      const relatedId = data[this.related.entity][id][this.relatedKey]
       const pivotKey = `${parentId}_${id}_${parent.entity}`
 
       data[this.pivot.entity] = {
@@ -184,7 +185,7 @@ export default class MorphToMany extends Relation {
 
         [pivotKey]: {
           $id: pivotKey,
-          [this.relatedId]: id,
+          [this.relatedId]: relatedId,
           [this.id]: parentId,
           [this.type]: parent.entity
         }
