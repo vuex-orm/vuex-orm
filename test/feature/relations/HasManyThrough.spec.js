@@ -157,7 +157,7 @@ describe('Features – Relations – Has Many Through', () => {
       static fields () {
         return {
           id: this.string(''),
-          country_id: this.string(''),
+          country_id: this.string('')
         }
       }
     }
@@ -168,7 +168,7 @@ describe('Features – Relations – Has Many Through', () => {
       static fields () {
         return {
           id: this.string(''),
-          user_id: this.string(''),
+          user_id: this.string('')
         }
       }
     }
