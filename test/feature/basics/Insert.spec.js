@@ -1,4 +1,4 @@
-import { createStore } from 'test/support/Helpers'
+import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Feature – Basics – Insert', () => {
@@ -36,5 +36,21 @@ describe('Feature – Basics – Insert', () => {
     })
 
     expect(store.state.entities.users.data).toEqual({})
+  })
+
+  it('can insert record with primary key value of `null`', async () => {
+    const store = createStore([{ model: User }])
+
+    await User.insert({
+      data: { id: null, name: 'John Doe' }
+    })
+
+    const expected = createState({
+      users: {
+        _no_key_1: { $id: '_no_key_1', id: null, name: 'John Doe' }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
   })
 })
