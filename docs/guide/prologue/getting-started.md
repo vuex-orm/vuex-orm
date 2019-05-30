@@ -201,6 +201,9 @@ const posts = [
   }
 ]
 
+// import the Post model class
+import Post from './Post'
+
 Post.create({ data: posts })
 ```
 
@@ -244,9 +247,37 @@ console.log(store.state.entities.posts.data[1].title) // <- 'Hello, world!'
 console.log(store.state.entities.users.data[1].name) // <- 'John Doe'
 ```
 
-However, Vuex ORM provides a way to query, and fetch data in an organized way through Vuex Getters.
+Or using Vuex Getters. However, Vuex ORM provides a way to query, and fetch data in an organized way through predefined Vuex Getters. You can map all these getters using mapGetters or using Model instances.
 
 ```js
+import {mapGetters} from 'vuex'
+
+//...
+
+computed: {
+    // use Vuex mapGetters
+    ...mapGetters({
+        allPosts: 'entities/post/all'
+    }),
+    // or get the actual model instance, which is much more sucinct later on
+    User: ()=> this.$store.getters['entities/user']().model // gets the User model
+},
+
+methods: {
+   foo(){
+      this.allPosts // all posts
+      this.User.all() // all users
+   }
+}
+```
+
+Or you can import the Model into the component and refer to that directly as well. This is useful when reading data from outside of a Vue component.
+
+```js
+
+// import the Post model
+import Post from './Post'
+
 // Fetch all post records. The result will be wrapped with Post model!
 Post.all()
 
