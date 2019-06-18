@@ -47,7 +47,7 @@ describe('Unit – Model', () => {
     expect(user2.id).toBe(1)
   })
 
-  it('should set given field values as a property on instanctiation', () => {
+  it('should set given field values as a property on instantiation', () => {
     class User extends Model {
       static entity = 'users'
 
