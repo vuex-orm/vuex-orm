@@ -16,6 +16,7 @@ import Fields from './contracts/Fields'
 import ModelState from './contracts/State'
 import Serializer from './Serializer'
 import NoKey from '../schema/NoKey'
+import InheritanceTypes from './contracts/InheritanceTypes'
 
 type InstanceOf<T> = T extends new (...args: any[]) => infer R ? R : any
 
@@ -26,9 +27,27 @@ export default class Model {
   static entity: string
 
   /**
+   * The reference to the base entity name if the class extends a base entity
+   * TODO: find a proper way to compute this, right now, the only way found was 
+   * to do declare 
+   * static baseEntity (): typeof Model {
+   *  let $this = new this()
+   *  return this.$root()
+   * }
+   * but this might cause side effects as we instanciate a new this, which will trigger
+   * closure on default values (like increment thus jumping one int)
+   */
+  static baseEntity: string
+
+  /**
    * The primary key to be used for the model.
    */
   static primaryKey: string | string[] = 'id'
+
+  /**
+   * The discriminator key to be used for the model when inheritance is used
+   */
+  static typeKey: string = 'type'
 
   /**
    * Vuex Store state definition.
@@ -254,6 +273,13 @@ export default class Model {
    * Mutators to mutate matching fields when instantiating the model.
    */
   static mutators (): Mutators {
+    return {}
+  }
+
+  /**
+   * Types mapping used to dispatch entities based on their discriminator field
+   */
+  static types (): InheritanceTypes {
     return {}
   }
 

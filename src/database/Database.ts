@@ -46,8 +46,17 @@ export default class Database {
    * Register a model and a module to Database.
    */
   register (model: typeof Model, module: Vuex.Module<any, any> = {}): void {
+
+    if(model.baseEntity) {
+      const base = this.model(model.baseEntity)
+      if(base.types === Model.types && process.env.NODE_ENV !== 'production') {
+        console.warn(`Model ${model.name} extends ${base.name} which doesn't overwrite Model.types(). You will not be able to use type mapping.`);
+      }
+    }
+
     this.entities.push({
       name: model.entity,
+      base: model.baseEntity || model.entity,
       model,
       module
     })
@@ -61,11 +70,29 @@ export default class Database {
   }
 
   /**
+   * Get base model of given name from the entities list.
+   */
+  baseModel (name: string): typeof Model {
+    return this.baseModels()[name]
+  }
+
+  /**
    * Get all models from the entities list.
    */
   models (): Models {
     return this.entities.reduce((models, entity) => {
       models[entity.name] = entity.model
+
+      return models
+    }, {} as Models)
+  }
+
+  /**
+   * Get all base model from the entities list.
+   */
+  baseModels (): Models {
+    return this.entities.reduce((models, entity) => {
+      models[entity.name] = this.model(entity.base)
 
       return models
     }, {} as Models)
