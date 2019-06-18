@@ -13,6 +13,7 @@ import Mutators from '../attributes/contracts/Mutators'
 import Query from '../query/Query'
 import * as Payloads from '../modules/payloads/Actions'
 import Fields from './contracts/Fields'
+import FieldCache from './contracts/FieldCache'
 import ModelState from './contracts/State'
 import Serializer from './Serializer'
 import NoKey from '../schema/NoKey'
@@ -57,7 +58,7 @@ export default class Model {
   /**
    * The cached attribute fields of the model.
    */
-  static cachedFields?: Fields
+  static cachedFields: FieldCache
 
   /**
    * The ID value of the store index.
@@ -82,13 +83,16 @@ export default class Model {
    * Get the model schema definition by adding additional default fields.
    */
   static getFields (): Fields {
-    if (this.cachedFields) {
-      return this.cachedFields
+    if(!this.cachedFields)
+      this.cachedFields = {}
+
+    if (this.cachedFields[this.entity]) {
+      return this.cachedFields[this.entity]
     }
 
-    this.cachedFields = this.fields()
+    this.cachedFields[this.entity] = this.fields()
 
-    return this.cachedFields
+    return this.cachedFields[this.entity]
   }
 
   /**
@@ -460,7 +464,7 @@ export default class Model {
    */
   static getFieldsByAttribute (name: string): { [key: string]: Attributes.Attribute } {
     const attr = this.getAttributeClass(name)
-    const fields = this.fields()
+    const fields = this.getFields()
 
     return Object.keys(fields).reduce((newFields, key) => {
       const field = fields[key]
@@ -493,7 +497,7 @@ export default class Model {
   static pivotFields (): { [key: string]: Attributes.BelongsToMany | Attributes.MorphToMany | Attributes.MorphedByMany }[] {
     const fields: { [key: string]: Attributes.BelongsToMany | Attributes.MorphToMany | Attributes.MorphedByMany }[] = []
 
-    Utils.forOwn(this.fields(), (field, key) => {
+    Utils.forOwn(this.getFields(), (field, key) => {
       if (field instanceof Attributes.BelongsToMany || field instanceof Attributes.MorphToMany || field instanceof Attributes.MorphedByMany) {
         fields.push({ [key]: field })
       }
@@ -507,6 +511,46 @@ export default class Model {
    */
   static hasPivotFields (): boolean {
     return this.pivotFields().length > 0
+  }
+
+  /**
+   * Check if the current model has a type definition
+   */
+  static hasTypes (): boolean {
+    return Object.keys(this.types()).length > 0
+  }
+
+  /**
+   * Given a Model, this returns the corresponding key in the InheritanceTypes mapping
+   */
+  static getTypeKeyValueFromModel (model?: typeof Model): string | null{
+    const modelToCheck = model || this
+    const types = this.types()
+    for(const type in types) {
+      if(types[type] === modelToCheck)
+        return type
+    }
+    return null
+  }
+
+  /**
+   * Tries to find a Relation field in all types defined in the InheritanceTypes mapping
+   */
+  static findRelationInSubTypes (relationName: string): Attributes.Relation | null {
+
+    const types = this.types()
+
+    for(const type in types) {
+      const fields = types[type].getFields()
+
+      for(const fieldName in fields) {
+        if(fieldName === relationName && fields[fieldName] instanceof Attributes.Relation) {
+          return fields[fieldName] as Attributes.Relation
+        }
+      }
+    }
+
+    return null
   }
 
   /**
@@ -709,4 +753,37 @@ export default class Model {
   toJSON (): Record {
     return this.$toJson()
   }
+  
+  /**
+   * Returns true if current instance is an instance of a base Vuex ORM class
+   * (directly inheriting from Model)
+   */
+  // isBaseClass (): boolean {
+  //   return Object.getPrototypeOf(this.constructor) === Model
+  // }
+
+  /**
+   * Returns the direct parent class for the current instance 
+   * (or null if the parent class is Model)
+   */
+  // parentModel (): any {
+  //   if(this.isBaseClass()) {
+  //     return null
+  //   } else {
+  //     return Object.getPrototypeOf(this.constructor) as typeof Model
+  //   }
+  // }
+
+  /**
+   * Returns the root class for the current instance 
+   * (i.e. the class which extends Model)
+   */
+  // $root (): typeof Model {
+  //   let parent = this.parentModel()
+  //   if(parent === null) { 
+  //     return this.$self() // parent is Model class
+  //   } else {
+  //     return parent.baseClass()
+  //   }
+  // }
 }
