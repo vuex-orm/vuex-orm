@@ -35,6 +35,14 @@ const sidebars = {
         '/guide/relationships/inserting-relationships',
         '/guide/relationships/retrieving-relationships'
       ]
+    },    
+    {
+      title: 'Inheritance',
+      collapsable: false,
+      children: [
+        '/guide/inheritance/defining-inheritance',
+        '/guide/inheritance/discriminator-field'
+      ]
     },
     {
       title: 'Advanced Usage',
