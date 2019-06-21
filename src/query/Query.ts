@@ -970,22 +970,22 @@ export default class Query<T extends Model = Model> {
    * Get method for the persist.
    */
   getPersistMethod (entity: string, method: string, options: PersistOptions): string {
-    if (options.create && options.create.includes(entity)) {
+    if (options.create && (options.create.includes(entity) || options.create.includes('*'))) {
       return 'create'
     }
 
-    if (options.insert && options.insert.includes(entity)) {
+    if (options.insert && (options.insert.includes(entity) || options.insert.includes('*'))) {
       return 'insert'
     }
 
-    if (options.update && options.update.includes(entity)) {
+    if (options.update && (options.update.includes(entity) || options.update.includes('*'))) {
       return 'update'
     }
 
-    if (options.insertOrUpdate && options.insertOrUpdate.includes(entity)) {
+    if (options.insertOrUpdate && (options.insertOrUpdate.includes(entity) || options.insertOrUpdate.includes('*'))) {
       return 'insertOrUpdate'
     }
-
+    
     return method
   }
 
