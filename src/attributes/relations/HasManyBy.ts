@@ -95,6 +95,10 @@ export default class HasManyBy extends Relation {
    * Get related records.
    */
   getRelatedRecords (records: DictionaryOne, keys: string[]): Collection {
+    if(!keys) {
+      return [];
+    }
+    
     return keys.reduce<Collection>((items, id) => {
       const related = records[id]
 
