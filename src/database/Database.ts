@@ -49,7 +49,7 @@ export default class Database {
 
     if(model.baseEntity) {
       const base = this.model(model.baseEntity)
-      if(base.types === Model.types && process.env.NODE_ENV !== 'production') {
+      if(base && base.types === Model.types && process.env.NODE_ENV !== 'production') {
         console.warn(`Model ${model.name} extends ${base.name} which doesn't overwrite Model.types(). You will not be able to use type mapping.`);
       }
     }
