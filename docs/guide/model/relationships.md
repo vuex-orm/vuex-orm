@@ -1,4 +1,4 @@
-# Defining Relationships
+# Relationships
 
 Relationship management is the key strength of Vuex ORM. The relationships may defined as attributes in Model's `static fields`. The below example shows that the Post has the relationship with Comment of `hasMany`.
 
@@ -36,12 +36,13 @@ By defining relationships, Vuex ORM is going to use those relationships to const
 - [Many To Many](#many-to-many)
 - [Has Many By](#has-many-by)
 - [Has Many Through](#has-many-through)
-- [Polymorphic Relations](#polymorphic-relations)
-- [Many To Many Polymorphic Relations](#many-to-many-polymorphic-relations)
+- [One To One (Polymorphic)](#one-to-one-polymorphic)
+- [One To Many (Polymorphic)](#one-to-many-polymorphic)
+- [Many To Many (Polymorphic)](#many-to-many-polymorphic)
 
 ## One To One
 
-A one-to-one relationship is defined by `this.hasOne` method. For example, User might have one profile information.
+A one-to-one relationship is a very basic relation. For example, a User Model might be associated with one Profile. It's defined by `this.hasOne` attribute on the User Model.
 
 ```js
 class User extends Model {
@@ -70,7 +71,7 @@ class Profile extends Model {
 }
 ```
 
-The first argument of `this.hasOne()` is the related model, which in this case is the Profile model. The second argument is the "foreign key" which holds the primary key of the User model. In this example, the foreign key is the `user_id` of the Profile model.
+The first argument of `this.hasOne()` is the related Model, which in this case is the Profile model. The second argument is the "foreign key" which holds the primary key of the User Model. In this example, the foreign key is the `user_id` of the Profile Model.
 
 Additionally, Vuex ORM assumes that the foreign key should have a value matching the id (or the custom `static primaryKey`) field of the parent. In other words, Vuex ORM will look for the value of the User's id column in the user_id column of the Profile record. If you would like the relationship to use a value other than id, you may pass the third argument to the hasOne method specifying your custom key:
 
@@ -440,11 +441,9 @@ this.hasManyThrough(
 
 > **NOTE:** When creating data that contains `hasManyThrough` relationship without intermediate relation, the intermediate record will not be generated. [See here](inserting-relationships#creating-has-many-through-relationship) for more details.
 
-## Polymorphic Relations
+## One To One (Polymorphic)
 
 A polymorphic relationship allows the target Model to belong to more than one type of Model using a single association.
-
-### One To One Polymorphic Relation
 
 A one-to-one polymorphic relation is similar to a simple one-to-one relation; however, the target model can belong to more than one type of model on a single association. For example, a blog Post and a User may share a polymorphic relation to an Image model. Using a one-to-one polymorphic relation allows you to have a single list of unique images that are used for both blog posts and user accounts.
 
@@ -559,7 +558,7 @@ Image.query().with('imageable').get()
 */
 ```
 
-### One To Many Polymorphic Relation
+## One To Many (Polymorphic)
 
 A one-to-many polymorphic relation is similar to a simple one-to-many relation; however, the target model can belong to more than one type of model on a single association. For example, imagine users of your application can "comment" on both posts and videos. Using polymorphic relationships, you may use a single comments table for both of these scenarios. First, let's examine the table structure required to build this relationship:
 
@@ -672,7 +671,7 @@ Comment.query().with('commentable').get()
 */
 ```
 
-## Many To Many Polymorphic Relations
+## Many To Many (Polymorphic)
 
 In addition to traditional polymorphic relations, you may also define "many-to-many" polymorphic relations. For example, a blog Post and Video model could share a polymorphic relation to a Tag model. Using a many-to-many polymorphic relation allows you to have a single list of unique tags that are shared across blog posts and videos.
 

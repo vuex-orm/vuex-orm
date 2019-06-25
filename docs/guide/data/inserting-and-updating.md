@@ -1,6 +1,6 @@
-# Inserting and Updating Data
+# Inserting and Updating
 
-To insert or update data, you can call corresponding methods through Models. Let's see what kind of methods are available.
+You may insert new data, or update existing data in Vuex Store through Model methods.
 
 ## Inserts
 

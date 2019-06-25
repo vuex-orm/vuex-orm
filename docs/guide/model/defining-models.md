@@ -1,6 +1,8 @@
 # Defining Models
 
-Models are the definition of the data schema that will be handled by Vuex ORM. You may define any number of Models depending on your needs. Every Model should extend Vuex ORM `Model`.
+Models are the definition of the data schema that will be handled by Vuex ORM. You may define any number of Models depending on your needs. 
+
+To define a Model, create a class that extend Vuex ORM `Model`.
 
 ```js
 import { Model } from '@vuex-orm/core'
@@ -17,8 +19,6 @@ class User extends Model {
 }
 ```
 
-There are 2 required properties you **must** define when creating a model, `static entity` and `static fields()`.
-
 ## Entity Name
 
 `static entity` will be used as the key for the state.
@@ -29,7 +29,9 @@ class User extends Model {
 }
 ```
 
-In the above example, state for the User model will be accessible by `store.state.entities.users`. Notice there is an `entities` state. This state is created by Vuex ORM automatically, and all of the Model data will be stored in this namespace. Please take a look at [Modules And Store](modules-and-store.md) to learn more about how Vuex ORM interacts with the Vuex Store.
+In the above example, state for the User Model will be accessible by `store.state.entities.users`. Notice there is an `entities` state. This state is created by Vuex ORM automatically, and all of the Model data will be stored in this namespace.
+
+You may change the default namespace (`entities`) to something else when installing Vuex ORM to Vuex. Please visit [Database Registration](/guide/model/database-registration) to learn how.
 
 ## Fields
 
@@ -61,7 +63,7 @@ user.name // <- 'John Doe'
 
 There are several attributes you can use to define model fields.
 
-### Generic Type
+### Generic Types
 
 Use `this.attr()` method to define the most generic field. The argument is the default value of the field which will be used when creating a new data if the field is not present.
 
@@ -94,9 +96,9 @@ class User extends Model {
 }
 ```
 
-### Specific Types
+### Primitive Types
 
-You may use specific type attributes, `this.string()`, `this.number()`, and `this.boolean()`. These attributes provide casting that will convert the given value to the specified type. For example, `'0'` to be `0` or `1` to be `true`. The argument is the default value.
+You may use primitive type attributes, `this.string()`, `this.number()`, and `this.boolean()`. These attributes provide casting that will convert the given value to the specified type. For example, `'0'` to be `0` or `1` to be `true`. The argument is the default value.
 
 ```js
 class User extends Model {
@@ -132,7 +134,7 @@ Note that these attributes will *not validate* the field value. It's going to *c
 
 ### Auto Increment Type
 
-`this.increment()` method will generate field type which will be auto incremented. Autoincrement field must be a number and should not have arguments. The value of this field gets incremented when you create a new record.
+`this.increment()` method will generate field type which will be auto incremented. Autoincrement field must be a number and should not have arguments.
 
 ```js
 class User extends Model {
@@ -147,9 +149,11 @@ class User extends Model {
 }
 ```
 
+Remember that the value of this field gets incremented when you **insert a new record**. Not when instantiating the Model.
+
 ### Relationships
 
-You can define a relationship between different models by relational attributes such as `this.hasMany()` or `this.belongsTo()`. To learn more, please take a look at [Relationships](relationships.md).
+You can define a relationship between different models by relational attributes such as `this.hasMany()` or `this.belongsTo()`. To learn more, please take a look at [Defining Relationships](defining-relationships.md).
 
 ## Primary Key
 

@@ -1,4 +1,4 @@
-# Deleting Data
+# Deleting
 
 You can delete data from the store by calling the delete Method on the model class or dispatching the `delete` action. Both expecting the first argument to be `String`, `Number`, `Function` or `Object`. 
 

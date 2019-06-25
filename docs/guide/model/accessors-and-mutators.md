@@ -38,13 +38,13 @@ As you can see, these are just ordinary JavaScript class definitions. You are fr
 
 ```js
 // Let's say you have following user inside Vuex Store.
-let state = { id: 1, first_name: 'John', last_name: 'Doe' }
+{ id: 1, first_name: 'John', last_name: 'Doe' }
 
 const user = User.find(1)
 
-console.log(user.full_name) // <- 'John Doe'
+user.full_name // <- 'John Doe'
 
-console.log(user.prefix('Sir.')) // <- 'Sir. John Doe'
+user.prefix('Sir.') // <- 'Sir. John Doe'
 ```
 
 ## Defining Mutators

@@ -6,8 +6,8 @@ To register defined Models to Vuex store, you must first create a Database, regi
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexORM from '@vuex-orm/core'
-import User from './User'
-import Post from './Post'
+import User from '@/models/User'
+import Post from '@/models/Post'
 
 Vue.use(Vuex)
 

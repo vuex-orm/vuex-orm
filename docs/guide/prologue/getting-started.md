@@ -87,6 +87,8 @@ class User extends Model {
   static get entity () {
     return 'users'
   }
+
+  // ...
 }
 ```
 
@@ -100,12 +102,12 @@ Now it's time for you to register Models to Vuex. To do so, you should first reg
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexORM from '@vuex-orm/core'
-import User from './User'
-import Post from './Post'
+import User from '@/models//User'
+import Post from '@/models/Post'
 
 Vue.use(Vuex)
 
-// Create new instance of Database.
+// Create a new instance of Database.
 const database = new VuexORM.Database()
 
 // Register Models to Database.
@@ -135,31 +137,38 @@ Now you are ready to go. Vuex ORM is going to create an `entities` module in Vue
 }
 ```
 
-Learn more about plugin registration at [Database Registration](../components/database-and-registration.md).
+Learn more about database registration at [Database Registration](../components/database-and-registration.md).
 
 ## Inserting Data
 
-You may use the `insert` method to insert a new record in Vuex Store. Let's say we want to save a single post data to the store.
+You may use the `insert` method from any Model you registered to insert a new record in Vuex Store. Let's say we want to save a single post data to the store. A simple Vue Component would look like this.
 
-```js
-// Assuming this data structure is the response from the API backend.
-const posts = [
-  {
-    id: 1,
-    title: 'Hello, world!',
-    body: 'Some awesome body...',
-    author: {
-      id: 1,
-      name: 'John Doe',
-      email: 'john@example.com'
+```vue
+<script>
+import Post from '@/models/Post'
+
+export default {
+  methods: {
+    created () {
+      // Assuming this data structure is the response from the API backend.
+      const posts = [
+        {
+          id: 1,
+          title: 'Hello, world!',
+          body: 'Some awesome body...',
+          author: {
+            id: 1,
+            name: 'John Doe',
+            email: 'john@example.com'
+          }
+        }
+      ]
+
+      Post.insert({ data: posts })
     }
   }
-]
-
-// import the Post model class
-import Post from './Post'
-
-Post.insert({ data: posts })
+}
+</script>
 ```
 
 With above action, Vuex ORM creates the following schema in the Vuex Store.
@@ -173,8 +182,7 @@ With above action, Vuex ORM creates the following schema in the Vuex Store.
         id: 1,
         user_id: 1,
         title: 'Hello, world!',
-        body: 'Some awesome body...',
-        author: 1
+        body: 'Some awesome body...'
       }
     }
   },
@@ -195,49 +203,57 @@ See how `posts` and `users` are decoupled from each other. This is what is meant
 
 ## Retrieving Data
 
-```js
+To retrieve inserted data, Vuex ORM provides a fluent query builder for it. You may think of it as Vuex Getters with additional features added. You would want to retrieve data in `computed` property as you would do when using Vuex.
 
-// import the Post model
-import Post from './Post'
+```vue
+<template>
+  <div>
+    <article :key="post.id" v-for="post in posts">
+      <h1>{{ post.title }}</h1>
+      <p>{{ post.body }}</p>
+    </article>
+  </div>
+</template>
 
-// Fetch all post records. The result will be wrapped with Post model.
-Post.all()
+<script>
+import Post from '@/models//Post'
 
-/*
-  [
-    {
-      id: 1,
-      user_id: 1,
-      title: 'Hello, world!',
-      body: 'Some awesome body...',
-    },
-    {
-      id: 2,
-      user_id: 2,
-      title: 'Hello, another world!',
-      body: 'Some another awesome body...'
-    }
-  ]
-*/
-```
-
-```js
-// Fetch single post with `author`.
-Post.query().with('author').first()
-
-/*
-  {
-    id: 1,
-    user_id: 1,
-    title: 'Hello, world!',
-    body: 'Some awesome body...',
-    author: {
-      id: 1,
-      name: 'John Doe',
-      email: 'john@example.com'
+export default {
+  computed: {
+    posts () {
+      // Fetch all post records.
+      return Post.all()
     }
   }
-*/
+}
+</script>
+```
+
+Note that the above method will not include Users within returned posts. If you want to load any relationships, you can use `with` chain with the query builder.
+
+```vue
+<template>
+  <div>
+    <article :key="post.id" v-for="post in posts">
+      <h1>{{ post.title }}</h1>
+      <p>{{ post.body }}</p>
+      <p>Author: {{ post.author.name }}</p>
+    </article>
+  </div>
+</template>
+
+<script>
+import Post from '@/models//Post'
+
+export default {
+  computed: {
+    posts () {
+      // Fetch all post records with author.
+      return Post.query().with('author').get()
+    }
+  }
+}
+</script>
 ```
 
 ## What's Next?

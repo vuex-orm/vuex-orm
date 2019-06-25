@@ -13,12 +13,13 @@ const sidebars = {
       collapsable: false,
       children: [
         '/guide/model/defining-models',
-        '/guide/model/defining-relationships',
+        '/guide/model/relationships',
+        '/guide/model/accessors-and-mutators',
         '/guide/model/database-registration'
       ]
     },
     {
-      title: 'Inserting & Updating Data',
+      title: 'Data',
       collapsable: false,
       children: [
         '/guide/store/inserting-and-updating-data',
@@ -57,7 +58,6 @@ const sidebars = {
       title: 'Advanced Usage',
       collapsable: false,
       children: [
-        '/guide/components/modules-and-store',
         '/guide/advanced/interact-with-store-from-model',
         '/guide/advanced/accessors-and-mutators',
         '/guide/advanced/lifecycle-hooks',
@@ -68,6 +68,8 @@ const sidebars = {
       title: 'Digging Deeper',
       collapsable: false,
       children: [
+        '/guide/advanced/serialization',
+        '/guide/advanced/lifecycle-hooks',
         '/guide/digging-deeper/plugins'
       ]
     }
