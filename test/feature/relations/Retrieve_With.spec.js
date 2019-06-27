@@ -10,7 +10,9 @@ describe('Feature – Relations – Retrieve – With', () => {
         return {
           id: this.attr(null),
           phone: this.hasOne(Phone, 'user_id'),
-          posts: this.hasMany(Post, 'user_id')
+          posts: this.hasMany(Post, 'user_id'),
+          dummy_ids: this.attr(null),
+          dummies: this.hasManyBy(Dummy, 'dummy_ids')
         }
       }
     }
@@ -33,6 +35,17 @@ describe('Feature – Relations – Retrieve – With', () => {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
+        }
+      }
+    }
+
+    class Dummy extends Model {
+      static entity = 'dummies'
+      static primaryKey = 'id'
+
+      static fields () {
+        return {
+          id: this.attr(null)
         }
       }
     }
@@ -70,7 +83,9 @@ describe('Feature – Relations – Retrieve – With', () => {
         return {
           id: this.attr(null),
           phone: this.hasOne(Phone, 'user_id'),
-          posts: this.hasMany(Post, 'user_id')
+          posts: this.hasMany(Post, 'user_id'),
+          dummy_ids: this.attr(null),
+          dummies: this.hasManyBy(Dummy, 'dummy_ids')
         }
       }
     }
@@ -94,6 +109,17 @@ describe('Feature – Relations – Retrieve – With', () => {
           id: this.attr(null),
           user_id: this.attr(null),
           user: this.belongsTo(User, 'user_id')
+        }
+      }
+    }
+
+    class Dummy extends Model {
+      static entity = 'dummies'
+      static primaryKey = 'id'
+
+      static fields () {
+        return {
+          id: this.attr(null)
         }
       }
     }
