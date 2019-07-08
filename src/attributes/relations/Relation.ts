@@ -38,14 +38,15 @@ export default abstract class Relation extends Attribute {
    * Get specified keys from the given collection.
    */
   protected getKeys (collection: Collection, key: string): string[] {
-    return collection.reduce((models, model) => {
+    return collection.reduce<string[]>((models, model) => {
       if (model[key] === null || model[key] === undefined) {
         return models
       }
 
       models.push(model[key] as string)
+
       return models
-    }, [] as Array<string>)
+    }, [])
   }
 
   /**
