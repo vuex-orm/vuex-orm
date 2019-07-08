@@ -18,7 +18,7 @@
 	});
 
 	var _core = createCommonjsModule(function (module) {
-	var core = module.exports = { version: '2.6.5' };
+	var core = module.exports = { version: '2.6.9' };
 	if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 	});
 	var _core_1 = _core.version;
@@ -122,7 +122,7 @@
 	  return store[key] || (store[key] = value !== undefined ? value : {});
 	})('versions', []).push({
 	  version: _core.version,
-	  mode: 'global',
+	  mode:  'global',
 	  copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
 	});
 	});
@@ -391,6 +391,7 @@
 
 
 
+
 	var $assign = Object.assign;
 
 	// should work with symbols and should have deterministic property order (V8 bug)
@@ -415,7 +416,10 @@
 	    var length = keys.length;
 	    var j = 0;
 	    var key;
-	    while (length > j) if (isEnum.call(S, key = keys[j++])) T[key] = S[key];
+	    while (length > j) {
+	      key = keys[j++];
+	      if (!_descriptors || isEnum.call(S, key)) T[key] = S[key];
+	    }
 	  } return T;
 	} : $assign;
 
@@ -435,9 +439,13 @@
 	    var i = 0;
 	    var result = [];
 	    var key;
-	    while (length > i) if (isEnum.call(O, key = keys[i++])) {
-	      result.push(isEntries ? [key, O[key]] : O[key]);
-	    } return result;
+	    while (length > i) {
+	      key = keys[i++];
+	      if (!_descriptors || isEnum.call(O, key)) {
+	        result.push(isEntries ? [key, O[key]] : O[key]);
+	      }
+	    }
+	    return result;
 	  };
 	};
 
@@ -511,8 +519,6 @@
 	});
 
 	var startsWith = _core.String.startsWith;
-
-	/*eslint-disable */
 
 	var Container = /** @class */ (function () {
 	    function Container() {
@@ -971,7 +977,13 @@
 	     * Get specified keys from the given collection.
 	     */
 	    Relation.prototype.getKeys = function (collection, key) {
-	        return collection.map(function (model) { return model[key]; });
+	        return collection.reduce(function (models, model) {
+	            if (model[key] === null || model[key] === undefined) {
+	                return models;
+	            }
+	            models.push(model[key]);
+	            return models;
+	        }, []);
 	    };
 	    /**
 	     * Create a new indexed map for the single relation by specified key.
@@ -2613,6 +2625,62 @@
 	    return Model;
 	}());
 
+	function _defineProperties(target, props) {
+	  for (var i = 0; i < props.length; i++) {
+	    var descriptor = props[i];
+	    descriptor.enumerable = descriptor.enumerable || false;
+	    descriptor.configurable = true;
+	    if ("value" in descriptor) descriptor.writable = true;
+	    Object.defineProperty(target, descriptor.key, descriptor);
+	  }
+	}
+
+	function _createClass(Constructor, protoProps, staticProps) {
+	  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+	  if (staticProps) _defineProperties(Constructor, staticProps);
+	  return Constructor;
+	}
+
+	function _defineProperty(obj, key, value) {
+	  if (key in obj) {
+	    Object.defineProperty(obj, key, {
+	      value: value,
+	      enumerable: true,
+	      configurable: true,
+	      writable: true
+	    });
+	  } else {
+	    obj[key] = value;
+	  }
+
+	  return obj;
+	}
+
+	function _objectSpread(target) {
+	  for (var i = 1; i < arguments.length; i++) {
+	    var source = arguments[i] != null ? arguments[i] : {};
+	    var ownKeys = Object.keys(source);
+
+	    if (typeof Object.getOwnPropertySymbols === 'function') {
+	      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+	        return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+	      }));
+	    }
+
+	    ownKeys.forEach(function (key) {
+	      _defineProperty(target, key, source[key]);
+	    });
+	  }
+
+	  return target;
+	}
+
+	function _inheritsLoose(subClass, superClass) {
+	  subClass.prototype = Object.create(superClass.prototype);
+	  subClass.prototype.constructor = subClass;
+	  subClass.__proto__ = superClass;
+	}
+
 	/**
 	 * Helpers to enable Immutable compatibility *without* bringing in
 	 * the 'immutable' package as a dependency.
@@ -2629,7 +2697,6 @@
 	  return !!(object && typeof object.hasOwnProperty === 'function' && (object.hasOwnProperty('__ownerID') || // Immutable.Map
 	  object._map && object._map.hasOwnProperty('__ownerID'))); // Immutable.Record
 	}
-
 	/**
 	 * Denormalize an immutable entity.
 	 *
@@ -2639,11 +2706,12 @@
 	 * @param  {function} getDenormalizedEntity
 	 * @return {Immutable.Map|Immutable.Record}
 	 */
+
 	function denormalizeImmutable(schema, input, unvisit) {
 	  return Object.keys(schema).reduce(function (object, key) {
 	    // Immutable maps cast keys to strings on write so we need to ensure
 	    // we're accessing them using string keys.
-	    var stringKey = '' + key;
+	    var stringKey = "" + key;
 
 	    if (object.has(stringKey)) {
 	      return object.set(stringKey, unvisit(object.get(stringKey), schema[stringKey]));
@@ -2653,130 +2721,39 @@
 	  }, input);
 	}
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-	  return typeof obj;
-	} : function (obj) {
-	  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-	};
-
-
-
-
-
-
-
-
-
-
-
-	var classCallCheck = function (instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	};
-
-	var createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];
-	      descriptor.enumerable = descriptor.enumerable || false;
-	      descriptor.configurable = true;
-	      if ("value" in descriptor) descriptor.writable = true;
-	      Object.defineProperty(target, descriptor.key, descriptor);
-	    }
-	  }
-
-	  return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);
-	    if (staticProps) defineProperties(Constructor, staticProps);
-	    return Constructor;
-	  };
-	}();
-
-
-
-
-
-
-
-	var _extends = Object.assign || function (target) {
-	  for (var i = 1; i < arguments.length; i++) {
-	    var source = arguments[i];
-
-	    for (var key in source) {
-	      if (Object.prototype.hasOwnProperty.call(source, key)) {
-	        target[key] = source[key];
-	      }
-	    }
-	  }
-
-	  return target;
-	};
-
-
-
-	var inherits = function (subClass, superClass) {
-	  if (typeof superClass !== "function" && superClass !== null) {
-	    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-	  }
-
-	  subClass.prototype = Object.create(superClass && superClass.prototype, {
-	    constructor: {
-	      value: subClass,
-	      enumerable: false,
-	      writable: true,
-	      configurable: true
-	    }
-	  });
-	  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-	};
-
-
-
-
-
-
-
-
-
-
-
-	var possibleConstructorReturn = function (self, call) {
-	  if (!self) {
-	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-	  }
-
-	  return call && (typeof call === "object" || typeof call === "function") ? call : self;
-	};
-
 	var getDefaultGetId = function getDefaultGetId(idAttribute) {
 	  return function (input) {
 	    return isImmutable(input) ? input.get(idAttribute) : input[idAttribute];
 	  };
 	};
 
-	var EntitySchema = function () {
-	  function EntitySchema(key) {
-	    var definition = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-	    classCallCheck(this, EntitySchema);
-
-	    if (!key || typeof key !== 'string') {
-	      throw new Error('Expected a string key for Entity, but found ' + key + '.');
+	var EntitySchema =
+	/*#__PURE__*/
+	function () {
+	  function EntitySchema(key, definition, options) {
+	    if (definition === void 0) {
+	      definition = {};
 	    }
 
-	    var _options$idAttribute = options.idAttribute,
-	        idAttribute = _options$idAttribute === undefined ? 'id' : _options$idAttribute,
-	        _options$mergeStrateg = options.mergeStrategy,
-	        mergeStrategy = _options$mergeStrateg === undefined ? function (entityA, entityB) {
-	      return _extends({}, entityA, entityB);
+	    if (options === void 0) {
+	      options = {};
+	    }
+
+	    if (!key || typeof key !== 'string') {
+	      throw new Error("Expected a string key for Entity, but found " + key + ".");
+	    }
+
+	    var _options = options,
+	        _options$idAttribute = _options.idAttribute,
+	        idAttribute = _options$idAttribute === void 0 ? 'id' : _options$idAttribute,
+	        _options$mergeStrateg = _options.mergeStrategy,
+	        mergeStrategy = _options$mergeStrateg === void 0 ? function (entityA, entityB) {
+	      return _objectSpread({}, entityA, entityB);
 	    } : _options$mergeStrateg,
-	        _options$processStrat = options.processStrategy,
-	        processStrategy = _options$processStrat === undefined ? function (input) {
-	      return _extends({}, input);
+	        _options$processStrat = _options.processStrategy,
+	        processStrategy = _options$processStrat === void 0 ? function (input) {
+	      return _objectSpread({}, input);
 	    } : _options$processStrat;
-
-
 	    this._key = key;
 	    this._getId = typeof idAttribute === 'function' ? idAttribute : getDefaultGetId(idAttribute);
 	    this._idAttribute = idAttribute;
@@ -2785,39 +2762,49 @@
 	    this.define(definition);
 	  }
 
-	  EntitySchema.prototype.define = function define(definition) {
+	  var _proto = EntitySchema.prototype;
+
+	  _proto.define = function define(definition) {
 	    this.schema = Object.keys(definition).reduce(function (entitySchema, key) {
-	      var _babelHelpers$extends;
+	      var _objectSpread2;
 
 	      var schema = definition[key];
-	      return _extends({}, entitySchema, (_babelHelpers$extends = {}, _babelHelpers$extends[key] = schema, _babelHelpers$extends));
+	      return _objectSpread({}, entitySchema, (_objectSpread2 = {}, _objectSpread2[key] = schema, _objectSpread2));
 	    }, this.schema || {});
 	  };
 
-	  EntitySchema.prototype.getId = function getId(input, parent, key) {
+	  _proto.getId = function getId(input, parent, key) {
 	    return this._getId(input, parent, key);
 	  };
 
-	  EntitySchema.prototype.merge = function merge(entityA, entityB) {
+	  _proto.merge = function merge(entityA, entityB) {
 	    return this._mergeStrategy(entityA, entityB);
 	  };
 
-	  EntitySchema.prototype.normalize = function normalize(input, parent, key, visit, addEntity) {
+	  _proto.normalize = function normalize(input, parent, key, visit, addEntity, visitedEntities) {
 	    var _this = this;
 
+	    if (visitedEntities.some(function (entity) {
+	      return entity === input;
+	    })) {
+	      return this.getId(input, parent, key);
+	    }
+
+	    visitedEntities.push(input);
+
 	    var processedEntity = this._processStrategy(input, parent, key);
+
 	    Object.keys(this.schema).forEach(function (key) {
-	      if (processedEntity.hasOwnProperty(key) && _typeof(processedEntity[key]) === 'object') {
+	      if (processedEntity.hasOwnProperty(key) && typeof processedEntity[key] === 'object') {
 	        var schema = _this.schema[key];
-	        processedEntity[key] = visit(processedEntity[key], processedEntity, key, schema, addEntity);
+	        processedEntity[key] = visit(processedEntity[key], processedEntity, key, schema, addEntity, visitedEntities);
 	      }
 	    });
-
 	    addEntity(this, processedEntity, input, parent, key);
 	    return this.getId(input, parent, key);
 	  };
 
-	  EntitySchema.prototype.denormalize = function denormalize(entity, unvisit) {
+	  _proto.denormalize = function denormalize(entity, unvisit) {
 	    var _this2 = this;
 
 	    if (isImmutable(entity)) {
@@ -2833,41 +2820,45 @@
 	    return entity;
 	  };
 
-	  createClass(EntitySchema, [{
-	    key: 'key',
-	    get: function get$$1() {
+	  _createClass(EntitySchema, [{
+	    key: "key",
+	    get: function get() {
 	      return this._key;
 	    }
 	  }, {
-	    key: 'idAttribute',
-	    get: function get$$1() {
+	    key: "idAttribute",
+	    get: function get() {
 	      return this._idAttribute;
 	    }
 	  }]);
+
 	  return EntitySchema;
 	}();
 
-	var PolymorphicSchema = function () {
+	var PolymorphicSchema =
+	/*#__PURE__*/
+	function () {
 	  function PolymorphicSchema(definition, schemaAttribute) {
-	    classCallCheck(this, PolymorphicSchema);
-
 	    if (schemaAttribute) {
 	      this._schemaAttribute = typeof schemaAttribute === 'string' ? function (input) {
 	        return input[schemaAttribute];
 	      } : schemaAttribute;
 	    }
+
 	    this.define(definition);
 	  }
 
-	  PolymorphicSchema.prototype.define = function define(definition) {
+	  var _proto = PolymorphicSchema.prototype;
+
+	  _proto.define = function define(definition) {
 	    this.schema = definition;
 	  };
 
-	  PolymorphicSchema.prototype.getSchemaAttribute = function getSchemaAttribute(input, parent, key) {
+	  _proto.getSchemaAttribute = function getSchemaAttribute(input, parent, key) {
 	    return !this.isSingleSchema && this._schemaAttribute(input, parent, key);
 	  };
 
-	  PolymorphicSchema.prototype.inferSchema = function inferSchema(input, parent, key) {
+	  _proto.inferSchema = function inferSchema(input, parent, key) {
 	    if (this.isSingleSchema) {
 	      return this.schema;
 	    }
@@ -2876,84 +2867,98 @@
 	    return this.schema[attr];
 	  };
 
-	  PolymorphicSchema.prototype.normalizeValue = function normalizeValue(value, parent, key, visit, addEntity) {
+	  _proto.normalizeValue = function normalizeValue(value, parent, key, visit, addEntity, visitedEntities) {
 	    var schema = this.inferSchema(value, parent, key);
+
 	    if (!schema) {
 	      return value;
 	    }
-	    var normalizedValue = visit(value, parent, key, schema, addEntity);
-	    return this.isSingleSchema || normalizedValue === undefined || normalizedValue === null ? normalizedValue : { id: normalizedValue, schema: this.getSchemaAttribute(value, parent, key) };
+
+	    var normalizedValue = visit(value, parent, key, schema, addEntity, visitedEntities);
+	    return this.isSingleSchema || normalizedValue === undefined || normalizedValue === null ? normalizedValue : {
+	      id: normalizedValue,
+	      schema: this.getSchemaAttribute(value, parent, key)
+	    };
 	  };
 
-	  PolymorphicSchema.prototype.denormalizeValue = function denormalizeValue(value, unvisit) {
+	  _proto.denormalizeValue = function denormalizeValue(value, unvisit) {
 	    var schemaKey = isImmutable(value) ? value.get('schema') : value.schema;
+
 	    if (!this.isSingleSchema && !schemaKey) {
 	      return value;
 	    }
+
 	    var id = isImmutable(value) ? value.get('id') : value.id;
 	    var schema = this.isSingleSchema ? this.schema : this.schema[schemaKey];
 	    return unvisit(id || value, schema);
 	  };
 
-	  createClass(PolymorphicSchema, [{
-	    key: 'isSingleSchema',
-	    get: function get$$1() {
+	  _createClass(PolymorphicSchema, [{
+	    key: "isSingleSchema",
+	    get: function get() {
 	      return !this._schemaAttribute;
 	    }
 	  }]);
+
 	  return PolymorphicSchema;
 	}();
 
-	var UnionSchema = function (_PolymorphicSchema) {
-	  inherits(UnionSchema, _PolymorphicSchema);
+	var UnionSchema =
+	/*#__PURE__*/
+	function (_PolymorphicSchema) {
+	  _inheritsLoose(UnionSchema, _PolymorphicSchema);
 
 	  function UnionSchema(definition, schemaAttribute) {
-	    classCallCheck(this, UnionSchema);
-
 	    if (!schemaAttribute) {
 	      throw new Error('Expected option "schemaAttribute" not found on UnionSchema.');
 	    }
-	    return possibleConstructorReturn(this, _PolymorphicSchema.call(this, definition, schemaAttribute));
+
+	    return _PolymorphicSchema.call(this, definition, schemaAttribute) || this;
 	  }
 
-	  UnionSchema.prototype.normalize = function normalize(input, parent, key, visit, addEntity) {
-	    return this.normalizeValue(input, parent, key, visit, addEntity);
+	  var _proto = UnionSchema.prototype;
+
+	  _proto.normalize = function normalize(input, parent, key, visit, addEntity, visitedEntities) {
+	    return this.normalizeValue(input, parent, key, visit, addEntity, visitedEntities);
 	  };
 
-	  UnionSchema.prototype.denormalize = function denormalize(input, unvisit) {
+	  _proto.denormalize = function denormalize(input, unvisit) {
 	    return this.denormalizeValue(input, unvisit);
 	  };
 
 	  return UnionSchema;
 	}(PolymorphicSchema);
 
-	var ValuesSchema = function (_PolymorphicSchema) {
-	  inherits(ValuesSchema, _PolymorphicSchema);
+	var ValuesSchema =
+	/*#__PURE__*/
+	function (_PolymorphicSchema) {
+	  _inheritsLoose(ValuesSchema, _PolymorphicSchema);
 
 	  function ValuesSchema() {
-	    classCallCheck(this, ValuesSchema);
-	    return possibleConstructorReturn(this, _PolymorphicSchema.apply(this, arguments));
+	    return _PolymorphicSchema.apply(this, arguments) || this;
 	  }
 
-	  ValuesSchema.prototype.normalize = function normalize(input, parent, key, visit, addEntity) {
-	    var _this2 = this;
+	  var _proto = ValuesSchema.prototype;
+
+	  _proto.normalize = function normalize(input, parent, key, visit, addEntity, visitedEntities) {
+	    var _this = this;
 
 	    return Object.keys(input).reduce(function (output, key, index) {
-	      var _babelHelpers$extends;
+	      var _objectSpread2;
 
 	      var value = input[key];
-	      return value !== undefined && value !== null ? _extends({}, output, (_babelHelpers$extends = {}, _babelHelpers$extends[key] = _this2.normalizeValue(value, input, key, visit, addEntity), _babelHelpers$extends)) : output;
+	      return value !== undefined && value !== null ? _objectSpread({}, output, (_objectSpread2 = {}, _objectSpread2[key] = _this.normalizeValue(value, input, key, visit, addEntity, visitedEntities), _objectSpread2)) : output;
 	    }, {});
 	  };
 
-	  ValuesSchema.prototype.denormalize = function denormalize(input, unvisit) {
-	    var _this3 = this;
+	  _proto.denormalize = function denormalize(input, unvisit) {
+	    var _this2 = this;
 
 	    return Object.keys(input).reduce(function (output, key) {
-	      var _babelHelpers$extends2;
+	      var _objectSpread3;
 
 	      var entityOrId = input[key];
-	      return _extends({}, output, (_babelHelpers$extends2 = {}, _babelHelpers$extends2[key] = _this3.denormalizeValue(entityOrId, unvisit), _babelHelpers$extends2));
+	      return _objectSpread({}, output, (_objectSpread3 = {}, _objectSpread3[key] = _this2.denormalizeValue(entityOrId, unvisit), _objectSpread3));
 	    }, {});
 	  };
 
@@ -2962,8 +2967,9 @@
 
 	var validateSchema = function validateSchema(definition) {
 	  var isArray = Array.isArray(definition);
+
 	  if (isArray && definition.length > 1) {
-	    throw new Error('Expected schema definition to be a single schema, but found ' + definition.length + '.');
+	    throw new Error("Expected schema definition to be a single schema, but found " + definition.length + ".");
 	  }
 
 	  return definition[0];
@@ -2975,54 +2981,56 @@
 	  });
 	};
 
-	var normalize = function normalize(schema, input, parent, key, visit, addEntity) {
+	var normalize = function normalize(schema, input, parent, key, visit, addEntity, visitedEntities) {
 	  schema = validateSchema(schema);
-
-	  var values = getValues(input);
-
-	  // Special case: Arrays pass *their* parent on to their children, since there
+	  var values = getValues(input); // Special case: Arrays pass *their* parent on to their children, since there
 	  // is not any special information that can be gathered from themselves directly
+
 	  return values.map(function (value, index) {
-	    return visit(value, parent, key, schema, addEntity);
+	    return visit(value, parent, key, schema, addEntity, visitedEntities);
 	  });
 	};
 
-	var ArraySchema = function (_PolymorphicSchema) {
-	  inherits(ArraySchema, _PolymorphicSchema);
+	var ArraySchema =
+	/*#__PURE__*/
+	function (_PolymorphicSchema) {
+	  _inheritsLoose(ArraySchema, _PolymorphicSchema);
 
 	  function ArraySchema() {
-	    classCallCheck(this, ArraySchema);
-	    return possibleConstructorReturn(this, _PolymorphicSchema.apply(this, arguments));
+	    return _PolymorphicSchema.apply(this, arguments) || this;
 	  }
 
-	  ArraySchema.prototype.normalize = function normalize(input, parent, key, visit, addEntity) {
-	    var _this2 = this;
+	  var _proto = ArraySchema.prototype;
+
+	  _proto.normalize = function normalize(input, parent, key, visit, addEntity, visitedEntities) {
+	    var _this = this;
 
 	    var values = getValues(input);
-
 	    return values.map(function (value, index) {
-	      return _this2.normalizeValue(value, parent, key, visit, addEntity);
+	      return _this.normalizeValue(value, parent, key, visit, addEntity, visitedEntities);
 	    }).filter(function (value) {
 	      return value !== undefined && value !== null;
 	    });
 	  };
 
-	  ArraySchema.prototype.denormalize = function denormalize(input, unvisit) {
-	    var _this3 = this;
+	  _proto.denormalize = function denormalize(input, unvisit) {
+	    var _this2 = this;
 
 	    return input && input.map ? input.map(function (value) {
-	      return _this3.denormalizeValue(value, unvisit);
+	      return _this2.denormalizeValue(value, unvisit);
 	    }) : input;
 	  };
 
 	  return ArraySchema;
 	}(PolymorphicSchema);
 
-	var _normalize = function _normalize(schema, input, parent, key, visit, addEntity) {
-	  var object = _extends({}, input);
+	var _normalize = function normalize(schema, input, parent, key, visit, addEntity, visitedEntities) {
+	  var object = _objectSpread({}, input);
+
 	  Object.keys(schema).forEach(function (key) {
 	    var localSchema = schema[key];
-	    var value = visit(input[key], input, key, localSchema, addEntity);
+	    var value = visit(input[key], input, key, localSchema, addEntity, visitedEntities);
+
 	    if (value === undefined || value === null) {
 	      delete object[key];
 	    } else {
@@ -3032,77 +3040,82 @@
 	  return object;
 	};
 
-	var _denormalize = function _denormalize(schema, input, unvisit) {
+	var _denormalize = function denormalize(schema, input, unvisit) {
 	  if (isImmutable(input)) {
 	    return denormalizeImmutable(schema, input, unvisit);
 	  }
 
-	  var object = _extends({}, input);
+	  var object = _objectSpread({}, input);
+
 	  Object.keys(schema).forEach(function (key) {
-	    if (object[key]) {
+	    if (object[key] != null) {
 	      object[key] = unvisit(object[key], schema[key]);
 	    }
 	  });
 	  return object;
 	};
 
-	var ObjectSchema = function () {
+	var ObjectSchema =
+	/*#__PURE__*/
+	function () {
 	  function ObjectSchema(definition) {
-	    classCallCheck(this, ObjectSchema);
-
 	    this.define(definition);
 	  }
 
-	  ObjectSchema.prototype.define = function define(definition) {
+	  var _proto = ObjectSchema.prototype;
+
+	  _proto.define = function define(definition) {
 	    this.schema = Object.keys(definition).reduce(function (entitySchema, key) {
-	      var _babelHelpers$extends;
+	      var _objectSpread2;
 
 	      var schema = definition[key];
-	      return _extends({}, entitySchema, (_babelHelpers$extends = {}, _babelHelpers$extends[key] = schema, _babelHelpers$extends));
+	      return _objectSpread({}, entitySchema, (_objectSpread2 = {}, _objectSpread2[key] = schema, _objectSpread2));
 	    }, this.schema || {});
 	  };
 
-	  ObjectSchema.prototype.normalize = function normalize() {
-	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	  _proto.normalize = function normalize() {
+	    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
 	      args[_key] = arguments[_key];
 	    }
 
-	    return _normalize.apply(undefined, [this.schema].concat(args));
+	    return _normalize.apply(void 0, [this.schema].concat(args));
 	  };
 
-	  ObjectSchema.prototype.denormalize = function denormalize() {
-	    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+	  _proto.denormalize = function denormalize() {
+	    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
 	      args[_key2] = arguments[_key2];
 	    }
 
-	    return _denormalize.apply(undefined, [this.schema].concat(args));
+	    return _denormalize.apply(void 0, [this.schema].concat(args));
 	  };
 
 	  return ObjectSchema;
 	}();
 
-	var visit = function visit(value, parent, key, schema, addEntity) {
-	  if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object' || !value) {
+	var visit = function visit(value, parent, key, schema, addEntity, visitedEntities) {
+	  if (typeof value !== 'object' || !value) {
 	    return value;
 	  }
 
-	  if ((typeof schema === 'undefined' ? 'undefined' : _typeof(schema)) === 'object' && (!schema.normalize || typeof schema.normalize !== 'function')) {
+	  if (typeof schema === 'object' && (!schema.normalize || typeof schema.normalize !== 'function')) {
 	    var method = Array.isArray(schema) ? normalize : _normalize;
-	    return method(schema, value, parent, key, visit, addEntity);
+	    return method(schema, value, parent, key, visit, addEntity, visitedEntities);
 	  }
 
-	  return schema.normalize(value, parent, key, visit, addEntity);
+	  return schema.normalize(value, parent, key, visit, addEntity, visitedEntities);
 	};
 
 	var addEntities = function addEntities(entities) {
 	  return function (schema, processedEntity, value, parent, key) {
 	    var schemaKey = schema.key;
 	    var id = schema.getId(value, parent, key);
+
 	    if (!(schemaKey in entities)) {
 	      entities[schemaKey] = {};
 	    }
 
 	    var existingEntity = entities[schemaKey][id];
+
 	    if (existingEntity) {
 	      entities[schemaKey][id] = schema.merge(existingEntity, processedEntity);
 	    } else {
@@ -3118,17 +3131,19 @@
 	  Union: UnionSchema,
 	  Values: ValuesSchema
 	};
-
-	var normalize$1 = function normalize$$1(input, schema) {
-	  if (!input || (typeof input === 'undefined' ? 'undefined' : _typeof(input)) !== 'object') {
-	    throw new Error('Unexpected input given to normalize. Expected type to be "object", found "' + (typeof input === 'undefined' ? 'undefined' : _typeof(input)) + '".');
+	var normalize$1 = function normalize(input, schema) {
+	  if (!input || typeof input !== 'object') {
+	    throw new Error("Unexpected input given to normalize. Expected type to be \"object\", found \"" + typeof input + "\".");
 	  }
 
 	  var entities = {};
 	  var addEntity = addEntities(entities);
-
-	  var result = visit(input, input, null, schema, addEntity);
-	  return { entities: entities, result: result };
+	  var visitedEntities = [];
+	  var result = visit(input, input, null, schema, addEntity, visitedEntities);
+	  return {
+	    entities: entities,
+	    result: result
+	  };
 	};
 
 	var Normalizer = /** @class */ (function () {
