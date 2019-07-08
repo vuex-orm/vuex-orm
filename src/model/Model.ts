@@ -753,6 +753,24 @@ export default class Model {
   toJSON (): Record {
     return this.$toJson()
   }
+
+  static getModelFromRecord (record: Record): typeof Model | null {
+
+    if(!record)
+      return null
+
+    if (record[this.typeKey] && Object.keys(this.types()).length > 0) {
+        const typeValue = record[this.typeKey];
+        const newModel = this.types()[typeValue];
+        return newModel || null
+    }
+
+    // Checking if record is already typed
+    if(record instanceof Model)
+      return record.$self()
+
+    return null
+  }
   
   /**
    * Returns true if current instance is an instance of a base Vuex ORM class

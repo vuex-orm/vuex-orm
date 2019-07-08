@@ -221,12 +221,103 @@ describe('Feature - Inheritance - Relations', () => {
     const roles = Role.query().with('persons').all()
     expect(roles.length).toBe(2)
 
+    // Checking persons have been fetched
     const role = roles.filter(r => r.id === 1)[0]
     expect(role.persons.length).toBe(2)
 
+    // Checking that there is one Adult in the persons array
     const adults = role.persons.filter(p => p instanceof Adult)
     expect(adults.length).toBe(1)
     expect(adults[0].id).toBe(2)
+  })
+
+  it('should keep right type when fetching related data from base entity', async () => {
+    class Person extends Model {
+      static entity = 'person'
+
+      static fields() {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          role_id: this.attr(null),
+          role: this.belongsTo(Role, 'role_id')
+        }
+      }
+
+      static types() {
+        return {
+          'ADULT': Adult,
+          'PERSON': Person
+        }
+      }
+    }
+
+    class Adult extends Person {
+      static entity = 'adult'
+      static baseEntity = 'person'
+
+      static fields() {
+        return {
+          ...super.fields()
+        }
+      }
+    }
+
+    class Role extends Model {
+      static entity = 'roles'
+
+      static fields() {
+        return {
+          id: this.attr(null),
+          roleName: this.attr(''),
+          persons: this.hasMany(Person, 'role_id')
+        }
+      }
+    }
+
+    const store = createStore([{
+      model: Person
+    }, {
+      model: Adult
+    }, {
+      model: Role
+    }])
+
+    store.dispatch('entities/roles/insert', {
+      data: [{
+        id: 1,
+        roleName: 'Role 1'
+      }, {
+        id: 2,
+        roleName: 'Role 2'
+      }]
+    })
+
+    store.dispatch('entities/person/insert', {
+      data: [{
+        id: 1,
+        name: 'John',
+        type: 'PERSON',
+        role_id: 1
+      }, {
+        id: 2,
+        name: 'Jane',
+        type: 'ADULT',
+        role_id: 2
+      }]
+    })
+
+    // Reverse check: getting all persons and their associated role
+    const persons = Person.query().with('role').all()
+    expect(persons.length).toBe(2)
+
+    const firstPerson = persons.filter(p => p.id === 1)[0]
+    expect(firstPerson).toBeInstanceOf(Person)
+    expect(firstPerson.role.id).toBe(1)
+
+    const secondPerson = persons.filter(p => p.id === 2)[0]
+    expect(secondPerson).toBeInstanceOf(Adult)
+    expect(secondPerson.role.id).toBe(2)
   })
 
   it('should allow definition of relationship to derived / base entities', () => {

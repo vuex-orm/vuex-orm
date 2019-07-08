@@ -701,7 +701,10 @@ export default class Query<T extends Model = Model> {
     }
 
     if (Object.keys(this.load).length > 0) {
-      item = new this.model(item)
+
+      const model = this.model.getModelFromRecord(item) || this.model
+
+      item = new model(item)
 
       let items = this.hook.executeSelectHook('beforeRelations', [item])
       item = items[0]
@@ -724,7 +727,11 @@ export default class Query<T extends Model = Model> {
     }
 
     if (Object.keys(this.load).length > 0) {
-      collection = collection.map(item => new this.model(item))
+      collection = collection.map(item => {
+
+        const model = this.model.getModelFromRecord(item) || this.model
+        return new model(item)
+      })
 
       collection = this.hook.executeSelectHook('beforeRelations', collection)
 
@@ -1143,23 +1150,22 @@ export default class Query<T extends Model = Model> {
 
     let model = this.model 
 
-    // If the record has the right typeKey attribute set, and Model has type mapping 
-    // we hydrate it as the corresponding model
-    if (record && record[model.typeKey] && Object.keys(model.types()).length > 0) {
-      const typeValue = record[model.typeKey];
-      const newModel = model.types()[typeValue];
+    if(record) {
 
-      // tslint:disable-next-line:strict-type-predicates
+      // If the record has the right typeKey attribute set, and Model has type mapping 
+      // we hydrate it as the corresponding model
+      const newModel = model.getModelFromRecord(record)
+
       if(typeof newModel === 'function') 
         return new newModel(record)
-    }
 
-    // If we know that we're hydrating an entity which is not a base one,
-    // we can set it's typeKey attribute as a "bonus"
-    if (record && !this.appliedOnBase) {
-      const typeValue = model.getTypeKeyValueFromModel()
-      if (typeValue !== null) {
-        record[model.typeKey] = typeValue
+      // If we know that we're hydrating an entity which is not a base one,
+      // we can set it's typeKey attribute as a "bonus"
+      if (!this.appliedOnBase) {
+        const typeValue = model.getTypeKeyValueFromModel()
+        if (typeValue !== null) {
+          record[model.typeKey] = typeValue
+        }
       }
     }
 
