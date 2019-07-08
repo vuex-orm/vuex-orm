@@ -759,7 +759,7 @@ export default class Model {
     if(!record)
       return null
 
-    if (record[this.typeKey] && Object.keys(this.types()).length > 0) {
+    if (record[this.typeKey] && this.hasTypes()) {
         const typeValue = record[this.typeKey];
         const newModel = this.types()[typeValue];
         return newModel || null
