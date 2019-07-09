@@ -666,28 +666,49 @@ const user = await User.new()
 
 ## Updates
 
-To update existing data, you can do so with the `update` method. The `update` method takes `where` condition and `data` as payload.
+To update existing data, you can do so with the `update` method. Following example is some simple Vue Component handling data update with form data. The `update` method takes `where` condition and `data` as payload.
 
-```js
-User.update({
-  where: 2,
-  data: { age: 24 }
-})
+```vue
+<template>
+  <div>
+    <label>Name</label>
+    <input :value="user.name" @input="updateName">
+  </div>
+</template>
+
+<script>
+import User from '@/models/User'
+
+export default {
+  computed: {
+    user () {
+      return User.find(1)
+    }
+  },
+
+  methods: {
+    updateName (e) {
+      User.update({
+        where: 1,
+        data: {
+          name: e.target.value
+        }
+      })
+    }
+  }
+}
+</script>
 ```
 
-`where` condition can be a `Number` or a `String` representing the value of the primary key of the model or can be a `Function` to determine the target data. A `Function` takes the record as the argument and must return `Boolean`.
-
-`data` is the data you want to update. `data` also could be just a plain object, or a `Function`.
-
-Let's see some example here to understand how it works.
+`where` condition can be a `Number` or a `String` representing the value of the primary key of the Model. `data` is the data you want to update. Let's see some example here to understand how it works.
 
 ```js
 // Initial State.
-let state = {
+{
   entities: {
     users: {
-      '1': { id: 1, name: 'John', age: 20 },
-      '2': { id: 2, name: 'Jane', age: 30 }
+      1: { id: 1, name: 'John', age: 20 },
+      2: { id: 2, name: 'Jane', age: 30 }
     }
   }
 }
@@ -699,96 +720,153 @@ User.update({
 })
 
 // State after `update`
-state = {
+{
   entities: {
     users: {
-      '1': { id: 1, name: 'John', age: 20 },
-      '2': { id: 2, name: 'Jane', age: 24 }
+      1: { id: 1, name: 'John', age: 20 },
+      2: { id: 2, name: 'Jane', age: 24 }
     }
   }
 }
 ```
 
-You can pass a function to the `where` method to get more control. Remember to return boolean in this case.
+You may also pass `Function` to the `where` field to determine the target data. The `Function` takes the record as the argument and must return `Boolean`. This approach also lets you update multiple records at once.
 
 ```js
+// Initial State.
+{
+  entities: {
+    users: {
+      1: { id: 1, name: 'John', age: 20, active: false },
+      2: { id: 2, name: 'Jane', age: 20, active: false },
+      3: { id: 3, name: 'Johnny', age: 30, active: false }
+    }
+  }
+}
+
+// Update via function.
 User.update({
-  where: (record) => {
-    return record.id === 2
+  where: (user) => {
+    return user.age === 20
   },
 
-  data: { age: 24 }
+  data: { active: true }
 })
+
+// State after `update`.
+{
+  entities: {
+    users: {
+      1: { id: 1, name: 'John', age: 20, active: true },
+      2: { id: 2, name: 'Jane', age: 20, active: true },
+      3: { id: 3, name: 'Johnny', age: 30, active: false }
+    }
+  }
+}
 ```
 
-Alternatively, you may pass the whole data object as a payload. In this case, the primary key must exist in the data object.
+`data` also could be `Function`. The `Function` will receive the target record as an argument. Then you can modify any properties. This is especially useful when you want to interact with the field that contains `Array` or `Object`.
 
 ```js
+// Initial State.
+{
+  entities: {
+    users: {
+      1: { id: 1, name: 'John', age: 20, keywords: ['sales'] },
+      2: { id: 2, name: 'Jane', age: 30, keywords: ['marketing'] }
+    }
+  }
+}
+
+// Update data via function.
+User.update({
+  where: 2,
+
+  data (user) {
+    user.name = 'Jane Doe'
+    user.keywords.push('pr')
+  }
+})
+
+// State after `update`.
+{
+  entities: {
+    users: {
+      1: { id: 1, name: 'John', age: 20, keywords: ['sales'] },
+      2: { id: 2, name: 'Jane Doe', age: 30, keywords: ['marketing', 'PR'] }
+    }
+  }
+}
+```
+
+You may also pass the whole data object as a single argument. In this case, the primary key must exist in the data object.
+
+```js
+// Initial State.
+{
+  entities: {
+    users: {
+      1: { id: 1, name: 'John', age: 20 },
+      2: { id: 2, name: 'Jane', age: 30 }
+    }
+  }
+}
+
+// Update by passing data object.
 User.update({
   id: 2, // <- Primary key must exist.
   age: 24
 })
 
-// Above code is equivalent to this.
-User.update({
-  where: 2,
-  data: { age: 24 }
-})
-
-// And this is same too.
-User.update({
-  where (record) {
-    return record.id === 2
-  },
-
-  data: { age: 24 }
-})
-```
-
-Finally, you can pass `Function` to the `data`. The `Function` will receive the target record as an argument. Then you can modify any properties. This is especially useful when you want to interact with the field that contains `Array` or `Object`.
-
-```js
-User.update({
-  where: 1,
-  data (user) {
-    user.name = 'Jane Doe'
-    user.arrayField.push(1)
+// State after `update`.
+{
+  entities: {
+    users: {
+      1: { id: 1, name: 'John', age: 20 },
+      2: { id: 2, name: 'Jane', age: 24 }
+    }
   }
-})
+}
 ```
 
-### Updating Multiple Data
+### Updating Relationships
 
-When specifying a `where` condition by a function, it's possible to update multiple records at once.
+Updating relationships works as same as insert methods such as `insert` and `create`. Any data you pass to `data` field will be normalized and updated accordingly in Vuex Store. Note that you can't specify `where` field for relationships, so don't forget to include the primary key for the relationships.
 
 ```js
 // Initial State.
-let state = {
+{
   entities: {
     users: {
-      '1': { id: 1, role: 'user', active: true },
-      '2': { id: 2, role: 'user', active: true },
-      '3': { id: 3, role: 'admin', active: true }
+      1: { id: 1, name: 'John', age: 20 }
+    },
+    posts: {
+      1: { id: 1, user_id: 1, title: 'Post title 1' },
+      2: { id: 2, user_id: 1, title: 'Post title 2' }
     }
   }
 }
 
-// Update data.
+// Update data with relationship.
 User.update({
-  where (record) {
-    return record.role === 'user'
-  },
-
-  data: { active: false }
+  where: 1,
+  data: {
+    name: 'John Doe',
+    posts: [
+      { id: 1, title: 'Edited post title' }
+    ]
+  }
 })
 
 // State after `update`.
-state = {
+{
   entities: {
     users: {
-      '1': { id: 1, role: 'user', active: false },
-      '2': { id: 2, role: 'user', active: false },
-      '3': { id: 3, role: 'admin', active: true }
+      1: { id: 1, name: 'John Doe', age: 20 }
+    },
+    posts: {
+      1: { id: 1, user_id: 1, title: 'Edited post title' },
+      2: { id: 2, user_id: 1, title: 'Post title 2' }
     }
   }
 }
@@ -796,19 +874,16 @@ state = {
 
 ### Get Updated Data
 
-The same as `insert` or `create`, the `update` method also returns updated data as a Promise. However, the data structure that will be returned is changed depending on the use of the `update` method.
+Same as `insert` or `create`, the `update` method also returns updated data as a Promise. However, the data structure that will be returned is different depending on the use of the `update` method.
 
 If you pass the whole object to the `update` method, it will return all updated entities.
 
 ```js
-User.update({ id: 1, age: 24 })
-  .then((entities) => {
-    console.log(entities)
-  })
+const user = await User.update({ id: 1, age: 24 })
 
 /*
   {
-    users: [{ User { id: 1, name: 'John Doe', age: 24 }]
+    users: [{ id: 1, name: 'John Doe', age: 24 }]
   }
 */
 ```
@@ -816,56 +891,47 @@ User.update({ id: 1, age: 24 })
 When specifying id value in the `where` property, it will return a single item that was updated.
 
 ```js
-User.update({
+const user = await User.update({
   where: 1,
   data: { age: 24 }
-}).then((user) => {
-  console.log(user)
 })
 
-// User { id: 1, name: 'John Doe', age: 24 },
+// { id: 1, name: 'John Doe', age: 24 },
 ```
 
-When updating many records by specifying a closure to the `where` property, the returned data will always be an array containing all updated data.
+When updating records by specifying a closure to the `where` property, the returned data will always be an array containing all updated data.
 
 ```js
-User.update({
+const user = await User.update({
   where: record => record.age === 30,
   data: { age: 24 }
-}).then((users) => {
-  console.log(users)
 })
 
 /*
   [
-    User { id: 1, name: 'John Doe', age: 24 },
-    User { id: 2, name: 'Jane Doe', age: 24 }
+    { id: 1, name: 'John Doe', age: 24 },
+    { id: 2, name: 'Jane Doe', age: 24 }
   ]
 */
 ```
 
 ## Insert or Update
 
-Sometimes you might want to insert a set of records which includes already existing and new records. When using the `insert` method you would replace the dataset of an already existing record. This can cause unexpected side effects.
-
-For example if an API supports dynamic embedding of relationships and doesn't always return all relationships, the relationships would be emptied when missing on `insert`.
-
-For those cases you can use the `insertOrUpdate` method:
+The ` insertOrUpdate` method will insert new data if the data doesn't exist in the store, and update data if it does.
 
 ```js
 // Initial State.
-let state = {
+{
   entities: {
     users: {
       data: {
-        '1': { id: 1, name: 'John', roles: [3] }
+        1: { id: 1, name: 'John', title: 'Sales' }
       }
     }
   }
 }
 
-// `insertOrUpdate` is going to add new records and update existing
-// records (see `update`). Also accepts a single item as data.
+// `insertOrUpdate` is going to add new data and update data.
 User.insertOrUpdate({
   data: [
     { id: 1, name: 'Peter' },
@@ -873,19 +939,145 @@ User.insertOrUpdate({
   ]
 })
 
-// State after `insertOrUpdate`. Roles for Peter won't be set to empty array
-// The new record is inserted with an empty relationship.
-state = {
+// State after `insertOrUpdate`.
+{
   entities: {
     users: {
       data: {
-        '1': { id: 1, name: 'Peter', roles: [3] },
-        '2': { id: 2, name: 'Hank', roles: [] }
+        1: { id: 1, name: 'Peter', title: 'Sales' },
+        2: { id: 2, name: 'Hank', title: null  }
       }
     }
   }
 }
 ```
+
+See how the `title` of the User ID of 1 is not affected. If we were using the `insert` method, both User ID 1 and 2 will have the `title` value set to `null` (the default value of the field).
+
+The `insertOrUpdate` is also very useful when inserting dynamically embdded relationships. For example, if an API supports dynamic embedding of relationships and doesn't always return all relationships, the relationships would be emptied when missing on `insert`. This is because insertion methods, `insert`, `create` and `update`, will be applied for all nested relationships.
+
+Let's see what we mean by this in the example. What happen if we were to `insert` User with Posts.
+
+```js
+// Initial State.
+{
+  entities: {
+    users: {
+      data: {
+        1: { id: 1, name: 'John' }
+      }
+    },
+    posts: {
+      data: {
+        1: { id: 1, user_id: 1, title: 'Post title 1', body: 'Very long body...' }
+      }
+    }
+  }
+}
+
+// We would destroy post's body field if we use `insert`.
+User.insert({
+  id: 1,
+  name: 'John',
+  posts: [
+    { id: 1, user_id: 1, title: 'Post title 1' },
+    { id: 2, user_id: 1, title: 'Post title 2' }
+  ]
+})
+
+// State after `insert`.
+{
+  entities: {
+    users: {
+      data: {
+        1: { id: 1, name: 'John' }
+      }
+    },
+    posts: {
+      data: {
+        1: { id: 1, user_id: 1, title: 'Post title 1', body: null },
+        2: { id: 1, user_id: 2, title: 'Post title 2', body: null }
+      }
+    }
+  }
+}
+```
+
+See `body` of Post ID of 1 got removed. This is because Post ID 1 got "inserted". This case, we want to "update" the posts. For these cases you can use the `insertOrUpdate` method:
+
+```js
+// Initial State.
+{
+  entities: {
+    users: {
+      data: {
+        1: { id: 1, name: 'John' }
+      }
+    },
+    posts: {
+      data: {
+        1: { id: 1, user_id: 1, title: 'Post title 1', body: 'Very long body...' }
+      }
+    }
+  }
+}
+
+// We would destroy post's body field if we use `insert`.
+User.insert({
+  id: 1,
+  name: 'John',
+  posts: [
+    { id: 1, user_id: 1, title: 'Post title 1' },
+    { id: 2, user_id: 1, title: 'Post title 2' }
+  ]
+})
+
+// State after `insert`.
+{
+  entities: {
+    users: {
+      data: {
+        1: { id: 1, name: 'John' }
+      }
+    },
+    posts: {
+      data: {
+        1: { id: 1, user_id: 1, title: 'Post title 1', body: 'Very long body...' },
+        2: { id: 1, user_id: 2, title: 'Post title 2', body: null }
+      }
+    }
+  }
+}
+```
+
+## Insert Method for Relationships
+
+As described at "Insert or Update" section, when you insert data with related records included, all of the related records will be inserted using the base method that was called. For example, if you call the `create` method, all of the related records get "created" into the store.
+
+Sometimes you might want the option to choose how Vuex ORM inserts data into the store depending on the relationship. For example, you might want to "create" users but "insert" posts. You may do so by passing additional options to the method.
+
+```js
+// `create` users but `insert` posts.
+User.create({
+  data: [...],
+  insert: ['posts']
+})
+
+// `insert` users but `create` posts and `comments`.
+User.insert({
+  data: [...],
+  create: ['posts', 'comments']
+})
+```
+
+The available options are:
+
+- `create`
+- `insert`
+- `update`
+- `insertOrUpdate`
+
+Note that the value passed to those `create` or `insert` options should be **the entity name of the Model**, _not_ the name of the field that defines the relationship in the model.
 
 ## Save Method
 
