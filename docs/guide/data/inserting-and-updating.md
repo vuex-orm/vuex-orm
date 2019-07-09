@@ -1,21 +1,53 @@
-# Inserting and Updating
+# Inserting & Updating
 
-You may insert new data, or update existing data in Vuex Store through Model methods.
+You may insert new data, or update existing data through various Model methods. All data created through Vuex ORM gets persisted to Vuex Store.
 
 ## Inserts
 
-To create a new data in the store, you can use `create`, `insert` and `new` method. For `create` and `insert`, you should pass an object with data key to the payload.
+To create a new data, you can use `insert`, `create` , and `new` method. They all insert new records to the Vuex Store but behaves in a slightly different manner.
+
+The `insert` method will simply insert new records. You should pass an object containing records in `data` key to the method.
+
+```vue
+<script>
+import User from '@/models/User'
+
+export default {
+  created () {
+    User.insert({
+      data: { id: 1, name: 'John' }
+    })
+  } 
+}
+</script>
+```
+
+You may also pass an array of record.
 
 ```js
-User.create({
-  data: { id: 1, name: 'John' }
-})
-
-// Or
-
 User.insert({
-  data: { id: 1, name: 'John' }
+  data: [
+    { id: 1, name: 'John' },
+    { id: 2, name: 'Jane' },
+    { id: 3, name: 'Johnny' }
+  ]
 })
+```
+
+After the insert, inside Vuex Store would look something like this.
+
+```js
+{
+  entities: {
+    users: {
+      data: {
+        1: { id: 1, name: 'John' },
+        2: { id: 2, name: 'Jane' },
+        3: { id: 3, name: 'Johnny' }
+      }
+    }
+  }
+}
 ```
 
 The difference between the `create` and `insert` methods is whether to keep existing data or not.
