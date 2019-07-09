@@ -50,102 +50,124 @@ After the insert, inside Vuex Store would look something like this.
 }
 ```
 
-The difference between the `create` and `insert` methods is whether to keep existing data or not.
-
-The `create` method is going to replace all existing data in the store and replace with the given data.
+The `create` method would work almost identical to `insert`. The argument is also the same.
 
 ```js
-// Initial State.
-let state = {
-  entities: {
-    users: {
-      data: {
-        '2': { id: 2, name: 'Jane' }
-      }
-    }
-  }
-}
-
-// `create` is going to replace all existing data with the new one.
 User.create({
   data: { id: 1, name: 'John' }
 })
-
-// State after `create`.
-state = {
-  entities: {
-    users: {
-      data: {
-        '1': { id: 1, name: 'John' }
-      }
-    }
-  }
-}
 ```
 
-The `insert` method is going to insert data into the store while keeping existing data. If the inserting data has the same primary key as existing data, that data will be replaced with the new one.
+The difference between the `insert` and `insert` method is whether to keep existing data or not. The `create` method is going to replace all existing data in the store and replace with the given data, while `insert` will create new data and leave existing data as is.
 
 ```js
-// Initial State.
-let state = {
+// Let's say this is the initial State.
+{
   entities: {
     users: {
       data: {
-        '2': { id: 2, name: 'Jane' }
+        1: { id: 1, name: 'John' }
       }
     }
   }
 }
 
-// `insert` is going to leave existing data as is.
+// `insert` is going to insert a new record, and keep existing data.
 User.insert({
-  data: {
-    id: 1,
-    name: 'John'
-  }
+  data: { id: 2, name: 'Jane' }
 })
 
 // State after `insert`.
-state = {
+{
   entities: {
     users: {
       data: {
-        '1': { id: 1, name: 'John' },
-        '2': { id: 2, name: 'Jane' }
+        1: { id: 1, name: 'John' },
+        2: { id: 2, name: 'Jane' }
+      }
+    }
+  }
+}
+
+// `create` is going to replace all existing data with new data.
+User.create({
+  data: { id: 3, name: 'Johnny' }
+})
+
+// State after `create`.
+{
+  entities: {
+    users: {
+      data: {
+        3: { id: 3, name: 'Johnny' }
       }
     }
   }
 }
 ```
 
-Finally, with the `new` method, you can create a new record with all fields filled by default values.
+When performing `insert`, if there is existing data with the same ID, the record will get overwritten.
 
 ```js
+// Initial State.
+{
+  entities: {
+    users: {
+      data: {
+        1: { id: 1, name: 'John' }
+      }
+    }
+  }
+}
+
+// `insert` is going to overwrite the record with the same ID.
+User.insert({
+  data: { id: 1, name: 'Jane' }
+})
+
+// State after `insert`.
+{
+  entities: {
+    users: {
+      data: {
+        1: { id: 1, name: 'Jane' }
+      }
+    }
+  }
+}
+```
+
+Finally, with the `new` method, you can create a new record with all fields filled by default values. Let's say you have the following Model defined.
+
+```js
+class User extends Model {
+  static entity = 'users'
+
+  static fields () {
+    return {
+      id: this.increment(),
+      name: this.string('Default Name')
+    }
+  }
+}
+```
+
+By calling `new` method on the User Model would create a new record of:
+
+```js
+// Create new data with default values.
 User.new()
 
 // State after `new`
-let state = {
+{
   entities: {
     users: {
       data: {
-        '1': { id: 1, name: 'Default Name' }
+        1: { id: 1, name: 'Default Name' }
       }
     }
   }
 }
-```
-
-### Insert Many Data
-
-You can pass an array of objects to insert multiple data. It works for both `create` and `insert`.
-
-```js
-User.insert({
-  data: [
-    { id: 1, name: 'John' },
-    { id: 2, name: 'Jane' }
-  ]
-})
 ```
 
 ### Default Values
@@ -171,12 +193,12 @@ User.create({
   data: { id: 1, name: 'John Doe ' }
 })
 
-// Missing field will be present with its default value.
-let state = {
+// Those missing fields will be present with its default value.
+{
   entities: {
     users: {
       data: {
-        '1': {
+        1: {
           id: 1,
           name: 'John Doe',
           active: false
@@ -187,9 +209,393 @@ let state = {
 }
 ```
 
+### Inserting Relationships
+
+If you pass data with relationships to the `insert` or `create` method, those relationships will be normalized and inserted to the store.
+
+For "Single Relationship", such as "Has One" and "Belongs To", the data should contain an object to its relational field. Let's say you have the following Model definition, where Post Model "Belongs To" User Model.
+
+```js
+class User extends Model {
+  static entity = 'users'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      name: this.attr('')
+    }
+  }
+}
+
+class Post extends Model {
+  static entity = 'posts'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      user_id: this.attr(null),
+      title: this.attr(''),
+      author: this.belongsTo(User, 'user_id')
+    }
+  }
+}
+```
+
+You may insert Post data with its related User like below example.
+
+```js
+// Create Post data with its related User.
+Post.insert({
+  data: {
+    id: 1,
+    user_id: 1,
+    title: 'Post title.',
+    author: {
+      id: 1,
+      name: 'John Doe '
+    }
+  }
+})
+
+// State after `insert`.
+{
+  entities: {
+    posts: {
+      data: {
+        1: { id: 1, user_id: 1, title: 'Post title' }
+      }
+    },
+    users: {
+      data: {
+        1: { id: 1, name: 'John Doe' }
+      }
+    }
+  }
+}
+```
+
+For "Many Relationship", for example, "Has Many", the data should contain an array of records to its relational field. Let's say this time you have the following Model definition, where User Model "Has Many" Post Model.
+
+```js
+class User extends Model {
+  static entity = 'users'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      name: this.attr(''),
+      posts: this.hasMany(Post, 'user_id')
+    }
+  }
+}
+
+class Post extends Model {
+  static entity = 'posts'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      user_id: this.attr(null),
+      title: this.attr('')
+    }
+  }
+}
+```
+
+Now you may insert User data with many Post data as same as "Single Relationship".
+
+```js
+// Create User data with its related Post data.
+User.insert({
+  data: {
+    id: 1,
+    name: 'John Doe ',
+    posts: [
+      { id: 1, user_id: 1, title: 'Post title 1' },
+      { id: 2, user_id: 1, title: 'Post title 2' }
+    ]
+  }
+})
+
+// State after `insert`.
+{
+  entities: {
+    posts: {
+      data: {
+        1: { id: 1, user_id: 1, title: 'Post title 1' }
+        2: { id: 2, user_id: 1, title: 'Post title 2' }
+      }
+    },
+    users: {
+      data: {
+        1: { id: 1, name: 'John Doe' }
+      }
+    }
+  }
+}
+```
+
+The insertion method works for all relationship types including complex ones such as "Belongs To Many" or "Morph Many". Because in the end, all relationships are either "Single" or "Many" from the data tree structure point of view. Vuex ORM will try its best to normalize the data and store each relationship separately into the store.
+
+Though there are few things that you should know about when inserting relationship in a slightly complex manner.
+
+### Generating Missing Foreign Keys
+
+If data is missing its foreign keys, Vuex ORM will automatically generate them during the inserting process. For example, let's say you have the following Model definition.
+
+```js
+class User extends Model {
+  static entity = 'users'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      name: this.attr(''),
+      posts: this.hasMany(Post, 'user_id')
+    }
+  }
+}
+
+class Post extends Model {
+  static entity = 'posts'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      user_id: this.attr(null),
+      title: this.attr('')
+    }
+  }
+}
+```
+
+And if you try to insert User with Post without `user_id` key, Vuex ORM will generate `user_id` value automatically.
+
+```js
+// Create User data with its related Post data with `user_id` missing.
+User.insert({
+  data: {
+    id: 1,
+    name: 'John Doe ',
+    posts: [
+      { id: 1, title: 'Post title 1' },
+      { id: 2, title: 'Post title 2' }
+    ]
+  }
+})
+
+// State after `insert`. See `user_id` is automatically generated.
+{
+  entities: {
+    posts: {
+      data: {
+        1: { id: 1, user_id: 1, title: 'Post title 1' }
+        2: { id: 2, user_id: 1, title: 'Post title 2' }
+      }
+    },
+    users: {
+      data: {
+        1: { id: 1, name: 'John Doe' }
+      }
+    }
+  }
+}
+```
+
+### Generating Pivot Records
+
+For relationships that require a "Pivot Entity" such as "Belongs To Many", Vuex ORM will create missing pivot records as well. Again, let's say you have the following Model definition.
+
+```js
+class User extends Model {
+  static entity = 'users'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      name: this.attr(''),
+      roles: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
+    }
+  }
+}
+
+class Role extends Model {
+  static entity = 'roles'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      name: this.string('')
+    }
+  }
+}
+
+class RoleUser extends Model {
+  static entity = 'role_user'
+
+  static primaryKey = ['role_id', 'user_id']
+
+  static fields () {
+    return {
+      role_id: this.attr(null),
+      user_id: this.attr(null)
+    }
+  }
+}
+```
+
+When inserting data, you insert User data its related Role data without RoleUser data. Still, in this case, Vuex ORM will generate required intermediate pivot records.
+
+```js
+// Insert User data with Role data.
+User.insert({
+  data: {
+    id: 1,
+    name: 'John Doe',
+    roles: [
+      { id: 1, name: 'admin' },
+      { id: 2, name: 'operator' }
+    ]
+  }
+})
+
+// State after `insert`. See there's a intermidiate `role_user` records.
+{
+  entities: {
+    users: {
+      1: { id: 1, name: 'John Doe' }
+    },
+    roles: {
+      1: { id: 1, name: 'admin' },
+      2: { id: 2, name: 'operator' }
+    },
+    role_user: {
+      1_1: { role_id: 1, user_id: 1 },
+      2_1: { role_id: 2, user_id: 1 }
+    }
+  }
+}
+```
+
+Note that there is a cavent with "Has Many Through" relationship. When creating data that contains "Has Many Through" relationship without intermediate pivot records, the intermediate record will not be generated. Let's say you have the following model definitions.
+
+```js
+class Country extends Model {
+  static entity = 'countries'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      users: this.hasMany(User, 'country_id'),
+      posts: this.hasManyThrough(Post, User, 'country_id', 'user_id')
+    }
+  }
+}
+
+class User extends Model {
+  static entity = 'users'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      country_id: this.attr(null),
+      posts: this.hasMany(Post, 'user_id')
+    }
+  }
+}
+
+class Post extends Model {
+  static entity = 'posts'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      user_id: this.attr(null)
+    }
+  }
+}
+```
+
+And then you try to save the following data.
+
+```js
+Country.create({
+  data: {
+    id: 1,
+    posts: [
+      { id: 1 },
+      { id: 2 }
+    ]
+  }
+})
+```
+
+Vuex ORM will normalize the data and save them to the store as below.
+
+```js
+{
+  countries: {
+    data: {
+      1: { id: 1 }
+    }
+  },
+  users: {
+    data: {}
+  },
+  posts: {
+    data: {
+      1: { id: 1, user_id: null },
+      2: { id: 2, user_id: null }
+    }
+  }
+}
+```
+
+See there is no users record, and `user_id` at `posts` becomes empty. This happens because Vuex ORM wouldn't have any idea how post data relate to the intermediate User. Hence if you create data like this, you wouldn't be able to retrieve them by getters anymore. In such cases, it is recommended to create data with the intermediate records.
+
+```js
+const data = {
+  id: 1,
+  users: [
+    {
+      id: 1,
+      posts: [
+        { id: 1 }
+      ]
+    },
+    {
+      id: 2,
+      posts: [
+        { id: 2 }
+      ]
+    }
+  ]
+}
+
+Country.create({
+  data: {
+    id: 1,
+    users: [
+      {
+        id: 1,
+        posts: [
+          { id: 1 }
+        ]
+      },
+      {
+        id: 2,
+        posts: [
+          { id: 2 }
+        ]
+      }
+    ]
+  }
+})
+```
+
 ### Get Newly Inserted Data
 
-Both `create` and `insert` will return the created data as a Promise so that you can get them as a return value. The return value will contain all of the data that was created.
+Both `insert` and `create` return the inserted data as a Promise so that you can get them as a return value. The return value will contain all of the data that was created.
 
 ```js
 User.create({
@@ -200,7 +606,9 @@ User.create({
 
 /*
   {
-    users: [User { id: 1, name: 'John Doe' }]
+    users: [
+      { id: 1, name: 'John Doe' }
+    ]
   }
 */
 ```
@@ -212,26 +620,49 @@ const entities = await User.create({
   data: { id: 1, name: 'John Doe' }
 })
 
-console.log(entities)
-
 /*
   {
-    users: [User { id: 1, name: 'John Doe' }]
+    users: [
+      { id: 1, name: 'John Doe' }
+    ]
   }
 */
 ```
 
-The `new` method will also return the newly created record, but it'll return only one since it's obvious that there's no relational data.
+Note that the return value will be in normalized shape. For example, when you insert data with relationships, those relationships are detached from each other.
+
+```js
+const entities = await User.create({
+  data: {
+    id: 1,
+    name: 'John Doe',
+    posts: [
+      { id: 1, user_id: 1, title: 'Post title 1' },
+      { id: 2, user_id: 1, title: 'Post title 2' }
+    ]
+  }
+})
+
+/*
+  {
+    users: [
+      { id: 1, name: 'John Doe' }
+    ],
+    posts: [
+      { id: 1, user_id: 1, title: 'Post title 1' },
+      { id: 2, user_id: 1, title: 'Post title 2' }
+    ]
+  }
+*/
+```
+
+The `new` method will also return the newly created record, but it'll return only one reocrd since it's obvious that there's no relational data.
 
 ```js
 const user = await User.new()
 
-// User { id: 1, name: 'Default Name' }
+// { id: 1, name: 'Default Name' }
 ```
-
-### Inserting Relationships
-
-If you pass data with relationships inside to the `create` or `insert` method, those relationships will be normalized and inserted to the store. Please see [Inserting Relationships](../relationships/inserting-relationships.md) for more detail.
 
 ## Updates
 
