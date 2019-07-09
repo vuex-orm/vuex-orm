@@ -272,7 +272,7 @@ describe('Model – Inheritance - Discriminator field', () => {
         id: 1,
         name: 'John Doe',
         type: 1
-      },{
+      }, {
         id: 2,
         name: 'Person Doe',
         type: 0

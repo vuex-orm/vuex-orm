@@ -1,7 +1,7 @@
 import Fields from './Fields'
 
 export interface FieldCache {
-    [key: string]: Fields
+  [key: string]: Fields
 }
 
 export default FieldCache

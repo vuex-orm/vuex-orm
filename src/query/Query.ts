@@ -125,7 +125,6 @@ export default class Query<T extends Model = Model> {
    */
   appliedOnBase: boolean = true
 
-
   /**
    * Create a new Query instance.
    */
@@ -540,7 +539,7 @@ export default class Query<T extends Model = Model> {
         const hydrated = model instanceof Model ? model : this.hydrate(model)
 
         // And ignoring if needed
-        if(!this.appliedOnBase && !(hydrated instanceof this.model)) {
+        if (!this.appliedOnBase && !(hydrated instanceof this.model)) {
           return null
         }
 
@@ -917,7 +916,7 @@ export default class Query<T extends Model = Model> {
     }
 
     // When the updated instance is not the base model, we tell te hydrate what model to use
-    if(instance.constructor !== this.model && instance instanceof Model) {
+    if (instance.constructor !== this.model && instance instanceof Model) {
       return this.hydrate({ ...instance, ...data }, instance.constructor as typeof Model)
     }
     return this.hydrate({ ...instance, ...data })
@@ -1099,10 +1098,10 @@ export default class Query<T extends Model = Model> {
 
     // If we deleting all derived entities, we need to filter out entities which
     // don't match
-    if(!this.appliedOnBase) {
+    if (!this.appliedOnBase) {
       instances = Object.keys(this.state.data).reduce<Data.Instances>((acc, id) => {
 
-        if(this.state.data[id] instanceof this.model) {
+        if (this.state.data[id] instanceof this.model) {
           acc[id] = this.state.data[id]
         }
 
@@ -1144,20 +1143,21 @@ export default class Query<T extends Model = Model> {
    */
   hydrate (record: Data.Record, forceModel?: typeof Model): Data.Instance {
 
-    if(forceModel !== undefined) {
+    if (forceModel !== undefined) {
       return new forceModel(record)
     }
 
     let model = this.model
 
-    if(record) {
+    if (record) {
 
       // If the record has the right typeKey attribute set, and Model has type mapping
       // we hydrate it as the corresponding model
       const newModel = model.getModelFromRecord(record)
 
-      if(typeof newModel === 'function')
+      if (typeof newModel === 'function') {
         return new newModel(record)
+      }
 
       // If we know that we're hydrating an entity which is not a base one,
       // we can set it's typeKey attribute as a "bonus"
@@ -1199,7 +1199,7 @@ export default class Query<T extends Model = Model> {
 
       const record = records[id]
 
-      if(instance.constructor !== this.model && instance instanceof Model) {
+      if (instance.constructor !== this.model && instance instanceof Model) {
         instances[id] = this.hydrate({ ...instance, ...record }, instance.constructor as typeof Model)
         return instances
       }
@@ -1240,13 +1240,13 @@ export default class Query<T extends Model = Model> {
    */
   private emptyState (): void {
 
-    if(this.appliedOnBase) {
+    if (this.appliedOnBase) {
       this.state.data = {}
       return
     }
 
-    for(const id in this.state.data) {
-      if(this.state.data[id] instanceof this.model) {
+    for (const id in this.state.data) {
+      if (this.state.data[id] instanceof this.model) {
         delete this.state.data[id]
       }
     }

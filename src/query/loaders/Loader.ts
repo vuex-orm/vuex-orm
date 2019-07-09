@@ -115,15 +115,15 @@ export default class Loader {
 
       if (relation instanceof Relation) {
         relation.load(query, collection, name, constraints)
-        continue;
+        continue
       }
 
       // If no relation was found on the query, it might be run on the
-      // base entity of a hierarchy. In this case, we try looking up 
-      // the relation on the derived entities 
-      if(query.model.hasTypes()) {
+      // base entity of a hierarchy. In this case, we try looking up
+      // the relation on the derived entities
+      if (query.model.hasTypes()) {
         const candidateRelation = query.model.findRelationInSubTypes(name)
-        if(candidateRelation !== null) {
+        if (candidateRelation !== null) {
           candidateRelation.load(query, collection, name, constraints)
         }
       }

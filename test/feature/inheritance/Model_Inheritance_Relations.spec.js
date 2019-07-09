@@ -2,30 +2,29 @@ import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Feature - Inheritance - Relations', () => {
-
   it('can fetch a related data defined on derived entity', async () => {
     class Person extends Model {
       static entity = 'person'
-  
+
       static fields () {
         return {
           id: this.attr(null),
-          name: this.attr(''),
+          name: this.attr('')
         }
       }
-  
+
       static types () {
-          return {
-            'ADULT': Adult,
-            'PERSON': Person,
-          }
+        return {
+          'ADULT': Adult,
+          'PERSON': Person
+        }
       }
     }
-  
+
     class Adult extends Person {
       static entity = 'adult'
       static baseEntity = 'person'
-  
+
       static fields () {
         return {
           ...super.fields(),
@@ -33,10 +32,10 @@ describe('Feature - Inheritance - Relations', () => {
         }
       }
     }
-  
+
     class Job extends Model {
       static entity = 'jobs'
-  
+
       static fields () {
         return {
           id: this.attr(null),
@@ -55,14 +54,13 @@ describe('Feature - Inheritance - Relations', () => {
         adult_id: 2
       }
     })
-    
 
     store.dispatch('entities/person/insert', {
       data: [{
         id: 1,
         name: 'John',
         type: 'PERSON'
-      },{
+      }, {
         id: 2,
         name: 'Jane',
         type: 'ADULT'
@@ -73,32 +71,32 @@ describe('Feature - Inheritance - Relations', () => {
     const adult = Adult.query().with('jobs').all()
     expect(adult.length).toBe(1)
     expect(adult[0].id).toBe(2)
-    expect(adult[0].jobs.length).toBe(1)    
+    expect(adult[0].jobs.length).toBe(1)
   })
 
   it('can fetch a related data which is a derived entity', async () => {
     class Person extends Model {
       static entity = 'person'
-  
+
       static fields () {
         return {
           id: this.attr(null),
-          name: this.attr(''),
+          name: this.attr('')
         }
       }
-  
+
       static types () {
-          return {
-            'ADULT': Adult,
-            'PERSON': Person,
-          }
+        return {
+          'ADULT': Adult,
+          'PERSON': Person
+        }
       }
     }
-  
+
     class Adult extends Person {
       static entity = 'adult'
       static baseEntity = 'person'
-  
+
       static fields () {
         return {
           ...super.fields(),
@@ -106,10 +104,10 @@ describe('Feature - Inheritance - Relations', () => {
         }
       }
     }
-  
+
     class Job extends Model {
       static entity = 'jobs'
-  
+
       static fields () {
         return {
           id: this.attr(null),
@@ -134,7 +132,7 @@ describe('Feature - Inheritance - Relations', () => {
         id: 1,
         name: 'John',
         type: 'PERSON'
-      },{
+      }, {
         id: 2,
         name: 'Jane',
         type: 'ADULT'
@@ -151,7 +149,7 @@ describe('Feature - Inheritance - Relations', () => {
   it('can fetch mixed data when related to a base entity', async () => {
     class Person extends Model {
       static entity = 'person'
-  
+
       static fields () {
         return {
           id: this.attr(null),
@@ -159,19 +157,19 @@ describe('Feature - Inheritance - Relations', () => {
           role_id: this.attr(null)
         }
       }
-  
+
       static types () {
-          return {
-            'ADULT': Adult,
-            'PERSON': Person
-          }
+        return {
+          'ADULT': Adult,
+          'PERSON': Person
+        }
       }
     }
-  
+
     class Adult extends Person {
       static entity = 'adult'
       static baseEntity = 'person'
-  
+
       static fields () {
         return {
           ...super.fields()
@@ -181,8 +179,8 @@ describe('Feature - Inheritance - Relations', () => {
 
     class Role extends Model {
       static entity = 'roles'
-      
-      static fields() {
+
+      static fields () {
         return {
           id: this.attr(null),
           roleName: this.attr(''),
@@ -197,7 +195,7 @@ describe('Feature - Inheritance - Relations', () => {
       data: [{
         id: 1,
         roleName: 'Role 1'
-      },{
+      }, {
         id: 2,
         roleName: 'Role 2'
       }]
@@ -209,7 +207,7 @@ describe('Feature - Inheritance - Relations', () => {
         name: 'John',
         type: 'PERSON',
         role_id: 1
-      },{
+      }, {
         id: 2,
         name: 'Jane',
         type: 'ADULT',
@@ -235,7 +233,7 @@ describe('Feature - Inheritance - Relations', () => {
     class Person extends Model {
       static entity = 'person'
 
-      static fields() {
+      static fields () {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -244,7 +242,7 @@ describe('Feature - Inheritance - Relations', () => {
         }
       }
 
-      static types() {
+      static types () {
         return {
           'ADULT': Adult,
           'PERSON': Person
@@ -256,7 +254,7 @@ describe('Feature - Inheritance - Relations', () => {
       static entity = 'adult'
       static baseEntity = 'person'
 
-      static fields() {
+      static fields () {
         return {
           ...super.fields()
         }
@@ -266,7 +264,7 @@ describe('Feature - Inheritance - Relations', () => {
     class Role extends Model {
       static entity = 'roles'
 
-      static fields() {
+      static fields () {
         return {
           id: this.attr(null),
           roleName: this.attr(''),
@@ -323,27 +321,27 @@ describe('Feature - Inheritance - Relations', () => {
   it('should allow definition of relationship to derived / base entities', () => {
     class Person extends Model {
       static entity = 'person'
-  
+
       static fields () {
         return {
           id: this.attr(null),
           name: this.attr('')
         }
       }
-  
+
       static types () {
-          return {
-            'ADULT': Adult,
-            'PERSON': Person,
-            'CHILD': Child
-          }
+        return {
+          'ADULT': Adult,
+          'PERSON': Person,
+          'CHILD': Child
+        }
       }
     }
-  
+
     class Adult extends Person {
       static entity = 'adult'
       static baseEntity = 'person'
-  
+
       static fields () {
         return {
           ...super.fields(),
@@ -356,8 +354,8 @@ describe('Feature - Inheritance - Relations', () => {
     class Child extends Person {
       static entity = 'child'
       static baseEntity = 'person'
-  
-      static fields() {
+
+      static fields () {
         return {
           ...super.fields(),
           parents: this.hasMany(Adult, 'child_id')
@@ -373,12 +371,12 @@ describe('Feature - Inheritance - Relations', () => {
         name: 'John',
         type: 'ADULT',
         child_id: 3
-      },{
+      }, {
         id: 2,
         name: 'Jane',
-        type: 'ADULT', 
+        type: 'ADULT',
         child_id: 3
-      },{
+      }, {
         id: 3,
         name: 'Jane',
         type: 'CHILD'
@@ -399,26 +397,26 @@ describe('Feature - Inheritance - Relations', () => {
   it('can fetch a related data defined on derived entity when calling root getter', async () => {
     class Person extends Model {
       static entity = 'person'
-  
+
       static fields () {
         return {
           id: this.attr(null),
-          name: this.attr(''),
+          name: this.attr('')
         }
       }
-  
+
       static types () {
-          return {
-            'ADULT': Adult,
-            'PERSON': Person,
-          }
+        return {
+          'ADULT': Adult,
+          'PERSON': Person
+        }
       }
     }
-  
+
     class Adult extends Person {
       static entity = 'adult'
       static baseEntity = 'person'
-  
+
       static fields () {
         return {
           ...super.fields(),
@@ -426,10 +424,10 @@ describe('Feature - Inheritance - Relations', () => {
         }
       }
     }
-  
+
     class Job extends Model {
       static entity = 'jobs'
-  
+
       static fields () {
         return {
           id: this.attr(null),
@@ -439,7 +437,7 @@ describe('Feature - Inheritance - Relations', () => {
         }
       }
     }
-    
+
     const store = createStore([{ model: Person }, { model: Adult }, { model: Job }])
     store.dispatch('entities/jobs/insert', {
       data: {
@@ -448,14 +446,13 @@ describe('Feature - Inheritance - Relations', () => {
         adult_id: 2
       }
     })
-    
 
     store.dispatch('entities/person/insert', {
       data: [{
         id: 1,
         name: 'John',
         type: 'PERSON'
-      },{
+      }, {
         id: 2,
         name: 'Jane',
         type: 'ADULT'

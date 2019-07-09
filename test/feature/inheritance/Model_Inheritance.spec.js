@@ -101,7 +101,6 @@ describe('Model – Inheritance', () => {
     expect(Model.getTypeKeyValueFromModel()).toBe(null)
   })
 
-
   it('sets right class for derived entity', () => {
     const store = createStore([{
       model: Person
@@ -215,7 +214,7 @@ describe('Model – Inheritance', () => {
       data: [{
         id: 4,
         name: 'Baby John'
-      },{
+      }, {
         id: 5,
         name: 'Baby Jane'
       }]

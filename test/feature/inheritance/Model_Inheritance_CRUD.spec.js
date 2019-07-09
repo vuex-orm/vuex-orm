@@ -139,15 +139,15 @@ describe('Model – Inheritance - CRUD', () => {
         id: 1,
         name: 'A',
         type: 'PERSON'
-      },{
+      }, {
         id: 2,
         name: 'B',
         type: 'ADULT'
-      },{
+      }, {
         id: 3,
         name: 'C',
         type: 'SUPER'
-      },{
+      }, {
         id: 4,
         name: 'D',
         type: 'CHILD'
@@ -163,7 +163,7 @@ describe('Model – Inheritance - CRUD', () => {
         name: 'E'
       }]
     })
-    
+
     const persons2 = Person.all()
     expect(persons2.length).toBe(3)
 
@@ -184,7 +184,7 @@ describe('Model – Inheritance - CRUD', () => {
         id: 1,
         name: 'A',
         type: 'PERSON'
-      },{
+      }, {
         id: 2,
         name: 'B',
         type: 'ADULT'
@@ -216,7 +216,7 @@ describe('Model – Inheritance - CRUD', () => {
         id: 1,
         name: 'A',
         type: 'PERSON'
-      },{
+      }, {
         id: 2,
         name: 'B',
         type: 'ADULT'
@@ -236,7 +236,7 @@ describe('Model – Inheritance - CRUD', () => {
     const newAdult = Person.find(2)
     expect(newAdult.name).toBe('C')
     expect(newAdult).toBeInstanceOf(Adult)
-  });
+  })
 
   it('should update or insert mixed data', async () => {
     const store = createStore([{
@@ -270,7 +270,7 @@ describe('Model – Inheritance - CRUD', () => {
         '1': { $id: 1, id: 1, name: 'John Doe', job: 'Writer' },
         '2': { $id: 2, id: 2, name: 'Jane Doe', job: 'QA' },
         '3': { $id: 3, id: 3, name: 'Jane Doe' }
-      }, 
+      },
       adult: {}
     })
 
@@ -289,7 +289,7 @@ describe('Model – Inheritance - CRUD', () => {
         id: 1,
         name: 'A',
         type: 'PERSON'
-      },{
+      }, {
         id: 2,
         name: 'B',
         job: 'Software Engineer',
@@ -312,7 +312,7 @@ describe('Model – Inheritance - CRUD', () => {
 
     const person = Person.find(1)
     expect(person.job).toBe(undefined)
-  });
+  })
 
   it('should delete record correctly when manipulating a derived entity', () => {
     const store = createStore([{
@@ -326,7 +326,7 @@ describe('Model – Inheritance - CRUD', () => {
         id: 1,
         name: 'A',
         type: 'PERSON'
-      },{
+      }, {
         id: 2,
         name: 'B',
         type: 'ADULT'
@@ -337,7 +337,7 @@ describe('Model – Inheritance - CRUD', () => {
     expect(persons.length).toBe(2)
 
     Adult.delete(2)
-    
+
     const persons2 = Person.all()
     expect(persons2.length).toBe(1)
     expect(persons2[0].id).toBe(1)
@@ -355,7 +355,7 @@ describe('Model – Inheritance - CRUD', () => {
         id: 1,
         name: 'A',
         type: 'PERSON'
-      },{
+      }, {
         id: 2,
         name: 'B',
         type: 'ADULT'
@@ -366,7 +366,7 @@ describe('Model – Inheritance - CRUD', () => {
     expect(persons.length).toBe(2)
 
     Adult.deleteAll()
-    
+
     const persons2 = Person.all()
     expect(persons2.length).toBe(1)
     expect(persons2[0].id).toBe(1)
@@ -377,7 +377,7 @@ describe('Model – Inheritance - CRUD', () => {
       model: Person
     }, {
       model: Adult
-    },{
+    }, {
       model: SuperAdult
     }])
 
@@ -386,11 +386,11 @@ describe('Model – Inheritance - CRUD', () => {
         id: 1,
         name: 'A',
         type: 'PERSON'
-      },{
+      }, {
         id: 2,
         name: 'B',
         type: 'ADULT'
-      },{
+      }, {
         id: 3,
         name: 'C',
         type: 'SUPER'
@@ -401,7 +401,7 @@ describe('Model – Inheritance - CRUD', () => {
     expect(persons.length).toBe(3)
 
     Adult.deleteAll()
-    
+
     const persons2 = Person.all()
     expect(persons2.length).toBe(1)
     expect(persons2[0].id).toBe(1)

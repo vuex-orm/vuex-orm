@@ -29,8 +29,8 @@ export default class Model {
 
   /**
    * The reference to the base entity name if the class extends a base entity
-   * TODO: find a proper way to compute this, right now, the only way found was 
-   * to do declare 
+   * TODO: find a proper way to compute this, right now, the only way found was
+   * to do declare
    * static baseEntity (): typeof Model {
    *  let $this = new this()
    *  return this.$root()
@@ -83,8 +83,9 @@ export default class Model {
    * Get the model schema definition by adding additional default fields.
    */
   static getFields (): Fields {
-    if(!this.cachedFields)
+    if (!this.cachedFields) {
       this.cachedFields = {}
+    }
 
     if (this.cachedFields[this.entity]) {
       return this.cachedFields[this.entity]
@@ -523,12 +524,13 @@ export default class Model {
   /**
    * Given a Model, this returns the corresponding key in the InheritanceTypes mapping
    */
-  static getTypeKeyValueFromModel (model?: typeof Model): string | null{
+  static getTypeKeyValueFromModel (model?: typeof Model): string | null {
     const modelToCheck = model || this
     const types = this.types()
-    for(const type in types) {
-      if(types[type] === modelToCheck)
+    for (const type in types) {
+      if (types[type] === modelToCheck) {
         return type
+      }
     }
     return null
   }
@@ -540,11 +542,11 @@ export default class Model {
 
     const types = this.types()
 
-    for(const type in types) {
+    for (const type in types) {
       const fields = types[type].getFields()
 
-      for(const fieldName in fields) {
-        if(fieldName === relationName && fields[fieldName] instanceof Attributes.Relation) {
+      for (const fieldName in fields) {
+        if (fieldName === relationName && fields[fieldName] instanceof Attributes.Relation) {
           return fields[fieldName] as Attributes.Relation
         }
       }
@@ -756,22 +758,24 @@ export default class Model {
 
   static getModelFromRecord (record: Record): typeof Model | null {
 
-    if(!record)
+    if (!record) {
       return null
+    }
 
     if (record[this.typeKey] && this.hasTypes()) {
-        const typeValue = record[this.typeKey];
-        const newModel = this.types()[typeValue];
-        return newModel || null
+      const typeValue = record[this.typeKey]
+      const newModel = this.types()[typeValue]
+      return newModel || null
     }
 
     // Checking if record is already typed
-    if(record instanceof Model)
+    if (record instanceof Model) {
       return record.$self()
+    }
 
     return null
   }
-  
+
   /**
    * Returns true if current instance is an instance of a base Vuex ORM class
    * (directly inheriting from Model)
@@ -781,7 +785,7 @@ export default class Model {
   // }
 
   /**
-   * Returns the direct parent class for the current instance 
+   * Returns the direct parent class for the current instance
    * (or null if the parent class is Model)
    */
   // parentModel (): any {
@@ -793,12 +797,12 @@ export default class Model {
   // }
 
   /**
-   * Returns the root class for the current instance 
+   * Returns the root class for the current instance
    * (i.e. the class which extends Model)
    */
   // $root (): typeof Model {
   //   let parent = this.parentModel()
-  //   if(parent === null) { 
+  //   if(parent === null) {
   //     return this.$self() // parent is Model class
   //   } else {
   //     return parent.baseClass()
