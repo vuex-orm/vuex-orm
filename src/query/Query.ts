@@ -119,8 +119,8 @@ export default class Query<T extends Model = Model> {
   hook: Hook
 
   /**
-   * This flag lets us know if current Query instance applies to 
-   * a base class or not (in order to know when to filter out some 
+   * This flag lets us know if current Query instance applies to
+   * a base class or not (in order to know when to filter out some
    * records)
    */
   appliedOnBase: boolean = true
@@ -134,7 +134,7 @@ export default class Query<T extends Model = Model> {
     // All entitites with same base class are stored in the same state
     const baseModel = this.getBase(entity)
 
-    this.state = state[baseModel.entity] 
+    this.state = state[baseModel.entity]
     this.appliedOnBase = baseModel.entity === entity
 
     this.rootState = state
@@ -538,7 +538,7 @@ export default class Query<T extends Model = Model> {
 
         // Getting the typed instance
         const hydrated = model instanceof Model ? model : this.hydrate(model)
-        
+
         // And ignoring if needed
         if(!this.appliedOnBase && !(hydrated instanceof this.model)) {
           return null
@@ -702,7 +702,7 @@ export default class Query<T extends Model = Model> {
 
     if (Object.keys(this.load).length > 0) {
 
-      const model = this.model.getModelFromRecord(item) || this.model
+      const model = this.model.getModelFromRecord(item) as typeof Model
 
       item = new model(item)
 
@@ -729,7 +729,7 @@ export default class Query<T extends Model = Model> {
     if (Object.keys(this.load).length > 0) {
       collection = collection.map(item => {
 
-        const model = this.model.getModelFromRecord(item) || this.model
+        const model = this.model.getModelFromRecord(item) as typeof Model
         return new model(item)
       })
 
@@ -1148,15 +1148,15 @@ export default class Query<T extends Model = Model> {
       return new forceModel(record)
     }
 
-    let model = this.model 
+    let model = this.model
 
     if(record) {
 
-      // If the record has the right typeKey attribute set, and Model has type mapping 
+      // If the record has the right typeKey attribute set, and Model has type mapping
       // we hydrate it as the corresponding model
       const newModel = model.getModelFromRecord(record)
 
-      if(typeof newModel === 'function') 
+      if(typeof newModel === 'function')
         return new newModel(record)
 
       // If we know that we're hydrating an entity which is not a base one,
