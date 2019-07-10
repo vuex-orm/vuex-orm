@@ -13,16 +13,13 @@ Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http
 - Model
     - [Defining Models](/guide/model/defining-models.md)
     - [Relationships](/guide/model/relationships.md)
+    - [Single Table Inheritance](/guide/model/single-table-inheritance.md)
     - [Accessors & Mutators](/guide/model/accessors-and-mutators.md)
     - [Database Registration](/guide/model/database-registration.md)
 - Data
     - [Inserting & Updating](/guide/data/inserting-and-updating.md)
     - [Retrieving](/guide/data/retrieving.md)
     - [Deleting](/guide/data/deleting.md)
-- Inheritance
-    - [Defining Inheritance](guide/inheritance/defining-inheritance.md)
-    - [Discriminator Field](guide/inheritance/discriminator-field.md)
-    - [Notes on import cycles](guide/inheritance/notes-on-cycles.md)
 - Digging Deeper
     - [Vuex Module](/guide/digging-deeper/vuex-module.md)
     - [Lifecycle Hooks](/guide/digging-deeper/lifecycle-hooks.md)

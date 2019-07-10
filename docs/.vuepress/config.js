@@ -14,6 +14,7 @@ const sidebars = {
       children: [
         '/guide/model/defining-models',
         '/guide/model/relationships',
+        '/guide/model/single-table-inheritance',
         '/guide/model/accessors-and-mutators',
         '/guide/model/database-registration'
       ]
@@ -22,46 +23,9 @@ const sidebars = {
       title: 'Data',
       collapsable: false,
       children: [
-        '/guide/store/inserting-and-updating-data',
-        '/guide/store/retrieving-data',
-        '/guide/store/deleting-data'
-      ]
-    },
-    {
-      title: 'Retrieving Data',
-      collapsable: false,
-      children: [
-        '/guide/relationships/defining-relationships',
-        '/guide/relationships/inserting-relationships',
-        '/guide/relationships/retrieving-relationships'
-      ]
-    },
-    {
-      title: 'Deleting Data',
-      collapsable: false,
-      children: [
-        '/guide/relationships/defining-relationships',
-        '/guide/relationships/inserting-relationships',
-        '/guide/relationships/retrieving-relationships'
-      ]
-    },
-    {
-      title: 'Inheritance',
-      collapsable: false,
-      children: [
-        '/guide/inheritance/defining-inheritance',
-        '/guide/inheritance/discriminator-field',
-        '/guide/inheritance/notes-on-cycles'
-      ]
-    },
-    {
-      title: 'Advanced Usage',
-      collapsable: false,
-      children: [
-        '/guide/advanced/interact-with-store-from-model',
-        '/guide/advanced/accessors-and-mutators',
-        '/guide/advanced/lifecycle-hooks',
-        '/guide/advanced/serialization'
+        '/guide/data/inserting-and-updating',
+        '/guide/data/retrieving',
+        '/guide/data/deleting'
       ]
     },
     {
