@@ -2102,11 +2102,14 @@ var Model = /** @class */ (function () {
      * Get the model schema definition by adding additional default fields.
      */
     Model.getFields = function () {
-        if (this.cachedFields) {
-            return this.cachedFields;
+        if (!this.cachedFields) {
+            this.cachedFields = {};
         }
-        this.cachedFields = this.fields();
-        return this.cachedFields;
+        if (this.cachedFields[this.entity]) {
+            return this.cachedFields[this.entity];
+        }
+        this.cachedFields[this.entity] = this.fields();
+        return this.cachedFields[this.entity];
     };
     /**
      * Create an attr attribute. The given value will be used as a default
@@ -2210,6 +2213,12 @@ var Model = /** @class */ (function () {
      * Mutators to mutate matching fields when instantiating the model.
      */
     Model.mutators = function () {
+        return {};
+    };
+    /**
+     * Types mapping used to dispatch entities based on their discriminator field
+     */
+    Model.types = function () {
         return {};
     };
     /**
@@ -2363,7 +2372,7 @@ var Model = /** @class */ (function () {
      */
     Model.getFieldsByAttribute = function (name) {
         var attr = this.getAttributeClass(name);
-        var fields = this.fields();
+        var fields = this.getFields();
         return Object.keys(fields).reduce(function (newFields, key) {
             var field = fields[key];
             if (field instanceof attr) {
@@ -2389,7 +2398,7 @@ var Model = /** @class */ (function () {
      */
     Model.pivotFields = function () {
         var fields = [];
-        Utils.forOwn(this.fields(), function (field, key) {
+        Utils.forOwn(this.getFields(), function (field, key) {
             var _a;
             if (field instanceof BelongsToMany || field instanceof MorphToMany || field instanceof MorphedByMany) {
                 fields.push((_a = {}, _a[key] = field, _a));
@@ -2402,6 +2411,40 @@ var Model = /** @class */ (function () {
      */
     Model.hasPivotFields = function () {
         return this.pivotFields().length > 0;
+    };
+    /**
+     * Check if the current model has a type definition
+     */
+    Model.hasTypes = function () {
+        return Object.keys(this.types()).length > 0;
+    };
+    /**
+     * Given a Model, this returns the corresponding key in the InheritanceTypes mapping
+     */
+    Model.getTypeKeyValueFromModel = function (model) {
+        var modelToCheck = model || this;
+        var types = this.types();
+        for (var type in types) {
+            if (types[type] === modelToCheck) {
+                return type;
+            }
+        }
+        return null;
+    };
+    /**
+     * Tries to find a Relation field in all types defined in the InheritanceTypes mapping
+     */
+    Model.findRelationInSubTypes = function (relationName) {
+        var types = this.types();
+        for (var type in types) {
+            var fields = types[type].getFields();
+            for (var fieldName in fields) {
+                if (fieldName === relationName && fields[fieldName] instanceof Relation) {
+                    return fields[fieldName];
+                }
+            }
+        }
+        return null;
     };
     /**
      * Fill any missing fields in the given record with the default value defined
@@ -2610,10 +2653,29 @@ var Model = /** @class */ (function () {
     Model.prototype.toJSON = function () {
         return this.$toJson();
     };
+    Model.getModelFromRecord = function (record) {
+        if (!record) {
+            return null;
+        }
+        if (record[this.typeKey] && this.hasTypes()) {
+            var typeValue = record[this.typeKey];
+            var newModel = this.types()[typeValue];
+            return newModel || null;
+        }
+        // Checking if record is already typed
+        if (record instanceof Model) {
+            return record.$self();
+        }
+        return null;
+    };
     /**
      * The primary key to be used for the model.
      */
     Model.primaryKey = 'id';
+    /**
+     * The discriminator key to be used for the model when inheritance is used
+     */
+    Model.typeKey = 'type';
     /**
      * Vuex Store state definition.
      */
@@ -3550,6 +3612,16 @@ var Loader = /** @class */ (function () {
             var relation = fields[name_1];
             if (relation instanceof Relation) {
                 relation.load(query, collection, name_1, constraints);
+                continue;
+            }
+            // If no relation was found on the query, it might be run on the
+            // base entity of a hierarchy. In this case, we try looking up
+            // the relation on the derived entities
+            if (query.model.hasTypes()) {
+                var candidateRelation = query.model.findRelationInSubTypes(name_1);
+                if (candidateRelation !== null) {
+                    candidateRelation.load(query, collection, name_1, constraints);
+                }
             }
         }
     };
@@ -3933,8 +4005,17 @@ var Query = /** @class */ (function () {
          * The relationships that should be eager loaded with the result.
          */
         this.load = {};
+        /**
+         * This flag lets us know if current Query instance applies to
+         * a base class or not (in order to know when to filter out some
+         * records)
+         */
+        this.appliedOnBase = true;
+        // All entitites with same base class are stored in the same state
+        var baseModel = this.getBase(entity);
+        this.state = state[baseModel.entity];
+        this.appliedOnBase = baseModel.entity === entity;
         this.rootState = state;
-        this.state = state[entity];
         this.entity = entity;
         this.model = this.getModel(entity);
         this.module = this.getModule(entity);
@@ -3951,6 +4032,12 @@ var Query = /** @class */ (function () {
      */
     Query.getModel = function (name) {
         return this.database().model(name);
+    };
+    /**
+     * Get base model of given name from the container.
+     */
+    Query.getBase = function (name) {
+        return this.database().baseModel(name);
     };
     /**
      * Get all models from the container.
@@ -4023,6 +4110,12 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.getModels = function () {
         return this.self().getModels();
+    };
+    /**
+     * Get base model of given name from the container.
+     */
+    Query.prototype.getBase = function (name) {
+        return this.self().getBase(name);
     };
     /**
      * Get module of given name from the container.
@@ -4248,9 +4341,19 @@ var Query = /** @class */ (function () {
     Query.prototype.records = function () {
         var _this = this;
         this.finalizeIdFilter();
-        return this.getIdsToLookup().map(function (id) {
+        return this.getIdsToLookup()
+            .map(function (id) {
             var model = _this.state.data[id];
-            return model instanceof Model ? model : _this.hydrate(model);
+            // Getting the typed instance
+            var hydrated = model instanceof Model ? model : _this.hydrate(model);
+            // And ignoring if needed
+            if (!_this.appliedOnBase && !(hydrated instanceof _this.model)) {
+                return null;
+            }
+            return hydrated;
+        })
+            .filter(function (record) {
+            return record !== null;
         });
     };
     /**
@@ -4373,7 +4476,8 @@ var Query = /** @class */ (function () {
             return null;
         }
         if (Object.keys(this.load).length > 0) {
-            item = new this.model(item);
+            var model = this.model.getModelFromRecord(item);
+            item = new model(item);
             var items = this.hook.executeSelectHook('beforeRelations', [item]);
             item = items[0];
             Loader.eagerLoadRelations(this, [item]);
@@ -4391,7 +4495,10 @@ var Query = /** @class */ (function () {
             return [];
         }
         if (Object.keys(this.load).length > 0) {
-            collection = collection.map(function (item) { return new _this.model(item); });
+            collection = collection.map(function (item) {
+                var model = _this.model.getModelFromRecord(item);
+                return new model(item);
+            });
             collection = this.hook.executeSelectHook('beforeRelations', collection);
             Loader.eagerLoadRelations(this, collection);
             collection = this.hook.executeSelectHook('afterRelations', collection);
@@ -4420,9 +4527,11 @@ var Query = /** @class */ (function () {
     Query.prototype.createMany = function (records) {
         var _this = this;
         var instances = this.hydrateMany(records);
-        this.commit('create', instances, function () {
-            _this.state.data = instances;
-        });
+        var createCallback = function () {
+            _this.emptyState();
+            _this.state.data = __assign({}, _this.state.data, instances);
+        };
+        this.commit('create', instances, createCallback);
         return this.map(instances); // TODO: Delete "as ..." when model type coverage reaches 100%.
     };
     /**
@@ -4534,6 +4643,10 @@ var Query = /** @class */ (function () {
             data(instance);
             return instance;
         }
+        // When the updated instance is not the base model, we tell te hydrate what model to use
+        if (instance.constructor !== this.model && instance instanceof Model) {
+            return this.hydrate(__assign({}, instance, data), instance.constructor);
+        }
         return this.hydrate(__assign({}, instance, data));
     };
     /**
@@ -4598,7 +4711,7 @@ var Query = /** @class */ (function () {
         data = this.normalize(data);
         if (Utils.isEmpty(data)) {
             if (method === 'create') {
-                this.state.data = {};
+                this.emptyState();
             }
             return {};
         }
@@ -4672,7 +4785,18 @@ var Query = /** @class */ (function () {
      * Delete all records from the state.
      */
     Query.prototype.deleteAll = function () {
+        var _this = this;
         var instances = this.state.data;
+        // If we deleting all derived entities, we need to filter out entities which
+        // don't match
+        if (!this.appliedOnBase) {
+            instances = Object.keys(this.state.data).reduce(function (acc, id) {
+                if (_this.state.data[id] instanceof _this.model) {
+                    acc[id] = _this.state.data[id];
+                }
+                return acc;
+            }, {});
+        }
         this.commitDelete(instances);
     };
     /**
@@ -4700,8 +4824,27 @@ var Query = /** @class */ (function () {
     /**
      * Convert given record to the model instance.
      */
-    Query.prototype.hydrate = function (record) {
+    Query.prototype.hydrate = function (record, forceModel) {
+        if (forceModel !== undefined) {
+            return new forceModel(record);
+        }
         var model = this.model;
+        if (record) {
+            // If the record has the right typeKey attribute set, and Model has type mapping
+            // we hydrate it as the corresponding model
+            var newModel = model.getModelFromRecord(record);
+            if (typeof newModel === 'function') {
+                return new newModel(record);
+            }
+            // If we know that we're hydrating an entity which is not a base one,
+            // we can set it's typeKey attribute as a "bonus"
+            if (!this.appliedOnBase) {
+                var typeValue = model.getTypeKeyValueFromModel();
+                if (typeValue !== null) {
+                    record[model.typeKey] = typeValue;
+                }
+            }
+        }
         return new model(record);
     };
     /**
@@ -4727,6 +4870,10 @@ var Query = /** @class */ (function () {
                 return instances;
             }
             var record = records[id];
+            if (instance.constructor !== _this.model && instance instanceof Model) {
+                instances[id] = _this.hydrate(__assign({}, instance, record), instance.constructor);
+                return instances;
+            }
             instances[id] = _this.hydrate(__assign({}, instance, record));
             return instances;
         }, {});
@@ -4748,6 +4895,22 @@ var Query = /** @class */ (function () {
         this.hook.executeMutationHookOnRecords("before" + name, instances);
         callback();
         this.hook.executeMutationHookOnRecords("after" + name, instances);
+    };
+    /**
+     * Clears the current state from any data related to current model:
+     * - everything if not in a inheritance scheme
+     * - only derived instances if applied to a derived entity
+     */
+    Query.prototype.emptyState = function () {
+        if (this.appliedOnBase) {
+            this.state.data = {};
+            return;
+        }
+        for (var id in this.state.data) {
+            if (this.state.data[id] instanceof this.model) {
+                delete this.state.data[id];
+            }
+        }
     };
     return Query;
 }());
@@ -5294,8 +5457,15 @@ var Database = /** @class */ (function () {
      */
     Database.prototype.register = function (model, module) {
         if (module === void 0) { module = {}; }
+        if (model.baseEntity) {
+            var base = this.model(model.baseEntity);
+            if (base && base.types === Model.types && process.env.NODE_ENV !== 'production') {
+                console.warn("Model " + model.name + " extends " + base.name + " which doesn't overwrite Model.types(). You will not be able to use type mapping.");
+            }
+        }
         this.entities.push({
             name: model.entity,
+            base: model.baseEntity || model.entity,
             model: model,
             module: module
         });
@@ -5307,11 +5477,27 @@ var Database = /** @class */ (function () {
         return this.models()[name];
     };
     /**
+     * Get base model of given name from the entities list.
+     */
+    Database.prototype.baseModel = function (name) {
+        return this.baseModels()[name];
+    };
+    /**
      * Get all models from the entities list.
      */
     Database.prototype.models = function () {
         return this.entities.reduce(function (models, entity) {
             models[entity.name] = entity.model;
+            return models;
+        }, {});
+    };
+    /**
+     * Get all base model from the entities list.
+     */
+    Database.prototype.baseModels = function () {
+        var _this = this;
+        return this.entities.reduce(function (models, entity) {
+            models[entity.name] = _this.model(entity.base);
             return models;
         }, {});
     };
