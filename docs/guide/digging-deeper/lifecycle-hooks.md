@@ -6,7 +6,6 @@ Supported lifecycle hooks are as follows.
 
 - `beforeSelect`
 - `afterWhere`
-- `afterWhere`
 - `afterOrderBy`
 - `afterLimit`
 - `beforeCreate`
@@ -18,9 +17,7 @@ Supported lifecycle hooks are as follows.
 
 ## Defining Lifecycle Hooks
 
-To define lifecycle hooks, you either define them as a static method at Model or register globally to Query class.
-
-To define as a static method at Model, define a method with the corresponding lifecycle hook name.
+To define lifecycle hooks, you can define them as a static method with the corresponding lifecycle hook name at Model.
 
 ```js
 class User extends Model {
@@ -39,8 +36,6 @@ class User extends Model {
   }
 }
 ```
-
-To define globally at Query class, import Query class and use `on` method.
 
 ## Select Lifecycle Hooks
 
@@ -67,8 +62,7 @@ class User extends Model {
 }
 ```
 
-The first argument passed to the select lifecycle hook is a collection of records (model instances). Note that **you must always return a 
-collection** from the hook.
+The first argument passed to the select lifecycle hook is a collection of records (model instances). Note that **you must always return a collection** from the hook.
 
 When defining select lifecycle hook by Query class, you may use the 2nd argument to check on which entity the hooks have been executed.
 

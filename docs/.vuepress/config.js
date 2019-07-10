@@ -9,55 +9,32 @@ const sidebars = {
       ]
     },
     {
-      title: 'Core Components',
+      title: 'Model',
       collapsable: false,
       children: [
-        '/guide/components/models',
-        '/guide/components/modules-and-store',
-        '/guide/components/database-and-registration'
+        '/guide/model/defining-models',
+        '/guide/model/relationships',
+        '/guide/model/single-table-inheritance',
+        '/guide/model/accessors-and-mutators',
+        '/guide/model/database-registration'
       ]
     },
     {
-      title: 'Interacting With Store',
+      title: 'Data',
       collapsable: false,
       children: [
-        '/guide/store/inserting-and-updating-data',
-        '/guide/store/retrieving-data',
-        '/guide/store/deleting-data'
-      ]
-    },
-    {
-      title: 'Relationships',
-      collapsable: false,
-      children: [
-        '/guide/relationships/defining-relationships',
-        '/guide/relationships/inserting-relationships',
-        '/guide/relationships/retrieving-relationships'
-      ]
-    },
-    {
-      title: 'Inheritance',
-      collapsable: false,
-      children: [
-        '/guide/inheritance/defining-inheritance',
-        '/guide/inheritance/discriminator-field',
-        '/guide/inheritance/notes-on-cycles'
-      ]
-    },
-    {
-      title: 'Advanced Usage',
-      collapsable: false,
-      children: [
-        '/guide/advanced/interact-with-store-from-model',
-        '/guide/advanced/accessors-and-mutators',
-        '/guide/advanced/lifecycle-hooks',
-        '/guide/advanced/serialization'
+        '/guide/data/inserting-and-updating',
+        '/guide/data/retrieving',
+        '/guide/data/deleting'
       ]
     },
     {
       title: 'Digging Deeper',
       collapsable: false,
       children: [
+        '/guide/digging-deeper/vuex-module',
+        '/guide/digging-deeper/lifecycle-hooks',
+        '/guide/digging-deeper/serialization',
         '/guide/digging-deeper/plugins'
       ]
     }
