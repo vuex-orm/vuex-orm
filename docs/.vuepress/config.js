@@ -1,6 +1,5 @@
 const sidebars = {
-  guide: [
-    {
+  guide: [{
       title: 'Prologue',
       collapsable: false,
       children: [
@@ -34,6 +33,15 @@ const sidebars = {
         '/guide/relationships/defining-relationships',
         '/guide/relationships/inserting-relationships',
         '/guide/relationships/retrieving-relationships'
+      ]
+    },
+    {
+      title: 'Inheritance',
+      collapsable: false,
+      children: [
+        '/guide/inheritance/defining-inheritance',
+        '/guide/inheritance/discriminator-field',
+        '/guide/inheritance/notes-on-cycles'
       ]
     },
     {
@@ -71,10 +79,18 @@ module.exports = {
     repo: 'vuex-orm/vuex-orm',
     docsDir: 'docs',
 
-    nav: [
-      { text: 'Guide', link: '/guide/prologue/what-is-vuex-orm' },
-      { text: 'API Reference', link: '/api/database' },
-      { text: 'Release Notes', link: 'https://github.com/vuex-orm/vuex-orm/releases' }
+    nav: [{
+        text: 'Guide',
+        link: '/guide/prologue/what-is-vuex-orm'
+      },
+      {
+        text: 'API Reference',
+        link: '/api/database'
+      },
+      {
+        text: 'Release Notes',
+        link: 'https://github.com/vuex-orm/vuex-orm/releases'
+      }
     ],
 
     sidebar: {

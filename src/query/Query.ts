@@ -119,11 +119,24 @@ export default class Query<T extends Model = Model> {
   hook: Hook
 
   /**
+   * This flag lets us know if current Query instance applies to
+   * a base class or not (in order to know when to filter out some
+   * records)
+   */
+  appliedOnBase: boolean = true
+
+  /**
    * Create a new Query instance.
    */
   constructor (state: RootState, entity: string) {
+
+    // All entitites with same base class are stored in the same state
+    const baseModel = this.getBase(entity)
+
+    this.state = state[baseModel.entity]
+    this.appliedOnBase = baseModel.entity === entity
+
     this.rootState = state
-    this.state = state[entity]
     this.entity = entity
     this.model = this.getModel(entity)
     this.module = this.getModule(entity)
@@ -142,6 +155,13 @@ export default class Query<T extends Model = Model> {
    */
   static getModel (name: string): typeof Model {
     return this.database().model(name)
+  }
+
+  /**
+   * Get base model of given name from the container.
+   */
+  static getBase (name: string): typeof Model {
+    return this.database().baseModel(name)
   }
 
   /**
@@ -227,6 +247,13 @@ export default class Query<T extends Model = Model> {
    */
   getModels (): Models {
     return this.self().getModels()
+  }
+
+  /**
+   * Get base model of given name from the container.
+   */
+  getBase (name: string): typeof Model {
+    return this.self().getBase(name)
   }
 
   /**
@@ -504,11 +531,23 @@ export default class Query<T extends Model = Model> {
   records (): Data.Collection {
     this.finalizeIdFilter()
 
-    return this.getIdsToLookup().map((id) => {
-      const model = this.state.data[id]
+    return this.getIdsToLookup()
+      .map((id) => {
+        const model = this.state.data[id]
 
-      return model instanceof Model ? model : this.hydrate(model)
-    })
+        // Getting the typed instance
+        const hydrated = model instanceof Model ? model : this.hydrate(model)
+
+        // And ignoring if needed
+        if (!this.appliedOnBase && !(hydrated instanceof this.model)) {
+          return null
+        }
+
+        return hydrated
+      })
+      .filter((record) => {
+        return record !== null
+      }) as Data.Collection
   }
 
   /**
@@ -661,7 +700,10 @@ export default class Query<T extends Model = Model> {
     }
 
     if (Object.keys(this.load).length > 0) {
-      item = new this.model(item)
+
+      const model = this.model.getModelFromRecord(item) as typeof Model
+
+      item = new model(item)
 
       let items = this.hook.executeSelectHook('beforeRelations', [item])
       item = items[0]
@@ -684,7 +726,11 @@ export default class Query<T extends Model = Model> {
     }
 
     if (Object.keys(this.load).length > 0) {
-      collection = collection.map(item => new this.model(item))
+      collection = collection.map(item => {
+
+        const model = this.model.getModelFromRecord(item) as typeof Model
+        return new model(item)
+      })
 
       collection = this.hook.executeSelectHook('beforeRelations', collection)
 
@@ -722,9 +768,12 @@ export default class Query<T extends Model = Model> {
   createMany (records: Data.Records): Data.Collection<T> {
     const instances = this.hydrateMany(records)
 
-    this.commit('create', instances, () => {
-      this.state.data = instances
-    })
+    const createCallback = () => {
+      this.emptyState()
+      this.state.data = { ...this.state.data, ...instances }
+    }
+
+    this.commit('create', instances, createCallback)
 
     return this.map(instances) as Data.Collection<T>  // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
@@ -866,6 +915,10 @@ export default class Query<T extends Model = Model> {
       return instance
     }
 
+    // When the updated instance is not the base model, we tell te hydrate what model to use
+    if (instance.constructor !== this.model && instance instanceof Model) {
+      return this.hydrate({ ...instance, ...data }, instance.constructor as typeof Model)
+    }
     return this.hydrate({ ...instance, ...data })
   }
 
@@ -946,7 +999,7 @@ export default class Query<T extends Model = Model> {
 
     if (Utils.isEmpty(data)) {
       if (method === 'create') {
-        this.state.data = {}
+        this.emptyState()
       }
 
       return {}
@@ -955,7 +1008,6 @@ export default class Query<T extends Model = Model> {
     return Object.keys(data).reduce((collection, entity) => {
       const query = this.newQuery(entity)
       const persistMethod = this.getPersistMethod(entity, method, options)
-
       const records = query[`${persistMethod}Many`](data[entity])
 
       if (records.length > 0) {
@@ -1042,7 +1094,20 @@ export default class Query<T extends Model = Model> {
    * Delete all records from the state.
    */
   deleteAll (): void {
-    const instances = this.state.data
+    let instances = this.state.data
+
+    // If we deleting all derived entities, we need to filter out entities which
+    // don't match
+    if (!this.appliedOnBase) {
+      instances = Object.keys(this.state.data).reduce<Data.Instances>((acc, id) => {
+
+        if (this.state.data[id] instanceof this.model) {
+          acc[id] = this.state.data[id]
+        }
+
+        return acc
+      }, {})
+    }
 
     this.commitDelete(instances)
   }
@@ -1076,8 +1141,33 @@ export default class Query<T extends Model = Model> {
   /**
    * Convert given record to the model instance.
    */
-  hydrate (record: Data.Record): Data.Instance {
-    const model = this.model
+  hydrate (record: Data.Record, forceModel?: typeof Model): Data.Instance {
+
+    if (forceModel !== undefined) {
+      return new forceModel(record)
+    }
+
+    let model = this.model
+
+    if (record) {
+
+      // If the record has the right typeKey attribute set, and Model has type mapping
+      // we hydrate it as the corresponding model
+      const newModel = model.getModelFromRecord(record)
+
+      if (typeof newModel === 'function') {
+        return new newModel(record)
+      }
+
+      // If we know that we're hydrating an entity which is not a base one,
+      // we can set it's typeKey attribute as a "bonus"
+      if (!this.appliedOnBase) {
+        const typeValue = model.getTypeKeyValueFromModel()
+        if (typeValue !== null) {
+          record[model.typeKey] = typeValue
+        }
+      }
+    }
 
     return new model(record)
   }
@@ -1109,6 +1199,11 @@ export default class Query<T extends Model = Model> {
 
       const record = records[id]
 
+      if (instance.constructor !== this.model && instance instanceof Model) {
+        instances[id] = this.hydrate({ ...instance, ...record }, instance.constructor as typeof Model)
+        return instances
+      }
+
       instances[id] = this.hydrate({ ...instance, ...record })
 
       return instances
@@ -1136,5 +1231,24 @@ export default class Query<T extends Model = Model> {
     callback()
 
     this.hook.executeMutationHookOnRecords(`after${name}`, instances)
+  }
+
+  /**
+   * Clears the current state from any data related to current model:
+   * - everything if not in a inheritance scheme
+   * - only derived instances if applied to a derived entity
+   */
+  private emptyState (): void {
+
+    if (this.appliedOnBase) {
+      this.state.data = {}
+      return
+    }
+
+    for (const id in this.state.data) {
+      if (this.state.data[id] instanceof this.model) {
+        delete this.state.data[id]
+      }
+    }
   }
 }

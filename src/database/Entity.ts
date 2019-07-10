@@ -3,6 +3,7 @@ import Model from '../model/Model'
 
 export interface Entity {
   name: string
+  base: string
   model: typeof Model
   module: Vuex.Module<any, any>
 }
