@@ -68,8 +68,9 @@ const sidebars = {
       title: 'Digging Deeper',
       collapsable: false,
       children: [
-        '/guide/advanced/serialization',
-        '/guide/advanced/lifecycle-hooks',
+        '/guide/digging-deeper/vuex-module',
+        '/guide/digging-deeper/lifecycle-hooks',
+        '/guide/digging-deeper/serialization',
         '/guide/digging-deeper/plugins'
       ]
     }

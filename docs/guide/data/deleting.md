@@ -1,97 +1,50 @@
 # Deleting
 
-You can delete data from the store by calling the delete Method on the model class or dispatching the `delete` action. Both expecting the first argument to be `String`, `Number`, `Function` or `Object`. 
+You can delete data from the store by calling the `delete` Method on the Model class. The first argument is the ID—primary key value—of the record you want to delete.
 
-If you use `String` or `Number`, a record that matches the condition with its primary key is going to be deleted.
+```vue
+<template>
+  <ul>
+    <li :key="user.id" v-for="user in users">
+      {{ user.name }} <button @click="destroy(user.id)">DELETE</button>
+    </li>
+  </ul>
+</template>
 
-If you use `Function`, that function is going to be used to determine which record to delete. The function takes the record as the argument and must return boolean.
+<script>
+import User from '@/models/User'
 
-By passing in an `Object` as argument the object is expacted to have a `where` key which have to be `String`, `Number` or `Function` exactly like described above.
+export default {
+  computed: {
+    users () {
+      return User.all()
+    }
+  },
 
-## Delete Data By Primary Key Value
-
-```js
-// Initial state.
-let state = {
-  entities: {
-    users: {
-      '1': { id: 1, name: 'John' },
-      '2': { id: 1, name: 'Jane' }
+  methods: {
+    destroy (id) {
+      User.delete(id)
     }
   }
 }
-
-
-// Delete single data by primary key value with model class.
-User.delete(1);
-
-// Or you can pass obejct as argument as well.
-User.delete({ where: 1 })
-
-// Or you can delete data from an existing model instance.
-const user = await User.find(1)
-user.delete()
-
-// Or you can delete single data by primary key value with vuex action.
-store.dispatch('entities/users/delete', 1)
-
-// Or you can pass obejct as argument as well.
-store.dispatch('entities/users/delete', { where: 1 })
-
-// State after `delete`
-state = {
-  entities: {
-    users: {
-      '2': { id: 1, name: 'Jane' }
-    }
-  }
-}
+</script>
 ```
 
-## Delete Data By Closure
+You can also pass `Function` to the argument to specify which record to delete dynamically. The closure will take the record as an argument, and should return `Boolean`.
 
 ```js
-// Initial state.
-let state = {
-  entities: {
-    users: {
-      '1': { id: 1, name: 'John' },
-      '2': { id: 1, name: 'Jane' },
-      '3': { id: 1, name: 'George' }
-    },
-    posts: {
-      '1': { id: 1, user_id: 1 },
-      '2': { id: 2, user_id: 2 },
-      '3': { id: 3, user_id: 3 }
-    }
-  }
-}
-
-// Delete data by closure.
-User.delete((record) => {
-  return record.id === 1 || record.name === 'Jane'
+// Delete all inactive users.
+User.delete((user) => {
+  return !user.active
 })
+```
 
-// Or with object style.
-User.delete({
-  where (record) {
-    return record.id === 1 || record.name === 'Jane'
-  }
-})
+Alternatively, you may call `$delete` method on a Model instance as well.
 
-// State after `delete`.
-state = {
-  entities: {
-    users: {
-      '3': { id: 1, name: 'George' }
-    },
-    posts: {
-      '1': { id: 1, user_id: 1 },
-      '2': { id: 2, user_id: 2 },
-      '3': { id: 3, user_id: 3 }
-    }
-  }
-}
+```js
+const user = User.find(1)
+
+user.$delete()
 ```
 
 ## Delete All Data
@@ -99,47 +52,6 @@ state = {
 You can delete all data in once by `deleteAll` action.
 
 ```js
-// Delete all data for an entity
+// Delete all users.
 User.deleteAll()
-
-// State after `deleteAll`.
-let state = {
-  entities: {
-    users: {},
-    posts: {
-      '1': { id: 1, user_id: 1 },
-      '2': { id: 2, user_id: 2 },
-      '3': { id: 3, user_id: 3 }
-    }
-  }
-}
-
-// Delete all data for all entities
-store.dispatch('entities/deleteAll')
-
-// State after `deleteAll`.
-state = {
-  entities: {
-    users: {},
-    posts: {}
-  }
-}
-```
-
-## Dispatch Action From Root Module
-
-You can also dispatch action from root module. Remember to pass `entity` name in this case.
-
-```js
-store.dispatch('entities/delete', {
-  entity: 'users',
-  where: 1
-})
-```
-
-Note that since root module needs `entity`, you can't dispatch root module action by passing condition directly.
-
-```js
-// This would not work.
-store.dispatch('entities/delete', 1)
 ```

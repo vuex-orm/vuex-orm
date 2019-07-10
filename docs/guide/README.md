@@ -2,40 +2,35 @@
 
 Vuex ORM is a plugin for [Vuex](https://github.com/vuejs/vuex) to enable Object-Relational Mapping access to the Vuex Store. Vuex ORM lets you create "normalized" data schema within Vuex Store with relationships such as "Has One" and "Belongs To Many" like any other usual ORM library. It also provides fluent API to get, search and update Store state.
 
-Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) and ["Updating Normalized Data"](http://redux.js.org/docs/recipes/reducers/UpdatingNormalizedData.html). Learn more about the concept and motivation of Vuex ORM at [What Is Vuex ORM?](https://vuex-orm.github.io/vuex-orm/guide/prologue/what-is-vuex-orm.html).
+Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) and ["Updating Normalized Data"](http://redux.js.org/docs/recipes/reducers/UpdatingNormalizedData.html). Learn more about the concept and motivation of Vuex ORM at [What is Vuex ORM?](https://vuex-orm.github.io/vuex-orm/guide/prologue/what-is-vuex-orm.html).
 
 ## Table Of Contents
 
 - Prologue
-    - [What is Vuex ORM?](prologue/what-is-vuex-orm.md)
-    - [Installation](prologue/installation.md)
-    - [Getting Started](prologue/getting-started.md)
-- Core Components
-    - [Models](components/models.md)
-    - [Modules and Store](components/modules-and-store.md)
-    - [Database and Registration](components/database-and-registration.md)
-- Interacting with Store
-    - [Inserting and Updating Data](store/inserting-and-updating-data.md)
-    - [Retrieving Data](store/retrieving-data.md)
-    - [Deleting Data](store/deleting-data.md)
-- Relationships
-    - [Defining Relationships](relationships/defining-relationships.md)
-    - [Inserting Relationships](relationships/inserting-relationships.md)
-    - [Retrieving Relationships](relationships/retrieving-relationships.md)
+    - [What is Vuex ORM?](guide/prologue/what-is-vuex-orm.md)
+    - [Installation](guide/prologue/installation.md)
+    - [Getting Started](guide/prologue/getting-started.md)
+- Model
+    - [Defining Models](/guide/model/defining-models.md)
+    - [Relationships](/guide/model/relationships.md)
+    - [Accessors & Mutators](/guide/model/accessors-and-mutators.md)
+    - [Database Registration](/guide/model/database-registration.md)
 - Inheritance
     - [Defining Inheritance](inheritance/defining-inheritance.md)
     - [Discriminator Field](inheritance/discriminator-field.md)
     - [Notes on import cycles](inheritance/notes-on-cycles.md)
-- Advanced Usage
-    - [Interact with Store from Model](advanced/interact-with-store-from-model.md)
-    - [Accessors & Mutators](advanced/accessors-and-mutators.md)
-    - [Lifecycle Hooks](advanced/lifecycle-hooks.md)
-    - [Serialization](advanced/serialization.md)
+- Data
+    - [Inserting & Updating](/guide/data/inserting-and-updating.md)
+    - [Retrieving](/guide/data/retrieving.md)
+    - [Deleting](/guide/data/deleting.md)
 - Digging Deeper
-    - [Plugins](digging-deeper/plugins.md)
+    - [Vuex Module](/guide/digging-deeper/vuex-module.md)
+    - [Lifecycle Hooks](/guide/digging-deeper/lifecycle-hooks.md)
+    - [Serialization](/guide/digging-deeper/serialization.md)
+    - [Plugins](/guide/digging-deeper/plugins.md)
 - API Reference
-    - [Database](../api/database.md)
-    - [Model](../api/model.md)
+    - [Database](api/database.md)
+    - [Model](api/model.md)
 
 ## Questions & Discussions
 
@@ -54,6 +49,7 @@ Vuex ORM can be extended via a plugin to add additional features. Here is the li
 - [Vuex ORM Axios](https://github.com/vuex-orm/plugin-axios) – The plugin to sync the store against a RESTful API.
 - [Vuex ORM GraphQL](https://github.com/vuex-orm/plugin-graphql) – The plugin to sync the store against a [GraphQL](https://graphql.org) API.
 - [Vuex ORM Search](https://github.com/vuex-orm/plugin-search) – The plugin adds a search() method to filter records using fuzzy search logic from the [Fuse.js](http://fusejs.io).
+- [Vuex ORM Change Flags](https://github.com/vuex-orm/plugin-change-flags) - Vuex ORM plugin for adding IsDirty / IsNew flags to model entities.
 - [Vuex ORM Soft Delete](https://github.com/vuex-orm/plugin-soft-delete) – Vuex ORM plugin for adding soft delete feature to model entities.
 
 ## Resources
