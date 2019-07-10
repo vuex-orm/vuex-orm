@@ -757,7 +757,6 @@ export default class Model {
   }
 
   static getModelFromRecord (record: Record): typeof Model | null {
-
     if (!record) {
       return null
     }
@@ -775,37 +774,4 @@ export default class Model {
 
     return null
   }
-
-  /**
-   * Returns true if current instance is an instance of a base Vuex ORM class
-   * (directly inheriting from Model)
-   */
-  // isBaseClass (): boolean {
-  //   return Object.getPrototypeOf(this.constructor) === Model
-  // }
-
-  /**
-   * Returns the direct parent class for the current instance
-   * (or null if the parent class is Model)
-   */
-  // parentModel (): any {
-  //   if(this.isBaseClass()) {
-  //     return null
-  //   } else {
-  //     return Object.getPrototypeOf(this.constructor) as typeof Model
-  //   }
-  // }
-
-  /**
-   * Returns the root class for the current instance
-   * (i.e. the class which extends Model)
-   */
-  // $root (): typeof Model {
-  //   let parent = this.parentModel()
-  //   if(parent === null) {
-  //     return this.$self() // parent is Model class
-  //   } else {
-  //     return parent.baseClass()
-  //   }
-  // }
 }
