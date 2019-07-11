@@ -58,7 +58,7 @@ User.create({
 })
 ```
 
-The difference between the `insert` and `insert` method is whether to keep existing data or not. The `create` method is going to replace all existing data in the store and replace with the given data, while `insert` will create new data and leave existing data as is.
+The difference between the `insert` and `create` method is whether to keep existing data or not. The `create` method is going to replace all existing data in the store and replace with the given data, while `insert` will create new data and leave existing data as is.
 
 ```js
 // Let's say this is the initial State.
