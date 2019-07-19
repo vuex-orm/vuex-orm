@@ -1,5 +1,6 @@
 const sidebars = {
-  guide: [{
+  guide: [
+    {
       title: 'Prologue',
       collapsable: false,
       children: [
@@ -41,8 +42,27 @@ const sidebars = {
   ],
 
   api: [
-    '/api/database',
-    '/api/model'
+    {
+      title: 'Container',
+      collapsable: false,
+      children: [
+        '/api/container/container'
+      ]
+    },
+    {
+      title: 'Database',
+      collapsable: false,
+      children: [
+        '/api/database/database'
+      ]
+    },
+    {
+      title: 'Model',
+      collapsable: false,
+      children: [
+        '/api/model/model'
+      ]
+    }
   ]
 }
 
@@ -62,7 +82,7 @@ module.exports = {
       },
       {
         text: 'API Reference',
-        link: '/api/database'
+        link: '/api/container/container'
       },
       {
         text: 'Release Notes',
