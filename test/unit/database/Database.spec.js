@@ -13,11 +13,13 @@ describe('Unit – Database', () => {
 
   class ExtendedUser extends User {
     static entity = 'extendedusers'
+
     static baseEntity = 'users'
   }
 
   class Post extends Model {
     static entity = 'posts'
+
     static primaryKey = 'customId'
   }
 

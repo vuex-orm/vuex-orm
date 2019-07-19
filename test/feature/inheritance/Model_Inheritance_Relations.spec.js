@@ -15,14 +15,15 @@ describe('Feature - Inheritance - Relations', () => {
 
       static types () {
         return {
-          'ADULT': Adult,
-          'PERSON': Person
+          ADULT: Adult,
+          PERSON: Person
         }
       }
     }
 
     class Adult extends Person {
       static entity = 'adult'
+
       static baseEntity = 'person'
 
       static fields () {
@@ -87,14 +88,15 @@ describe('Feature - Inheritance - Relations', () => {
 
       static types () {
         return {
-          'ADULT': Adult,
-          'PERSON': Person
+          ADULT: Adult,
+          PERSON: Person
         }
       }
     }
 
     class Adult extends Person {
       static entity = 'adult'
+
       static baseEntity = 'person'
 
       static fields () {
@@ -160,14 +162,15 @@ describe('Feature - Inheritance - Relations', () => {
 
       static types () {
         return {
-          'ADULT': Adult,
-          'PERSON': Person
+          ADULT: Adult,
+          PERSON: Person
         }
       }
     }
 
     class Adult extends Person {
       static entity = 'adult'
+
       static baseEntity = 'person'
 
       static fields () {
@@ -244,14 +247,15 @@ describe('Feature - Inheritance - Relations', () => {
 
       static types () {
         return {
-          'ADULT': Adult,
-          'PERSON': Person
+          ADULT: Adult,
+          PERSON: Person
         }
       }
     }
 
     class Adult extends Person {
       static entity = 'adult'
+
       static baseEntity = 'person'
 
       static fields () {
@@ -331,15 +335,16 @@ describe('Feature - Inheritance - Relations', () => {
 
       static types () {
         return {
-          'ADULT': Adult,
-          'PERSON': Person,
-          'CHILD': Child
+          ADULT: Adult,
+          PERSON: Person,
+          CHILD: Child
         }
       }
     }
 
     class Adult extends Person {
       static entity = 'adult'
+
       static baseEntity = 'person'
 
       static fields () {
@@ -353,6 +358,7 @@ describe('Feature - Inheritance - Relations', () => {
 
     class Child extends Person {
       static entity = 'child'
+
       static baseEntity = 'person'
 
       static fields () {
@@ -407,14 +413,15 @@ describe('Feature - Inheritance - Relations', () => {
 
       static types () {
         return {
-          'ADULT': Adult,
-          'PERSON': Person
+          ADULT: Adult,
+          PERSON: Person
         }
       }
     }
 
     class Adult extends Person {
       static entity = 'adult'
+
       static baseEntity = 'person'
 
       static fields () {

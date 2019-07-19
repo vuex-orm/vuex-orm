@@ -17,14 +17,15 @@ describe('Model – Inheritance - Discriminator field', () => {
 
       static types () {
         return {
-          'PERSON': Person,
-          'ADULT': Adult
+          PERSON: Person,
+          ADULT: Adult
         }
       }
     }
 
     class Adult extends Person {
       static entity = 'adult'
+
       static baseEntity = 'person'
 
       static fields () {
@@ -53,6 +54,7 @@ describe('Model – Inheritance - Discriminator field', () => {
   it('uses overwritten typeKey as discriminator when defined', () => {
     class Person extends Model {
       static entity = 'person'
+
       static typeKey = 'the_key'
 
       static fields () {
@@ -65,14 +67,15 @@ describe('Model – Inheritance - Discriminator field', () => {
 
       static types () {
         return {
-          'PERSON': Person,
-          'ADULT': Adult
+          PERSON: Person,
+          ADULT: Adult
         }
       }
     }
 
     class Adult extends Person {
       static entity = 'adult'
+
       static baseEntity = 'person'
 
       static fields () {
@@ -112,15 +115,16 @@ describe('Model – Inheritance - Discriminator field', () => {
 
       static types () {
         return {
-          'PERSON': Person,
-          'ADULT': Adult,
-          'CHILD': Child
+          PERSON: Person,
+          ADULT: Adult,
+          CHILD: Child
         }
       }
     }
 
     class Child extends Person {
       static entity = 'child'
+
       static baseEntity = 'person'
 
       static fields () {
@@ -130,6 +134,7 @@ describe('Model – Inheritance - Discriminator field', () => {
 
     class Adult extends Person {
       static entity = 'adult'
+
       static baseEntity = 'person'
 
       static fields () {
@@ -195,14 +200,15 @@ describe('Model – Inheritance - Discriminator field', () => {
 
       static types () {
         return {
-          'PERSON': Person,
-          'ADULT': Adult
+          PERSON: Person,
+          ADULT: Adult
         }
       }
     }
 
     class Adult extends Person {
       static entity = 'adult'
+
       static baseEntity = 'person'
 
       static fields () {
@@ -252,6 +258,7 @@ describe('Model – Inheritance - Discriminator field', () => {
 
     class Adult extends Person {
       static entity = 'adult'
+
       static baseEntity = 'person'
 
       static fields () {

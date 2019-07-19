@@ -24,7 +24,7 @@ describe('Feature – Models – Update', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, name: 'Jane Doe' }
+        1: { $id: 1, id: 1, name: 'Jane Doe' }
       }
     })
 
@@ -45,7 +45,7 @@ describe('Feature – Models – Update', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, name: 'Jane Doe' }
+        1: { $id: 1, id: 1, name: 'Jane Doe' }
       }
     })
 
@@ -73,9 +73,9 @@ describe('Feature – Models – Update', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, name: 'John Doe' },
-        '2': { $id: 2, id: 2, name: 'John Doe' },
-        '3': { $id: 3, id: 3, name: 'John Doe' }
+        1: { $id: 1, id: 1, name: 'John Doe' },
+        2: { $id: 2, id: 2, name: 'John Doe' },
+        3: { $id: 3, id: 3, name: 'John Doe' }
       }
     })
 
@@ -103,9 +103,9 @@ describe('Feature – Models – Update', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, name: 'Jane Doe' },
-        '2': { $id: 2, id: 2, name: 'Jane Doe' },
-        '3': { $id: 3, id: 3, name: 'Jane Doe' }
+        1: { $id: 1, id: 1, name: 'Jane Doe' },
+        2: { $id: 2, id: 2, name: 'Jane Doe' },
+        3: { $id: 3, id: 3, name: 'Jane Doe' }
       }
     })
 
@@ -125,7 +125,7 @@ describe('Feature – Models – Update', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, name: 'Jane Doe' }
+        1: { $id: 1, id: 1, name: 'Jane Doe' }
       }
     })
 
@@ -145,7 +145,7 @@ describe('Feature – Models – Update', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, name: 'Jane Doe' }
+        1: { $id: 1, id: 1, name: 'Jane Doe' }
       }
     })
 
@@ -171,8 +171,8 @@ describe('Feature – Models – Update', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, name: 'Jane Doe' },
-        '2': { $id: 2, id: 2, name: 'Johnny Doe' }
+        1: { $id: 1, id: 1, name: 'Jane Doe' },
+        2: { $id: 2, id: 2, name: 'Johnny Doe' }
       }
     })
 
@@ -195,7 +195,7 @@ describe('Feature – Models – Update', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, name: 'Jane Doe' }
+        1: { $id: 1, id: 1, name: 'Jane Doe' }
       }
     })
 

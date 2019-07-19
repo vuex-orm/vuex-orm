@@ -30,19 +30,20 @@ describe('Unit – Model - Utility', () => {
 
                 static types () {
                   return {
-                    'USER': User,
-                    'SUPER': SuperUser
+                    USER: User,
+                    SUPER: SuperUser
                   }
                 }
       }
 
       class SuperUser extends User {
                 static entity = 'superusers'
+
                 static baseEntity = 'users'
       }
 
-      let superU = { type: 'SUPER' }
-      let user = { type: 'USER' }
+      const superU = { type: 'SUPER' }
+      const user = { type: 'USER' }
 
       const result = User.getModelFromRecord(user)
       expect(result).toBe(User)
@@ -59,18 +60,19 @@ describe('Unit – Model - Utility', () => {
 
                 static types () {
                   return {
-                    'USER': User,
-                    'SUPER': SuperUser
+                    USER: User,
+                    SUPER: SuperUser
                   }
                 }
       }
 
       class SuperUser extends User {
                 static entity = 'superusers'
+
                 static baseEntity = 'users'
       }
 
-      let test = { type: 'UNKNOWN' }
+      const test = { type: 'UNKNOWN' }
 
       const result = User.getModelFromRecord(test)
       expect(result).toBe(null)

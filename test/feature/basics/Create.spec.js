@@ -21,7 +21,7 @@ describe('Feature – Basics – Create', () => {
     })
 
     const expected = {
-      '1': { $id: 1, id: 1, name: 'John Doe' }
+      1: { $id: 1, id: 1, name: 'John Doe' }
     }
 
     expect(store.state.entities.users.data[1]).toBeInstanceOf(User)
@@ -39,8 +39,8 @@ describe('Feature – Basics – Create', () => {
     })
 
     const expected = {
-      '1': { $id: 1, id: 1, name: 'John Doe' },
-      '2': { $id: 2, id: 2, name: 'Jane Doe' }
+      1: { $id: 1, id: 1, name: 'John Doe' },
+      2: { $id: 2, id: 2, name: 'Jane Doe' }
     }
 
     expect(store.state.entities.users.data).toEqual(expected)
@@ -58,7 +58,7 @@ describe('Feature – Basics – Create', () => {
     })
 
     const expected = {
-      '2': { $id: 2, id: 2, name: 'Jane Doe' }
+      2: { $id: 2, id: 2, name: 'Jane Doe' }
     }
 
     expect(store.state.entities.users.data).toEqual(expected)
@@ -104,7 +104,7 @@ describe('Feature – Basics – Create', () => {
     })
 
     const expected = {
-      '1': { $id: 1, id: 1, name: 'JD' }
+      1: { $id: 1, id: 1, name: 'JD' }
     }
 
     expect(store.state.entities.users.data).toEqual(expected)

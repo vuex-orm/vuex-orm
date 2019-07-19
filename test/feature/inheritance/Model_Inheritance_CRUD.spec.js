@@ -17,16 +17,17 @@ describe('Model – Inheritance - CRUD', () => {
 
     static types () {
       return {
-        'ADULT': Adult,
-        'PERSON': Person,
-        'SUPER': SuperAdult,
-        'CHILD': Child
+        ADULT: Adult,
+        PERSON: Person,
+        SUPER: SuperAdult,
+        CHILD: Child
       }
     }
   }
 
   class Adult extends Person {
     static entity = 'adult'
+
     static baseEntity = 'person'
 
     static fields () {
@@ -39,6 +40,7 @@ describe('Model – Inheritance - CRUD', () => {
 
   class Child extends Person {
     static entity = 'child'
+
     static baseEntity = 'person'
 
     static fields () {
@@ -50,6 +52,7 @@ describe('Model – Inheritance - CRUD', () => {
 
   class SuperAdult extends Adult {
     static entity = 'superadult'
+
     static baseEntity = 'person'
 
     static fields () {
@@ -83,7 +86,7 @@ describe('Model – Inheritance - CRUD', () => {
       }
     })
 
-    let results = Person.query().orderBy('id').get()
+    const results = Person.query().orderBy('id').get()
     expect(results.length).toBe(2)
 
     expect(results[0].name).toBe('John')
@@ -116,7 +119,7 @@ describe('Model – Inheritance - CRUD', () => {
       }
     })
 
-    let results = Adult.all()
+    const results = Adult.all()
     expect(results.length).toBe(1)
 
     expect(results[0].name).toBe('Jane')
@@ -267,9 +270,9 @@ describe('Model – Inheritance - CRUD', () => {
 
     const expected = createState({
       person: {
-        '1': { $id: 1, id: 1, name: 'John Doe', job: 'Writer' },
-        '2': { $id: 2, id: 2, name: 'Jane Doe', job: 'QA' },
-        '3': { $id: 3, id: 3, name: 'Jane Doe' }
+        1: { $id: 1, id: 1, name: 'John Doe', job: 'Writer' },
+        2: { $id: 2, id: 2, name: 'Jane Doe', job: 'QA' },
+        3: { $id: 3, id: 3, name: 'Jane Doe' }
       },
       adult: {}
     })

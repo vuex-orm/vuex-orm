@@ -38,11 +38,11 @@ describe('Features – Relations – Has Many By', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, posts: [] }
+        1: { $id: 1, id: 1, posts: [] }
       },
       posts: {
-        '1': { $id: 1, id: 1 },
-        '2': { $id: 2, id: 2 }
+        1: { $id: 1, id: 1 },
+        2: { $id: 2, id: 2 }
       }
     })
 
@@ -82,7 +82,7 @@ describe('Features – Relations – Has Many By', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, posts: [] }
+        1: { $id: 1, id: 1, posts: [] }
       },
       posts: {}
     })

@@ -26,8 +26,8 @@ describe('Feature – Models – Insert', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, name: 'John Doe' },
-        '2': { $id: 2, id: 2, name: 'Jane Doe' }
+        1: { $id: 1, id: 1, name: 'John Doe' },
+        2: { $id: 2, id: 2, name: 'Jane Doe' }
       }
     })
 
@@ -46,8 +46,8 @@ describe('Feature – Models – Insert', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, name: 'John Doe' },
-        '2': { $id: 2, id: 2, name: 'Jane Doe' }
+        1: { $id: 1, id: 1, name: 'John Doe' },
+        2: { $id: 2, id: 2, name: 'Jane Doe' }
       }
     })
 
@@ -83,8 +83,8 @@ describe('Feature – Models – Insert', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, name: 'John Doe' },
-        '2': { $id: 2, id: 2, name: 'Jane Doe' }
+        1: { $id: 1, id: 1, name: 'John Doe' },
+        2: { $id: 2, id: 2, name: 'Jane Doe' }
       }
     })
 
@@ -105,8 +105,8 @@ describe('Feature – Models – Insert', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, name: 'John Doe' },
-        '2': { $id: 2, id: 2, name: 'Jane Doe' }
+        1: { $id: 1, id: 1, name: 'John Doe' },
+        2: { $id: 2, id: 2, name: 'Jane Doe' }
       }
     })
 

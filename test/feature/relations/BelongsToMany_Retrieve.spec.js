@@ -41,7 +41,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
     await User.create({
-      data: [ { id: 1 }, { id: 2 } ]
+      data: [{ id: 1 }, { id: 2 }]
     })
 
     await Role.create({
@@ -204,20 +204,20 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
 
     const data = [
       {
-        'id': 1,
-        'roles': [
+        id: 1,
+        roles: [
           {
-            'id': 1,
-            'permissions': [{ 'id': 1 }, { 'id': 2 }, { 'id': 3 }, { 'id': 4 }]
+            id: 1,
+            permissions: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]
           }
         ]
       },
       {
-        'id': 2,
-        'roles': [
+        id: 2,
+        roles: [
           {
-            'id': 2,
-            'permissions': [{ 'id': 1 }, { 'id': 2 }, { 'id': 3 }, { 'id': 4 }]
+            id: 2,
+            permissions: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]
           }
         ]
       }
@@ -279,7 +279,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
     await User.create({
-      data: [ { id: 1 } ]
+      data: [{ id: 1 }]
     })
 
     await Role.create({

@@ -18,6 +18,7 @@ describe('Model – Inheritance - No type warning', () => {
 
   class Adult extends Person {
     static entity = 'adult'
+
     static baseEntity = 'person'
 
     static fields () {
@@ -52,16 +53,17 @@ describe('Model – Inheritance', () => {
 
     static types () {
       return {
-        'ADULT': Adult,
-        'PERSON': Person,
-        'SUPER': SuperAdult,
-        'CHILD': Child
+        ADULT: Adult,
+        PERSON: Person,
+        SUPER: SuperAdult,
+        CHILD: Child
       }
     }
   }
 
   class Adult extends Person {
     static entity = 'adult'
+
     static baseEntity = 'person'
 
     static fields () {
@@ -74,6 +76,7 @@ describe('Model – Inheritance', () => {
 
   class Child extends Person {
     static entity = 'child'
+
     static baseEntity = 'person'
 
     static fields () {
@@ -85,6 +88,7 @@ describe('Model – Inheritance', () => {
 
   class SuperAdult extends Adult {
     static entity = 'superadult'
+
     static baseEntity = 'person'
 
     static fields () {

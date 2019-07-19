@@ -48,11 +48,11 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, permissions: [] }
+        1: { $id: 1, id: 1, permissions: [] }
       },
       roles: {
-        '1': { $id: 1, id: 1 },
-        '2': { $id: 2, id: 2 }
+        1: { $id: 1, id: 1 },
+        2: { $id: 2, id: 2 }
       },
       roleUser: {
         '1_1': { $id: '1_1', role_id: 1, user_id: 1 },
@@ -104,7 +104,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, roles: [] }
+        1: { $id: 1, id: 1, roles: [] }
       },
       roles: {},
       roleUser: {}
@@ -393,6 +393,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
     class RoleUser extends Model {
       static entity = 'roleUsers'
+
       static primaryKey = 'id'
 
       static fields () {
@@ -442,16 +443,16 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, name: 'Jane Doe', roleUsers: [], roles: [] }
+        1: { $id: 1, id: 1, name: 'Jane Doe', roleUsers: [], roles: [] }
       },
       roles: {
-        '1': { $id: 1, id: 1, roleUsers: [], users: [] },
-        '2': { $id: 2, id: 2, roleUsers: [], users: [] }
+        1: { $id: 1, id: 1, roleUsers: [], users: [] },
+        2: { $id: 2, id: 2, roleUsers: [], users: [] }
       },
       roleUsers: {
-        '1': { $id: 1, id: 1, user_id: 1, role_id: 1, type: 'administrator', user: null, role: null },
-        '2': { $id: 2, id: 2, user_id: 1, role_id: 1, type: 'general', user: null, role: null },
-        '3': { $id: 3, id: 3, user_id: 1, role_id: 2, type: 'general', user: null, role: null }
+        1: { $id: 1, id: 1, user_id: 1, role_id: 1, type: 'administrator', user: null, role: null },
+        2: { $id: 2, id: 2, user_id: 1, role_id: 1, type: 'general', user: null, role: null },
+        3: { $id: 3, id: 3, user_id: 1, role_id: 2, type: 'general', user: null, role: null }
       }
     })
 
@@ -486,6 +487,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
     class RoleUser extends Model {
       static entity = 'roleUsers'
+
       static primaryKey = ['role_id', 'user_id']
 
       static fields () {
@@ -526,11 +528,11 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1, name: 'Jane Doe', roleUsers: [], roles: [] }
+        1: { $id: 1, id: 1, name: 'Jane Doe', roleUsers: [], roles: [] }
       },
       roles: {
-        '1': { $id: 1, id: 1, roleUsers: [], users: [] },
-        '2': { $id: 2, id: 2, roleUsers: [], users: [] }
+        1: { $id: 1, id: 1, roleUsers: [], users: [] },
+        2: { $id: 2, id: 2, roleUsers: [], users: [] }
       },
       roleUsers: {
         '1_1': { $id: '1_1', user_id: 1, role_id: 1, type: 'administrator', user: null, role: null },

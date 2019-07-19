@@ -45,7 +45,7 @@ describe('Performance – Retrieve – Has Many Through', () => {
 
     // 100 users
     for (let i = 1; i <= 100; i++) {
-      let countryID = (i % 2) + 1
+      const countryID = (i % 2) + 1
       users.push({ id: i, country_id: countryID })
     }
 

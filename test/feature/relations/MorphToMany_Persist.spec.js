@@ -126,7 +126,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     })
 
     const expected = {
-      '1': { $id: 1, id: 1, tags: [] }
+      1: { $id: 1, id: 1, tags: [] }
     }
 
     expect(store.state.entities.posts.data).toEqual(expected)

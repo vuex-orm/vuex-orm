@@ -42,10 +42,10 @@ describe('Features – Relations – Morph To', () => {
 
     const expected = createState({
       posts: {
-        '1': { $id: 1, id: 1, comment: null }
+        1: { $id: 1, id: 1, comment: null }
       },
       comments: {
-        '1': { $id: 1,
+        1: { $id: 1,
           id: 1,
           body: 'The Body',
           commentable_type: 'posts',

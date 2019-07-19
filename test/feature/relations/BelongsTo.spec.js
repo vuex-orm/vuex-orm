@@ -37,10 +37,10 @@ describe('Features – Relations – Belongs To', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1 }
+        1: { $id: 1, id: 1 }
       },
       posts: {
-        '1': { $id: 1, id: 1, user_id: 1, user: null }
+        1: { $id: 1, id: 1, user_id: 1, user: null }
       }
     })
 
@@ -61,7 +61,7 @@ describe('Features – Relations – Belongs To', () => {
     const expected = createState({
       users: {},
       posts: {
-        '1': { $id: 1, id: 1, user_id: 1, user: null }
+        1: { $id: 1, id: 1, user_id: 1, user: null }
       }
     })
 
@@ -80,10 +80,10 @@ describe('Features – Relations – Belongs To', () => {
 
     const expected = createState({
       users: {
-        '1': { $id: 1, id: 1 }
+        1: { $id: 1, id: 1 }
       },
       posts: {
-        '1': { $id: 1, id: 1, user_id: 1, user: null }
+        1: { $id: 1, id: 1, user_id: 1, user: null }
       }
     })
 
@@ -103,6 +103,7 @@ describe('Features – Relations – Belongs To', () => {
 
     class Post extends Model {
       static entity = 'posts'
+
       static primaryKey = ['id', 'user_id']
 
       static fields () {
