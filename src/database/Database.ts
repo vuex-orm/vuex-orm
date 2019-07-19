@@ -14,19 +14,20 @@ export default class Database {
   store!: Vuex.Store<any>
 
   /**
-   * The namespace of the Vuex Store Module where the database is registered.
+   * The namespace of the Vuex Store Module where all entities are
+   * registered under.
    */
   namespace!: string
 
   /**
-   * The list of entities to be registered to the Vuex Store. It contains
-   * models and modules with its name.
+   * The list of entities registered to the Vuex Store. It contains models and
+   * modules with its name.
    */
   entities: Entity[] = []
 
   /**
-   * The database schema definition. This schema will be used when normalizing
-   * the data before persisting them to the Vuex Store.
+   * The database schema definition. This schema is going to be used when
+   * normalizing the data before persisting them to the Vuex Store.
    */
   schemas: Schemas = {}
 
@@ -46,13 +47,7 @@ export default class Database {
    * Register a model and a module to Database.
    */
   register (model: typeof Model, module: Vuex.Module<any, any> = {}): void {
-
-    if (model.baseEntity) {
-      const base = this.model(model.baseEntity)
-      if (base && base.types === Model.types && process.env.NODE_ENV !== 'production') {
-        console.warn(`Model ${model.name} extends ${base.name} which doesn't overwrite Model.types(). You will not be able to use type mapping.`)
-      }
-    }
+    this.checkModelTypeMappingCapability(model)
 
     this.entities.push({
       name: model.entity,
@@ -70,7 +65,7 @@ export default class Database {
   }
 
   /**
-   * Get base model of given name from the entities list.
+   * Get the base model of the given name from the entities list.
    */
   baseModel (name: string): typeof Model {
     return this.baseModels()[name]
@@ -88,7 +83,7 @@ export default class Database {
   }
 
   /**
-   * Get all base model from the entities list.
+   * Get all base models from the entities list.
    */
   baseModels (): Models {
     return this.entities.reduce((models, entity) => {
@@ -117,22 +112,52 @@ export default class Database {
   }
 
   /**
-   * Create the Vuex Module from registered entities.
+   * Create the Vuex Module from the registered entities.
    */
-  registerModules (): void {
+  private registerModules (): void {
     const modules = ModuleBuilder.create(this.namespace, this.models(), this.modules())
 
     this.store.registerModule(this.namespace, modules)
   }
 
   /**
-   * Create the schema definition from registered entities list and set
-   * it to the property. This schema will be used by the normalizer
+   * Create the schema definition from registered entities list and set it to
+   * the `schema` property. This schema will be used by the normalizer
    * to normalize data before persisting them to the Vuex Store.
    */
-  createSchema (): void {
+  private createSchema (): void {
     this.entities.forEach((entity) => {
       this.schemas[entity.name] = Schema.create(entity.model)
     })
+  }
+
+  /**
+   * Warn user if the given model is a type of an inherited model that is being
+   * defined without overwriting `Model.types()` because the user will not be
+   * able to use the type mapping feature in this case.
+   */
+  private checkModelTypeMappingCapability (model: typeof Model): void {
+    // We'll not be logging any warning if it's on a production environment,
+    // so let's return here if it is.
+    /* istanbul ignore next */
+    if (process.env.NODE_ENV === 'production') {
+      return
+    }
+
+    // If the model doesn't have `baseEntity` property set, we'll assume it is
+    // not an inherited model so we can stop here.
+    if (!model.baseEntity) {
+      return
+    }
+
+    // Now it seems like the model is indeed an inherited model. Let's check if
+    // it has `types()` method declared, or we'll warn the user that it's not
+    // possible to use type mapping feature.
+
+    const baseModel = this.model(model.baseEntity)
+
+    if (baseModel && baseModel.types === Model.types) {
+      console.warn(`Model ${model.name} extends ${baseModel.name} which doesn't overwrite Model.types(). You will not be able to use type mapping.`)
+    }
   }
 }
