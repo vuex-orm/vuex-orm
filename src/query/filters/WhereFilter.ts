@@ -42,12 +42,16 @@ export default class WhereFilter {
         const newQuery = new Query(query.rootState, query.entity)
         const result = this.executeWhereClosure(newQuery, record, where.field)
 
+        if (result === undefined || result === null) {
+          return false
+        }
+
         if (typeof result === 'boolean') {
           return result
         }
 
         // If closure returns undefined, we need to execute the local query
-        const matchingRecords = newQuery.get()
+        const matchingRecords = result.get()
 
         // And check if current record is part of the resul
         return !Utils.isEmpty(matchingRecords.filter((rec: Instance): boolean => {
@@ -73,7 +77,7 @@ export default class WhereFilter {
   /**
    * Execute where closure.
    */
-  static executeWhereClosure (query: Query, record: Instance, closure: Options.WherePrimaryClosure): boolean | void {
+  static executeWhereClosure (query: Query, record: Instance, closure: Options.WherePrimaryClosure): boolean | Query {
     if (closure.length !== 3) {
       return closure(record, query)
     }
