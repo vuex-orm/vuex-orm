@@ -293,7 +293,7 @@ describe('Feature – Retrieve – Where', () => {
     ]
 
     const users = store.getters['entities/users/query']()
-      .where((_user, query) => { query.where('age', 20) })
+      .where((_user, query) => { return query.where('age', 20) })
       .get()
 
     expect(users).toEqual(expected)
@@ -341,7 +341,7 @@ describe('Feature – Retrieve – Where', () => {
 
     const users = store.getters['entities/users/query']()
       .where((_user, query) => {
-        query.where('age', 20).where('active', true)
+        return query.where('age', 20).where('active', true)
       })
       .orWhere('id', 1)
       .get()
@@ -433,10 +433,10 @@ describe('Feature – Retrieve – Where', () => {
     // (A && B) || (C && D)
     const users = store.getters['entities/users/query']()
       .where((_user, query) => {
-        query.where('age', 20).where('active', true)
+        return query.where('age', 20).where('active', true)
       })
       .orWhere((_user, query) => {
-        query.where('age', 24).where('active', false)
+        return query.where('age', 24).where('active', false)
       })
       .get()
 
@@ -463,10 +463,10 @@ describe('Feature – Retrieve – Where', () => {
     // (A || B) && (C || D)
     const users = store.getters['entities/users/query']()
       .where((_user, query) => {
-        query.where('age', 20).orWhere('age', 21)
+        return query.where('age', 20).orWhere('age', 21)
       })
       .where((_user, query) => {
-        query.where('active', true)
+        return query.where('active', true)
       })
       .get()
 
@@ -497,12 +497,12 @@ describe('Feature – Retrieve – Where', () => {
     // (A || B || (E && F)) && (C || D)
     const users = store.getters['entities/users/query']()
       .where((_user, query) => {
-        query.where('age', 20).orWhere('age', 21).orWhere((_user2, q) => {
-          q.where('age', 22).where(u => { return u.name.indexOf('Jimm') === 0 })
+        return query.where('age', 20).orWhere('age', 21).orWhere((_user2, q) => {
+          return q.where('age', 22).where(u => { return u.name.indexOf('Jimm') === 0 })
         })
       })
       .where((_user, query) => {
-        query.where('active', true)
+        return query.where('active', true)
       })
       .get()
 
