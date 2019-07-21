@@ -77,7 +77,7 @@ export default class WhereFilter {
   /**
    * Execute where closure.
    */
-  static executeWhereClosure (query: Query, record: Instance, closure: Options.WherePrimaryClosure): boolean | Query {
+  static executeWhereClosure (query: Query, record: Instance, closure: Options.WherePrimaryClosure): boolean | void | null | Query {
     if (closure.length !== 3) {
       return closure(record, query)
     }
