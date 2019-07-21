@@ -51,7 +51,7 @@ export default class WhereFilter {
         }
 
         // If closure returns undefined, we need to execute the local query
-        const matchingRecords = result.get()
+        const matchingRecords = newQuery.get()
 
         // And check if current record is part of the resul
         return !Utils.isEmpty(matchingRecords.filter((rec: Instance): boolean => {
