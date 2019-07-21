@@ -508,4 +508,22 @@ describe('Feature – Retrieve – Where', () => {
 
     expect(users).toEqual(expected)
   })
+
+  it('can retrieve records that matches in the where clause as a closure', () => {
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: [
+        { id: 1, name: 'John', age: 20, active: true },
+        { id: 2, name: 'Jane', age: 20, active: true },
+        { id: 3, name: 'Johnny', age: 24, active: true }
+      ]
+    })
+
+    const users = store.getters['entities/users/query']()
+      .where(user => undefined)
+      .get()
+
+    expect(users.length).toEqual(0)
+  })
 })
