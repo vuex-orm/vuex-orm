@@ -260,7 +260,8 @@ export default {
 
 Vuex ORM offers a lot more features that help you deal with data. Please read through the documentation to find out more. Here are some good starting points to go from here.
 
-- [Defining Models]()
-- [Inserting and Updating Data]()
-- [Retrieving Data]()
-- [Deleting Data]()
+- [Defining Models](/guide/model/defining-models.md)
+- [Inserting and Updating Data](/guide/data/inserting-and-updating.md)
+- [Retrieving Data](/guide/data/retrieving.md)
+- [Deleting Data](/guide/data/deleting.md)
+
