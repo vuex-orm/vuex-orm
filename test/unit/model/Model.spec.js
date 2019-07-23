@@ -40,10 +40,10 @@ describe('Unit – Model', () => {
       }
     }
 
-    const user = new User()
+    const user1 = new User()
     const user2 = new User()
 
-    expect(user.id).toBe(0)
+    expect(user1.id).toBe(0)
     expect(user2.id).toBe(1)
   })
 
@@ -64,70 +64,6 @@ describe('Unit – Model', () => {
     expect(user.name).toBe('Jane Doe')
     expect(user.email).toBe('john@example.com')
     expect(user.age).toBe(undefined)
-  })
-
-  it('should mutate data if closure was given to the attr when instantiating', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          name: this.attr('', value => value.toUpperCase())
-        }
-      }
-    }
-
-    const user = new User({ name: 'john doe' })
-
-    expect(user.name).toBe('JOHN DOE')
-  })
-
-  it('should mutate data if mutators are present', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          name: this.attr('')
-        }
-      }
-
-      static mutators () {
-        return {
-          name (value) {
-            return value.toUpperCase()
-          }
-        }
-      }
-    }
-
-    const user = new User({ name: 'john doe' })
-
-    expect(user.name).toBe('JOHN DOE')
-  })
-
-  it('attr mutator should take precedent over static mutators', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          name: this.attr('', value => value.toUpperCase())
-        }
-      }
-
-      static mutators () {
-        return {
-          name (value) {
-            return 'Not Expected'
-          }
-        }
-      }
-    }
-
-    const user = new User({ name: 'john doe' })
-
-    expect(user.name).toBe('JOHN DOE')
   })
 
   it('can get a value of the primary key', () => {
@@ -176,6 +112,76 @@ describe('Unit – Model', () => {
     }
 
     expect(User.localKey()).toBe('id')
+  })
+
+  it('should return right model when getting a model from a record if the record is in a hierarchy', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static typeKey = 'type'
+
+      static types () {
+        return {
+          USER: User,
+          SUPER: SuperUser
+        }
+      }
+    }
+
+    class SuperUser extends User {
+      static entity = 'super_users'
+
+      static baseEntity = 'users'
+    }
+
+    const result1 = User.getModelFromRecord({ type: 'USER' })
+
+    expect(result1).toBe(User)
+
+    const result2 = User.getModelFromRecord({ type: 'SUPER' })
+
+    expect(result2).toBe(SuperUser)
+  })
+
+  it('should return null when getting a model from a record if model was not found', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static typeKey = 'type'
+
+      static types () {
+        return {
+          USER: User,
+          SUPER: SuperUser
+        }
+      }
+    }
+
+    class SuperUser extends User {
+      static entity = 'superusers'
+
+      static baseEntity = 'users'
+    }
+
+    const result1 = User.getModelFromRecord({ type: 'UNKNOWN' })
+
+    expect(result1).toBe(null)
+
+    const result2 = User.getModelFromRecord({ data: 'bla' })
+
+    expect(result2).toBe(null)
+  })
+
+  it('should return model when getting a model from a record if the record is already a model instance', () => {
+    class User extends Model {
+      static entity = 'users'
+    }
+
+    const user = new User()
+
+    const result = User.getModelFromRecord(user)
+
+    expect(result).toBe(User)
   })
 
   it('throws error when trying to fetch attribute class that does not exist', () => {
@@ -280,128 +286,5 @@ describe('Unit – Model', () => {
     }
 
     expect(record).toEqual(expected)
-  })
-
-  it('can serialize own fields into json', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          name: this.attr('')
-        }
-      }
-    }
-
-    const user = new User({ $id: 1, id: 1, name: 'John Doe' })
-
-    const json = user.$toJson()
-
-    expect(json).not.toBeInstanceOf(User)
-    expect(json).toEqual({ id: 1, name: 'John Doe' })
-  })
-
-  it('can serialize nested fields into json', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          phone: this.hasOne(Phone, 'user_id'),
-          posts: this.hasMany(Post, 'user_id')
-        }
-      }
-    }
-
-    class Phone extends Model {
-      static entity = 'phones'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          user_id: this.attr(null)
-        }
-      }
-    }
-
-    class Post extends Model {
-      static entity = 'posts'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          user_id: this.attr(null)
-        }
-      }
-    }
-
-    const user = new User({
-      $id: 1,
-      id: 1,
-      phone: { $id: 2, id: 2, user_id: 1 },
-      posts: [
-        { $id: 3, id: 3, user_id: 1 },
-        { $id: 4, id: 4, user_id: 1 }
-      ]
-    })
-
-    const json = user.$toJson()
-
-    const expected = {
-      id: 1,
-      phone: { id: 2, user_id: 1 },
-      posts: [
-        { id: 3, user_id: 1 },
-        { id: 4, user_id: 1 }
-      ]
-    }
-
-    expect(json).not.toBeInstanceOf(User)
-    expect(json.phone).not.toBeInstanceOf(Phone)
-    expect(json.posts[0]).not.toBeInstanceOf(Post)
-    expect(json.posts[1]).not.toBeInstanceOf(Post)
-    expect(json).toEqual(expected)
-  })
-
-  it('can serialize the array field', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          array: this.attr([])
-        }
-      }
-    }
-
-    const user = new User({ $id: 1, id: 1, array: [1, 2] })
-
-    const json = user.$toJson()
-
-    expect(json).not.toBeInstanceOf(User)
-    expect(json).toEqual({ id: 1, array: [1, 2] })
-  })
-
-  it('can serialize own fields into json via `toJSON` method', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          name: this.attr('')
-        }
-      }
-    }
-
-    const user = new User({ $id: 1, id: 1, name: 'John Doe' })
-
-    const json = user.toJSON()
-
-    expect(json).not.toBeInstanceOf(User)
-    expect(json).toEqual({ id: 1, name: 'John Doe' })
   })
 })

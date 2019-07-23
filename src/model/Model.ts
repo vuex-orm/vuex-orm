@@ -438,6 +438,26 @@ export default class Model {
   }
 
   /**
+   * Get the model object that matches the given record type. The method is for
+   * getting the correct model object when the model has any inheritance
+   * children model.
+   *
+   * For example, if a User Model have `static types()` declared, and if you
+   * pass record with `{ type: 'admin' }`, then the method will likely to
+   * return SuperUser class.
+   */
+  static getModelFromRecord (record: Record | Model): typeof Model | null {
+    // If the given record is already a model instance, return the
+    // model object.
+    if (record instanceof Model) {
+      return record.$self()
+    }
+
+    // Else, get the corresponding model for the type value if there's any.
+    return this.getTypeModel(record[this.typeKey])
+  }
+
+  /**
    * Get a model from the container.
    */
   static relation (model: typeof Model | string): typeof Model {
@@ -519,6 +539,14 @@ export default class Model {
    */
   static hasTypes (): boolean {
     return Object.keys(this.types()).length > 0
+  }
+
+  /**
+   * Get the model corresponding to the given type name. If it can't be found,
+   * it'll return `null`.
+   */
+  static getTypeModel (name: string): typeof Model | null {
+    return this.types()[name] || null
   }
 
   /**
@@ -754,24 +782,5 @@ export default class Model {
    */
   toJSON (): Record {
     return this.$toJson()
-  }
-
-  static getModelFromRecord (record: Record): typeof Model | null {
-    if (!record) {
-      return null
-    }
-
-    if (record[this.typeKey] && this.hasTypes()) {
-      const typeValue = record[this.typeKey]
-      const newModel = this.types()[typeValue]
-      return newModel || null
-    }
-
-    // Checking if record is already typed
-    if (record instanceof Model) {
-      return record.$self()
-    }
-
-    return null
   }
 }
