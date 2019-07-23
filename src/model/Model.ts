@@ -780,7 +780,25 @@ export default class Model {
    *
    * See https://github.com/vuex-orm/vuex-orm/issues/255 for more detail.
    */
-  toJSON (): Record {
-    return this.$toJson()
+  toJSON (): object {
+    return Object.keys(this).reduce<object>((json, key) => {
+      const value = this[key]
+
+      if (value instanceof Model) {
+        json[key] = value.toJSON()
+
+        return json
+      }
+
+      if (Array.isArray(value)) {
+        json[key] = value.map(v => v instanceof Model ? v.toJSON() : v)
+
+        return json
+      }
+
+      json[key] = value
+
+      return json
+    }, {})
   }
 }

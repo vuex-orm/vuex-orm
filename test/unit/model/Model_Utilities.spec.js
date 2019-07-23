@@ -121,6 +121,90 @@ describe('Unit – Model - Utilities', () => {
     const json = user.toJSON()
 
     expect(json).not.toBeInstanceOf(User)
-    expect(json).toEqual({ id: 1, name: 'John Doe' })
+    expect(json).toEqual({ $id: 1, id: 1, name: 'John Doe' })
+  })
+
+  it('can serialize nested fields into json via `toJSON` method', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          phone: this.hasOne(Phone, 'user_id'),
+          posts: this.hasMany(Post, 'user_id')
+        }
+      }
+    }
+
+    class Phone extends Model {
+      static entity = 'phones'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null)
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null)
+        }
+      }
+    }
+
+    const user = new User({
+      $id: 1,
+      id: 1,
+      phone: { $id: 2, id: 2, user_id: 1 },
+      posts: [
+        { $id: 3, id: 3, user_id: 1 },
+        { $id: 4, id: 4, user_id: 1 }
+      ]
+    })
+
+    const json = user.toJSON()
+
+    const expected = {
+      $id: 1,
+      id: 1,
+      phone: { $id: 2, id: 2, user_id: 1 },
+      posts: [
+        { $id: 3, id: 3, user_id: 1 },
+        { $id: 4, id: 4, user_id: 1 }
+      ]
+    }
+
+    expect(json).not.toBeInstanceOf(User)
+    expect(json.phone).not.toBeInstanceOf(Phone)
+    expect(json.posts[0]).not.toBeInstanceOf(Post)
+    expect(json.posts[1]).not.toBeInstanceOf(Post)
+    expect(json).toEqual(expected)
+  })
+
+  it('can serialize the array field via `toJSON` method', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          array: this.attr([])
+        }
+      }
+    }
+
+    const user = new User({ $id: 1, id: 1, array: [1, 2] })
+
+    const json = user.toJSON()
+
+    expect(json).not.toBeInstanceOf(User)
+    expect(json).toEqual({ $id: 1, id: 1, array: [1, 2] })
   })
 })
