@@ -61,7 +61,7 @@
     "cross-env": "^5.2.0",
     "eslint": "^6.0.1",
     "eslint-config-standard": "^13.0.1",
-    "eslint-plugin-import": "^2.18.1",
+    "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^9.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
@@ -84,7 +84,7 @@
     "vue": "^2.5.22",
     "vuepress": "^1.0.2",
     "vuepress-theme-vue": "^1.1.0",
-    "webpack": "^4.36.1"
+    "webpack": "^4.37.0"
   },
   "nyc": {
     "include": [
