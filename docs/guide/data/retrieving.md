@@ -329,7 +329,7 @@ const user = User.query()
 You can load all relations using the `withAll` method.
 
 ```js
-const user = User.query().withAll().firs()
+const user = User.query().withAll().first()
 
 /*
   {
