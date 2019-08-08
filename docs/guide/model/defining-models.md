@@ -153,7 +153,7 @@ Remember that the value of this field gets incremented when you **insert a new r
 
 ### Relationships
 
-You can define a relationship between different models by relational attributes such as `this.hasMany()` or `this.belongsTo()`. To learn more, please take a look at [Defining Relationships](defining-relationships.md).
+You can define a relationship between different models by relational attributes such as `this.hasMany()` or `this.belongsTo()`. To learn more, please take a look at [Defining Relationships](relationships.md).
 
 ## Primary Key
 
