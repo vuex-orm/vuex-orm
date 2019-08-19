@@ -2,7 +2,7 @@ import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Features – Relations – Has Many Through', () => {
-  it('can create data contains has many through relationship', () => {
+  it('can create data contains has many through relationship', async () => {
     class Country extends Model {
       static entity = 'countries'
 
@@ -38,13 +38,15 @@ describe('Features – Relations – Has Many Through', () => {
 
     const store = createStore([{ model: Country }, { model: User }, { model: Post }])
 
-    const data = {
-      id: 1,
-      posts: [
-        { id: 1 },
-        { id: 2 }
-      ]
-    }
+    await Country.insert({
+      data: {
+        id: 1,
+        posts: [
+          { id: 1 },
+          { id: 2 }
+        ]
+      }
+    })
 
     const expected = createState({
       countries: {
@@ -56,8 +58,6 @@ describe('Features – Relations – Has Many Through', () => {
       },
       users: {}
     })
-
-    store.dispatch('entities/countries/create', { data })
 
     expect(store.state.entities).toEqual(expected)
   })
@@ -96,9 +96,9 @@ describe('Features – Relations – Has Many Through', () => {
       }
     }
 
-    const store = createStore([{ model: Country }, { model: User }, { model: Post }])
+    createStore([{ model: Country }, { model: User }, { model: Post }])
 
-    await store.dispatch('entities/users/create', {
+    await User.insert({
       data: [
         { id: 1, country_id: 1 },
         { id: 2, country_id: 1 },
@@ -106,7 +106,7 @@ describe('Features – Relations – Has Many Through', () => {
       ]
     })
 
-    await store.dispatch('entities/posts/create', {
+    await Post.insert({
       data: [
         { id: 1, user_id: 1 },
         { id: 2, user_id: 2 },
@@ -115,14 +115,14 @@ describe('Features – Relations – Has Many Through', () => {
       ]
     })
 
-    await store.dispatch('entities/countries/create', {
+    await Country.insert({
       data: [
         { id: 1 },
         { id: 2 }
       ]
     })
 
-    const country = store.getters['entities/countries/query']().with('posts').find(1)
+    const country = Country.query().with('posts').find(1)
 
     expect(country).toBeInstanceOf(Country)
     expect(country.posts.length).toBe(3)
@@ -173,9 +173,9 @@ describe('Features – Relations – Has Many Through', () => {
       }
     }
 
-    const store = createStore([{ model: Country }, { model: User }, { model: Post }])
+    createStore([{ model: Country }, { model: User }, { model: Post }])
 
-    await store.dispatch('entities/users/create', {
+    await User.insert({
       data: [
         { id: 'string-id-1', country_id: 'string-id-1' },
         { id: 'string-id-2', country_id: 'string-id-1' },
@@ -183,7 +183,7 @@ describe('Features – Relations – Has Many Through', () => {
       ]
     })
 
-    await store.dispatch('entities/posts/create', {
+    await Post.insert({
       data: [
         { id: 'string-id-1', user_id: 'string-id-1' },
         { id: 'string-id-2', user_id: 'string-id-2' },
@@ -192,14 +192,14 @@ describe('Features – Relations – Has Many Through', () => {
       ]
     })
 
-    await store.dispatch('entities/countries/create', {
+    await Country.insert({
       data: [
         { id: 'string-id-1' },
         { id: 'string-id-2' }
       ]
     })
 
-    const country = store.getters['entities/countries/query']().with('posts').find('string-id-1')
+    const country = Country.query().with('posts').find('string-id-1')
 
     expect(country).toBeInstanceOf(Country)
     expect(country.posts.length).toBe(3)
@@ -247,13 +247,13 @@ describe('Features – Relations – Has Many Through', () => {
       }
     }
 
-    const store = createStore([{ model: Country }, { model: User }, { model: Post }])
+    createStore([{ model: Country }, { model: User }, { model: Post }])
 
-    await store.dispatch('entities/countries/create', {
+    await Country.insert({
       data: [{ id: 1 }]
     })
 
-    const country = store.getters['entities/countries/query']().with('posts').find(1)
+    const country = Country.query().with('posts').find(1)
 
     expect(country.posts.length).toBe(0)
   })
@@ -298,9 +298,9 @@ describe('Features – Relations – Has Many Through', () => {
       }
     }
 
-    const store = createStore([{ model: Country }, { model: User }, { model: Post }])
+    createStore([{ model: Country }, { model: User }, { model: Post }])
 
-    await store.dispatch('entities/users/create', {
+    await User.insert({
       data: [
         { u_id: 1, country_id: 1 },
         { u_id: 2, country_id: 1 },
@@ -308,7 +308,7 @@ describe('Features – Relations – Has Many Through', () => {
       ]
     })
 
-    await store.dispatch('entities/posts/create', {
+    await Post.insert({
       data: [
         { p_id: 1, user_id: 1 },
         { p_id: 2, user_id: 2 },
@@ -316,14 +316,14 @@ describe('Features – Relations – Has Many Through', () => {
       ]
     })
 
-    await store.dispatch('entities/countries/create', {
+    await Country.insert({
       data: [
         { c_id: 1 },
         { c_id: 2 }
       ]
     })
 
-    const country = store.getters['entities/countries/query']().with('posts').find(1)
+    const country = Country.query().with('posts').find(1)
 
     expect(country).toBeInstanceOf(Country)
     expect(country.posts.length).toBe(2)
@@ -369,9 +369,9 @@ describe('Features – Relations – Has Many Through', () => {
       }
     }
 
-    const store = createStore([{ model: Country }, { model: User }, { model: Post }])
+    createStore([{ model: Country }, { model: User }, { model: Post }])
 
-    await store.dispatch('entities/users/create', {
+    await User.insert({
       data: [
         { id: 11, u_id: 1, country_id: 1 },
         { id: 12, u_id: 2, country_id: 1 },
@@ -379,7 +379,7 @@ describe('Features – Relations – Has Many Through', () => {
       ]
     })
 
-    await store.dispatch('entities/posts/create', {
+    await Post.insert({
       data: [
         { id: 11, p_id: 1, user_id: 1 },
         { id: 12, p_id: 2, user_id: 2 },
@@ -387,14 +387,14 @@ describe('Features – Relations – Has Many Through', () => {
       ]
     })
 
-    await store.dispatch('entities/countries/create', {
+    await Country.insert({
       data: [
         { id: 11, c_id: 1 },
         { id: 12, c_id: 2 }
       ]
     })
 
-    const country = store.getters['entities/countries/query']().with('posts').find(11)
+    const country = Country.query().with('posts').find(11)
 
     expect(country).toBeInstanceOf(Country)
     expect(country.posts.length).toBe(2)
