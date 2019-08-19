@@ -126,18 +126,22 @@ export default class HasManyThrough extends Relation {
   mapThroughRelations (throughs: Collection, relatedQuery: Query): Records {
     const relateds = this.mapManyRelations(relatedQuery.get(), this.secondKey)
 
-    return throughs.reduce((records, record) => {
+    return throughs.reduce<Record>((records, record) => {
       const id = record[this.firstKey]
 
       if (!records[id]) {
         records[id] = []
       }
 
-      const related = relateds[record[this.secondLocalKey]]
+      const related = relateds[record[this.secondLocalKey]] as Record | undefined
+
+      if (related === undefined) {
+        return records
+      }
 
       records[id] = records[id].concat(related)
 
       return records
-    }, {} as Records)
+    }, {})
   }
 }
