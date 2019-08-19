@@ -4,6 +4,7 @@ import Relation from '../attributes/relations/Relation'
 import Schemas from './Schemas'
 import IdAttribute from './IdAttribute'
 import ProcessStrategy from './ProcessStrategy'
+import { Database } from 'src'
 
 export default class Schema {
   /**
@@ -19,10 +20,10 @@ export default class Schema {
   /**
    * Create a new schema instance.
    */
-  constructor (model: typeof Model) {
+  constructor (model: typeof Model, database: Database) {
     this.model = model
 
-    const models = model.database().models()
+    const models = database.models()
 
     Object.keys(models).forEach((name) => { this.one(models[name]) })
   }
@@ -30,8 +31,8 @@ export default class Schema {
   /**
    * Create a schema for the given model.
    */
-  static create (model: typeof Model): Normalizr.Entity {
-    return (new this(model)).one()
+  static create (model: typeof Model, database: Database): Normalizr.Entity {
+    return (new this(model, database)).one()
   }
 
   /**
