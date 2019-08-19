@@ -36,7 +36,7 @@ export default class WhereFilter {
    * Get comparator for the where clause.
    */
   static getComparator (query: Query, record: Instance): (where: Options.Where) => boolean {
-    return (where: Options.Where) => {
+    return (where: Options.Where): boolean => {
       // Function with Record and Query as argument.
       if (typeof where.field === 'function') {
         const newQuery = new Query(query.rootState, query.entity)
@@ -46,10 +46,10 @@ export default class WhereFilter {
           return result
         }
 
-        // If closure returns undefined, we need to execute the local query
+        // If closure returns undefined, we need to execute the local query.
         const matchingRecords = newQuery.get()
 
-        // And check if current record is part of the resul
+        // And check if current record is part of the result.
         return !Utils.isEmpty(matchingRecords.filter((rec: Instance): boolean => {
           return rec['$id'] === record['$id']
         }))

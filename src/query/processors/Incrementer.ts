@@ -54,7 +54,9 @@ export default class Incrementer {
   private static max (records: Records, query: Query, field: string): number {
     const maxInState = query.max(field)
 
-    const maxInRecord = Math.max(...Utils.map(records, record => {
+    const maxInRecord = Math.max(...Object.keys(records).map((key) => {
+      const record = records[key]
+
       const id = record[field]
 
       return typeof id === 'number' ? id : 0
