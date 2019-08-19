@@ -138,6 +138,8 @@ const user = User.query().where((user) => {
 }).get()
 ```
 
+> **NOTE:** When returning the result of the condition, you must explicitly return a boolean, `true` or `false`. It will not work if you return a falsy value other than `false`, for example, `undefined` or `null`. See [GitHub Issue #402](https://github.com/vuex-orm/vuex-orm/issues/402) for more details.
+
 When passing a closure to the 1st argument, it will also receive query builder as the 2nd argument. By using the query builder, you may nest the where clause. This is useful when you want "group" the where clauses.
 
 ```js
