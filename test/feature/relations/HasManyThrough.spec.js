@@ -213,7 +213,7 @@ describe('Features – Relations – Has Many Through', () => {
     expect(country.posts[2].id).toBe('string-id-2')
   })
 
-  it('can resolve empty has many through relationship', async () => {
+  it('can resolve the relationship when the intermediate entity is empty', async () => {
     class Country extends Model {
       static entity = 'countries'
 
@@ -248,6 +248,58 @@ describe('Features – Relations – Has Many Through', () => {
     }
 
     createStore([{ model: Country }, { model: User }, { model: Post }])
+
+    await Country.insert({
+      data: [{ id: 1 }]
+    })
+
+    const country = Country.query().with('posts').find(1)
+
+    expect(country.posts.length).toBe(0)
+  })
+
+  it('can resolve the relationship when the target entity is empty', async () => {
+    class Country extends Model {
+      static entity = 'countries'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          posts: this.hasManyThrough(Post, User, 'country_id', 'user_id')
+        }
+      }
+    }
+
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          country_id: this.attr(null)
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null)
+        }
+      }
+    }
+
+    createStore([{ model: Country }, { model: User }, { model: Post }])
+
+    await User.insert({
+      data: {
+        id: 1,
+        country_id: 1
+      }
+    })
 
     await Country.insert({
       data: [{ id: 1 }]
