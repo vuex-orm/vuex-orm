@@ -45,6 +45,10 @@ export default class HasManyBy extends Relation {
    * Attach the relational key to the given data.
    */
   attach (key: any, record: Record, _data: NormalizedData): void {
+    if (key === undefined || key === null) {
+      return
+    }
+
     if (key.length === 0) {
       return
     }
