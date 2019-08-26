@@ -2,7 +2,7 @@ import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Features – Relations – Has Many By', () => {
-  it('can create data containing the has many by relation', () => {
+  it('can create data containing the has many by relation', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -26,7 +26,7 @@ describe('Features – Relations – Has Many By', () => {
 
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
+    await User.insert({
       data: {
         id: 1,
         posts: [
@@ -49,7 +49,7 @@ describe('Features – Relations – Has Many By', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
-  it('can create data containing empty has many by relation', () => {
+  it('can create data containing empty has many by relation', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -73,11 +73,8 @@ describe('Features – Relations – Has Many By', () => {
 
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
-      data: {
-        id: 1,
-        posts: []
-      }
+    await User.insert({
+      data: { id: 1, posts: [] }
     })
 
     const expected = createState({
@@ -90,7 +87,7 @@ describe('Features – Relations – Has Many By', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
-  it('can resolve the has many by relation', () => {
+  it('can resolve the has many by relation', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -113,9 +110,9 @@ describe('Features – Relations – Has Many By', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Post }])
+    createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
+    await User.insert({
       data: {
         id: 1,
         posts: [
@@ -124,6 +121,8 @@ describe('Features – Relations – Has Many By', () => {
         ]
       }
     })
+
+    const user = User.query().with('posts').find(1)
 
     const expected = {
       $id: 1,
@@ -134,8 +133,6 @@ describe('Features – Relations – Has Many By', () => {
         { $id: 2, id: 2 }
       ]
     }
-
-    const user = store.getters['entities/users/query']().with('posts').find(1)
 
     expect(user).toEqual(expected)
   })
