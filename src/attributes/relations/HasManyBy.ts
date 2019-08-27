@@ -53,10 +53,6 @@ export default class HasManyBy extends Relation {
       return
     }
 
-    if (record[this.foreignKey] !== undefined) {
-      return
-    }
-
     record[this.foreignKey] = key
   }
 
