@@ -61,7 +61,7 @@ User.commit((state) => {
 
 The `static commit` method receives `state` object as same as usual Vuex Mutation, and you may mutate any field using the state.
 
-Note that the callback function passed to the `commit` method is called within the Vuex Mutation handler. Which means, the callback should always follow the rule for the mutations that it must be syncronaus.
+Note that the callback function passed to the `commit` method is called within the Vuex Mutation handler. Which means, the callback should always follow the rule for the mutations that it must be synchronous.
 
 ## Defining Modules
 
