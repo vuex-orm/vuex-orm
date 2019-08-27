@@ -47,21 +47,6 @@ export default class HasOne extends Relation {
    * `user_id` field of Phone record.
    */
   attach (key: any, record: Record, data: NormalizedData): void {
-    // Get related record.
-    const related = data[this.related.entity]
-
-    // If there's no related record, there's nothing we can do so return here.
-    if (!related || !related[key]) {
-      return
-    }
-
-    // If there is a related record, check if the related record already has
-    // proper foreign key value. If it has, that means the user has provided
-    // the foreign key themselves so leave it alone and do nothing.
-    if (related[key][this.foreignKey] !== undefined) {
-      return
-    }
-
     // Check if the record has local key set. If not, set the local key to be
     // the id value. This happens if the user defines the custom local key
     // and didn't include it in the data being normalized.
@@ -71,7 +56,7 @@ export default class HasOne extends Relation {
 
     // Finally, set the foreign key of the related record to be the local
     // key of this record.
-    related[key][this.foreignKey] = record[this.localKey]
+    data[this.related.entity][key][this.foreignKey] = record[this.localKey]
   }
 
   /**

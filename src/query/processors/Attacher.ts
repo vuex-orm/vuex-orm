@@ -16,7 +16,7 @@ export default class Attacher {
           const field = fields[key]
 
           if (field instanceof Relation) {
-            field.attach(value, record, data)
+            value !== null && field.attach(value, record, data)
           }
         })
       })

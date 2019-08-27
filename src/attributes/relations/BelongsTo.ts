@@ -42,11 +42,11 @@ export default class BelongsTo extends Relation {
   }
 
   /**
-   * Attach the relational key to the given data. For example,
-   * when Post belongs to User, it will attach value to the
-   * `user_id` field of Post record.
+   * Attach the relational key to the given data. For example, when Post
+   * belongs to User, it will attach value to the `user_id` field of
+   * Post record.
    */
-  attach (key: any, record: Record, _data: NormalizedData): void {
+  attach (key: any, record: Record, data: NormalizedData): void {
     // See if the record has the foreign key, if yes, it means the user has
     // provided the key explicitly so do nothing and return.
     if (record[this.foreignKey] !== undefined) {
@@ -54,7 +54,7 @@ export default class BelongsTo extends Relation {
     }
 
     // If there is no foreign key, let's set it here.
-    record[this.foreignKey] = key
+    record[this.foreignKey] = data[this.parent.entity][key][this.ownerKey]
   }
 
   /**

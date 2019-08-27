@@ -943,7 +943,7 @@ export default class Query<T extends Model = Model> {
   private updateIndexes (instances: Data.Instances): Data.Instances {
     return Object.keys(instances).reduce<Data.Instances>((instances, key) => {
       const instance = instances[key]
-      const id = String(this.model.id(instance))
+      const id = String(this.model.getIndexIdFromRecord(instance))
 
       if (key !== id) {
         instance.$id = id

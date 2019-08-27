@@ -16,7 +16,6 @@ import Fields from './contracts/Fields'
 import FieldCache from './contracts/FieldCache'
 import ModelState from './contracts/State'
 import Serializer from './Serializer'
-import NoKey from '../schema/NoKey'
 import InheritanceTypes from './contracts/InheritanceTypes'
 
 type InstanceOf<T> = T extends new (...args: any[]) => infer R ? R : any
@@ -28,15 +27,7 @@ export default class Model {
   static entity: string
 
   /**
-   * The reference to the base entity name if the class extends a base entity
-   * TODO: find a proper way to compute this, right now, the only way found was
-   * to do declare
-   * static baseEntity (): typeof Model {
-   *  let $this = new this()
-   *  return this.$root()
-   * }
-   * but this might cause side effects as we instanciate a new this, which will trigger
-   * closure on default values (like increment thus jumping one int)
+   * The reference to the base entity name if the class extends a base entity.
    */
   static baseEntity: string
 
@@ -77,23 +68,6 @@ export default class Model {
    */
   static fields (): Fields {
     return {}
-  }
-
-  /**
-   * Get the model schema definition by adding additional default fields.
-   */
-  static getFields (): Fields {
-    if (!this.cachedFields) {
-      this.cachedFields = {}
-    }
-
-    if (this.cachedFields[this.entity]) {
-      return this.cachedFields[this.entity]
-    }
-
-    this.cachedFields[this.entity] = this.fields()
-
-    return this.cachedFields[this.entity]
   }
 
   /**
@@ -335,6 +309,23 @@ export default class Model {
   }
 
   /**
+   * Get the Model schema definition from the cache.
+   */
+  static getFields (): Fields {
+    if (!this.cachedFields) {
+      this.cachedFields = {}
+    }
+
+    if (this.cachedFields[this.entity]) {
+      return this.cachedFields[this.entity]
+    }
+
+    this.cachedFields[this.entity] = this.fields()
+
+    return this.cachedFields[this.entity]
+  }
+
+  /**
    * Get all records.
    */
   static all<T extends typeof Model> (this: T): Collection<InstanceOf<T>> {
@@ -414,16 +405,53 @@ export default class Model {
   }
 
   /**
-   * Get the value of the primary key.
+   * Get the index ID value from the given record. An index ID is a value that
+   * used as a key for records within the Vuex Store.
+   *
+   * Most of the time, it's same as the value for the Model's primary key. If
+   * the Model has a composite primary key, each value corresponding to those
+   * primary key will be joined together with `_` and become a single string
+   * value such as `1_2`.
+   *
+   * If the primary key is not present at the given record, it returns `null`.
+   * For the composite primary key, every key must exist at a given record,
+   * or it will return `null`.
    */
-  static id (record: any): any {
+  static getIndexIdFromRecord (record: Record | Model): string | number | null {
     const key = this.primaryKey
 
     if (typeof key === 'string') {
-      return record[key]
+      return this.getIndexIdFromValue(record[key])
     }
 
-    return key.map(k => (record[k] || NoKey.increment())).join('_')
+    const ids: (string | number)[] = []
+
+    const isCompositeKeyValid = key.every((k) => {
+      const id = this.getIndexIdFromValue(record[k])
+
+      id && ids.push(id)
+
+      return id
+    })
+
+    return isCompositeKeyValid ? ids.join('_') : null
+  }
+
+  /**
+   * Get correct index ID from the given value. This method will cast the
+   * number to the string, and returns `null` for anything which is not
+   * a string or a number.
+   */
+  static getIndexIdFromValue (value: any): string | number | null {
+    if (typeof value === 'string' && value !== '') {
+      return value
+    }
+
+    if (typeof value === 'number') {
+      return value
+    }
+
+    return null
   }
 
   /**
@@ -688,7 +716,7 @@ export default class Model {
       return this.$dispatch('update', payload)
     }
 
-    if (this.$self().id(payload) === undefined) {
+    if (this.$self().getIndexIdFromRecord(payload) === null) {
       return this.$dispatch('update', { where: this.$id, data: payload })
     }
 

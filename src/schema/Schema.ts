@@ -76,9 +76,9 @@ export default class Schema {
    * Create a dfinition for the given model.
    */
   definition (model: typeof Model): NormalizrSchema {
-    const fields = model.fields()
+    const fields = model.getFields()
 
-    return Object.keys(fields).reduce((definition, key) => {
+    return Object.keys(fields).reduce<NormalizrSchema>((definition, key) => {
       const field = fields[key]
 
       if (field instanceof Relation) {
@@ -86,6 +86,6 @@ export default class Schema {
       }
 
       return definition
-    }, {} as NormalizrSchema)
+    }, {})
   }
 }

@@ -8,9 +8,10 @@ export default class IdAttribute {
    * Create the id attribute.
    */
   static create (model: typeof Model): Attribute {
-    return (value: any, _parent: any, _key: string) => {
-      const id = model.id(value)
-      return id === undefined || id === null || id === '' ? NoKey.get() : id
+    return (value: any, _parent: any, _key: string): string | number => {
+      const id = model.getIndexIdFromRecord(value)
+
+      return id === null ? NoKey.get() : id
     }
   }
 }

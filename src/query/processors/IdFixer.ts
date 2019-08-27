@@ -22,10 +22,10 @@ export default class IdFixer {
   static processRecords (records: Records, query: Query): Records {
     return Object.keys(records).reduce((newRecords, id) => {
       const record = records[id]
-      const newId = query.model.id(record)
+      const newId = query.model.getIndexIdFromRecord(record)
       const newStringId = String(newId)
 
-      if (newId == null || id === newStringId) {
+      if (newId === null || id === newStringId) {
         newRecords[id] = record
 
         return newRecords

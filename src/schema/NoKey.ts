@@ -3,18 +3,18 @@ export default class NoKey {
   /**
    * Count to create a unique id for the record that missing its primary key.
    */
-  static count: number = 0
+  private static count: number = 0
 
   /**
    * Prefix string to be used for undefined primary key value.
    */
-  static prefix: string = '_no_key_'
+  private static prefix: string = '_no_key_'
 
   /**
    * The current unique id value. This is the combination of
    * the `prefix` and the `count`.
    */
-  static value: string = ''
+  private static value: string = ''
 
   /**
    * Set new unique id value.
@@ -31,7 +31,7 @@ export default class NoKey {
   }
 
   /**
-   * Increment the count, new unique id value.
+   * Increment the count, then set the new unique id value.
    */
   static increment (): string {
     this.count++
