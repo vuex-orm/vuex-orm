@@ -55,3 +55,10 @@ You can delete all data in once by `deleteAll` action.
 // Delete all users.
 User.deleteAll()
 ```
+
+Even more, you may delete entire data by Vuex Action `dispatch('entities/deleteAll')`.
+
+```js
+// Delete entire data.
+store.dispatch('entities/deleteAll')
+```
