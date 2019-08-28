@@ -15,8 +15,8 @@ import * as Payloads from '../modules/payloads/Actions'
 import Fields from './contracts/Fields'
 import FieldCache from './contracts/FieldCache'
 import ModelState from './contracts/State'
-import Serializer from './Serializer'
 import InheritanceTypes from './contracts/InheritanceTypes'
+import Serializer from './Serializer'
 
 type InstanceOf<T> = T extends new (...args: any[]) => infer R ? R : any
 
@@ -52,7 +52,7 @@ export default class Model {
   static cachedFields: FieldCache
 
   /**
-   * The ID value of the store index.
+   * The index ID for the model.
    */
   $id: string | null = null
 
@@ -71,8 +71,7 @@ export default class Model {
   }
 
   /**
-   * Create an attr attribute. The given value will be used as a default
-   * value for the field.
+   * Create an attr attribute.
    */
   static attr (value: any, mutator?: Mutator<any>): Attributes.Attr {
     return new Attributes.Attr(this, value, mutator)
@@ -100,8 +99,7 @@ export default class Model {
   }
 
   /**
-   * Create an increment attribute. The field with this attribute will
-   * automatically increment its value when creating a new record.
+   * Create an increment attribute.
    */
   static increment (): Attributes.Increment {
     return new Attributes.Increment(this)
@@ -158,7 +156,7 @@ export default class Model {
   }
 
   /**
-   * The belongs to many relationship.
+   * Create a belongs to many relationship.
    */
   static belongsToMany (
     related: typeof Model | string,
