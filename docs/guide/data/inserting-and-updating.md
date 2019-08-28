@@ -209,6 +209,8 @@ User.create({
 }
 ```
 
+Note that records should always be created with the primary key value provided. Leaving the primary key empty (`''`, `undefined` or `null`) will result in index keys `_no_key_X` and a high probability of inconsistent behavior. This also means that a primary key of type `increment` is recommended when using the `new` method.
+
 ### Inserting Relationships
 
 If you pass data with relationships to the `insert` or `create` method, those relationships will be normalized and inserted to the store.
