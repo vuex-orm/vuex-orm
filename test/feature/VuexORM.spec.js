@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import VuexORM from 'app'
+import VuexORM from 'app/index'
 
 describe('Feature – Vuex ORM', () => {
   Vue.use(Vuex)

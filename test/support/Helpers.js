@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import VuexORM from 'app'
+import VuexORM from 'app/index'
 import Utils from 'app/support/Utils'
 import Database from 'app/database/Database'
 import NoKey from 'app/schema/NoKey'

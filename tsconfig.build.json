@@ -3,7 +3,6 @@
     "target": "es5",
     "module": "esnext",
     "strict": true,
-    "allowJs": true,
     "importHelpers": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -29,14 +28,12 @@
 
     "paths": {
       "*": ["*"],
-      "app/*": ["src/*"],
-      "test/*": ["test/*"]
+      "app/*": ["src/*"]
     }
   },
 
   "include": [
-    "src",
-    "test"
+    "src"
   ],
 
   "exclude": [

@@ -1163,9 +1163,8 @@ export default class Query<T extends Model = Model> {
       // we can set it's typeKey attribute as a "bonus"
       if (!this.appliedOnBase) {
         const typeValue = model.getTypeKeyValueFromModel()
-        if (typeValue !== null) {
-          record[model.typeKey] = typeValue
-        }
+
+        record[model.typeKey] = typeValue
       }
     }
 

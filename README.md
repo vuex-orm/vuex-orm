@@ -278,7 +278,7 @@ Lint files using a rule of Standard JS.
 $ npm run test
 ```
 
-Run the test using [Mocha Webpack](https://github.com/zinserjan/mocha-webpack).
+Run the test using [Jest](https://jestjs.io/).
 
 ```bash
 $ npm run test:watch

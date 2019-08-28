@@ -55,5 +55,5 @@ describe('Performance – Retrieve – Belongs To', () => {
     expect(end - start).toBeLessThan(500)
 
     console.info('\x1b[2m%s\x1b[0m', `    -- The test took ${end - start}ms`)
-  }).timeout(10000)
+  })
 })

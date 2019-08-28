@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import VuexORM from 'app'
+import VuexORM from 'app/index'
 import Model from 'app/model/Model'
 import Query from 'app/query/Query'
 
