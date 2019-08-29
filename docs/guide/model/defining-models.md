@@ -193,12 +193,18 @@ class UserVote extends Model {
 
 ### Primary Key and Index Key
 
-Since records are stored using the value of the primary key for index key in the `data` object, it is recommended that records always have a primary key. If no primary key is provided, records are stored under index key `_no_key_X` (where `X` is an auto increment integer). But **this can lead to inconsistent behavior** as the primary key and the index key are not the same.
-Given the models `User` and `UserVote` defined above creating records would result in the following data structure:
+Since records are stored using the value of the primary key for the index key in the `data` object, it is recommended that records always have a primary key. If no primary key is provided, records are stored under index key `_no_key_X` (where `X` is an auto increment integer). But **this can lead to inconsistent behavior** as the primary key and the index key are not the same.
+
+Given the models `User` and `UserVote` defined above, creating records would result in the following data structure:
 
 ```js
-User.create({ data: [ { my_id: 1, name: 'John Doe' }, { name: 'Jane Doe' } ] })
-UserVote.create({ data: [ { user_id: 4, vote_id: 2 }, { user_id: 3 }, { vote_id: 3 }, {} ] })
+User.insert({
+  data: [{ my_id: 1, name: 'John Doe' }, { name: 'Jane Doe' }]
+})
+
+UserVote.insert({
+  data: [{ user_id: 4, vote_id: 2 }, { user_id: 3 }, { vote_id: 3 }, {}]
+})
 
 /*
 {
