@@ -4,6 +4,33 @@ import RootState from './contracts/RootState'
 import MutationsContract from './contracts/RootMutations'
 import * as Payloads from './payloads/RootMutations'
 
+/**
+ * Delete records from the store. The actual name for this mutation is
+ * `delete`, but named `destroy` here because `delete` can't be declared at
+ * this scope level.
+ */
+function destroy (state: RootState, payload: Payloads.Delete): void {
+  const entity = payload.entity
+  const where = payload.where
+
+  const result = payload.result
+
+  result.data = (new Query(state, entity)).delete(where as any)
+}
+
+/**
+ * Delete all data from the store.
+ */
+function deleteAll (state: RootState, payload?: Payloads.DeleteAll): void {
+  if (payload && payload.entity) {
+    (new Query(state, payload.entity)).deleteAll()
+
+    return
+  }
+
+  Query.deleteAll(state)
+}
+
 const RootMutations: MutationsContract = {
   /**
    * Execute generic mutation. This method is used by `Model.commit` method so
@@ -83,30 +110,8 @@ const RootMutations: MutationsContract = {
     result.data = (new Query(state, entity)).insertOrUpdate(data, options)
   },
 
-  /**
-   * Delete data from the store.
-   */
-  delete (state: RootState, payload: Payloads.Delete): void {
-    const entity = payload.entity
-    const where = payload.where
-
-    const result = payload.result
-
-    result.data = (new Query(state, entity)).delete(where)
-  },
-
-  /**
-   * Delete all data from the store.
-   */
-  deleteAll (state: RootState, payload?: Payloads.DeleteAll): void {
-    if (payload && payload.entity) {
-      (new Query(state, payload.entity)).deleteAll()
-
-      return
-    }
-
-    Query.deleteAll(state)
-  }
+  delete: destroy,
+  deleteAll
 }
 
 export default RootMutations

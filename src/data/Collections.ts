@@ -1,8 +1,8 @@
 import Collection from './Collection'
-import Model from '../model/Model'
+import Model from './Model'
 
-export interface Collections<T extends Model = Model> {
-  [entity: string]: Collection<T>
+export interface Collections<M extends Model = Model> {
+  [entity: string]: Collection<M>
 }
 
 export default Collections

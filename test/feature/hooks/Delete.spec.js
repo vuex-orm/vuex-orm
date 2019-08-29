@@ -86,7 +86,7 @@ describe('Hooks – Delete', () => {
         }
       }
 
-      static beforeDelete () {
+      static afterDelete () {
         hit = true
       }
     }

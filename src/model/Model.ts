@@ -3,6 +3,7 @@ import Utils from '../support/Utils'
 import Container from '../container/Container'
 import Database from '../database/Database'
 import Record from '../data/Record'
+import InstanceOf from '../data/InstanceOf'
 import Item from '../data/Item'
 import Collection from '../data/Collection'
 import Collections from '../data/Collections'
@@ -10,6 +11,7 @@ import State from '../modules/contracts/State'
 import * as Attributes from '../attributes'
 import Mutator from '../attributes/contracts/Mutator'
 import Mutators from '../attributes/contracts/Mutators'
+import Predicate from '../query/contracts/Predicate'
 import Query from '../query/Query'
 import * as Payloads from '../modules/payloads/Actions'
 import Fields from './contracts/Fields'
@@ -17,8 +19,6 @@ import FieldCache from './contracts/FieldCache'
 import ModelState from './contracts/State'
 import InheritanceTypes from './contracts/InheritanceTypes'
 import Serializer from './Serializer'
-
-type InstanceOf<T> = T extends new (...args: any[]) => infer R ? R : any
 
 export default class Model {
   /**
@@ -391,14 +391,16 @@ export default class Model {
   /**
    * Delete records that matches the given condition.
    */
-  static delete<T extends typeof Model> (this: T, payload: Payloads.Delete): Promise<Item<InstanceOf<T>> | Collection<InstanceOf<T>>> {
+  static delete<M extends typeof Model> (this: M, id: string | number): Promise<Item<InstanceOf<M>>>
+  static delete<M extends typeof Model> (this: M, condition: Predicate): Promise<Collection<InstanceOf<M>>>
+  static delete<M extends typeof Model> (this: M, payload: any): any {
     return this.dispatch('delete', payload)
   }
 
   /**
-   * Delete all records.
+   * Delete all records from the store.
    */
-  static deleteAll (): Promise<void> {
+  static deleteAll<M extends typeof Model> (this: M): Promise<Collection<InstanceOf<M>>> {
     return this.dispatch('deleteAll')
   }
 
@@ -625,6 +627,13 @@ export default class Model {
   }
 
   /**
+   * Get the primary key for the model.
+   */
+  $primaryKey (): string | string[] {
+    return this.$self().primaryKey
+  }
+
+  /**
    * The definition of the fields of the model and its relations.
    */
   $fields (): Fields {
@@ -752,22 +761,22 @@ export default class Model {
   /**
    * Delete records that matches the given condition.
    */
-  async $delete<T extends Model> (this: T, condition?: Payloads.Delete): Promise<Item<T> | Collection<T>> {
-    if (condition) {
-      return this.$dispatch('delete', condition)
+  async $delete (): Promise<Item<this>> {
+    const primaryKey = this.$primaryKey()
+
+    if (!Array.isArray(primaryKey)) {
+      return this.$dispatch('delete', this[primaryKey])
     }
 
-    if (this.$id === null) {
-      return null
-    }
-
-    return this.$dispatch('delete', this.$id)
+    return this.$dispatch('delete', (model: this): boolean => {
+      return primaryKey.every(id => model[id] === this[id])
+    })
   }
 
   /**
    * Delete all records.
    */
-  async $deleteAll (): Promise<void> {
+  async $deleteAll (): Promise<Collection<this>> {
     return this.$dispatch('deleteAll')
   }
 

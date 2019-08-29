@@ -1,4 +1,5 @@
 import { Record } from '../../data'
+import Predicate from '../../query/contracts/Predicate'
 import PersistOptions from './PersistOptions'
 
 export type Condition = (record: Record) => boolean
@@ -23,8 +24,6 @@ export interface InsertOrUpdate extends PersistOptions {
   data: Record | Record[]
 }
 
-export type Delete = string | number | Condition | DeleteObject
+export type DeleteById = string | number
 
-export interface DeleteObject {
-  where: string | number
-}
+export type DeleteByCondition = Predicate

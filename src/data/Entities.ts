@@ -1,7 +1,7 @@
-import Instances from './Instances'
+import Models from './Models'
 
 export interface Entities {
-  [entity: string]: Instances
+  [entity: string]: Models
 }
 
 export default Entities

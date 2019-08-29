@@ -6,6 +6,31 @@ import ActionsContract from './contracts/Actions'
 import ActionContext from './contracts/ActionContext'
 import * as Payloads from './payloads/Actions'
 
+/**
+ * Delete records from the store. The actual name for this action is `delete`,
+ * but named `destroy` here because `delete` can't be declared at this
+ * scope level.
+ */
+async function destroy (context: ActionContext, payload: Payloads.DeleteById): Promise<Item>
+async function destroy (context: ActionContext, payload: Payloads.DeleteByCondition): Promise<Collection>
+async function destroy (context: ActionContext, payload: any): Promise<any> {
+  const state = context.state
+  const entity = state.$name
+  const where = payload
+
+  return context.dispatch(`${state.$connection}/delete`, { entity, where }, { root: true })
+}
+
+/**
+ * Delete all data from the store.
+ */
+async function deleteAll (context: ActionContext): Promise<void> {
+  const state = context.state
+  const entity = state.$name
+
+  return context.dispatch(`${state.$connection}/deleteAll`, { entity }, { root: true })
+}
+
 const Actions: ActionsContract = {
   /**
    * Create new data with all fields filled by default values.
@@ -77,26 +102,8 @@ const Actions: ActionsContract = {
     return context.dispatch(`${state.$connection}/insertOrUpdate`, { entity, ...payload }, { root: true })
   },
 
-  /**
-   * Delete data from the store.
-   */
-  delete (context: ActionContext, payload: Payloads.Delete): Promise<Item | Collection> {
-    const state = context.state
-    const entity = state.$name
-    const where = typeof payload === 'object' ? payload.where : payload
-
-    return context.dispatch(`${state.$connection}/delete`, { entity, where }, { root: true })
-  },
-
-  /**
-   * Delete all data from the store.
-   */
-  deleteAll (context: ActionContext): Promise<void> {
-    const state = context.state
-    const entity = state.$name
-
-    return context.dispatch(`${state.$connection}/deleteAll`, { entity }, { root: true })
-  }
+  delete: destroy,
+  deleteAll
 }
 
 export default Actions

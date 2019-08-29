@@ -7,6 +7,34 @@ import ActionContext from './contracts/RootActionContext'
 import * as Payloads from './payloads/RootActions'
 import Result from './contracts/Result'
 
+/**
+ * Delete records from the store. The actual name for this action is `delete`,
+ * but named `destroy` here because `delete` can't be declared at this
+ * scope level.
+ */
+async function destroy (context: ActionContext, payload: Payloads.DeleteById): Promise<Item>
+async function destroy (context: ActionContext, payload: Payloads.DeleteByCondition): Promise<Collection>
+async function destroy (context: ActionContext, payload: any): Promise<any> {
+  const result: Result = { data: {} }
+
+  context.commit('delete', { ...payload, result })
+
+  return result.data
+}
+
+/**
+ * Delete all data from the store.
+ */
+async function deleteAll (context: ActionContext, payload?: Payloads.DeleteAll): Promise<void> {
+  if (payload && payload.entity) {
+    context.commit('deleteAll', { entity: payload.entity })
+
+    return
+  }
+
+  context.commit('deleteAll')
+}
+
 const RootActions: ActionsContract = {
   /**
    * Create new data with all fields filled by default values.
@@ -69,29 +97,8 @@ const RootActions: ActionsContract = {
     return result.data
   },
 
-  /**
-   * Delete data from the store.
-   */
-  async delete (context: ActionContext, payload: Payloads.Delete): Promise<Item | Collection> {
-    const result: Result = { data: {} }
-
-    context.commit('delete', { ...payload, result })
-
-    return result.data
-  },
-
-  /**
-   * Delete all data from the store.
-   */
-  async deleteAll (context: ActionContext, payload?: Payloads.DeleteAll): Promise<void> {
-    if (payload && payload.entity) {
-      context.commit('deleteAll', { entity: payload.entity })
-
-      return
-    }
-
-    context.commit('deleteAll')
-  }
+  delete: destroy,
+  deleteAll
 }
 
 export default RootActions

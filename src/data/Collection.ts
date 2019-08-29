@@ -1,6 +1,5 @@
-import Instance from '../data/Instance'
-import Model from '../model/Model'
+import Model from './Model'
 
-export type Collection<T extends Model = Model> = Array<Instance<T>>
+export type Collection<M extends Model = Model> = Model<M>[]
 
 export default Collection

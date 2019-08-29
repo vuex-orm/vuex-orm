@@ -1,4 +1,5 @@
 import Record from '../../data/Record'
+import Predicate from '../../query/contracts/Predicate'
 import State from '../contracts/State'
 import Result from '../contracts/Result'
 import PersistOptions from './PersistOptions'
@@ -42,7 +43,7 @@ export interface InsertOrUpdate extends PersistOptions {
 
 export interface Delete {
   entity: string
-  where: string | number | Condition
+  where: string | number | Predicate
   result: Result
 }
 

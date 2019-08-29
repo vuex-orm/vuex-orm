@@ -15,6 +15,7 @@ import Processor from './processors/Processor'
 import Filter from './filters/Filter'
 import Loader from './loaders/Loader'
 import Rollcaller from './rollcallers/Rollcaller'
+import Deleter from './deleters/Deleter'
 import Hook from './hooks/Hook'
 
 export type UpdateClosure = (record: Data.Record) => void
@@ -186,12 +187,12 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Delete all records from the state.
+   * Delete all records from the store.
    */
   static deleteAll (state: RootState): void {
     const models = this.getModels()
 
-    Utils.forOwn(models, (_model, name) => {
+    Object.keys(models).forEach((name) => {
       state[name] && (new this(state, name)).deleteAll()
     })
   }
@@ -743,6 +744,21 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
+   * Filter all data in the store by the given predicate.
+   */
+  filterData (predicate: Contracts.Predicate): void {
+    this.state.data = Object.keys(this.state.data).reduce<Data.Models>((models, id) => {
+      const model = this.state.data[id]
+
+      if (predicate(model)) {
+        models[id] = model
+      }
+
+      return models
+    }, {})
+  }
+
+  /**
    * Create new data with all fields filled by default values.
    */
   new (): Model {
@@ -1042,93 +1058,19 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Delete records from the state.
+   * Delete matching records with the given condition from the store.
    */
-  delete (condition: DeleteCondition): Data.Item<T> | Data.Collection<T> {
-    if (typeof condition === 'function') {
-      return this.deleteByCondition(condition)
-    }
-
-    return this.deleteById(condition)
+  delete (condition: string | number): Data.Item
+  delete (condition: Predicate): Data.Collection
+  delete (condition: any): any {
+    return (new Deleter(this)).delete(condition)
   }
 
   /**
-   * Delete a record by id.
+   * Delete all records from the store.
    */
-  deleteById (id: string | number): Data.Item<T> {
-    id = typeof id === 'number' ? id.toString() : id
-
-    const instance = this.state.data[id]
-
-    if (!instance) {
-      return null
-    }
-
-    const instances = { [id]: instance }
-
-    const collection = this.commitDelete(instances)
-
-    return collection[0] as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
-  }
-
-  /**
-   * Delete record by condition.
-   */
-  deleteByCondition (condition: Predicate): Data.Collection<T> {
-    const instances = Object.keys(this.state.data).reduce<Data.Instances>((records, id) => {
-      const instance = this.state.data[id]
-
-      if (!condition(instance)) {
-        return records
-      }
-
-      records[id] = instance
-
-      return records
-    }, {})
-
-    return this.commitDelete(instances) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
-  }
-
-  /**
-   * Delete all records from the state.
-   */
-  deleteAll (): void {
-    let instances = this.state.data
-
-    // If we deleting all derived entities, we need to filter out entities which
-    // don't match
-    if (!this.appliedOnBase) {
-      instances = Object.keys(this.state.data).reduce<Data.Instances>((acc, id) => {
-
-        if (this.state.data[id] instanceof this.model) {
-          acc[id] = this.state.data[id]
-        }
-
-        return acc
-      }, {})
-    }
-
-    this.commitDelete(instances)
-  }
-
-  /**
-   * Commit `delete` to the state.
-   */
-  commitDelete (instances: Data.Instances): Data.Collection {
-    this.commit('delete', instances, () => {
-      const ids = Object.keys(instances)
-
-      this.state.data = Object.keys(this.state.data).reduce<Data.Instances>((instances, id) => {
-        if (!ids.includes(id)) {
-          instances[id] = this.state.data[id]
-        }
-
-        return instances
-      }, {})
-    })
-
-    return this.map(instances)
+  deleteAll (): Data.Collection {
+    return (new Deleter(this)).deleteAll()
   }
 
   /**
@@ -1238,9 +1180,9 @@ export default class Query<T extends Model = Model> {
    * - only derived instances if applied to a derived entity
    */
   private emptyState (): void {
-
     if (this.appliedOnBase) {
       this.state.data = {}
+
       return
     }
 

@@ -1,6 +1,5 @@
-import Instance from '../data/Instance'
-import Model from '../model/Model'
+import Model from './Model'
 
-export type Item<T extends Model = Model> = Instance<T> | null
+export type Item<M extends Model = Model> = Model<M> | null
 
 export default Item

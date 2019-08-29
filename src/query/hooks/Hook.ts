@@ -1,7 +1,9 @@
 import Collection from '../../data/Collection'
+import Model from '../../data/Model'
 import Instances from '../../data/Instances'
-import Model from '../../model/Model'
 import Query from '../Query'
+import BeforeDeleteHook from '../contracts/BeforeDeleteHook'
+import AfterDeleteHook from '../contracts/AfterDeleteHook'
 import GlobalHook from './GlobalHook'
 import GlobalHooks from './GlobalHooks'
 
@@ -245,5 +247,39 @@ export default class Hook {
     }
 
     this.indexToBeDeleted.reverse().forEach(index => { hooks.splice(index, 1) })
+  }
+
+  /**
+   * Execute before delete hook to the given model.
+   */
+  executeBeforeDeleteHook (model: Model): false | void {
+    if (this.executeLocalBeforeDeleteHook(model) === false) {
+      return false
+    }
+  }
+
+  /**
+   * Execute local before delete hook to the given model.
+   */
+  private executeLocalBeforeDeleteHook (model: Model): false | void {
+    const hook = this.query.model['beforeDelete'] as BeforeDeleteHook | undefined
+
+    return hook && hook(model)
+  }
+
+  /**
+   * Execute after delete hook to the given model.
+   */
+  executeAfterDeleteHook (model: Model): void {
+    this.executeLocalAfterDeleteHook(model)
+  }
+
+  /**
+   * Execute local after delete hook to the given model.
+   */
+  private executeLocalAfterDeleteHook (model: Model): void {
+    const hook = this.query.model['afterDelete'] as AfterDeleteHook | undefined
+
+    return hook && hook(model)
   }
 }
