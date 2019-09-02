@@ -19,11 +19,7 @@ import Hook from './hooks/Hook'
 
 export type UpdateClosure = (record: Data.Record) => void
 
-export type Predicate = (item: Data.Record) => boolean
-
-export type UpdateCondition = number | string | Predicate | null
-
-export type Buildable = Data.Record | Data.Record[] | null
+export type UpdateCondition = number | string | Contracts.Predicate | null
 
 export type Constraint = (query: Query) => void | boolean
 
@@ -902,7 +898,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Update the state by condition.
    */
-  updateByCondition (data: Data.Record | UpdateClosure, condition: Predicate): Data.Collection<T> {
+  updateByCondition (data: Data.Record | UpdateClosure, condition: Contracts.Predicate): Data.Collection<T> {
     const instances = Object.keys(this.state.data).reduce<Data.Instances>((instances, id) => {
       const instance = this.state.data[id]
 
