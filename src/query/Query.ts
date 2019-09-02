@@ -743,7 +743,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Filter all data in the store by the given predicate.
    */
-  filterData (predicate: Contracts.Predicate): void {
+  private filterData (predicate: Contracts.Predicate): void {
     this.state.data = Object.keys(this.state.data).reduce<Data.Models>((models, id) => {
       const model = this.state.data[id]
 
