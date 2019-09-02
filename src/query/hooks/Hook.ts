@@ -1,6 +1,6 @@
 import Collection from '../../data/Collection'
-import Model from '../../data/Model'
 import Instances from '../../data/Instances'
+import Model from '../../model/Model'
 import Query from '../Query'
 import BeforeDeleteHook from '../contracts/BeforeDeleteHook'
 import AfterDeleteHook from '../contracts/AfterDeleteHook'
