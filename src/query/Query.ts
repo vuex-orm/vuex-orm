@@ -15,7 +15,6 @@ import Processor from './processors/Processor'
 import Filter from './filters/Filter'
 import Loader from './loaders/Loader'
 import Rollcaller from './rollcallers/Rollcaller'
-import Deleter from './deleters/Deleter'
 import Hook from './hooks/Hook'
 
 export type UpdateClosure = (record: Data.Record) => void
@@ -23,8 +22,6 @@ export type UpdateClosure = (record: Data.Record) => void
 export type Predicate = (item: Data.Record) => boolean
 
 export type UpdateCondition = number | string | Predicate | null
-
-export type DeleteCondition = number | string | Predicate
 
 export type Buildable = Data.Record | Data.Record[] | null
 
@@ -1061,16 +1058,68 @@ export default class Query<T extends Model = Model> {
    * Delete matching records with the given condition from the store.
    */
   delete (condition: string | number): Data.Item
-  delete (condition: Predicate): Data.Collection
+  delete (condition: Contracts.Predicate): Data.Collection
   delete (condition: any): any {
-    return (new Deleter(this)).delete(condition)
+    if (typeof condition === 'function') {
+      return this.deleteByCondition(condition)
+    }
+
+    return this.deleteById(condition)
   }
 
   /**
-   * Delete all records from the store.
+   * Delete all records from the store. Even when deleting all records, we'll
+   * iterate over all records to ensure that before and after hook will be
+   * called for each existing records.
    */
   deleteAll (): Data.Collection {
-    return (new Deleter(this)).deleteAll()
+    // If the target entity is the base entity and not inherited entity, we can
+    // just delete all records.
+    if (this.appliedOnBase) {
+      return this.deleteByCondition(() => true)
+    }
+
+    // Otherwise, we should filter out any derived entities from being deleted
+    // so we'll add such filter here.
+    return this.deleteByCondition(model => model instanceof this.model)
+  }
+
+  /**
+   * Delete a record from the store by given id.
+   */
+  private deleteById (id: string | number): Data.Item {
+    const item = this.whereId(id).first()
+
+    if (!item) {
+      return null
+    }
+
+    return this.deleteByCondition(model => model.$id === item.$id)[0]
+  }
+
+  /**
+   * Perform the actual delete query to the store.
+   */
+  private deleteByCondition (condition: Contracts.Predicate): Data.Collection {
+    const deleted: Data.Collection = []
+
+    this.filterData((model) => {
+      if (!condition(model)) {
+        return true
+      }
+
+      if (this.hook.executeBeforeDeleteHook(model) === false) {
+        return true
+      }
+
+      deleted.push(model)
+
+      this.hook.executeAfterDeleteHook(model)
+
+      return false
+    })
+
+    return deleted
   }
 
   /**
