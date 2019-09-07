@@ -54,7 +54,9 @@ export default class BelongsTo extends Relation {
     }
 
     // If there is no foreign key, let's set it here.
-    record[this.foreignKey] = data[this.parent.entity][key][this.ownerKey]
+    record[this.foreignKey] = data[this.parent.entity] && data[this.parent.entity][key]
+      ? data[this.parent.entity][key][this.ownerKey]
+      : key
   }
 
   /**
