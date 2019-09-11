@@ -1,4 +1,4 @@
-import { createStore } from 'test/support/Helpers'
+import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Feature – Basics – Delete', () => {
@@ -8,9 +8,12 @@ describe('Feature – Basics – Delete', () => {
     static fields () {
       return {
         id: this.attr(null),
-        name: this.attr('')
+        name: this.string('')
       }
     }
+
+    id!: any
+    name!: string
   }
 
   class Post extends Model {
@@ -18,9 +21,11 @@ describe('Feature – Basics – Delete', () => {
 
     static fields () {
       return {
-        id: this.attr(null)
+        id: this.number(null)
       }
     }
+
+    id!: any
   }
 
   function getStore () {
@@ -36,8 +41,14 @@ describe('Feature – Basics – Delete', () => {
 
     await User.delete(1)
 
-    expect(store.state.entities.users.data[1]).toBe(undefined)
-    expect(store.state.entities.users.data[2].id).toBe(2)
+    const expected = createState({
+      users: {
+        2: { $id: 2, id: 2, name: '' }
+      },
+      posts: {}
+    })
+
+    expect(store.state.entities).toEqual(expected)
   })
 
   it('can delete a record by specifying id as a string', async () => {
@@ -49,8 +60,14 @@ describe('Feature – Basics – Delete', () => {
 
     await User.delete('string_id_2')
 
-    expect(store.state.entities.users.data.string_id_1.id).toBe('string_id_1')
-    expect(store.state.entities.users.data.string_id_2).toBe(undefined)
+    const expected = createState({
+      users: {
+        string_id_1: { $id: 'string_id_1', id: 'string_id_1', name: '' }
+      },
+      posts: {}
+    })
+
+    expect(store.state.entities).toEqual(expected)
   })
 
   it('can delete records by specifying a closure', async () => {
@@ -66,9 +83,14 @@ describe('Feature – Basics – Delete', () => {
 
     await User.delete(user => user.name === 'Jane Doe')
 
-    expect(store.state.entities.users.data[1].id).toBe(1)
-    expect(store.state.entities.users.data[2]).toBe(undefined)
-    expect(store.state.entities.users.data[3]).toBe(undefined)
+    const expected = createState({
+      users: {
+        1: { $id: 1, id: 1, name: 'John Doe' }
+      },
+      posts: {}
+    })
+
+    expect(store.state.entities).toEqual(expected)
   })
 
   it('does nothing if the specified id does not exist', async () => {
@@ -80,8 +102,15 @@ describe('Feature – Basics – Delete', () => {
 
     await User.delete(3)
 
-    expect(store.state.entities.users.data[1].id).toBe(1)
-    expect(store.state.entities.users.data[2].id).toBe(2)
+    const expected = createState({
+      users: {
+        1: { $id: 1, id: 1, name: '' },
+        2: { $id: 2, id: 2, name: '' }
+      },
+      posts: {}
+    })
+
+    expect(store.state.entities).toEqual(expected)
   })
 
   it('returns deleted item', async () => {
@@ -91,11 +120,19 @@ describe('Feature – Basics – Delete', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    const user = await User.delete(1)
+    const user = await User.delete(1) as User
 
     expect(user).toBeInstanceOf(User)
     expect(user.id).toBe(1)
-    expect(store.state.entities.users.data[1]).toBe(undefined)
+
+    const expected = createState({
+      users: {
+        2: { $id: 2, id: 2, name: '' }
+      },
+      posts: {}
+    })
+
+    expect(store.state.entities).toEqual(expected)
   })
 
   it('returns all deleted records as a collection when specifying a closure', async () => {
@@ -116,9 +153,15 @@ describe('Feature – Basics – Delete', () => {
     expect(users[0].id).toBe(2)
     expect(users[1]).toBeInstanceOf(User)
     expect(users[1].id).toBe(3)
-    expect(store.state.entities.users.data[1].id).toBe(1)
-    expect(store.state.entities.users.data[2]).toBe(undefined)
-    expect(store.state.entities.users.data[3]).toBe(undefined)
+
+    const expected = createState({
+      users: {
+        1: { $id: 1, id: 1, name: 'John Doe' }
+      },
+      posts: {}
+    })
+
+    expect(store.state.entities).toEqual(expected)
   })
 
   it('deletes itself by instance method', async () => {
@@ -131,12 +174,18 @@ describe('Feature – Basics – Delete', () => {
       ]
     })
 
-    const user = User.find(2)
+    const user = User.find(2) as User
 
-    user.$delete()
+    await user.$delete()
 
-    expect(store.state.entities.users.data[1].id).toBe(1)
-    expect(store.state.entities.users.data[2]).toBe(undefined)
+    const expected = createState({
+      users: {
+        1: { $id: 1, id: 1, name: 'John Doe' }
+      },
+      posts: {}
+    })
+
+    expect(store.state.entities).toEqual(expected)
   })
 
   it('can delete all records in the entity', async () => {
@@ -148,8 +197,12 @@ describe('Feature – Basics – Delete', () => {
 
     await User.deleteAll()
 
-    expect(store.state.entities.users.data[1]).toBe(undefined)
-    expect(store.state.entities.users.data[2]).toBe(undefined)
+    const expected = createState({
+      users: {},
+      posts: {}
+    })
+
+    expect(store.state.entities).toEqual(expected)
   })
 
   it('can delete all records in the entity by the instance method', async () => {
@@ -161,8 +214,12 @@ describe('Feature – Basics – Delete', () => {
 
     await (new User()).$deleteAll()
 
-    expect(store.state.entities.users.data[1]).toBe(undefined)
-    expect(store.state.entities.users.data[2]).toBe(undefined)
+    const expected = createState({
+      users: {},
+      posts: {}
+    })
+
+    expect(store.state.entities).toEqual(expected)
   })
 
   it('can delete all records in the entire entities', async () => {
@@ -178,9 +235,11 @@ describe('Feature – Basics – Delete', () => {
 
     await store.dispatch('entities/deleteAll')
 
-    expect(store.state.entities.users.data[1]).toBe(undefined)
-    expect(store.state.entities.users.data[2]).toBe(undefined)
-    expect(store.state.entities.users.data[1]).toBe(undefined)
-    expect(store.state.entities.users.data[2]).toBe(undefined)
+    const expected = createState({
+      users: {},
+      posts: {}
+    })
+
+    expect(store.state.entities).toEqual(expected)
   })
 })

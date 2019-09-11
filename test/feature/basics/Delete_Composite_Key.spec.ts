@@ -1,4 +1,4 @@
-import { createStore } from 'test/support/Helpers'
+import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Feature – Basics – Delete Composite Key', () => {
@@ -25,11 +25,16 @@ describe('Feature – Basics – Delete Composite Key', () => {
       ]
     })
 
-    const user = User.query().where('first_id', 1).where('second_id', 2).first()
+    const user = User.query().where('first_id', 1).where('second_id', 2).first() as User
 
     await user.$delete()
 
-    expect(store.state.entities.users.data['1_2']).toBe(undefined)
-    expect(store.state.entities.users.data['3_4'].first_id).toBe(3)
+    const expected = createState({
+      users: {
+        '3_4': { $id: '3_4', first_id: 3, second_id: 4 }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
   })
 })
