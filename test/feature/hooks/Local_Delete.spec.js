@@ -1,7 +1,7 @@
 import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
-describe('Hooks – Delete', () => {
+describe('Hooks – Local Delete', () => {
   it('can dispatch the `beforeDelete` hook', async () => {
     let hit = false
 

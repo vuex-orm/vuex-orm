@@ -1,8 +1,8 @@
-import { createStore } from 'test/support/Helpers'
+import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
-describe('Hooks – Insert', () => {
-  it('can dispatch the `beforeCreate` hook that modifies the data being inserted', async () => {
+describe('Hooks – Local Create', () => {
+  it('can dispatch the `beforeCreate` hook that modifies the data being created', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -21,18 +21,20 @@ describe('Hooks – Insert', () => {
 
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/insert', {
+    await User.create({
       data: { id: 1, name: 'John Doe', age: 20 }
     })
 
-    const user = store.getters['entities/users/find'](1)
+    const expected = createState({
+      users: {
+        1: { $id: 1, id: 1, name: 'John Doe', age: 30 }
+      }
+    })
 
-    const expected = new User({ $id: 1, id: 1, name: 'John Doe', age: 30 })
-
-    expect(user).toEqual(expected)
+    expect(store.state.entities).toEqual(expected)
   })
 
-  it('it will insert the record as is if the `beforeCreate` hook returns nothing', async () => {
+  it('it will create the record as is if the `beforeCreate` hook returns nothing', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -51,7 +53,7 @@ describe('Hooks – Insert', () => {
 
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/insert', {
+    await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe', age: 20 }
     })
 
@@ -62,7 +64,7 @@ describe('Hooks – Insert', () => {
     expect(user).toEqual(expected)
   })
 
-  it('can cancel the insert by returing false from `beforeCreate` hook', async () => {
+  it('can cancel the create by returing false from `beforeCreate` hook', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -88,7 +90,7 @@ describe('Hooks – Insert', () => {
       { id: 2, name: 'Jane Doe', age: 24 }
     ]
 
-    await store.dispatch('entities/users/insert', { data })
+    await store.dispatch('entities/users/create', { data })
 
     const result = store.getters['entities/users/all']()
 
@@ -116,7 +118,7 @@ describe('Hooks – Insert', () => {
 
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/insert', {
+    await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe', age: 20 }
     })
   })
