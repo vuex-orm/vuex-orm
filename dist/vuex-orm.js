@@ -1075,9 +1075,12 @@
 	        if (!record[this.localKey]) {
 	            record[this.localKey] = record.$id;
 	        }
-	        // Finally, set the foreign key of the related record to be the local
+	        // Finally, set the foreign key of the related record if it exists to be the local
 	        // key of this record.
-	        data[this.related.entity][key][this.foreignKey] = record[this.localKey];
+	        var related = data[this.related.entity] && data[this.related.entity][key];
+	        if (related) {
+	            related[this.foreignKey] = record[this.localKey];
+	        }
 	    };
 	    /**
 	     * Make value to be set to model property. This method is used when
@@ -1159,7 +1162,9 @@
 	            return;
 	        }
 	        // If there is no foreign key, let's set it here.
-	        record[this.foreignKey] = data[this.parent.entity][key][this.ownerKey];
+	        record[this.foreignKey] = data[this.parent.entity] && data[this.parent.entity][key]
+	            ? data[this.parent.entity][key][this.ownerKey]
+	            : key;
 	    };
 	    /**
 	     * Convert given value to the appropriate value for the attribute.

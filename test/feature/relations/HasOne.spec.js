@@ -83,6 +83,26 @@ describe('Features – Relations – Has One', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
+  it('can create data when the has one relation is set to primitive value', () => {
+    const store = createStore([{ model: User }, { model: Phone }])
+
+    store.dispatch('entities/users/create', {
+      data: {
+        id: 1,
+        phone: 1
+      }
+    })
+
+    const expected = createState({
+      users: {
+        1: { $id: 1, id: 1, phone: null }
+      },
+      phones: {}
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
+
   it('it can create data containing mixed fields value', () => {
     const store = createStore([{ model: User }, { model: Phone }])
 
