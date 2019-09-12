@@ -6,6 +6,7 @@ import Query from '../../query/Query'
 import Constraint from '../../query/contracts/RelationshipConstraint'
 import DictionaryOne from '../contracts/DictionaryOne'
 import Relation from './Relation'
+import Utils from '../../support/Utils'
 
 export default class BelongsTo extends Relation {
   /**
@@ -16,7 +17,7 @@ export default class BelongsTo extends Relation {
   /**
    * The foregin key of the model.
    */
-  foreignKey: string
+  foreignKey: string[]
 
   /**
    * The associated key on the parent model.
@@ -26,11 +27,13 @@ export default class BelongsTo extends Relation {
   /**
    * Create a new belongs to instance.
    */
-  constructor (model: typeof Model, parent: typeof Model | string, foreignKey: string, ownerKey: string) {
+  constructor (model: typeof Model, parent: typeof Model | string, foreignKey: string | string[], ownerKey: string) {
     super(model) /* istanbul ignore next */
 
     this.parent = this.model.relation(parent)
-    this.foreignKey = foreignKey
+
+    this.foreignKey = Array.isArray(foreignKey) ? foreignKey :  [foreignKey]
+
     this.ownerKey = ownerKey
   }
 
@@ -49,14 +52,19 @@ export default class BelongsTo extends Relation {
   attach (key: any, record: Record, data: NormalizedData): void {
     // See if the record has the foreign key, if yes, it means the user has
     // provided the key explicitly so do nothing and return.
-    if (record[this.foreignKey] !== undefined) {
+
+    const fKey = Utils.concatValues(record, this.foreignKey)
+
+    if (this.foreignKey.some(f => !record[f])) {
       return
     }
 
     // If there is no foreign key, let's set it here.
-    record[this.foreignKey] = data[this.parent.entity] && data[this.parent.entity][key]
-      ? data[this.parent.entity][key][this.ownerKey]
-      : key
+    if (data[this.parent.entity] && data[this.parent.entity][key]) {
+      record[fKey] = data[this.parent.entity][key][this.ownerKey]
+    } else {
+      record[fKey] = key
+    }
   }
 
   /**
@@ -95,8 +103,9 @@ export default class BelongsTo extends Relation {
     const dictionary = this.buildDictionary(relations)
 
     collection.forEach((model) => {
-      const id = model[this.foreignKey]
-      const relation = id !== null ? dictionary[id] : null
+      const fKey = Utils.concatValues(model, this.foreignKey)
+
+      const relation = fKey !== null ? dictionary[fKey] : null
 
       model[name] = relation || null
     })

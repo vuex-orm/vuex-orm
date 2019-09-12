@@ -5,6 +5,7 @@ import Model from '../../model/Model'
 import Query from '../../query/Query'
 import Constraint from '../../query/contracts/RelationshipConstraint'
 import Attribute from '../Attribute'
+import Utils from '../../support/Utils'
 
 export default abstract class Relation extends Attribute {
   /**
@@ -37,13 +38,15 @@ export default abstract class Relation extends Attribute {
   /**
    * Get specified keys from the given collection.
    */
-  protected getKeys (collection: Collection, key: string): string[] {
+  protected getKeys (collection: Collection, key: string | string[]): string[] {
+    const keys = Array.isArray(key) ? key : [key]
+
     return collection.reduce<string[]>((models, model) => {
-      if (model[key] === null || model[key] === undefined) {
+      if (keys.some(k => !model[k])) {
         return models
       }
 
-      models.push(model[key] as string)
+      models.push(Utils.concatValues(model, keys) as string)
 
       return models
     }, [])

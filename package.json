@@ -99,6 +99,11 @@
       "!src/index.ts",
       "!**/node_modules/**"
     ],
-    "coverageReporters": ["json", "lcov", "text-summary", "clover"]
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text-summary",
+      "clover"
+    ]
   }
 }
