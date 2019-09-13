@@ -32,7 +32,7 @@ export default class BelongsTo extends Relation {
 
     this.parent = this.model.relation(parent)
 
-    this.foreignKey = Array.isArray(foreignKey) ? foreignKey :  [foreignKey]
+    this.foreignKey = Array.isArray(foreignKey) ? foreignKey : [foreignKey]
 
     this.ownerKey = ownerKey
   }
@@ -105,7 +105,7 @@ export default class BelongsTo extends Relation {
     collection.forEach((model) => {
       const fKey = Utils.concatValues(model, this.foreignKey)
 
-      const relation = fKey !== null ? dictionary[fKey] : null
+      const relation = dictionary[fKey]
 
       model[name] = relation || null
     })

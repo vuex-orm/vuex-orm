@@ -161,9 +161,9 @@ function compareAscending (value: any, other: any): number {
 }
 
 /**
-  * Takes values corresponding to keys in object and returns them concatenated with separator
+ * Takes values corresponding to keys in object and returns them concatenated with separator
  */
-function concatValues (object: Object, keys: string[], separator = "_"): string {
+function concatValues (object: Object, keys: string[], separator = '_'): string {
   return keys.map(k => object[k]).join(separator)
 }
 

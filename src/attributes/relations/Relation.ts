@@ -46,7 +46,7 @@ export default abstract class Relation extends Attribute {
         return models
       }
 
-      models.push(Utils.concatValues(model, keys) as string)
+      models.push(Utils.concatValues(model, keys))
 
       return models
     }, [])
