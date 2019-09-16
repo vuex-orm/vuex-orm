@@ -172,6 +172,17 @@ function concatValues (object: Object, keys: string[], separator = '_'): string 
   }
 }
 
+/**
+ * Returns value cast to Integer if value string contains only an integer, else returns value string as is
+ */
+function tryParseInt (value: string): string | number {
+  if (parseInt(value).toString() === value) {
+    return parseInt(value)
+  } else {
+    return value
+  }
+}
+
 export default {
   isEmpty,
   forOwn,
@@ -179,5 +190,6 @@ export default {
   mapValues,
   orderBy,
   pickBy,
-  concatValues
+  concatValues,
+  tryParseInt
 }

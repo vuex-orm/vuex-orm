@@ -58,7 +58,7 @@ export default class BelongsTo extends Relation {
         return
       }
 
-      const value = (typeof key === 'string') ? key.split('_')[i] : key
+      const value = (typeof key === 'string') ? Utils.tryParseInt(key.split('_')[i]) : key
 
       // If there is no foreign key, let's set it here.
       record[foreignKey] = data[this.parent.entity] && data[this.parent.entity][value]

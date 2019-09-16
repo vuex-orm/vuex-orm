@@ -294,4 +294,109 @@ describe('Features – Relations – Belongs To', () => {
 
     expect(post).toEqual(expected)
   })
+
+  it('can resolve belongs to relation with composite foreign key', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static primaryKey = ['workspace_id', 'id']
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          workspace_id: this.attr(null)
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static primaryKey = ['workspace_id', 'id']
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          workspace_id: this.attr(null),
+          user_id: this.attr(null),
+          user: this.belongsTo(User, ['workspace_id', 'user_id'])
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }, { model: Post }])
+
+    store.dispatch('entities/posts/create', {
+      data: {
+        id: 1,
+        workspace_id: 1,
+        user_id: 1,
+        user: { id: 1, workspace_id: 1 }
+      }
+    })
+
+    const expected = {
+      $id: '1_1',
+      id: 1,
+      workspace_id: 1,
+      user_id: 1,
+      user: {
+        $id: '1_1',
+        id: 1,
+        workspace_id: 1
+      }
+    }
+
+    const post = store.getters['entities/posts/query']().with('user').find('1_1')
+
+    expect(post).toEqual(expected)
+  })
+
+  it('can create data when the belongs to relation is set to related model composite key', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static primaryKey = ['workspace_id', 'id']
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          workspace_id: this.attr(null)
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static primaryKey = ['workspace_id', 'id']
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          workspace_id: this.attr(null),
+          user_id: this.attr(null),
+          user: this.belongsTo(User, ['workspace_id', 'user_id'])
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }, { model: Post }])
+
+    store.dispatch('entities/posts/create', {
+      data: {
+        id: 1,
+        user: '1_1'
+      }
+    })
+
+    const expected = createState({
+      users: {},
+      posts: {
+        '1_1': { $id: '1_1', id: 1, workspace_id: 1, user_id: 1, user: null }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
 })
