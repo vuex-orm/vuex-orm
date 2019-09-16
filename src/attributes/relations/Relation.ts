@@ -42,7 +42,7 @@ export default abstract class Relation extends Attribute {
     const keys = Array.isArray(key) ? key : [key]
 
     return collection.reduce<string[]>((models, model) => {
-      if (keys.some(k => !model[k])) {
+      if (keys.some(k => model[k] === null || model[k] === undefined)) {
         return models
       }
 

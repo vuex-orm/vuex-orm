@@ -53,18 +53,18 @@ export default class BelongsTo extends Relation {
     // See if the record has the foreign key, if yes, it means the user has
     // provided the key explicitly so do nothing and return.
 
-    const fKey = Utils.concatValues(record, this.foreignKey)
+    this.foreignKey.forEach((foreignKey, i) => {
+      if (record[foreignKey] !== undefined) {
+        return
+      }
 
-    if (this.foreignKey.some(f => !record[f])) {
-      return
-    }
+      const value = (typeof key === 'string') ? key.split('_')[i] : key
 
-    // If there is no foreign key, let's set it here.
-    if (data[this.parent.entity] && data[this.parent.entity][key]) {
-      record[fKey] = data[this.parent.entity][key][this.ownerKey]
-    } else {
-      record[fKey] = key
-    }
+      // If there is no foreign key, let's set it here.
+      record[foreignKey] = data[this.parent.entity] && data[this.parent.entity][value]
+      ? data[this.parent.entity][value][this.ownerKey]
+      : value
+    })
   }
 
   /**
