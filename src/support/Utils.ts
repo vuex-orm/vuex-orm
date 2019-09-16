@@ -176,8 +176,8 @@ function concatValues (object: Object, keys: string[], separator = '_'): string 
  * Returns value cast to Integer if value string contains only an integer, else returns value string as is
  */
 function tryParseInt (value: string): string | number {
-  if (parseInt(value).toString() === value) {
-    return parseInt(value)
+  if (parseInt(value, 10).toString() === value) {
+    return parseInt(value, 10)
   } else {
     return value
   }
