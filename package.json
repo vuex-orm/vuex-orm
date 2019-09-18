@@ -58,23 +58,23 @@
     "babel-jest": "^24.9.0",
     "codecov": "^3.5.0",
     "core-js": "^2.6.9",
-    "eslint": "^6.3.0",
+    "eslint": "^6.4.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "jest": "^24.9.0",
-    "rollup": "^1.21.2",
+    "rollup": "^1.21.4",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "ts-jest": "^24.0.2",
+    "ts-jest": "^24.1.0",
     "tslint": "^5.20.0",
     "tslint-config-standard": "^8.0.1",
     "typescript": "^3.6.3",
     "uglify-js": "^3.6.0",
     "vue": "^2.5.22",
-    "vuepress": "^1.0.4",
+    "vuepress": "^1.1.0",
     "vuepress-theme-vue": "^1.1.0"
   },
   "jest": {
@@ -99,6 +99,11 @@
       "!src/index.ts",
       "!**/node_modules/**"
     ],
-    "coverageReporters": ["json", "lcov", "text-summary", "clover"]
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text-summary",
+      "clover"
+    ]
   }
 }
