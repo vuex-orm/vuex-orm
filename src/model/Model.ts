@@ -787,7 +787,7 @@ export default class Model {
    */
   $fill (record?: Record): void {
     const data = record || {}
-    const fields = this.$fields()
+    const fields = this.$self().fields()
 
     Object.keys(fields).forEach((key) => {
       const field = fields[key]
