@@ -128,4 +128,46 @@ describe('Feature – Models – Insert', () => {
     expect(data.users.length).toBe(2)
     expect(data.users[0]).toBeInstanceOf(User)
   })
+
+  it('return nested object with default value', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr(''),
+          nestedObj: this.attr({
+            field: 'default value'
+          })
+        }
+      }
+    }
+
+    createStore([{ model: User }])
+
+    let user = new User()
+    await user.$insert({
+      data: [
+        { id: 1, name: 'John Doe' }
+      ]
+    })
+
+    await User.update({
+      where: 1,
+      data (user) {
+        user.nestedObj.field = 'update value'
+      }
+    })
+
+    user = new User()
+    await user.$insert({
+      data: [
+        { id: 1, name: 'John Doe' }
+      ]
+    })
+
+    expect(User.find(1).name).toBe('John Doe')
+    expect(User.find(1).nestedObj.field).toBe('default value')
+  })
 })
