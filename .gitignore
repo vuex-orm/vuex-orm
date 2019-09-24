@@ -5,5 +5,5 @@
 /docs/node_modules
 /lib
 /node_modules
-yarn-error.log
 .vscode/*
+yarn-error.log
