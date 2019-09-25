@@ -54,7 +54,7 @@ export default class Model {
   /**
    * The index ID for the model.
    */
-  $id: string | null = null
+  $id: string | Array<number | string> | null = null
 
   /**
    * Create a new model instance.
@@ -410,8 +410,8 @@ export default class Model {
    *
    * Most of the time, it's same as the value for the Model's primary key. If
    * the Model has a composite primary key, each value corresponding to those
-   * primary key will be joined together with `_` and become a single string
-   * value such as `1_2`.
+   * primary key will be stringified and become a single string
+   * value such as `[1,2]`.
    *
    * If the primary key is not present at the given record, it returns `null`.
    * For the composite primary key, every key must exist at a given record,
@@ -426,15 +426,22 @@ export default class Model {
 
     const ids: (string | number)[] = []
 
-    const isCompositeKeyValid = key.every((k) => {
+    key.forEach((k) => {
       const id = this.getIndexIdFromValue(record[k])
 
       id && ids.push(id)
-
-      return id
     })
 
-    return isCompositeKeyValid ? ids.join('_') : null
+    return this.isCompositeKeyValid(record) ? JSON.stringify(ids) : null
+  }
+
+  /**
+   * Returns true if primaryKey is composite
+   * and all corresponding values in the record are present
+   */
+  static isCompositeKeyValid (record: Record | Model) {
+    if (!Array.isArray(this.primaryKey)) return false
+    return this.primaryKey.every((k) => this.getIndexIdFromValue(record[k]))
   }
 
   /**
@@ -797,7 +804,7 @@ export default class Model {
     })
 
     if (data.$id !== undefined) {
-      this.$id = data.$id
+      this.$id = this.$self().isCompositeKeyValid(this) ? JSON.parse(data.$id) : data.$id
     }
   }
 
