@@ -3763,225 +3763,6 @@ var Rollcaller = /** @class */ (function () {
     return Rollcaller;
 }());
 
-var Hook = /** @class */ (function () {
-    /**
-     * Create a lidecycle hook instance.
-     */
-    function Hook(query) {
-        /**
-         * The global hook index to be deleted.
-         */
-        this.indexToBeDeleted = [];
-        this.query = query;
-    }
-    /**
-     * Register a callback. It Returns unique ID for registered callback.
-     */
-    Hook.on = function (on, callback, once) {
-        if (once === void 0) { once = false; }
-        var uid = this.lastHookId + 1;
-        this.lastHookId = uid;
-        if (!this.hooks[on]) {
-            this.hooks[on] = [];
-        }
-        this.hooks[on].push({ callback: callback, once: once, uid: uid });
-        return uid;
-    };
-    /**
-     * Remove hook registration.
-     */
-    Hook.off = function (uid) {
-        var _this = this;
-        var removed = false;
-        Object.keys(this.hooks).some(function (on) {
-            var hook = _this.hooks[on];
-            var index = hook.findIndex(function (h) { return h.uid === uid; });
-            if (index !== -1) {
-                hook.splice(index, 1);
-                removed = true;
-            }
-            return removed;
-        });
-        return removed;
-    };
-    /**
-     * Get the hook class.
-     */
-    Hook.prototype.self = function () {
-        return this.constructor;
-    };
-    /**
-     * Get the hook for the given name.
-     */
-    Hook.prototype.getHook = function (name) {
-        var hook = this.query.model[name];
-        return hook || null;
-    };
-    /**
-     * Get the global hook.
-     */
-    Hook.prototype.getGlobalHook = function (name) {
-        var hook = this.self().hooks[name];
-        return hook || null;
-    };
-    /**
-     * Check if the given hook exist.
-     */
-    Hook.prototype.has = function (name) {
-        return !!this.getHook(name) || !!this.getGlobalHook(name);
-    };
-    /**
-     * Execute select hook for the given collection.
-     */
-    Hook.prototype.executeSelectHook = function (on, records) {
-        if (!this.has(on)) {
-            return records;
-        }
-        records = this.executeLocalSelectHook(on, records);
-        records = this.executeGlobalSelectHook(on, records);
-        return records;
-    };
-    /**
-     * Execute select hook against given records.
-     */
-    Hook.prototype.executeLocalSelectHook = function (on, records) {
-        var hook = this.getHook(on);
-        if (!hook) {
-            return records;
-        }
-        return hook(records, this.query.entity);
-    };
-    /**
-     * Execute the global select hook against given records.
-     */
-    Hook.prototype.executeGlobalSelectHook = function (on, records) {
-        var _this = this;
-        var hooks = this.getGlobalHook(on);
-        if (!hooks) {
-            return records;
-        }
-        // Track indexes to delete.
-        var deleteHookIndexes = [];
-        // Loop all hooks.
-        hooks.forEach(function (hook, hookIndex) {
-            var callback = hook.callback, once = hook.once;
-            records = callback.call(_this.query, records, _this.query.entity);
-            // Add hook index to delete.
-            once && deleteHookIndexes.push(hookIndex);
-        });
-        // Remove hooks to be deleted in reverse order.
-        deleteHookIndexes.reverse().forEach(function (hookIndex) {
-            hooks.splice(hookIndex, 1);
-        });
-        return records;
-    };
-    /**
-     * Execute the callback for all given records.
-     */
-    Hook.prototype.executeMutationHookOnRecords = function (on, records) {
-        var _this = this;
-        if (!this.has(on)) {
-            return;
-        }
-        Object.keys(records).forEach(function (id) {
-            var result = _this.executeMutationHook(on, records[id]);
-            if (result === false) {
-                delete records[id];
-            }
-        });
-        this.removeGlobalHook(on);
-    };
-    /**
-     * Execute mutation hook against given model.
-     */
-    Hook.prototype.executeMutationHook = function (on, model) {
-        if (this.executeLocalMutationHook(on, model) === false) {
-            return false;
-        }
-        if (this.executeGlobalMutationHook(on, model) === false) {
-            return false;
-        }
-    };
-    /**
-     * Execute the local mutation hook.
-     */
-    Hook.prototype.executeLocalMutationHook = function (on, model) {
-        var hook = this.getHook(on);
-        if (!hook) {
-            return;
-        }
-        return hook(model, this.query.entity);
-    };
-    /**
-     * Execute the global mutation hook.
-     */
-    Hook.prototype.executeGlobalMutationHook = function (on, model) {
-        var _this = this;
-        var hooks = this.getGlobalHook(on);
-        if (!hooks) {
-            return;
-        }
-        // Track results.
-        var results = [];
-        // Loop all hooks.
-        hooks.forEach(function (hook, index) {
-            results.push(hook.callback.call(_this.query, model, _this.query.entity));
-            // Add hook index to delete.
-            hook.once && _this.indexToBeDeleted.push(index);
-        });
-        if (results.includes(false)) {
-            return false;
-        }
-    };
-    /**
-     * Remove global hooks which are executed and defined as once.
-     */
-    Hook.prototype.removeGlobalHook = function (on) {
-        var hooks = this.getGlobalHook(on);
-        if (!hooks) {
-            return;
-        }
-        this.indexToBeDeleted.reverse().forEach(function (index) { hooks.splice(index, 1); });
-    };
-    /**
-     * Execute before delete hook to the given model.
-     */
-    Hook.prototype.executeBeforeDeleteHook = function (model) {
-        if (this.executeLocalBeforeDeleteHook(model) === false) {
-            return false;
-        }
-    };
-    /**
-     * Execute local before delete hook to the given model.
-     */
-    Hook.prototype.executeLocalBeforeDeleteHook = function (model) {
-        var hook = this.query.model['beforeDelete'];
-        return hook && hook(model);
-    };
-    /**
-     * Execute after delete hook to the given model.
-     */
-    Hook.prototype.executeAfterDeleteHook = function (model) {
-        this.executeLocalAfterDeleteHook(model);
-    };
-    /**
-     * Execute local after delete hook to the given model.
-     */
-    Hook.prototype.executeLocalAfterDeleteHook = function (model) {
-        var hook = this.query.model['afterDelete'];
-        return hook && hook(model);
-    };
-    /**
-     * Global lifecycle hooks for the query.
-     */
-    Hook.hooks = {};
-    /**
-     * Hook UID counter.
-     */
-    Hook.lastHookId = 0;
-    return Hook;
-}());
-
 var Query = /** @class */ (function () {
     /**
      * Create a new Query instance.
@@ -4048,7 +3829,6 @@ var Query = /** @class */ (function () {
         this.entity = entity;
         this.model = this.getModel(entity);
         this.module = this.getModule(entity);
-        this.hook = new Hook(this);
     }
     /**
      * Get the database from the container.
@@ -4097,16 +3877,32 @@ var Query = /** @class */ (function () {
         });
     };
     /**
-     * Register a callback. It Returns unique ID for registered callback.
+     * Register a global hook. It will return ID for the hook that users may use
+     * it to unregister hooks.
      */
     Query.on = function (on, callback, once) {
-        return Hook.on(on, callback, once);
+        if (once === void 0) { once = false; }
+        var id = ++this.lastHookId;
+        if (!this.hooks[on]) {
+            this.hooks[on] = [];
+        }
+        this.hooks[on].push({ id: id, callback: callback, once: once });
+        return id;
     };
     /**
-     * Remove hook registration.
+     * Unregister global hook with the given id.
      */
-    Query.off = function (uid) {
-        return Hook.off(uid);
+    Query.off = function (id) {
+        var _this = this;
+        return Object.keys(this.hooks).some(function (on) {
+            var hooks = _this.hooks[on];
+            var index = hooks.findIndex(function (h) { return h.id === id; });
+            if (index === -1) {
+                return false;
+            }
+            hooks.splice(index, 1);
+            return true;
+        });
     };
     /**
      * Get query class.
@@ -4422,20 +4218,20 @@ var Query = /** @class */ (function () {
         Rollcaller.applyConstraints(this);
         // Next, get all record as an array and then start filtering it through.
         var records = this.records();
-        // Process `beforeProcess` hook.
-        records = this.hook.executeSelectHook('beforeSelect', records);
+        // Process `beforeSelect` hook.
+        records = this.executeRetrieveHook('beforeSelect', records);
         // Let's filter the records at first by the where clauses.
         records = this.filterWhere(records);
         // Process `afterWhere` hook.
-        records = this.hook.executeSelectHook('afterWhere', records);
+        records = this.executeRetrieveHook('afterWhere', records);
         // Next, lets sort the data.
         records = this.filterOrderBy(records);
         // Process `afterOrderBy` hook.
-        records = this.hook.executeSelectHook('afterOrderBy', records);
+        records = this.executeRetrieveHook('afterOrderBy', records);
         // Finally, slice the record by limit and offset.
         records = this.filterLimit(records);
         // Process `afterLimit` hook.
-        records = this.hook.executeSelectHook('afterLimit', records);
+        records = this.executeRetrieveHook('afterLimit', records);
         return records; // TODO: Delete "as ..." when model type coverage reaches 100%.
     };
     /**
@@ -4507,11 +4303,7 @@ var Query = /** @class */ (function () {
         if (Object.keys(this.load).length > 0) {
             var model = this.model.getModelFromRecord(item);
             item = new model(item);
-            var items = this.hook.executeSelectHook('beforeRelations', [item]);
-            item = items[0];
             Loader.eagerLoadRelations(this, [item]);
-            items = this.hook.executeSelectHook('afterRelations', [item]);
-            item = items[0];
         }
         return item;
     };
@@ -4528,9 +4320,7 @@ var Query = /** @class */ (function () {
                 var model = _this.model.getModelFromRecord(item);
                 return new model(item);
             });
-            collection = this.hook.executeSelectHook('beforeRelations', collection);
             Loader.eagerLoadRelations(this, collection);
-            collection = this.hook.executeSelectHook('afterRelations', collection);
         }
         return collection;
     };
@@ -4573,7 +4363,7 @@ var Query = /** @class */ (function () {
             _this.emptyState();
             _this.state.data = __assign(__assign({}, _this.state.data), instances);
         };
-        this.commit('create', instances, createCallback);
+        this.commitCreateOnRecords(instances, createCallback);
         return this.map(instances); // TODO: Delete "as ..." when model type coverage reaches 100%.
     };
     /**
@@ -4590,10 +4380,18 @@ var Query = /** @class */ (function () {
     Query.prototype.insertMany = function (records) {
         var _this = this;
         var instances = this.hydrateMany(records);
-        this.commit('create', instances, function () {
+        this.commitCreateOnRecords(instances, function () {
             _this.state.data = __assign(__assign({}, _this.state.data), instances);
         });
         return this.map(instances); // TODO: Delete "as ..." when model type coverage reaches 100%.
+    };
+    /**
+     * Commit given models to the store by `create` method.
+     */
+    Query.prototype.commitCreateOnRecords = function (models, callback) {
+        this.executeBeforeCreateHookOnModels(models);
+        callback();
+        this.executeAfterCreateHookOnModels(models);
     };
     /**
      * Update data in the state.
@@ -4697,10 +4495,18 @@ var Query = /** @class */ (function () {
     Query.prototype.commitUpdate = function (instances) {
         var _this = this;
         instances = this.updateIndexes(instances);
-        this.commit('update', instances, function () {
+        this.commitUpdateOnRecords(instances, function () {
             _this.state.data = __assign(__assign({}, _this.state.data), instances);
         });
         return this.map(instances);
+    };
+    /**
+     * Commit given models to the store by `update` method.
+     */
+    Query.prototype.commitUpdateOnRecords = function (models, callback) {
+        this.executeBeforeUpdateHookOnModels(models);
+        callback();
+        this.executeAfterUpdateHookOnModels(models);
     };
     /**
      * Update the key of the instances. This is needed when a user updates
@@ -4827,11 +4633,11 @@ var Query = /** @class */ (function () {
             if (!condition(model)) {
                 return true;
             }
-            if (_this.hook.executeBeforeDeleteHook(model) === false) {
+            if (_this.executeBeforeDeleteHook(model) === false) {
                 return true;
             }
             deleted.push(model);
-            _this.hook.executeAfterDeleteHook(model);
+            _this.executeAfterDeleteHook(model);
             return false;
         });
         return deleted;
@@ -4904,18 +4710,6 @@ var Query = /** @class */ (function () {
         return Object.keys(instances).map(function (id) { return instances[id]; });
     };
     /**
-     * Execute given callback by executing before and after hooks of the specified
-     * method to the given instances. The method name should be something like
-     * `create` or `update`, then it will be converted to `beforeCreate` ,
-     * `afterCreate` and so on.
-     */
-    Query.prototype.commit = function (method, instances, callback) {
-        var name = "" + method.charAt(0).toUpperCase() + method.slice(1);
-        this.hook.executeMutationHookOnRecords("before" + name, instances);
-        callback();
-        this.hook.executeMutationHookOnRecords("after" + name, instances);
-    };
-    /**
      * Clears the current state from any data related to current model:
      * - everything if not in a inheritance scheme
      * - only derived instances if applied to a derived entity
@@ -4931,6 +4725,271 @@ var Query = /** @class */ (function () {
             }
         }
     };
+    /**
+     * Execute retrieve hook for the given method.
+     */
+    Query.prototype.executeRetrieveHook = function (on, models) {
+        var collection = models;
+        collection = this.executeLocalRetrieveHook(on, collection);
+        collection = this.executeGlobalRetrieveHook(on, collection);
+        return collection;
+    };
+    /**
+     * Execute local retrieve hook for the given method.
+     */
+    Query.prototype.executeLocalRetrieveHook = function (on, models) {
+        var hook = this.model[on];
+        return hook ? hook(models, this.model.entity) : models;
+    };
+    /**
+     * Execute global retrieve hook for the given method.
+     */
+    Query.prototype.executeGlobalRetrieveHook = function (on, models) {
+        var _this = this;
+        var hooks = this.self().hooks[on];
+        if (!hooks) {
+            return models;
+        }
+        var result = hooks.reduce(function (collection, hook) {
+            return hook.callback.call(_this, collection, _this.model.entity);
+        }, models);
+        this.cleanGlobalHooksOn(on);
+        return result;
+    };
+    /**
+     * Execute before create hook to the given model.
+     */
+    Query.prototype.executeBeforeCreateHook = function (model) {
+        if (this.executeLocalBeforeCreateHook(model) === false) {
+            return false;
+        }
+        if (this.executeGlobalBeforeCreateHook(model) === false) {
+            return false;
+        }
+    };
+    /**
+     * Execute before create hook to the goven models.
+     */
+    Query.prototype.executeBeforeCreateHookOnModels = function (models) {
+        var _this = this;
+        Object.keys(models).forEach(function (id) {
+            var model = models[id];
+            if (_this.executeBeforeCreateHook(model) === false) {
+                delete models[id];
+            }
+        });
+    };
+    /**
+     * Execute local before create hook to the given model.
+     */
+    Query.prototype.executeLocalBeforeCreateHook = function (model) {
+        var hook = this.model['beforeCreate'];
+        return hook && hook(model, this.entity);
+    };
+    /**
+     * Execute global before create hook to the given model.
+     */
+    Query.prototype.executeGlobalBeforeCreateHook = function (model) {
+        var _this = this;
+        return this.executeGlobalBeforeMutationHooks('beforeCreate', function (hook) {
+            return hook(model, _this.entity);
+        });
+    };
+    /**
+     * Execute after create hook to the given model.
+     */
+    Query.prototype.executeAfterCreateHook = function (model) {
+        this.executeLocalAfterCreateHook(model);
+        this.executeGlobalAfterCreateHook(model);
+    };
+    /**
+     * Execute after create hook to the goven models.
+     */
+    Query.prototype.executeAfterCreateHookOnModels = function (models) {
+        var _this = this;
+        Object.keys(models).forEach(function (id) {
+            var model = models[id];
+            _this.executeAfterCreateHook(model);
+        });
+    };
+    /**
+     * Execute local after create hook to the given model.
+     */
+    Query.prototype.executeLocalAfterCreateHook = function (model) {
+        var hook = this.model['afterCreate'];
+        return hook && hook(model, this.entity);
+    };
+    /**
+     * Execute global after create hook to the given model.
+     */
+    Query.prototype.executeGlobalAfterCreateHook = function (model) {
+        var _this = this;
+        this.executeGlobalAfterMutationHooks('afterCreate', function (hook) {
+            hook(model, _this.entity);
+        });
+    };
+    /**
+     * Execute before update hook to the given model.
+     */
+    Query.prototype.executeBeforeUpdateHook = function (model) {
+        if (this.executeLocalBeforeUpdateHook(model) === false) {
+            return false;
+        }
+        if (this.executeGlobalBeforeUpdateHook(model) === false) {
+            return false;
+        }
+    };
+    /**
+     * Execute before update hook to the goven models.
+     */
+    Query.prototype.executeBeforeUpdateHookOnModels = function (models) {
+        var _this = this;
+        Object.keys(models).forEach(function (id) {
+            var model = models[id];
+            if (_this.executeBeforeUpdateHook(model) === false) {
+                delete models[id];
+            }
+        });
+    };
+    /**
+     * Execute local before update hook to the given model.
+     */
+    Query.prototype.executeLocalBeforeUpdateHook = function (model) {
+        var hook = this.model['beforeUpdate'];
+        return hook && hook(model, this.entity);
+    };
+    /**
+     * Execute global before update hook to the given model.
+     */
+    Query.prototype.executeGlobalBeforeUpdateHook = function (model) {
+        var _this = this;
+        return this.executeGlobalBeforeMutationHooks('beforeUpdate', function (hook) {
+            return hook(model, _this.entity);
+        });
+    };
+    /**
+     * Execute after update hook to the given model.
+     */
+    Query.prototype.executeAfterUpdateHook = function (model) {
+        this.executeLocalAfterUpdateHook(model);
+        this.executeGlobalAfterUpdateHook(model);
+    };
+    /**
+     * Execute local after update hook to the given model.
+     */
+    Query.prototype.executeLocalAfterUpdateHook = function (model) {
+        var hook = this.model['afterUpdate'];
+        return hook && hook(model, this.entity);
+    };
+    /**
+     * Execute global after create hook to the given model.
+     */
+    Query.prototype.executeGlobalAfterUpdateHook = function (model) {
+        var _this = this;
+        this.executeGlobalAfterMutationHooks('afterUpdate', function (hook) {
+            hook(model, _this.entity);
+        });
+    };
+    /**
+     * Execute after update hook to the goven models.
+     */
+    Query.prototype.executeAfterUpdateHookOnModels = function (models) {
+        var _this = this;
+        Object.keys(models).forEach(function (id) {
+            var model = models[id];
+            _this.executeAfterUpdateHook(model);
+        });
+    };
+    /**
+     * Execute before delete hook to the given model.
+     */
+    Query.prototype.executeBeforeDeleteHook = function (model) {
+        if (this.executeLocalBeforeDeleteHook(model) === false) {
+            return false;
+        }
+        if (this.executeGlobalBeforeDeleteHook(model) === false) {
+            return false;
+        }
+    };
+    /**
+     * Execute local before delete hook to the given model.
+     */
+    Query.prototype.executeLocalBeforeDeleteHook = function (model) {
+        var hook = this.model['beforeDelete'];
+        return hook && hook(model, this.entity);
+    };
+    /**
+     * Execute global before delete hook to the given model.
+     */
+    Query.prototype.executeGlobalBeforeDeleteHook = function (model) {
+        var _this = this;
+        return this.executeGlobalBeforeMutationHooks('beforeDelete', function (hook) {
+            return hook(model, _this.entity);
+        });
+    };
+    /**
+     * Execute after delete hook to the given model.
+     */
+    Query.prototype.executeAfterDeleteHook = function (model) {
+        this.executeLocalAfterDeleteHook(model);
+        this.executeGlobalAfterDeleteHook(model);
+    };
+    /**
+     * Execute local after delete hook to the given model.
+     */
+    Query.prototype.executeLocalAfterDeleteHook = function (model) {
+        var hook = this.model['afterDelete'];
+        return hook && hook(model, this.entity);
+    };
+    /**
+     * Execute global after delete hook to the given model.
+     */
+    Query.prototype.executeGlobalAfterDeleteHook = function (model) {
+        var _this = this;
+        this.executeGlobalAfterMutationHooks('afterDelete', function (hook) {
+            hook(model, _this.entity);
+        });
+    };
+    /**
+     * Execute global before mutation hook on the given method.
+     */
+    Query.prototype.executeGlobalBeforeMutationHooks = function (on, callback) {
+        var hooks = this.self().hooks[on];
+        if (!Array.isArray(hooks) || hooks.length <= 0) {
+            return;
+        }
+        var result = hooks.some(function (hook) {
+            return callback(hook.callback) === false ? false : true;
+        });
+        this.cleanGlobalHooksOn(on);
+        return result === false ? false : undefined;
+    };
+    /**
+     * Execute global after mutation hook on the given method.
+     */
+    Query.prototype.executeGlobalAfterMutationHooks = function (on, callback) {
+        var hooks = this.self().hooks[on];
+        if (!Array.isArray(hooks)) {
+            return;
+        }
+        hooks.forEach(function (hook) { callback(hook.callback); });
+        this.cleanGlobalHooksOn(on);
+    };
+    /**
+     * Remove all callback defined as "once" from the global hooks.
+     */
+    Query.prototype.cleanGlobalHooksOn = function (on) {
+        var hooks = this.self().hooks[on];
+        this.self().hooks[on] = hooks.filter(function (hook) { return !hook.once; });
+    };
+    /**
+     * The global lifecycle hook registries.
+     */
+    Query.hooks = {};
+    /**
+     * The counter to generate the UID for global hooks.
+     */
+    Query.lastHookId = 0;
     return Query;
 }());
 
