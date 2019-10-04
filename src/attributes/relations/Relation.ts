@@ -116,7 +116,8 @@ export default abstract class Relation extends Attribute {
     return records.filter((record: any) => {
       return this.isOneRelation(record)
     }).map((record: Record) => {
-      return new model(record)
+      const currentModel = model.getModelFromRecord(record) || model
+      return new currentModel(record)
     })
   }
 }

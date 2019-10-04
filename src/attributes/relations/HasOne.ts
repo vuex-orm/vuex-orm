@@ -72,7 +72,8 @@ export default class HasOne extends Relation {
       return null
     }
 
-    return new this.related(value)
+    const model = this.related.getModelFromRecord(value) || this.related
+    return new model(value)
   }
 
   /**

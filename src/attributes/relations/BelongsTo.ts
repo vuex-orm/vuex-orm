@@ -67,7 +67,8 @@ export default class BelongsTo extends Relation {
       return null
     }
 
-    return new this.parent(value)
+    const model = this.parent.getModelFromRecord(value) || this.parent
+    return new model(value)
   }
 
   /**

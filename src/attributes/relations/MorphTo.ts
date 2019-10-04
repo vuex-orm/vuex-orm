@@ -55,7 +55,13 @@ export default class MorphTo extends Relation {
     const related: string = parent[this.type]
     const model = this.model.relation(related)
 
-    return model ? new model(value) : null
+    if (model) {
+      const currentModel = model.getModelFromRecord(value) || model
+
+      return new currentModel(value)
+    }
+
+    return null
   }
 
   /**
