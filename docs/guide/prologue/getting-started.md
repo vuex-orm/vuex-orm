@@ -102,7 +102,7 @@ Now it's time for you to register Models to Vuex. To do so, you should first reg
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexORM from '@vuex-orm/core'
-import User from '@/models//User'
+import User from '@/models/User'
 import Post from '@/models/Post'
 
 Vue.use(Vuex)
@@ -216,7 +216,7 @@ To retrieve inserted data, Vuex ORM provides a fluent query builder for it. You 
 </template>
 
 <script>
-import Post from '@/models//Post'
+import Post from '@/models/Post'
 
 export default {
   computed: {
@@ -243,7 +243,7 @@ Note that the above method will not include Users within returned posts. If you 
 </template>
 
 <script>
-import Post from '@/models//Post'
+import Post from '@/models/Post'
 
 export default {
   computed: {
