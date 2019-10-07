@@ -106,6 +106,18 @@ export default abstract class Relation extends Attribute {
   }
 
   /**
+   * Convert given record
+   */
+  makeOneRelation (value: any, related: typeof Model): Model | null {
+    if (!this.isOneRelation(value)) {
+      return null
+    }
+
+    const model: typeof Model = related.getModelFromRecord(value) || related
+    return new model(value)
+  }
+
+  /**
    * Convert given records to the collection.
    */
   makeManyRelation (records: any, model: typeof Model): Collection {

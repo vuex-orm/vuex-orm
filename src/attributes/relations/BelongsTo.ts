@@ -63,12 +63,7 @@ export default class BelongsTo extends Relation {
    * Convert given value to the appropriate value for the attribute.
    */
   make (value: any, _parent: Record, _key: string): Model | null {
-    if (!this.isOneRelation(value)) {
-      return null
-    }
-
-    const model = this.parent.getModelFromRecord(value) || this.parent
-    return new model(value)
+    return this.makeOneRelation(value, this.parent)
   }
 
   /**

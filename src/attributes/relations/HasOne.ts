@@ -68,12 +68,7 @@ export default class HasOne extends Relation {
    * instantiating a model or creating a plain object from a model.
    */
   make (value: any, _parent: Record, _key: string): Model | null {
-    if (!this.isOneRelation(value)) {
-      return null
-    }
-
-    const model = this.related.getModelFromRecord(value) || this.related
-    return new model(value)
+    return this.makeOneRelation(value, this.related)
   }
 
   /**
