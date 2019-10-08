@@ -1008,7 +1008,7 @@
 	        }, {});
 	    };
 	    /**
-	     * Check if the given value is a single relation, which is the Object.
+	     * Check if the given record is a single relation, which is an object.
 	     */
 	    Relation.prototype.isOneRelation = function (record) {
 	        if (!Array.isArray(record) && record !== null && typeof record === 'object') {
@@ -1017,7 +1017,8 @@
 	        return false;
 	    };
 	    /**
-	     * Check if the given value is a single relation, which is the Object.
+	     * Check if the given records is a many relation, which is an array
+	     * of object.
 	     */
 	    Relation.prototype.isManyRelation = function (records) {
 	        if (!Array.isArray(records)) {
@@ -1029,7 +1030,17 @@
 	        return true;
 	    };
 	    /**
-	     * Convert given records to the collection.
+	     * Wrap the given object into a model instance.
+	     */
+	    Relation.prototype.makeOneRelation = function (record, model) {
+	        if (!this.isOneRelation(record)) {
+	            return null;
+	        }
+	        var relatedModel = model.getModelFromRecord(record) || model;
+	        return new relatedModel(record);
+	    };
+	    /**
+	     * Wrap the given records into a collection of model instances.
 	     */
 	    Relation.prototype.makeManyRelation = function (records, model) {
 	        var _this = this;
@@ -1039,7 +1050,8 @@
 	        return records.filter(function (record) {
 	            return _this.isOneRelation(record);
 	        }).map(function (record) {
-	            return new model(record);
+	            var relatedModel = model.getModelFromRecord(record) || model;
+	            return new relatedModel(record);
 	        });
 	    };
 	    return Relation;
@@ -1087,10 +1099,7 @@
 	     * instantiating a model or creating a plain object from a model.
 	     */
 	    HasOne.prototype.make = function (value, _parent, _key) {
-	        if (!this.isOneRelation(value)) {
-	            return null;
-	        }
-	        return new this.related(value);
+	        return this.makeOneRelation(value, this.related);
 	    };
 	    /**
 	     * Load the has one relationship for the collection.
@@ -1170,10 +1179,7 @@
 	     * Convert given value to the appropriate value for the attribute.
 	     */
 	    BelongsTo.prototype.make = function (value, _parent, _key) {
-	        if (!this.isOneRelation(value)) {
-	            return null;
-	        }
-	        return new this.parent(value);
+	        return this.makeOneRelation(value, this.parent);
 	    };
 	    /**
 	     * Load the belongs to relationship for the collection.
@@ -1590,12 +1596,12 @@
 	     * Convert given value to the appropriate value for the attribute.
 	     */
 	    MorphTo.prototype.make = function (value, parent, _key) {
-	        if (!this.isOneRelation(value)) {
-	            return null;
-	        }
 	        var related = parent[this.type];
 	        var model = this.model.relation(related);
-	        return model ? new model(value) : null;
+	        if (!model) {
+	            return null;
+	        }
+	        return this.makeOneRelation(value, model);
 	    };
 	    /**
 	     * Load the morph to relationship for the collection.
@@ -1660,10 +1666,7 @@
 	     * Convert given value to the appropriate value for the attribute.
 	     */
 	    MorphOne.prototype.make = function (value, _parent, _key) {
-	        if (!this.isOneRelation(value)) {
-	            return null;
-	        }
-	        return new this.related(value);
+	        return this.makeOneRelation(value, this.related);
 	    };
 	    /**
 	     * Load the morph many relationship for the record.
