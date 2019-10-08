@@ -26,7 +26,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  abstract make (value: any, parent: Record, key: string): Record[] | Model[] | Model | null
+  abstract make (value: any, parent: Record, key: string): Model | Model[] | null
 
   /**
    * Get relation query instance with constraint attached.
@@ -85,7 +85,7 @@ export default abstract class Relation extends Attribute {
   }
 
   /**
-   * Check if the given value is a single relation, which is the Object.
+   * Check if the given record is a single relation, which is an object.
    */
   isOneRelation (record: any): boolean {
     if (!Array.isArray(record) && record !== null && typeof record === 'object') {
@@ -96,7 +96,8 @@ export default abstract class Relation extends Attribute {
   }
 
   /**
-   * Check if the given value is a single relation, which is the Object.
+   * Check if the given records is a many relation, which is an array
+   * of object.
    */
   isManyRelation (records: any): boolean {
     if (!Array.isArray(records)) {
@@ -111,19 +112,20 @@ export default abstract class Relation extends Attribute {
   }
 
   /**
-   * Convert given record
+   * Wrap the given object into a model instance.
    */
-  makeOneRelation (value: any, related: typeof Model): Model | null {
-    if (!this.isOneRelation(value)) {
+  makeOneRelation (record: any, model: typeof Model): Model | null {
+    if (!this.isOneRelation(record)) {
       return null
     }
 
-    const model: typeof Model = related.getModelFromRecord(value) || related
-    return new model(value)
+    const relatedModel = model.getModelFromRecord(record) || model
+
+    return new relatedModel(record)
   }
 
   /**
-   * Convert given records to the collection.
+   * Wrap the given records into a collection of model instances.
    */
   makeManyRelation (records: any, model: typeof Model): Collection {
     if (!this.isManyRelation(records)) {
@@ -133,8 +135,9 @@ export default abstract class Relation extends Attribute {
     return records.filter((record: any) => {
       return this.isOneRelation(record)
     }).map((record: Record) => {
-      const currentModel = model.getModelFromRecord(record) || model
-      return new currentModel(record)
+      const relatedModel = model.getModelFromRecord(record) || model
+
+      return new relatedModel(record)
     })
   }
 }
