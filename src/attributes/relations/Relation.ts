@@ -24,6 +24,11 @@ export default abstract class Relation extends Attribute {
   abstract load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void
 
   /**
+   * Convert given value to the appropriate value for the attribute.
+   */
+  abstract make (value: any, parent: Record, key: string): Model[] | Model | null
+
+  /**
    * Get relation query instance with constraint attached.
    */
   protected getRelation (query: Query, name: string, constraints: Constraint[]): Query {
