@@ -24,6 +24,11 @@ export default abstract class Relation extends Attribute {
   abstract load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void
 
   /**
+   * Convert given value to the appropriate value for the attribute.
+   */
+  abstract make (value: any, parent: Record, key: string): Record[] | Model[] | Model | null
+
+  /**
    * Get relation query instance with constraint attached.
    */
   protected getRelation (query: Query, name: string, constraints: Constraint[]): Query {
@@ -106,6 +111,18 @@ export default abstract class Relation extends Attribute {
   }
 
   /**
+   * Convert given record
+   */
+  makeOneRelation (value: any, related: typeof Model): Model | null {
+    if (!this.isOneRelation(value)) {
+      return null
+    }
+
+    const model: typeof Model = related.getModelFromRecord(value) || related
+    return new model(value)
+  }
+
+  /**
    * Convert given records to the collection.
    */
   makeManyRelation (records: any, model: typeof Model): Collection {
@@ -116,7 +133,8 @@ export default abstract class Relation extends Attribute {
     return records.filter((record: any) => {
       return this.isOneRelation(record)
     }).map((record: Record) => {
-      return new model(record)
+      const currentModel = model.getModelFromRecord(record) || model
+      return new currentModel(record)
     })
   }
 }

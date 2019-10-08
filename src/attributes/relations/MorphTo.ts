@@ -48,14 +48,14 @@ export default class MorphTo extends Relation {
    * Convert given value to the appropriate value for the attribute.
    */
   make (value: any, parent: Record, _key: string): Model | null {
-    if (!this.isOneRelation(value)) {
-      return null
-    }
-
     const related: string = parent[this.type]
     const model = this.model.relation(related)
 
-    return model ? new model(value) : null
+    if (!model) {
+      return null
+    }
+
+    return this.makeOneRelation(value, model)
   }
 
   /**
