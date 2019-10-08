@@ -26,7 +26,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  abstract make (value: any, parent: Record, key: string): Model[] | Model | null
+  abstract make (value: any, parent: Record, key: string): Record[] | Model[] | Model | null
 
   /**
    * Get relation query instance with constraint attached.
