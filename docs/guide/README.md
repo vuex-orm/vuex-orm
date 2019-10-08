@@ -4,6 +4,17 @@ Vuex ORM is a plugin for [Vuex](https://github.com/vuejs/vuex) to enable Object-
 
 Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) and ["Updating Normalized Data"](http://redux.js.org/docs/recipes/reducers/UpdatingNormalizedData.html). Learn more about the concept and motivation of Vuex ORM at [What is Vuex ORM?](https://vuex-orm.github.io/vuex-orm/guide/prologue/what-is-vuex-orm.html).
 
+## Sponsors
+
+Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex ORM community :two_hearts:
+
+<a href="https://github.com/petertoth">
+  <img src="https://avatars2.githubusercontent.com/u/3661783?s=400&v=4" alt="Peter Tóth" width="96" style="border-radius: 8px;">
+</a>
+<a href="https://github.com/phaust">
+  <img src="https://avatars1.githubusercontent.com/u/2367770?s=400&v=4" alt="Mario Kolli" width="96" style="border-radius: 8px;">
+</a>
+
 ## Table Of Contents
 
 - Prologue
