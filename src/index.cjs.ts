@@ -40,6 +40,7 @@ import RootMutationsContract from './modules/contracts/RootMutations'
 export interface VuexORM {
   install: Install
   use: Use
+  Container: typeof Container
   Database: typeof Database
   Model: typeof Model
   Query: typeof Query
