@@ -5683,6 +5683,7 @@ var Database = /** @class */ (function () {
 var index = {
     install: install,
     use: use,
+    Container: Container,
     Database: Database,
     Model: Model,
     Query: Query,
@@ -5713,4 +5714,4 @@ var index = {
 };
 
 export default index;
-export { Actions, Attr, Attribute, BelongsTo, BelongsToMany, Boolean, Database, Getters, HasMany, HasManyBy, HasManyThrough, HasOne, Increment, Model, MorphMany, MorphOne, MorphTo, MorphToMany, MorphedByMany, Number, Query, Relation, RootActions, RootGetters, RootMutations, String$1 as String, Type, install, use };
+export { Actions, Attr, Attribute, BelongsTo, BelongsToMany, Boolean, Container, Database, Getters, HasMany, HasManyBy, HasManyThrough, HasOne, Increment, Model, MorphMany, MorphOne, MorphTo, MorphToMany, MorphedByMany, Number, Query, Relation, RootActions, RootGetters, RootMutations, String$1 as String, Type, install, use };
