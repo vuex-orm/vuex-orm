@@ -46,8 +46,7 @@
   },
   "dependencies": {
     "normalizr": "^3.4.1",
-    "vuex": "^3.1.1",
-    "yarn": "^1.19.1"
+    "vuex": "^3.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
