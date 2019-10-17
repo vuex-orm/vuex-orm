@@ -15,13 +15,15 @@ export default class Loader {
       return
     }
 
-    // If we passed an array, we dispatch the bits to with queries
-    if (name instanceof Array) {
+    // If we passed an array, we dispatch the bits to with queries.
+    if (Array.isArray(name)) {
       name.forEach(relationName => this.with(query, relationName, constraint))
-    } else {
-      // Else parse relations and set appropriate constraints.
-      this.parseWithRelations(query, name.split('.'), constraint)
+
+      return
     }
+
+    // Else parse relations and set appropriate constraints.
+    this.parseWithRelations(query, name.split('.'), constraint)
   }
 
   /**
