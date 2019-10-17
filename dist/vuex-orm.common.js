@@ -5685,6 +5685,7 @@ var Database = /** @class */ (function () {
 var index_cjs = {
     install: install,
     use: use,
+    Container: Container,
     Database: Database,
     Model: Model,
     Query: Query,

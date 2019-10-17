@@ -2,6 +2,7 @@ import './polyfills'
 
 import install, { Install } from './store/install'
 import use, { Use } from './plugins/use'
+import Container from './container/Container'
 import Database from './database/Database'
 import Model from './model/Model'
 import Fields from './model/contracts/Fields'
@@ -39,6 +40,7 @@ import RootMutationsContract from './modules/contracts/RootMutations'
 export interface VuexORM {
   install: Install
   use: Use
+  Container: typeof Container
   Database: typeof Database
   Model: typeof Model
   Query: typeof Query
@@ -72,6 +74,7 @@ export interface VuexORM {
 export default {
   install,
   use,
+  Container,
   Database,
   Model,
   Query,
