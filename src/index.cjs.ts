@@ -43,6 +43,7 @@ export interface VuexORM {
   Container: typeof Container
   Database: typeof Database
   Model: typeof Model
+  Fields: Fields
   Query: typeof Query
   Attribute: typeof Attribute
   Type: typeof Type
@@ -68,7 +69,6 @@ export interface VuexORM {
   RootGetters: RootGettersContract
   RootActions: RootActionsContract
   RootMutations: RootMutationsContract
-  Fields: Fields
 }
 
 export default {
@@ -77,7 +77,6 @@ export default {
   Container,
   Database,
   Model,
-  Query,
   Attribute,
   Type,
   Attr,
@@ -101,5 +100,6 @@ export default {
   Actions,
   RootGetters,
   RootActions,
-  RootMutations
+  RootMutations,
+  Query
 } as VuexORM
