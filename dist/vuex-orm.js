@@ -2690,6 +2690,120 @@
 	    return Model;
 	}());
 
+	var Getters = {
+	    /**
+	     * Create a new Query instance.
+	     */
+	    query: function (state, _getters, _rootState, rootGetters) { return function () {
+	        return rootGetters[state.$connection + "/query"](state.$name);
+	    }; },
+	    /**
+	     * Get all data of given entity.
+	     */
+	    all: function (state, _getters, _rootState, rootGetters) { return function () {
+	        return rootGetters[state.$connection + "/all"](state.$name);
+	    }; },
+	    /**
+	     * Find a data of the given entity by given id.
+	     */
+	    find: function (state, _getters, _rootState, rootGetters) { return function (id) {
+	        return rootGetters[state.$connection + "/find"](state.$name, id);
+	    }; },
+	    /**
+	     * Find array of data of the given entity by given ids.
+	     */
+	    findIn: function (state, _getters, _rootState, rootGetters) { return function (idList) {
+	        return rootGetters[state.$connection + "/findIn"](state.$name, idList);
+	    }; }
+	};
+
+	function destroy(context, payload) {
+	    return __awaiter(this, void 0, void 0, function () {
+	        var state, entity, where;
+	        return __generator(this, function (_a) {
+	            state = context.state;
+	            entity = state.$name;
+	            where = payload;
+	            return [2 /*return*/, context.dispatch(state.$connection + "/delete", { entity: entity, where: where }, { root: true })];
+	        });
+	    });
+	}
+	/**
+	 * Delete all data from the store.
+	 */
+	function deleteAll(context) {
+	    return __awaiter(this, void 0, void 0, function () {
+	        var state, entity;
+	        return __generator(this, function (_a) {
+	            state = context.state;
+	            entity = state.$name;
+	            return [2 /*return*/, context.dispatch(state.$connection + "/deleteAll", { entity: entity }, { root: true })];
+	        });
+	    });
+	}
+	var Actions = {
+	    /**
+	     * Create new data with all fields filled by default values.
+	     */
+	    new: function (context) {
+	        var state = context.state;
+	        var entity = state.$name;
+	        return context.dispatch(state.$connection + "/new", { entity: entity }, { root: true });
+	    },
+	    /**
+	     * Save given data to the store by replacing all existing records in the
+	     * store. If you want to save data without replacing existing records,
+	     * use the `insert` method instead.
+	     */
+	    create: function (context, payload) {
+	        var state = context.state;
+	        var entity = state.$name;
+	        return context.dispatch(state.$connection + "/create", __assign(__assign({}, payload), { entity: entity }), { root: true });
+	    },
+	    /**
+	     * Insert given data to the state. Unlike `create`, this method will not
+	     * remove existing data within the state, but it will update the data
+	     * with the same primary key.
+	     */
+	    insert: function (context, payload) {
+	        var state = context.state;
+	        var entity = state.$name;
+	        return context.dispatch(state.$connection + "/insert", __assign(__assign({}, payload), { entity: entity }), { root: true });
+	    },
+	    /**
+	     * Update data in the store.
+	     */
+	    update: function (context, payload) {
+	        var state = context.state;
+	        var entity = state.$name;
+	        // If the payload is an array, then the payload should be an array of
+	        // data so let's pass the whole payload as data.
+	        if (Array.isArray(payload)) {
+	            return context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true });
+	        }
+	        // If the payload doesn't have `data` property, we'll assume that
+	        // the user has passed the object as the payload so let's define
+	        // the whole payload as a data.
+	        if (payload.data === undefined) {
+	            return context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true });
+	        }
+	        // Else destructure the payload and let root action handle it.
+	        return context.dispatch(state.$connection + "/update", __assign({ entity: entity }, payload), { root: true });
+	    },
+	    /**
+	     * Insert or update given data to the state. Unlike `insert`, this method
+	     * will not replace existing data within the state, but it will update only
+	     * the submitted data with the same primary key.
+	     */
+	    insertOrUpdate: function (context, payload) {
+	        var state = context.state;
+	        var entity = state.$name;
+	        return context.dispatch(state.$connection + "/insertOrUpdate", __assign({ entity: entity }, payload), { root: true });
+	    },
+	    delete: destroy,
+	    deleteAll: deleteAll
+	};
+
 	function _defineProperties(target, props) {
 	  for (var i = 0; i < props.length; i++) {
 	    var descriptor = props[i];
@@ -3532,14 +3646,13 @@
 	            this.withAll(query);
 	            return;
 	        }
-	        // If we passed an array, we dispatch the bits to with queries
-	        if (name instanceof Array) {
+	        // If we passed an array, we dispatch the bits to with queries.
+	        if (Array.isArray(name)) {
 	            name.forEach(function (relationName) { return _this.with(query, relationName, constraint); });
+	            return;
 	        }
-	        else {
-	            // Else parse relations and set appropriate constraints.
-	            this.parseWithRelations(query, name.split('.'), constraint);
-	        }
+	        // Else parse relations and set appropriate constraints.
+	        this.parseWithRelations(query, name.split('.'), constraint);
 	    };
 	    /**
 	     * Set all relationships to be eager loaded with the query.
@@ -5000,120 +5113,6 @@
 	    return Query;
 	}());
 
-	var Getters = {
-	    /**
-	     * Create a new Query instance.
-	     */
-	    query: function (state, _getters, _rootState, rootGetters) { return function () {
-	        return rootGetters[state.$connection + "/query"](state.$name);
-	    }; },
-	    /**
-	     * Get all data of given entity.
-	     */
-	    all: function (state, _getters, _rootState, rootGetters) { return function () {
-	        return rootGetters[state.$connection + "/all"](state.$name);
-	    }; },
-	    /**
-	     * Find a data of the given entity by given id.
-	     */
-	    find: function (state, _getters, _rootState, rootGetters) { return function (id) {
-	        return rootGetters[state.$connection + "/find"](state.$name, id);
-	    }; },
-	    /**
-	     * Find array of data of the given entity by given ids.
-	     */
-	    findIn: function (state, _getters, _rootState, rootGetters) { return function (idList) {
-	        return rootGetters[state.$connection + "/findIn"](state.$name, idList);
-	    }; }
-	};
-
-	function destroy(context, payload) {
-	    return __awaiter(this, void 0, void 0, function () {
-	        var state, entity, where;
-	        return __generator(this, function (_a) {
-	            state = context.state;
-	            entity = state.$name;
-	            where = payload;
-	            return [2 /*return*/, context.dispatch(state.$connection + "/delete", { entity: entity, where: where }, { root: true })];
-	        });
-	    });
-	}
-	/**
-	 * Delete all data from the store.
-	 */
-	function deleteAll(context) {
-	    return __awaiter(this, void 0, void 0, function () {
-	        var state, entity;
-	        return __generator(this, function (_a) {
-	            state = context.state;
-	            entity = state.$name;
-	            return [2 /*return*/, context.dispatch(state.$connection + "/deleteAll", { entity: entity }, { root: true })];
-	        });
-	    });
-	}
-	var Actions = {
-	    /**
-	     * Create new data with all fields filled by default values.
-	     */
-	    new: function (context) {
-	        var state = context.state;
-	        var entity = state.$name;
-	        return context.dispatch(state.$connection + "/new", { entity: entity }, { root: true });
-	    },
-	    /**
-	     * Save given data to the store by replacing all existing records in the
-	     * store. If you want to save data without replacing existing records,
-	     * use the `insert` method instead.
-	     */
-	    create: function (context, payload) {
-	        var state = context.state;
-	        var entity = state.$name;
-	        return context.dispatch(state.$connection + "/create", __assign(__assign({}, payload), { entity: entity }), { root: true });
-	    },
-	    /**
-	     * Insert given data to the state. Unlike `create`, this method will not
-	     * remove existing data within the state, but it will update the data
-	     * with the same primary key.
-	     */
-	    insert: function (context, payload) {
-	        var state = context.state;
-	        var entity = state.$name;
-	        return context.dispatch(state.$connection + "/insert", __assign(__assign({}, payload), { entity: entity }), { root: true });
-	    },
-	    /**
-	     * Update data in the store.
-	     */
-	    update: function (context, payload) {
-	        var state = context.state;
-	        var entity = state.$name;
-	        // If the payload is an array, then the payload should be an array of
-	        // data so let's pass the whole payload as data.
-	        if (Array.isArray(payload)) {
-	            return context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true });
-	        }
-	        // If the payload doesn't have `data` property, we'll assume that
-	        // the user has passed the object as the payload so let's define
-	        // the whole payload as a data.
-	        if (payload.data === undefined) {
-	            return context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true });
-	        }
-	        // Else destructure the payload and let root action handle it.
-	        return context.dispatch(state.$connection + "/update", __assign({ entity: entity }, payload), { root: true });
-	    },
-	    /**
-	     * Insert or update given data to the state. Unlike `insert`, this method
-	     * will not replace existing data within the state, but it will update only
-	     * the submitted data with the same primary key.
-	     */
-	    insertOrUpdate: function (context, payload) {
-	        var state = context.state;
-	        var entity = state.$name;
-	        return context.dispatch(state.$connection + "/insertOrUpdate", __assign({ entity: entity }, payload), { root: true });
-	    },
-	    delete: destroy,
-	    deleteAll: deleteAll
-	};
-
 	var RootGetters = {
 	    /**
 	     * Create a new Query instance.
@@ -5346,7 +5345,6 @@
 	    if (options === void 0) { options = {}; }
 	    var components = {
 	        Model: Model,
-	        Query: Query,
 	        Attribute: Attribute,
 	        Type: Type,
 	        Attr: Attr,
@@ -5370,7 +5368,8 @@
 	        Actions: Actions,
 	        RootGetters: RootGetters,
 	        RootActions: RootActions,
-	        RootMutations: RootMutations
+	        RootMutations: RootMutations,
+	        Query: Query
 	    };
 	    plugin.install(components, options);
 	}
@@ -5692,7 +5691,6 @@
 	    Container: Container,
 	    Database: Database,
 	    Model: Model,
-	    Query: Query,
 	    Attribute: Attribute,
 	    Type: Type,
 	    Attr: Attr,
@@ -5716,7 +5714,8 @@
 	    Actions: Actions,
 	    RootGetters: RootGetters,
 	    RootActions: RootActions,
-	    RootMutations: RootMutations
+	    RootMutations: RootMutations,
+	    Query: Query
 	};
 
 	return index_cjs;
