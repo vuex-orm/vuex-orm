@@ -1004,7 +1004,7 @@ var Relation = /** @class */ (function (_super) {
         }, {});
     };
     /**
-     * Check if the given value is a single relation, which is the Object.
+     * Check if the given record is a single relation, which is an object.
      */
     Relation.prototype.isOneRelation = function (record) {
         if (!Array.isArray(record) && record !== null && typeof record === 'object') {
@@ -1013,7 +1013,8 @@ var Relation = /** @class */ (function (_super) {
         return false;
     };
     /**
-     * Check if the given value is a single relation, which is the Object.
+     * Check if the given records is a many relation, which is an array
+     * of object.
      */
     Relation.prototype.isManyRelation = function (records) {
         if (!Array.isArray(records)) {
@@ -1025,7 +1026,17 @@ var Relation = /** @class */ (function (_super) {
         return true;
     };
     /**
-     * Convert given records to the collection.
+     * Wrap the given object into a model instance.
+     */
+    Relation.prototype.makeOneRelation = function (record, model) {
+        if (!this.isOneRelation(record)) {
+            return null;
+        }
+        var relatedModel = model.getModelFromRecord(record) || model;
+        return new relatedModel(record);
+    };
+    /**
+     * Wrap the given records into a collection of model instances.
      */
     Relation.prototype.makeManyRelation = function (records, model) {
         var _this = this;
@@ -1035,7 +1046,8 @@ var Relation = /** @class */ (function (_super) {
         return records.filter(function (record) {
             return _this.isOneRelation(record);
         }).map(function (record) {
-            return new model(record);
+            var relatedModel = model.getModelFromRecord(record) || model;
+            return new relatedModel(record);
         });
     };
     return Relation;
@@ -1083,10 +1095,7 @@ var HasOne = /** @class */ (function (_super) {
      * instantiating a model or creating a plain object from a model.
      */
     HasOne.prototype.make = function (value, _parent, _key) {
-        if (!this.isOneRelation(value)) {
-            return null;
-        }
-        return new this.related(value);
+        return this.makeOneRelation(value, this.related);
     };
     /**
      * Load the has one relationship for the collection.
@@ -1166,10 +1175,7 @@ var BelongsTo = /** @class */ (function (_super) {
      * Convert given value to the appropriate value for the attribute.
      */
     BelongsTo.prototype.make = function (value, _parent, _key) {
-        if (!this.isOneRelation(value)) {
-            return null;
-        }
-        return new this.parent(value);
+        return this.makeOneRelation(value, this.parent);
     };
     /**
      * Load the belongs to relationship for the collection.
@@ -1586,12 +1592,12 @@ var MorphTo = /** @class */ (function (_super) {
      * Convert given value to the appropriate value for the attribute.
      */
     MorphTo.prototype.make = function (value, parent, _key) {
-        if (!this.isOneRelation(value)) {
-            return null;
-        }
         var related = parent[this.type];
         var model = this.model.relation(related);
-        return model ? new model(value) : null;
+        if (!model) {
+            return null;
+        }
+        return this.makeOneRelation(value, model);
     };
     /**
      * Load the morph to relationship for the collection.
@@ -1656,10 +1662,7 @@ var MorphOne = /** @class */ (function (_super) {
      * Convert given value to the appropriate value for the attribute.
      */
     MorphOne.prototype.make = function (value, _parent, _key) {
-        if (!this.isOneRelation(value)) {
-            return null;
-        }
-        return new this.related(value);
+        return this.makeOneRelation(value, this.related);
     };
     /**
      * Load the morph many relationship for the record.
@@ -2692,6 +2695,120 @@ var Model = /** @class */ (function () {
     return Model;
 }());
 
+var Getters = {
+    /**
+     * Create a new Query instance.
+     */
+    query: function (state, _getters, _rootState, rootGetters) { return function () {
+        return rootGetters[state.$connection + "/query"](state.$name);
+    }; },
+    /**
+     * Get all data of given entity.
+     */
+    all: function (state, _getters, _rootState, rootGetters) { return function () {
+        return rootGetters[state.$connection + "/all"](state.$name);
+    }; },
+    /**
+     * Find a data of the given entity by given id.
+     */
+    find: function (state, _getters, _rootState, rootGetters) { return function (id) {
+        return rootGetters[state.$connection + "/find"](state.$name, id);
+    }; },
+    /**
+     * Find array of data of the given entity by given ids.
+     */
+    findIn: function (state, _getters, _rootState, rootGetters) { return function (idList) {
+        return rootGetters[state.$connection + "/findIn"](state.$name, idList);
+    }; }
+};
+
+function destroy(context, payload) {
+    return __awaiter(this, void 0, void 0, function () {
+        var state, entity, where;
+        return __generator(this, function (_a) {
+            state = context.state;
+            entity = state.$name;
+            where = payload;
+            return [2 /*return*/, context.dispatch(state.$connection + "/delete", { entity: entity, where: where }, { root: true })];
+        });
+    });
+}
+/**
+ * Delete all data from the store.
+ */
+function deleteAll(context) {
+    return __awaiter(this, void 0, void 0, function () {
+        var state, entity;
+        return __generator(this, function (_a) {
+            state = context.state;
+            entity = state.$name;
+            return [2 /*return*/, context.dispatch(state.$connection + "/deleteAll", { entity: entity }, { root: true })];
+        });
+    });
+}
+var Actions = {
+    /**
+     * Create new data with all fields filled by default values.
+     */
+    new: function (context) {
+        var state = context.state;
+        var entity = state.$name;
+        return context.dispatch(state.$connection + "/new", { entity: entity }, { root: true });
+    },
+    /**
+     * Save given data to the store by replacing all existing records in the
+     * store. If you want to save data without replacing existing records,
+     * use the `insert` method instead.
+     */
+    create: function (context, payload) {
+        var state = context.state;
+        var entity = state.$name;
+        return context.dispatch(state.$connection + "/create", __assign(__assign({}, payload), { entity: entity }), { root: true });
+    },
+    /**
+     * Insert given data to the state. Unlike `create`, this method will not
+     * remove existing data within the state, but it will update the data
+     * with the same primary key.
+     */
+    insert: function (context, payload) {
+        var state = context.state;
+        var entity = state.$name;
+        return context.dispatch(state.$connection + "/insert", __assign(__assign({}, payload), { entity: entity }), { root: true });
+    },
+    /**
+     * Update data in the store.
+     */
+    update: function (context, payload) {
+        var state = context.state;
+        var entity = state.$name;
+        // If the payload is an array, then the payload should be an array of
+        // data so let's pass the whole payload as data.
+        if (Array.isArray(payload)) {
+            return context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true });
+        }
+        // If the payload doesn't have `data` property, we'll assume that
+        // the user has passed the object as the payload so let's define
+        // the whole payload as a data.
+        if (payload.data === undefined) {
+            return context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true });
+        }
+        // Else destructure the payload and let root action handle it.
+        return context.dispatch(state.$connection + "/update", __assign({ entity: entity }, payload), { root: true });
+    },
+    /**
+     * Insert or update given data to the state. Unlike `insert`, this method
+     * will not replace existing data within the state, but it will update only
+     * the submitted data with the same primary key.
+     */
+    insertOrUpdate: function (context, payload) {
+        var state = context.state;
+        var entity = state.$name;
+        return context.dispatch(state.$connection + "/insertOrUpdate", __assign({ entity: entity }, payload), { root: true });
+    },
+    delete: destroy,
+    deleteAll: deleteAll
+};
+
 function _defineProperties(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
@@ -3534,14 +3651,13 @@ var Loader = /** @class */ (function () {
             this.withAll(query);
             return;
         }
-        // If we passed an array, we dispatch the bits to with queries
-        if (name instanceof Array) {
+        // If we passed an array, we dispatch the bits to with queries.
+        if (Array.isArray(name)) {
             name.forEach(function (relationName) { return _this.with(query, relationName, constraint); });
+            return;
         }
-        else {
-            // Else parse relations and set appropriate constraints.
-            this.parseWithRelations(query, name.split('.'), constraint);
-        }
+        // Else parse relations and set appropriate constraints.
+        this.parseWithRelations(query, name.split('.'), constraint);
     };
     /**
      * Set all relationships to be eager loaded with the query.
@@ -5006,120 +5122,6 @@ var Query = /** @class */ (function () {
     return Query;
 }());
 
-var Getters = {
-    /**
-     * Create a new Query instance.
-     */
-    query: function (state, _getters, _rootState, rootGetters) { return function () {
-        return rootGetters[state.$connection + "/query"](state.$name);
-    }; },
-    /**
-     * Get all data of given entity.
-     */
-    all: function (state, _getters, _rootState, rootGetters) { return function () {
-        return rootGetters[state.$connection + "/all"](state.$name);
-    }; },
-    /**
-     * Find a data of the given entity by given id.
-     */
-    find: function (state, _getters, _rootState, rootGetters) { return function (id) {
-        return rootGetters[state.$connection + "/find"](state.$name, id);
-    }; },
-    /**
-     * Find array of data of the given entity by given ids.
-     */
-    findIn: function (state, _getters, _rootState, rootGetters) { return function (idList) {
-        return rootGetters[state.$connection + "/findIn"](state.$name, idList);
-    }; }
-};
-
-function destroy(context, payload) {
-    return __awaiter(this, void 0, void 0, function () {
-        var state, entity, where;
-        return __generator(this, function (_a) {
-            state = context.state;
-            entity = state.$name;
-            where = payload;
-            return [2 /*return*/, context.dispatch(state.$connection + "/delete", { entity: entity, where: where }, { root: true })];
-        });
-    });
-}
-/**
- * Delete all data from the store.
- */
-function deleteAll(context) {
-    return __awaiter(this, void 0, void 0, function () {
-        var state, entity;
-        return __generator(this, function (_a) {
-            state = context.state;
-            entity = state.$name;
-            return [2 /*return*/, context.dispatch(state.$connection + "/deleteAll", { entity: entity }, { root: true })];
-        });
-    });
-}
-var Actions = {
-    /**
-     * Create new data with all fields filled by default values.
-     */
-    new: function (context) {
-        var state = context.state;
-        var entity = state.$name;
-        return context.dispatch(state.$connection + "/new", { entity: entity }, { root: true });
-    },
-    /**
-     * Save given data to the store by replacing all existing records in the
-     * store. If you want to save data without replacing existing records,
-     * use the `insert` method instead.
-     */
-    create: function (context, payload) {
-        var state = context.state;
-        var entity = state.$name;
-        return context.dispatch(state.$connection + "/create", __assign(__assign({}, payload), { entity: entity }), { root: true });
-    },
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    insert: function (context, payload) {
-        var state = context.state;
-        var entity = state.$name;
-        return context.dispatch(state.$connection + "/insert", __assign(__assign({}, payload), { entity: entity }), { root: true });
-    },
-    /**
-     * Update data in the store.
-     */
-    update: function (context, payload) {
-        var state = context.state;
-        var entity = state.$name;
-        // If the payload is an array, then the payload should be an array of
-        // data so let's pass the whole payload as data.
-        if (Array.isArray(payload)) {
-            return context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true });
-        }
-        // If the payload doesn't have `data` property, we'll assume that
-        // the user has passed the object as the payload so let's define
-        // the whole payload as a data.
-        if (payload.data === undefined) {
-            return context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true });
-        }
-        // Else destructure the payload and let root action handle it.
-        return context.dispatch(state.$connection + "/update", __assign({ entity: entity }, payload), { root: true });
-    },
-    /**
-     * Insert or update given data to the state. Unlike `insert`, this method
-     * will not replace existing data within the state, but it will update only
-     * the submitted data with the same primary key.
-     */
-    insertOrUpdate: function (context, payload) {
-        var state = context.state;
-        var entity = state.$name;
-        return context.dispatch(state.$connection + "/insertOrUpdate", __assign({ entity: entity }, payload), { root: true });
-    },
-    delete: destroy,
-    deleteAll: deleteAll
-};
-
 var RootGetters = {
     /**
      * Create a new Query instance.
@@ -5352,7 +5354,6 @@ function use (plugin, options) {
     if (options === void 0) { options = {}; }
     var components = {
         Model: Model,
-        Query: Query,
         Attribute: Attribute,
         Type: Type,
         Attr: Attr,
@@ -5376,7 +5377,8 @@ function use (plugin, options) {
         Actions: Actions,
         RootGetters: RootGetters,
         RootActions: RootActions,
-        RootMutations: RootMutations
+        RootMutations: RootMutations,
+        Query: Query
     };
     plugin.install(components, options);
 }
@@ -5699,9 +5701,9 @@ var Database = /** @class */ (function () {
 var index_cjs = {
     install: install,
     use: use,
+    Container: Container,
     Database: Database,
     Model: Model,
-    Query: Query,
     Attribute: Attribute,
     Type: Type,
     Attr: Attr,
@@ -5725,7 +5727,8 @@ var index_cjs = {
     Actions: Actions,
     RootGetters: RootGetters,
     RootActions: RootActions,
-    RootMutations: RootMutations
+    RootMutations: RootMutations,
+    Query: Query
 };
 
 module.exports = index_cjs;

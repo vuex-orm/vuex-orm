@@ -38,6 +38,13 @@ const sidebars = {
         '/guide/digging-deeper/serialization',
         '/guide/digging-deeper/plugins'
       ]
+    },
+    {
+      title: 'Sponsors',
+      collapsable: false,
+      children: [
+        '/guide/sponsors/awesome-folks'
+      ]
     }
   ],
 

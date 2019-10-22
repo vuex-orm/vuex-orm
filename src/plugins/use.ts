@@ -1,5 +1,4 @@
 import Model from '../model/Model'
-import Query from '../query/Query'
 import Attribute from '../attributes/Attribute'
 import Type from '../attributes/types/Type'
 import Attr from '../attributes/types/Attr'
@@ -29,10 +28,10 @@ import ActionsContract from '../modules/contracts/Actions'
 import RootGettersContract from '../modules/contracts/RootGetters'
 import RootActionsContract from '../modules/contracts/RootActions'
 import RootMutationsContract from '../modules/contracts/RootMutations'
+import Query from '../query/Query'
 
-export interface Components {
+export interface PluginComponents {
   Model: typeof Model
-  Query: typeof Query
   Attribute: typeof Attribute
   Type: typeof Type
   Attr: typeof Attr
@@ -57,6 +56,7 @@ export interface Components {
   RootGetters: RootGettersContract
   RootActions: RootActionsContract
   RootMutations: RootMutationsContract
+  Query: typeof Query
 }
 
 export interface Options {
@@ -70,9 +70,8 @@ export interface Plugin {
 export type Use = (plugin: Plugin, options?: Options) => void
 
 export default function (plugin: Plugin, options: Options = {}): void {
-  const components: Components = {
+  const components: PluginComponents = {
     Model,
-    Query,
     Attribute,
     Type,
     Attr,
@@ -96,7 +95,8 @@ export default function (plugin: Plugin, options: Options = {}): void {
     Actions,
     RootGetters,
     RootActions,
-    RootMutations
+    RootMutations,
+    Query
   }
 
   plugin.install(components, options)

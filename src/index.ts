@@ -1,11 +1,11 @@
 import './polyfills'
 
 import install, { Install } from './store/install'
-import use, { Use } from './plugins/use'
+import use, { Use, PluginComponents } from './plugins/use'
+import Container from './container/Container'
 import Database from './database/Database'
 import Model from './model/Model'
 import Fields from './model/contracts/Fields'
-import Query from './query/Query'
 import Attribute from './attributes/Attribute'
 import Type from './attributes/types/Type'
 import Attr from './attributes/types/Attr'
@@ -35,13 +35,24 @@ import ActionsContract from './modules/contracts/Actions'
 import RootGettersContract from './modules/contracts/RootGetters'
 import RootActionsContract from './modules/contracts/RootActions'
 import RootMutationsContract from './modules/contracts/RootMutations'
+import Query from './query/Query'
+import Record from './data/Record'
+import Records from './data/Records'
+import NormalizedData from './data/NormalizedData'
+import Instance from './data/Instance'
+import Instances from './data/Instances'
+import InstanceOf from './data/InstanceOf'
+import Entities from './data/Entities'
+import Item from './data/Item'
+import Collection from './data/Collection'
+import Collections from './data/Collections'
 
 export interface VuexORM {
   install: Install
   use: Use
+  Container: typeof Container
   Database: typeof Database
   Model: typeof Model
-  Query: typeof Query
   Attribute: typeof Attribute
   Type: typeof Type
   Attr: typeof Attr
@@ -66,15 +77,17 @@ export interface VuexORM {
   RootGetters: RootGettersContract
   RootActions: RootActionsContract
   RootMutations: RootMutationsContract
-  Fields: Fields
+  Query: typeof Query
 }
 
 export {
   install,
   use,
+  PluginComponents,
+  Container,
   Database,
   Model,
-  Query,
+  Fields,
   Attribute,
   Type,
   Attr,
@@ -99,15 +112,25 @@ export {
   RootGetters,
   RootActions,
   RootMutations,
-  Fields
+  Query,
+  Record,
+  Records,
+  NormalizedData,
+  Instance,
+  Instances,
+  InstanceOf,
+  Entities,
+  Item,
+  Collection,
+  Collections
 }
 
 export default {
   install,
   use,
+  Container,
   Database,
   Model,
-  Query,
   Attribute,
   Type,
   Attr,
@@ -131,5 +154,6 @@ export default {
   Actions,
   RootGetters,
   RootActions,
-  RootMutations
+  RootMutations,
+  Query
 } as VuexORM
