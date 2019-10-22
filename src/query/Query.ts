@@ -301,15 +301,21 @@ export default class Query<T extends Model = Model> {
   /**
    * Get the record of the given id.
    */
-  find (id: number | string): Data.Item<T> {
+  find (id: number | string | Array<any>): Data.Item<T> {
+    id = Array.isArray(id) ? JSON.stringify(id) : id
+
     return this.item(this.state.data[id]) as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
    * Get the record of the given array of ids.
    */
-  findIn (idList: Array<number | string>): Data.Collection<T> {
-    return idList.map(id => this.state.data[id]).filter(item => item) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+  findIn (idList: Array<number | string | Array<any>>): Data.Collection<T> {
+    return idList.map(id => {
+      id = Array.isArray(id) ? JSON.stringify(id) : id
+
+      return this.state.data[id]
+    }).filter(item => item) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**

@@ -333,14 +333,14 @@ export default class Model {
   /**
    * Find a record.
    */
-  static find<T extends typeof Model> (this: T, id: string | number): Item<InstanceOf<T>> {
+  static find<T extends typeof Model> (this: T, id: string | number | Array<any>): Item<InstanceOf<T>> {
     return this.getters('find')(id)
   }
 
   /**
    * Get the record of the given array of ids.
    */
-  static findIn<T extends typeof Model> (this: T, idList: Array<number | string>): Collection<InstanceOf<T>> {
+  static findIn<T extends typeof Model> (this: T, idList: Array<number | string | Array<any>>): Collection<InstanceOf<T>> {
     return this.getters('findIn')(idList)
   }
 
@@ -686,14 +686,14 @@ export default class Model {
   /**
    * Find a record.
    */
-  $find<T extends Model> (this: T, id: string | number): Item<T> {
+  $find<T extends Model> (this: T, id: string | number | Array<any>): Item<T> {
     return this.$getters('find')(id)
   }
 
   /**
    * Find record of the given array of ids.
    */
-  $findIn<T extends Model> (this: T, idList: Array<number | string>): Collection<T> {
+  $findIn<T extends Model> (this: T, idList: Array<number | string | Array<any>>): Collection<T> {
     return this.$getters('findIn')(idList)
   }
 

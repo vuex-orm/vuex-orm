@@ -23,14 +23,14 @@ const Getters: GettersContract = {
   /**
    * Find a data of the given entity by given id.
    */
-  find: (state: State, _getters: any, _rootState: RootState, rootGetters: any) => (id: string | number): Item => {
+  find: (state: State, _getters: any, _rootState: RootState, rootGetters: any) => (id: string | number | Array<any>): Item => {
     return rootGetters[`${state.$connection}/find`](state.$name, id)
   },
 
   /**
    * Find array of data of the given entity by given ids.
    */
-  findIn: (state: State, _getters: any, _rootState: RootState, rootGetters: any) => (idList: Array<string | number>): Item[] => {
+  findIn: (state: State, _getters: any, _rootState: RootState, rootGetters: any) => (idList: Array<string | number | Array<any>>): Item[] => {
     return rootGetters[`${state.$connection}/findIn`](state.$name, idList)
   }
 }
