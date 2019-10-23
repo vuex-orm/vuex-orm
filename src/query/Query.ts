@@ -1095,7 +1095,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Delete matching records with the given condition from the store.
    */
-  delete (condition: string | number): Data.Item
+  delete (condition: string | number | Array<any>): Data.Item
   delete (condition: Contracts.Predicate): Data.Collection
   delete (condition: any): any {
     if (typeof condition === 'function') {
@@ -1125,8 +1125,8 @@ export default class Query<T extends Model = Model> {
   /**
    * Delete a record from the store by given id.
    */
-  private deleteById (id: string | number): Data.Item {
-    const item = this.whereId(id).first()
+  private deleteById (id: string | number | Array<any>): Data.Item {
+    const item = this.find(id)
 
     if (!item) {
       return null

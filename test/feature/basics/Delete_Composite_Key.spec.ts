@@ -15,8 +15,30 @@ describe('Feature – Basics – Delete Composite Key', () => {
     }
   }
 
+  function getStore () {
+    return createStore([{ model: User }])
+  }
+
+  it('can delete a record by specifying the composite id as an array', async () => {
+    const store = getStore()
+
+    await User.create({
+      data: [{ first_id: 1, second_id: 1 }, { first_id: 1, second_id: 2 }]
+    })
+
+    await User.delete([1, 1])
+
+    const expected = createState({
+      users: {
+        '[1,2]': { $id: [1, 2], first_id: 1, second_id: 2 }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
+
   it('deletes itself by instance method even when model has composite primary key', async () => {
-    const store = createStore([{ model: User }])
+    const store = getStore()
 
     await User.create({
       data: [
@@ -25,7 +47,7 @@ describe('Feature – Basics – Delete Composite Key', () => {
       ]
     })
 
-    const user = User.query().where('first_id', 1).where('second_id', 2).first() as User
+    const user = User.find([1, 2]) as User
 
     await user.$delete()
 

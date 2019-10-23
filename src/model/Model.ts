@@ -391,7 +391,7 @@ export default class Model {
   /**
    * Delete records that matches the given condition.
    */
-  static delete<M extends typeof Model> (this: M, id: string | number): Promise<Item<InstanceOf<M>>>
+  static delete<M extends typeof Model> (this: M, id: string | number | Array<any>): Promise<Item<InstanceOf<M>>>
   static delete<M extends typeof Model> (this: M, condition: Predicate<InstanceOf<M>>): Promise<Collection<InstanceOf<M>>>
   static delete<M extends typeof Model> (this: M, payload: any): any {
     return this.dispatch('delete', payload)
