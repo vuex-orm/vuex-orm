@@ -4744,7 +4744,7 @@ var Query = /** @class */ (function () {
      * Delete a record from the store by given id.
      */
     Query.prototype.deleteById = function (id) {
-        var item = this.whereId(id).first();
+        var item = this.find(id);
         if (!item) {
             return null;
         }
