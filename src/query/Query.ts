@@ -15,7 +15,6 @@ import Processor from './processors/Processor'
 import Filter from './filters/Filter'
 import Loader from './loaders/Loader'
 import Rollcaller from './rollcallers/Rollcaller'
-import Hook from './hooks/Hook'
 
 export type UpdateClosure = (record: Data.Record) => void
 
@@ -26,6 +25,16 @@ export type Constraint = (query: Query) => void | boolean
 export type ConstraintCallback = (relationName: string) => Constraint | null
 
 export default class Query<T extends Model = Model> {
+  /**
+   * The global lifecycle hook registries.
+   */
+  static hooks: Contracts.GlobalHooks = {}
+
+  /**
+   * The counter to generate the UID for global hooks.
+   */
+  static lastHookId: number = 0
+
   /**
    * The root state of the Vuex Store.
    */
@@ -108,11 +117,6 @@ export default class Query<T extends Model = Model> {
   load: Options.Load = {}
 
   /**
-   * The lifecycle hook instance.
-   */
-  hook: Hook
-
-  /**
    * This flag lets us know if current Query instance applies to
    * a base class or not (in order to know when to filter out some
    * records)
@@ -134,7 +138,6 @@ export default class Query<T extends Model = Model> {
     this.entity = entity
     this.model = this.getModel(entity)
     this.module = this.getModule(entity)
-    this.hook = new Hook(this)
   }
 
   /**
@@ -191,17 +194,38 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Register a callback. It Returns unique ID for registered callback.
+   * Register a global hook. It will return ID for the hook that users may use
+   * it to unregister hooks.
    */
-  static on (on: string, callback: Function, once?: boolean): number {
-    return Hook.on(on, callback, once)
+  static on (on: string, callback: Contracts.HookableClosure, once: boolean = false): number {
+    const id = ++this.lastHookId
+
+    if (!this.hooks[on]) {
+      this.hooks[on] = []
+    }
+
+    this.hooks[on].push({ id, callback, once })
+
+    return id
   }
 
   /**
-   * Remove hook registration.
+   * Unregister global hook with the given id.
    */
-  static off (uid: number): boolean {
-    return Hook.off(uid)
+  static off (id: number): boolean {
+    return Object.keys(this.hooks).some((on) => {
+      const hooks = this.hooks[on]
+
+      const index = hooks.findIndex(h => h.id === id)
+
+      if (index === -1) {
+        return false
+      }
+
+      hooks.splice(index, 1)
+
+      return true
+    })
   }
 
   /**
@@ -590,26 +614,26 @@ export default class Query<T extends Model = Model> {
     // Next, get all record as an array and then start filtering it through.
     let records = this.records()
 
-    // Process `beforeProcess` hook.
-    records = this.hook.executeSelectHook('beforeSelect', records)
+    // Process `beforeSelect` hook.
+    records = this.executeRetrieveHook('beforeSelect', records)
 
     // Let's filter the records at first by the where clauses.
     records = this.filterWhere(records)
 
     // Process `afterWhere` hook.
-    records = this.hook.executeSelectHook('afterWhere', records)
+    records = this.executeRetrieveHook('afterWhere', records)
 
     // Next, lets sort the data.
     records = this.filterOrderBy(records)
 
     // Process `afterOrderBy` hook.
-    records = this.hook.executeSelectHook('afterOrderBy', records)
+    records = this.executeRetrieveHook('afterOrderBy', records)
 
     // Finally, slice the record by limit and offset.
     records = this.filterLimit(records)
 
     // Process `afterLimit` hook.
-    records = this.hook.executeSelectHook('afterLimit', records)
+    records = this.executeRetrieveHook('afterLimit', records)
 
     return records as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
@@ -699,13 +723,7 @@ export default class Query<T extends Model = Model> {
 
       item = new model(item)
 
-      let items = this.hook.executeSelectHook('beforeRelations', [item])
-      item = items[0]
-
       Loader.eagerLoadRelations(this, [item])
-
-      items = this.hook.executeSelectHook('afterRelations', [item])
-      item = items[0]
     }
 
     return item
@@ -726,11 +744,7 @@ export default class Query<T extends Model = Model> {
         return new model(item)
       })
 
-      collection = this.hook.executeSelectHook('beforeRelations', collection)
-
       Loader.eagerLoadRelations(this, collection)
-
-      collection = this.hook.executeSelectHook('afterRelations', collection)
     }
 
     return collection
@@ -782,7 +796,7 @@ export default class Query<T extends Model = Model> {
       this.state.data = { ...this.state.data, ...instances }
     }
 
-    this.commit('create', instances, createCallback)
+    this.commitCreateOnRecords(instances, createCallback)
 
     return this.map(instances) as Data.Collection<T>  // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
@@ -802,11 +816,22 @@ export default class Query<T extends Model = Model> {
   insertMany (records: Data.Records): Data.Collection<T> {
     const instances = this.hydrateMany(records)
 
-    this.commit('create', instances, () => {
+    this.commitCreateOnRecords(instances, () => {
       this.state.data = { ...this.state.data, ...instances }
     })
 
     return this.map(instances) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+  }
+
+  /**
+   * Commit given models to the store by `create` method.
+   */
+  private commitCreateOnRecords (models: Data.Instances, callback: Function): void {
+    this.executeBeforeCreateHookOnModels(models)
+
+    callback()
+
+    this.executeAfterCreateHookOnModels(models)
   }
 
   /**
@@ -937,11 +962,22 @@ export default class Query<T extends Model = Model> {
   commitUpdate (instances: Data.Instances): Data.Collection {
     instances = this.updateIndexes(instances)
 
-    this.commit('update', instances, () => {
+    this.commitUpdateOnRecords(instances, () => {
       this.state.data = { ...this.state.data, ...instances }
     })
 
     return this.map(instances)
+  }
+
+  /**
+   * Commit given models to the store by `update` method.
+   */
+  private commitUpdateOnRecords (models: Data.Instances, callback: Function): void {
+    this.executeBeforeUpdateHookOnModels(models)
+
+    callback()
+
+    this.executeAfterUpdateHookOnModels(models)
   }
 
   /**
@@ -1104,13 +1140,13 @@ export default class Query<T extends Model = Model> {
         return true
       }
 
-      if (this.hook.executeBeforeDeleteHook(model) === false) {
+      if (this.executeBeforeDeleteHook(model) === false) {
         return true
       }
 
       deleted.push(model)
 
-      this.hook.executeAfterDeleteHook(model)
+      this.executeAfterDeleteHook(model)
 
       return false
     })
@@ -1204,22 +1240,6 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Execute given callback by executing before and after hooks of the specified
-   * method to the given instances. The method name should be something like
-   * `create` or `update`, then it will be converted to `beforeCreate` ,
-   * `afterCreate` and so on.
-   */
-  commit (method: string, instances: Data.Instances, callback: Function): void {
-    const name = `${method.charAt(0).toUpperCase()}${method.slice(1)}`
-
-    this.hook.executeMutationHookOnRecords(`before${name}`, instances)
-
-    callback()
-
-    this.hook.executeMutationHookOnRecords(`after${name}`, instances)
-  }
-
-  /**
    * Clears the current state from any data related to current model:
    * - everything if not in a inheritance scheme
    * - only derived instances if applied to a derived entity
@@ -1236,5 +1256,307 @@ export default class Query<T extends Model = Model> {
         delete this.state.data[id]
       }
     }
+  }
+
+  /**
+   * Execute retrieve hook for the given method.
+   */
+  private executeRetrieveHook (on: string, models: Data.Collection): Data.Collection {
+    let collection: Data.Collection = models
+
+    collection = this.executeLocalRetrieveHook(on, collection)
+    collection = this.executeGlobalRetrieveHook(on, collection)
+
+    return collection
+  }
+
+  /**
+   * Execute local retrieve hook for the given method.
+   */
+  private executeLocalRetrieveHook (on: string, models: Data.Collection): Data.Collection {
+    const hook = this.model[on] as Contracts.RetrieveHook | undefined
+
+    return hook ? hook(models, this.model.entity) : models
+  }
+
+  /**
+   * Execute global retrieve hook for the given method.
+   */
+  private executeGlobalRetrieveHook (on: string, models: Data.Collection): Data.Collection {
+    const hooks = this.self().hooks[on]
+
+    if (!hooks) {
+      return models
+    }
+
+    const result = hooks.reduce<Data.Collection>((collection, hook) => {
+      return (hook.callback as Contracts.RetrieveHook).call(this, collection, this.model.entity)
+    }, models)
+
+    this.cleanGlobalHooksOn(on)
+
+    return result
+  }
+
+  /**
+   * Execute before create hook to the given model.
+   */
+  private executeBeforeCreateHook (model: Model): false | void {
+    if (this.executeLocalBeforeCreateHook(model) === false) {
+      return false
+    }
+
+    if (this.executeGlobalBeforeCreateHook(model) === false) {
+      return false
+    }
+  }
+
+  /**
+   * Execute before create hook to the goven models.
+   */
+  private executeBeforeCreateHookOnModels (models: Data.Instances): void {
+    Object.keys(models).forEach((id) => {
+      const model = models[id]
+
+      if (this.executeBeforeCreateHook(model) === false) {
+        delete models[id]
+      }
+    })
+  }
+
+  /**
+   * Execute local before create hook to the given model.
+   */
+  private executeLocalBeforeCreateHook (model: Model): false | void {
+    const hook = this.model['beforeCreate'] as Contracts.BeforeCreateHook | undefined
+
+    return hook && hook(model, this.entity)
+  }
+
+  /**
+   * Execute global before create hook to the given model.
+   */
+  private executeGlobalBeforeCreateHook (model: Model): false | void {
+    return this.executeGlobalBeforeMutationHooks('beforeCreate', (hook) => {
+      return (hook as Contracts.BeforeCreateHook)(model, this.entity)
+    })
+  }
+
+  /**
+   * Execute after create hook to the given model.
+   */
+  private executeAfterCreateHook (model: Model): void {
+    this.executeLocalAfterCreateHook(model)
+    this.executeGlobalAfterCreateHook(model)
+  }
+
+  /**
+   * Execute after create hook to the goven models.
+   */
+  private executeAfterCreateHookOnModels (models: Data.Instances): void {
+    Object.keys(models).forEach((id) => {
+      const model = models[id]
+
+      this.executeAfterCreateHook(model)
+    })
+  }
+
+  /**
+   * Execute local after create hook to the given model.
+   */
+  private executeLocalAfterCreateHook (model: Model): void {
+    const hook = this.model['afterCreate'] as Contracts.AfterCreateHook | undefined
+
+    return hook && hook(model, this.entity)
+  }
+
+  /**
+   * Execute global after create hook to the given model.
+   */
+  private executeGlobalAfterCreateHook (model: Model): void {
+    this.executeGlobalAfterMutationHooks('afterCreate', (hook) => {
+      (hook as Contracts.AfterCreateHook)(model, this.entity)
+    })
+  }
+
+  /**
+   * Execute before update hook to the given model.
+   */
+  private executeBeforeUpdateHook (model: Model): false | void {
+    if (this.executeLocalBeforeUpdateHook(model) === false) {
+      return false
+    }
+
+    if (this.executeGlobalBeforeUpdateHook(model) === false) {
+      return false
+    }
+  }
+
+  /**
+   * Execute before update hook to the goven models.
+   */
+  private executeBeforeUpdateHookOnModels (models: Data.Instances): void {
+    Object.keys(models).forEach((id) => {
+      const model = models[id]
+
+      if (this.executeBeforeUpdateHook(model) === false) {
+        delete models[id]
+      }
+    })
+  }
+
+  /**
+   * Execute local before update hook to the given model.
+   */
+  private executeLocalBeforeUpdateHook (model: Model): false | void {
+    const hook = this.model['beforeUpdate'] as Contracts.BeforeUpdateHook | undefined
+
+    return hook && hook(model, this.entity)
+  }
+
+  /**
+   * Execute global before update hook to the given model.
+   */
+  private executeGlobalBeforeUpdateHook (model: Model): false | void {
+    return this.executeGlobalBeforeMutationHooks('beforeUpdate', (hook) => {
+      return (hook as Contracts.BeforeUpdateHook)(model, this.entity)
+    })
+  }
+
+  /**
+   * Execute after update hook to the given model.
+   */
+  private executeAfterUpdateHook (model: Model): void {
+    this.executeLocalAfterUpdateHook(model)
+    this.executeGlobalAfterUpdateHook(model)
+  }
+
+  /**
+   * Execute local after update hook to the given model.
+   */
+  private executeLocalAfterUpdateHook (model: Model): void {
+    const hook = this.model['afterUpdate'] as Contracts.AfterUpdateHook | undefined
+
+    return hook && hook(model, this.entity)
+  }
+
+  /**
+   * Execute global after create hook to the given model.
+   */
+  private executeGlobalAfterUpdateHook (model: Model): void {
+    this.executeGlobalAfterMutationHooks('afterUpdate', (hook) => {
+      (hook as Contracts.AfterCreateHook)(model, this.entity)
+    })
+  }
+
+  /**
+   * Execute after update hook to the goven models.
+   */
+  private executeAfterUpdateHookOnModels (models: Data.Instances): void {
+    Object.keys(models).forEach((id) => {
+      const model = models[id]
+
+      this.executeAfterUpdateHook(model)
+    })
+  }
+
+  /**
+   * Execute before delete hook to the given model.
+   */
+  private executeBeforeDeleteHook (model: Model): false | void {
+    if (this.executeLocalBeforeDeleteHook(model) === false) {
+      return false
+    }
+
+    if (this.executeGlobalBeforeDeleteHook(model) === false) {
+      return false
+    }
+  }
+
+  /**
+   * Execute local before delete hook to the given model.
+   */
+  private executeLocalBeforeDeleteHook (model: Model): false | void {
+    const hook = this.model['beforeDelete'] as Contracts.BeforeDeleteHook | undefined
+
+    return hook && hook(model, this.entity)
+  }
+
+  /**
+   * Execute global before delete hook to the given model.
+   */
+  private executeGlobalBeforeDeleteHook (model: Model): false | void {
+    return this.executeGlobalBeforeMutationHooks('beforeDelete', (hook) => {
+      return (hook as Contracts.BeforeDeleteHook)(model, this.entity)
+    })
+  }
+
+  /**
+   * Execute after delete hook to the given model.
+   */
+  private executeAfterDeleteHook (model: Model): void {
+    this.executeLocalAfterDeleteHook(model)
+    this.executeGlobalAfterDeleteHook(model)
+  }
+
+  /**
+   * Execute local after delete hook to the given model.
+   */
+  private executeLocalAfterDeleteHook (model: Model): void {
+    const hook = this.model['afterDelete'] as Contracts.AfterDeleteHook | undefined
+
+    return hook && hook(model, this.entity)
+  }
+
+  /**
+   * Execute global after delete hook to the given model.
+   */
+  private executeGlobalAfterDeleteHook (model: Model): void {
+    this.executeGlobalAfterMutationHooks('afterDelete', (hook) => {
+      (hook as Contracts.AfterDeleteHook)(model, this.entity)
+    })
+  }
+
+  /**
+   * Execute global before mutation hook on the given method.
+   */
+  private executeGlobalBeforeMutationHooks (on: string, callback: (hook: Contracts.HookableClosure) => false | void): false | void {
+    const hooks = this.self().hooks[on]
+
+    if (!Array.isArray(hooks) || hooks.length <= 0) {
+      return
+    }
+
+    const result = hooks.some((hook) => {
+      return callback(hook.callback) === false ? false : true
+    })
+
+    this.cleanGlobalHooksOn(on)
+
+    return result === false ? false : undefined
+  }
+
+  /**
+   * Execute global after mutation hook on the given method.
+   */
+  private executeGlobalAfterMutationHooks (on: string, callback: (hook: Contracts.HookableClosure) => void): void {
+    const hooks = this.self().hooks[on]
+
+    if (!Array.isArray(hooks)) {
+      return
+    }
+
+    hooks.forEach(hook => { callback(hook.callback) })
+
+    this.cleanGlobalHooksOn(on)
+  }
+
+  /**
+   * Remove all callback defined as "once" from the global hooks.
+   */
+  private cleanGlobalHooksOn (on: string): void {
+    const hooks = this.self().hooks[on]
+
+    this.self().hooks[on] = hooks.filter(hook => !hook.once)
   }
 }

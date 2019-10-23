@@ -1,7 +1,7 @@
 import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
-describe('Feature – Hooks – Select', () => {
+describe('Feature – Hooks – Local Select', () => {
   it('can process beforeSelect hook', async () => {
     class User extends Model {
       static entity = 'users'
