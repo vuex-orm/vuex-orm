@@ -30,16 +30,6 @@ export default {
 </script>
 ```
 
-If your model has a composite primary key you can pass an array of ids
-
-```js
-// In User model:
-// static primaryKey = ['workspace_id', 'id']
-
-// Delete user with workspace_id 1 and user_id 2.
-User.delete([1, 2])
-```
-
 You can also pass `Function` to the argument to specify which record to delete dynamically. The closure will take the record as an argument, and should return `Boolean`.
 
 ```js
@@ -55,6 +45,34 @@ Alternatively, you may call `$delete` method on a Model instance as well.
 const user = User.find(1)
 
 user.$delete()
+```
+
+## Deleting Models with Composite Primary Key
+
+If your model has a composite primary key, you can pass an array of ids. Let's say you have a Subscription model defined like this.
+
+```js
+import { Model } from '@vuex-orm/core'
+
+class Subscription extends Model {
+  static entity = 'users'
+
+  static primaryKey = ['video_id', 'user_id']
+
+  static fields () {
+    return {
+      video_id: this.attr(null),
+      user_id: this.attr(null)
+    }
+  }
+}
+```
+
+Then, you can delete Subscription records as below. Remember that the value order in the array is the same as the order you defined in your Model's primary key property. In this case it's `['video_id', 'user_id']`.
+
+```js
+// Delete subscription with video_id 1 and user_id 2.
+Subscription.delete([1, 2])
 ```
 
 ## Delete All Data

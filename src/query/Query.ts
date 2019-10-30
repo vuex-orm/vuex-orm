@@ -301,7 +301,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Get the record of the given id.
    */
-  find (id: number | string | Array<any>): Data.Item<T> {
+  find (id: number | string | (number | string)[]): Data.Item<T> {
     id = Array.isArray(id) ? JSON.stringify(id) : id
 
     return this.item(this.state.data[id]) as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
@@ -310,7 +310,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Get the record of the given array of ids.
    */
-  findIn (idList: Array<number | string | Array<any>>): Data.Collection<T> {
+  findIn (idList: (number | string | (number | string)[])[]): Data.Collection<T> {
     return idList.map(id => {
       id = Array.isArray(id) ? JSON.stringify(id) : id
 
@@ -1095,7 +1095,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Delete matching records with the given condition from the store.
    */
-  delete (condition: string | number | Array<any>): Data.Item
+  delete (condition: string | number | (number | string)[]): Data.Item
   delete (condition: Contracts.Predicate): Data.Collection
   delete (condition: any): any {
     if (typeof condition === 'function') {
@@ -1125,7 +1125,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Delete a record from the store by given id.
    */
-  private deleteById (id: string | number | Array<any>): Data.Item {
+  private deleteById (id: string | number | (number | string)[]): Data.Item {
     const item = this.find(id)
 
     if (!item) {

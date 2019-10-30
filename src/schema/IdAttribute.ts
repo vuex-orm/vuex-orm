@@ -11,8 +11,9 @@ export default class IdAttribute {
     return (value: any, _parent: any, _key: string): string | number => {
       const id = model.getIndexIdFromRecord(value)
 
-      if (Array.isArray(id)) return JSON.stringify(id)
-      if (id === null) return NoKey.get()
+      if (id === null) {
+        return NoKey.get()
+      }
 
       return id
     }
