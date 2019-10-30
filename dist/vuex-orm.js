@@ -1559,7 +1559,7 @@
 	            var _a, _b;
 	            var parentId = record[_this.parentKey];
 	            var relatedId = data[_this.related.entity][id][_this.relatedKey];
-	            var pivotKey = relatedId + "_" + parentId;
+	            var pivotKey = JSON.stringify([relatedId, parentId]);
 	            var pivotRecord = data[_this.pivot.entity] ? data[_this.pivot.entity][pivotKey] : {};
 	            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = __assign(__assign({}, pivotRecord), (_b = { $id: pivotKey }, _b[_this.foreignPivotKey] = parentId, _b[_this.relatedPivotKey] = relatedId, _b)), _a));
 	        });
@@ -2280,8 +2280,8 @@
 	     *
 	     * Most of the time, it's same as the value for the Model's primary key. If
 	     * the Model has a composite primary key, each value corresponding to those
-	     * primary key will be joined together with `_` and become a single string
-	     * value such as `1_2`.
+	     * primary key will be stringified and become a single string
+	     * value such as `[1,2]`.
 	     *
 	     * If the primary key is not present at the given record, it returns `null`.
 	     * For the composite primary key, every key must exist at a given record,
@@ -2294,12 +2294,21 @@
 	            return this.getIndexIdFromValue(record[key]);
 	        }
 	        var ids = [];
-	        var isCompositeKeyValid = key.every(function (k) {
+	        key.forEach(function (k) {
 	            var id = _this.getIndexIdFromValue(record[k]);
 	            id && ids.push(id);
-	            return id;
 	        });
-	        return isCompositeKeyValid ? ids.join('_') : null;
+	        return this.isCompositeKeyValid(record) ? JSON.stringify(ids) : null;
+	    };
+	    /**
+	     * Returns true if primaryKey is composite
+	     * and all corresponding values in the record are present
+	     */
+	    Model.isCompositeKeyValid = function (record) {
+	        var _this = this;
+	        if (!Array.isArray(this.primaryKey))
+	            return false;
+	        return this.primaryKey.every(function (k) { return _this.getIndexIdFromValue(record[k]); });
 	    };
 	    /**
 	     * Get correct index ID from the given value. This method will cast the
@@ -2643,7 +2652,7 @@
 	            _this[key] = field.make(value, data, key);
 	        });
 	        if (data.$id !== undefined) {
-	            this.$id = data.$id;
+	            this.$id = this.$self().isCompositeKeyValid(this) ? JSON.parse(data.$id) : data.$id;
 	        }
 	    };
 	    /**
@@ -4086,6 +4095,7 @@
 	     * Get the record of the given id.
 	     */
 	    Query.prototype.find = function (id) {
+	        id = Array.isArray(id) ? JSON.stringify(id) : id;
 	        return this.item(this.state.data[id]); // TODO: Delete "as ..." when model type coverage reaches 100%.
 	    };
 	    /**
@@ -4093,7 +4103,10 @@
 	     */
 	    Query.prototype.findIn = function (idList) {
 	        var _this = this;
-	        return idList.map(function (id) { return _this.state.data[id]; }).filter(function (item) { return item; }); // TODO: Delete "as ..." when model type coverage reaches 100%.
+	        return idList.map(function (id) {
+	            id = Array.isArray(id) ? JSON.stringify(id) : id;
+	            return _this.state.data[id];
+	        }).filter(function (item) { return item; }); // TODO: Delete "as ..." when model type coverage reaches 100%.
 	    };
 	    /**
 	     * Returns all record of the query chain result.
@@ -4737,7 +4750,7 @@
 	     * Delete a record from the store by given id.
 	     */
 	    Query.prototype.deleteById = function (id) {
-	        var item = this.whereId(id).first();
+	        var item = this.find(id);
 	        if (!item) {
 	            return null;
 	        }
@@ -5423,7 +5436,11 @@
 	    IdAttribute.create = function (model) {
 	        return function (value, _parent, _key) {
 	            var id = model.getIndexIdFromRecord(value);
-	            return id === null ? NoKey.get() : id;
+	            if (Array.isArray(id))
+	                return JSON.stringify(id);
+	            if (id === null)
+	                return NoKey.get();
+	            return id;
 	        };
 	    };
 	    return IdAttribute;

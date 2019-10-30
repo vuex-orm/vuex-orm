@@ -80,7 +80,7 @@ describe('Unit – Model', () => {
     expect(User.getIndexIdFromRecord(data)).toBe(1)
   })
 
-  it('can get a value of the composit primary key', () => {
+  it('can get a value of the composite primary key', () => {
     class Vote extends Model {
       static primaryKey = ['vote_id', 'user_id']
 
@@ -94,7 +94,7 @@ describe('Unit – Model', () => {
 
     const data = { user_id: 1, vote_id: 2 }
 
-    expect(Vote.getIndexIdFromRecord(data)).toBe('2_1')
+    expect(Vote.getIndexIdFromRecord(data)).toBe('[2,1]')
   })
 
   it('can get local key of the model', () => {

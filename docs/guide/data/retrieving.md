@@ -55,6 +55,18 @@ const users = User.find(1)
 // { id: 1, name: 'John' }
 ```
 
+If your model has a composite primary key, you can retrieve data by passing an array as the argument
+
+```js
+// In User model:
+// static primaryKey = ['workspace_id', 'id']
+
+// Get a user with workspace_id 1 and id 3.
+const users = User.find([1, 3])
+
+// { workspace_id: 1, id: 3, name: 'John' }
+```
+
 ## Get Mulitple Data by Primary Keys
 
 The `findIn` method is going to fetch array of data from the store. The argument is array of ids—primary key value—for the records.
@@ -67,6 +79,20 @@ const users = User.findIn([1, 2])
   [
     { id: 1, name: 'John' },
     { id: 2, name: 'Jane' }
+  ]
+*/
+```
+
+Similarly to `find`, if your model has a composite primary key you can pass an array of arrays as the argument:
+
+```js
+// Retrieve array of records by their composite primary keys.
+const users = User.findIn([[1, 1], [1, 2]])
+
+/*
+  [
+    { workspace_id: 1, id: 1, name: 'John' },
+    { workspace_id: 1, id: 2, name: 'Jane' }
   ]
 */
 ```
