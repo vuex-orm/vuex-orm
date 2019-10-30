@@ -2,7 +2,7 @@
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
 	(global = global || self, global.VuexORM = factory());
-}(this, function () { 'use strict';
+}(this, (function () { 'use strict';
 
 	function createCommonjsModule(fn, module) {
 		return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -2280,8 +2280,8 @@
 	     *
 	     * Most of the time, it's same as the value for the Model's primary key. If
 	     * the Model has a composite primary key, each value corresponding to those
-	     * primary key will be stringified and become a single string
-	     * value such as `[1,2]`.
+	     * primary key will be stringified and become a single string value such
+	     * as `'[1, 2]'`.
 	     *
 	     * If the primary key is not present at the given record, it returns `null`.
 	     * For the composite primary key, every key must exist at a given record,
@@ -2294,21 +2294,22 @@
 	            return this.getIndexIdFromValue(record[key]);
 	        }
 	        var ids = [];
-	        key.forEach(function (k) {
-	            var id = _this.getIndexIdFromValue(record[k]);
+	        key.forEach(function (key) {
+	            var id = _this.getIndexIdFromValue(record[key]);
 	            id && ids.push(id);
 	        });
 	        return this.isCompositeKeyValid(record) ? JSON.stringify(ids) : null;
 	    };
 	    /**
-	     * Returns true if primaryKey is composite
-	     * and all corresponding values in the record are present
+	     * Returns true if primaryKey is composite and all corresponding values
+	     * in the record are present.
 	     */
 	    Model.isCompositeKeyValid = function (record) {
 	        var _this = this;
-	        if (!Array.isArray(this.primaryKey))
+	        if (!Array.isArray(this.primaryKey)) {
 	            return false;
-	        return this.primaryKey.every(function (k) { return _this.getIndexIdFromValue(record[k]); });
+	        }
+	        return this.primaryKey.every(function (key) { return _this.getIndexIdFromValue(record[key]); });
 	    };
 	    /**
 	     * Get correct index ID from the given value. This method will cast the
@@ -5436,10 +5437,9 @@
 	    IdAttribute.create = function (model) {
 	        return function (value, _parent, _key) {
 	            var id = model.getIndexIdFromRecord(value);
-	            if (Array.isArray(id))
-	                return JSON.stringify(id);
-	            if (id === null)
+	            if (id === null) {
 	                return NoKey.get();
+	            }
 	            return id;
 	        };
 	    };
@@ -5737,4 +5737,4 @@
 
 	return index_cjs;
 
-}));
+})));
