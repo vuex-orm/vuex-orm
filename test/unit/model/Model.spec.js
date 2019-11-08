@@ -111,7 +111,7 @@ describe('Unit – Model', () => {
       }
     }
 
-    expect(User.localKey()).toBe('id')
+    expect(User.localKey()).toBe('$id')
   })
 
   it('should return right model when getting a model from a record if the record is in a hierarchy', () => {

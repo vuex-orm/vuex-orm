@@ -115,7 +115,7 @@ export default class Model {
   /**
    * Create a belongs to relationship.
    */
-  static belongsTo (parent: typeof Model | string, foreignKey: string, ownerKey?: string): Attributes.BelongsTo {
+  static belongsTo (parent: typeof Model | string, foreignKey: string | (string)[], ownerKey?: string): Attributes.BelongsTo {
     return new Attributes.BelongsTo(this, parent, foreignKey, this.relation(parent).localKey(ownerKey))
   }
 
@@ -472,7 +472,7 @@ export default class Model {
       return key
     }
 
-    return typeof this.primaryKey === 'string' ? this.primaryKey : 'id'
+    return typeof this.primaryKey === 'string' ? this.primaryKey : '$id'
   }
 
   /**

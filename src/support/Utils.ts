@@ -160,11 +160,36 @@ function compareAscending (value: any, other: any): number {
   return 0
 }
 
+/**
+ * Takes values corresponding to keys in object and returns them concatenated with separator
+ */
+function concatValues (object: Object, keys: string[], separator = '_'): string {
+  if (keys.length === 1) {
+    // prevents casting value to String if the key is not a composite key
+    return object[keys[0]]
+  } else {
+    return keys.map(k => object[k]).join(separator)
+  }
+}
+
+/**
+ * Returns value cast to Integer if value string contains only an integer, else returns value string as is
+ */
+function tryParseInt (value: string): string | number {
+  if (parseInt(value, 10).toString() === value) {
+    return parseInt(value, 10)
+  } else {
+    return value
+  }
+}
+
 export default {
   isEmpty,
   forOwn,
   groupBy,
   mapValues,
   orderBy,
-  pickBy
+  pickBy,
+  concatValues,
+  tryParseInt
 }

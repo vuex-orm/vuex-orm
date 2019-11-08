@@ -749,13 +749,39 @@
 	    }
 	    return 0;
 	}
+	/**
+	 * Takes values corresponding to keys in object and returns them concatenated with separator
+	 */
+	function concatValues(object, keys, separator) {
+	    if (separator === void 0) { separator = '_'; }
+	    if (keys.length === 1) {
+	        // prevents casting value to String if the key is not a composite key
+	        return object[keys[0]];
+	    }
+	    else {
+	        return keys.map(function (k) { return object[k]; }).join(separator);
+	    }
+	}
+	/**
+	 * Returns value cast to Integer if value string contains only an integer, else returns value string as is
+	 */
+	function tryParseInt(value) {
+	    if (parseInt(value, 10).toString() === value) {
+	        return parseInt(value, 10);
+	    }
+	    else {
+	        return value;
+	    }
+	}
 	var Utils = {
 	    isEmpty: isEmpty,
 	    forOwn: forOwn,
 	    groupBy: groupBy,
 	    mapValues: mapValues,
 	    orderBy: orderBy,
-	    pickBy: pickBy
+	    pickBy: pickBy,
+	    concatValues: concatValues,
+	    tryParseInt: tryParseInt
 	};
 
 	var Attribute = /** @class */ (function () {
@@ -976,11 +1002,12 @@
 	     * Get specified keys from the given collection.
 	     */
 	    Relation.prototype.getKeys = function (collection, key) {
+	        var keys = Array.isArray(key) ? key : [key];
 	        return collection.reduce(function (models, model) {
-	            if (model[key] === null || model[key] === undefined) {
+	            if (keys.some(function (k) { return model[k] === null || model[k] === undefined; })) {
 	                return models;
 	            }
-	            models.push(model[key]);
+	            models.push(Utils.concatValues(model, keys));
 	            return models;
 	        }, []);
 	    };
@@ -1149,7 +1176,7 @@
 	    function BelongsTo(model, parent, foreignKey, ownerKey) {
 	        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
 	        _this.parent = _this.model.relation(parent);
-	        _this.foreignKey = foreignKey;
+	        _this.foreignKey = Array.isArray(foreignKey) ? foreignKey : [foreignKey];
 	        _this.ownerKey = ownerKey;
 	        return _this;
 	    }
@@ -1167,13 +1194,17 @@
 	    BelongsTo.prototype.attach = function (key, record, data) {
 	        // See if the record has the foreign key, if yes, it means the user has
 	        // provided the key explicitly so do nothing and return.
-	        if (record[this.foreignKey] !== undefined) {
-	            return;
-	        }
-	        // If there is no foreign key, let's set it here.
-	        record[this.foreignKey] = data[this.parent.entity] && data[this.parent.entity][key]
-	            ? data[this.parent.entity][key][this.ownerKey]
-	            : key;
+	        var _this = this;
+	        this.foreignKey.forEach(function (foreignKey, i) {
+	            if (record[foreignKey] !== undefined) {
+	                return;
+	            }
+	            var value = (typeof key === 'string') ? Utils.tryParseInt(key.split('_')[i]) : key;
+	            // If there is no foreign key, let's set it here.
+	            record[foreignKey] = data[_this.parent.entity] && data[_this.parent.entity][value]
+	                ? data[_this.parent.entity][value][_this.ownerKey]
+	                : value;
+	        });
 	    };
 	    /**
 	     * Convert given value to the appropriate value for the attribute.
@@ -1202,8 +1233,8 @@
 	        var _this = this;
 	        var dictionary = this.buildDictionary(relations);
 	        collection.forEach(function (model) {
-	            var id = model[_this.foreignKey];
-	            var relation = id !== null ? dictionary[id] : null;
+	            var fKey = Utils.concatValues(model, _this.foreignKey);
+	            var relation = dictionary[fKey];
 	            model[name] = relation || null;
 	        });
 	    };
@@ -2332,7 +2363,7 @@
 	        if (key) {
 	            return key;
 	        }
-	        return typeof this.primaryKey === 'string' ? this.primaryKey : 'id';
+	        return typeof this.primaryKey === 'string' ? this.primaryKey : '$id';
 	    };
 	    /**
 	     * Get the model object that matches the given record type. The method is for
