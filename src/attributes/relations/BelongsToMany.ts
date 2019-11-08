@@ -179,7 +179,7 @@ export default class BelongsToMany extends Relation {
     related.forEach((id) => {
       const parentId = record[this.parentKey]
       const relatedId = data[this.related.entity][id][this.relatedKey]
-      const pivotKey = `${relatedId}_${parentId}`
+      const pivotKey = JSON.stringify([relatedId, parentId])
       const pivotRecord = data[this.pivot.entity] ? data[this.pivot.entity][pivotKey] : {}
 
       data[this.pivot.entity] = {

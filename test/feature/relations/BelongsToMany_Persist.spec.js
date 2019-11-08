@@ -55,8 +55,8 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
         2: { $id: 2, id: 2 }
       },
       roleUser: {
-        '1_1': { $id: '1_1', role_id: 1, user_id: 1 },
-        '2_1': { $id: '2_1', role_id: 2, user_id: 1 }
+        '[1,1]': { $id: [1, 1], role_id: 1, user_id: 1 },
+        '[2,1]': { $id: [2, 1], role_id: 2, user_id: 1 }
       }
     })
 
@@ -165,8 +165,8 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     expect(store.state.entities.users.data['1'].id).toBe(1)
     expect(store.state.entities.roles.data['2'].id).toBe(2)
     expect(store.state.entities.roles.data['3'].id).toBe(3)
-    expect(store.state.entities.roleUser.data['2_1'].id).toBe(1)
-    expect(store.state.entities.roleUser.data['3_1'].id).toBe(2)
+    expect(store.state.entities.roleUser.data['[2,1]'].id).toBe(1)
+    expect(store.state.entities.roleUser.data['[3,1]'].id).toBe(2)
   })
 
   it('can create a belongs to many relation data with increment id set on base models', async () => {
@@ -228,8 +228,8 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
         2: { $id: 2, id: 2, name: 'view-comment', users: [] }
       },
       roleUser: {
-        '1_1': { $id: '1_1', role_id: 1, user_id: 1 },
-        '2_1': { $id: '2_1', role_id: 2, user_id: 1 }
+        '[1,1]': { $id: [1, 1], role_id: 1, user_id: 1 },
+        '[2,1]': { $id: [2, 1], role_id: 2, user_id: 1 }
       }
     })
 
@@ -304,8 +304,8 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     expect(store.state.entities.users.data['1'].id).toBe(1)
     expect(store.state.entities.roles.data['2'].id).toBe(2)
     expect(store.state.entities.roles.data['3'].id).toBe(3)
-    expect(store.state.entities.roleUser.data['2_1'].$id).toBe('2_1')
-    expect(store.state.entities.roleUser.data['3_1'].$id).toBe('3_1')
+    expect(store.state.entities.roleUser.data['[2,1]'].$id).toStrictEqual([2, 1])
+    expect(store.state.entities.roleUser.data['[3,1]'].$id).toStrictEqual([3, 1])
   })
 
   it('can retrieve data by filtering with `whereHas`', async () => {
@@ -535,8 +535,8 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
         2: { $id: 2, id: 2, roleUsers: [], users: [] }
       },
       roleUsers: {
-        '1_1': { $id: '1_1', user_id: 1, role_id: 1, type: 'administrator', user: null, role: null },
-        '2_1': { $id: '2_1', user_id: 1, role_id: 2, type: 'general', user: null, role: null }
+        '[1,1]': { $id: [1, 1], user_id: 1, role_id: 1, type: 'administrator', user: null, role: null },
+        '[2,1]': { $id: [2, 1], user_id: 1, role_id: 2, type: 'general', user: null, role: null }
       }
     })
 

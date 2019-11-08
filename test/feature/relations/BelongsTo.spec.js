@@ -146,12 +146,12 @@ describe('Features – Relations – Belongs To', () => {
 
     expect(store.state.entities.users.data[10].id).toBe(10)
     expect(store.state.entities.users.data[20].id).toBe(20)
-    expect(store.state.entities.posts.data['1_10'].$id).toBe('1_10')
-    expect(store.state.entities.posts.data['1_10'].id).toBe(1)
-    expect(store.state.entities.posts.data['1_10'].user_id).toBe(10)
-    expect(store.state.entities.posts.data['1_20'].$id).toBe('1_20')
-    expect(store.state.entities.posts.data['1_20'].id).toBe(1)
-    expect(store.state.entities.posts.data['1_20'].user_id).toBe(20)
+    expect(store.state.entities.posts.data['[1,10]'].$id).toStrictEqual([1, 10])
+    expect(store.state.entities.posts.data['[1,10]'].id).toBe(1)
+    expect(store.state.entities.posts.data['[1,10]'].user_id).toBe(10)
+    expect(store.state.entities.posts.data['[1,20]'].$id).toStrictEqual([1, 20])
+    expect(store.state.entities.posts.data['[1,20]'].id).toBe(1)
+    expect(store.state.entities.posts.data['[1,20]'].user_id).toBe(20)
   })
 
   it('returns created record from `create` method', async () => {

@@ -5,4 +5,5 @@
 /docs/node_modules
 /lib
 /node_modules
+.vscode/*
 yarn-error.log

@@ -62,11 +62,7 @@ export default class MorphOne extends Relation {
    * Convert given value to the appropriate value for the attribute.
    */
   make (value: any, _parent: Record, _key: string): Model | null {
-    if (!this.isOneRelation(value)) {
-      return null
-    }
-
-    return new this.related(value)
+    return this.makeOneRelation(value, this.related)
   }
 
   /**

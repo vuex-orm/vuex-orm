@@ -1029,7 +1029,7 @@ var Relation = /** @class */ (function (_super) {
         }, {});
     };
     /**
-     * Check if the given value is a single relation, which is the Object.
+     * Check if the given record is a single relation, which is an object.
      */
     Relation.prototype.isOneRelation = function (record) {
         if (!Array.isArray(record) && record !== null && typeof record === 'object') {
@@ -1038,7 +1038,8 @@ var Relation = /** @class */ (function (_super) {
         return false;
     };
     /**
-     * Check if the given value is a single relation, which is the Object.
+     * Check if the given records is a many relation, which is an array
+     * of object.
      */
     Relation.prototype.isManyRelation = function (records) {
         if (!Array.isArray(records)) {
@@ -1050,7 +1051,17 @@ var Relation = /** @class */ (function (_super) {
         return true;
     };
     /**
-     * Convert given records to the collection.
+     * Wrap the given object into a model instance.
+     */
+    Relation.prototype.makeOneRelation = function (record, model) {
+        if (!this.isOneRelation(record)) {
+            return null;
+        }
+        var relatedModel = model.getModelFromRecord(record) || model;
+        return new relatedModel(record);
+    };
+    /**
+     * Wrap the given records into a collection of model instances.
      */
     Relation.prototype.makeManyRelation = function (records, model) {
         var _this = this;
@@ -1060,7 +1071,8 @@ var Relation = /** @class */ (function (_super) {
         return records.filter(function (record) {
             return _this.isOneRelation(record);
         }).map(function (record) {
-            return new model(record);
+            var relatedModel = model.getModelFromRecord(record) || model;
+            return new relatedModel(record);
         });
     };
     return Relation;
@@ -1108,10 +1120,7 @@ var HasOne = /** @class */ (function (_super) {
      * instantiating a model or creating a plain object from a model.
      */
     HasOne.prototype.make = function (value, _parent, _key) {
-        if (!this.isOneRelation(value)) {
-            return null;
-        }
-        return new this.related(value);
+        return this.makeOneRelation(value, this.related);
     };
     /**
      * Load the has one relationship for the collection.
@@ -1195,10 +1204,7 @@ var BelongsTo = /** @class */ (function (_super) {
      * Convert given value to the appropriate value for the attribute.
      */
     BelongsTo.prototype.make = function (value, _parent, _key) {
-        if (!this.isOneRelation(value)) {
-            return null;
-        }
-        return new this.parent(value);
+        return this.makeOneRelation(value, this.parent);
     };
     /**
      * Load the belongs to relationship for the collection.
@@ -1578,7 +1584,7 @@ var BelongsToMany = /** @class */ (function (_super) {
             var _a, _b;
             var parentId = record[_this.parentKey];
             var relatedId = data[_this.related.entity][id][_this.relatedKey];
-            var pivotKey = relatedId + "_" + parentId;
+            var pivotKey = JSON.stringify([relatedId, parentId]);
             var pivotRecord = data[_this.pivot.entity] ? data[_this.pivot.entity][pivotKey] : {};
             data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = __assign(__assign({}, pivotRecord), (_b = { $id: pivotKey }, _b[_this.foreignPivotKey] = parentId, _b[_this.relatedPivotKey] = relatedId, _b)), _a));
         });
@@ -1615,12 +1621,12 @@ var MorphTo = /** @class */ (function (_super) {
      * Convert given value to the appropriate value for the attribute.
      */
     MorphTo.prototype.make = function (value, parent, _key) {
-        if (!this.isOneRelation(value)) {
-            return null;
-        }
         var related = parent[this.type];
         var model = this.model.relation(related);
-        return model ? new model(value) : null;
+        if (!model) {
+            return null;
+        }
+        return this.makeOneRelation(value, model);
     };
     /**
      * Load the morph to relationship for the collection.
@@ -1685,10 +1691,7 @@ var MorphOne = /** @class */ (function (_super) {
      * Convert given value to the appropriate value for the attribute.
      */
     MorphOne.prototype.make = function (value, _parent, _key) {
-        if (!this.isOneRelation(value)) {
-            return null;
-        }
-        return new this.related(value);
+        return this.makeOneRelation(value, this.related);
     };
     /**
      * Load the morph many relationship for the record.
@@ -2302,8 +2305,8 @@ var Model = /** @class */ (function () {
      *
      * Most of the time, it's same as the value for the Model's primary key. If
      * the Model has a composite primary key, each value corresponding to those
-     * primary key will be joined together with `_` and become a single string
-     * value such as `1_2`.
+     * primary key will be stringified and become a single string value such
+     * as `'[1, 2]'`.
      *
      * If the primary key is not present at the given record, it returns `null`.
      * For the composite primary key, every key must exist at a given record,
@@ -2316,12 +2319,22 @@ var Model = /** @class */ (function () {
             return this.getIndexIdFromValue(record[key]);
         }
         var ids = [];
-        var isCompositeKeyValid = key.every(function (k) {
-            var id = _this.getIndexIdFromValue(record[k]);
+        key.forEach(function (key) {
+            var id = _this.getIndexIdFromValue(record[key]);
             id && ids.push(id);
-            return id;
         });
-        return isCompositeKeyValid ? ids.join('_') : null;
+        return this.isCompositeKeyValid(record) ? JSON.stringify(ids) : null;
+    };
+    /**
+     * Returns true if primaryKey is composite and all corresponding values
+     * in the record are present.
+     */
+    Model.isCompositeKeyValid = function (record) {
+        var _this = this;
+        if (!Array.isArray(this.primaryKey)) {
+            return false;
+        }
+        return this.primaryKey.every(function (key) { return _this.getIndexIdFromValue(record[key]); });
     };
     /**
      * Get correct index ID from the given value. This method will cast the
@@ -2665,7 +2678,7 @@ var Model = /** @class */ (function () {
             _this[key] = field.make(value, data, key);
         });
         if (data.$id !== undefined) {
-            this.$id = data.$id;
+            this.$id = this.$self().isCompositeKeyValid(this) ? JSON.parse(data.$id) : data.$id;
         }
     };
     /**
@@ -2711,6 +2724,120 @@ var Model = /** @class */ (function () {
     Model.state = {};
     return Model;
 }());
+
+var Getters = {
+    /**
+     * Create a new Query instance.
+     */
+    query: function (state, _getters, _rootState, rootGetters) { return function () {
+        return rootGetters[state.$connection + "/query"](state.$name);
+    }; },
+    /**
+     * Get all data of given entity.
+     */
+    all: function (state, _getters, _rootState, rootGetters) { return function () {
+        return rootGetters[state.$connection + "/all"](state.$name);
+    }; },
+    /**
+     * Find a data of the given entity by given id.
+     */
+    find: function (state, _getters, _rootState, rootGetters) { return function (id) {
+        return rootGetters[state.$connection + "/find"](state.$name, id);
+    }; },
+    /**
+     * Find array of data of the given entity by given ids.
+     */
+    findIn: function (state, _getters, _rootState, rootGetters) { return function (idList) {
+        return rootGetters[state.$connection + "/findIn"](state.$name, idList);
+    }; }
+};
+
+function destroy(context, payload) {
+    return __awaiter(this, void 0, void 0, function () {
+        var state, entity, where;
+        return __generator(this, function (_a) {
+            state = context.state;
+            entity = state.$name;
+            where = payload;
+            return [2 /*return*/, context.dispatch(state.$connection + "/delete", { entity: entity, where: where }, { root: true })];
+        });
+    });
+}
+/**
+ * Delete all data from the store.
+ */
+function deleteAll(context) {
+    return __awaiter(this, void 0, void 0, function () {
+        var state, entity;
+        return __generator(this, function (_a) {
+            state = context.state;
+            entity = state.$name;
+            return [2 /*return*/, context.dispatch(state.$connection + "/deleteAll", { entity: entity }, { root: true })];
+        });
+    });
+}
+var Actions = {
+    /**
+     * Create new data with all fields filled by default values.
+     */
+    new: function (context) {
+        var state = context.state;
+        var entity = state.$name;
+        return context.dispatch(state.$connection + "/new", { entity: entity }, { root: true });
+    },
+    /**
+     * Save given data to the store by replacing all existing records in the
+     * store. If you want to save data without replacing existing records,
+     * use the `insert` method instead.
+     */
+    create: function (context, payload) {
+        var state = context.state;
+        var entity = state.$name;
+        return context.dispatch(state.$connection + "/create", __assign(__assign({}, payload), { entity: entity }), { root: true });
+    },
+    /**
+     * Insert given data to the state. Unlike `create`, this method will not
+     * remove existing data within the state, but it will update the data
+     * with the same primary key.
+     */
+    insert: function (context, payload) {
+        var state = context.state;
+        var entity = state.$name;
+        return context.dispatch(state.$connection + "/insert", __assign(__assign({}, payload), { entity: entity }), { root: true });
+    },
+    /**
+     * Update data in the store.
+     */
+    update: function (context, payload) {
+        var state = context.state;
+        var entity = state.$name;
+        // If the payload is an array, then the payload should be an array of
+        // data so let's pass the whole payload as data.
+        if (Array.isArray(payload)) {
+            return context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true });
+        }
+        // If the payload doesn't have `data` property, we'll assume that
+        // the user has passed the object as the payload so let's define
+        // the whole payload as a data.
+        if (payload.data === undefined) {
+            return context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true });
+        }
+        // Else destructure the payload and let root action handle it.
+        return context.dispatch(state.$connection + "/update", __assign({ entity: entity }, payload), { root: true });
+    },
+    /**
+     * Insert or update given data to the state. Unlike `insert`, this method
+     * will not replace existing data within the state, but it will update only
+     * the submitted data with the same primary key.
+     */
+    insertOrUpdate: function (context, payload) {
+        var state = context.state;
+        var entity = state.$name;
+        return context.dispatch(state.$connection + "/insertOrUpdate", __assign({ entity: entity }, payload), { root: true });
+    },
+    delete: destroy,
+    deleteAll: deleteAll
+};
 
 function _defineProperties(target, props) {
   for (var i = 0; i < props.length; i++) {
@@ -3554,14 +3681,13 @@ var Loader = /** @class */ (function () {
             this.withAll(query);
             return;
         }
-        // If we passed an array, we dispatch the bits to with queries
-        if (name instanceof Array) {
+        // If we passed an array, we dispatch the bits to with queries.
+        if (Array.isArray(name)) {
             name.forEach(function (relationName) { return _this.with(query, relationName, constraint); });
+            return;
         }
-        else {
-            // Else parse relations and set appropriate constraints.
-            this.parseWithRelations(query, name.split('.'), constraint);
-        }
+        // Else parse relations and set appropriate constraints.
+        this.parseWithRelations(query, name.split('.'), constraint);
     };
     /**
      * Set all relationships to be eager loaded with the query.
@@ -3792,225 +3918,6 @@ var Rollcaller = /** @class */ (function () {
     return Rollcaller;
 }());
 
-var Hook = /** @class */ (function () {
-    /**
-     * Create a lidecycle hook instance.
-     */
-    function Hook(query) {
-        /**
-         * The global hook index to be deleted.
-         */
-        this.indexToBeDeleted = [];
-        this.query = query;
-    }
-    /**
-     * Register a callback. It Returns unique ID for registered callback.
-     */
-    Hook.on = function (on, callback, once) {
-        if (once === void 0) { once = false; }
-        var uid = this.lastHookId + 1;
-        this.lastHookId = uid;
-        if (!this.hooks[on]) {
-            this.hooks[on] = [];
-        }
-        this.hooks[on].push({ callback: callback, once: once, uid: uid });
-        return uid;
-    };
-    /**
-     * Remove hook registration.
-     */
-    Hook.off = function (uid) {
-        var _this = this;
-        var removed = false;
-        Object.keys(this.hooks).some(function (on) {
-            var hook = _this.hooks[on];
-            var index = hook.findIndex(function (h) { return h.uid === uid; });
-            if (index !== -1) {
-                hook.splice(index, 1);
-                removed = true;
-            }
-            return removed;
-        });
-        return removed;
-    };
-    /**
-     * Get the hook class.
-     */
-    Hook.prototype.self = function () {
-        return this.constructor;
-    };
-    /**
-     * Get the hook for the given name.
-     */
-    Hook.prototype.getHook = function (name) {
-        var hook = this.query.model[name];
-        return hook || null;
-    };
-    /**
-     * Get the global hook.
-     */
-    Hook.prototype.getGlobalHook = function (name) {
-        var hook = this.self().hooks[name];
-        return hook || null;
-    };
-    /**
-     * Check if the given hook exist.
-     */
-    Hook.prototype.has = function (name) {
-        return !!this.getHook(name) || !!this.getGlobalHook(name);
-    };
-    /**
-     * Execute select hook for the given collection.
-     */
-    Hook.prototype.executeSelectHook = function (on, records) {
-        if (!this.has(on)) {
-            return records;
-        }
-        records = this.executeLocalSelectHook(on, records);
-        records = this.executeGlobalSelectHook(on, records);
-        return records;
-    };
-    /**
-     * Execute select hook against given records.
-     */
-    Hook.prototype.executeLocalSelectHook = function (on, records) {
-        var hook = this.getHook(on);
-        if (!hook) {
-            return records;
-        }
-        return hook(records, this.query.entity);
-    };
-    /**
-     * Execute the global select hook against given records.
-     */
-    Hook.prototype.executeGlobalSelectHook = function (on, records) {
-        var _this = this;
-        var hooks = this.getGlobalHook(on);
-        if (!hooks) {
-            return records;
-        }
-        // Track indexes to delete.
-        var deleteHookIndexes = [];
-        // Loop all hooks.
-        hooks.forEach(function (hook, hookIndex) {
-            var callback = hook.callback, once = hook.once;
-            records = callback.call(_this.query, records, _this.query.entity);
-            // Add hook index to delete.
-            once && deleteHookIndexes.push(hookIndex);
-        });
-        // Remove hooks to be deleted in reverse order.
-        deleteHookIndexes.reverse().forEach(function (hookIndex) {
-            hooks.splice(hookIndex, 1);
-        });
-        return records;
-    };
-    /**
-     * Execute the callback for all given records.
-     */
-    Hook.prototype.executeMutationHookOnRecords = function (on, records) {
-        var _this = this;
-        if (!this.has(on)) {
-            return;
-        }
-        Object.keys(records).forEach(function (id) {
-            var result = _this.executeMutationHook(on, records[id]);
-            if (result === false) {
-                delete records[id];
-            }
-        });
-        this.removeGlobalHook(on);
-    };
-    /**
-     * Execute mutation hook against given model.
-     */
-    Hook.prototype.executeMutationHook = function (on, model) {
-        if (this.executeLocalMutationHook(on, model) === false) {
-            return false;
-        }
-        if (this.executeGlobalMutationHook(on, model) === false) {
-            return false;
-        }
-    };
-    /**
-     * Execute the local mutation hook.
-     */
-    Hook.prototype.executeLocalMutationHook = function (on, model) {
-        var hook = this.getHook(on);
-        if (!hook) {
-            return;
-        }
-        return hook(model, this.query.entity);
-    };
-    /**
-     * Execute the global mutation hook.
-     */
-    Hook.prototype.executeGlobalMutationHook = function (on, model) {
-        var _this = this;
-        var hooks = this.getGlobalHook(on);
-        if (!hooks) {
-            return;
-        }
-        // Track results.
-        var results = [];
-        // Loop all hooks.
-        hooks.forEach(function (hook, index) {
-            results.push(hook.callback.call(_this.query, model, _this.query.entity));
-            // Add hook index to delete.
-            hook.once && _this.indexToBeDeleted.push(index);
-        });
-        if (results.includes(false)) {
-            return false;
-        }
-    };
-    /**
-     * Remove global hooks which are executed and defined as once.
-     */
-    Hook.prototype.removeGlobalHook = function (on) {
-        var hooks = this.getGlobalHook(on);
-        if (!hooks) {
-            return;
-        }
-        this.indexToBeDeleted.reverse().forEach(function (index) { hooks.splice(index, 1); });
-    };
-    /**
-     * Execute before delete hook to the given model.
-     */
-    Hook.prototype.executeBeforeDeleteHook = function (model) {
-        if (this.executeLocalBeforeDeleteHook(model) === false) {
-            return false;
-        }
-    };
-    /**
-     * Execute local before delete hook to the given model.
-     */
-    Hook.prototype.executeLocalBeforeDeleteHook = function (model) {
-        var hook = this.query.model['beforeDelete'];
-        return hook && hook(model);
-    };
-    /**
-     * Execute after delete hook to the given model.
-     */
-    Hook.prototype.executeAfterDeleteHook = function (model) {
-        this.executeLocalAfterDeleteHook(model);
-    };
-    /**
-     * Execute local after delete hook to the given model.
-     */
-    Hook.prototype.executeLocalAfterDeleteHook = function (model) {
-        var hook = this.query.model['afterDelete'];
-        return hook && hook(model);
-    };
-    /**
-     * Global lifecycle hooks for the query.
-     */
-    Hook.hooks = {};
-    /**
-     * Hook UID counter.
-     */
-    Hook.lastHookId = 0;
-    return Hook;
-}());
-
 var Query = /** @class */ (function () {
     /**
      * Create a new Query instance.
@@ -4077,7 +3984,6 @@ var Query = /** @class */ (function () {
         this.entity = entity;
         this.model = this.getModel(entity);
         this.module = this.getModule(entity);
-        this.hook = new Hook(this);
     }
     /**
      * Get the database from the container.
@@ -4126,16 +4032,32 @@ var Query = /** @class */ (function () {
         });
     };
     /**
-     * Register a callback. It Returns unique ID for registered callback.
+     * Register a global hook. It will return ID for the hook that users may use
+     * it to unregister hooks.
      */
     Query.on = function (on, callback, once) {
-        return Hook.on(on, callback, once);
+        if (once === void 0) { once = false; }
+        var id = ++this.lastHookId;
+        if (!this.hooks[on]) {
+            this.hooks[on] = [];
+        }
+        this.hooks[on].push({ id: id, callback: callback, once: once });
+        return id;
     };
     /**
-     * Remove hook registration.
+     * Unregister global hook with the given id.
      */
-    Query.off = function (uid) {
-        return Hook.off(uid);
+    Query.off = function (id) {
+        var _this = this;
+        return Object.keys(this.hooks).some(function (on) {
+            var hooks = _this.hooks[on];
+            var index = hooks.findIndex(function (h) { return h.id === id; });
+            if (index === -1) {
+                return false;
+            }
+            hooks.splice(index, 1);
+            return true;
+        });
     };
     /**
      * Get query class.
@@ -4199,6 +4121,7 @@ var Query = /** @class */ (function () {
      * Get the record of the given id.
      */
     Query.prototype.find = function (id) {
+        id = Array.isArray(id) ? JSON.stringify(id) : id;
         return this.item(this.state.data[id]); // TODO: Delete "as ..." when model type coverage reaches 100%.
     };
     /**
@@ -4206,7 +4129,10 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.findIn = function (idList) {
         var _this = this;
-        return idList.map(function (id) { return _this.state.data[id]; }).filter(function (item) { return item; }); // TODO: Delete "as ..." when model type coverage reaches 100%.
+        return idList.map(function (id) {
+            id = Array.isArray(id) ? JSON.stringify(id) : id;
+            return _this.state.data[id];
+        }).filter(function (item) { return item; }); // TODO: Delete "as ..." when model type coverage reaches 100%.
     };
     /**
      * Returns all record of the query chain result.
@@ -4451,20 +4377,20 @@ var Query = /** @class */ (function () {
         Rollcaller.applyConstraints(this);
         // Next, get all record as an array and then start filtering it through.
         var records = this.records();
-        // Process `beforeProcess` hook.
-        records = this.hook.executeSelectHook('beforeSelect', records);
+        // Process `beforeSelect` hook.
+        records = this.executeRetrieveHook('beforeSelect', records);
         // Let's filter the records at first by the where clauses.
         records = this.filterWhere(records);
         // Process `afterWhere` hook.
-        records = this.hook.executeSelectHook('afterWhere', records);
+        records = this.executeRetrieveHook('afterWhere', records);
         // Next, lets sort the data.
         records = this.filterOrderBy(records);
         // Process `afterOrderBy` hook.
-        records = this.hook.executeSelectHook('afterOrderBy', records);
+        records = this.executeRetrieveHook('afterOrderBy', records);
         // Finally, slice the record by limit and offset.
         records = this.filterLimit(records);
         // Process `afterLimit` hook.
-        records = this.hook.executeSelectHook('afterLimit', records);
+        records = this.executeRetrieveHook('afterLimit', records);
         return records; // TODO: Delete "as ..." when model type coverage reaches 100%.
     };
     /**
@@ -4536,11 +4462,7 @@ var Query = /** @class */ (function () {
         if (Object.keys(this.load).length > 0) {
             var model = this.model.getModelFromRecord(item);
             item = new model(item);
-            var items = this.hook.executeSelectHook('beforeRelations', [item]);
-            item = items[0];
             Loader.eagerLoadRelations(this, [item]);
-            items = this.hook.executeSelectHook('afterRelations', [item]);
-            item = items[0];
         }
         return item;
     };
@@ -4557,9 +4479,7 @@ var Query = /** @class */ (function () {
                 var model = _this.model.getModelFromRecord(item);
                 return new model(item);
             });
-            collection = this.hook.executeSelectHook('beforeRelations', collection);
             Loader.eagerLoadRelations(this, collection);
-            collection = this.hook.executeSelectHook('afterRelations', collection);
         }
         return collection;
     };
@@ -4602,7 +4522,7 @@ var Query = /** @class */ (function () {
             _this.emptyState();
             _this.state.data = __assign(__assign({}, _this.state.data), instances);
         };
-        this.commit('create', instances, createCallback);
+        this.commitCreateOnRecords(instances, createCallback);
         return this.map(instances); // TODO: Delete "as ..." when model type coverage reaches 100%.
     };
     /**
@@ -4619,10 +4539,18 @@ var Query = /** @class */ (function () {
     Query.prototype.insertMany = function (records) {
         var _this = this;
         var instances = this.hydrateMany(records);
-        this.commit('create', instances, function () {
+        this.commitCreateOnRecords(instances, function () {
             _this.state.data = __assign(__assign({}, _this.state.data), instances);
         });
         return this.map(instances); // TODO: Delete "as ..." when model type coverage reaches 100%.
+    };
+    /**
+     * Commit given models to the store by `create` method.
+     */
+    Query.prototype.commitCreateOnRecords = function (models, callback) {
+        this.executeBeforeCreateHookOnModels(models);
+        callback();
+        this.executeAfterCreateHookOnModels(models);
     };
     /**
      * Update data in the state.
@@ -4726,10 +4654,18 @@ var Query = /** @class */ (function () {
     Query.prototype.commitUpdate = function (instances) {
         var _this = this;
         instances = this.updateIndexes(instances);
-        this.commit('update', instances, function () {
+        this.commitUpdateOnRecords(instances, function () {
             _this.state.data = __assign(__assign({}, _this.state.data), instances);
         });
         return this.map(instances);
+    };
+    /**
+     * Commit given models to the store by `update` method.
+     */
+    Query.prototype.commitUpdateOnRecords = function (models, callback) {
+        this.executeBeforeUpdateHookOnModels(models);
+        callback();
+        this.executeAfterUpdateHookOnModels(models);
     };
     /**
      * Update the key of the instances. This is needed when a user updates
@@ -4840,7 +4776,7 @@ var Query = /** @class */ (function () {
      * Delete a record from the store by given id.
      */
     Query.prototype.deleteById = function (id) {
-        var item = this.whereId(id).first();
+        var item = this.find(id);
         if (!item) {
             return null;
         }
@@ -4856,11 +4792,11 @@ var Query = /** @class */ (function () {
             if (!condition(model)) {
                 return true;
             }
-            if (_this.hook.executeBeforeDeleteHook(model) === false) {
+            if (_this.executeBeforeDeleteHook(model) === false) {
                 return true;
             }
             deleted.push(model);
-            _this.hook.executeAfterDeleteHook(model);
+            _this.executeAfterDeleteHook(model);
             return false;
         });
         return deleted;
@@ -4933,18 +4869,6 @@ var Query = /** @class */ (function () {
         return Object.keys(instances).map(function (id) { return instances[id]; });
     };
     /**
-     * Execute given callback by executing before and after hooks of the specified
-     * method to the given instances. The method name should be something like
-     * `create` or `update`, then it will be converted to `beforeCreate` ,
-     * `afterCreate` and so on.
-     */
-    Query.prototype.commit = function (method, instances, callback) {
-        var name = "" + method.charAt(0).toUpperCase() + method.slice(1);
-        this.hook.executeMutationHookOnRecords("before" + name, instances);
-        callback();
-        this.hook.executeMutationHookOnRecords("after" + name, instances);
-    };
-    /**
      * Clears the current state from any data related to current model:
      * - everything if not in a inheritance scheme
      * - only derived instances if applied to a derived entity
@@ -4960,122 +4884,273 @@ var Query = /** @class */ (function () {
             }
         }
     };
+    /**
+     * Execute retrieve hook for the given method.
+     */
+    Query.prototype.executeRetrieveHook = function (on, models) {
+        var collection = models;
+        collection = this.executeLocalRetrieveHook(on, collection);
+        collection = this.executeGlobalRetrieveHook(on, collection);
+        return collection;
+    };
+    /**
+     * Execute local retrieve hook for the given method.
+     */
+    Query.prototype.executeLocalRetrieveHook = function (on, models) {
+        var hook = this.model[on];
+        return hook ? hook(models, this.model.entity) : models;
+    };
+    /**
+     * Execute global retrieve hook for the given method.
+     */
+    Query.prototype.executeGlobalRetrieveHook = function (on, models) {
+        var _this = this;
+        var hooks = this.self().hooks[on];
+        if (!hooks) {
+            return models;
+        }
+        var result = hooks.reduce(function (collection, hook) {
+            return hook.callback.call(_this, collection, _this.model.entity);
+        }, models);
+        this.cleanGlobalHooksOn(on);
+        return result;
+    };
+    /**
+     * Execute before create hook to the given model.
+     */
+    Query.prototype.executeBeforeCreateHook = function (model) {
+        if (this.executeLocalBeforeCreateHook(model) === false) {
+            return false;
+        }
+        if (this.executeGlobalBeforeCreateHook(model) === false) {
+            return false;
+        }
+    };
+    /**
+     * Execute before create hook to the goven models.
+     */
+    Query.prototype.executeBeforeCreateHookOnModels = function (models) {
+        var _this = this;
+        Object.keys(models).forEach(function (id) {
+            var model = models[id];
+            if (_this.executeBeforeCreateHook(model) === false) {
+                delete models[id];
+            }
+        });
+    };
+    /**
+     * Execute local before create hook to the given model.
+     */
+    Query.prototype.executeLocalBeforeCreateHook = function (model) {
+        var hook = this.model['beforeCreate'];
+        return hook && hook(model, this.entity);
+    };
+    /**
+     * Execute global before create hook to the given model.
+     */
+    Query.prototype.executeGlobalBeforeCreateHook = function (model) {
+        var _this = this;
+        return this.executeGlobalBeforeMutationHooks('beforeCreate', function (hook) {
+            return hook(model, _this.entity);
+        });
+    };
+    /**
+     * Execute after create hook to the given model.
+     */
+    Query.prototype.executeAfterCreateHook = function (model) {
+        this.executeLocalAfterCreateHook(model);
+        this.executeGlobalAfterCreateHook(model);
+    };
+    /**
+     * Execute after create hook to the goven models.
+     */
+    Query.prototype.executeAfterCreateHookOnModels = function (models) {
+        var _this = this;
+        Object.keys(models).forEach(function (id) {
+            var model = models[id];
+            _this.executeAfterCreateHook(model);
+        });
+    };
+    /**
+     * Execute local after create hook to the given model.
+     */
+    Query.prototype.executeLocalAfterCreateHook = function (model) {
+        var hook = this.model['afterCreate'];
+        return hook && hook(model, this.entity);
+    };
+    /**
+     * Execute global after create hook to the given model.
+     */
+    Query.prototype.executeGlobalAfterCreateHook = function (model) {
+        var _this = this;
+        this.executeGlobalAfterMutationHooks('afterCreate', function (hook) {
+            hook(model, _this.entity);
+        });
+    };
+    /**
+     * Execute before update hook to the given model.
+     */
+    Query.prototype.executeBeforeUpdateHook = function (model) {
+        if (this.executeLocalBeforeUpdateHook(model) === false) {
+            return false;
+        }
+        if (this.executeGlobalBeforeUpdateHook(model) === false) {
+            return false;
+        }
+    };
+    /**
+     * Execute before update hook to the goven models.
+     */
+    Query.prototype.executeBeforeUpdateHookOnModels = function (models) {
+        var _this = this;
+        Object.keys(models).forEach(function (id) {
+            var model = models[id];
+            if (_this.executeBeforeUpdateHook(model) === false) {
+                delete models[id];
+            }
+        });
+    };
+    /**
+     * Execute local before update hook to the given model.
+     */
+    Query.prototype.executeLocalBeforeUpdateHook = function (model) {
+        var hook = this.model['beforeUpdate'];
+        return hook && hook(model, this.entity);
+    };
+    /**
+     * Execute global before update hook to the given model.
+     */
+    Query.prototype.executeGlobalBeforeUpdateHook = function (model) {
+        var _this = this;
+        return this.executeGlobalBeforeMutationHooks('beforeUpdate', function (hook) {
+            return hook(model, _this.entity);
+        });
+    };
+    /**
+     * Execute after update hook to the given model.
+     */
+    Query.prototype.executeAfterUpdateHook = function (model) {
+        this.executeLocalAfterUpdateHook(model);
+        this.executeGlobalAfterUpdateHook(model);
+    };
+    /**
+     * Execute local after update hook to the given model.
+     */
+    Query.prototype.executeLocalAfterUpdateHook = function (model) {
+        var hook = this.model['afterUpdate'];
+        return hook && hook(model, this.entity);
+    };
+    /**
+     * Execute global after create hook to the given model.
+     */
+    Query.prototype.executeGlobalAfterUpdateHook = function (model) {
+        var _this = this;
+        this.executeGlobalAfterMutationHooks('afterUpdate', function (hook) {
+            hook(model, _this.entity);
+        });
+    };
+    /**
+     * Execute after update hook to the goven models.
+     */
+    Query.prototype.executeAfterUpdateHookOnModels = function (models) {
+        var _this = this;
+        Object.keys(models).forEach(function (id) {
+            var model = models[id];
+            _this.executeAfterUpdateHook(model);
+        });
+    };
+    /**
+     * Execute before delete hook to the given model.
+     */
+    Query.prototype.executeBeforeDeleteHook = function (model) {
+        if (this.executeLocalBeforeDeleteHook(model) === false) {
+            return false;
+        }
+        if (this.executeGlobalBeforeDeleteHook(model) === false) {
+            return false;
+        }
+    };
+    /**
+     * Execute local before delete hook to the given model.
+     */
+    Query.prototype.executeLocalBeforeDeleteHook = function (model) {
+        var hook = this.model['beforeDelete'];
+        return hook && hook(model, this.entity);
+    };
+    /**
+     * Execute global before delete hook to the given model.
+     */
+    Query.prototype.executeGlobalBeforeDeleteHook = function (model) {
+        var _this = this;
+        return this.executeGlobalBeforeMutationHooks('beforeDelete', function (hook) {
+            return hook(model, _this.entity);
+        });
+    };
+    /**
+     * Execute after delete hook to the given model.
+     */
+    Query.prototype.executeAfterDeleteHook = function (model) {
+        this.executeLocalAfterDeleteHook(model);
+        this.executeGlobalAfterDeleteHook(model);
+    };
+    /**
+     * Execute local after delete hook to the given model.
+     */
+    Query.prototype.executeLocalAfterDeleteHook = function (model) {
+        var hook = this.model['afterDelete'];
+        return hook && hook(model, this.entity);
+    };
+    /**
+     * Execute global after delete hook to the given model.
+     */
+    Query.prototype.executeGlobalAfterDeleteHook = function (model) {
+        var _this = this;
+        this.executeGlobalAfterMutationHooks('afterDelete', function (hook) {
+            hook(model, _this.entity);
+        });
+    };
+    /**
+     * Execute global before mutation hook on the given method.
+     */
+    Query.prototype.executeGlobalBeforeMutationHooks = function (on, callback) {
+        var hooks = this.self().hooks[on];
+        if (!Array.isArray(hooks) || hooks.length <= 0) {
+            return;
+        }
+        var result = hooks.some(function (hook) {
+            return callback(hook.callback) === false ? false : true;
+        });
+        this.cleanGlobalHooksOn(on);
+        return result === false ? false : undefined;
+    };
+    /**
+     * Execute global after mutation hook on the given method.
+     */
+    Query.prototype.executeGlobalAfterMutationHooks = function (on, callback) {
+        var hooks = this.self().hooks[on];
+        if (!Array.isArray(hooks)) {
+            return;
+        }
+        hooks.forEach(function (hook) { callback(hook.callback); });
+        this.cleanGlobalHooksOn(on);
+    };
+    /**
+     * Remove all callback defined as "once" from the global hooks.
+     */
+    Query.prototype.cleanGlobalHooksOn = function (on) {
+        var hooks = this.self().hooks[on];
+        this.self().hooks[on] = hooks.filter(function (hook) { return !hook.once; });
+    };
+    /**
+     * The global lifecycle hook registries.
+     */
+    Query.hooks = {};
+    /**
+     * The counter to generate the UID for global hooks.
+     */
+    Query.lastHookId = 0;
     return Query;
 }());
-
-var Getters = {
-    /**
-     * Create a new Query instance.
-     */
-    query: function (state, _getters, _rootState, rootGetters) { return function () {
-        return rootGetters[state.$connection + "/query"](state.$name);
-    }; },
-    /**
-     * Get all data of given entity.
-     */
-    all: function (state, _getters, _rootState, rootGetters) { return function () {
-        return rootGetters[state.$connection + "/all"](state.$name);
-    }; },
-    /**
-     * Find a data of the given entity by given id.
-     */
-    find: function (state, _getters, _rootState, rootGetters) { return function (id) {
-        return rootGetters[state.$connection + "/find"](state.$name, id);
-    }; },
-    /**
-     * Find array of data of the given entity by given ids.
-     */
-    findIn: function (state, _getters, _rootState, rootGetters) { return function (idList) {
-        return rootGetters[state.$connection + "/findIn"](state.$name, idList);
-    }; }
-};
-
-function destroy(context, payload) {
-    return __awaiter(this, void 0, void 0, function () {
-        var state, entity, where;
-        return __generator(this, function (_a) {
-            state = context.state;
-            entity = state.$name;
-            where = payload;
-            return [2 /*return*/, context.dispatch(state.$connection + "/delete", { entity: entity, where: where }, { root: true })];
-        });
-    });
-}
-/**
- * Delete all data from the store.
- */
-function deleteAll(context) {
-    return __awaiter(this, void 0, void 0, function () {
-        var state, entity;
-        return __generator(this, function (_a) {
-            state = context.state;
-            entity = state.$name;
-            return [2 /*return*/, context.dispatch(state.$connection + "/deleteAll", { entity: entity }, { root: true })];
-        });
-    });
-}
-var Actions = {
-    /**
-     * Create new data with all fields filled by default values.
-     */
-    new: function (context) {
-        var state = context.state;
-        var entity = state.$name;
-        return context.dispatch(state.$connection + "/new", { entity: entity }, { root: true });
-    },
-    /**
-     * Save given data to the store by replacing all existing records in the
-     * store. If you want to save data without replacing existing records,
-     * use the `insert` method instead.
-     */
-    create: function (context, payload) {
-        var state = context.state;
-        var entity = state.$name;
-        return context.dispatch(state.$connection + "/create", __assign(__assign({}, payload), { entity: entity }), { root: true });
-    },
-    /**
-     * Insert given data to the state. Unlike `create`, this method will not
-     * remove existing data within the state, but it will update the data
-     * with the same primary key.
-     */
-    insert: function (context, payload) {
-        var state = context.state;
-        var entity = state.$name;
-        return context.dispatch(state.$connection + "/insert", __assign(__assign({}, payload), { entity: entity }), { root: true });
-    },
-    /**
-     * Update data in the store.
-     */
-    update: function (context, payload) {
-        var state = context.state;
-        var entity = state.$name;
-        // If the payload is an array, then the payload should be an array of
-        // data so let's pass the whole payload as data.
-        if (Array.isArray(payload)) {
-            return context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true });
-        }
-        // If the payload doesn't have `data` property, we'll assume that
-        // the user has passed the object as the payload so let's define
-        // the whole payload as a data.
-        if (payload.data === undefined) {
-            return context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true });
-        }
-        // Else destructure the payload and let root action handle it.
-        return context.dispatch(state.$connection + "/update", __assign({ entity: entity }, payload), { root: true });
-    },
-    /**
-     * Insert or update given data to the state. Unlike `insert`, this method
-     * will not replace existing data within the state, but it will update only
-     * the submitted data with the same primary key.
-     */
-    insertOrUpdate: function (context, payload) {
-        var state = context.state;
-        var entity = state.$name;
-        return context.dispatch(state.$connection + "/insertOrUpdate", __assign({ entity: entity }, payload), { root: true });
-    },
-    delete: destroy,
-    deleteAll: deleteAll
-};
 
 var RootGetters = {
     /**
@@ -5309,7 +5384,6 @@ function use (plugin, options) {
     if (options === void 0) { options = {}; }
     var components = {
         Model: Model,
-        Query: Query,
         Attribute: Attribute,
         Type: Type,
         Attr: Attr,
@@ -5333,7 +5407,8 @@ function use (plugin, options) {
         Actions: Actions,
         RootGetters: RootGetters,
         RootActions: RootActions,
-        RootMutations: RootMutations
+        RootMutations: RootMutations,
+        Query: Query
     };
     plugin.install(components, options);
 }
@@ -5387,7 +5462,10 @@ var IdAttribute = /** @class */ (function () {
     IdAttribute.create = function (model) {
         return function (value, _parent, _key) {
             var id = model.getIndexIdFromRecord(value);
-            return id === null ? NoKey.get() : id;
+            if (id === null) {
+                return NoKey.get();
+            }
+            return id;
         };
     };
     return IdAttribute;
@@ -5652,9 +5730,9 @@ var Database = /** @class */ (function () {
 var index = {
     install: install,
     use: use,
+    Container: Container,
     Database: Database,
     Model: Model,
-    Query: Query,
     Attribute: Attribute,
     Type: Type,
     Attr: Attr,
@@ -5678,8 +5756,9 @@ var index = {
     Actions: Actions,
     RootGetters: RootGetters,
     RootActions: RootActions,
-    RootMutations: RootMutations
+    RootMutations: RootMutations,
+    Query: Query
 };
 
 export default index;
-export { Actions, Attr, Attribute, BelongsTo, BelongsToMany, Boolean, Database, Getters, HasMany, HasManyBy, HasManyThrough, HasOne, Increment, Model, MorphMany, MorphOne, MorphTo, MorphToMany, MorphedByMany, Number, Query, Relation, RootActions, RootGetters, RootMutations, String$1 as String, Type, install, use };
+export { Actions, Attr, Attribute, BelongsTo, BelongsToMany, Boolean, Container, Database, Getters, HasMany, HasManyBy, HasManyThrough, HasOne, Increment, Model, MorphMany, MorphOne, MorphTo, MorphToMany, MorphedByMany, Number, Query, Relation, RootActions, RootGetters, RootMutations, String$1 as String, Type, install, use };

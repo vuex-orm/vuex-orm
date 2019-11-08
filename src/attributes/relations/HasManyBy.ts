@@ -55,7 +55,7 @@ export default class HasManyBy extends Relation {
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  make (value: any, _parent: Record, _key: string): Model[] | Record[] {
+  make (value: any, _parent: Record, _key: string): Model[] {
     return this.makeManyRelation(value, this.parent)
   }
 

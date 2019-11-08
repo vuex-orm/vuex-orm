@@ -55,6 +55,34 @@ const users = User.find(1)
 // { id: 1, name: 'John' }
 ```
 
+If your model has a composite primary key, you can retrieve data by passing an array as the argument. Let's say you have a Subscription model defined like this.
+
+```js
+import { Model } from '@vuex-orm/core'
+
+class Subscription extends Model {
+  static entity = 'users'
+
+  static primaryKey = ['video_id', 'user_id']
+
+  static fields () {
+    return {
+      video_id: this.attr(null),
+      user_id: this.attr(null)
+    }
+  }
+}
+```
+
+Then, you can retrieve Subscription records as below. Remember that the value order in the array is the same as the order you defined in your Model's primary key property. In this case it's `['video_id', 'user_id']`.
+
+```js
+// Get a subscription with video_id 1 and user_id 2.
+const subscription = User.find([1, 2])
+
+// { video_id: 1, user_id: 2 }
+```
+
 ## Get Mulitple Data by Primary Keys
 
 The `findIn` method is going to fetch array of data from the store. The argument is array of ids—primary key value—for the records.
@@ -67,6 +95,20 @@ const users = User.findIn([1, 2])
   [
     { id: 1, name: 'John' },
     { id: 2, name: 'Jane' }
+  ]
+*/
+```
+
+Similarly to `find`, if your model has a composite primary key you can pass an array of arrays as the argument.
+
+```js
+// Retrieve array of records by their composite primary keys.
+const subscriptions = Subscription.findIn([[1, 1], [1, 2]])
+
+/*
+  [
+    { video_id: 1, user_id: 1 },
+    { video_id: 1, user_id: 2 }
   ]
 */
 ```

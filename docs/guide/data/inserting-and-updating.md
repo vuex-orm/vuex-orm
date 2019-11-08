@@ -956,7 +956,7 @@ User.insertOrUpdate({
 
 See how the `title` of the User ID of 1 is not affected. If we were using the `insert` method, both User ID 1 and 2 will have the `title` value set to `null` (the default value of the field).
 
-The `insertOrUpdate` is also very useful when inserting dynamically embdded relationships. For example, if an API supports dynamic embedding of relationships and doesn't always return all relationships, the relationships would be emptied when missing on `insert`. This is because insertion methods, `insert`, `create` and `update`, will be applied for all nested relationships.
+The `insertOrUpdate` is also very useful when inserting dynamically embedded relationships. For example, if an API supports dynamic embedding of relationships and doesn't always return all relationships, the relationships would be emptied when missing on `insert`. This is because insertion methods, `insert`, `create` and `update`, will be applied for all nested relationships.
 
 Let's see what we mean by this in the example. What happen if we were to `insert` User with Posts.
 
