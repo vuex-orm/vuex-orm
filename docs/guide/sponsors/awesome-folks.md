@@ -15,6 +15,9 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex 
 <a href="https://github.com/cannikan">
   <img src="https://avatars2.githubusercontent.com/u/21893904?s=460&v=4" alt="Cannikan" width="96" style="border-radius: 8px;">
 </a>
+<a href="https://github.com/somazx">
+  <img src="https://avatars0.githubusercontent.com/u/7306?s=400&v=4" alt="Andy Koch" width="96" style="border-radius: 8px;">
+</a>
 
 ### A Love Sponsors
 
