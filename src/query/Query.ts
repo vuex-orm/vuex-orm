@@ -1,9 +1,7 @@
-import * as Vuex from 'vuex'
 import Utils from '../support/Utils'
 import Container from '../container/Container'
 import Database from '../database/Database'
 import Models from '../database/Models'
-import Modules from '../database/Modules'
 import * as Data from '../data'
 import Model from '../model/Model'
 import State from '../modules/contracts/State'
@@ -54,11 +52,6 @@ export default class Query<T extends Model = Model> {
    * The model being queried.
    */
   model: typeof Model
-
-  /**
-   * The module being queried.
-   */
-  module: Vuex.Module<State, any>
 
   /**
    * Primary key ids to filter records by. It is used for filtering records
@@ -137,7 +130,6 @@ export default class Query<T extends Model = Model> {
     this.rootState = state
     this.entity = entity
     this.model = this.getModel(entity)
-    this.module = this.getModule(entity)
   }
 
   /**
@@ -166,20 +158,6 @@ export default class Query<T extends Model = Model> {
    */
   static getModels (): Models {
     return this.database().models()
-  }
-
-  /**
-   * Get module of given name from the container.
-   */
-  static getModule (name: string): Vuex.Module<State, any> {
-    return this.database().module(name)
-  }
-
-  /**
-   * Get all modules from the container.
-   */
-  static getModules (): Modules {
-    return this.database().modules()
   }
 
   /**
@@ -272,22 +250,6 @@ export default class Query<T extends Model = Model> {
    */
   getBase (name: string): typeof Model {
     return this.self().getBase(name)
-  }
-
-  /**
-   * Get module of given name from the container.
-   */
-  getModule (name?: string): Vuex.Module<State, any> {
-    const entity = name || this.entity
-
-    return this.self().getModule(entity)
-  }
-
-  /**
-   * Get all modules from the container.
-   */
-  getModules (): Modules {
-    return this.self().getModules()
   }
 
   /**

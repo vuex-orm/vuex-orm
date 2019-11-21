@@ -11,10 +11,6 @@ describe('Unit – Query', () => {
     static entity = 'posts'
   }
 
-  const users = {}
-
-  const posts = {}
-
   it('can retrieve all models from the database instance', () => {
     createStore([{ model: User }, { model: Post }])
 
@@ -38,30 +34,5 @@ describe('Unit – Query', () => {
     const model = (new Query({}, 'users')).getModel()
 
     expect(model).toBe(User)
-  })
-
-  it('can retrieve all modules from the database instance', () => {
-    createStore([{ model: User, module: users }, { model: Post, module: posts }])
-
-    const modules = (new Query({}, 'users')).getModules()
-
-    expect(modules.users).toBe(users)
-    expect(modules.posts).toBe(posts)
-  })
-
-  it('can retrieve a specific modules from the database instance', () => {
-    createStore([{ model: User, module: users }, { model: Post, module: posts }])
-
-    const module = (new Query({}, 'users')).getModule('posts')
-
-    expect(module).toBe(posts)
-  })
-
-  it('retrieves the module correspondes to the entity of Query if the name is not specified', () => {
-    createStore([{ model: User, module: users }, { model: Post, module: posts }])
-
-    const module = (new Query({}, 'users')).getModule()
-
-    expect(module).toBe(users)
   })
 })
