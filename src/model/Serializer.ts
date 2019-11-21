@@ -6,9 +6,9 @@ export default class Serializer {
    * Serialize given model fields value to json.
    */
   static serialize (model: Model): Record {
-    const fields = model.$fields()
+    const keys = Object.keys(model.$fields())
 
-    return Object.keys(fields).reduce<Record>((record, key) => {
+    return keys.reduce<Record>((record, key) => {
       const value = model[key]
 
       record[key] = this.serializeValue(value)

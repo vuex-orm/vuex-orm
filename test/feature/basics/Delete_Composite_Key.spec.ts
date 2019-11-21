@@ -30,7 +30,7 @@ describe('Feature – Basics – Delete Composite Key', () => {
 
     const expected = createState({
       users: {
-        '[1,2]': { $id: [1, 2], first_id: 1, second_id: 2 }
+        '[1,2]': { $id: '[1,2]', first_id: 1, second_id: 2 }
       }
     })
 
@@ -53,7 +53,7 @@ describe('Feature – Basics – Delete Composite Key', () => {
 
     const expected = createState({
       users: {
-        '[3,4]': { $id: [3, 4], first_id: 3, second_id: 4 }
+        '[3,4]': { $id: '[3,4]', first_id: 3, second_id: 4 }
       }
     })
 

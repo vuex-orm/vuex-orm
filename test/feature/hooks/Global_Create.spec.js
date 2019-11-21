@@ -36,6 +36,22 @@ describe('Feature – Hooks – Global Create', () => {
     expect(results[1].role).toBe('admin')
   })
 
+  it('can process multiple `beforeCreate` hook', async () => {
+    createStore([{ model: User }])
+
+    Query.on('beforeCreate', (model, entity) => { model.role = 'admin' })
+    Query.on('beforeCreate', (model, entity) => { model.role = 'not admin' })
+
+    await User.create({
+      data: [{ id: 1, role: 'admin' }, { id: 2, role: 'user' }]
+    })
+
+    const results = User.all()
+
+    expect(results[0].role).toBe('not admin')
+    expect(results[1].role).toBe('not admin')
+  })
+
   it('can cancel the mutation by returning false from `beforeCreate` hook', async () => {
     createStore([{ model: User }])
 

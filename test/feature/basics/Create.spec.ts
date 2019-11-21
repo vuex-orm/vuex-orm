@@ -1,11 +1,11 @@
 import { createStore } from 'test/support/Helpers'
-import Model from 'app/model/Model'
+import { Model, Fields } from 'app/index'
 
 describe('Feature – Basics – Create', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    static fields (): Fields {
       return {
         id: this.attr(null),
         name: this.attr('JD')
@@ -16,15 +16,15 @@ describe('Feature – Basics – Create', () => {
   it('can create a data', async () => {
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: { id: 1, name: 'John Doe' }
     })
 
     const expected = {
-      1: { $id: 1, id: 1, name: 'John Doe' }
+      1: { $id: '1', id: 1, name: 'John Doe' }
     }
 
-    expect(store.state.entities.users.data[1]).toBeInstanceOf(User)
+    expect(store.state.entities.users.data[1]).not.toBeInstanceOf(User)
     expect(store.state.entities.users.data).toEqual(expected)
   })
 
@@ -39,8 +39,8 @@ describe('Feature – Basics – Create', () => {
     })
 
     const expected = {
-      1: { $id: 1, id: 1, name: 'John Doe' },
-      2: { $id: 2, id: 2, name: 'Jane Doe' }
+      1: { $id: '1', id: 1, name: 'John Doe' },
+      2: { $id: '2', id: 2, name: 'Jane Doe' }
     }
 
     expect(store.state.entities.users.data).toEqual(expected)
@@ -58,7 +58,7 @@ describe('Feature – Basics – Create', () => {
     })
 
     const expected = {
-      2: { $id: 2, id: 2, name: 'Jane Doe' }
+      2: { $id: '2', id: 2, name: 'Jane Doe' }
     }
 
     expect(store.state.entities.users.data).toEqual(expected)
@@ -83,11 +83,11 @@ describe('Feature – Basics – Create', () => {
   it('cleans all existing records when passing empty array', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe' }
     })
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: []
     })
 
@@ -99,12 +99,12 @@ describe('Feature – Basics – Create', () => {
   it('fills missing fields with the default value', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: { id: 1 }
     })
 
     const expected = {
-      1: { $id: 1, id: 1, name: 'JD' }
+      1: { $id: '1', id: 1, name: 'JD' }
     }
 
     expect(store.state.entities.users.data).toEqual(expected)
@@ -118,7 +118,7 @@ describe('Feature – Basics – Create', () => {
     })
 
     const expected = {
-      users: [new User({ $id: 1, id: 1, name: 'John Doe' })]
+      users: [new User({ $id: '1', id: 1, name: 'John Doe' })]
     }
 
     expect(collection).toEqual(expected)
@@ -136,8 +136,8 @@ describe('Feature – Basics – Create', () => {
 
     const expected = {
       users: [
-        new User({ $id: 1, id: 1, name: 'John Doe' }),
-        new User({ $id: 2, id: 2, name: 'Jane Doe' })
+        new User({ $id: '1', id: 1, name: 'John Doe' }),
+        new User({ $id: '2', id: 2, name: 'Jane Doe' })
       ]
     }
 

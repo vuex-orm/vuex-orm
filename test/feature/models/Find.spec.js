@@ -25,7 +25,7 @@ describe('Feature – Models – Find', () => {
 
     const user = User.find(1)
 
-    const expected = { $id: 1, id: 1, name: 'John Doe' }
+    const expected = { $id: '1', id: 1, name: 'John Doe' }
 
     expect(user).toEqual(expected)
     expect(user).toBeInstanceOf(User)
@@ -45,7 +45,7 @@ describe('Feature – Models – Find', () => {
 
     const user = u.$find(1)
 
-    const expected = { $id: 1, id: 1, name: 'John Doe' }
+    const expected = { $id: '1', id: 1, name: 'John Doe' }
 
     expect(user).toEqual(expected)
     expect(user).toBeInstanceOf(User)
@@ -64,7 +64,7 @@ describe('Feature – Models – Find', () => {
 
     const users = User.findIn([1, 3])
 
-    const expected = [{ $id: 1, id: 1, name: 'John Doe' }, { $id: 3, id: 3, name: 'Smith Doe' }]
+    const expected = [{ $id: '1', id: 1, name: 'John Doe' }, { $id: '3', id: 3, name: 'Smith Doe' }]
 
     expect(users).toEqual(expected)
     expect(users[0]).toBeInstanceOf(User)
@@ -86,7 +86,7 @@ describe('Feature – Models – Find', () => {
 
     const users = u.$findIn([1, 3])
 
-    const expected = [{ $id: 1, id: 1, name: 'John Doe' }, { $id: 3, id: 3, name: 'Smith Doe' }]
+    const expected = [{ $id: '1', id: 1, name: 'John Doe' }, { $id: '3', id: 3, name: 'Smith Doe' }]
 
     expect(users).toEqual(expected)
     expect(users[0]).toBeInstanceOf(User)
@@ -119,7 +119,7 @@ describe('Feature – Models – Find', () => {
 
       const user = User.find([1, 1])
 
-      const expected = { $id: [1, 1], id: 1, workspace_id: 1, name: 'John Doe' }
+      const expected = { $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' }
 
       expect(user).toEqual(expected)
       expect(user).toBeInstanceOf(User)
@@ -139,7 +139,7 @@ describe('Feature – Models – Find', () => {
 
       const user = u.$find([1, 1])
 
-      const expected = { $id: [1, 1], id: 1, workspace_id: 1, name: 'John Doe' }
+      const expected = { $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' }
 
       expect(user).toEqual(expected)
       expect(user).toBeInstanceOf(User)
@@ -158,7 +158,7 @@ describe('Feature – Models – Find', () => {
 
       const users = User.findIn([[1, 1], [1, 3]])
 
-      const expected = [{ $id: [1, 1], id: 1, workspace_id: 1, name: 'John Doe' }, { $id: [1, 3], id: 3, workspace_id: 1, name: 'Smith Doe' }]
+      const expected = [{ $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' }, { $id: '[1,3]', id: 3, workspace_id: 1, name: 'Smith Doe' }]
 
       expect(users).toEqual(expected)
       expect(users[0]).toBeInstanceOf(User)
@@ -178,9 +178,9 @@ describe('Feature – Models – Find', () => {
 
       const u = new User()
 
-      const users = u.$findIn([[1, 1], [1, 3]])
+      const users = u.$findIn(['[1,1]', '[1,3]'])
 
-      const expected = [{ $id: [1, 1], id: 1, workspace_id: 1, name: 'John Doe' }, { $id: [1, 3], id: 3, workspace_id: 1, name: 'Smith Doe' }]
+      const expected = [{ $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' }, { $id: '[1,3]', id: 3, workspace_id: 1, name: 'Smith Doe' }]
 
       expect(users).toEqual(expected)
       expect(users[0]).toBeInstanceOf(User)

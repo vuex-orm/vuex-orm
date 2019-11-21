@@ -57,7 +57,7 @@ export default class MorphMany extends Relation {
     key.forEach((id: any) => {
       const relatedItem = relatedItems[id]
 
-      relatedItem[this.id] = relatedItem[this.id] || record.$id
+      relatedItem[this.id] = relatedItem[this.id] || this.related.getIdFromRecord(record)
       relatedItem[this.type] = relatedItem[this.type] || this.model.entity
     })
   }

@@ -1,3 +1,4 @@
+import Model from '../../model/Model'
 import Utils from '../../support/Utils'
 import Instance from '../../data/Instance'
 import Collection from '../../data/Collection'
@@ -8,7 +9,7 @@ export default class WhereFilter {
   /**
    * Filter the given data by registered where clause.
    */
-  static filter (query: Query, records: Collection): Collection {
+  static filter<T extends Model> (query: Query, records: Collection<T>): Collection<T> {
     if (query.wheres.length === 0) {
       return records
     }

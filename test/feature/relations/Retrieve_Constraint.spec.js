@@ -37,19 +37,19 @@ describe('Feature – Relations – Retrieve – Constraint', () => {
     })
 
     const expected = {
-      $id: 1,
+      $id: '1',
       id: 1,
       posts: [
-        { $id: 1, id: 1, user_id: 1, user: null }
+        { $id: '1', id: 1, user_id: 1, user: null }
       ]
     }
 
-    const users = store.getters['entities/users/query']()
+    const user = store.getters['entities/users/query']()
       .with('posts', (query) => {
         query.where('id', 1)
       })
       .first()
 
-    expect(users).toEqual(expected)
+    expect(user).toEqual(expected)
   })
 })

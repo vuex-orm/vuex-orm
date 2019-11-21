@@ -39,11 +39,11 @@ describe('Features – Relations – Has Many By', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, post_ids: [1, 2], posts: [] }
+        1: { $id: '1', id: 1, post_ids: [1, 2], posts: [] }
       },
       posts: {
-        1: { $id: 1, id: 1 },
-        2: { $id: 2, id: 2 }
+        1: { $id: '1', id: 1 },
+        2: { $id: '2', id: 2 }
       }
     })
 
@@ -81,7 +81,7 @@ describe('Features – Relations – Has Many By', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, post_ids: [], posts: [] }
+        1: { $id: '1', id: 1, post_ids: [], posts: [] }
       },
       posts: {}
     })
@@ -120,7 +120,7 @@ describe('Features – Relations – Has Many By', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, post_ids: [], posts: [] }
+        1: { $id: '1', id: 1, post_ids: [], posts: [] }
       },
       posts: {}
     })
@@ -166,12 +166,12 @@ describe('Features – Relations – Has Many By', () => {
     const user = User.query().with('posts').find(1)
 
     const expected = {
-      $id: 1,
+      $id: '1',
       id: 1,
       post_ids: [1, 2],
       posts: [
-        { $id: 1, id: 1 },
-        { $id: 2, id: 2 }
+        { $id: '1', id: 1 },
+        { $id: '2', id: 2 }
       ]
     }
 
@@ -214,16 +214,16 @@ describe('Features – Relations – Has Many By', () => {
 
     const expected = [
       {
-        $id: 1,
+        $id: '1',
         id: 1,
         post_ids: [1, 2],
         posts: [
-          { $id: 1, id: 1 },
-          { $id: 2, id: 2 }
+          { $id: '1', id: 1 },
+          { $id: '2', id: 2 }
         ]
       },
       {
-        $id: 2,
+        $id: '2',
         id: 2,
         post_ids: [],
         posts: []

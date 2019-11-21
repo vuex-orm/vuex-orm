@@ -44,10 +44,10 @@ describe('Features – Relations – Morph One – Persist', () => {
 
     const expected = createState({
       posts: {
-        1: { $id: 1, id: 1, comment: null }
+        1: { $id: '1', id: 1, comment: null }
       },
       comments: {
-        1: { $id: 1, id: 1, body: 'The Body', commentable_type: 'posts', commentable_id: 1, commentable: null }
+        1: { $id: '1', id: 1, body: 'The Body', commentable_type: 'posts', commentable_id: 1, commentable: null }
       }
     })
 
@@ -152,11 +152,11 @@ describe('Features – Relations – Morph One – Persist', () => {
 
     createState({
       posts: {
-        1: { $id: 1, id: 1, comment: null }
+        1: { $id: '1', id: 1, comment: null }
       },
       videos: {},
       comments: {
-        2: { $id: 2, id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' }
+        2: { $id: '2', id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' }
       }
     })
 
@@ -282,14 +282,14 @@ describe('Features – Relations – Morph One – Persist', () => {
 
     createState({
       users: {
-        1: { $id: 1, id: 1, posts: [] }
+        1: { $id: '1', id: 1, posts: [] }
       },
       posts: {
-        5: { $id: 5, id: 5, user_id: 1, comment: null }
+        5: { $id: '5', id: 5, user_id: 1, comment: null }
       },
       videos: {},
       comments: {
-        2: { $id: 2, id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' }
+        2: { $id: '2', id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' }
       }
     })
 
@@ -348,11 +348,11 @@ describe('Features – Relations – Morph One – Persist', () => {
 
     const expected = createState({
       posts: {
-        1: { $id: 1, id: 1, comment: null },
-        2: { $id: 2, id: 2, comment: null }
+        1: { $id: '1', id: 1, comment: null },
+        2: { $id: '2', id: 2, comment: null }
       },
       comments: {
-        1: { $id: 1, id: 1, body: 'The Body', commentable_type: 'posts', commentable_id: 1, commentable: null }
+        1: { $id: '1', id: 1, body: 'The Body', commentable_type: 'posts', commentable_id: 1, commentable: null }
       }
     })
 

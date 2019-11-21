@@ -126,29 +126,15 @@ describe('Model – Inheritance - Discriminator field', () => {
       static entity = 'child'
 
       static baseEntity = 'person'
-
-      static fields () {
-        return {}
-      }
     }
 
     class Adult extends Person {
       static entity = 'adult'
 
       static baseEntity = 'person'
-
-      static fields () {
-        return {}
-      }
     }
 
-    const store = createStore([{
-      model: Person
-    }, {
-      model: Adult
-    }, {
-      model: Child
-    }])
+    const store = createStore([{ model: Person }, { model: Adult }, { model: Child }])
 
     store.dispatch('entities/person/insert', {
       data: [{

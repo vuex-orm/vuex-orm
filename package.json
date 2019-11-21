@@ -93,6 +93,7 @@
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "collectCoverageFrom": [
       "src/**/*.ts",
+      "!src/attributes/types/Increment.ts",
       "!src/polyfills/index.ts",
       "!src/support/Utils.ts",
       "!src/index.cjs.ts",

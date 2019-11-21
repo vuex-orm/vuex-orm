@@ -181,7 +181,7 @@ export default class MorphedByMany extends Relation {
         [pivotKey]: {
           $id: pivotKey,
           [this.relatedId]: parentId,
-          [this.id]: id,
+          [this.id]: this.model.getIdFromRecord(data[this.related.entity][id]),
           [this.type]: this.related.entity
         }
       }

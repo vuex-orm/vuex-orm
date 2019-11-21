@@ -19,7 +19,7 @@ describe('Feature – Retrieve – Limit And Offset', () => {
       data: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]
     })
 
-    const expected = [{ $id: 1, id: 1 }, { $id: 2, id: 2 }]
+    const expected = [{ $id: '1', id: 1 }, { $id: '2', id: 2 }]
 
     const users = store.getters['entities/users/query']()
       .limit(2)
@@ -40,7 +40,7 @@ describe('Feature – Retrieve – Limit And Offset', () => {
       ]
     })
 
-    const expected = [{ $id: 2, id: 2 }, { $id: 3, id: 3 }]
+    const expected = [{ $id: '2', id: 2 }, { $id: '3', id: 3 }]
 
     const users = store.getters['entities/users/query']()
       .limit(2)

@@ -136,7 +136,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       ]
     })
 
-    const roles = Role.query().has('users').get(2)
+    const roles = Role.query().has('users').get()
 
     expect(roles.length).toBe(2)
   })

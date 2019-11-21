@@ -9,7 +9,8 @@ describe('Feature - Inheritance - Relations', () => {
       static fields () {
         return {
           id: this.attr(null),
-          name: this.attr('')
+          name: this.attr(''),
+          type: this.string('')
         }
       }
 
@@ -82,7 +83,8 @@ describe('Feature - Inheritance - Relations', () => {
       static fields () {
         return {
           id: this.attr(null),
-          name: this.attr('')
+          name: this.attr(''),
+          type: this.string('')
         }
       }
 
@@ -156,7 +158,8 @@ describe('Feature - Inheritance - Relations', () => {
         return {
           id: this.attr(null),
           name: this.attr(''),
-          role_id: this.attr(null)
+          role_id: this.attr(null),
+          type: this.string('')
         }
       }
 
@@ -241,7 +244,8 @@ describe('Feature - Inheritance - Relations', () => {
           id: this.attr(null),
           name: this.attr(''),
           role_id: this.attr(null),
-          role: this.belongsTo(Role, 'role_id')
+          role: this.belongsTo(Role, 'role_id'),
+          type: this.string('')
         }
       }
 
@@ -329,7 +333,8 @@ describe('Feature - Inheritance - Relations', () => {
       static fields () {
         return {
           id: this.attr(null),
-          name: this.attr('')
+          name: this.attr(''),
+          type: this.string('')
         }
       }
 

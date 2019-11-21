@@ -15,6 +15,6 @@ export default class Increment extends Type {
    * Convert given value to the appropriate value for the attribute.
    */
   make (value: any, _parent: Record, _key: string): number | null {
-    return typeof value === 'number' ? value : null
+    return typeof value === 'number' || 'string' ? value : null
   }
 }

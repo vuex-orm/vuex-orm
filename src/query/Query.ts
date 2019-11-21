@@ -54,6 +54,13 @@ export default class Query<T extends Model = Model> {
   model: typeof Model
 
   /**
+   * This flag lets us know if current Query instance applies to
+   * a base class or not (in order to know when to filter out
+   * some records).
+   */
+  appliedOnBase: boolean = true
+
+  /**
    * Primary key ids to filter records by. It is used for filtering records
    * direct key lookup when a user is trying to fetch records by its
    * primary key.
@@ -68,7 +75,7 @@ export default class Query<T extends Model = Model> {
    * prevents index usage, for example, an "or" condition which already
    * requires full scan.
    */
-  cancelIdFilter: Boolean = false
+  cancelIdFilter: boolean = false
 
   /**
    * Primary key ids to filter joined records. It is used for filtering
@@ -110,26 +117,17 @@ export default class Query<T extends Model = Model> {
   load: Options.Load = {}
 
   /**
-   * This flag lets us know if current Query instance applies to
-   * a base class or not (in order to know when to filter out some
-   * records)
-   */
-  appliedOnBase: boolean = true
-
-  /**
    * Create a new Query instance.
    */
   constructor (state: RootState, entity: string) {
-
-    // All entitites with same base class are stored in the same state
-    const baseModel = this.getBase(entity)
-
-    this.state = state[baseModel.entity]
-    this.appliedOnBase = baseModel.entity === entity
+    // All entitites with same base class are stored in the same state.
+    const baseModel = this.getBaseModel(entity)
 
     this.rootState = state
+    this.state = state[baseModel.entity]
     this.entity = entity
     this.model = this.getModel(entity)
+    this.appliedOnBase = baseModel.entity === entity
   }
 
   /**
@@ -149,7 +147,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Get base model of given name from the container.
    */
-  static getBase (name: string): typeof Model {
+  static getBaseModel (name: string): typeof Model {
     return this.database().baseModel(name)
   }
 
@@ -166,23 +164,23 @@ export default class Query<T extends Model = Model> {
   static deleteAll (state: RootState): void {
     const models = this.getModels()
 
-    Object.keys(models).forEach((name) => {
-      state[name] && (new this(state, name)).deleteAll()
-    })
+    for (const entity in models) {
+      state[entity] && (new this(state, entity)).deleteAll()
+    }
   }
 
   /**
    * Register a global hook. It will return ID for the hook that users may use
    * it to unregister hooks.
    */
-  static on (on: string, callback: Contracts.HookableClosure, once: boolean = false): number {
+  static on (on: string, callback: Contracts.HookableClosure): number {
     const id = ++this.lastHookId
 
     if (!this.hooks[on]) {
       this.hooks[on] = []
     }
 
-    this.hooks[on].push({ id, callback, once })
+    this.hooks[on].push({ id, callback })
 
     return id
   }
@@ -248,8 +246,8 @@ export default class Query<T extends Model = Model> {
   /**
    * Get base model of given name from the container.
    */
-  getBase (name: string): typeof Model {
-    return this.self().getBase(name)
+  getBaseModel (name: string): typeof Model {
+    return this.self().getBaseModel(name)
   }
 
   /**
@@ -266,18 +264,36 @@ export default class Query<T extends Model = Model> {
   find (id: number | string | (number | string)[]): Data.Item<T> {
     id = Array.isArray(id) ? JSON.stringify(id) : id
 
-    return this.item(this.state.data[id]) as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+    const record = this.state.data[id]
+
+    if (!record) {
+      return null
+    }
+
+    const model = this.hydrate(record)
+
+    model.$id = String(id)
+
+    return this.item(model)
   }
 
   /**
    * Get the record of the given array of ids.
    */
   findIn (idList: (number | string | (number | string)[])[]): Data.Collection<T> {
-    return idList.map(id => {
-      id = Array.isArray(id) ? JSON.stringify(id) : id
+    return idList.reduce<Data.Collection<T>>((collection, id) => {
+      const indexId = Array.isArray(id) ? JSON.stringify(id) : id
 
-      return this.state.data[id]
-    }).filter(item => item) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+      const record = this.state.data[indexId]
+
+      if (!record) {
+        return collection
+      }
+
+      collection.push(this.hydrate(record))
+
+      return collection
+    }, [])
   }
 
   /**
@@ -286,7 +302,7 @@ export default class Query<T extends Model = Model> {
   get (): Data.Collection<T> {
     const records = this.select()
 
-    return this.collect(records) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+    return this.collect(records)
   }
 
   /**
@@ -295,7 +311,7 @@ export default class Query<T extends Model = Model> {
   first (): Data.Item<T> {
     const records = this.select()
 
-    return this.item(records[0]) as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+    return this.item(records[0]) // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
@@ -304,7 +320,7 @@ export default class Query<T extends Model = Model> {
   last (): Data.Item<T> {
     const records = this.select()
 
-    return this.item(records[records.length - 1]) as Data.Item<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+    return this.item(records[records.length - 1]) // TODO: Delete "as ..." when model type coverage reaches 100%.
   }
 
   /**
@@ -507,33 +523,30 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Get all records from the state and convert them into the array. It will
-   * check if the record is an instance of Model and if not, it will
-   * instantiate before returning them.
-   *
-   * This is needed to support SSR, that when the state is hydrated at server
-   * side, it will be converted to the plain record at the client side.
+   * Get all records from the state and convert them into the array of
+   * model instances.
    */
-  records (): Data.Collection {
+  records (): Data.Collection<T> {
     this.finalizeIdFilter()
 
-    return this.getIdsToLookup()
-      .map((id) => {
-        const model = this.state.data[id]
+    return this.getIdsToLookup().reduce<Data.Collection<T>>((models, id) => {
+      const record = this.state.data[id]
 
-        // Getting the typed instance
-        const hydrated = model instanceof Model ? model : this.hydrate(model)
+      if (!record) {
+        return models
+      }
 
-        // And ignoring if needed
-        if (!this.appliedOnBase && !(hydrated instanceof this.model)) {
-          return null
-        }
+      const model = this.hydrate(record)
 
-        return hydrated
-      })
-      .filter((record) => {
-        return record !== null
-      }) as Data.Collection
+      // Ignore if the model is not current type of model.
+      if (!this.appliedOnBase && !(model instanceof this.model)) {
+        return models
+      }
+
+      models.push(model)
+
+      return models
+    }, [])
   }
 
   /**
@@ -603,28 +616,28 @@ export default class Query<T extends Model = Model> {
     // Process `afterLimit` hook.
     records = this.executeRetrieveHook('afterLimit', records)
 
-    return records as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+    return records
   }
 
   /**
    * Filter the given data by registered where clause.
    */
-  filterWhere (records: Data.Collection): Data.Collection {
-    return Filter.where(this, records)
+  filterWhere (records: Data.Collection<T>): Data.Collection<T> {
+    return Filter.where<T>(this, records)
   }
 
   /**
    * Sort the given data by registered orders.
    */
-  filterOrderBy (records: Data.Collection): Data.Collection {
-    return Filter.orderBy(this, records)
+  filterOrderBy (records: Data.Collection<T>): Data.Collection<T> {
+    return Filter.orderBy<T>(this, records)
   }
 
   /**
    * Limit the given records by the lmilt and offset.
    */
-  filterLimit (records: Data.Collection): Data.Collection {
-    return Filter.limit(this, records)
+  filterLimit (records: Data.Collection<T>): Data.Collection<T> {
+    return Filter.limit<T>(this, records)
   }
 
   /**
@@ -680,17 +693,8 @@ export default class Query<T extends Model = Model> {
   /**
    * Create a item from given record.
    */
-  item (item?: Data.Instance): Data.Item {
-    if (!item) {
-      return null
-    }
-
+  item (item: Data.Instance<T>): Data.Item<T> {
     if (Object.keys(this.load).length > 0) {
-
-      const model = this.model.getModelFromRecord(item) as typeof Model
-
-      item = new model(item)
-
       Loader.eagerLoadRelations(this, [item])
     }
 
@@ -700,16 +704,16 @@ export default class Query<T extends Model = Model> {
   /**
    * Create a collection (array) from given records.
    */
-  collect (collection: Data.Collection): Data.Collection {
+  collect (collection: Data.Collection<T>): Data.Collection<T> {
     if (collection.length < 1) {
       return []
     }
 
     if (Object.keys(this.load).length > 0) {
-      collection = collection.map(item => {
-
+      collection = collection.map<T>(item => {
         const model = this.model.getModelFromRecord(item) as typeof Model
-        return new model(item)
+
+        return new model(item) as T
       })
 
       Loader.eagerLoadRelations(this, collection)
@@ -723,7 +727,7 @@ export default class Query<T extends Model = Model> {
    */
   private filterData (predicate: Contracts.Predicate): void {
     this.state.data = Object.keys(this.state.data).reduce<Data.Instances>((models, id) => {
-      const model = this.state.data[id]
+      const model = this.hydrate(this.state.data[id])
 
       if (predicate(model)) {
         models[id] = model
@@ -749,24 +753,17 @@ export default class Query<T extends Model = Model> {
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.
    */
-  create (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections<T> {
-    return this.persist(data, 'create', options) as Data.Collections<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+  create (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
+    return this.persist('create', data, options)
   }
 
   /**
    * Create records to the state.
    */
-  createMany (records: Data.Records): Data.Collection<T> {
-    const instances = this.hydrateMany(records)
+  createRecords (records: Data.Records): Data.Collection<T> {
+    this.emptyState()
 
-    const createCallback = () => {
-      this.emptyState()
-      this.state.data = { ...this.state.data, ...instances }
-    }
-
-    this.commitCreateOnRecords(instances, createCallback)
-
-    return this.map(instances) as Data.Collection<T>  // TODO: Delete "as ..." when model type coverage reaches 100%.
+    return this.insertRecords(records)
   }
 
   /**
@@ -774,41 +771,50 @@ export default class Query<T extends Model = Model> {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections<T> {
-    return this.persist(data, 'insert', options) as Data.Collections<T>  // TODO: Delete "as ..." when model type coverage reaches 100%.
+  insert (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
+    return this.persist('insert', data, options)
   }
 
   /**
-   * Insert list of records in the state.
+   * Insert records in the state.
    */
-  insertMany (records: Data.Records): Data.Collection<T> {
-    const instances = this.hydrateMany(records)
+  insertRecords (records: Data.Records): Data.Collection<T> {
+    const recordsToBeInserted: Data.Records = {}
+    const models: Data.Collection<T> = []
 
-    this.commitCreateOnRecords(instances, () => {
-      this.state.data = { ...this.state.data, ...instances }
+    const beforeHooks = this.buildHooks('beforeCreate') as Contracts.BeforeCreateHook[]
+
+    for (const id in records) {
+      const record = records[id]
+
+      const model = this.hydrate(record)
+
+      if (beforeHooks.some(hook => hook(model as any, this.entity) === false)) {
+        continue
+      }
+
+      models.push(model)
+      recordsToBeInserted[id] = model.$toJson()
+    }
+
+    this.state.data = { ...this.state.data, ...recordsToBeInserted }
+
+    const afterHooks = this.buildHooks('afterCreate') as Contracts.AfterCreateHook[]
+
+    models.forEach((model) => {
+      afterHooks.forEach(hook => { hook(model as any, this.entity) })
     })
 
-    return this.map(instances) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
-  }
-
-  /**
-   * Commit given models to the store by `create` method.
-   */
-  private commitCreateOnRecords (models: Data.Instances, callback: Function): void {
-    this.executeBeforeCreateHookOnModels(models)
-
-    callback()
-
-    this.executeAfterCreateHookOnModels(models)
+    return models
   }
 
   /**
    * Update data in the state.
    */
-  update (data: Data.Record | Data.Record[] | UpdateClosure, condition: UpdateCondition, options: PersistOptions): Data.Item<T> | Data.Collection<T> | Data.Collections<T> {
+  update (data: Data.Record | Data.Record[] | UpdateClosure, condition: UpdateCondition, options: PersistOptions): Data.Item<T> | Data.Collection<T> | Data.Collections {
     // If the data is array, simply normalize the data and update them.
     if (Array.isArray(data)) {
-      return this.persist(data, 'update', options) as Data.Collections<T>
+      return this.persist('update', data, options)
     }
 
     // OK, the data is not an array. Now let's check `data` to see what we can
@@ -839,7 +845,7 @@ export default class Query<T extends Model = Model> {
 
     // If there's no condition, let's normalize the data and update them.
     if (!condition) {
-      return this.persist(data, 'update', options) as Data.Collections<T>
+      return this.persist('update', data, options)
     }
 
     // Now since the condition is either String or Number, let's check if the
@@ -861,10 +867,10 @@ export default class Query<T extends Model = Model> {
   /**
    * Update all records.
    */
-  updateMany (records: Data.Records): Data.Collection<T> {
-    const instances = this.combine(records)
+  updateRecords (records: Data.Records): Data.Collection<T> {
+    const models = this.hydrateRecordsByMerging(records)
 
-    return this.commitUpdate(instances) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+    return this.commitUpdate(models)
   }
 
   /**
@@ -873,14 +879,16 @@ export default class Query<T extends Model = Model> {
   updateById (data: Data.Record | UpdateClosure, id: string | number): Data.Item<T> {
     id = typeof id === 'number' ? id.toString() : id
 
-    const instance = this.state.data[id]
+    const record = this.state.data[id]
 
-    if (!instance) {
+    if (!record) {
       return null
     }
 
-    const instances: Data.Instances = {
-      [id]: this.processUpdate(data, instance)
+    const model = this.hydrate(record)
+
+    const instances: Data.Instances<T> = {
+      [id]: this.processUpdate(data, model)
     }
 
     this.commitUpdate(instances)
@@ -892,8 +900,8 @@ export default class Query<T extends Model = Model> {
    * Update the state by condition.
    */
   updateByCondition (data: Data.Record | UpdateClosure, condition: Contracts.Predicate): Data.Collection<T> {
-    const instances = Object.keys(this.state.data).reduce<Data.Instances>((instances, id) => {
-      const instance = this.state.data[id]
+    const instances = Object.keys(this.state.data).reduce<Data.Instances<T>>((instances, id) => {
+      const instance = this.hydrate(this.state.data[id])
 
       if (!condition(instance)) {
         return instances
@@ -904,13 +912,13 @@ export default class Query<T extends Model = Model> {
       return instances
     }, {})
 
-    return this.commitUpdate(instances) as Data.Collection<T>
+    return this.commitUpdate(instances)
   }
 
   /**
    * Update the given record with given data.
    */
-  processUpdate (data: Data.Record | UpdateClosure, instance: Data.Instance): Data.Instance {
+  processUpdate (data: Data.Record | UpdateClosure, instance: Data.Instance<T>): Data.Instance<T> {
     if (typeof data === 'function') {
       (data as UpdateClosure)(instance)
 
@@ -921,31 +929,36 @@ export default class Query<T extends Model = Model> {
     if (instance.constructor !== this.model && instance instanceof Model) {
       return this.hydrate({ ...instance, ...data }, instance.constructor as typeof Model)
     }
+
     return this.hydrate({ ...instance, ...data })
   }
 
   /**
    * Commit `update` to the state.
    */
-  commitUpdate (instances: Data.Instances): Data.Collection {
-    instances = this.updateIndexes(instances)
+  private commitUpdate (models: Data.Instances<T>): Data.Collection<T> {
+    models = this.updateIndexes(models)
 
-    this.commitUpdateOnRecords(instances, () => {
-      this.state.data = { ...this.state.data, ...instances }
-    })
+    const beforeHooks = this.buildHooks('beforeUpdate') as Contracts.BeforeUpdateHook[]
+    const afterHooks = this.buildHooks('afterUpdate') as Contracts.AfterUpdateHook[]
 
-    return this.map(instances)
-  }
+    const updated: Data.Collection<T> = []
 
-  /**
-   * Commit given models to the store by `update` method.
-   */
-  private commitUpdateOnRecords (models: Data.Instances, callback: Function): void {
-    this.executeBeforeUpdateHookOnModels(models)
+    for (const id in models) {
+      const model = models[id]
 
-    callback()
+      if (beforeHooks.some(hook => hook(model as any, this.entity) === false)) {
+        continue
+      }
 
-    this.executeAfterUpdateHookOnModels(models)
+      this.state.data = { ...this.state.data, [id]: model.$toJson() }
+
+      afterHooks.forEach(hook => { hook(model as any, this.entity) })
+
+      updated.push(model)
+    }
+
+    return updated
   }
 
   /**
@@ -953,8 +966,8 @@ export default class Query<T extends Model = Model> {
    * record's primary key. We must then update the index key to
    * correspond with new id value.
    */
-  private updateIndexes (instances: Data.Instances): Data.Instances {
-    return Object.keys(instances).reduce<Data.Instances>((instances, key) => {
+  private updateIndexes (instances: Data.Instances<T>): Data.Instances<T> {
+    return Object.keys(instances).reduce<Data.Instances<T>>((instances, key) => {
       const instance = instances[key]
       const id = String(this.model.getIndexIdFromRecord(instance))
 
@@ -975,14 +988,14 @@ export default class Query<T extends Model = Model> {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  insertOrUpdate (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections<T> {
-    return this.persist(data, 'insertOrUpdate', options) as Data.Collections<T>  // TODO: Delete "as ..." when model type coverage reaches 100%.
+  insertOrUpdate (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
+    return this.persist('insertOrUpdate', data, options)
   }
 
   /**
    * Insert or update the records.
    */
-  insertOrUpdateMany (records: Data.Records): Data.Collection<T> {
+  insertOrUpdateRecords (records: Data.Records): Data.Collection<T> {
     let toBeInserted: Data.Records = {}
     let toBeUpdated: Data.Records = {}
 
@@ -999,18 +1012,18 @@ export default class Query<T extends Model = Model> {
     })
 
     return [
-      ...this.insertMany(toBeInserted),
-      ...this.updateMany(toBeUpdated)
+      ...this.insertRecords(toBeInserted),
+      ...this.updateRecords(toBeUpdated)
     ]
   }
 
   /**
    * Persist data into the state.
    */
-  persist (data: Data.Record | Data.Record[], method: string, options: PersistOptions): Data.Collections {
-    data = this.normalize(data)
+  persist (method: string, data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
+    const normalizedData = this.normalize(data)
 
-    if (Utils.isEmpty(data)) {
+    if (Utils.isEmpty(normalizedData)) {
       if (method === 'create') {
         this.emptyState()
       }
@@ -1018,23 +1031,41 @@ export default class Query<T extends Model = Model> {
       return {}
     }
 
-    return Object.keys(data).reduce((collection, entity) => {
-      const query = this.newQuery(entity)
-      const persistMethod = this.getPersistMethod(entity, method, options)
-      const records = query[`${persistMethod}Many`](data[entity])
+    return Object.entries(normalizedData).reduce<Data.Collections>((collections, [entity, records]) => {
+      const newQuery = this.newQuery(entity)
 
-      if (records.length > 0) {
-        collection[entity] = records
+      const methodForEntity = this.getPersistMethod(entity, options, method)
+
+      const collection = newQuery.persistRecords(methodForEntity, records)
+
+      if (collection.length > 0) {
+        collections[entity] = collection
       }
 
-      return collection
-    }, {} as Data.Collections)
+      return collections
+    }, {})
   }
 
   /**
-   * Get method for the persist.
+   * Persist given records to the store by the given method.
    */
-  getPersistMethod (entity: string, method: string, options: PersistOptions): string {
+  persistRecords (method: 'create' | 'insert' | 'update' | 'insertOrUpdate', records: Data.Records): Data.Collection<T> {
+    switch (method) {
+      case 'create':
+        return this.createRecords(records)
+      case 'insert':
+        return this.insertRecords(records)
+      case 'update':
+        return this.updateRecords(records)
+      case 'insertOrUpdate':
+        return this.insertOrUpdateRecords(records)
+    }
+  }
+
+  /**
+   * Get persist method from given information.
+   */
+  private getPersistMethod (entity: string, options: PersistOptions, fallback: string): 'create' | 'insert' | 'update' | 'insertOrUpdate' {
     if (options.create && options.create.includes(entity)) {
       return 'create'
     }
@@ -1051,7 +1082,7 @@ export default class Query<T extends Model = Model> {
       return 'insertOrUpdate'
     }
 
-    return method
+    return fallback as 'create' | 'insert' | 'update' | 'insertOrUpdate'
   }
 
   /**
@@ -1132,85 +1163,63 @@ export default class Query<T extends Model = Model> {
   /**
    * Convert given record to the model instance.
    */
-  hydrate (record: Data.Record, forceModel?: typeof Model): Data.Instance {
-
-    if (forceModel !== undefined) {
-      return new forceModel(record)
+  hydrate (record: Data.Record, forceModel?: typeof Model): Data.Instance<T> {
+    if (forceModel) {
+      return new forceModel(record) as T
     }
 
-    let model = this.model
+    const newModel = this.model.getModelFromRecord(record)
 
-    if (record) {
-
-      // If the record has the right typeKey attribute set, and Model has type mapping
-      // we hydrate it as the corresponding model
-      const newModel = model.getModelFromRecord(record)
-
-      if (typeof newModel === 'function') {
-        return new newModel(record)
-      }
-
-      // If we know that we're hydrating an entity which is not a base one,
-      // we can set it's typeKey attribute as a "bonus"
-      if (!this.appliedOnBase) {
-        const typeValue = model.getTypeKeyValueFromModel()
-
-        record[model.typeKey] = typeValue
-      }
+    if (newModel !== null) {
+      return new newModel(record) as T
     }
 
-    return new model(record)
-  }
+    if (!this.appliedOnBase && record[this.model.typeKey] === undefined) {
+      const typeValue = this.model.getTypeKeyValueFromModel()
 
-  /**
-   * Convert all given records to model instances.
-   */
-  hydrateMany (records: Data.Records): Data.Instances {
-    return Object.keys(records).reduce<Data.Instances>((instances, id) => {
-      const record = records[id]
+      record = { ...record, [this.model.typeKey]: typeValue }
 
-      instances[id] = this.hydrate(record)
+      return new this.model(record) as T
+    }
 
-      return instances
-    }, {})
+    const baseModel = this.getBaseModel(this.entity)
+
+    return new baseModel(record) as T
   }
 
   /**
    * Convert given records to instances by merging existing record. If there's
    * no existing record, that record will not be included in the result.
    */
-  combine (records: Data.Records): Data.Instances {
-    return Object.keys(records).reduce<Data.Instances>((instances, id) => {
-      const instance = this.state.data[id]
+  hydrateRecordsByMerging (records: Data.Records): Data.Instances<T> {
+    return Object.keys(records).reduce<Data.Instances<T>>((instances, id) => {
+      const recordInStore = this.state.data[id]
 
-      if (!instance) {
+      if (!recordInStore) {
         return instances
       }
 
       const record = records[id]
 
-      if (instance.constructor !== this.model && instance instanceof Model) {
-        instances[id] = this.hydrate({ ...instance, ...record }, instance.constructor as typeof Model)
+      const modelForRecordInStore = this.model.getModelFromRecord(recordInStore)
+
+      if (modelForRecordInStore === null) {
+        instances[id] = this.hydrate({ ...recordInStore, ...record })
+
         return instances
       }
 
-      instances[id] = this.hydrate({ ...instance, ...record })
+      instances[id] = this.hydrate({ ...recordInStore, ...record }, modelForRecordInStore)
 
       return instances
     }, {})
   }
 
   /**
-   * Convert all given instances to collections.
-   */
-  map (instances: Data.Instances): Data.Collection {
-    return Object.keys(instances).map(id => instances[id])
-  }
-
-  /**
-   * Clears the current state from any data related to current model:
-   * - everything if not in a inheritance scheme
-   * - only derived instances if applied to a derived entity
+   * Clears the current state from any data related to current model.
+   *
+   * - Everything if not in a inheritance scheme.
+   * - Only derived instances if applied to a derived entity.
    */
   private emptyState (): void {
     if (this.appliedOnBase) {
@@ -1219,213 +1228,49 @@ export default class Query<T extends Model = Model> {
       return
     }
 
-    for (const id in this.state.data) {
-      if (this.state.data[id] instanceof this.model) {
-        delete this.state.data[id]
+    this.state.data = Object.entries(this.state.data).reduce<Data.Records>((records, [id, record]) => {
+      if (!(this.model.getModelFromRecord(record) === this.model)) {
+        records[id] = record
       }
-    }
+
+      return records
+    }, {})
+  }
+
+  /**
+   * Build before create hooks arra
+   */
+  private buildHooks (on: string): Contracts.HookableClosure[] {
+    const hooks = this.getGlobalHookAsArray(on)
+
+    const localHook = this.model[on] as Contracts.HookableClosure | undefined
+
+    localHook && hooks.push(localHook)
+
+    return hooks
+  }
+
+  /**
+   * Get global hook of the given name as array by stripping id key and keep
+   * only hook functions.
+   */
+  private getGlobalHookAsArray (on: string): Contracts.HookableClosure[] {
+    const hooks = this.self().hooks[on]
+
+    return hooks ? hooks.map(h => h.callback.bind(this)) : []
   }
 
   /**
    * Execute retrieve hook for the given method.
    */
-  private executeRetrieveHook (on: string, models: Data.Collection): Data.Collection {
-    let collection: Data.Collection = models
+  private executeRetrieveHook (on: string, models: Data.Collection<T>): Data.Collection<T> {
+    const hooks = this.buildHooks(on)
 
-    collection = this.executeLocalRetrieveHook(on, collection)
-    collection = this.executeGlobalRetrieveHook(on, collection)
+    return hooks.reduce((collection, hook) => {
+      collection = hook(models as any, this.entity) as any
 
-    return collection
-  }
-
-  /**
-   * Execute local retrieve hook for the given method.
-   */
-  private executeLocalRetrieveHook (on: string, models: Data.Collection): Data.Collection {
-    const hook = this.model[on] as Contracts.RetrieveHook | undefined
-
-    return hook ? hook(models, this.model.entity) : models
-  }
-
-  /**
-   * Execute global retrieve hook for the given method.
-   */
-  private executeGlobalRetrieveHook (on: string, models: Data.Collection): Data.Collection {
-    const hooks = this.self().hooks[on]
-
-    if (!hooks) {
-      return models
-    }
-
-    const result = hooks.reduce<Data.Collection>((collection, hook) => {
-      return (hook.callback as Contracts.RetrieveHook).call(this, collection, this.model.entity)
+      return collection
     }, models)
-
-    this.cleanGlobalHooksOn(on)
-
-    return result
-  }
-
-  /**
-   * Execute before create hook to the given model.
-   */
-  private executeBeforeCreateHook (model: Model): false | void {
-    if (this.executeLocalBeforeCreateHook(model) === false) {
-      return false
-    }
-
-    if (this.executeGlobalBeforeCreateHook(model) === false) {
-      return false
-    }
-  }
-
-  /**
-   * Execute before create hook to the goven models.
-   */
-  private executeBeforeCreateHookOnModels (models: Data.Instances): void {
-    Object.keys(models).forEach((id) => {
-      const model = models[id]
-
-      if (this.executeBeforeCreateHook(model) === false) {
-        delete models[id]
-      }
-    })
-  }
-
-  /**
-   * Execute local before create hook to the given model.
-   */
-  private executeLocalBeforeCreateHook (model: Model): false | void {
-    const hook = this.model['beforeCreate'] as Contracts.BeforeCreateHook | undefined
-
-    return hook && hook(model, this.entity)
-  }
-
-  /**
-   * Execute global before create hook to the given model.
-   */
-  private executeGlobalBeforeCreateHook (model: Model): false | void {
-    return this.executeGlobalBeforeMutationHooks('beforeCreate', (hook) => {
-      return (hook as Contracts.BeforeCreateHook)(model, this.entity)
-    })
-  }
-
-  /**
-   * Execute after create hook to the given model.
-   */
-  private executeAfterCreateHook (model: Model): void {
-    this.executeLocalAfterCreateHook(model)
-    this.executeGlobalAfterCreateHook(model)
-  }
-
-  /**
-   * Execute after create hook to the goven models.
-   */
-  private executeAfterCreateHookOnModels (models: Data.Instances): void {
-    Object.keys(models).forEach((id) => {
-      const model = models[id]
-
-      this.executeAfterCreateHook(model)
-    })
-  }
-
-  /**
-   * Execute local after create hook to the given model.
-   */
-  private executeLocalAfterCreateHook (model: Model): void {
-    const hook = this.model['afterCreate'] as Contracts.AfterCreateHook | undefined
-
-    return hook && hook(model, this.entity)
-  }
-
-  /**
-   * Execute global after create hook to the given model.
-   */
-  private executeGlobalAfterCreateHook (model: Model): void {
-    this.executeGlobalAfterMutationHooks('afterCreate', (hook) => {
-      (hook as Contracts.AfterCreateHook)(model, this.entity)
-    })
-  }
-
-  /**
-   * Execute before update hook to the given model.
-   */
-  private executeBeforeUpdateHook (model: Model): false | void {
-    if (this.executeLocalBeforeUpdateHook(model) === false) {
-      return false
-    }
-
-    if (this.executeGlobalBeforeUpdateHook(model) === false) {
-      return false
-    }
-  }
-
-  /**
-   * Execute before update hook to the goven models.
-   */
-  private executeBeforeUpdateHookOnModels (models: Data.Instances): void {
-    Object.keys(models).forEach((id) => {
-      const model = models[id]
-
-      if (this.executeBeforeUpdateHook(model) === false) {
-        delete models[id]
-      }
-    })
-  }
-
-  /**
-   * Execute local before update hook to the given model.
-   */
-  private executeLocalBeforeUpdateHook (model: Model): false | void {
-    const hook = this.model['beforeUpdate'] as Contracts.BeforeUpdateHook | undefined
-
-    return hook && hook(model, this.entity)
-  }
-
-  /**
-   * Execute global before update hook to the given model.
-   */
-  private executeGlobalBeforeUpdateHook (model: Model): false | void {
-    return this.executeGlobalBeforeMutationHooks('beforeUpdate', (hook) => {
-      return (hook as Contracts.BeforeUpdateHook)(model, this.entity)
-    })
-  }
-
-  /**
-   * Execute after update hook to the given model.
-   */
-  private executeAfterUpdateHook (model: Model): void {
-    this.executeLocalAfterUpdateHook(model)
-    this.executeGlobalAfterUpdateHook(model)
-  }
-
-  /**
-   * Execute local after update hook to the given model.
-   */
-  private executeLocalAfterUpdateHook (model: Model): void {
-    const hook = this.model['afterUpdate'] as Contracts.AfterUpdateHook | undefined
-
-    return hook && hook(model, this.entity)
-  }
-
-  /**
-   * Execute global after create hook to the given model.
-   */
-  private executeGlobalAfterUpdateHook (model: Model): void {
-    this.executeGlobalAfterMutationHooks('afterUpdate', (hook) => {
-      (hook as Contracts.AfterCreateHook)(model, this.entity)
-    })
-  }
-
-  /**
-   * Execute after update hook to the goven models.
-   */
-  private executeAfterUpdateHookOnModels (models: Data.Instances): void {
-    Object.keys(models).forEach((id) => {
-      const model = models[id]
-
-      this.executeAfterUpdateHook(model)
-    })
   }
 
   /**
@@ -1447,7 +1292,7 @@ export default class Query<T extends Model = Model> {
   private executeLocalBeforeDeleteHook (model: Model): false | void {
     const hook = this.model['beforeDelete'] as Contracts.BeforeDeleteHook | undefined
 
-    return hook && hook(model, this.entity)
+    return hook && hook(model as any, this.entity)
   }
 
   /**
@@ -1473,7 +1318,7 @@ export default class Query<T extends Model = Model> {
   private executeLocalAfterDeleteHook (model: Model): void {
     const hook = this.model['afterDelete'] as Contracts.AfterDeleteHook | undefined
 
-    return hook && hook(model, this.entity)
+    return hook && hook(model as any, this.entity)
   }
 
   /**
@@ -1499,8 +1344,6 @@ export default class Query<T extends Model = Model> {
       return callback(hook.callback) === false ? false : true
     })
 
-    this.cleanGlobalHooksOn(on)
-
     return result === false ? false : undefined
   }
 
@@ -1515,16 +1358,5 @@ export default class Query<T extends Model = Model> {
     }
 
     hooks.forEach(hook => { callback(hook.callback) })
-
-    this.cleanGlobalHooksOn(on)
-  }
-
-  /**
-   * Remove all callback defined as "once" from the global hooks.
-   */
-  private cleanGlobalHooksOn (on: string): void {
-    const hooks = this.self().hooks[on]
-
-    this.self().hooks[on] = hooks.filter(hook => !hook.once)
   }
 }

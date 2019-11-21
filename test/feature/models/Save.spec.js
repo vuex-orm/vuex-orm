@@ -36,7 +36,7 @@ describe('Feature – Models – Save', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, name: 'John Doe', posts: [] }
+        1: { $id: '1', id: 1, name: 'John Doe', posts: [] }
       }
     })
 
@@ -59,10 +59,10 @@ describe('Feature – Models – Save', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, name: 'John Doe', posts: [] }
+        1: { $id: '1', id: 1, name: 'John Doe', posts: [] }
       },
       posts: {
-        1: { $id: 1, id: 1, user_id: 1, user: null }
+        1: { $id: '1', id: 1, user_id: 1, user: null }
       }
     })
 

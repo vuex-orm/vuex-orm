@@ -54,7 +54,7 @@ export default class MorphOne extends Relation {
   attach (key: any, record: Record, data: NormalizedData): void {
     const relatedRecord = data[this.related.entity][key]
 
-    relatedRecord[this.id] = relatedRecord[this.id] || record.$id
+    relatedRecord[this.id] = relatedRecord[this.id] || this.related.getIdFromRecord(record)
     relatedRecord[this.type] = relatedRecord[this.type] || this.model.entity
   }
 

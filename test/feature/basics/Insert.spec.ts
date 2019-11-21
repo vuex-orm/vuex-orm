@@ -1,39 +1,38 @@
 import { createStore, createState } from 'test/support/Helpers'
-import Model from 'app/model/Model'
+import { Model, Fields } from 'app/index'
 
 describe('Feature – Basics – Insert', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    static fields (): Fields {
       return {
         id: this.attr(null),
-        name: this.attr('JD')
+        name: this.string('John Doe')
       }
     }
   }
 
-  it('can insert a record', () => {
+  it('can insert a record', async () => {
     const store = createStore([{ model: User }])
 
-    User.insert({
+    await User.insert({
       data: { id: 1, name: 'John Doe' }
     })
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, name: 'John Doe' }
+        1: { $id: '1', id: 1, name: 'John Doe' }
       }
     })
 
     expect(store.state.entities).toEqual(expected)
-    expect(store.state.entities.users.data[1]).toBeInstanceOf(User)
   })
 
-  it('does nothing if an empty object is passed', () => {
+  it('does nothing if an empty object is passed', async () => {
     const store = createStore([{ model: User }])
 
-    User.insert({
+    await User.insert({
       data: {}
     })
 
@@ -44,16 +43,16 @@ describe('Feature – Basics – Insert', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
-  it('can insert record with primary key value of `null`', () => {
+  it('can insert record with primary key value of `null`', async () => {
     const store = createStore([{ model: User }])
 
-    User.insert({
+    await User.insert({
       data: { id: null, name: 'John Doe' }
     })
 
     const expected = createState({
       users: {
-        _no_key_1: { $id: '_no_key_1', id: null, name: 'John Doe' }
+        '$uuid1': { $id: '$uuid1', id: '$uuid1', name: 'John Doe' }
       }
     })
 

@@ -77,7 +77,7 @@ describe('Unit – Model', () => {
 
     const data = { id: 1 }
 
-    expect(User.getIndexIdFromRecord(data)).toBe(1)
+    expect(User.getIndexIdFromRecord(data)).toBe('1')
   })
 
   it('can get a value of the composite primary key', () => {
@@ -213,7 +213,7 @@ describe('Unit – Model', () => {
 
     const record = User.hydrate({ id: 1, age: 24 })
 
-    expect(record).toEqual({ id: 1, name: 'Default Doe' })
+    expect(record).toEqual({ $id: null, id: 1, name: 'Default Doe' })
   })
 
   it('can hydrate without passing any record', () => {
@@ -230,7 +230,7 @@ describe('Unit – Model', () => {
 
     const record = User.hydrate()
 
-    expect(record).toEqual({ id: null, name: 'Default Doe' })
+    expect(record).toEqual({ $id: null, id: null, name: 'Default Doe' })
   })
 
   it('can hydrate relationship data', () => {
@@ -277,11 +277,12 @@ describe('Unit – Model', () => {
     })
 
     const expected = {
+      $id: null,
       id: 1,
-      phone: { id: 1, user_id: null, number: '12-3456-7891' },
+      phone: { $id: null, id: 1, user_id: null, number: '12-3456-7891' },
       posts: [
-        { id: 1, user_id: null, title: 'Title 001' },
-        { id: 2, user_id: null, title: 'Default Title' }
+        { $id: null, id: 1, user_id: null, title: 'Title 001' },
+        { $id: null, id: 2, user_id: null, title: 'Default Title' }
       ]
     }
 

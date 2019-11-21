@@ -39,11 +39,11 @@ describe('Features – Relations – Has Many', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, posts: [] }
+        1: { $id: '1', id: 1, posts: [] }
       },
       posts: {
-        1: { $id: 1, id: 1, user_id: 1 },
-        2: { $id: 2, id: 2, user_id: 1 }
+        1: { $id: '1', id: 1, user_id: 1 },
+        2: { $id: '2', id: 2, user_id: 1 }
       }
     })
 
@@ -70,11 +70,11 @@ describe('Features – Relations – Has Many', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, posts: [] }
+        1: { $id: '1', id: 1, posts: [] }
       },
       posts: {
-        1: { $id: 1, id: 1, user_id: 1 },
-        2: { $id: 2, id: 2, user_id: 1 }
+        1: { $id: '1', id: 1, user_id: 1 },
+        2: { $id: '2', id: 2, user_id: 1 }
       }
     })
 
@@ -102,15 +102,15 @@ describe('Features – Relations – Has Many', () => {
 
     const expected = [
       {
-        $id: 1,
+        $id: '1',
         id: 1,
         posts: [
-          { $id: 1, id: 1, user_id: 1 },
-          { $id: 2, id: 2, user_id: 1 }
+          { $id: '1', id: 1, user_id: 1 },
+          { $id: '2', id: 2, user_id: 1 }
         ]
       },
       {
-        $id: 2,
+        $id: '2',
         id: 2,
         posts: []
       }
@@ -148,11 +148,11 @@ describe('Features – Relations – Has Many', () => {
     })
 
     const expected = {
-      $id: 1,
+      $id: '1',
       user_id: 1,
       posts: [
-        { $id: 1, id: 1, user_id: 1 },
-        { $id: 2, id: 2, user_id: 1 }
+        { $id: '1', id: 1, user_id: 1 },
+        { $id: '2', id: 2, user_id: 1 }
       ]
     }
 
@@ -199,10 +199,10 @@ describe('Features – Relations – Has Many', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, local_key: 'local_key', posts: [] }
+        1: { $id: '1', id: 1, local_key: 'local_key', posts: [] }
       },
       posts: {
-        1: { $id: 1, id: 1, user_id: 'local_key' }
+        1: { $id: '1', id: 1, user_id: 'local_key' }
       }
     })
 

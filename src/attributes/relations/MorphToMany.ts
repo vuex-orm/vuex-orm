@@ -158,7 +158,7 @@ export default class MorphToMany extends Relation {
                                        .where(this.id, record[this.parentKey])
                                        .where(this.type, parent.entity)
                                        .get()
-                                       .map(pivotRecord => pivotRecord[this.parentKey])
+
       const relateds = (record[key] || []).filter((relatedId: any) => !relatedIds.includes(relatedId))
 
       if (!Array.isArray(relateds) || relateds.length === 0) {
