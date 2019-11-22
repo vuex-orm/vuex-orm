@@ -1,4 +1,4 @@
-export default class Uuid {
+export default class Uid {
   /**
    * Count to create a unique id.
    */
@@ -16,5 +16,12 @@ export default class Uuid {
     this.count++
 
     return `${this.prefix}${this.count}`
+  }
+
+  /**
+   * Reset the count to 0.
+   */
+  static reset (): void {
+    this.count = 0
   }
 }

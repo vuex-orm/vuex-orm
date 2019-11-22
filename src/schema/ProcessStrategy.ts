@@ -1,6 +1,7 @@
 import { schema } from 'normalizr'
-import Uuid from '../support/Uuid'
+import Uid from '../support/Uid'
 import Record from '../data/Record'
+import UidAttribute from '../attributes/types/Uid'
 import Model from '../model/Model'
 
 export default class ProcessStrategy {
@@ -20,7 +21,7 @@ export default class ProcessStrategy {
   /**
    * Generate a field that is defined as primary keys. For keys with a proper
    * value set, it will do nothing. If a key is missing, it will generate
-   * UUID for it.
+   * UID for it.
    */
   private static generateIds (record: Record, model: typeof Model): void {
     const keys = Array.isArray(model.primaryKey) ? model.primaryKey : [model.primaryKey]
@@ -30,7 +31,9 @@ export default class ProcessStrategy {
         return
       }
 
-      record[k] = Uuid.make()
+      const attr = model.getFields()[k]
+
+      record[k] = attr instanceof UidAttribute ? attr.make() : Uid.make()
     })
   }
 

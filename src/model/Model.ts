@@ -99,10 +99,17 @@ export default class Model {
   }
 
   /**
-   * Create an increment attribute.
+   * Create an uid attribute.
    */
-  static increment (): Attributes.Increment {
-    return new Attributes.Increment(this)
+  static uid (value?: () => string | number): Attributes.Uid {
+    return new Attributes.Uid(this, value)
+  }
+
+  /**
+   * @deprecated Use `uid` attribute instead.
+   */
+  static increment (): Attributes.Uid {
+    return this.uid()
   }
 
   /**
