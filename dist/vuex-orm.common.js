@@ -14,7 +14,7 @@ if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 });
 
 var _core = createCommonjsModule(function (module) {
-var core = module.exports = { version: '2.6.10' };
+var core = module.exports = { version: '2.6.9' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 });
 var _core_1 = _core.version;
@@ -3954,6 +3954,7 @@ var Query = /** @class */ (function () {
         this.rootState = state;
         this.entity = entity;
         this.model = this.getModel(entity);
+        this.module = this.getModule(entity);
     }
     /**
      * Get the database from the container.
@@ -3978,6 +3979,18 @@ var Query = /** @class */ (function () {
      */
     Query.getModels = function () {
         return this.database().models();
+    };
+    /**
+     * Get module of given name from the container.
+     */
+    Query.getModule = function (name) {
+        return this.database().module(name);
+    };
+    /**
+     * Get all modules from the container.
+     */
+    Query.getModules = function () {
+        return this.database().modules();
     };
     /**
      * Delete all records from the store.
@@ -4054,6 +4067,19 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.getBase = function (name) {
         return this.self().getBase(name);
+    };
+    /**
+     * Get module of given name from the container.
+     */
+    Query.prototype.getModule = function (name) {
+        var entity = name || this.entity;
+        return this.self().getModule(entity);
+    };
+    /**
+     * Get all modules from the container.
+     */
+    Query.prototype.getModules = function () {
+        return this.self().getModules();
     };
     /**
      * Returns all record of the query chain result. This method is alias
