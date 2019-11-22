@@ -135,7 +135,7 @@ describe('Features – Relations – Has One', () => {
 
       static fields () {
         return {
-          id: this.increment(),
+          id: this.attr(null),
           local_key: this.attr(null),
           phone: this.hasOne(Phone, 'user_id', 'local_key')
         }
