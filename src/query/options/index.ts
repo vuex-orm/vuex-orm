@@ -6,6 +6,7 @@ import Has from './Has'
 import HasConstraint from './HasConstraint'
 import Orders from './Orders'
 import OrderDirection from './OrderDirection'
+import OrderKey from './OrderKey'
 import Constraint from './Constraint'
 import Load from './Load'
 
@@ -18,6 +19,7 @@ export {
   HasConstraint,
   Orders,
   OrderDirection,
+  OrderKey,
   Constraint,
   Load
 }

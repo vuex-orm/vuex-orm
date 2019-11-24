@@ -12,7 +12,7 @@ export default class OrderByFilter {
       return records
     }
 
-    const keys = query.orders.map(order => order.field)
+    const keys = query.orders.map(order => order.key)
     const directions = query.orders.map(order => order.direction)
 
     return Utils.orderBy(records, keys, directions)
