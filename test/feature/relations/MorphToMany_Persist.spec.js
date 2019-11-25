@@ -267,7 +267,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
 
     const expected = createState({
       posts: {
-        $uuid1: { $id: '$uuid1', id: '$uuid1', title: 'Post title.', tags: [] }
+        $uid1: { $id: '$uid1', id: '$uid1', title: 'Post title.', tags: [] }
       },
       videos: {},
       tags: {
@@ -275,8 +275,8 @@ describe('Features – Relations – Morph To Many – Persist', () => {
         3: { $id: '3', id: 3, name: 'cast' }
       },
       taggables: {
-        $uuid1_2_posts: { $id: '$uuid1_2_posts', id: null, tag_id: 2, taggable_id: '$uuid1', taggable_type: 'posts' },
-        $uuid1_3_posts: { $id: '$uuid1_3_posts', id: null, tag_id: 3, taggable_id: '$uuid1', taggable_type: 'posts' }
+        $uid1_2_posts: { $id: '$uid1_2_posts', id: null, tag_id: 2, taggable_id: '$uid1', taggable_type: 'posts' },
+        $uid1_3_posts: { $id: '$uid1_3_posts', id: null, tag_id: 3, taggable_id: '$uid1', taggable_type: 'posts' }
       }
     })
 

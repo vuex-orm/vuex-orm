@@ -26,9 +26,9 @@ describe('Feature – Attributes – Uid', () => {
 
       const expected = createState({
         users: {
-          $uuid1: { $id: '$uuid1', id: '$uuid1', id2: '$uuid4' },
-          $uuid2: { $id: '$uuid2', id: '$uuid2', id2: '$uuid5' },
-          $uuid3: { $id: '$uuid3', id: '$uuid3', id2: '$uuid6' }
+          $uid1: { $id: '$uid1', id: '$uid1', id2: '$uid4' },
+          $uid2: { $id: '$uid2', id: '$uid2', id2: '$uid5' },
+          $uid3: { $id: '$uid3', id: '$uid3', id2: '$uid6' }
         }
       })
 

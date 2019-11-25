@@ -7,7 +7,7 @@ export default class Uid {
   /**
    * Prefix string to be used for the id.
    */
-  private static prefix: string = '$uuid'
+  private static prefix: string = '$uid'
 
   /**
    * Generate an UUID.

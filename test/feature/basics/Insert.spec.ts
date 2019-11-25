@@ -52,7 +52,7 @@ describe('Feature – Basics – Insert', () => {
 
     const expected = createState({
       users: {
-        '$uuid1': { $id: '$uuid1', id: '$uuid1', name: 'John Doe' }
+        '$uid1': { $id: '$uid1', id: '$uid1', name: 'John Doe' }
       }
     })
 

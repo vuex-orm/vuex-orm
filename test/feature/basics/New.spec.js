@@ -19,13 +19,13 @@ describe('Feature – Basics – New', () => {
     await User.new()
     await User.new()
 
-    expect(store.state.entities.users.data.$uuid1.$id).toBe('$uuid1')
-    expect(store.state.entities.users.data.$uuid1.id).toBe('$uuid1')
-    expect(store.state.entities.users.data.$uuid1.name).toBe('Default Doe')
+    expect(store.state.entities.users.data.$uid1.$id).toBe('$uid1')
+    expect(store.state.entities.users.data.$uid1.id).toBe('$uid1')
+    expect(store.state.entities.users.data.$uid1.name).toBe('Default Doe')
 
-    expect(store.state.entities.users.data.$uuid2.$id).toBe('$uuid2')
-    expect(store.state.entities.users.data.$uuid2.id).toBe('$uuid2')
-    expect(store.state.entities.users.data.$uuid2.name).toBe('Default Doe')
+    expect(store.state.entities.users.data.$uid2.$id).toBe('$uid2')
+    expect(store.state.entities.users.data.$uid2.id).toBe('$uid2')
+    expect(store.state.entities.users.data.$uid2.name).toBe('Default Doe')
   })
 
   it('returns newly created instance', async () => {
@@ -33,8 +33,8 @@ describe('Feature – Basics – New', () => {
 
     const user = await User.new()
 
-    expect(user.$id).toBe('$uuid3')
-    expect(user.id).toBe('$uuid3')
+    expect(user.$id).toBe('$uid3')
+    expect(user.id).toBe('$uid3')
     expect(user.name).toBe('Default Doe')
   })
 })
