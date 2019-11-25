@@ -94,7 +94,7 @@ export default class Rollcaller {
 
     collection.forEach((model) => {
       if (comparators.every(comparator => comparator(model))) {
-        ids.push(model.$id as string)
+        ids.push(model.$self().getIdFromRecord(model) as string)
       }
     })
 

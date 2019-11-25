@@ -54,7 +54,7 @@ export default class Model {
   /**
    * The index ID for the model.
    */
-  $id: string | (number | string)[] | null = null
+  $id: string | null = null
 
   /**
    * Create a new model instance.
@@ -99,10 +99,17 @@ export default class Model {
   }
 
   /**
-   * Create an increment attribute.
+   * Create an uid attribute.
    */
-  static increment (): Attributes.Increment {
-    return new Attributes.Increment(this)
+  static uid (value?: () => string | number): Attributes.Uid {
+    return new Attributes.Uid(this, value)
+  }
+
+  /**
+   * @deprecated Use `uid` attribute instead.
+   */
+  static increment (): Attributes.Uid {
+    return this.uid()
   }
 
   /**
@@ -318,7 +325,10 @@ export default class Model {
       return this.cachedFields[this.entity]
     }
 
-    this.cachedFields[this.entity] = this.fields()
+    this.cachedFields[this.entity] = {
+      $id: this.string(null).nullable(),
+      ...this.fields()
+    }
 
     return this.cachedFields[this.entity]
   }
@@ -363,28 +373,28 @@ export default class Model {
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.
    */
-  static create<T extends typeof Model> (this: T, payload: Payloads.Create): Promise<Collections<InstanceOf<T>>> {
+  static create<T extends typeof Model> (this: T, payload: Payloads.Create): Promise<Collections> {
     return this.dispatch('create', payload)
   }
 
   /**
    * Insert records.
    */
-  static insert<T extends typeof Model> (this: T, payload: Payloads.Insert): Promise<Collections<InstanceOf<T>>> {
+  static insert<T extends typeof Model> (this: T, payload: Payloads.Insert): Promise<Collections> {
     return this.dispatch('insert', payload)
   }
 
   /**
    * Update records.
    */
-  static update<T extends typeof Model> (this: T, payload: Payloads.Update): Promise<Collections<InstanceOf<T>>> {
+  static update<T extends typeof Model> (this: T, payload: Payloads.Update): Promise<Collections> {
     return this.dispatch('update', payload)
   }
 
   /**
    * Insert or update records.
    */
-  static insertOrUpdate<T extends typeof Model> (this: T, payload: Payloads.InsertOrUpdate): Promise<Collections<InstanceOf<T>>> {
+  static insertOrUpdate<T extends typeof Model> (this: T, payload: Payloads.InsertOrUpdate): Promise<Collections> {
     return this.dispatch('insertOrUpdate', payload)
   }
 
@@ -405,54 +415,48 @@ export default class Model {
   }
 
   /**
-   * Get the index ID value from the given record. An index ID is a value that
-   * used as a key for records within the Vuex Store.
-   *
-   * Most of the time, it's same as the value for the Model's primary key. If
-   * the Model has a composite primary key, each value corresponding to those
-   * primary key will be stringified and become a single string value such
-   * as `'[1, 2]'`.
-   *
-   * If the primary key is not present at the given record, it returns `null`.
-   * For the composite primary key, every key must exist at a given record,
-   * or it will return `null`.
+   * Check if the given key is the primary key. If the model has composite
+   * primary key, this method is going to check if the given key is included
+   * in the composite key.
    */
-  static getIndexIdFromRecord (record: Record | Model): string | number | null {
+  static isPrimaryKey (key: string): boolean {
+    if (!Array.isArray(this.primaryKey)) {
+      return this.primaryKey === key
+    }
+
+    return this.primaryKey.includes(key)
+  }
+
+  /**
+   * Get the id (value of primary key) from teh given record. If primary key is
+   * not present, or it is invalid primary key value, which is other than
+   * `string` or `number`, it's going to return `null`.
+   *
+   * If the model has composite key, it's going to return array of ids. If any
+   * composite key missing, it will return `null`.
+   */
+  static getIdFromRecord (record: Record): string | number | (string | number)[] | null {
     const key = this.primaryKey
 
     if (typeof key === 'string') {
-      return this.getIndexIdFromValue(record[key])
+      return this.getIdFromValue(record[key])
     }
 
-    const ids: (string | number)[] = []
+    const ids = key.reduce<(string | number)[]>((keys, k) => {
+      const id = this.getIdFromValue(record[k])
 
-    key.forEach((key) => {
-      const id = this.getIndexIdFromValue(record[key])
+      id !== null && keys.push(id)
 
-      id && ids.push(id)
-    })
+      return keys
+    }, [])
 
-    return this.isCompositeKeyValid(record) ? JSON.stringify(ids) : null
+    return ids.length === key.length ? ids : null
   }
 
   /**
-   * Returns true if primaryKey is composite and all corresponding values
-   * in the record are present.
+   * Get correct index id, which is `string` | `number`, from the given value.
    */
-  static isCompositeKeyValid (record: Record | Model): boolean {
-    if (!Array.isArray(this.primaryKey)) {
-      return false
-    }
-
-    return this.primaryKey.every(key => this.getIndexIdFromValue(record[key]))
-  }
-
-  /**
-   * Get correct index ID from the given value. This method will cast the
-   * number to the string, and returns `null` for anything which is not
-   * a string or a number.
-   */
-  static getIndexIdFromValue (value: any): string | number | null {
+  static getIdFromValue (value: any): string | number | null {
     if (typeof value === 'string' && value !== '') {
       return value
     }
@@ -462,6 +466,35 @@ export default class Model {
     }
 
     return null
+  }
+
+  /**
+   * Get the index ID value from the given record. An index ID is a value that
+   * used as a key for records within the Vuex Store.
+   *
+   * Most of the time, it's same as the value for the Model's primary key but
+   * it's always `string`, even if the primary key value is `number`.
+   *
+   * If the Model has a composite primary key, each value corresponding to
+   * those primary key will be stringified and become a single string value
+   * such as `'[1,2]'`.
+   *
+   * If the primary key is not present at the given record, it returns `null`.
+   * For the composite primary key, every key must exist at a given record,
+   * or it will return `null`.
+   */
+  static getIndexIdFromRecord (record: Record): string | null {
+    const id = this.getIdFromRecord(record)
+
+    if (id === null) {
+      return null
+    }
+
+    if (Array.isArray(id)) {
+      return JSON.stringify(id)
+    }
+
+    return String(id)
   }
 
   /**
@@ -487,7 +520,7 @@ export default class Model {
   static getModelFromRecord (record: Record | Model): typeof Model | null {
     // If the given record is already a model instance, return the
     // model object.
-    if (record instanceof Model) {
+    if (record instanceof this) {
       return record.$self()
     }
 
@@ -504,50 +537,6 @@ export default class Model {
     }
 
     return this.database().model(model)
-  }
-
-  /**
-   * Get the attribute class for the given attribute name.
-   */
-  static getAttributeClass (name: string): typeof Attributes.Attribute {
-    switch (name) {
-      case 'increment': return Attributes.Increment
-
-      default:
-        throw Error(`The attribute name "${name}" doesn't exist.`)
-    }
-  }
-
-  /**
-   * Get all of the fields that matches the given attribute name.
-   */
-  static getFieldsByAttribute (name: string): { [key: string]: Attributes.Attribute } {
-    const attr = this.getAttributeClass(name)
-    const fields = this.getFields()
-
-    return Object.keys(fields).reduce((newFields, key) => {
-      const field = fields[key]
-
-      if (field instanceof attr) {
-        newFields[key] = field
-      }
-
-      return newFields
-    }, {} as { [key: string]: Attributes.Attribute })
-  }
-
-  /**
-   * Get all `increment` fields from the schema.
-   */
-  static getIncrementFields (): { [key: string]: Attributes.Increment } {
-    return this.getFieldsByAttribute('increment') as { [key: string]: Attributes.Increment }
-  }
-
-  /**
-   * Check if fields contains the `increment` field type.
-   */
-  static hasIncrementFields (): boolean {
-    return Object.keys(this.getIncrementFields()).length > 0
   }
 
   /**
@@ -605,7 +594,6 @@ export default class Model {
    * Tries to find a Relation field in all types defined in the InheritanceTypes mapping
    */
   static findRelationInSubTypes (relationName: string): Attributes.Relation | null {
-
     const types = this.types()
 
     for (const type in types) {
@@ -710,21 +698,21 @@ export default class Model {
   /**
    * Create records.
    */
-  async $create<T extends Model> (this: T, payload: Payloads.Create): Promise<Collections<T>> {
+  async $create (payload: Payloads.Create): Promise<Collections> {
     return this.$dispatch('create', payload)
   }
 
   /**
    * Create records.
    */
-  async $insert<T extends Model> (this: T, payload: Payloads.Insert): Promise<Collections<T>> {
+  async $insert (payload: Payloads.Insert): Promise<Collections> {
     return this.$dispatch('insert', payload)
   }
 
   /**
    * Update records.
    */
-  async $update<T extends Model> (this: T, payload: Payloads.Update): Promise<Collections<T>> {
+  async $update (payload: Payloads.Update): Promise<Collections> {
     if (Array.isArray(payload)) {
       return this.$dispatch('update', payload)
     }
@@ -743,7 +731,7 @@ export default class Model {
   /**
    * Insert or update records.
    */
-  async $insertOrUpdate<T extends Model> (this: T, payload: Payloads.InsertOrUpdate): Promise<Collections<T>> {
+  async $insertOrUpdate (payload: Payloads.InsertOrUpdate): Promise<Collections> {
     return this.$dispatch('insertOrUpdate', payload)
   }
 
@@ -805,10 +793,6 @@ export default class Model {
 
       this[key] = field.make(value, data, key)
     })
-
-    if (data.$id !== undefined) {
-      this.$id = this.$self().isCompositeKeyValid(this) ? JSON.parse(data.$id) : data.$id
-    }
   }
 
   /**
@@ -816,34 +800,5 @@ export default class Model {
    */
   $toJson (): Record {
     return Serializer.serialize(this)
-  }
-
-  /**
-   * This method is used by Nuxt server-side rendering. It will prevent
-   * `non-POJO` warning when using Vuex ORM with Nuxt universal mode.
-   * The method is not meant to be used publicly by a user.
-   *
-   * See https://github.com/vuex-orm/vuex-orm/issues/255 for more detail.
-   */
-  toJSON (): object {
-    return Object.keys(this).reduce<object>((json, key) => {
-      const value = this[key]
-
-      if (value instanceof Model) {
-        json[key] = value.toJSON()
-
-        return json
-      }
-
-      if (Array.isArray(value)) {
-        json[key] = value.map(v => v instanceof Model ? v.toJSON() : v)
-
-        return json
-      }
-
-      json[key] = value
-
-      return json
-    }, {})
   }
 }

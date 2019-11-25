@@ -2,7 +2,7 @@ import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Feature – Basics – Update', () => {
-  it('can update record by including primary key in the data', () => {
+  it('can update record by including primary key in the data', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -13,23 +13,27 @@ describe('Feature – Basics – Update', () => {
           age: this.attr(null)
         }
       }
+
+      id!: any
+      name!: any
+      age!: any
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await User.create({
       data: { id: 0, name: 'John Doe', age: 30 }
     })
 
-    store.dispatch('entities/users/update', { id: 0, age: 24 })
+    await User.update({ id: 0, age: 24 })
 
-    const user = store.getters['entities/users/find'](0)
+    const user = User.find(0) as User
 
     expect(user.name).toBe('John Doe')
     expect(user.age).toBe(24)
   })
 
-  it('can update record by including custom primary key in the data', () => {
+  it('can update record by including custom primary key in the data', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -46,20 +50,19 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: { user_id: 1, name: 'John Doe', age: 30 }
     })
 
-    store.dispatch('entities/users/update', { user_id: 1, age: 24 })
+    await store.dispatch('entities/users/update', { user_id: 1, age: 24 })
 
     const user = store.state.entities.users.data['1']
 
-    expect(user).toBeInstanceOf(User)
     expect(user.name).toBe('John Doe')
     expect(user.age).toBe(24)
   })
 
-  it('can update record by including composite primary key in the data', () => {
+  it('can update record by including composite primary key in the data', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -77,11 +80,11 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: { key_1: 1, key_2: 2, name: 'John Doe', age: 30 }
     })
 
-    store.dispatch('entities/users/update', { key_1: 1, key_2: 2, age: 24 })
+    await store.dispatch('entities/users/update', { key_1: 1, key_2: 2, age: 24 })
 
     const user = store.getters['entities/users']().where('key_1', 1).where('key_2', 2).first()
 
@@ -89,7 +92,7 @@ describe('Feature – Basics – Update', () => {
     expect(user.age).toBe(24)
   })
 
-  it('can update record by passing an array', () => {
+  it('can update record by passing an array', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -104,14 +107,14 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 0, name: 'John Doe', age: 30 },
         { id: 1, name: 'Jane Doe', age: 24 }
       ]
     })
 
-    store.dispatch('entities/users/update', [
+    await store.dispatch('entities/users/update', [
       { id: 0, age: 24 },
       { id: 1, age: 30 }
     ])
@@ -125,7 +128,7 @@ describe('Feature – Basics – Update', () => {
     expect(user1.age).toBe(30)
   })
 
-  it('can update record by passing an array as a data', () => {
+  it('can update record by passing an array as a data', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -140,14 +143,14 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 0, name: 'John Doe', age: 30 },
         { id: 1, name: 'Jane Doe', age: 24 }
       ]
     })
 
-    store.dispatch('entities/users/update', {
+    await store.dispatch('entities/users/update', {
       data: [
         { id: 0, age: 24 },
         { id: 1, age: 30 }
@@ -163,7 +166,7 @@ describe('Feature – Basics – Update', () => {
     expect(user1.age).toBe(30)
   })
 
-  it('can update record by specifying condition with id', () => {
+  it('can update record by specifying condition with id', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -178,23 +181,22 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe', age: 30 }
     })
 
-    store.dispatch('entities/users/update', {
+    await store.dispatch('entities/users/update', {
       where: 1,
       data: { age: 24 }
     })
 
     const user = store.state.entities.users.data['1']
 
-    expect(user).toBeInstanceOf(User)
     expect(user.name).toBe('John Doe')
     expect(user.age).toBe(24)
   })
 
-  it('can update record by specifying condition with id of string', () => {
+  it('can update record by specifying condition with id of string', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -209,25 +211,24 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe', age: 30 }
     })
 
-    store.dispatch('entities/users/update', {
+    await store.dispatch('entities/users/update', {
       where: '1',
-      data (user) {
+      data (user: any) {
         user.age = 24
       }
     })
 
     const user = store.state.entities.users.data['1']
 
-    expect(user).toBeInstanceOf(User)
     expect(user.name).toBe('John Doe')
     expect(user.age).toBe(24)
   })
 
-  it('can update record by specifying condition with closure', () => {
+  it('can update record by specifying condition with closure', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -242,7 +243,7 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'JD', age: 30 },
         { id: 2, name: 'JD', age: 30 },
@@ -250,8 +251,8 @@ describe('Feature – Basics – Update', () => {
       ]
     })
 
-    store.dispatch('entities/users/update', {
-      where (record) {
+    await store.dispatch('entities/users/update', {
+      where (record: any) {
         return record.name === 'JD'
       },
       data: { age: 24 }
@@ -259,15 +260,12 @@ describe('Feature – Basics – Update', () => {
 
     const users = store.state.entities.users.data
 
-    expect(users['1']).toBeInstanceOf(User)
-    expect(users['2']).toBeInstanceOf(User)
-    expect(users['3']).toBeInstanceOf(User)
     expect(users['1'].age).toBe(24)
     expect(users['2'].age).toBe(24)
     expect(users['3'].age).toBe(20)
   })
 
-  it('can update record by specifying data with closure', () => {
+  it('can update record by specifying data with closure', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -282,7 +280,7 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'JD', age: 30 },
         { id: 2, name: 'JD', age: 30 },
@@ -290,9 +288,9 @@ describe('Feature – Basics – Update', () => {
       ]
     })
 
-    store.dispatch('entities/users/update', {
+    await store.dispatch('entities/users/update', {
       where: 1,
-      data (record) {
+      data (record: any) {
         record.name = 'John Doe'
         record.age = 24
       }
@@ -304,7 +302,7 @@ describe('Feature – Basics – Update', () => {
     expect(user.age).toBe(24)
   })
 
-  it('does nothing if the specified id can not be found', () => {
+  it('does nothing if the specified id can not be found', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -319,15 +317,15 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'JD', age: 30 }
       ]
     })
 
-    store.dispatch('entities/users/update', {
+    await store.dispatch('entities/users/update', {
       where: 2,
-      data (user) {
+      data (user: any) {
         user.name = 'John Doe'
         user.age = 24
       }
@@ -338,7 +336,7 @@ describe('Feature – Basics – Update', () => {
     expect(user).toBe(null)
   })
 
-  it('can update record by specifying data and where with closure', () => {
+  it('can update record by specifying data and where with closure', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -353,7 +351,7 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'JD', age: 30 },
         { id: 2, name: 'JD', age: 30 },
@@ -361,12 +359,12 @@ describe('Feature – Basics – Update', () => {
       ]
     })
 
-    store.dispatch('entities/users/update', {
-      where (record) {
+    await store.dispatch('entities/users/update', {
+      where (record: any) {
         return record.name === 'JD'
       },
 
-      data (record) {
+      data (record: any) {
         record.age = 24
       }
     })
@@ -392,7 +390,7 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
+    await await store.dispatch('entities/users/create', {
       data: { id: 1, parameters: [1, 2] }
     })
 
@@ -420,7 +418,7 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
+    await await store.dispatch('entities/users/create', {
       data: { id: 1, settings: { role: 'admin' } }
     })
 
@@ -448,7 +446,7 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
+    await await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe' }
     })
 
@@ -464,7 +462,7 @@ describe('Feature – Basics – Update', () => {
     expect(user.age).toBe(undefined)
   })
 
-  it('does nothing if the condition did not match', () => {
+  it('does nothing if the condition did not match', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -479,12 +477,12 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe', age: 30 }
     })
 
-    store.dispatch('entities/users/update', { id: 2, age: 24 })
-    store.dispatch('entities/users/update', { user_id: 2, age: 24 })
+    await store.dispatch('entities/users/update', { id: 2, age: 24 })
+    await store.dispatch('entities/users/update', { user_id: 2, age: 24 })
 
     const user = store.getters['entities/users/find'](1)
 
@@ -507,13 +505,13 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe', age: 30 }
     })
 
     try {
       await store.dispatch('entities/users/update', {
-        data (user) {
+        data (user: any) {
           user.age = 24
         }
       })
@@ -540,7 +538,7 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: { id1: 1, id2: 2, name: 'John Doe', age: 30 }
     })
 
@@ -558,7 +556,7 @@ describe('Feature – Basics – Update', () => {
     }
   })
 
-  it('updates index key when primary key gets updated', () => {
+  it('updates index key when primary key gets updated', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -572,16 +570,16 @@ describe('Feature – Basics – Update', () => {
 
     createStore([{ model: User }])
 
-    User.create({
+    await User.create({
       data: { id: 1, name: 'John Doe' }
     })
 
-    User.update({
+    await User.update({
       where: 1,
       data: { id: 2 }
     })
 
-    const user = User.find(2)
+    const user: any = User.find(2)
 
     expect(user.$id).toBe('2')
     expect(user.id).toBe(2)
@@ -602,7 +600,7 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe', age: 30 }
     })
 
@@ -627,7 +625,7 @@ describe('Feature – Basics – Update', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe', age: 30 }
     })
 

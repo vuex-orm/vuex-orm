@@ -27,7 +27,7 @@ describe('Hooks – Local Insert', () => {
 
     const user = store.getters['entities/users/find'](1)
 
-    const expected = new User({ $id: 1, id: 1, name: 'John Doe', age: 30 })
+    const expected = new User({ $id: '1', id: 1, name: 'John Doe', age: 30 })
 
     expect(user).toEqual(expected)
   })
@@ -57,7 +57,7 @@ describe('Hooks – Local Insert', () => {
 
     const user = store.getters['entities/users/find'](1)
 
-    const expected = new User({ $id: 1, id: 1, name: 'John Doe', age: 20 })
+    const expected = new User({ $id: '1', id: 1, name: 'John Doe', age: 20 })
 
     expect(user).toEqual(expected)
   })

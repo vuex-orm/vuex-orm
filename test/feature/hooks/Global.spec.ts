@@ -8,7 +8,7 @@ describe('Feature – Hooks – Global', () => {
     Query.lastHookId = 0
   })
 
-  it('can get instance context in hook', () => {
+  it('can get instance context in hook', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -22,19 +22,19 @@ describe('Feature – Hooks – Global', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [{ id: 1, role: 'admin' }, { id: 2, role: 'admin' }, { id: 3, role: 'user' }]
     })
 
     const expected = [
-      { $id: 1, id: 1, role: 'admin' }
+      { $id: '1', id: 1, role: 'admin' }
     ]
 
-    const callbackFunction = function (records) {
+    const callbackFunction = function (this: Query, records: any) {
       expect(records.length).toBe(2)
       expect(this).toBeInstanceOf(Query)
 
-      return records.filter(r => r.id === 1)
+      return records.filter((r: any) => r.id === 1)
     }
 
     const hookId = Query.on('afterWhere', callbackFunction)
@@ -48,7 +48,7 @@ describe('Feature – Hooks – Global', () => {
     expect(removeBoolean).toBe(true)
   })
 
-  it('can remove callback hooks once and through off method', () => {
+  it('can remove callback hooks through off method', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -62,11 +62,11 @@ describe('Feature – Hooks – Global', () => {
 
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [{ id: 1, role: 'admin' }, { id: 2, role: 'admin' }, { id: 3, role: 'user' }]
     })
 
-    const callbackFunction = function (records) {
+    const callbackFunction = function (records: any) {
       return records
     }
 
@@ -81,14 +81,6 @@ describe('Feature – Hooks – Global', () => {
     store.getters['entities/users/all']()
     expect(Query.hooks.beforeSelect.length).toBe(1)
 
-    Query.on('beforeSelect', callbackFunction, true)
-    Query.on('beforeSelect', callbackFunction, true)
-    Query.on('beforeSelect', callbackFunction, true)
-    expect(Query.hooks.beforeSelect.length).toBe(4)
-
-    store.getters['entities/users/all']()
-    expect(Query.hooks.beforeSelect.length).toBe(1)
-
     const removed1 = Query.off(persistedHookId1)
     expect(removed1).toBe(true)
     expect(Query.hooks.afterWhere.length).toBe(0)
@@ -96,33 +88,5 @@ describe('Feature – Hooks – Global', () => {
     const removed2 = Query.off(persistedHookId2)
     expect(removed2).toBe(true)
     expect(Query.hooks.beforeSelect.length).toBe(0)
-  })
-
-  it('can process hook only once', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          role: this.attr('')
-        }
-      }
-    }
-
-    createStore([{ model: User }])
-
-    Query.on('beforeCreate', (model, entity) => {
-      model.role = 'admin'
-    }, true)
-
-    User.create({
-      data: [{ id: 1, role: 'user' }, { id: 2, role: 'guest' }]
-    })
-
-    const results1 = User.all()
-
-    expect(results1[0].role).toBe('admin')
-    expect(results1[1].role).toBe('guest')
   })
 })

@@ -31,8 +31,8 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 1, id: 1, name: 'John', age: 20, active: true },
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+      { $id: '1', id: 1, name: 'John', age: 20, active: true },
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
     ]
 
     const users = store.getters['entities/users/query']()
@@ -55,7 +55,7 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
     ]
 
     const users = store.getters['entities/users/query']()
@@ -98,8 +98,8 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 1, id: 1, name: 'John', age: 20, active: true },
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+      { $id: '1', id: 1, name: 'John', age: 20, active: true },
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
     ]
 
     const users = store.getters['entities/users/query']()
@@ -122,8 +122,8 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true },
-      { $id: 3, id: 3, name: 'Johnny', age: 20, active: false }
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true },
+      { $id: '3', id: 3, name: 'Johnny', age: 20, active: false }
     ]
 
     const users = store.getters['entities/users/query']()
@@ -145,7 +145,7 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
     ]
 
     const users = store.getters['entities/users/query']()
@@ -168,9 +168,9 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 1, id: 1, name: 'John', age: 20, active: true },
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true },
-      { $id: 3, id: 3, name: 'Johnny', age: 20, active: false }
+      { $id: '1', id: 1, name: 'John', age: 20, active: true },
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true },
+      { $id: '3', id: 3, name: 'Johnny', age: 20, active: false }
     ]
 
     const users = store.getters['entities/users/query']()
@@ -193,8 +193,8 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 1, id: 1, name: 'John', age: 20, active: true },
-      { $id: 2, id: 2, name: 'Jane', age: 24, active: true }
+      { $id: '1', id: 1, name: 'John', age: 20, active: true },
+      { $id: '2', id: 2, name: 'Jane', age: 24, active: true }
     ]
 
     const users = store.getters['entities/users/query']()
@@ -217,8 +217,8 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 1, id: 1, name: 'John', age: 20, active: true },
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+      { $id: '1', id: 1, name: 'John', age: 20, active: true },
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
     ]
 
     const users = store.getters['entities/users/query']()
@@ -240,8 +240,8 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 1, id: 1, name: 'John', age: 20, active: true },
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+      { $id: '1', id: 1, name: 'John', age: 20, active: true },
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
     ]
 
     const users = store.getters['entities/users/query']()
@@ -263,8 +263,8 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 1, id: 1, name: 'John', age: 20, active: true },
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+      { $id: '1', id: 1, name: 'John', age: 20, active: true },
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
     ]
 
     const ageAsVariable = 20
@@ -288,8 +288,8 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 1, id: 1, name: 'John', age: 20, active: true },
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+      { $id: '1', id: 1, name: 'John', age: 20, active: true },
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
     ]
 
     const users = store.getters['entities/users/query']()
@@ -311,7 +311,7 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
     ]
 
     const users = store.getters['entities/users/query']()
@@ -335,8 +335,8 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 1, id: 1, name: 'John', age: 24, active: false },
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+      { $id: '1', id: 1, name: 'John', age: 24, active: false },
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
     ]
 
     const users = store.getters['entities/users/query']()
@@ -361,8 +361,8 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 1, id: 1, name: 'John', age: 20, active: true },
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+      { $id: '1', id: 1, name: 'John', age: 20, active: true },
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
     ]
 
     const users = store.getters['entities/users/query']()
@@ -385,7 +385,7 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
     ]
 
     const users = store.getters['entities/users/query']()
@@ -426,8 +426,8 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 1, id: 1, name: 'John', age: 24, active: false },
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+      { $id: '1', id: 1, name: 'John', age: 24, active: false },
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
     ]
 
     // (A && B) || (C && D)
@@ -456,8 +456,8 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 1, id: 1, name: 'John', age: 21, active: true },
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true }
+      { $id: '1', id: 1, name: 'John', age: 21, active: true },
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
     ]
 
     // (A || B) && (C || D)
@@ -489,9 +489,9 @@ describe('Feature – Retrieve – Where', () => {
     })
 
     const expected = [
-      { $id: 1, id: 1, name: 'John', age: 21, active: true },
-      { $id: 2, id: 2, name: 'Jane', age: 20, active: true },
-      { $id: 5, id: 5, name: 'Jimmy', age: 22, active: true }
+      { $id: '1', id: 1, name: 'John', age: 21, active: true },
+      { $id: '2', id: 2, name: 'Jane', age: 20, active: true },
+      { $id: '5', id: 5, name: 'Jimmy', age: 22, active: true }
     ]
 
     // (A || B || (E && F)) && (C || D)

@@ -27,12 +27,12 @@ describe('Unit – Database', () => {
   }
 
   const posts = {
-    state () {},
+    state () { return { key: 'value' } },
     mutations: {}
   }
 
   const extended = {
-    state () {},
+    state () { return { key: 'value' } },
     mutations: {}
   }
 
@@ -61,5 +61,28 @@ describe('Unit – Database', () => {
 
     expect(base).toEqual(User)
     expect(base.entity).toEqual('users')
+  })
+
+  it('can retrieve all modules', () => {
+    const database = new Database()
+
+    database.register(User, users)
+    database.register(Post, posts)
+
+    const modules = database.modules()
+
+    expect(modules.users).toEqual(users)
+    expect(modules.posts).toEqual(posts)
+  })
+
+  it('can retrieve a single module', () => {
+    const database = new Database()
+
+    database.register(User, users)
+    database.register(Post, posts)
+
+    const module = database.module('users')
+
+    expect(module).toEqual(users)
   })
 })

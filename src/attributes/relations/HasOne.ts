@@ -51,11 +51,11 @@ export default class HasOne extends Relation {
     // the id value. This happens if the user defines the custom local key
     // and didn't include it in the data being normalized.
     if (!record[this.localKey]) {
-      record[this.localKey] = record.$id
+      record[this.localKey] = this.model.getIndexIdFromRecord(record)
     }
 
-    // Finally, set the foreign key of the related record if it exists to be the local
-    // key of this record.
+    // Then set the foreign key of the related record if it exists to be the
+    // local key of this record.
     const related = data[this.related.entity] && data[this.related.entity][key]
 
     if (related) {

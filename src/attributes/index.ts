@@ -1,10 +1,10 @@
 import Attribute from './Attribute'
 import Type from './types/Type'
 import Attr from './types/Attr'
-import Increment from './types/Increment'
 import String from './types/String'
 import Number from './types/Number'
 import Boolean from './types/Boolean'
+import Uid from './types/Uid'
 import Relation from './relations/Relation'
 import HasOne from './relations/HasOne'
 import BelongsTo from './relations/BelongsTo'
@@ -22,10 +22,10 @@ export {
   Attribute,
   Type,
   Attr,
-  Increment,
   String,
   Number,
   Boolean,
+  Uid,
   Relation,
   HasOne,
   BelongsTo,

@@ -1,7 +1,4 @@
-
-import {
-  createStore, createState
-} from 'test/support/Helpers'
+import { createStore, createState } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Model – Inheritance - CRUD', () => {
@@ -11,7 +8,8 @@ describe('Model – Inheritance - CRUD', () => {
     static fields () {
       return {
         id: this.attr(null),
-        name: this.attr('')
+        name: this.attr(''),
+        type: this.string('')
       }
     }
 
@@ -19,7 +17,6 @@ describe('Model – Inheritance - CRUD', () => {
       return {
         ADULT: Adult,
         PERSON: Person,
-        SUPER: SuperAdult,
         CHILD: Child
       }
     }
@@ -50,26 +47,9 @@ describe('Model – Inheritance - CRUD', () => {
     }
   }
 
-  class SuperAdult extends Adult {
-    static entity = 'superadult'
-
-    static baseEntity = 'person'
-
-    static fields () {
-      return {
-        ...super.fields(),
-        extra: this.attr('')
-      }
-    }
-  }
-
   /// Tests
   it('can get mixed results when calling getter of root entity', () => {
-    const store = createStore([{
-      model: Person
-    }, {
-      model: Adult
-    }])
+    const store = createStore([{ model: Person }, { model: Adult }])
 
     store.dispatch('entities/person/insert', {
       data: {
@@ -98,25 +78,14 @@ describe('Model – Inheritance - CRUD', () => {
   })
 
   it('can get derived results only when calling getter of derived entity', () => {
-    const store = createStore([{
-      model: Person
-    }, {
-      model: Adult
-    }])
+    const store = createStore([{ model: Person }, { model: Adult }])
 
     store.dispatch('entities/person/insert', {
-      data: {
-        id: 1,
-        name: 'John'
-      }
+      data: { id: 1, name: 'John' }
     })
 
     store.dispatch('entities/adult/insert', {
-      data: {
-        id: 2,
-        name: 'Jane',
-        job: 'Software Engineer'
-      }
+      data: { id: 2, name: 'Jane', job: 'Software Engineer' }
     })
 
     const results = Adult.all()
@@ -132,47 +101,29 @@ describe('Model – Inheritance - CRUD', () => {
     }, {
       model: Adult
     }, {
-      model: SuperAdult
-    }, {
       model: Child
     }])
 
-    store.dispatch('entities/person/create', {
-      data: [{
-        id: 1,
-        name: 'A',
-        type: 'PERSON'
-      }, {
-        id: 2,
-        name: 'B',
-        type: 'ADULT'
-      }, {
-        id: 3,
-        name: 'C',
-        type: 'SUPER'
-      }, {
-        id: 4,
-        name: 'D',
-        type: 'CHILD'
-      }]
+    store.dispatch('entities/person/insert', {
+      data: [
+        { id: 1, name: 'A', type: 'PERSON' },
+        { id: 2, name: 'B', type: 'ADULT' },
+        { id: 3, name: 'D', type: 'CHILD' }
+      ]
     })
 
-    const persons = Person.all()
-    expect(persons.length).toBe(4)
+    expect(Person.all().length).toBe(3)
 
     store.dispatch('entities/adult/create', {
-      data: [{
-        id: 5,
-        name: 'E'
-      }]
+      data: { id: 4, name: 'E' }
     })
 
-    const persons2 = Person.all()
-    expect(persons2.length).toBe(3)
+    const people = Person.all()
+    expect(people.length).toBe(3)
 
     const adults = Adult.all()
     expect(adults.length).toBe(1)
-    expect(adults[0].id).toBe(5)
+    expect(adults[0].id).toBe(4)
   })
 
   it('should update derived data without changing its class when calling base update', () => {
@@ -260,19 +211,11 @@ describe('Model – Inheritance - CRUD', () => {
       ]
     })
 
-    // await Person.update({
-    //   where: 1,
-
-    //   data (record) {
-    //     record.job = 'Writer'
-    //   }
-    // })
-
     const expected = createState({
       person: {
-        1: { $id: 1, id: 1, name: 'John Doe', job: 'Writer' },
-        2: { $id: 2, id: 2, name: 'Jane Doe', job: 'QA' },
-        3: { $id: 3, id: 3, name: 'Jane Doe' }
+        1: { $id: '1', id: 1, name: 'John Doe', job: 'Writer', type: 'ADULT' },
+        2: { $id: '2', id: 2, name: 'Jane Doe', job: 'QA', type: 'ADULT' },
+        3: { $id: '3', id: 3, name: 'Jane Doe', type: 'PERSON' }
       },
       adult: {}
     })
@@ -380,8 +323,6 @@ describe('Model – Inheritance - CRUD', () => {
       model: Person
     }, {
       model: Adult
-    }, {
-      model: SuperAdult
     }])
 
     store.dispatch('entities/person/create', {
@@ -393,15 +334,11 @@ describe('Model – Inheritance - CRUD', () => {
         id: 2,
         name: 'B',
         type: 'ADULT'
-      }, {
-        id: 3,
-        name: 'C',
-        type: 'SUPER'
       }]
     })
 
     const persons = Person.all()
-    expect(persons.length).toBe(3)
+    expect(persons.length).toBe(2)
 
     Adult.deleteAll()
 

@@ -31,14 +31,14 @@ describe('Feature – Attributes – Boolean', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, bool: true },
-        2: { $id: 2, id: 2, bool: false },
-        3: { $id: 3, id: 3, bool: true },
-        4: { $id: 4, id: 4, bool: false },
-        5: { $id: 5, id: 5, bool: false },
-        6: { $id: 6, id: 6, bool: true },
-        7: { $id: 7, id: 7, bool: true },
-        8: { $id: 8, id: 8, bool: false }
+        1: { $id: '1', id: 1, bool: true },
+        2: { $id: '2', id: 2, bool: false },
+        3: { $id: '3', id: 3, bool: true },
+        4: { $id: '4', id: 4, bool: false },
+        5: { $id: '5', id: 5, bool: false },
+        6: { $id: '6', id: 6, bool: true },
+        7: { $id: '7', id: 7, bool: true },
+        8: { $id: '8', id: 8, bool: false }
       }
     })
 

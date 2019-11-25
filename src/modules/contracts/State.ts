@@ -1,9 +1,9 @@
-import Instances from '../../data/Instances'
+import Record from '../../data/Record'
 
 export interface State {
   $connection: string
   $name: string
-  data: Instances
+  data: Record
   [key: string]: any
 }
 

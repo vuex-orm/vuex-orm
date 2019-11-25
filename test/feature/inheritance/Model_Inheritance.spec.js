@@ -1,7 +1,4 @@
-
-import {
-  createStore
-} from 'test/support/Helpers'
+import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
 describe('Model – Inheritance - No type warning', () => {
@@ -11,7 +8,8 @@ describe('Model – Inheritance - No type warning', () => {
     static fields () {
       return {
         id: this.attr(null),
-        name: this.attr('')
+        name: this.attr(''),
+        type: this.string('')
       }
     }
   }
@@ -47,7 +45,8 @@ describe('Model – Inheritance', () => {
     static fields () {
       return {
         id: this.attr(null),
-        name: this.attr('')
+        name: this.attr(''),
+        type: this.string('')
       }
     }
 
@@ -55,7 +54,6 @@ describe('Model – Inheritance', () => {
       return {
         ADULT: Adult,
         PERSON: Person,
-        SUPER: SuperAdult,
         CHILD: Child
       }
     }
@@ -82,19 +80,6 @@ describe('Model – Inheritance', () => {
     static fields () {
       return {
         ...super.fields()
-      }
-    }
-  }
-
-  class SuperAdult extends Adult {
-    static entity = 'superadult'
-
-    static baseEntity = 'person'
-
-    static fields () {
-      return {
-        ...super.fields(),
-        extra: this.attr('')
       }
     }
   }
@@ -177,60 +162,5 @@ describe('Model – Inheritance', () => {
 
     const adult = Adult.find(2)
     expect(adult.job).toBe('Software Engineer')
-  })
-
-  it('can handle multiple levels in hierarchy', () => {
-    const store = createStore([{
-      model: Person
-    }, {
-      model: Adult
-    }, {
-      model: SuperAdult
-    }, {
-      model: Child
-    }])
-
-    store.dispatch('entities/person/insert', {
-      data: {
-        id: 1,
-        name: 'John'
-      }
-    })
-
-    store.dispatch('entities/adult/insert', {
-      data: {
-        id: 2,
-        name: 'Jane',
-        job: 'Software Engineer'
-      }
-    })
-
-    store.dispatch('entities/superadult/insert', {
-      data: {
-        id: 3,
-        name: 'SuperJane',
-        job: 'Software Engineer',
-        extra: 'I\'m extra !'
-      }
-    })
-
-    store.dispatch('entities/child/insert', {
-      data: [{
-        id: 4,
-        name: 'Baby John'
-      }, {
-        id: 5,
-        name: 'Baby Jane'
-      }]
-    })
-
-    const all = Person.all()
-    expect(all.length).toBe(5)
-
-    const adults = Adult.all()
-    expect(adults.length).toBe(2)
-
-    const children = Child.all()
-    expect(children.length).toBe(2)
   })
 })

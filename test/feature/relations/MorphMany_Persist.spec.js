@@ -52,12 +52,12 @@ describe('Feature – Relations – Morph Many – Persist', () => {
 
     createState({
       posts: {
-        1: { $id: 1, id: 1, comments: [] }
+        1: { $id: '1', id: 1, comments: [] }
       },
       videos: {},
       comments: {
-        2: { $id: 2, id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
-        3: { $id: 3, id: 3, body: 'comment2', commentable_id: 1, commentable_type: 'posts' }
+        2: { $id: '2', id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
+        3: { $id: '3', id: 3, body: 'comment2', commentable_id: 1, commentable_type: 'posts' }
       }
     })
 
@@ -184,12 +184,12 @@ describe('Feature – Relations – Morph Many – Persist', () => {
 
     createState({
       posts: {
-        1: { $id: 1, id: 1, comments: [] }
+        1: { $id: '1', id: 1, comments: [] }
       },
       videos: {},
       comments: {
-        2: { $id: 2, id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
-        3: { $id: 3, id: 3, body: 'comment2', commentable_id: 1, commentable_type: 'posts' }
+        2: { $id: '2', id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
+        3: { $id: '3', id: 3, body: 'comment2', commentable_id: 1, commentable_type: 'posts' }
       }
     })
 
@@ -304,8 +304,8 @@ describe('Feature – Relations – Morph Many – Persist', () => {
       posts: {},
       videos: {},
       comments: {
-        2: { $id: 2, id: 2, body: 'comment1', commentable_id: null, commentable_type: null },
-        3: { $id: 3, id: 3, body: 'comment2', commentable_id: null, commentable_type: null }
+        2: { $id: '2', id: 2, body: 'comment1', commentable_id: null, commentable_type: null },
+        3: { $id: '3', id: 3, body: 'comment2', commentable_id: null, commentable_type: null }
       }
     })
 
@@ -383,15 +383,15 @@ describe('Feature – Relations – Morph Many – Persist', () => {
 
     createState({
       users: {
-        1: { $id: 1, id: 1, posts: [] }
+        1: { $id: '1', id: 1, posts: [] }
       },
       posts: {
-        5: { $id: 5, id: 5, user_id: 1, comments: [] }
+        5: { $id: '5', id: 5, user_id: 1, comments: [] }
       },
       videos: {},
       comments: {
-        2: { $id: 2, id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
-        3: { $id: 3, id: 3, body: 'comment2', commentable_id: 2, commentable_type: 'posts' }
+        2: { $id: '2', id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
+        3: { $id: '3', id: 3, body: 'comment2', commentable_id: 2, commentable_type: 'posts' }
       }
     })
 
@@ -438,7 +438,7 @@ describe('Feature – Relations – Morph Many – Persist', () => {
 
     const expected = createState({
       posts: {
-        1: { $id: 1, id: 1, comments: [] }
+        1: { $id: '1', id: 1, comments: [] }
       },
       comments: {}
     })

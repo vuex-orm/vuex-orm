@@ -26,8 +26,8 @@ describe('Feature – Models – All', () => {
     const users = User.all()
 
     const expected = [
-      { $id: 1, id: 1, name: 'John Doe' },
-      { $id: 2, id: 2, name: 'Jane Doe' }
+      { $id: '1', id: 1, name: 'John Doe' },
+      { $id: '2', id: 2, name: 'Jane Doe' }
     ]
 
     expect(users).toEqual(expected)
@@ -49,8 +49,8 @@ describe('Feature – Models – All', () => {
     const users = user.$all()
 
     const expected = [
-      { $id: 1, id: 1, name: 'John Doe' },
-      { $id: 2, id: 2, name: 'Jane Doe' }
+      { $id: '1', id: 1, name: 'John Doe' },
+      { $id: '2', id: 2, name: 'Jane Doe' }
     ]
 
     expect(users).toEqual(expected)

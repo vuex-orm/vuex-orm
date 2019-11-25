@@ -5,7 +5,7 @@ import Attr from '../attributes/types/Attr'
 import String from '../attributes/types/String'
 import Number from '../attributes/types/Number'
 import Boolean from '../attributes/types/Boolean'
-import Increment from '../attributes/types/Increment'
+import Uid from '../attributes/types/Uid'
 import Relation from '../attributes/relations/Relation'
 import HasOne from '../attributes/relations/HasOne'
 import BelongsTo from '../attributes/relations/BelongsTo'
@@ -38,7 +38,7 @@ export interface PluginComponents {
   String: typeof String
   Number: typeof Number
   Boolean: typeof Boolean
-  Increment: typeof Increment
+  Uid: typeof Uid
   Relation: typeof Relation
   HasOne: typeof HasOne
   BelongsTo: typeof BelongsTo
@@ -78,7 +78,7 @@ export default function (plugin: Plugin, options: Options = {}): void {
     String,
     Number,
     Boolean,
-    Increment,
+    Uid,
     Relation,
     HasOne,
     BelongsTo,

@@ -8,9 +8,8 @@ export default class Attr extends Type {
    * Create a new attr instance.
    */
   constructor (model: typeof Model, value: any, mutator?: Mutator<any>) {
-    super(model, value, mutator) /* istanbul ignore next */
-
-    this.value = value
+     /* istanbul ignore next */
+    super(model, value, mutator)
   }
 
   /**
@@ -20,8 +19,9 @@ export default class Attr extends Type {
   make (value: any, _parent: Record, key: string): any {
     value = value !== undefined ? value : this.value
 
-    // Default Value might be a function (taking no parameter)
+    // Default Value might be a function (taking no parameter).
     let localValue = value
+
     if (typeof value === 'function') {
       localValue = value()
     }

@@ -27,7 +27,7 @@ describe('Hooks – Local Create', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, name: 'John Doe', age: 30 }
+        1: { $id: '1', id: 1, name: 'John Doe', age: 30 }
       }
     })
 
@@ -59,7 +59,7 @@ describe('Hooks – Local Create', () => {
 
     const user = store.getters['entities/users/find'](1)
 
-    const expected = new User({ $id: 1, id: 1, name: 'John Doe', age: 20 })
+    const expected = new User({ $id: '1', id: 1, name: 'John Doe', age: 20 })
 
     expect(user).toEqual(expected)
   })

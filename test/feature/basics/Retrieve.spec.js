@@ -19,7 +19,7 @@ describe('Feature – Retrieve', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    const expected = [{ $id: 1, id: 1 }, { $id: 2, id: 2 }]
+    const expected = [{ $id: '1', id: 1 }, { $id: '2', id: 2 }]
 
     const users = store.getters['entities/users/all']()
 
@@ -36,7 +36,7 @@ describe('Feature – Retrieve', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    const expected = [{ $id: 1, id: 1 }, { $id: 2, id: 2 }]
+    const expected = [{ $id: '1', id: 1 }, { $id: '2', id: 2 }]
 
     const users = store.getters['entities/users/query']().all()
 
@@ -53,7 +53,7 @@ describe('Feature – Retrieve', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    const expected = [{ $id: 1, id: 1 }, { $id: 2, id: 2 }]
+    const expected = [{ $id: '1', id: 1 }, { $id: '2', id: 2 }]
 
     const users = store.getters['entities/users/query']().get()
 
@@ -87,21 +87,25 @@ describe('Feature – Retrieve', () => {
     expect(user.id).toBe(2)
   })
 
-  it('can retrieve array of items by their ids', () => {
+  it('can retrieve array of items by their ids', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    User.insert({
       data: [{ id: 1 }, { id: 2 }, { id: 3 }]
     })
 
-    const expected = [{ $id: 1, id: 1 }, { $id: 3, id: 3 }]
+    const expected = [{ $id: '1', id: 1 }, { $id: '3', id: 3 }]
 
-    const users = store.getters['entities/users/findIn']([1, 3])
+    const users1 = store.getters['entities/users/findIn']([1, 3])
 
-    expect(users.length).toBe(2)
-    expect(users[0]).toBeInstanceOf(User)
-    expect(users[1]).toBeInstanceOf(User)
-    expect(users).toEqual(expected)
+    expect(users1.length).toBe(2)
+    expect(users1[0]).toBeInstanceOf(User)
+    expect(users1[1]).toBeInstanceOf(User)
+    expect(users1).toEqual(expected)
+
+    const users2 = store.getters['entities/users/findIn']([4, 5])
+
+    expect(users2).toEqual([])
   })
 
   it('can retrieve a single item by chaind find method', () => {
@@ -111,7 +115,7 @@ describe('Feature – Retrieve', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    const expected = { $id: 2, id: 2 }
+    const expected = { $id: '2', id: 2 }
 
     const user = store.getters['entities/users/query']().find(2)
 
@@ -125,7 +129,7 @@ describe('Feature – Retrieve', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    const expected = { $id: 1, id: 1 }
+    const expected = { $id: '1', id: 1 }
 
     const user = store.getters['entities/users/query']().first()
 
@@ -139,7 +143,7 @@ describe('Feature – Retrieve', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    const expected = { $id: 2, id: 2 }
+    const expected = { $id: '2', id: 2 }
 
     const user = store.getters['entities/users/query']().last()
 

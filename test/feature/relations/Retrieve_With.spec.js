@@ -197,25 +197,25 @@ describe('Feature – Relations – Retrieve – With', () => {
     })
 
     const expected = {
-      $id: 1,
+      $id: '1',
       id: 1,
       posts: [
         {
-          $id: 1,
+          $id: '1',
           id: 1,
           user_id: 1,
           comments: [
-            { $id: 1, id: 1, post_id: 1 },
-            { $id: 2, id: 2, post_id: 1 }
+            { $id: '1', id: 1, post_id: 1 },
+            { $id: '2', id: 2, post_id: 1 }
           ]
         },
         {
-          $id: 2,
+          $id: '2',
           id: 2,
           user_id: 1,
           comments: [
-            { $id: 3, id: 3, post_id: 2 },
-            { $id: 4, id: 4, post_id: 2 }
+            { $id: '3', id: 3, post_id: 2 },
+            { $id: '4', id: 4, post_id: 2 }
           ]
         }
       ]
@@ -300,25 +300,25 @@ describe('Feature – Relations – Retrieve – With', () => {
     })
 
     const expected = {
-      $id: 1,
+      $id: '1',
       id: 1,
       posts: [
         {
-          $id: 1,
+          $id: '1',
           id: 1,
           user_id: 1,
           comments: [
-            { $id: 1, id: 1, post_id: 1, likes: [{ $id: 1, id: 1, comment_id: 1 }] },
-            { $id: 2, id: 2, post_id: 1, likes: [{ $id: 2, id: 2, comment_id: 2 }] }
+            { $id: '1', id: 1, post_id: 1, likes: [{ $id: '1', id: 1, comment_id: 1 }] },
+            { $id: '2', id: 2, post_id: 1, likes: [{ $id: '2', id: 2, comment_id: 2 }] }
           ]
         },
         {
-          $id: 2,
+          $id: '2',
           id: 2,
           user_id: 1,
           comments: [
-            { $id: 3, id: 3, post_id: 2, likes: [{ $id: 3, id: 3, comment_id: 3 }] },
-            { $id: 4, id: 4, post_id: 2, likes: [{ $id: 4, id: 4, comment_id: 4 }] }
+            { $id: '3', id: 3, post_id: 2, likes: [{ $id: '3', id: 3, comment_id: 3 }] },
+            { $id: '4', id: 4, post_id: 2, likes: [{ $id: '4', id: 4, comment_id: 4 }] }
           ]
         }
       ]
@@ -411,33 +411,33 @@ describe('Feature – Relations – Retrieve – With', () => {
     })
 
     const expected = {
-      $id: 1,
+      $id: '1',
       id: 1,
       posts: [
         {
-          $id: 1,
+          $id: '1',
           id: 1,
           user_id: 1,
           comments: [
-            { $id: 1, id: 1, post_id: 1 },
-            { $id: 2, id: 2, post_id: 1 }
+            { $id: '1', id: 1, post_id: 1 },
+            { $id: '2', id: 2, post_id: 1 }
           ],
           likes: [
-            { $id: 1, id: 1, post_id: 1 },
-            { $id: 2, id: 2, post_id: 1 }
+            { $id: '1', id: 1, post_id: 1 },
+            { $id: '2', id: 2, post_id: 1 }
           ]
         },
         {
-          $id: 2,
+          $id: '2',
           id: 2,
           user_id: 1,
           comments: [
-            { $id: 3, id: 3, post_id: 2 },
-            { $id: 4, id: 4, post_id: 2 }
+            { $id: '3', id: 3, post_id: 2 },
+            { $id: '4', id: 4, post_id: 2 }
           ],
           likes: [
-            { $id: 3, id: 3, post_id: 2 },
-            { $id: 4, id: 4, post_id: 2 }
+            { $id: '3', id: 3, post_id: 2 },
+            { $id: '4', id: 4, post_id: 2 }
           ]
         }
       ]
@@ -532,33 +532,33 @@ describe('Feature – Relations – Retrieve – With', () => {
     })
 
     const expected = {
-      $id: 1,
+      $id: '1',
       id: 1,
       posts: [
         {
-          $id: 1,
+          $id: '1',
           id: 1,
           user_id: 1,
           comments: [
-            { $id: 1, id: 1, post_id: 1 },
-            { $id: 2, id: 2, post_id: 1 }
+            { $id: '1', id: 1, post_id: 1 },
+            { $id: '2', id: 2, post_id: 1 }
           ],
           likes: [
-            { $id: 1, id: 1, post_id: 1 },
-            { $id: 2, id: 2, post_id: 1 }
+            { $id: '1', id: 1, post_id: 1 },
+            { $id: '2', id: 2, post_id: 1 }
           ]
         },
         {
-          $id: 2,
+          $id: '2',
           id: 2,
           user_id: 1,
           comments: [
-            { $id: 3, id: 3, post_id: 2 },
-            { $id: 4, id: 4, post_id: 2 }
+            { $id: '3', id: 3, post_id: 2 },
+            { $id: '4', id: 4, post_id: 2 }
           ],
           likes: [
-            { $id: 3, id: 3, post_id: 2 },
-            { $id: 4, id: 4, post_id: 2 }
+            { $id: '3', id: 3, post_id: 2 },
+            { $id: '4', id: 4, post_id: 2 }
           ]
         }
       ]

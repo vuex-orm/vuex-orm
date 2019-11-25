@@ -28,11 +28,11 @@ describe('Feature – Attributes – String', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, str: 'default' },
-        2: { $id: 2, id: 2, str: 'value' },
-        3: { $id: 3, id: 3, str: '1' },
-        4: { $id: 4, id: 4, str: 'true' },
-        5: { $id: 5, id: 5, str: 'null' }
+        1: { $id: '1', id: 1, str: 'default' },
+        2: { $id: '2', id: 2, str: 'value' },
+        3: { $id: '3', id: 3, str: '1' },
+        4: { $id: '4', id: 4, str: 'true' },
+        5: { $id: '5', id: 5, str: 'null' }
       }
     })
 

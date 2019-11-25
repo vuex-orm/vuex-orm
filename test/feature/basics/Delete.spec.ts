@@ -43,7 +43,7 @@ describe('Feature – Basics – Delete', () => {
 
     const expected = createState({
       users: {
-        2: { $id: 2, id: 2, name: '' }
+        2: { $id: '2', id: 2, name: '' }
       },
       posts: {}
     })
@@ -85,7 +85,7 @@ describe('Feature – Basics – Delete', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, name: 'John Doe' }
+        1: { $id: '1', id: 1, name: 'John Doe' }
       },
       posts: {}
     })
@@ -104,8 +104,8 @@ describe('Feature – Basics – Delete', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, name: '' },
-        2: { $id: 2, id: 2, name: '' }
+        1: { $id: '1', id: 1, name: '' },
+        2: { $id: '2', id: 2, name: '' }
       },
       posts: {}
     })
@@ -127,7 +127,7 @@ describe('Feature – Basics – Delete', () => {
 
     const expected = createState({
       users: {
-        2: { $id: 2, id: 2, name: '' }
+        2: { $id: '2', id: 2, name: '' }
       },
       posts: {}
     })
@@ -156,7 +156,7 @@ describe('Feature – Basics – Delete', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, name: 'John Doe' }
+        1: { $id: '1', id: 1, name: 'John Doe' }
       },
       posts: {}
     })
@@ -180,7 +180,7 @@ describe('Feature – Basics – Delete', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, name: 'John Doe' }
+        1: { $id: '1', id: 1, name: 'John Doe' }
       },
       posts: {}
     })

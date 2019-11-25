@@ -27,7 +27,7 @@ describe('Feature – Hooks – Global Select', () => {
     })
 
     const expected = [
-      { $id: 1, id: 1, role: 'admin' }
+      { $id: '1', id: 1, role: 'admin' }
     ]
 
     const hookId = Query.on('afterWhere', function (records, entity) {

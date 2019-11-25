@@ -58,12 +58,12 @@ describe('Feature – Basics – Insert Or Update', () => {
 
     const expected = createState({
       users: {
-        1: { $id: 1, id: 1, name: 'Jane Doe', posts: [] },
-        2: { $id: 2, id: 2, name: 'Johnny Doe', posts: [] }
+        1: { $id: '1', id: 1, name: 'Jane Doe', posts: [] },
+        2: { $id: '2', id: 2, name: 'Johnny Doe', posts: [] }
       },
       posts: {
-        1: { $id: 1, id: 1, user_id: 1, title: 'title 02' },
-        2: { $id: 2, id: 2, user_id: 2, title: 'title 03' }
+        1: { $id: '1', id: 1, user_id: 1, title: 'title 02' },
+        2: { $id: '2', id: 2, user_id: 2, title: 'title 03' }
       }
     })
 
