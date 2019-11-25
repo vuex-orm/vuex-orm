@@ -806,9 +806,8 @@
 	     * Create a new attr instance.
 	     */
 	    function Attr(model, value, mutator) {
-	        var _this = _super.call(this, model, value, mutator) /* istanbul ignore next */ || this;
-	        _this.value = value;
-	        return _this;
+	        /* istanbul ignore next */
+	        return _super.call(this, model, value, mutator) || this;
 	    }
 	    /**
 	     * Make value to be set to model property. This method is used when
@@ -816,7 +815,7 @@
 	     */
 	    Attr.prototype.make = function (value, _parent, key) {
 	        value = value !== undefined ? value : this.value;
-	        // Default Value might be a function (taking no parameter)
+	        // Default Value might be a function (taking no parameter).
 	        var localValue = value;
 	        if (typeof value === 'function') {
 	            localValue = value();
@@ -824,24 +823,6 @@
 	        return this.mutate(localValue, key);
 	    };
 	    return Attr;
-	}(Type));
-
-	var Increment = /** @class */ (function (_super) {
-	    __extends(Increment, _super);
-	    /**
-	     * Create a new increment instance.
-	     */
-	    function Increment(model) {
-	        /* istanbul ignore next */
-	        return _super.call(this, model, null) || this;
-	    }
-	    /**
-	     * Convert given value to the appropriate value for the attribute.
-	     */
-	    Increment.prototype.make = function (value, _parent, _key) {
-	        return typeof value === 'number' ? value : null;
-	    };
-	    return Increment;
 	}(Type));
 
 	var String$1 = /** @class */ (function (_super) {
@@ -957,6 +938,57 @@
 	        return false;
 	    };
 	    return Boolean;
+	}(Type));
+
+	var Uid = /** @class */ (function () {
+	    function Uid() {
+	    }
+	    /**
+	     * Generate an UUID.
+	     */
+	    Uid.make = function () {
+	        this.count++;
+	        return "" + this.prefix + this.count;
+	    };
+	    /**
+	     * Reset the count to 0.
+	     */
+	    Uid.reset = function () {
+	        this.count = 0;
+	    };
+	    /**
+	     * Count to create a unique id.
+	     */
+	    Uid.count = 0;
+	    /**
+	     * Prefix string to be used for the id.
+	     */
+	    Uid.prefix = '$uid';
+	    return Uid;
+	}());
+
+	var Uid$1 = /** @class */ (function (_super) {
+	    __extends(Uid$1, _super);
+	    /**
+	     * Create a new uid instance.
+	     */
+	    function Uid$1(model, value) {
+	        /* istanbul ignore next */
+	        return _super.call(this, model, value) || this;
+	    }
+	    /**
+	     * Convert given value to the appropriate value for the attribute.
+	     */
+	    Uid$1.prototype.make = function (value) {
+	        if (typeof value === 'number' || typeof value === 'string') {
+	            return value;
+	        }
+	        if (typeof this.value === 'function') {
+	            return this.value();
+	        }
+	        return Uid.make();
+	    };
+	    return Uid$1;
 	}(Type));
 
 	var Relation = /** @class */ (function (_super) {
@@ -1085,10 +1117,10 @@
 	        // the id value. This happens if the user defines the custom local key
 	        // and didn't include it in the data being normalized.
 	        if (!record[this.localKey]) {
-	            record[this.localKey] = record.$id;
+	            record[this.localKey] = this.model.getIndexIdFromRecord(record);
 	        }
-	        // Finally, set the foreign key of the related record if it exists to be the local
-	        // key of this record.
+	        // Then set the foreign key of the related record if it exists to be the
+	        // local key of this record.
 	        var related = data[this.related.entity] && data[this.related.entity][key];
 	        if (related) {
 	            related[this.foreignKey] = record[this.localKey];
@@ -1323,10 +1355,13 @@
 	     * Attach the relational key to the given data.
 	     */
 	    HasManyBy.prototype.attach = function (key, record, _data) {
+	        var _this = this;
 	        if (key.length === 0) {
 	            return;
 	        }
-	        record[this.foreignKey] = key;
+	        record[this.foreignKey] = key.map(function (parentId) {
+	            return _this.parent.getIdFromRecord(_data[_this.parent.entity][parentId]);
+	        });
 	    };
 	    /**
 	     * Convert given value to the appropriate value for the attribute.
@@ -1659,7 +1694,7 @@
 	     */
 	    MorphOne.prototype.attach = function (key, record, data) {
 	        var relatedRecord = data[this.related.entity][key];
-	        relatedRecord[this.id] = relatedRecord[this.id] || record.$id;
+	        relatedRecord[this.id] = relatedRecord[this.id] || this.related.getIdFromRecord(record);
 	        relatedRecord[this.type] = relatedRecord[this.type] || this.model.entity;
 	    };
 	    /**
@@ -1717,7 +1752,7 @@
 	        var relatedItems = data[this.related.entity];
 	        key.forEach(function (id) {
 	            var relatedItem = relatedItems[id];
-	            relatedItem[_this.id] = relatedItem[_this.id] || record.$id;
+	            relatedItem[_this.id] = relatedItem[_this.id] || _this.related.getIdFromRecord(record);
 	            relatedItem[_this.type] = relatedItem[_this.type] || _this.model.entity;
 	        });
 	    };
@@ -1837,8 +1872,7 @@
 	            var relatedIds = parent.query().newQuery(_this.pivot.entity)
 	                .where(_this.id, record[_this.parentKey])
 	                .where(_this.type, parent.entity)
-	                .get()
-	                .map(function (pivotRecord) { return pivotRecord[_this.parentKey]; });
+	                .get();
 	            var relateds = (record[key] || []).filter(function (relatedId) { return !relatedIds.includes(relatedId); });
 	            if (!Array.isArray(relateds) || relateds.length === 0) {
 	                return;
@@ -1976,7 +2010,7 @@
 	                    $id: pivotKey
 	                },
 	                _b[_this.relatedId] = parentId,
-	                _b[_this.id] = id,
+	                _b[_this.id] = _this.model.getIdFromRecord(data[_this.related.entity][id]),
 	                _b[_this.type] = _this.related.entity,
 	                _b), _a));
 	        });
@@ -1992,8 +2026,8 @@
 	     */
 	    Serializer.serialize = function (model) {
 	        var _this = this;
-	        var fields = model.$fields();
-	        return Object.keys(fields).reduce(function (record, key) {
+	        var keys = Object.keys(model.$fields());
+	        return keys.reduce(function (record, key) {
 	            var value = model[key];
 	            record[key] = _this.serializeValue(value);
 	            return record;
@@ -2073,10 +2107,16 @@
 	        return new Boolean(this, value, mutator);
 	    };
 	    /**
-	     * Create an increment attribute.
+	     * Create an uid attribute.
+	     */
+	    Model.uid = function (value) {
+	        return new Uid$1(this, value);
+	    };
+	    /**
+	     * @deprecated Use `uid` attribute instead.
 	     */
 	    Model.increment = function () {
-	        return new Increment(this);
+	        return this.uid();
 	    };
 	    /**
 	     * Create a has one relationship.
@@ -2206,7 +2246,7 @@
 	        if (this.cachedFields[this.entity]) {
 	            return this.cachedFields[this.entity];
 	        }
-	        this.cachedFields[this.entity] = this.fields();
+	        this.cachedFields[this.entity] = __assign({ $id: this.string(null).nullable() }, this.fields());
 	        return this.cachedFields[this.entity];
 	    };
 	    /**
@@ -2275,48 +2315,41 @@
 	        return this.dispatch('deleteAll');
 	    };
 	    /**
-	     * Get the index ID value from the given record. An index ID is a value that
-	     * used as a key for records within the Vuex Store.
-	     *
-	     * Most of the time, it's same as the value for the Model's primary key. If
-	     * the Model has a composite primary key, each value corresponding to those
-	     * primary key will be stringified and become a single string value such
-	     * as `'[1, 2]'`.
-	     *
-	     * If the primary key is not present at the given record, it returns `null`.
-	     * For the composite primary key, every key must exist at a given record,
-	     * or it will return `null`.
+	     * Check if the given key is the primary key. If the model has composite
+	     * primary key, this method is going to check if the given key is included
+	     * in the composite key.
 	     */
-	    Model.getIndexIdFromRecord = function (record) {
+	    Model.isPrimaryKey = function (key) {
+	        if (!Array.isArray(this.primaryKey)) {
+	            return this.primaryKey === key;
+	        }
+	        return this.primaryKey.includes(key);
+	    };
+	    /**
+	     * Get the id (value of primary key) from teh given record. If primary key is
+	     * not present, or it is invalid primary key value, which is other than
+	     * `string` or `number`, it's going to return `null`.
+	     *
+	     * If the model has composite key, it's going to return array of ids. If any
+	     * composite key missing, it will return `null`.
+	     */
+	    Model.getIdFromRecord = function (record) {
 	        var _this = this;
 	        var key = this.primaryKey;
 	        if (typeof key === 'string') {
-	            return this.getIndexIdFromValue(record[key]);
+	            return this.getIdFromValue(record[key]);
 	        }
-	        var ids = [];
-	        key.forEach(function (key) {
-	            var id = _this.getIndexIdFromValue(record[key]);
-	            id && ids.push(id);
-	        });
-	        return this.isCompositeKeyValid(record) ? JSON.stringify(ids) : null;
+	        var ids = key.reduce(function (keys, k) {
+	            var id = _this.getIdFromValue(record[k]);
+	            id !== null && keys.push(id);
+	            return keys;
+	        }, []);
+	        return ids.length === key.length ? ids : null;
 	    };
 	    /**
-	     * Returns true if primaryKey is composite and all corresponding values
-	     * in the record are present.
+	     * Get correct index id, which is `string` | `number`, from the given value.
 	     */
-	    Model.isCompositeKeyValid = function (record) {
-	        var _this = this;
-	        if (!Array.isArray(this.primaryKey)) {
-	            return false;
-	        }
-	        return this.primaryKey.every(function (key) { return _this.getIndexIdFromValue(record[key]); });
-	    };
-	    /**
-	     * Get correct index ID from the given value. This method will cast the
-	     * number to the string, and returns `null` for anything which is not
-	     * a string or a number.
-	     */
-	    Model.getIndexIdFromValue = function (value) {
+	    Model.getIdFromValue = function (value) {
 	        if (typeof value === 'string' && value !== '') {
 	            return value;
 	        }
@@ -2324,6 +2357,31 @@
 	            return value;
 	        }
 	        return null;
+	    };
+	    /**
+	     * Get the index ID value from the given record. An index ID is a value that
+	     * used as a key for records within the Vuex Store.
+	     *
+	     * Most of the time, it's same as the value for the Model's primary key but
+	     * it's always `string`, even if the primary key value is `number`.
+	     *
+	     * If the Model has a composite primary key, each value corresponding to
+	     * those primary key will be stringified and become a single string value
+	     * such as `'[1,2]'`.
+	     *
+	     * If the primary key is not present at the given record, it returns `null`.
+	     * For the composite primary key, every key must exist at a given record,
+	     * or it will return `null`.
+	     */
+	    Model.getIndexIdFromRecord = function (record) {
+	        var id = this.getIdFromRecord(record);
+	        if (id === null) {
+	            return null;
+	        }
+	        if (Array.isArray(id)) {
+	            return JSON.stringify(id);
+	        }
+	        return String(id);
 	    };
 	    /**
 	     * Get local key to pass to the attributes.
@@ -2346,7 +2404,7 @@
 	    Model.getModelFromRecord = function (record) {
 	        // If the given record is already a model instance, return the
 	        // model object.
-	        if (record instanceof Model) {
+	        if (record instanceof this) {
 	            return record.$self();
 	        }
 	        // Else, get the corresponding model for the type value if there's any.
@@ -2360,42 +2418,6 @@
 	            return model;
 	        }
 	        return this.database().model(model);
-	    };
-	    /**
-	     * Get the attribute class for the given attribute name.
-	     */
-	    Model.getAttributeClass = function (name) {
-	        switch (name) {
-	            case 'increment': return Increment;
-	            default:
-	                throw Error("The attribute name \"" + name + "\" doesn't exist.");
-	        }
-	    };
-	    /**
-	     * Get all of the fields that matches the given attribute name.
-	     */
-	    Model.getFieldsByAttribute = function (name) {
-	        var attr = this.getAttributeClass(name);
-	        var fields = this.getFields();
-	        return Object.keys(fields).reduce(function (newFields, key) {
-	            var field = fields[key];
-	            if (field instanceof attr) {
-	                newFields[key] = field;
-	            }
-	            return newFields;
-	        }, {});
-	    };
-	    /**
-	     * Get all `increment` fields from the schema.
-	     */
-	    Model.getIncrementFields = function () {
-	        return this.getFieldsByAttribute('increment');
-	    };
-	    /**
-	     * Check if fields contains the `increment` field type.
-	     */
-	    Model.hasIncrementFields = function () {
-	        return Object.keys(this.getIncrementFields()).length > 0;
 	    };
 	    /**
 	     * Get all `belongsToMany` fields from the schema.
@@ -2652,38 +2674,12 @@
 	            var value = data[key];
 	            _this[key] = field.make(value, data, key);
 	        });
-	        if (data.$id !== undefined) {
-	            this.$id = this.$self().isCompositeKeyValid(this) ? JSON.parse(data.$id) : data.$id;
-	        }
 	    };
 	    /**
 	     * Serialize field values into json.
 	     */
 	    Model.prototype.$toJson = function () {
 	        return Serializer.serialize(this);
-	    };
-	    /**
-	     * This method is used by Nuxt server-side rendering. It will prevent
-	     * `non-POJO` warning when using Vuex ORM with Nuxt universal mode.
-	     * The method is not meant to be used publicly by a user.
-	     *
-	     * See https://github.com/vuex-orm/vuex-orm/issues/255 for more detail.
-	     */
-	    Model.prototype.toJSON = function () {
-	        var _this = this;
-	        return Object.keys(this).reduce(function (json, key) {
-	            var value = _this[key];
-	            if (value instanceof Model) {
-	                json[key] = value.toJSON();
-	                return json;
-	            }
-	            if (Array.isArray(value)) {
-	                json[key] = value.map(function (v) { return v instanceof Model ? v.toJSON() : v; });
-	                return json;
-	            }
-	            json[key] = value;
-	            return json;
-	        }, {});
 	    };
 	    /**
 	     * The primary key to be used for the model.
@@ -3373,62 +3369,6 @@
 	    return PivotCreator;
 	}());
 
-	var Incrementer = /** @class */ (function () {
-	    function Incrementer() {
-	    }
-	    /**
-	     * Increment all fields that have increment attribute.
-	     */
-	    Incrementer.process = function (query, data) {
-	        var _this = this;
-	        return Utils.mapValues(data, function (records, entity) {
-	            var newQuery = query.newQuery(entity);
-	            // If the entity doesn't have increment attribute, do nothing and
-	            // just return immediately.
-	            if (!newQuery.model.hasIncrementFields()) {
-	                return records;
-	            }
-	            _this.processRecordsByFields(records, newQuery);
-	            return records;
-	        });
-	    };
-	    /**
-	     * Process all of the increment fields.
-	     */
-	    Incrementer.processRecordsByFields = function (records, query) {
-	        var _this = this;
-	        var fields = query.model.getIncrementFields();
-	        Utils.forOwn(fields, function (_attr, key) {
-	            _this.processRecords(records, query, key);
-	        });
-	    };
-	    /**
-	     * Process all records and increment all field that is defined as increment.
-	     */
-	    Incrementer.processRecords = function (records, query, key) {
-	        var max = this.max(records, query, key);
-	        Utils.forOwn(records, function (record) {
-	            if (typeof record[key] !== 'number') {
-	                record[key] = ++max;
-	            }
-	        });
-	    };
-	    /**
-	     * Get the max value of the specified field with given data combined
-	     * with existing records.
-	     */
-	    Incrementer.max = function (records, query, field) {
-	        var maxInState = query.max(field);
-	        var maxInRecord = Math.max.apply(Math, Object.keys(records).map(function (key) {
-	            var record = records[key];
-	            var id = record[field];
-	            return typeof id === 'number' ? id : 0;
-	        }));
-	        return Math.max(maxInRecord, maxInState);
-	    };
-	    return Incrementer;
-	}());
-
 	var Attacher = /** @class */ (function () {
 	    function Attacher() {
 	    }
@@ -3452,39 +3392,6 @@
 	    return Attacher;
 	}());
 
-	var IdFixer = /** @class */ (function () {
-	    function IdFixer() {
-	    }
-	    /**
-	     * Fix all of the "no key" records with appropriate id value if it can.
-	     */
-	    IdFixer.process = function (query, data) {
-	        var _this = this;
-	        return Utils.mapValues(data, function (records, entity) {
-	            var newQuery = query.newQuery(entity);
-	            return _this.processRecords(records, newQuery);
-	        });
-	    };
-	    /**
-	     * Process records to Fix all of the "no key" records with
-	     * appropriate id value if it can.
-	     */
-	    IdFixer.processRecords = function (records, query) {
-	        return Object.keys(records).reduce(function (newRecords, id) {
-	            var record = records[id];
-	            var newId = query.model.getIndexIdFromRecord(record);
-	            var newStringId = String(newId);
-	            if (newId === null || id === newStringId) {
-	                newRecords[id] = record;
-	                return newRecords;
-	            }
-	            newRecords[newStringId] = __assign(__assign({}, record), { $id: newId });
-	            return newRecords;
-	        }, {});
-	    };
-	    return IdFixer;
-	}());
-
 	var Processor = /** @class */ (function () {
 	    function Processor() {
 	    }
@@ -3494,8 +3401,6 @@
 	    Processor.normalize = function (query, record) {
 	        // First, let's normalize the data.
 	        var data = Normalizer.process(query, record);
-	        // Next, increment any field that defined with `increment` attribute.
-	        data = Incrementer.process(query, data);
 	        // Then, attach any missing foreign keys. For example, if a User has many
 	        // Post nested but without foreign key such as `user_id`, we can attach
 	        // the `user_id` value to the Post entities.
@@ -3503,18 +3408,6 @@
 	        // Now we'll create any missing pivot entities for relationships such as
 	        // `belongsTo` or `morphMany`.
 	        data = PivotCreator.process(query, data);
-	        // There might be new pivot entities now which weren't there before, and
-	        // it might contain increment field so we must increment those filed
-	        // again here.
-	        //
-	        // Improvements: This double incrementing process can be improved. Since
-	        // currently, we're looping whole records twice. If we could remember the
-	        // entities which were already incremented at an earlier stage, we could
-	        // only process the newly created entities.
-	        data = Incrementer.process(query, data);
-	        // Finally, let's fix key id for the entities since the id value might
-	        // have changed due to the incrementing process.
-	        data = IdFixer.process(query, data);
 	        // And we'll return the result as a normalized data.
 	        return data;
 	    };
@@ -3838,7 +3731,7 @@
 	        var ids = [];
 	        collection.forEach(function (model) {
 	            if (comparators.every(function (comparator) { return comparator(model); })) {
-	                ids.push(model.$id);
+	                ids.push(model.$self().getIdFromRecord(model));
 	            }
 	        });
 	        query.whereIdIn(ids);
@@ -3899,6 +3792,12 @@
 	     */
 	    function Query(state, entity) {
 	        /**
+	         * This flag lets us know if current Query instance applies to
+	         * a base class or not (in order to know when to filter out
+	         * some records).
+	         */
+	        this.appliedOnBase = true;
+	        /**
 	         * Primary key ids to filter records by. It is used for filtering records
 	         * direct key lookup when a user is trying to fetch records by its
 	         * primary key.
@@ -3945,20 +3844,13 @@
 	         * The relationships that should be eager loaded with the result.
 	         */
 	        this.load = {};
-	        /**
-	         * This flag lets us know if current Query instance applies to
-	         * a base class or not (in order to know when to filter out some
-	         * records)
-	         */
-	        this.appliedOnBase = true;
-	        // All entitites with same base class are stored in the same state
-	        var baseModel = this.getBase(entity);
-	        this.state = state[baseModel.entity];
-	        this.appliedOnBase = baseModel.entity === entity;
+	        // All entitites with same base class are stored in the same state.
+	        var baseModel = this.getBaseModel(entity);
 	        this.rootState = state;
+	        this.state = state[baseModel.entity];
 	        this.entity = entity;
 	        this.model = this.getModel(entity);
-	        this.module = this.getModule(entity);
+	        this.appliedOnBase = baseModel.entity === entity;
 	    }
 	    /**
 	     * Get the database from the container.
@@ -3975,7 +3867,7 @@
 	    /**
 	     * Get base model of given name from the container.
 	     */
-	    Query.getBase = function (name) {
+	    Query.getBaseModel = function (name) {
 	        return this.database().baseModel(name);
 	    };
 	    /**
@@ -3985,38 +3877,24 @@
 	        return this.database().models();
 	    };
 	    /**
-	     * Get module of given name from the container.
-	     */
-	    Query.getModule = function (name) {
-	        return this.database().module(name);
-	    };
-	    /**
-	     * Get all modules from the container.
-	     */
-	    Query.getModules = function () {
-	        return this.database().modules();
-	    };
-	    /**
 	     * Delete all records from the store.
 	     */
 	    Query.deleteAll = function (state) {
-	        var _this = this;
 	        var models = this.getModels();
-	        Object.keys(models).forEach(function (name) {
-	            state[name] && (new _this(state, name)).deleteAll();
-	        });
+	        for (var entity in models) {
+	            state[entity] && (new this(state, entity)).deleteAll();
+	        }
 	    };
 	    /**
 	     * Register a global hook. It will return ID for the hook that users may use
 	     * it to unregister hooks.
 	     */
-	    Query.on = function (on, callback, once) {
-	        if (once === void 0) { once = false; }
+	    Query.on = function (on, callback) {
 	        var id = ++this.lastHookId;
 	        if (!this.hooks[on]) {
 	            this.hooks[on] = [];
 	        }
-	        this.hooks[on].push({ id: id, callback: callback, once: once });
+	        this.hooks[on].push({ id: id, callback: callback });
 	        return id;
 	    };
 	    /**
@@ -4069,21 +3947,8 @@
 	    /**
 	     * Get base model of given name from the container.
 	     */
-	    Query.prototype.getBase = function (name) {
-	        return this.self().getBase(name);
-	    };
-	    /**
-	     * Get module of given name from the container.
-	     */
-	    Query.prototype.getModule = function (name) {
-	        var entity = name || this.entity;
-	        return this.self().getModule(entity);
-	    };
-	    /**
-	     * Get all modules from the container.
-	     */
-	    Query.prototype.getModules = function () {
-	        return this.self().getModules();
+	    Query.prototype.getBaseModel = function (name) {
+	        return this.self().getBaseModel(name);
 	    };
 	    /**
 	     * Returns all record of the query chain result. This method is alias
@@ -4097,24 +3962,35 @@
 	     */
 	    Query.prototype.find = function (id) {
 	        id = Array.isArray(id) ? JSON.stringify(id) : id;
-	        return this.item(this.state.data[id]); // TODO: Delete "as ..." when model type coverage reaches 100%.
+	        var record = this.state.data[id];
+	        if (!record) {
+	            return null;
+	        }
+	        var model = this.hydrate(record);
+	        model.$id = String(id);
+	        return this.item(model);
 	    };
 	    /**
 	     * Get the record of the given array of ids.
 	     */
 	    Query.prototype.findIn = function (idList) {
 	        var _this = this;
-	        return idList.map(function (id) {
-	            id = Array.isArray(id) ? JSON.stringify(id) : id;
-	            return _this.state.data[id];
-	        }).filter(function (item) { return item; }); // TODO: Delete "as ..." when model type coverage reaches 100%.
+	        return idList.reduce(function (collection, id) {
+	            var indexId = Array.isArray(id) ? JSON.stringify(id) : id;
+	            var record = _this.state.data[indexId];
+	            if (!record) {
+	                return collection;
+	            }
+	            collection.push(_this.hydrate(record));
+	            return collection;
+	        }, []);
 	    };
 	    /**
 	     * Returns all record of the query chain result.
 	     */
 	    Query.prototype.get = function () {
 	        var records = this.select();
-	        return this.collect(records); // TODO: Delete "as ..." when model type coverage reaches 100%.
+	        return this.collect(records);
 	    };
 	    /**
 	     * Returns the first record of the query chain result.
@@ -4290,30 +4166,25 @@
 	        return this;
 	    };
 	    /**
-	     * Get all records from the state and convert them into the array. It will
-	     * check if the record is an instance of Model and if not, it will
-	     * instantiate before returning them.
-	     *
-	     * This is needed to support SSR, that when the state is hydrated at server
-	     * side, it will be converted to the plain record at the client side.
+	     * Get all records from the state and convert them into the array of
+	     * model instances.
 	     */
 	    Query.prototype.records = function () {
 	        var _this = this;
 	        this.finalizeIdFilter();
-	        return this.getIdsToLookup()
-	            .map(function (id) {
-	            var model = _this.state.data[id];
-	            // Getting the typed instance
-	            var hydrated = model instanceof Model ? model : _this.hydrate(model);
-	            // And ignoring if needed
-	            if (!_this.appliedOnBase && !(hydrated instanceof _this.model)) {
-	                return null;
+	        return this.getIdsToLookup().reduce(function (models, id) {
+	            var record = _this.state.data[id];
+	            if (!record) {
+	                return models;
 	            }
-	            return hydrated;
-	        })
-	            .filter(function (record) {
-	            return record !== null;
-	        });
+	            var model = _this.hydrate(record);
+	            // Ignore if the model is not current type of model.
+	            if (!_this.appliedOnBase && !(model instanceof _this.model)) {
+	                return models;
+	            }
+	            models.push(model);
+	            return models;
+	        }, []);
 	    };
 	    /**
 	     * Check whether if id filters should on select. If not, clear out id filter.
@@ -4366,7 +4237,7 @@
 	        records = this.filterLimit(records);
 	        // Process `afterLimit` hook.
 	        records = this.executeRetrieveHook('afterLimit', records);
-	        return records; // TODO: Delete "as ..." when model type coverage reaches 100%.
+	        return records;
 	    };
 	    /**
 	     * Filter the given data by registered where clause.
@@ -4431,12 +4302,7 @@
 	     * Create a item from given record.
 	     */
 	    Query.prototype.item = function (item) {
-	        if (!item) {
-	            return null;
-	        }
 	        if (Object.keys(this.load).length > 0) {
-	            var model = this.model.getModelFromRecord(item);
-	            item = new model(item);
 	            Loader.eagerLoadRelations(this, [item]);
 	        }
 	        return item;
@@ -4464,7 +4330,7 @@
 	    Query.prototype.filterData = function (predicate) {
 	        var _this = this;
 	        this.state.data = Object.keys(this.state.data).reduce(function (models, id) {
-	            var model = _this.state.data[id];
+	            var model = _this.hydrate(_this.state.data[id]);
 	            if (predicate(model)) {
 	                models[id] = model;
 	            }
@@ -4485,20 +4351,14 @@
 	     * use the `insert` method instead.
 	     */
 	    Query.prototype.create = function (data, options) {
-	        return this.persist(data, 'create', options); // TODO: Delete "as ..." when model type coverage reaches 100%.
+	        return this.persist('create', data, options);
 	    };
 	    /**
 	     * Create records to the state.
 	     */
-	    Query.prototype.createMany = function (records) {
-	        var _this = this;
-	        var instances = this.hydrateMany(records);
-	        var createCallback = function () {
-	            _this.emptyState();
-	            _this.state.data = __assign(__assign({}, _this.state.data), instances);
-	        };
-	        this.commitCreateOnRecords(instances, createCallback);
-	        return this.map(instances); // TODO: Delete "as ..." when model type coverage reaches 100%.
+	    Query.prototype.createRecords = function (records) {
+	        this.emptyState();
+	        return this.insertRecords(records);
 	    };
 	    /**
 	     * Insert given data to the state. Unlike `create`, this method will not
@@ -4506,26 +4366,35 @@
 	     * with the same primary key.
 	     */
 	    Query.prototype.insert = function (data, options) {
-	        return this.persist(data, 'insert', options); // TODO: Delete "as ..." when model type coverage reaches 100%.
+	        return this.persist('insert', data, options);
 	    };
 	    /**
-	     * Insert list of records in the state.
+	     * Insert records in the state.
 	     */
-	    Query.prototype.insertMany = function (records) {
+	    Query.prototype.insertRecords = function (records) {
 	        var _this = this;
-	        var instances = this.hydrateMany(records);
-	        this.commitCreateOnRecords(instances, function () {
-	            _this.state.data = __assign(__assign({}, _this.state.data), instances);
+	        var recordsToBeInserted = {};
+	        var models = [];
+	        var beforeHooks = this.buildHooks('beforeCreate');
+	        var _loop_1 = function (id) {
+	            var record = records[id];
+	            var model = this_1.hydrate(record);
+	            if (beforeHooks.some(function (hook) { return hook(model, _this.entity) === false; })) {
+	                return "continue";
+	            }
+	            models.push(model);
+	            recordsToBeInserted[id] = model.$toJson();
+	        };
+	        var this_1 = this;
+	        for (var id in records) {
+	            _loop_1(id);
+	        }
+	        this.state.data = __assign(__assign({}, this.state.data), recordsToBeInserted);
+	        var afterHooks = this.buildHooks('afterCreate');
+	        models.forEach(function (model) {
+	            afterHooks.forEach(function (hook) { hook(model, _this.entity); });
 	        });
-	        return this.map(instances); // TODO: Delete "as ..." when model type coverage reaches 100%.
-	    };
-	    /**
-	     * Commit given models to the store by `create` method.
-	     */
-	    Query.prototype.commitCreateOnRecords = function (models, callback) {
-	        this.executeBeforeCreateHookOnModels(models);
-	        callback();
-	        this.executeAfterCreateHookOnModels(models);
+	        return models;
 	    };
 	    /**
 	     * Update data in the state.
@@ -4533,7 +4402,7 @@
 	    Query.prototype.update = function (data, condition, options) {
 	        // If the data is array, simply normalize the data and update them.
 	        if (Array.isArray(data)) {
-	            return this.persist(data, 'update', options);
+	            return this.persist('update', data, options);
 	        }
 	        // OK, the data is not an array. Now let's check `data` to see what we can
 	        // do if it's a closure.
@@ -4559,7 +4428,7 @@
 	        }
 	        // If there's no condition, let's normalize the data and update them.
 	        if (!condition) {
-	            return this.persist(data, 'update', options);
+	            return this.persist('update', data, options);
 	        }
 	        // Now since the condition is either String or Number, let's check if the
 	        // model's primary key is not a composite key. If yes, we can't set the
@@ -4574,9 +4443,9 @@
 	    /**
 	     * Update all records.
 	     */
-	    Query.prototype.updateMany = function (records) {
-	        var instances = this.combine(records);
-	        return this.commitUpdate(instances); // TODO: Delete "as ..." when model type coverage reaches 100%.
+	    Query.prototype.updateRecords = function (records) {
+	        var models = this.hydrateRecordsByMerging(records);
+	        return this.commitUpdate(models);
 	    };
 	    /**
 	     * Update the state by id.
@@ -4584,12 +4453,13 @@
 	    Query.prototype.updateById = function (data, id) {
 	        var _a;
 	        id = typeof id === 'number' ? id.toString() : id;
-	        var instance = this.state.data[id];
-	        if (!instance) {
+	        var record = this.state.data[id];
+	        if (!record) {
 	            return null;
 	        }
+	        var model = this.hydrate(record);
 	        var instances = (_a = {},
-	            _a[id] = this.processUpdate(data, instance),
+	            _a[id] = this.processUpdate(data, model),
 	            _a);
 	        this.commitUpdate(instances);
 	        return instances[id];
@@ -4600,7 +4470,7 @@
 	    Query.prototype.updateByCondition = function (data, condition) {
 	        var _this = this;
 	        var instances = Object.keys(this.state.data).reduce(function (instances, id) {
-	            var instance = _this.state.data[id];
+	            var instance = _this.hydrate(_this.state.data[id]);
 	            if (!condition(instance)) {
 	                return instances;
 	            }
@@ -4626,21 +4496,27 @@
 	    /**
 	     * Commit `update` to the state.
 	     */
-	    Query.prototype.commitUpdate = function (instances) {
+	    Query.prototype.commitUpdate = function (models) {
 	        var _this = this;
-	        instances = this.updateIndexes(instances);
-	        this.commitUpdateOnRecords(instances, function () {
-	            _this.state.data = __assign(__assign({}, _this.state.data), instances);
-	        });
-	        return this.map(instances);
-	    };
-	    /**
-	     * Commit given models to the store by `update` method.
-	     */
-	    Query.prototype.commitUpdateOnRecords = function (models, callback) {
-	        this.executeBeforeUpdateHookOnModels(models);
-	        callback();
-	        this.executeAfterUpdateHookOnModels(models);
+	        models = this.updateIndexes(models);
+	        var beforeHooks = this.buildHooks('beforeUpdate');
+	        var afterHooks = this.buildHooks('afterUpdate');
+	        var updated = [];
+	        var _loop_2 = function (id) {
+	            var _a;
+	            var model = models[id];
+	            if (beforeHooks.some(function (hook) { return hook(model, _this.entity) === false; })) {
+	                return "continue";
+	            }
+	            this_2.state.data = __assign(__assign({}, this_2.state.data), (_a = {}, _a[id] = model.$toJson(), _a));
+	            afterHooks.forEach(function (hook) { hook(model, _this.entity); });
+	            updated.push(model);
+	        };
+	        var this_2 = this;
+	        for (var id in models) {
+	            _loop_2(id);
+	        }
+	        return updated;
 	    };
 	    /**
 	     * Update the key of the instances. This is needed when a user updates
@@ -4666,12 +4542,12 @@
 	     * the submitted data with the same primary key.
 	     */
 	    Query.prototype.insertOrUpdate = function (data, options) {
-	        return this.persist(data, 'insertOrUpdate', options); // TODO: Delete "as ..." when model type coverage reaches 100%.
+	        return this.persist('insertOrUpdate', data, options);
 	    };
 	    /**
 	     * Insert or update the records.
 	     */
-	    Query.prototype.insertOrUpdateMany = function (records) {
+	    Query.prototype.insertOrUpdateRecords = function (records) {
 	        var _this = this;
 	        var toBeInserted = {};
 	        var toBeUpdated = {};
@@ -4683,34 +4559,50 @@
 	            }
 	            toBeInserted[id] = record;
 	        });
-	        return __spreadArrays(this.insertMany(toBeInserted), this.updateMany(toBeUpdated));
+	        return __spreadArrays(this.insertRecords(toBeInserted), this.updateRecords(toBeUpdated));
 	    };
 	    /**
 	     * Persist data into the state.
 	     */
-	    Query.prototype.persist = function (data, method, options) {
+	    Query.prototype.persist = function (method, data, options) {
 	        var _this = this;
-	        data = this.normalize(data);
-	        if (Utils.isEmpty(data)) {
+	        var normalizedData = this.normalize(data);
+	        if (Utils.isEmpty(normalizedData)) {
 	            if (method === 'create') {
 	                this.emptyState();
 	            }
 	            return {};
 	        }
-	        return Object.keys(data).reduce(function (collection, entity) {
-	            var query = _this.newQuery(entity);
-	            var persistMethod = _this.getPersistMethod(entity, method, options);
-	            var records = query[persistMethod + "Many"](data[entity]);
-	            if (records.length > 0) {
-	                collection[entity] = records;
+	        return Object.entries(normalizedData).reduce(function (collections, _a) {
+	            var entity = _a[0], records = _a[1];
+	            var newQuery = _this.newQuery(entity);
+	            var methodForEntity = _this.getPersistMethod(entity, options, method);
+	            var collection = newQuery.persistRecords(methodForEntity, records);
+	            if (collection.length > 0) {
+	                collections[entity] = collection;
 	            }
-	            return collection;
+	            return collections;
 	        }, {});
 	    };
 	    /**
-	     * Get method for the persist.
+	     * Persist given records to the store by the given method.
 	     */
-	    Query.prototype.getPersistMethod = function (entity, method, options) {
+	    Query.prototype.persistRecords = function (method, records) {
+	        switch (method) {
+	            case 'create':
+	                return this.createRecords(records);
+	            case 'insert':
+	                return this.insertRecords(records);
+	            case 'update':
+	                return this.updateRecords(records);
+	            case 'insertOrUpdate':
+	                return this.insertOrUpdateRecords(records);
+	        }
+	    };
+	    /**
+	     * Get persist method from given information.
+	     */
+	    Query.prototype.getPersistMethod = function (entity, options, fallback) {
 	        if (options.create && options.create.includes(entity)) {
 	            return 'create';
 	        }
@@ -4723,7 +4615,7 @@
 	        if (options.insertOrUpdate && options.insertOrUpdate.includes(entity)) {
 	            return 'insertOrUpdate';
 	        }
-	        return method;
+	        return fallback;
 	    };
 	    Query.prototype.delete = function (condition) {
 	        if (typeof condition === 'function') {
@@ -4786,253 +4678,91 @@
 	     * Convert given record to the model instance.
 	     */
 	    Query.prototype.hydrate = function (record, forceModel) {
-	        if (forceModel !== undefined) {
+	        var _a;
+	        if (forceModel) {
 	            return new forceModel(record);
 	        }
-	        var model = this.model;
-	        if (record) {
-	            // If the record has the right typeKey attribute set, and Model has type mapping
-	            // we hydrate it as the corresponding model
-	            var newModel = model.getModelFromRecord(record);
-	            if (typeof newModel === 'function') {
-	                return new newModel(record);
-	            }
-	            // If we know that we're hydrating an entity which is not a base one,
-	            // we can set it's typeKey attribute as a "bonus"
-	            if (!this.appliedOnBase) {
-	                var typeValue = model.getTypeKeyValueFromModel();
-	                record[model.typeKey] = typeValue;
-	            }
+	        var newModel = this.model.getModelFromRecord(record);
+	        if (newModel !== null) {
+	            return new newModel(record);
 	        }
-	        return new model(record);
-	    };
-	    /**
-	     * Convert all given records to model instances.
-	     */
-	    Query.prototype.hydrateMany = function (records) {
-	        var _this = this;
-	        return Object.keys(records).reduce(function (instances, id) {
-	            var record = records[id];
-	            instances[id] = _this.hydrate(record);
-	            return instances;
-	        }, {});
+	        if (!this.appliedOnBase && record[this.model.typeKey] === undefined) {
+	            var typeValue = this.model.getTypeKeyValueFromModel();
+	            record = __assign(__assign({}, record), (_a = {}, _a[this.model.typeKey] = typeValue, _a));
+	            return new this.model(record);
+	        }
+	        var baseModel = this.getBaseModel(this.entity);
+	        return new baseModel(record);
 	    };
 	    /**
 	     * Convert given records to instances by merging existing record. If there's
 	     * no existing record, that record will not be included in the result.
 	     */
-	    Query.prototype.combine = function (records) {
+	    Query.prototype.hydrateRecordsByMerging = function (records) {
 	        var _this = this;
 	        return Object.keys(records).reduce(function (instances, id) {
-	            var instance = _this.state.data[id];
-	            if (!instance) {
+	            var recordInStore = _this.state.data[id];
+	            if (!recordInStore) {
 	                return instances;
 	            }
 	            var record = records[id];
-	            if (instance.constructor !== _this.model && instance instanceof Model) {
-	                instances[id] = _this.hydrate(__assign(__assign({}, instance), record), instance.constructor);
+	            var modelForRecordInStore = _this.model.getModelFromRecord(recordInStore);
+	            if (modelForRecordInStore === null) {
+	                instances[id] = _this.hydrate(__assign(__assign({}, recordInStore), record));
 	                return instances;
 	            }
-	            instances[id] = _this.hydrate(__assign(__assign({}, instance), record));
+	            instances[id] = _this.hydrate(__assign(__assign({}, recordInStore), record), modelForRecordInStore);
 	            return instances;
 	        }, {});
 	    };
 	    /**
-	     * Convert all given instances to collections.
-	     */
-	    Query.prototype.map = function (instances) {
-	        return Object.keys(instances).map(function (id) { return instances[id]; });
-	    };
-	    /**
-	     * Clears the current state from any data related to current model:
-	     * - everything if not in a inheritance scheme
-	     * - only derived instances if applied to a derived entity
+	     * Clears the current state from any data related to current model.
+	     *
+	     * - Everything if not in a inheritance scheme.
+	     * - Only derived instances if applied to a derived entity.
 	     */
 	    Query.prototype.emptyState = function () {
+	        var _this = this;
 	        if (this.appliedOnBase) {
 	            this.state.data = {};
 	            return;
 	        }
-	        for (var id in this.state.data) {
-	            if (this.state.data[id] instanceof this.model) {
-	                delete this.state.data[id];
+	        this.state.data = Object.entries(this.state.data).reduce(function (records, _a) {
+	            var id = _a[0], record = _a[1];
+	            if (!(_this.model.getModelFromRecord(record) === _this.model)) {
+	                records[id] = record;
 	            }
-	        }
+	            return records;
+	        }, {});
+	    };
+	    /**
+	     * Build before create hooks arra
+	     */
+	    Query.prototype.buildHooks = function (on) {
+	        var hooks = this.getGlobalHookAsArray(on);
+	        var localHook = this.model[on];
+	        localHook && hooks.push(localHook);
+	        return hooks;
+	    };
+	    /**
+	     * Get global hook of the given name as array by stripping id key and keep
+	     * only hook functions.
+	     */
+	    Query.prototype.getGlobalHookAsArray = function (on) {
+	        var _this = this;
+	        var hooks = this.self().hooks[on];
+	        return hooks ? hooks.map(function (h) { return h.callback.bind(_this); }) : [];
 	    };
 	    /**
 	     * Execute retrieve hook for the given method.
 	     */
 	    Query.prototype.executeRetrieveHook = function (on, models) {
-	        var collection = models;
-	        collection = this.executeLocalRetrieveHook(on, collection);
-	        collection = this.executeGlobalRetrieveHook(on, collection);
-	        return collection;
-	    };
-	    /**
-	     * Execute local retrieve hook for the given method.
-	     */
-	    Query.prototype.executeLocalRetrieveHook = function (on, models) {
-	        var hook = this.model[on];
-	        return hook ? hook(models, this.model.entity) : models;
-	    };
-	    /**
-	     * Execute global retrieve hook for the given method.
-	     */
-	    Query.prototype.executeGlobalRetrieveHook = function (on, models) {
 	        var _this = this;
-	        var hooks = this.self().hooks[on];
-	        if (!hooks) {
-	            return models;
-	        }
-	        var result = hooks.reduce(function (collection, hook) {
-	            return hook.callback.call(_this, collection, _this.model.entity);
+	        var hooks = this.buildHooks(on);
+	        return hooks.reduce(function (collection, hook) {
+	            collection = hook(models, _this.entity);
+	            return collection;
 	        }, models);
-	        this.cleanGlobalHooksOn(on);
-	        return result;
-	    };
-	    /**
-	     * Execute before create hook to the given model.
-	     */
-	    Query.prototype.executeBeforeCreateHook = function (model) {
-	        if (this.executeLocalBeforeCreateHook(model) === false) {
-	            return false;
-	        }
-	        if (this.executeGlobalBeforeCreateHook(model) === false) {
-	            return false;
-	        }
-	    };
-	    /**
-	     * Execute before create hook to the goven models.
-	     */
-	    Query.prototype.executeBeforeCreateHookOnModels = function (models) {
-	        var _this = this;
-	        Object.keys(models).forEach(function (id) {
-	            var model = models[id];
-	            if (_this.executeBeforeCreateHook(model) === false) {
-	                delete models[id];
-	            }
-	        });
-	    };
-	    /**
-	     * Execute local before create hook to the given model.
-	     */
-	    Query.prototype.executeLocalBeforeCreateHook = function (model) {
-	        var hook = this.model['beforeCreate'];
-	        return hook && hook(model, this.entity);
-	    };
-	    /**
-	     * Execute global before create hook to the given model.
-	     */
-	    Query.prototype.executeGlobalBeforeCreateHook = function (model) {
-	        var _this = this;
-	        return this.executeGlobalBeforeMutationHooks('beforeCreate', function (hook) {
-	            return hook(model, _this.entity);
-	        });
-	    };
-	    /**
-	     * Execute after create hook to the given model.
-	     */
-	    Query.prototype.executeAfterCreateHook = function (model) {
-	        this.executeLocalAfterCreateHook(model);
-	        this.executeGlobalAfterCreateHook(model);
-	    };
-	    /**
-	     * Execute after create hook to the goven models.
-	     */
-	    Query.prototype.executeAfterCreateHookOnModels = function (models) {
-	        var _this = this;
-	        Object.keys(models).forEach(function (id) {
-	            var model = models[id];
-	            _this.executeAfterCreateHook(model);
-	        });
-	    };
-	    /**
-	     * Execute local after create hook to the given model.
-	     */
-	    Query.prototype.executeLocalAfterCreateHook = function (model) {
-	        var hook = this.model['afterCreate'];
-	        return hook && hook(model, this.entity);
-	    };
-	    /**
-	     * Execute global after create hook to the given model.
-	     */
-	    Query.prototype.executeGlobalAfterCreateHook = function (model) {
-	        var _this = this;
-	        this.executeGlobalAfterMutationHooks('afterCreate', function (hook) {
-	            hook(model, _this.entity);
-	        });
-	    };
-	    /**
-	     * Execute before update hook to the given model.
-	     */
-	    Query.prototype.executeBeforeUpdateHook = function (model) {
-	        if (this.executeLocalBeforeUpdateHook(model) === false) {
-	            return false;
-	        }
-	        if (this.executeGlobalBeforeUpdateHook(model) === false) {
-	            return false;
-	        }
-	    };
-	    /**
-	     * Execute before update hook to the goven models.
-	     */
-	    Query.prototype.executeBeforeUpdateHookOnModels = function (models) {
-	        var _this = this;
-	        Object.keys(models).forEach(function (id) {
-	            var model = models[id];
-	            if (_this.executeBeforeUpdateHook(model) === false) {
-	                delete models[id];
-	            }
-	        });
-	    };
-	    /**
-	     * Execute local before update hook to the given model.
-	     */
-	    Query.prototype.executeLocalBeforeUpdateHook = function (model) {
-	        var hook = this.model['beforeUpdate'];
-	        return hook && hook(model, this.entity);
-	    };
-	    /**
-	     * Execute global before update hook to the given model.
-	     */
-	    Query.prototype.executeGlobalBeforeUpdateHook = function (model) {
-	        var _this = this;
-	        return this.executeGlobalBeforeMutationHooks('beforeUpdate', function (hook) {
-	            return hook(model, _this.entity);
-	        });
-	    };
-	    /**
-	     * Execute after update hook to the given model.
-	     */
-	    Query.prototype.executeAfterUpdateHook = function (model) {
-	        this.executeLocalAfterUpdateHook(model);
-	        this.executeGlobalAfterUpdateHook(model);
-	    };
-	    /**
-	     * Execute local after update hook to the given model.
-	     */
-	    Query.prototype.executeLocalAfterUpdateHook = function (model) {
-	        var hook = this.model['afterUpdate'];
-	        return hook && hook(model, this.entity);
-	    };
-	    /**
-	     * Execute global after create hook to the given model.
-	     */
-	    Query.prototype.executeGlobalAfterUpdateHook = function (model) {
-	        var _this = this;
-	        this.executeGlobalAfterMutationHooks('afterUpdate', function (hook) {
-	            hook(model, _this.entity);
-	        });
-	    };
-	    /**
-	     * Execute after update hook to the goven models.
-	     */
-	    Query.prototype.executeAfterUpdateHookOnModels = function (models) {
-	        var _this = this;
-	        Object.keys(models).forEach(function (id) {
-	            var model = models[id];
-	            _this.executeAfterUpdateHook(model);
-	        });
 	    };
 	    /**
 	     * Execute before delete hook to the given model.
@@ -5095,7 +4825,6 @@
 	        var result = hooks.some(function (hook) {
 	            return callback(hook.callback) === false ? false : true;
 	        });
-	        this.cleanGlobalHooksOn(on);
 	        return result === false ? false : undefined;
 	    };
 	    /**
@@ -5107,14 +4836,6 @@
 	            return;
 	        }
 	        hooks.forEach(function (hook) { callback(hook.callback); });
-	        this.cleanGlobalHooksOn(on);
-	    };
-	    /**
-	     * Remove all callback defined as "once" from the global hooks.
-	     */
-	    Query.prototype.cleanGlobalHooksOn = function (on) {
-	        var hooks = this.self().hooks[on];
-	        this.self().hooks[on] = hooks.filter(function (hook) { return !hook.once; });
 	    };
 	    /**
 	     * The global lifecycle hook registries.
@@ -5365,7 +5086,7 @@
 	        String: String$1,
 	        Number: Number,
 	        Boolean: Boolean,
-	        Increment: Increment,
+	        Uid: Uid$1,
 	        Relation: Relation,
 	        HasOne: HasOne,
 	        BelongsTo: BelongsTo,
@@ -5388,64 +5109,6 @@
 	    plugin.install(components, options);
 	}
 
-	/* istanbul ignore next */
-	var NoKey = /** @class */ (function () {
-	    function NoKey() {
-	    }
-	    /**
-	     * Set new unique id value.
-	     */
-	    NoKey.set = function () {
-	        this.value = "" + this.prefix + this.count;
-	    };
-	    /**
-	     * Get the current unique id value.
-	     */
-	    NoKey.get = function () {
-	        return this.value;
-	    };
-	    /**
-	     * Increment the count, then set the new unique id value.
-	     */
-	    NoKey.increment = function () {
-	        this.count++;
-	        this.set();
-	        return this.get();
-	    };
-	    /**
-	     * Count to create a unique id for the record that missing its primary key.
-	     */
-	    NoKey.count = 0;
-	    /**
-	     * Prefix string to be used for undefined primary key value.
-	     */
-	    NoKey.prefix = '_no_key_';
-	    /**
-	     * The current unique id value. This is the combination of
-	     * the `prefix` and the `count`.
-	     */
-	    NoKey.value = '';
-	    return NoKey;
-	}());
-
-	var IdAttribute = /** @class */ (function () {
-	    function IdAttribute() {
-	    }
-	    /**
-	     * Create the id attribute.
-	     */
-	    IdAttribute.create = function (model) {
-	        return function (value, _parent, _key) {
-	            var id = model.getIndexIdFromRecord(value);
-	            if (id === null) {
-	                return NoKey.get();
-	            }
-	            return id;
-	        };
-	    };
-	    return IdAttribute;
-	}());
-
 	var ProcessStrategy = /** @class */ (function () {
 	    function ProcessStrategy() {
 	    }
@@ -5453,10 +5116,33 @@
 	     * Create the process strategy.
 	     */
 	    ProcessStrategy.create = function (model) {
+	        var _this = this;
 	        return function (value, _parentValue, _key) {
-	            var id = model.getIndexIdFromRecord(value);
-	            return __assign(__assign({}, value), { $id: id === null ? NoKey.increment() : id });
+	            _this.generateIds(value, model);
+	            _this.generateIndexId(value, model);
+	            return value;
 	        };
+	    };
+	    /**
+	     * Generate a field that is defined as primary keys. For keys with a proper
+	     * value set, it will do nothing. If a key is missing, it will generate
+	     * UID for it.
+	     */
+	    ProcessStrategy.generateIds = function (record, model) {
+	        var keys = Array.isArray(model.primaryKey) ? model.primaryKey : [model.primaryKey];
+	        keys.forEach(function (k) {
+	            if (record[k] !== undefined && record[k] !== null) {
+	                return;
+	            }
+	            var attr = model.getFields()[k];
+	            record[k] = attr instanceof Uid$1 ? attr.make() : Uid.make();
+	        });
+	    };
+	    /**
+	     * Generate index id field (which is `$id`) and attach to the given record.
+	     */
+	    ProcessStrategy.generateIndexId = function (record, model) {
+	        record.$id = model.getIndexIdFromRecord(record);
 	    };
 	    return ProcessStrategy;
 	}());
@@ -5490,7 +5176,7 @@
 	            return this.schemas[model.entity];
 	        }
 	        var schema$1 = new schema.Entity(model.entity, {}, {
-	            idAttribute: IdAttribute.create(model),
+	            idAttribute: '$id',
 	            processStrategy: ProcessStrategy.create(model)
 	        });
 	        this.schemas[model.entity] = schema$1;
@@ -5714,7 +5400,7 @@
 	    String: String$1,
 	    Number: Number,
 	    Boolean: Boolean,
-	    Increment: Increment,
+	    Uid: Uid$1,
 	    Relation: Relation,
 	    HasOne: HasOne,
 	    BelongsTo: BelongsTo,
