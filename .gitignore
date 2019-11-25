@@ -5,6 +5,6 @@
 /docs/node_modules
 /lib
 /node_modules
+.idea/*
 .vscode/*
 yarn-error.log
-.idea/*
