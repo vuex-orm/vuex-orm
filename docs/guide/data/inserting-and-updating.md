@@ -22,7 +22,7 @@ export default {
 </script>
 ```
 
-You may also pass an array of record.
+You may also pass an array of records.
 
 ```js
 User.insert({
