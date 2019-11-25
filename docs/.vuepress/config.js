@@ -82,7 +82,7 @@ module.exports = {
   themeConfig: {
     repo: 'vuex-orm/vuex-orm',
     docsDir: 'docs',
-    sidebarDepth: 1,
+    sidebarDepth: 2,
 
     nav: [{
         text: 'Guide',
