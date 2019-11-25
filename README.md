@@ -30,22 +30,25 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex 
 ### Super Love Sponsors
 
 <a href="https://github.com/petertoth">
-  <img src="https://avatars2.githubusercontent.com/u/3661783?s=400&v=4" alt="Peter Tóth" width="96">
+  <img src="https://avatars2.githubusercontent.com/u/3661783?s=400&v=4" alt="Peter Tóth" width="88">
 </a>
 <a href="https://github.com/phaust">
-  <img src="https://avatars1.githubusercontent.com/u/2367770?s=400&v=4" alt="Mario Kolli" width="96">
+  <img src="https://avatars1.githubusercontent.com/u/2367770?s=400&v=4" alt="Mario Kolli" width="88">
 </a>
 <a href="https://github.com/cannikan">
-  <img src="https://avatars2.githubusercontent.com/u/21893904?s=460&v=4" alt="Cannikan" width="96">
+  <img src="https://avatars2.githubusercontent.com/u/21893904?s=460&v=4" alt="Cannikan" width="88">
 </a>
 <a href="https://github.com/somazx">
-  <img src="https://avatars0.githubusercontent.com/u/7306?s=400&v=4" alt="Andy Koch" width="96">
+  <img src="https://avatars0.githubusercontent.com/u/7306?s=400&v=4" alt="Andy Koch" width="88">
 </a>
 
 #### A Love Sponsors
 
 <a href="https://github.com/georgechaduneli">
   <img src="https://avatars1.githubusercontent.com/u/9340753?s=460&v=4" alt="George Chaduneli" width="64">
+</a>
+<a href="https://github.com/bpuig">
+  <img src="https://avatars3.githubusercontent.com/u/22938625?s=400&v=4" alt="bpuig" width="64">
 </a>
 
 ## Documentation
