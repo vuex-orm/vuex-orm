@@ -1,7 +1,6 @@
 import Model from '../../model/Model'
-import OrderDirection from './OrderDirection'
 import OrderKey from './OrderKey'
-
+import OrderDirection from './OrderDirection'
 
 export interface Orders<T extends Model = Model> {
   key: OrderKey<T>

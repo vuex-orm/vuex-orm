@@ -68,27 +68,6 @@ describe('Feature – Retrieve – Order By', () => {
     expect(result).toEqual(expected)
   })
 
-  it('can sort by model fields with first method', () => {
-    const store = createStore([{ model: User }])
-
-    store.dispatch('entities/users/create', {
-      data: [
-        { id: 1, name: 'John' },
-        { id: 2, name: 'Andy' },
-        { id: 3, name: 'Roger' }
-      ]
-    })
-
-    const expected = { $id: '2', id: 2, name: 'Andy' }
-
-    const result = store.getters['entities/users/query']()
-      .orderBy('name')
-      .orderBy('id', 'desc')
-      .first()
-
-    expect(result).toEqual(expected)
-  })
-
   it('can sort using a function ', () => {
     const store = createStore([{ model: User }])
 
@@ -107,7 +86,7 @@ describe('Feature – Retrieve – Order By', () => {
     ]
 
     const result = store.getters['entities/users/query']()
-      .orderBy(user => user.name[2]) // sort by third character in name
+      .orderBy(user => user.name[2]) // Sort by third character in name.
       .get()
 
     expect(result).toEqual(expected)
@@ -131,6 +110,27 @@ describe('Feature – Retrieve – Order By', () => {
     const result = store.getters['entities/users/query']()
       .orderBy(user => user.id, 'desc')
       .get()
+
+    expect(result).toEqual(expected)
+  })
+
+  it('can sort by model fields with first method', () => {
+    const store = createStore([{ model: User }])
+
+    store.dispatch('entities/users/create', {
+      data: [
+        { id: 1, name: 'John' },
+        { id: 2, name: 'Andy' },
+        { id: 3, name: 'Roger' }
+      ]
+    })
+
+    const expected = { $id: '2', id: 2, name: 'Andy' }
+
+    const result = store.getters['entities/users/query']()
+      .orderBy('name')
+      .orderBy('id', 'desc')
+      .first()
 
     expect(result).toEqual(expected)
   })

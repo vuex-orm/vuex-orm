@@ -5,8 +5,8 @@ import WhereSecondaryClosure from './WhereSecondaryClosure'
 import Has from './Has'
 import HasConstraint from './HasConstraint'
 import Orders from './Orders'
-import OrderDirection from './OrderDirection'
 import OrderKey from './OrderKey'
+import OrderDirection from './OrderDirection'
 import Constraint from './Constraint'
 import Load from './Load'
 
@@ -18,8 +18,8 @@ export {
   Has,
   HasConstraint,
   Orders,
-  OrderDirection,
   OrderKey,
+  OrderDirection,
   Constraint,
   Load
 }

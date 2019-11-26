@@ -65,12 +65,8 @@ export function orderBy<T> (collection: T[], keys: (((record: T) => any) | strin
   let index = -1
 
   const result = collection.map((value) => {
-    const criteria = keys.map(key => {
-      if (typeof key === 'function') {
-        return key(value)
-      } else {
-        return value[key]
-      }
+    const criteria = keys.map((key) => {
+      return typeof key === 'function' ? key(value) : value[key]
     })
 
     return { criteria: criteria, index: ++index, value: value }
