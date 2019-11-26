@@ -259,22 +259,18 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Get the record of the given id.
+   * Find the record by the given id.
    */
   find (id: number | string | (number | string)[]): Data.Item<T> {
-    id = Array.isArray(id) ? JSON.stringify(id) : id
+    const indexId = Array.isArray(id) ? JSON.stringify(id) : id
 
-    const record = this.state.data[id]
+    const record = this.state.data[indexId]
 
     if (!record) {
       return null
     }
 
-    const model = this.hydrate(record)
-
-    model.$id = String(id)
-
-    return this.item(model)
+    return this.item(this.hydrate(record))
   }
 
   /**
