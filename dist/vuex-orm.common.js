@@ -671,7 +671,9 @@ function pickBy(object, predicate) {
 function orderBy(collection, keys, directions) {
     var index = -1;
     var result = collection.map(function (value) {
-        var criteria = keys.map(function (key) { return value[key]; });
+        var criteria = keys.map(function (key) {
+            return typeof key === 'function' ? key(value) : value[key];
+        });
         return { criteria: criteria, index: ++index, value: value };
     });
     return baseSortBy(result, function (object, other) {
@@ -2662,14 +2664,13 @@ var Model = /** @class */ (function () {
      * be filled with its default value defined at model fields definition.
      */
     Model.prototype.$fill = function (record) {
-        var _this = this;
         var data = record || {};
         var fields = this.$fields();
-        Object.keys(fields).forEach(function (key) {
+        for (var key in fields) {
             var field = fields[key];
             var value = data[key];
-            _this[key] = field.make(value, data, key);
-        });
+            this[key] = field.make(value, data, key);
+        }
     };
     /**
      * Serialize field values into json.
@@ -3489,7 +3490,7 @@ var OrderByFilter = /** @class */ (function () {
         if (query.orders.length === 0) {
             return records;
         }
-        var keys = query.orders.map(function (order) { return order.field; });
+        var keys = query.orders.map(function (order) { return order.key; });
         var directions = query.orders.map(function (order) { return order.direction; });
         return Utils.orderBy(records, keys, directions);
     };
@@ -3954,17 +3955,15 @@ var Query = /** @class */ (function () {
         return this.get();
     };
     /**
-     * Get the record of the given id.
+     * Find the record by the given id.
      */
     Query.prototype.find = function (id) {
-        id = Array.isArray(id) ? JSON.stringify(id) : id;
-        var record = this.state.data[id];
+        var indexId = Array.isArray(id) ? JSON.stringify(id) : id;
+        var record = this.state.data[indexId];
         if (!record) {
             return null;
         }
-        var model = this.hydrate(record);
-        model.$id = String(id);
-        return this.item(model);
+        return this.item(this.hydrate(record));
     };
     /**
      * Get the record of the given array of ids.
@@ -3993,14 +3992,20 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.first = function () {
         var records = this.select();
-        return this.item(records[0]); // TODO: Delete "as ..." when model type coverage reaches 100%.
+        if (records.length === 0) {
+            return null;
+        }
+        return this.item(this.hydrate(records[0]));
     };
     /**
-     * Returns the last single record of the query chain result.
+     * Returns the last record of the query chain result.
      */
     Query.prototype.last = function () {
         var records = this.select();
-        return this.item(records[records.length - 1]); // TODO: Delete "as ..." when model type coverage reaches 100%.
+        if (records.length === 0) {
+            return null;
+        }
+        return this.item(this.hydrate(records[records.length - 1]));
     };
     /**
      * Add a and where clause to the query.
@@ -4091,9 +4096,9 @@ var Query = /** @class */ (function () {
     /**
      * Add an order to the query.
      */
-    Query.prototype.orderBy = function (field, direction) {
+    Query.prototype.orderBy = function (key, direction) {
         if (direction === void 0) { direction = 'asc'; }
-        this.orders.push({ field: field, direction: direction });
+        this.orders.push({ key: key, direction: direction });
         return this;
     };
     /**
@@ -4737,7 +4742,7 @@ var Query = /** @class */ (function () {
     Query.prototype.buildHooks = function (on) {
         var hooks = this.getGlobalHookAsArray(on);
         var localHook = this.model[on];
-        localHook && hooks.push(localHook);
+        localHook && hooks.push(localHook.bind(this.model));
         return hooks;
     };
     /**
