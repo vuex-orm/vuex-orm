@@ -61,11 +61,17 @@ export function pickBy<T> (object: Dictionary<T>, predicate: Predicate<T>): Dict
  * Creates an array of elements, sorted in specified order by the results
  * of running each element in a collection thru each iteratee.
  */
-export function orderBy<T> (collection: T[], keys: string[], directions: string[]): any {
+export function orderBy<T> (collection: T[], keys: (((record: T) => any) | string)[], directions: string[]): any {
   let index = -1
 
   const result = collection.map((value) => {
-    const criteria = keys.map(key => value[key])
+    const criteria = keys.map(key => {
+      if (typeof key === 'function') {
+        return key(value)
+      } else {
+        return value[key]
+      }
+    })
 
     return { criteria: criteria, index: ++index, value: value }
   })

@@ -431,8 +431,8 @@ export default class Query<T extends Model = Model> {
   /**
    * Add an order to the query.
    */
-  orderBy (field: string, direction: Options.OrderDirection = 'asc'): this {
-    this.orders.push({ field, direction })
+  orderBy (key: Options.OrderKey, direction: Options.OrderDirection = 'asc'): this {
+    this.orders.push({ key, direction })
 
     return this
   }
