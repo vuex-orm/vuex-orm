@@ -42,13 +42,19 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex 
   <img src="https://avatars0.githubusercontent.com/u/7306?s=400&v=4" alt="Andy Koch" width="88">
 </a>
 
+#### Big Love Sponsors
+
+<a href="https://github.com/geraldbiggs">
+  <img src="https://avatars1.githubusercontent.com/u/3213608?s=400&v=4" alt="geraldbiggs" width="64">
+</a>
+
 #### A Love Sponsors
 
 <a href="https://github.com/georgechaduneli">
-  <img src="https://avatars1.githubusercontent.com/u/9340753?s=460&v=4" alt="George Chaduneli" width="64">
+  <img src="https://avatars1.githubusercontent.com/u/9340753?s=460&v=4" alt="George Chaduneli" width="48">
 </a>
 <a href="https://github.com/bpuig">
-  <img src="https://avatars3.githubusercontent.com/u/22938625?s=400&v=4" alt="bpuig" width="64">
+  <img src="https://avatars3.githubusercontent.com/u/22938625?s=400&v=4" alt="bpuig" width="48">
 </a>
 
 ## Documentation
