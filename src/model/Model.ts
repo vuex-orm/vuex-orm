@@ -787,12 +787,12 @@ export default class Model {
     const data = record || {}
     const fields = this.$fields()
 
-    Object.keys(fields).forEach((key) => {
+    for (const key in fields) {
       const field = fields[key]
       const value = data[key]
 
       this[key] = field.make(value, data, key)
-    })
+    }
   }
 
   /**
