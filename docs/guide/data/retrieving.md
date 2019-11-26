@@ -228,16 +228,42 @@ The `orderBy` method allows you to sort the result of the query by a given field
 // Order users by name.
 const users = User.query().orderBy('name').get()
 
-// [{ id: 2, name: 'Andy' }, { id: 1, name: 'John' }]
+/*
+  [
+    { id: 2, name: 'Andy' },
+    { id: 1, name: 'John' }
+  ]
+*/
 
 
 // You may also chain orderBy.
-const usersByAge = User.query()
+const users = User.query()
   .orderBy('name')
   .orderBy('age', 'desc')
   .get()
 
-// [{ id: 4, name: 'Andy', age: 32 }, { id: 2, name: 'Andy', age: 27 }]
+/*
+  [
+    { id: 4, name: 'Andy', age: 32 },
+    { id: 2, name: 'Andy', age: 27 },
+    { id: 6, name: 'Jane', age: 42 }
+  ]
+*/
+```
+
+You may also pass a function as the 1st argument. The function will accept a record that is being sorted, and it should return value to be sorted by.
+
+```js
+// Sort user name by its 3rd character.
+const users = User.query().orderBy(user => user.name[2]).get()
+
+/*
+  [
+    { id: 4, name: 'Andy' },
+    { id: 2, name: 'Roger' },
+    { id: 1, name: 'John' }
+  ]
+*/
 ```
 
 ## Limit & Offset
