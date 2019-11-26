@@ -1249,7 +1249,7 @@ export default class Query<T extends Model = Model> {
 
     const localHook = this.model[on] as Contracts.HookableClosure | undefined
 
-    localHook && hooks.push(localHook)
+    localHook && hooks.push(localHook.bind(this.model))
 
     return hooks
   }
