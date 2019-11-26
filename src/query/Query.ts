@@ -307,16 +307,24 @@ export default class Query<T extends Model = Model> {
   first (): Data.Item<T> {
     const records = this.select()
 
-    return this.item(records[0]) // TODO: Delete "as ..." when model type coverage reaches 100%.
+    if (records.length === 0) {
+      return null
+    }
+
+    return this.item(this.hydrate(records[0]))
   }
 
   /**
-   * Returns the last single record of the query chain result.
+   * Returns the last record of the query chain result.
    */
   last (): Data.Item<T> {
     const records = this.select()
 
-    return this.item(records[records.length - 1]) // TODO: Delete "as ..." when model type coverage reaches 100%.
+    if (records.length === 0) {
+      return null
+    }
+
+    return this.item(this.hydrate(records[records.length - 1]))
   }
 
   /**
