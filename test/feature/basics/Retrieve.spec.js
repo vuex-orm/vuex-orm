@@ -122,32 +122,52 @@ describe('Feature – Retrieve', () => {
     expect(user).toEqual(expected)
   })
 
-  it('can retrieve the first item in the state', () => {
-    const store = createStore([{ model: User }])
+  describe('#first', () => {
+    it('can retrieve the first item from the store', async () => {
+      createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
-      data: [{ id: 1 }, { id: 2 }]
+      await User.insert({
+        data: [{ id: 1 }, { id: 2 }]
+      })
+
+      const expected = { $id: '1', id: 1 }
+
+      const user = User.query().first()
+
+      expect(user).toEqual(expected)
     })
 
-    const expected = { $id: '1', id: 1 }
+    it('returns `null` if it can not find any record', () => {
+      createStore([{ model: User }])
 
-    const user = store.getters['entities/users/query']().first()
+      const user = User.query().first()
 
-    expect(user).toEqual(expected)
+      expect(user).toBe(null)
+    })
   })
 
-  it('can retrieve the last item in the state', () => {
-    const store = createStore([{ model: User }])
+  describe('#last', () => {
+    it('can retrieve the last item from the store', async () => {
+      createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
-      data: [{ id: 1 }, { id: 2 }]
+      User.insert({
+        data: [{ id: 1 }, { id: 2 }]
+      })
+
+      const expected = { $id: '2', id: 2 }
+
+      const user = User.query().last()
+
+      expect(user).toEqual(expected)
     })
 
-    const expected = { $id: '2', id: 2 }
+    it('returns `null` if it can not find any record', () => {
+      createStore([{ model: User }])
 
-    const user = store.getters['entities/users/query']().last()
+      const user = User.query().last()
 
-    expect(user).toEqual(expected)
+      expect(user).toBe(null)
+    })
   })
 
   it('returns null when single item can not be found', () => {
