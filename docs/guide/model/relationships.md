@@ -226,9 +226,9 @@ As you can see, `clusters` have `hasMany` relationship with `nodes`, but `nodes`
 
 ```js
 class Node extends Model {
-  static entities = 'nodes'
+  static entity = 'nodes'
 
-  static field () {
+  static fields () {
     return {
       id: this.attr(null),
       name: this.attr(null)
@@ -237,9 +237,9 @@ class Node extends Model {
 }
 
 class Cluster extends Model {
-  static entities = 'clusters'
+  static entity = 'clusters'
 
-  static field () {
+  static fields () {
     return {
       id: this.attr(null),
       node_ids: this.attr(null),
@@ -255,9 +255,9 @@ As always, you can pass the third argument to specify which id to look for.
 
 ```js
 class Cluster extends Model {
-  static entities = 'clusters'
+  static entity = 'clusters'
 
-  static field () {
+  static fields () {
     return {
       id: this.attr(null),
       node_ids: this.attr(null),
