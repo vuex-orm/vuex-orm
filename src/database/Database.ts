@@ -32,6 +32,12 @@ export default class Database {
   schemas: Schemas = {}
 
   /**
+   * Whether the database has already been installed to Vuex or not.
+   * Model registration steps depend on its value.
+   */
+  isStarted: boolean = false
+
+  /**
    * Initialize the database before a user can start using it.
    */
   start (store: Vuex.Store<any>, namespace: string): void {
@@ -41,6 +47,8 @@ export default class Database {
     this.registerModules()
 
     this.createSchema()
+
+    this.isStarted = true
   }
 
   /**
@@ -49,12 +57,19 @@ export default class Database {
   register (model: typeof Model, module: Vuex.Module<any, any> = {}): void {
     this.checkModelTypeMappingCapability(model)
 
-    this.entities.push({
+    const entity: Entity = {
       name: model.entity,
       base: model.baseEntity || model.entity,
       model,
       module
-    })
+    }
+
+    this.entities.push(entity)
+
+    if (this.isStarted) {
+      this.registerModule(entity.name)
+      this.registerSchema(entity)
+    }
   }
 
   /**
@@ -129,6 +144,22 @@ export default class Database {
     this.entities.forEach((entity) => {
       this.schemas[entity.name] = Schema.create(entity.model)
     })
+  }
+
+  /**
+   * Append entity registered after start
+   */
+  private registerModule (name: string): void {
+    const module = ModuleBuilder.createModule(name, this.namespace, this.model(name), this.module(name))
+
+    this.store.registerModule([ this.namespace, name ], module)
+  }
+
+  /**
+   * Append schema registered after start
+   */
+  private registerSchema (entity: Entity): void {
+    this.schemas[entity.name] = Schema.create(entity.model)
   }
 
   /**

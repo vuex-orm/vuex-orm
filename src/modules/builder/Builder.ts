@@ -56,6 +56,26 @@ export default class Builder {
   }
 
   /**
+   * Creates a new module to be registered under top level module
+   * from the given entity
+   */
+  static createModule (name: string, namespace: string, model: typeof Model, module: Vuex.Module<State, any>): Vuex.Module<State, any> {
+    return {
+      namespaced: true,
+
+      state: this.createState(namespace, name, model, module),
+
+      // TODO SZM no idea how to implement tree.getters[name]
+
+      getters: { ...Getters, ...module.getters },
+
+      actions: { ...Actions, ...module.actions },
+
+      mutations: module.mutations || {}
+    }
+  }
+
+  /**
    * Get new state to be registered to the modules.
    */
   static createState (namespace: string, name: string, model: typeof Model, module: Vuex.Module<State, any>): State {
