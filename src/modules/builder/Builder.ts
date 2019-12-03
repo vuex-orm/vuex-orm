@@ -33,18 +33,7 @@ export default class Builder {
    */
   static createModules (tree: Module, namespace: string, models: Models, modules: Modules): Module {
     Object.keys(modules).forEach((name) => {
-      const model = models[name]
-      const module = modules[name]
-
-      tree.modules[name] = { namespaced: true }
-
-      tree.modules[name].state = this.createState(namespace, name, model, module)
-
-      tree.modules[name].getters = { ...Getters, ...module.getters }
-
-      tree.modules[name].actions = { ...Actions, ...module.actions }
-
-      tree.modules[name].mutations = module.mutations || {}
+      tree.modules[name] = this.createModule(name, namespace, models[name], modules[name])
     })
 
     return tree
