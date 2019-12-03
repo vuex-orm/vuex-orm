@@ -20,7 +20,7 @@ describe('Features – Sub Getters – Direct Entity Call', () => {
       data: { id: 1, name: 'John Doe' }
     })
 
-    const users = store.getters['entities/users']().get()
+    const users = store.getters['entities/users/query']().get()
 
     expect(users.length).toBe(1)
     expect(users[0]).toBeInstanceOf(User)

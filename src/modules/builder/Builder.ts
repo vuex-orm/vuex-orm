@@ -4,7 +4,6 @@ import Models from '../../database/Models'
 import Modules from '../../database/Modules'
 import Module from '../contracts/Module'
 import State from '../contracts/State'
-import RootState from '../contracts/RootState'
 import Getters from '../Getters'
 import RootGetters from '../RootGetters'
 import Actions from '../Actions'
@@ -41,10 +40,6 @@ export default class Builder {
 
       tree.modules[name].state = this.createState(namespace, name, model, module)
 
-      tree.getters[name] = (_state: RootState, getters: any, _rootState: any, _rootGetters: any) => () => {
-        return getters.query(name)
-      }
-
       tree.modules[name].getters = { ...Getters, ...module.getters }
 
       tree.modules[name].actions = { ...Actions, ...module.actions }
@@ -64,8 +59,6 @@ export default class Builder {
       namespaced: true,
 
       state: this.createState(namespace, name, model, module),
-
-      // TODO SZM no idea how to implement tree.getters[name]
 
       getters: { ...Getters, ...module.getters },
 
