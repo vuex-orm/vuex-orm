@@ -83,7 +83,7 @@ const subscription = User.find([1, 2])
 // { video_id: 1, user_id: 2 }
 ```
 
-## Get Mulitple Data by Primary Keys
+## Get Multiple Data by Primary Keys
 
 The `findIn` method is going to fetch array of data from the store. The argument is array of ids—primary key value—for the records.
 
