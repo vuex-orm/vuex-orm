@@ -8,6 +8,11 @@ export default abstract class Attribute {
   model: typeof Model
 
   /**
+   * The default value of the field.
+   */
+  value: any
+
+  /**
    * Create a new attribute instance.
    */
   constructor (model: typeof Model) {
