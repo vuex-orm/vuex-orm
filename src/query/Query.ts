@@ -1,7 +1,5 @@
 import Utils from '../support/Utils'
-import Container from '../container/Container'
-import Database from '../database/Database'
-import Models from '../database/Models'
+import Database, { Models } from '../database/Database'
 import * as Data from '../data'
 import Model from '../model/Model'
 import State from '../modules/contracts/State'
@@ -34,6 +32,11 @@ export default class Query<T extends Model = Model> {
   static lastHookId: number = 0
 
   /**
+   * The database instance.
+   */
+  database: Database
+
+  /**
    * The root state of the Vuex Store.
    */
   rootState: RootState
@@ -52,6 +55,11 @@ export default class Query<T extends Model = Model> {
    * The model being queried.
    */
   model: typeof Model
+
+  /**
+   * The base model.
+   */
+  baseModel: typeof Model
 
   /**
    * This flag lets us know if current Query instance applies to
@@ -119,53 +127,25 @@ export default class Query<T extends Model = Model> {
   /**
    * Create a new Query instance.
    */
-  constructor (state: RootState, entity: string) {
-    // All entitites with same base class are stored in the same state.
-    const baseModel = this.getBaseModel(entity)
-
-    this.rootState = state
-    this.state = state[baseModel.entity]
+  constructor (database: Database, entity: string) {
+    this.database = database
     this.entity = entity
+    this.baseModel = this.getBaseModel(entity)
     this.model = this.getModel(entity)
-    this.appliedOnBase = baseModel.entity === entity
-  }
-
-  /**
-   * Get the database from the container.
-   */
-  static database (): Database {
-    return Container.database
-  }
-
-  /**
-   * Get model of given name from the container.
-   */
-  static getModel (name: string): typeof Model {
-    return this.database().model(name)
-  }
-
-  /**
-   * Get base model of given name from the container.
-   */
-  static getBaseModel (name: string): typeof Model {
-    return this.database().baseModel(name)
-  }
-
-  /**
-   * Get all models from the container.
-   */
-  static getModels (): Models {
-    return this.database().models()
+    this.rootState = this.database.getState()
+    this.state = this.rootState[this.baseModel.entity]
+    this.appliedOnBase = this.baseModel.entity === this.entity
   }
 
   /**
    * Delete all records from the store.
    */
-  static deleteAll (state: RootState): void {
-    const models = this.getModels()
+  static deleteAll (database: Database): void {
+    const models = database.models()
 
     for (const entity in models) {
-      state[entity] && (new this(state, entity)).deleteAll()
+      const state = database.getState()[entity]
+      state && (new this(database, entity)).deleteAll()
     }
   }
 
@@ -217,14 +197,7 @@ export default class Query<T extends Model = Model> {
   newQuery (entity?: string): Query {
     entity = entity || this.entity
 
-    return (new Query(this.rootState, entity))
-  }
-
-  /**
-   * Get the database from the container.
-   */
-  database (): Database {
-    return this.self().database()
+    return (new Query(this.database, entity))
   }
 
   /**
@@ -233,21 +206,21 @@ export default class Query<T extends Model = Model> {
   getModel (name?: string): typeof Model {
     const entity = name || this.entity
 
-    return this.self().getModel(entity)
+    return this.database.model(entity)
   }
 
   /**
    * Get all models from the container.
    */
   getModels (): Models {
-    return this.self().getModels()
+    return this.database.models()
   }
 
   /**
    * Get base model of given name from the container.
    */
   getBaseModel (name: string): typeof Model {
-    return this.self().getBaseModel(name)
+    return this.database.baseModel(name)
   }
 
   /**
@@ -543,7 +516,7 @@ export default class Query<T extends Model = Model> {
       const model = this.hydrate(record)
 
       // Ignore if the model is not current type of model.
-      if (!this.appliedOnBase && !(model instanceof this.model)) {
+      if (!this.appliedOnBase && !(this.model.entity === model.$self().entity)) {
         return models
       }
 
@@ -1116,7 +1089,7 @@ export default class Query<T extends Model = Model> {
 
     // Otherwise, we should filter out any derived entities from being deleted
     // so we'll add such filter here.
-    return this.deleteByCondition(model => model instanceof this.model)
+    return this.deleteByCondition(model => model.$self().entity === this.model.entity)
   }
 
   /**
@@ -1233,7 +1206,7 @@ export default class Query<T extends Model = Model> {
     }
 
     this.state.data = Object.entries(this.state.data).reduce<Data.Records>((records, [id, record]) => {
-      if (!(this.model.getModelFromRecord(record) === this.model)) {
+      if (!((this.model.getModelFromRecord(record) as any).entity === this.model.entity)) {
         records[id] = record
       }
 

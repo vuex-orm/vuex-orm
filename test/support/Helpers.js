@@ -13,11 +13,20 @@ export function createStore (entities, namespace) {
   const database = new Database()
 
   entities.forEach((entity) => {
-    database.register(entity.model, entity.module || {})
+    entity.prototype === undefined
+      ? database.register(entity.model, entity.module)
+      : database.register(entity)
   })
 
   return new Vuex.Store({
     plugins: [VuexORM.install(database, { namespace })],
+    strict: true
+  })
+}
+
+export function createStoreFromDatabase (database) {
+  return new Vuex.Store({
+    plugins: [VuexORM.install(database)],
     strict: true
   })
 }
@@ -41,5 +50,6 @@ export function createState (state, namespace = 'entities') {
 
 export default {
   createStore,
+  createStoreFromDatabase,
   createState
 }

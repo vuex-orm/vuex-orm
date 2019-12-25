@@ -1,69 +1,162 @@
+import { createStoreFromDatabase } from 'test/support/Helpers'
 import Database from 'app/database/Database'
 import Model from 'app/model/Model'
 
 describe('Unit – Database', () => {
-  class User extends Model {
-    static entity = 'users'
-
-    // Dummy implementation.
-    static types () {
-      return {}
-    }
-  }
-
-  class ExtendedUser extends User {
-    static entity = 'extended_users'
-
-    static baseEntity = 'users'
-  }
-
-  class Post extends Model {
-    static entity = 'posts'
-  }
-
-  const users = {
-    state: {},
-    actions: {}
-  }
-
-  const posts = {
-    state () { return { key: 'value' } },
-    mutations: {}
-  }
-
-  const extended = {
-    state () { return { key: 'value' } },
-    mutations: {}
-  }
-
-  it('can register models', () => {
+  it('registers itself to the store instance', () => {
     const database = new Database()
 
-    database.register(User, users)
-    database.register(Post, posts)
+    const store = createStoreFromDatabase(database)
 
-    const expected = [
-      { name: 'users', base: 'users', model: User, module: users },
-      { name: 'posts', base: 'posts', model: Post, module: posts }
-    ]
-
-    expect(database.entities).toEqual(expected)
+    expect(store.$db()).toBe(database)
   })
 
-  it('can get a base model of a derived one', () => {
+  it('binds the store instance to the registered models.', () => {
+    class User extends Model { static entity = 'users' }
+
+    const database1 = new Database()
+    const database2 = new Database()
+
+    database1.register(User)
+    database2.register(User)
+
+    const store1 = createStoreFromDatabase(database1)
+    const store2 = createStoreFromDatabase(database2)
+
+    expect(store1.$db().model('users').database()).toBe(database1)
+    expect(store2.$db().model('users').database()).toBe(database2)
+  })
+
+  it('can fetch all models', () => {
+    class User extends Model { static entity = 'users' }
+    class Post extends Model { static entity = 'posts' }
+
     const database = new Database()
 
-    database.register(User, users)
-    database.register(ExtendedUser, extended)
-    database.register(Post, posts)
+    database.register(User)
+    database.register(Post)
 
-    const base = database.baseModel('extended_users')
+    const models = database.models()
 
-    expect(base).toEqual(User)
-    expect(base.entity).toEqual('users')
+    expect(models.users.prototype).toBeInstanceOf(User)
+    expect(models.posts.prototype).toBeInstanceOf(Post)
   })
 
-  it('can retrieve all modules', () => {
+  it('can fetch a model by string', () => {
+    class User extends Model { static entity = 'users' }
+    class Post extends Model { static entity = 'posts' }
+
+    const database = new Database()
+
+    database.register(User)
+    database.register(Post)
+
+    const model = database.model('users')
+
+    expect(model.prototype).toBeInstanceOf(User)
+  })
+
+  it('can fetch a model by type', () => {
+    class User extends Model { static entity = 'users' }
+    class Post extends Model { static entity = 'posts' }
+
+    const database = new Database()
+
+    database.register(User)
+    database.register(Post)
+
+    const model = database.model(User)
+
+    expect(model.prototype).toBeInstanceOf(User)
+  })
+
+  it('throws when a model is not found', () => {
+    class User extends Model { static entity = 'users' }
+
+    const database = new Database()
+
+    database.register(User)
+
+    expect(() => database.model('posts')).toThrowError('[Vuex ORM]')
+  })
+
+  it('can fetch all base models', () => {
+    // Suppress model inheritance warning.
+    jest.spyOn(global.console, 'warn').mockImplementation()
+
+    class User extends Model { static entity = 'users' }
+    class Guest extends Model { static entity = 'guests'; static baseEntity = 'users' }
+    class Admin extends Model { static entity = 'admins'; static baseEntity = 'users' }
+
+    const database = new Database()
+
+    database.register(User)
+    database.register(Guest)
+    database.register(Admin)
+
+    const models = database.baseModels()
+
+    expect(models.users.prototype).toBeInstanceOf(User)
+    expect(models.guests.prototype).toBeInstanceOf(User)
+    expect(models.admins.prototype).toBeInstanceOf(User)
+  })
+
+  it('can fetch a base model by string', () => {
+    // Suppress model inheritance warning.
+    jest.spyOn(global.console, 'warn').mockImplementation()
+
+    class User extends Model { static entity = 'users' }
+    class Guest extends Model { static entity = 'guests'; static baseEntity = 'users' }
+
+    const database = new Database()
+
+    database.register(User)
+    database.register(Guest)
+
+    const model = database.baseModel('guests')
+
+    expect(model.prototype).toBeInstanceOf(User)
+  })
+
+  it('can fetch a base model by type', () => {
+    // Suppress model inheritance warning.
+    jest.spyOn(global.console, 'warn').mockImplementation()
+
+    class User extends Model { static entity = 'users' }
+    class Guest extends Model { static entity = 'guests'; static baseEntity = 'users' }
+
+    const database = new Database()
+
+    database.register(User)
+    database.register(Guest)
+
+    const model = database.baseModel(Guest)
+
+    expect(model.prototype).toBeInstanceOf(User)
+  })
+
+  it('throws when a base model is not found', () => {
+    // Suppress model inheritance warning.
+    jest.spyOn(global.console, 'warn').mockImplementation()
+
+    class User extends Model { static entity = 'users' }
+    class Guest extends Model { static entity = 'guests'; static baseEntity = 'users' }
+
+    const database = new Database()
+
+    database.register(User)
+    database.register(Guest)
+
+    expect(() => database.baseModel('admins')).toThrowError('[Vuex ORM]')
+  })
+
+  it('can fetch all modules', () => {
+    class User extends Model { static entity = 'users' }
+    class Post extends Model { static entity = 'posts' }
+
+    const users = {}
+    const posts = {}
+
     const database = new Database()
 
     database.register(User, users)
@@ -71,11 +164,17 @@ describe('Unit – Database', () => {
 
     const modules = database.modules()
 
-    expect(modules.users).toEqual(users)
-    expect(modules.posts).toEqual(posts)
+    expect(modules.users).toBe(users)
+    expect(modules.posts).toBe(posts)
   })
 
-  it('can retrieve a single module', () => {
+  it('can fetch a module', () => {
+    class User extends Model { static entity = 'users' }
+    class Post extends Model { static entity = 'posts' }
+
+    const users = {}
+    const posts = {}
+
     const database = new Database()
 
     database.register(User, users)
@@ -83,6 +182,18 @@ describe('Unit – Database', () => {
 
     const module = database.module('users')
 
-    expect(module).toEqual(users)
+    expect(module).toBe(users)
+  })
+
+  it('throws when a module is not found', () => {
+    class User extends Model { static entity = 'users' }
+
+    const users = {}
+
+    const database = new Database()
+
+    database.register(User, users)
+
+    expect(() => database.module('posts')).toThrowError('[Vuex ORM]')
   })
 })

@@ -1,58 +1,78 @@
-import * as Vuex from 'vuex'
+import { Store, Module, MutationTree } from 'vuex'
+import { mapValues } from '../support/Utils'
 import Schema from '../schema/Schema'
 import Schemas from '../schema/Schemas'
 import Model from '../model/Model'
-import ModuleBuilder from '../modules/builder/Builder'
-import Entity from './Entity'
-import Models from './Models'
-import Modules from './Modules'
+import ModuleContract from '../modules/contracts/Module'
+import RootState from '../modules/contracts/RootState'
+import RootGettersContract from '../modules/contracts/RootGetters'
+import RootActionsContract from '../modules/contracts/RootActions'
+import RootMutationsContract from '../modules/contracts/RootMutations'
+import RootGetters from '../modules/RootGetters'
+import RootActions from '../modules/RootActions'
+import RootMutations from '../modules/RootMutations'
+import State from '../modules/contracts/State'
+import GettersContract from '../modules/contracts/Getters'
+import ActionsContract from '../modules/contracts/Actions'
+import Getters from '../modules/Getters'
+import Actions from '../modules/Actions'
+
+export interface Entity {
+  name: string
+  base: string
+  model: typeof Model
+  module: Module<any, any>
+}
+
+export type Models = Record<string, typeof Model>
+export type Modules = Record<string, Module<State, any>>
 
 export default class Database {
   /**
    * The Vuex Store instance.
    */
-  store!: Vuex.Store<any>
+  store!: Store<any>
 
   /**
-   * The namespace of the Vuex Store Module where all entities are
-   * registered under.
+   * The namespace for the Vuex Module. Vuex ORM will create Vuex Modules from the
+   * registered models and modules and define them under this namespace.
    */
   namespace!: string
 
   /**
-   * The list of entities registered to the Vuex Store. It contains models and
-   * modules with its name.
+   * The list of entities. It contains models and modules with its name.
+   * The name is going to be the namespace for the Vuex Modules.
    */
   entities: Entity[] = []
 
   /**
-   * The database schema definition. This schema is going to be used when
-   * normalizing the data before persisting them to the Vuex Store.
+   * The normalizr schema.
    */
   schemas: Schemas = {}
 
   /**
    * Initialize the database before a user can start using it.
    */
-  start (store: Vuex.Store<any>, namespace: string): void {
+  start (store: Store<any>, namespace: string): void {
     this.store = store
     this.namespace = namespace
 
-    this.registerModules()
+    this.connect()
 
+    this.registerModules()
     this.createSchema()
   }
 
   /**
    * Register a model and a module to Database.
    */
-  register (model: typeof Model, module: Vuex.Module<any, any> = {}): void {
+  register (model: typeof Model, module: Module<any, any> = {}): void {
     this.checkModelTypeMappingCapability(model)
 
     this.entities.push({
       name: model.entity,
       base: model.baseEntity || model.entity,
-      model,
+      model: this.createBindingModel(model),
       module
     })
   }
@@ -60,64 +80,227 @@ export default class Database {
   /**
    * Get the model of the given name from the entities list.
    */
-  model (name: string): typeof Model {
-    return this.models()[name]
+  model <T extends typeof Model> (model: T): T
+  model (model: string): typeof Model
+  model (model: typeof Model | string): typeof Model | string {
+    const m = this.models()[typeof model === 'string' ? model : model.entity]
+
+    if (!m) {
+      throw new Error(
+        `[Vuex ORM] Could not find the model \`${name}\`. Please check if you ` +
+        'have registered the model to the database.'
+      )
+    }
+
+    return m
   }
 
   /**
    * Get the base model of the given name from the entities list.
    */
-  baseModel (name: string): typeof Model {
-    return this.baseModels()[name]
+  baseModel <T extends typeof Model> (model: T): T
+  baseModel (model: string): typeof Model
+  baseModel (model: typeof Model | string): typeof Model | string {
+    const m = this.baseModels()[typeof model === 'string' ? model : model.entity]
+
+    if (!m) {
+      throw new Error(
+        `[Vuex ORM] Could not find the model \`${name}\`. Please check if you ` +
+        'have registered the model to the database.'
+      )
+    }
+
+    return m
   }
 
   /**
    * Get all models from the entities list.
    */
   models (): Models {
-    return this.entities.reduce((models, entity) => {
+    return this.entities.reduce<Models>((models, entity) => {
       models[entity.name] = entity.model
-
       return models
-    }, {} as Models)
+    }, {})
   }
 
   /**
    * Get all base models from the entities list.
    */
   baseModels (): Models {
-    return this.entities.reduce((models, entity) => {
+    return this.entities.reduce<Models>((models, entity) => {
       models[entity.name] = this.model(entity.base)
-
       return models
-    }, {} as Models)
+    }, {})
   }
 
   /**
    * Get the module of the given name from the entities list.
    */
-  module (name: string): Vuex.Module<any, any> {
-    return this.modules()[name]
+  module (name: string): Module<any, any> {
+    const module = this.modules()[name]
+
+    if (!module) {
+      throw new Error(
+        `[Vuex ORM] Could not find the module \`${name}\`. Please check if you ` +
+        'have registered the module to the database.'
+      )
+    }
+
+    return module
   }
 
   /**
    * Get all modules from the entities list.
    */
   modules (): Modules {
-    return this.entities.reduce((modules, entity) => {
+    return this.entities.reduce<Modules>((modules, entity) => {
       modules[entity.name] = entity.module
-
       return modules
-    }, {} as Modules)
+    }, {})
   }
 
   /**
-   * Create the Vuex Module from the registered entities.
+   * Get the root state from the store.
+   */
+  getState (): RootState {
+    return this.store.state[this.namespace]
+  }
+
+  /**
+   * Create a new model that binds the database.
+   */
+  private createBindingModel (model: typeof Model): typeof Model {
+    const database = this
+
+    const c = class extends model {
+      static store (): Store<any> {
+        return database.store
+      }
+    }
+
+    Object.defineProperty(c, 'name', { get: () => model.name })
+
+    return c
+  }
+
+  /**
+   * Create Vuex Module from the registered entities, and register to
+   * the store.
    */
   private registerModules (): void {
-    const modules = ModuleBuilder.create(this.namespace, this.models(), this.modules())
+    this.store.registerModule(this.namespace, this.createModule())
+  }
 
-    this.store.registerModule(this.namespace, modules)
+  /**
+   * Create Vuex Module from the registered entities.
+   */
+  private createModule (): Module<any, any> {
+    const module = this.createRootModule()
+
+    this.entities.forEach((entity) => {
+      module.getters[entity.name] = (_state: RootState, getters: any) => () => getters.query(entity.name)
+      module.modules[entity.name] = this.createSubModule(entity)
+    })
+
+    return module
+  }
+
+  /**
+   * Create root module.
+   */
+  private createRootModule (): ModuleContract {
+    return {
+      namespaced: true,
+      state: this.createRootState(),
+      getters: this.createRootGetters(),
+      actions: this.createRootActions(),
+      mutations: this.createRootMutations(),
+      modules: {}
+    }
+  }
+
+  /**
+   * Create root state.
+   */
+  private createRootState (): () => RootState {
+    return () => ({ $name: this.namespace })
+  }
+
+  /**
+   * Create root getters. For the getters, we bind the store instance to each
+   * function to retrieve database instances within getters. We only need this
+   * for the getter since actions and mutations are already bound to store.
+   */
+  private createRootGetters (): RootGettersContract {
+    return mapValues(RootGetters, (_getter, name) => {
+      return RootGetters[name].bind(this.store)
+    })
+  }
+
+  /**
+   * Create root actions.
+   */
+  private createRootActions (): RootActionsContract {
+    return RootActions
+  }
+
+  /**
+   * Create root mutations.
+   */
+  private createRootMutations (): RootMutationsContract {
+    return RootMutations
+  }
+
+  /**
+   * Create sub module.
+   */
+  private createSubModule (entity: Entity): Module<any, any> {
+    return {
+      namespaced: true,
+      state: this.createSubState(entity),
+      getters: this.createSubGetters(entity),
+      actions: this.createSubActions(entity),
+      mutations: this.createSubMutations(entity)
+    }
+  }
+
+  /**
+   * Create sub state.
+   */
+  private createSubState (entity: Entity): () => State {
+    const { name, model, module } = entity
+
+    const modelState = typeof model.state === 'function' ? model.state() : model.state
+    const moduleState = typeof module.state === 'function' ? module.state() : module.state
+
+    return () => ({
+      ...modelState,
+      ...moduleState,
+      $connection: this.namespace,
+      $name: name,
+      data: {}
+    })
+  }
+
+  /**
+   * Create sub getters.
+   */
+  private createSubGetters (entity: Entity): GettersContract {
+    return { ...Getters, ...entity.module.getters }
+  }
+
+  /**
+   * Create sub actions.
+   */
+  private createSubActions (entity: Entity): ActionsContract {
+    return { ...Actions, ...entity.module.actions }
+  }
+
+  /**
+   * Create sub mutations.
+   */
+  private createSubMutations (entity: Entity): MutationTree<any> {
+    return entity.module.mutations ?? {}
   }
 
   /**
@@ -129,6 +312,13 @@ export default class Database {
     this.entities.forEach((entity) => {
       this.schemas[entity.name] = Schema.create(entity.model)
     })
+  }
+
+  /**
+   * Inject database to the store instance.
+   */
+  private connect (): void {
+    this.store.$db = () => this
   }
 
   /**
@@ -153,11 +343,13 @@ export default class Database {
     // Now it seems like the model is indeed an inherited model. Let's check if
     // it has `types()` method declared, or we'll warn the user that it's not
     // possible to use type mapping feature.
-
     const baseModel = this.model(model.baseEntity)
 
     if (baseModel && baseModel.types === Model.types) {
-      console.warn(`Model ${model.name} extends ${baseModel.name} which doesn't overwrite Model.types(). You will not be able to use type mapping.`)
+      console.warn(
+        `Model ${model.name} extends ${baseModel.name} which doesn't overwrite` +
+        'Model.types(). You will not be able to use type mapping.'
+      )
     }
   }
 }

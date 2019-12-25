@@ -12,8 +12,8 @@ export default (database: Database, options: Options = {}): Vuex.Plugin<any> => 
   const namespace = options.namespace || 'entities'
 
   return (store: Vuex.Store<any>): void => {
-    Container.register(database)
-
     database.start(store, namespace)
+
+    Container.register(store)
   }
 }

@@ -1,15 +1,15 @@
-import Database from '../database/Database'
+import { Store } from 'vuex'
 
 export default class Container {
   /**
-   * The database instance that have been registered to the Vuex Store.
+   * The store instance.
    */
-  static database: Database
+  static store: Store<any>
 
   /**
-   * Register the database.
+   * Register the store instance.
    */
-  static register (database: Database): void {
-    this.database = database
+  static register (store: Store<any>): void {
+    this.store = store
   }
 }

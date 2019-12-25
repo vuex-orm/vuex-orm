@@ -123,6 +123,7 @@ describe('Feature - Inheritance - Relations', () => {
     }
 
     const store = createStore([{ model: Person }, { model: Adult }, { model: Job }])
+
     store.dispatch('entities/jobs/insert', {
       data: {
         id: 1,
