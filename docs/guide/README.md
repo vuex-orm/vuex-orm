@@ -44,7 +44,7 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex 
   <img src="https://avatars0.githubusercontent.com/u/7306?s=400&v=4" alt="Andy Koch" width="88" style="border-radius: 8px;">
 </a>
 
-## Table Of Contents
+## Table of Contents
 
 - Prologue
     - [What is Vuex ORM?](guide/prologue/what-is-vuex-orm.md)
@@ -56,6 +56,7 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex 
     - [Single Table Inheritance](/guide/model/single-table-inheritance.md)
     - [Accessors & Mutators](/guide/model/accessors-and-mutators.md)
     - [Database Registration](/guide/model/database-registration.md)
+    - [Retrieve Models](/guide/model/retrieve-models.md)
 - Data
     - [Inserting & Updating](/guide/data/inserting-and-updating.md)
     - [Retrieving](/guide/data/retrieving.md)
@@ -64,10 +65,12 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex 
     - [Vuex Module](/guide/digging-deeper/vuex-module.md)
     - [Lifecycle Hooks](/guide/digging-deeper/lifecycle-hooks.md)
     - [Serialization](/guide/digging-deeper/serialization.md)
+    - [Server Side Rendering](/guide/digging-deeper/server-side-rendering.md)
     - [Plugins](/guide/digging-deeper/plugins.md)
 - API Reference
-    - [Database](api/database.md)
-    - [Model](api/model.md)
+    - [Container](api/container/container.md)
+    - [Database](api/database/database.md)
+    - [Model](api/model/model.md)
 
 ## Questions & Discussions
 

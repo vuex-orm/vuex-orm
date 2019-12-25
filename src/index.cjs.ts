@@ -1,4 +1,3 @@
-import './types/vuex'
 import './polyfills'
 
 import install, { Install } from './store/install'

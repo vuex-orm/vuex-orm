@@ -17,7 +17,8 @@ const sidebars = {
         '/guide/model/relationships',
         '/guide/model/single-table-inheritance',
         '/guide/model/accessors-and-mutators',
-        '/guide/model/database-registration'
+        '/guide/model/database-registration',
+        '/guide/model/retrieving-models'
       ]
     },
     {
@@ -36,6 +37,7 @@ const sidebars = {
         '/guide/digging-deeper/vuex-module',
         '/guide/digging-deeper/lifecycle-hooks',
         '/guide/digging-deeper/serialization',
+        '/guide/digging-deeper/server-side-rendering',
         '/guide/digging-deeper/plugins'
       ]
     },

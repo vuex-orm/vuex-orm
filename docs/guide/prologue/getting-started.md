@@ -201,6 +201,10 @@ With above action, Vuex ORM creates the following schema in the Vuex Store.
 
 See how `posts` and `users` are decoupled from each other. This is what is meant by "normalizing" the data.
 
+::: tip WHEN DOING SSR
+You should import models through injected database instance when you're doing SSR like this; `this.$store.$db().model('users')`. Please check out the [Retrieve Models](../model/retrieve-models) section for the detail.
+:::
+
 ## Retrieving Data
 
 To retrieve inserted data, Vuex ORM provides a fluent query builder for it. You may think of it as Vuex Getters with additional features added. You would want to retrieve data in `computed` property as you would do when using Vuex.

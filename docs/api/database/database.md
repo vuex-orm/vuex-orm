@@ -38,16 +38,20 @@ class User extends Model {
 
 So, can't we just resolve relationship directly from the Model? Unfortunately no, we can't. The biggest reason is that Vuex ORM is built on top of Vuex, and Vuex ORM is calling Vuex Getters/Actions/Mutations to interact with Vuex Store. In fact, you can call Vuex Actions directly to create or fetch data.
 
-Vuex Module doesn't have access to Model. It must resolve the Model from the entity name, which is `string`. When a user calls actions like `store.dispatch('entities/users/insert', { ... })`, we must somehow get User Model. Yes, Vuex ORM actions are getting Models from the Database.
+Vuex Module doesn't have access to Model. It must resolve the Model from the entity name, which is `string`. When a user calls actions like `store.dispatch('entities/users/insert', { ... })`, we must somehow get User Model by the namespace, which is `users` in `entities/users/insert`. Well, Vuex ORM actions are getting Models from the Database.
 
-Finally, the created Database instance is registered to the global [Container ](/api/container/container) object so we have access to it from everywhere. So in your code, after installing Vuex ORM to Vuex, you can always access Database through Container like below.
+Finally, the created Database instance is registered to the Vuex Store instance, then it's registered to the [Container](../container/container) so we have access to it from everywhere.
+
+You can access the database instance through store instance, or Container.
 
 ```js
+// Through store instance.
+this.$store.$db()
+
+// Through container.
 import { Container } from '@vuex-orm/core'
 
-const database = Container.database
-
-const user = database.model('users')
+Container.store.$db()
 ```
 
 ## Instance Properties
@@ -117,9 +121,10 @@ const user = database.model('users')
 
 ### model
 
-- **`model (name: string): typeof Model`**
+- **`model<T extends typeof Model>(model: T): T`**<br>
+  **`model(model: string): typeof Model`**
 
-  Get the model of the given name from the entities list.
+  Get the model of the given name from the entities list. It is going to through error if the model was not found.
 
   ```js
   const user = database.model('users')
@@ -141,15 +146,16 @@ const user = database.model('users')
 
 ### baseModel
 
-- **`baseModel (name: string): typeof Model`**
+- **`baseModel<T extends typeof Model>(model: T): T`**<br>
+  **`baseModel(model: string): typeof Model`**
 
-  Get the base model of the given name from the entities list. The base Model is only relevant when the model is inheriting another model to achieve Single Table inheritance feature.
+  Get the base model of the given name from the entities list. The base Model is only relevant when the model is inheriting another model to achieve Single Table inheritance feature. It is going to through error if the model was not found.
  
 ### module
 
 - **`module (name: string): Vuex.Module<any, any>`**
 
-  Get the module of the given name from the entities list.
+  Get the module of the given name from the entities list. It is going to through error if the module was not found.
 
 ### modules
 

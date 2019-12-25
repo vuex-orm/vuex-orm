@@ -1,6 +1,6 @@
 const path = require('path')
-const nodeResolve = require('rollup-plugin-node-resolve')
-const commonjs = require('rollup-plugin-commonjs')
+const nodeResolve = require('@rollup/plugin-node-resolve')
+const commonjs = require('@rollup/plugin-commonjs')
 
 const resolve = _path => path.resolve(__dirname, '../', _path)
 

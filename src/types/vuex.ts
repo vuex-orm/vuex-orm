@@ -1,7 +1,7 @@
 import Database from '../database/Database'
 
-declare module 'vuex/types' {
+declare module 'vuex' {
   interface Store<S> {
-    $db (): Database
+    $db(): Database
   }
 }
