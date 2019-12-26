@@ -12,27 +12,27 @@ describe('Unit – Query', () => {
   }
 
   it('can retrieve all models from the database instance', () => {
-    createStore([{ model: User }, { model: Post }])
+    const store = createStore([{ model: User }, { model: Post }])
 
-    const models = (new Query({}, 'users')).getModels()
+    const models = (new Query(store.$db(), 'users')).getModels()
 
-    expect(models.users).toBe(User)
-    expect(models.posts).toBe(Post)
+    expect(models.users.prototype).toBeInstanceOf(User)
+    expect(models.posts.prototype).toBeInstanceOf(Post)
   })
 
   it('can retrieve a specific model from the database instance', () => {
-    createStore([{ model: User }, { model: Post }])
+    const store = createStore([{ model: User }, { model: Post }])
 
-    const model = (new Query({}, 'users')).getModel('posts')
+    const model = (new Query(store.$db(), 'users')).getModel('posts')
 
-    expect(model).toBe(Post)
+    expect(model.prototype).toBeInstanceOf(Post)
   })
 
   it('retrieves the model correspondes to the entity of Query if the name is not specified', () => {
-    createStore([{ model: User }, { model: Post }])
+    const store = createStore([{ model: User }, { model: Post }])
 
-    const model = (new Query({}, 'users')).getModel()
+    const model = (new Query(store.$db(), 'users')).getModel()
 
-    expect(model).toBe(User)
+    expect(model.prototype).toBeInstanceOf(User)
   })
 })

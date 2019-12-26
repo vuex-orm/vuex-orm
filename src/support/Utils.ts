@@ -1,10 +1,10 @@
-export type Iteratee = (value: any, key: string, collection: any) => any
-
-export type Predicate<T> = (value: T, key: string) => boolean
-
 export interface Dictionary<T> {
   [key: string]: T
 }
+
+export type Predicate<T> = (value: T, key: string) => boolean
+
+export type ObjectIteratee<T extends object, TResult> = (value: T[keyof T], key: string, object: T) => TResult
 
 /**
  * Check if the given array or object is empty.
@@ -21,7 +21,7 @@ export function isEmpty (data: any[] | object): boolean {
  * Iterates over own enumerable string keyed properties of an object and
  * invokes `iteratee` for each property.
  */
-export function forOwn (object: any, iteratee: Iteratee): void {
+export function forOwn<T extends object> (object: T, iteratee: ObjectIteratee<T, void>): void {
   Object.keys(object).forEach(key => iteratee(object[key], key, object))
 }
 
@@ -31,12 +31,11 @@ export function forOwn (object: any, iteratee: Iteratee): void {
  * iteratee. The iteratee is invoked with three arguments:
  * (value, key, object).
  */
-export function mapValues (object: any, iteratee: Iteratee): any {
+export function mapValues<T extends object, TResult> (object: T, iteratee: ObjectIteratee<T, TResult>): Dictionary<TResult> {
   const newObject = Object.assign({}, object)
 
   return Object.keys(object).reduce((records, key) => {
     records[key] = iteratee(object[key], key, object)
-
     return records
   }, newObject)
 }

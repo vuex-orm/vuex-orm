@@ -49,13 +49,13 @@ export default class MorphTo extends Relation {
    */
   make (value: any, parent: Record, _key: string): Model | null {
     const related = parent[this.type] as string
-    const model = this.model.relation(related)
 
-    if (!model) {
+    try {
+      const model = this.model.relation(related)
+      return this.makeOneRelation(value, model)
+    } catch {
       return null
     }
-
-    return this.makeOneRelation(value, model)
   }
 
   /**

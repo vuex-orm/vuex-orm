@@ -44,15 +44,19 @@
   "bugs": {
     "url": "https://github.com/vuex-orm/vuex-orm/issues"
   },
+  "peerDependencies": {
+    "vuex": ">=3.1.0"
+  },
   "dependencies": {
-    "normalizr": "^3.4.1",
-    "vuex": "^3.1.2"
+    "normalizr": "^3.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.7.7",
     "@babel/plugin-proposal-class-properties": "^7.7.4",
     "@babel/plugin-transform-runtime": "^7.7.6",
     "@babel/preset-env": "^7.7.7",
+    "@rollup/plugin-commonjs": "^11.0.0",
+    "@rollup/plugin-node-resolve": "^6.0.0",
     "@types/jest": "^24.0.24",
     "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
@@ -66,8 +70,6 @@
     "eslint-plugin-standard": "^4.0.1",
     "jest": "^24.9.0",
     "rollup": "^1.27.14",
-    "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-node-resolve": "^5.2.0",
     "ts-jest": "^24.2.0",
     "tslint": "^5.20.1",
     "tslint-config-standard": "^9.0.0",
@@ -76,7 +78,8 @@
     "vue": "^2.6.11",
     "vue-server-renderer": "^2.6.11",
     "vuepress": "^1.2.0",
-    "vuepress-theme-vue": "^1.1.0"
+    "vuepress-theme-vue": "^1.1.0",
+    "vuex": "^3.1.2"
   },
   "jest": {
     "moduleFileExtensions": [

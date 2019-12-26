@@ -1,3 +1,4 @@
+import { Store } from 'vuex'
 import Item from '../data/Item'
 import Collection from '../data/Collection'
 import Query from '../query/Query'
@@ -8,29 +9,37 @@ const RootGetters: GettersContract = {
   /**
    * Create a new Query instance.
    */
-  query: (state: RootState) => (entity: string): Query => {
-    return new Query(state, entity)
+  query (this: Store<any>, _state: RootState) {
+    const database = this.$db()
+    return (entity: string): Query => new Query(database, entity)
   },
 
   /**
    * Get all data of given entity.
    */
-  all: (state: RootState) => (entity: string): Collection => {
-    return (new Query(state, entity)).all()
+  all (this: Store<any>, _state: RootState) {
+    const database = this.$db()
+    return (entity: string): Collection => (new Query(database, entity)).all()
   },
 
   /**
    * Find a data of the given entity by given id.
    */
-  find: (state: RootState) => (entity: string, id: string | number | Array<any>): Item => {
-    return (new Query(state, entity)).find(id)
+  find (this: Store<any>, _state: RootState) {
+    const database = this.$db()
+    return (entity: string, id: string | number | Array<any>): Item => {
+      return (new Query(database, entity)).find(id)
+    }
   },
 
   /**
    * Find a data of the given entity by given id.
    */
-  findIn: (state: RootState) => (entity: string, idList: Array<string | number | Array<any>>): Item[] => {
-    return (new Query(state, entity)).findIn(idList)
+  findIn (this: Store<any>, _state: RootState) {
+    const database = this.$db()
+    return (entity: string, idList: Array<string | number | Array<any>>): Item[] => {
+      return (new Query(database, entity)).findIn(idList)
+    }
   }
 }
 

@@ -268,17 +268,17 @@ export default class Model {
   }
 
   /**
-   * Get the database instance from the container.
-   */
-  static database (): Database {
-    return Container.database
-  }
-
-  /**
    * Get the store instance from the container.
    */
   static store (): Vuex.Store<any> {
-    return this.database().store
+    return Container.store
+  }
+
+  /**
+   * Get the database instance from store.
+   */
+  static database (): Database {
+    return this.store().$db()
   }
 
   /**
@@ -573,7 +573,13 @@ export default class Model {
    * it'll return `null`.
    */
   static getTypeModel (name: string): typeof Model | null {
-    return this.types()[name] || null
+    const model = this.types()[name]
+
+    if (!model) {
+      return null
+    }
+
+    return model
   }
 
   /**
@@ -583,7 +589,7 @@ export default class Model {
     const modelToCheck = model || this
     const types = this.types()
     for (const type in types) {
-      if (types[type] === modelToCheck) {
+      if (types[type].entity === modelToCheck.entity) {
         return type
       }
     }

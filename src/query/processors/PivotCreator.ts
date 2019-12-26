@@ -12,7 +12,7 @@ export default class PivotCreator {
       const model = query.getModel(entity)
 
       if (model.hasPivotFields()) {
-        Utils.forOwn(model.pivotFields(), (field) => {
+        Utils.forOwn(model.pivotFields(), (field: any) => {
           Utils.forOwn(field, (attr, key) => { attr.createPivots(model, data, key) })
         })
       }

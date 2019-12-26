@@ -1,3 +1,4 @@
+import { Store } from 'vuex'
 import Query from '../query/Query'
 import OptionsBuilder from './support/OptionsBuilder'
 import RootState from './contracts/RootState'
@@ -9,26 +10,26 @@ import * as Payloads from './payloads/RootMutations'
  * `delete`, but named `destroy` here because `delete` can't be declared at
  * this scope level.
  */
-function destroy (state: RootState, payload: Payloads.Delete): void {
+function destroy (this: Store<any>, _state: RootState, payload: Payloads.Delete): void {
   const entity = payload.entity
   const where = payload.where
 
   const result = payload.result
 
-  result.data = (new Query(state, entity)).delete(where as any)
+  result.data = (new Query(this.$db(), entity)).delete(where as any)
 }
 
 /**
  * Delete all data from the store.
  */
-function deleteAll (state: RootState, payload?: Payloads.DeleteAll): void {
+function deleteAll (this: Store<any>, _state: RootState, payload?: Payloads.DeleteAll): void {
   if (payload && payload.entity) {
-    (new Query(state, payload.entity)).deleteAll()
+    (new Query(this.$db(), payload.entity)).deleteAll()
 
     return
   }
 
-  Query.deleteAll(state)
+  Query.deleteAll(this.$db())
 }
 
 const RootMutations: MutationsContract = {
@@ -36,19 +37,19 @@ const RootMutations: MutationsContract = {
    * Execute generic mutation. This method is used by `Model.commit` method so
    * that user can commit any state changes easily through models.
    */
-  $mutate (state: RootState, payload: Payloads.$Mutate): void {
+  $mutate (this: Store<any>, state: RootState, payload: Payloads.$Mutate): void {
     payload.callback(state[payload.entity])
   },
 
   /**
    * Create new data with all fields filled by default values.
    */
-  new (state: RootState, payload: Payloads.New): void {
+  new (this: Store<any>, _state: RootState, payload: Payloads.New): void {
     const entity = payload.entity
 
     const result = payload.result
 
-    result.data = (new Query(state, entity)).new()
+    result.data = (new Query(this.$db(), entity)).new()
   },
 
   /**
@@ -56,14 +57,14 @@ const RootMutations: MutationsContract = {
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.
    */
-  create (state: RootState, payload: Payloads.Create): void {
+  create (this: Store<any>, _state: RootState, payload: Payloads.Create): void {
     const entity = payload.entity
     const data = payload.data
     const options = OptionsBuilder.createPersistOptions(payload)
 
     const result = payload.result
 
-    result.data = (new Query(state, entity)).create(data, options)
+    result.data = (new Query(this.$db(), entity)).create(data, options)
   },
 
   /**
@@ -71,20 +72,20 @@ const RootMutations: MutationsContract = {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert (state: RootState, payload: Payloads.Insert): void {
+  insert (this: Store<any>, _state: RootState, payload: Payloads.Insert): void {
     const entity = payload.entity
     const data = payload.data
     const options = OptionsBuilder.createPersistOptions(payload)
 
     const result = payload.result
 
-    result.data = (new Query(state, entity)).insert(data, options)
+    result.data = (new Query(this.$db(), entity)).insert(data, options)
   },
 
   /**
    * Update data in the store.
    */
-  update (state: RootState, payload: Payloads.Update): void {
+  update (this: Store<any>, _state: RootState, payload: Payloads.Update): void {
     const entity = payload.entity
     const data = payload.data
     const where = payload.where || null
@@ -92,7 +93,7 @@ const RootMutations: MutationsContract = {
 
     const result = payload.result
 
-    result.data = (new Query(state, entity)).update(data, where, options)
+    result.data = (new Query(this.$db(), entity)).update(data, where, options)
   },
 
   /**
@@ -100,14 +101,14 @@ const RootMutations: MutationsContract = {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  insertOrUpdate (state: RootState, payload: Payloads.InsertOrUpdate): void {
+  insertOrUpdate (this: Store<any>, _state: RootState, payload: Payloads.InsertOrUpdate): void {
     const entity = payload.entity
     const data = payload.data
     const options = OptionsBuilder.createPersistOptions(payload)
 
     const result = payload.result
 
-    result.data = (new Query(state, entity)).insertOrUpdate(data, options)
+    result.data = (new Query(this.$db(), entity)).insertOrUpdate(data, options)
   },
 
   delete: destroy,

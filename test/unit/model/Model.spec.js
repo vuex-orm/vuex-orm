@@ -136,11 +136,11 @@ describe('Unit – Model', () => {
 
     const result1 = User.getModelFromRecord({ type: 'USER' })
 
-    expect(result1).toBe(User)
+    expect(result1.entity).toBe('users')
 
     const result2 = User.getModelFromRecord({ type: 'SUPER' })
 
-    expect(result2).toBe(SuperUser)
+    expect(result2.entity).toBe('super_users')
   })
 
   it('should return null when getting a model from a record if model was not found', () => {
