@@ -1,22 +1,22 @@
 import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
-describe('Model – Inheritance - Relation instantiation', () => {
+describe('Feature - Inheritance - Relation instantiation', () => {
   it('should choose the appropriate STI model class when instantiating a belongsTo relation', () => {
     class Employee extends Model {
       static entity = 'employee'
+
+      static types () {
+        return {
+          boss: Boss
+        }
+      }
 
       static fields () {
         return {
           id: this.attr(null),
           name: this.string(''),
           type: this.string('')
-        }
-      }
-
-      static types () {
-        return {
-          boss: Boss
         }
       }
     }
@@ -38,21 +38,17 @@ describe('Model – Inheritance - Relation instantiation', () => {
           owner: this.belongsTo(Employee, 'owner_id')
         }
       }
+
+      owner!: any
     }
 
-    createStore([
-      { model: Employee },
-      { model: Boss },
-      { model: Firm }
-    ])
+    createStore([Employee, Boss, Firm])
 
-    const firmData = {
+    const firm = new Firm({
       id: 1,
       name: 'VUEX ORM Ltd.',
       owner: { id: 'Jax', type: 'boss' }
-    }
-
-    const firm = new Firm(firmData)
+    })
 
     expect(firm.owner).toBeInstanceOf(Boss)
   })
@@ -60,6 +56,13 @@ describe('Model – Inheritance - Relation instantiation', () => {
   it('should choose the appropriate STI model class when instantiating hasMany relations', () => {
     class Employee extends Model {
       static entity = 'employee'
+
+      static types () {
+        return {
+          HR: HumanResources,
+          CEO: ChiefExecutiveOfficer
+        }
+      }
 
       static fields () {
         return {
@@ -70,12 +73,7 @@ describe('Model – Inheritance - Relation instantiation', () => {
         }
       }
 
-      static types () {
-        return {
-          HR: HumanResources,
-          CEO: ChiefExecutiveOfficer
-        }
-      }
+      id!: any
     }
 
     class HumanResources extends Employee {
@@ -98,25 +96,20 @@ describe('Model – Inheritance - Relation instantiation', () => {
           employees: this.hasMany(Employee, 'firm_id')
         }
       }
+
+      employees!: Employee[]
     }
 
-    createStore([
-      { model: Employee },
-      { model: HumanResources },
-      { model: ChiefExecutiveOfficer },
-      { model: Firm }
-    ])
+    createStore([Employee, HumanResources, ChiefExecutiveOfficer, Firm ])
 
-    const firmData = {
+    const firm = new Firm({
       id: 1,
       name: 'VUEX ORM Ltd.',
       employees: [
         { id: 1, name: 'John', type: 'HR' },
         { id: 2, name: 'Jane', type: 'CEO' }
       ]
-    }
-
-    const firm = new Firm(firmData)
+    })
 
     expect(firm.employees.find(({ id }) => id === 1)).toBeInstanceOf(HumanResources)
     expect(firm.employees.find(({ id }) => id === 2)).toBeInstanceOf(ChiefExecutiveOfficer)
@@ -126,18 +119,18 @@ describe('Model – Inheritance - Relation instantiation', () => {
     class User extends Model {
       static entity = 'user'
 
+      static types () {
+        return {
+          admin: Admin,
+          user: User
+        }
+      }
+
       static fields () {
         return {
           id: this.attr(null),
           name: this.string(''),
           image: this.morphOne(Image, 'imageable_id', 'imageable_type')
-        }
-      }
-
-      static types () {
-        return {
-          admin: Admin,
-          user: User
         }
       }
     }
@@ -159,22 +152,18 @@ describe('Model – Inheritance - Relation instantiation', () => {
           imageable: this.morphTo('imageable_id', 'imageable_type')
         }
       }
+
+      imageable!: User | Admin
     }
 
-    createStore([
-      { model: User },
-      { model: Admin },
-      { model: Image }
-    ])
+    createStore([User, Admin, Image])
 
-    const imageData = {
+    const image = new Image({
       id: 1,
       url: 'myPng.gif',
       imageable_type: 'user',
       imageable: { id: 1, name: 'Jane', type: 'admin' }
-    }
-
-    const image = new Image(imageData)
+    })
 
     expect(image.imageable).toBeInstanceOf(Admin)
   })

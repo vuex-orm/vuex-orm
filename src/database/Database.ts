@@ -347,8 +347,8 @@ export default class Database {
 
     if (baseModel && baseModel.types === Model.types) {
       console.warn(
-        `Model ${model.name} extends ${baseModel.name} which doesn't overwrite` +
-        'Model.types(). You will not be able to use type mapping.'
+        `[Vuex ORM] Model \`${model.name}\` extends \`${baseModel.name}\` which doesn't ` +
+        'overwrite Model.types(). You will not be able to use type mapping.'
       )
     }
   }
