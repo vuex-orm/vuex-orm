@@ -1,7 +1,7 @@
 import { Store, Module, MutationTree } from 'vuex'
+import { schema as NormalizrSchema } from 'normalizr'
 import { mapValues } from '../support/Utils'
 import Schema from '../schema/Schema'
-import Schemas from '../schema/Schemas'
 import Model from '../model/Model'
 import ModuleContract from '../modules/contracts/Module'
 import RootState from '../modules/contracts/RootState'
@@ -26,6 +26,10 @@ export interface Entity {
 
 export type Models = Record<string, typeof Model>
 export type Modules = Record<string, Module<State, any>>
+
+export interface Schemas {
+  [entity: string]: NormalizrSchema.Entity
+}
 
 export default class Database {
   /**
