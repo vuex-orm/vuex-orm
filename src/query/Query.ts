@@ -4,7 +4,6 @@ import * as Data from '../data'
 import Model from '../model/Model'
 import State from '../modules/contracts/State'
 import RootState from '../modules/contracts/RootState'
-import PersistOptions from '../modules/payloads/PersistOptions'
 import * as Contracts from './contracts'
 import * as Options from './options'
 import Processor from './processors/Processor'
@@ -730,7 +729,7 @@ export default class Query<T extends Model = Model> {
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.
    */
-  create (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
+  create (data: Data.Record | Data.Record[], options: Options.PersistOptions): Data.Collections {
     return this.persist('create', data, options)
   }
 
@@ -748,7 +747,7 @@ export default class Query<T extends Model = Model> {
    * remove existing data within the state, but it will update the data
    * with the same primary key.
    */
-  insert (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
+  insert (data: Data.Record | Data.Record[], options: Options.PersistOptions): Data.Collections {
     return this.persist('insert', data, options)
   }
 
@@ -788,7 +787,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Update data in the state.
    */
-  update (data: Data.Record | Data.Record[] | UpdateClosure, condition: UpdateCondition, options: PersistOptions): Data.Item<T> | Data.Collection<T> | Data.Collections {
+  update (data: Data.Record | Data.Record[] | UpdateClosure, condition: UpdateCondition, options: Options.PersistOptions): Data.Item<T> | Data.Collection<T> | Data.Collections {
     // If the data is array, simply normalize the data and update them.
     if (Array.isArray(data)) {
       return this.persist('update', data, options)
@@ -965,7 +964,7 @@ export default class Query<T extends Model = Model> {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  insertOrUpdate (data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
+  insertOrUpdate (data: Data.Record | Data.Record[], options: Options.PersistOptions): Data.Collections {
     return this.persist('insertOrUpdate', data, options)
   }
 
@@ -997,7 +996,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Persist data into the state.
    */
-  persist (method: string, data: Data.Record | Data.Record[], options: PersistOptions): Data.Collections {
+  persist (method: string, data: Data.Record | Data.Record[], options: Options.PersistOptions): Data.Collections {
     const normalizedData = this.normalize(data)
 
     if (Utils.isEmpty(normalizedData)) {
@@ -1042,7 +1041,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Get persist method from given information.
    */
-  private getPersistMethod (entity: string, options: PersistOptions, fallback: string): 'create' | 'insert' | 'update' | 'insertOrUpdate' {
+  private getPersistMethod (entity: string, options: Options.PersistOptions, fallback: string): 'create' | 'insert' | 'update' | 'insertOrUpdate' {
     if (options.create && options.create.includes(entity)) {
       return 'create'
     }

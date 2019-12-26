@@ -9,6 +9,7 @@ import OrderKey from './OrderKey'
 import OrderDirection from './OrderDirection'
 import Constraint from './Constraint'
 import Load from './Load'
+import PersistOptions from './PersistOptions'
 
 export {
   Where,
@@ -21,5 +22,6 @@ export {
   OrderKey,
   OrderDirection,
   Constraint,
-  Load
+  Load,
+  PersistOptions
 }

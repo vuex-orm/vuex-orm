@@ -1,4 +1,4 @@
-import PersistOptions from '../payloads/PersistOptions'
+import PersistOptions from '../../query/options/PersistOptions'
 
 export default class OptionsBuilder {
   /**
