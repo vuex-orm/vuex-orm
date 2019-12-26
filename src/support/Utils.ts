@@ -6,15 +6,25 @@ export type Predicate<T> = (value: T, key: string) => boolean
 
 export type ObjectIteratee<T extends object, TResult> = (value: T[keyof T], key: string, object: T) => TResult
 
+interface SortableArray<T> {
+  criteria: any[]
+  index: number
+  value: T
+}
+
+/**
+ * Gets the size of collection by returning its length for array-like values
+ * or the number of own enumerable string keyed properties for objects.
+ */
+export function size (collection: any[] | object): number {
+  return Array.isArray(collection) ? collection.length : Object.keys(collection).length
+}
+
 /**
  * Check if the given array or object is empty.
  */
-export function isEmpty (data: any[] | object): boolean {
-  if (Array.isArray(data)) {
-    return data.length === 0
-  }
-
-  return Object.keys(data).length === 0
+export function isEmpty (collection: any[] | object): boolean {
+  return size(collection) === 0
 }
 
 /**
@@ -41,74 +51,41 @@ export function mapValues<T extends object, TResult> (object: T, iteratee: Objec
 }
 
 /**
- * Creates an object composed of the object properties predicate returns
- * truthy for. The predicate is invoked with two arguments: (value, key).
- */
-export function pickBy<T> (object: Dictionary<T>, predicate: Predicate<T>): Dictionary<T> {
-  return Object.keys(object).reduce((records, key) => {
-    const value = object[key]
-
-    if (predicate(value, key)) {
-      records[key] = value
-    }
-
-    return records
-  }, {} as Dictionary<T>)
-}
-
-/**
  * Creates an array of elements, sorted in specified order by the results
  * of running each element in a collection thru each iteratee.
  */
-export function orderBy<T> (collection: T[], keys: (((record: T) => any) | string)[], directions: string[]): any {
+export function orderBy<T> (collection: T[], iteratees: (((record: T) => any) | string)[], directions: string[]): T[] {
   let index = -1
 
   const result = collection.map((value) => {
-    const criteria = keys.map((key) => {
-      return typeof key === 'function' ? key(value) : value[key]
+    const criteria = iteratees.map((iteratee) => {
+      return typeof iteratee === 'function' ? iteratee(value) : value[iteratee]
     })
 
-    return { criteria: criteria, index: ++index, value: value }
+    return { criteria, index: ++index, value }
   })
 
-  return baseSortBy(result, (object: any, other: any) => {
+  return baseSortBy(result, (object, other) => {
     return compareMultiple(object, other, directions)
   })
 }
 
 /**
- * Creates an object composed of keys generated from the results of running
- * each element of collection thru iteratee.
+ * Creates an array of elements, sorted in ascending order by the results of
+ * running each element in a collection thru each iteratee. This method
+ * performs a stable sort, that is, it preserves the original sort order
+ * of equal elements.
  */
-export function groupBy (collection: any[], iteratee: (record: any) => any): any {
-  return collection.reduce((records, record) => {
-    const key = iteratee(record)
-
-    if (records[key] === undefined) {
-      records[key] = []
-    }
-
-    records[key].push(record)
-
-    return records
-  }, {} as any)
-}
-
-/**
- * The base implementation of `_.sortBy` which uses `comparer` to define the
- * sort order of `array` and replaces criteria objects with their
- * corresponding values.
- */
-function baseSortBy (array: any[], comparer: any): any[] {
+function baseSortBy<T> (array: SortableArray<T>[], comparer: (a: SortableArray<T>, B: SortableArray<T>) => number): T[] {
   let length = array.length
 
   array.sort(comparer)
 
+  const newArray: T[] = []
   while (length--) {
-    array[length] = array[length].value
+    newArray[length] = array[length].value
   }
-
-  return array
+  return newArray
 }
 
 /**
@@ -120,12 +97,12 @@ function baseSortBy (array: any[], comparer: any): any[] {
  * ascending sort order of corresponding values.
  */
 function compareMultiple (object: any, other: any, orders: string[]): number {
+  let index = -1
+
   const objCriteria = object.criteria
   const othCriteria = other.criteria
   const length = objCriteria.length
   const ordersLength = orders.length
-
-  let index = -1
 
   while (++index < length) {
     const result = compareAscending(objCriteria[index], othCriteria[index])
@@ -149,11 +126,32 @@ function compareMultiple (object: any, other: any, orders: string[]): number {
  */
 function compareAscending (value: any, other: any): number {
   if (value !== other) {
-    if (value > other) {
+    const valIsDefined = value !== undefined
+    const valIsNull = value === null
+    const valIsReflexive = value === value
+
+    const othIsDefined = other !== undefined
+    const othIsNull = other === null
+    const othIsReflexive = other === other
+
+    value = typeof value === 'number' ? String(value) : value
+    other = typeof other === 'number' ? String(other) : other
+
+    if (
+      (!othIsNull && value > other) ||
+      (valIsNull && othIsDefined && othIsReflexive) ||
+      (!valIsDefined && othIsReflexive) ||
+      !valIsReflexive
+    ) {
       return 1
     }
 
-    if (value < other) {
+    if (
+      (!valIsNull && value < other) ||
+      (othIsNull && valIsDefined && valIsReflexive) ||
+      (!othIsDefined && valIsReflexive) ||
+      !othIsReflexive
+    ) {
       return -1
     }
   }
@@ -161,11 +159,29 @@ function compareAscending (value: any, other: any): number {
   return 0
 }
 
+/**
+ * Creates an object composed of keys generated from the results of running
+ * each element of collection thru iteratee.
+ */
+export function groupBy (collection: any[], iteratee: (record: any) => any): any {
+  return collection.reduce((records, record) => {
+    const key = iteratee(record)
+
+    if (records[key] === undefined) {
+      records[key] = []
+    }
+
+    records[key].push(record)
+
+    return records
+  }, {} as any)
+}
+
 export default {
+  size,
   isEmpty,
   forOwn,
   groupBy,
   mapValues,
-  orderBy,
-  pickBy
+  orderBy
 }
