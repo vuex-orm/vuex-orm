@@ -770,7 +770,7 @@ export default class Query<T extends Model = Model> {
       }
 
       models.push(model)
-      recordsToBeInserted[id] = model.$toJson()
+      recordsToBeInserted[id] = model.$getAttributes()
     }
 
     this.state.data = { ...this.state.data, ...recordsToBeInserted }
@@ -927,7 +927,7 @@ export default class Query<T extends Model = Model> {
         continue
       }
 
-      this.state.data = { ...this.state.data, [id]: model.$toJson() }
+      this.state.data = { ...this.state.data, [id]: model.$getAttributes() }
 
       afterHooks.forEach(hook => { hook(model as any, this.entity) })
 
