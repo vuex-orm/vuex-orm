@@ -18,7 +18,7 @@ import Fields from './contracts/Fields'
 import FieldCache from './contracts/FieldCache'
 import ModelState from './contracts/State'
 import InheritanceTypes from './contracts/InheritanceTypes'
-import Serializer from './Serializer'
+import { toAttributes, toJson } from './Serialize'
 
 export default class Model {
   /**
@@ -325,10 +325,7 @@ export default class Model {
       return this.cachedFields[this.entity]
     }
 
-    this.cachedFields[this.entity] = {
-      $id: this.string(null).nullable(),
-      ...this.fields()
-    }
+    this.cachedFields[this.entity] = this.fields()
 
     return this.cachedFields[this.entity]
   }
@@ -620,7 +617,7 @@ export default class Model {
    * in the model schema.
    */
   static hydrate (record?: Record): Record {
-    return (new this(record)).$toJson()
+    return (new this(record)).$getAttributes()
   }
 
   /**
@@ -642,6 +639,15 @@ export default class Model {
    */
   $fields (): Fields {
     return this.$self().getFields()
+  }
+
+  /**
+   * Set index id.
+   */
+  $setIndexId (id: string): this {
+    this.$id = id
+
+    return this
   }
 
   /**
@@ -789,22 +795,33 @@ export default class Model {
    * or if the record has any missing fields, each value of the fields will
    * be filled with its default value defined at model fields definition.
    */
-  $fill (record?: Record): void {
-    const data = record || {}
+  $fill (record: Record = {}): void {
     const fields = this.$fields()
 
     for (const key in fields) {
       const field = fields[key]
-      const value = data[key]
+      const value = record[key]
 
-      this[key] = field.make(value, data, key)
+      this[key] = field.make(value, record, key)
     }
+
+    // If the record contains index id, set it to the model.
+    record.$id !== undefined && this.$setIndexId(record.$id)
+  }
+
+  /**
+   * Get all of the current attributes on the model. It includes index id
+   * value as well. This method is mainly used when saving a model to
+   * the store.
+   */
+  $getAttributes (): Record {
+    return toAttributes(this)
   }
 
   /**
    * Serialize field values into json.
    */
   $toJson (): Record {
-    return Serializer.serialize(this)
+    return toJson(this)
   }
 }

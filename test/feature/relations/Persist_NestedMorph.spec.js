@@ -69,9 +69,7 @@ describe('Features – Relations – Persist – Nested Morph', () => {
           user_id: 1,
           commentable_type: 'posts',
           commentable_id: 1,
-          commentable: {
-            $id: null, id: '1'
-          }
+          commentable: null
         }
       }
     })
