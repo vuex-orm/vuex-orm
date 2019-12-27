@@ -1,5 +1,6 @@
 import * as Vuex from 'vuex'
 import Utils from '../support/Utils'
+import Uid from '../support/Uid'
 import Container from '../container/Container'
 import Database from '../database/Database'
 import Record from '../data/Record'
@@ -649,7 +650,7 @@ export default class Model {
   /**
    * Set index id.
    */
-  $setIndexId (id: string): this {
+  $setIndexId (id: string | null): this {
     this.$id = id
 
     return this
@@ -812,6 +813,43 @@ export default class Model {
 
     // If the record contains index id, set it to the model.
     record.$id !== undefined && this.$setIndexId(record.$id)
+  }
+
+  /**
+   * Generate missing primary ids and index id.
+   */
+  $generateId (): this {
+    return this.$generatePrimaryId().$generateIndexId()
+  }
+
+  /**
+   * Generate any missing primary ids.
+   */
+  $generatePrimaryId (): this {
+    const key = this.$self().primaryKey
+    const keys = Array.isArray(key) ? key : [key]
+
+    keys.forEach((k) => {
+      if (this[k] === undefined || this[k] === null) {
+        this[k] = Uid.make()
+      }
+    })
+
+    return this
+  }
+
+  /**
+   * Generate index id from current model attributes.
+   */
+  $generateIndexId (): this {
+    return this.$setIndexId(this.$getIndexIdFromAttributes())
+  }
+
+  /**
+   * Get index id based on current model attributes.
+   */
+  $getIndexIdFromAttributes (): string | null {
+    return this.$self().getIndexIdFromRecord(this)
   }
 
   /**

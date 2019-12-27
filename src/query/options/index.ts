@@ -9,6 +9,7 @@ import OrderKey from './OrderKey'
 import OrderDirection from './OrderDirection'
 import Constraint from './Constraint'
 import Load from './Load'
+import PersistMethods from './PersistMethods'
 import PersistOptions from './PersistOptions'
 
 export {
@@ -23,5 +24,6 @@ export {
   OrderDirection,
   Constraint,
   Load,
+  PersistMethods,
   PersistOptions
 }

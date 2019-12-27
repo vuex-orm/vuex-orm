@@ -40,7 +40,7 @@ export default class WhereFilter {
     return (where: Options.Where): boolean => {
       // Function with Record and Query as argument.
       if (typeof where.field === 'function') {
-        const newQuery = new Query(query.database, query.entity)
+        const newQuery = new Query(query.store, query.entity)
         const result = this.executeWhereClosure(newQuery, record, where.field)
 
         if (typeof result === 'boolean') {

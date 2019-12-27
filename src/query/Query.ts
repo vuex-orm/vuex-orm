@@ -1,3 +1,4 @@
+import { Store } from 'vuex'
 import Utils from '../support/Utils'
 import Database, { Models } from '../database/Database'
 import * as Data from '../data'
@@ -31,14 +32,24 @@ export default class Query<T extends Model = Model> {
   static lastHookId: number = 0
 
   /**
+   * The store instance.
+   */
+  store: Store<any>
+
+  /**
    * The database instance.
    */
   database: Database
 
   /**
-   * The root state of the Vuex Store.
+   * The entity name being queried.
    */
-  rootState: RootState
+  entity: string
+
+  /**
+   * The entity name being queried.
+   */
+  baseEntity: string
 
   /**
    * The entity state of the Vuex Store.
@@ -46,9 +57,9 @@ export default class Query<T extends Model = Model> {
   state: State
 
   /**
-   * The entity name being queried.
+   * The root state of the Vuex Store.
    */
-  entity: string
+  rootState: RootState
 
   /**
    * The model being queried.
@@ -126,25 +137,32 @@ export default class Query<T extends Model = Model> {
   /**
    * Create a new Query instance.
    */
-  constructor (database: Database, entity: string) {
-    this.database = database
-    this.entity = entity
-    this.baseModel = this.getBaseModel(entity)
+  constructor (store: Store<any>, entity: string) {
+    this.store = store
+    this.database = store.$db()
+
     this.model = this.getModel(entity)
+    this.baseModel = this.getBaseModel(entity)
+
+    this.entity = entity
+    this.baseEntity = this.baseModel.entity
+
     this.rootState = this.database.getState()
-    this.state = this.rootState[this.baseModel.entity]
-    this.appliedOnBase = this.baseModel.entity === this.entity
+    this.state = this.rootState[this.baseEntity]
+
+    this.appliedOnBase = this.baseEntity === this.entity
   }
 
   /**
    * Delete all records from the store.
    */
-  static deleteAll (database: Database): void {
+  static deleteAll (store: Store<any>): void {
+    const database = store.$db()
     const models = database.models()
 
     for (const entity in models) {
       const state = database.getState()[entity]
-      state && (new this(database, entity)).deleteAll()
+      state && (new this(store, entity)).deleteAll()
     }
   }
 
@@ -196,7 +214,7 @@ export default class Query<T extends Model = Model> {
   newQuery (entity?: string): Query {
     entity = entity || this.entity
 
-    return (new Query(this.database, entity))
+    return (new Query(this.store, entity))
   }
 
   /**
@@ -572,25 +590,25 @@ export default class Query<T extends Model = Model> {
     let records = this.records()
 
     // Process `beforeSelect` hook.
-    records = this.executeRetrieveHook('beforeSelect', records)
+    records = this.executeSelectHook('beforeSelect', records)
 
     // Let's filter the records at first by the where clauses.
     records = this.filterWhere(records)
 
     // Process `afterWhere` hook.
-    records = this.executeRetrieveHook('afterWhere', records)
+    records = this.executeSelectHook('afterWhere', records)
 
     // Next, lets sort the data.
     records = this.filterOrderBy(records)
 
     // Process `afterOrderBy` hook.
-    records = this.executeRetrieveHook('afterOrderBy', records)
+    records = this.executeSelectHook('afterOrderBy', records)
 
     // Finally, slice the record by limit and offset.
     records = this.filterLimit(records)
 
     // Process `afterLimit` hook.
-    records = this.executeRetrieveHook('afterLimit', records)
+    records = this.executeSelectHook('afterLimit', records)
 
     return records
   }
@@ -699,29 +717,14 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Filter all data in the store by the given predicate.
-   */
-  private filterData (predicate: Contracts.Predicate): void {
-    this.state.data = Object.keys(this.state.data).reduce<Data.Instances>((models, id) => {
-      const model = this.hydrate(this.state.data[id])
-
-      if (predicate(model)) {
-        models[id] = model
-      }
-
-      return models
-    }, {})
-  }
-
-  /**
    * Create new data with all fields filled by default values.
    */
-  new (): Model {
-    const record = (new this.model()).$toJson()
+  new (): T {
+    const model = (new this.model()).$generateId() as T
 
-    const result = this.insert(record, {})
+    this.commitInsert(model.$getAttributes())
 
-    return result[this.entity][0]
+    return model
   }
 
   /**
@@ -737,14 +740,14 @@ export default class Query<T extends Model = Model> {
    * Create records to the state.
    */
   createRecords (records: Data.Records): Data.Collection<T> {
-    this.emptyState()
+    this.deleteAll()
 
     return this.insertRecords(records)
   }
 
   /**
-   * Insert given data to the state. Unlike `create`, this method will not
-   * remove existing data within the state, but it will update the data
+   * Insert given data to the store. Unlike `create`, this method will not
+   * remove existing data within the store, but it will update the data
    * with the same primary key.
    */
   insert (data: Data.Record | Data.Record[], options: Options.PersistOptions): Data.Collections {
@@ -752,36 +755,20 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Insert records in the state.
+   * Insert records to the store.
    */
   insertRecords (records: Data.Records): Data.Collection<T> {
-    const recordsToBeInserted: Data.Records = {}
-    const models: Data.Collection<T> = []
+    let collection = this.mapHydrateRecords(records)
 
-    const beforeHooks = this.buildHooks('beforeCreate') as Contracts.BeforeCreateHook[]
+    collection = this.executeMutationHooks('beforeCreate', collection)
 
-    for (const id in records) {
-      const record = records[id]
+    this.commitInsertRecords(
+      this.convertCollectionToRecords(collection)
+    )
 
-      const model = this.hydrate(record)
+    this.executeMutationHooks('afterCreate', collection)
 
-      if (beforeHooks.some(hook => hook(model as any, this.entity) === false)) {
-        continue
-      }
-
-      models.push(model)
-      recordsToBeInserted[id] = model.$getAttributes()
-    }
-
-    this.state.data = { ...this.state.data, ...recordsToBeInserted }
-
-    const afterHooks = this.buildHooks('afterCreate') as Contracts.AfterCreateHook[]
-
-    models.forEach((model) => {
-      afterHooks.forEach(hook => { hook(model as any, this.entity) })
-    })
-
-    return models
+    return collection
   }
 
   /**
@@ -846,7 +833,7 @@ export default class Query<T extends Model = Model> {
   updateRecords (records: Data.Records): Data.Collection<T> {
     const models = this.hydrateRecordsByMerging(records)
 
-    return this.commitUpdate(models)
+    return this.performUpdate(models)
   }
 
   /**
@@ -867,7 +854,7 @@ export default class Query<T extends Model = Model> {
       [id]: this.processUpdate(data, model)
     }
 
-    this.commitUpdate(instances)
+    this.performUpdate(instances)
 
     return instances[id] as Data.Item<T>
   }
@@ -888,7 +875,7 @@ export default class Query<T extends Model = Model> {
       return instances
     }, {})
 
-    return this.commitUpdate(instances)
+    return this.performUpdate(instances)
   }
 
   /**
@@ -912,24 +899,24 @@ export default class Query<T extends Model = Model> {
   /**
    * Commit `update` to the state.
    */
-  private commitUpdate (models: Data.Instances<T>): Data.Collection<T> {
+  private performUpdate (models: Data.Instances<T>): Data.Collection<T> {
     models = this.updateIndexes(models)
 
-    const beforeHooks = this.buildHooks('beforeUpdate') as Contracts.BeforeUpdateHook[]
-    const afterHooks = this.buildHooks('afterUpdate') as Contracts.AfterUpdateHook[]
+    const beforeHooks = this.buildHooks('beforeUpdate') as Contracts.MutationHook[]
+    const afterHooks = this.buildHooks('afterUpdate') as Contracts.MutationHook[]
 
     const updated: Data.Collection<T> = []
 
     for (const id in models) {
       const model = models[id]
 
-      if (beforeHooks.some(hook => hook(model as any, this.entity) === false)) {
+      if (beforeHooks.some(hook => hook(model, null, this.entity) === false)) {
         continue
       }
 
-      this.state.data = { ...this.state.data, [id]: model.$getAttributes() }
+      this.commitInsert(model.$getAttributes())
 
-      afterHooks.forEach(hook => { hook(model as any, this.entity) })
+      afterHooks.forEach(hook => { hook(model, null, this.entity) })
 
       updated.push(model)
     }
@@ -996,7 +983,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Persist data into the state.
    */
-  persist (method: string, data: Data.Record | Data.Record[], options: Options.PersistOptions): Data.Collections {
+  persist (method: Options.PersistMethods, data: Data.Record | Data.Record[], options: Options.PersistOptions): Data.Collections {
     const normalizedData = this.normalize(data)
 
     if (Utils.isEmpty(normalizedData)) {
@@ -1025,7 +1012,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Persist given records to the store by the given method.
    */
-  persistRecords (method: 'create' | 'insert' | 'update' | 'insertOrUpdate', records: Data.Records): Data.Collection<T> {
+  persistRecords (method: Options.PersistMethods, records: Data.Records): Data.Collection<T> {
     switch (method) {
       case 'create':
         return this.createRecords(records)
@@ -1041,7 +1028,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Get persist method from given information.
    */
-  private getPersistMethod (entity: string, options: Options.PersistOptions, fallback: string): 'create' | 'insert' | 'update' | 'insertOrUpdate' {
+  private getPersistMethod (entity: string, options: Options.PersistOptions, fallback: Options.PersistMethods): Options.PersistMethods {
     if (options.create && options.create.includes(entity)) {
       return 'create'
     }
@@ -1058,7 +1045,7 @@ export default class Query<T extends Model = Model> {
       return 'insertOrUpdate'
     }
 
-    return fallback as 'create' | 'insert' | 'update' | 'insertOrUpdate'
+    return fallback
   }
 
   /**
@@ -1107,26 +1094,51 @@ export default class Query<T extends Model = Model> {
   /**
    * Perform the actual delete query to the store.
    */
-  private deleteByCondition (condition: Contracts.Predicate): Data.Collection {
-    const deleted: Data.Collection = []
+  private deleteByCondition (condition: Contracts.Predicate): Data.Collection<T> {
+    let collection = this.mapHydrateAndFilterRecords(this.state.data, condition)
 
-    this.filterData((model) => {
-      if (!condition(model)) {
-        return true
-      }
+    collection = this.executeMutationHooks('beforeDelete', collection)
 
-      if (this.executeBeforeDeleteHook(model) === false) {
-        return true
-      }
+    if (collection.length === 0) {
+      return []
+    }
 
-      deleted.push(model)
+    this.commitDelete(collection.map(model => model.$id as string))
 
-      this.executeAfterDeleteHook(model)
+    this.executeMutationHooks('afterDelete', collection)
 
-      return false
+    return collection
+  }
+
+  /**
+   * Commit mutation.
+   */
+  private commit (name: string, payload: any): void {
+    this.store.commit(`${this.database.namespace}/${name}`, {
+      entity: this.baseEntity,
+      ...payload
     })
+  }
 
-    return deleted
+  /**
+   * Commit insert mutation.
+   */
+  private commitInsert (record: Data.Record): void {
+    this.commit('insert', { record })
+  }
+
+  /**
+   * Commit insert records mutation.
+   */
+  private commitInsertRecords (records: Data.Record): void {
+    this.commit('insertRecords', { records })
+  }
+
+  /**
+   * Commit delete mutation.
+   */
+  private commitDelete (id: string[]): void {
+    this.commit('delete', { id })
   }
 
   /**
@@ -1192,29 +1204,50 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
+   * Convert all given records and return it as a collection.
+   */
+  private mapHydrateRecords (records: Data.Records): Data.Collection<T> {
+    return Utils.map(records, record => this.hydrate(record))
+  }
+
+  /**
+   * Convert all given records and return it as a collection.
+   */
+  private mapHydrateAndFilterRecords (records: Data.Records, condition: Contracts.Predicate): Data.Collection<T> {
+    const collection: Data.Collection<T> = []
+
+    for (const key in records) {
+      const model = this.hydrate(records[key])
+
+      condition(model) && collection.push(model)
+    }
+
+    return collection
+  }
+
+  /**
+   * Convert given collection to records by using index id as a key.
+   */
+  private convertCollectionToRecords (collection: Data.Collection<T>): Data.Records {
+    return collection.reduce<Data.Records>((carry, model) => {
+      carry[model['$id'] as string] = model.$getAttributes()
+
+      return carry
+    }, {})
+  }
+
+  /**
    * Clears the current state from any data related to current model.
    *
    * - Everything if not in a inheritance scheme.
    * - Only derived instances if applied to a derived entity.
    */
   private emptyState (): void {
-    if (this.appliedOnBase) {
-      this.state.data = {}
-
-      return
-    }
-
-    this.state.data = Object.entries(this.state.data).reduce<Data.Records>((records, [id, record]) => {
-      if (!((this.model.getModelFromRecord(record) as any).entity === this.model.entity)) {
-        records[id] = record
-      }
-
-      return records
-    }, {})
+    this.deleteAll()
   }
 
   /**
-   * Build before create hooks arra
+   * Build executable hook collection for the given hook.
    */
   private buildHooks (on: string): Contracts.HookableClosure[] {
     const hooks = this.getGlobalHookAsArray(on)
@@ -1237,102 +1270,29 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
+   * Execute mutation hooks to the given collection.
+   */
+  private executeMutationHooks (on: string, collection: T[]): T[] {
+    const hooks = this.buildHooks(on) as Contracts.MutationHook[]
+
+    if (hooks.length === 0) {
+      return collection
+    }
+
+    return collection.filter((model) => {
+      return !hooks.some(hook => hook(model, null, this.entity) === false)
+    })
+  }
+
+  /**
    * Execute retrieve hook for the given method.
    */
-  private executeRetrieveHook (on: string, models: Data.Collection<T>): Data.Collection<T> {
-    const hooks = this.buildHooks(on)
+  private executeSelectHook (on: string, models: Data.Collection<T>): Data.Collection<T> {
+    const hooks = this.buildHooks(on) as Contracts.SelectHook[]
 
-    return hooks.reduce((collection, hook) => {
+    return hooks.reduce<Data.Collection<T>>((collection, hook) => {
       collection = hook(models as any, this.entity) as any
-
       return collection
     }, models)
-  }
-
-  /**
-   * Execute before delete hook to the given model.
-   */
-  private executeBeforeDeleteHook (model: Model): false | void {
-    if (this.executeLocalBeforeDeleteHook(model) === false) {
-      return false
-    }
-
-    if (this.executeGlobalBeforeDeleteHook(model) === false) {
-      return false
-    }
-  }
-
-  /**
-   * Execute local before delete hook to the given model.
-   */
-  private executeLocalBeforeDeleteHook (model: Model): false | void {
-    const hook = this.model['beforeDelete'] as Contracts.BeforeDeleteHook | undefined
-
-    return hook && hook(model as any, this.entity)
-  }
-
-  /**
-   * Execute global before delete hook to the given model.
-   */
-  private executeGlobalBeforeDeleteHook (model: Model): false | void {
-    return this.executeGlobalBeforeMutationHooks('beforeDelete', (hook) => {
-      return (hook as Contracts.BeforeDeleteHook)(model, this.entity)
-    })
-  }
-
-  /**
-   * Execute after delete hook to the given model.
-   */
-  private executeAfterDeleteHook (model: Model): void {
-    this.executeLocalAfterDeleteHook(model)
-    this.executeGlobalAfterDeleteHook(model)
-  }
-
-  /**
-   * Execute local after delete hook to the given model.
-   */
-  private executeLocalAfterDeleteHook (model: Model): void {
-    const hook = this.model['afterDelete'] as Contracts.AfterDeleteHook | undefined
-
-    return hook && hook(model as any, this.entity)
-  }
-
-  /**
-   * Execute global after delete hook to the given model.
-   */
-  private executeGlobalAfterDeleteHook (model: Model): void {
-    this.executeGlobalAfterMutationHooks('afterDelete', (hook) => {
-      (hook as Contracts.AfterDeleteHook)(model, this.entity)
-    })
-  }
-
-  /**
-   * Execute global before mutation hook on the given method.
-   */
-  private executeGlobalBeforeMutationHooks (on: string, callback: (hook: Contracts.HookableClosure) => false | void): false | void {
-    const hooks = this.self().hooks[on]
-
-    if (!Array.isArray(hooks) || hooks.length <= 0) {
-      return
-    }
-
-    const result = hooks.some((hook) => {
-      return callback(hook.callback) === false ? false : true
-    })
-
-    return result === false ? false : undefined
-  }
-
-  /**
-   * Execute global after mutation hook on the given method.
-   */
-  private executeGlobalAfterMutationHooks (on: string, callback: (hook: Contracts.HookableClosure) => void): void {
-    const hooks = this.self().hooks[on]
-
-    if (!Array.isArray(hooks)) {
-      return
-    }
-
-    hooks.forEach(hook => { callback(hook.callback) })
   }
 }

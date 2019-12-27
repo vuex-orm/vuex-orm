@@ -5,42 +5,43 @@ import Query from '../query/Query'
 import RootState from './contracts/RootState'
 import GettersContract from './contracts/RootGetters'
 
-const RootGetters: GettersContract = {
-  /**
-   * Create a new Query instance.
-   */
-  query (this: Store<any>, _state: RootState) {
-    const database = this.$db()
-    return (entity: string): Query => new Query(database, entity)
-  },
+/**
+ * Create a new Query instance.
+ */
+function query (this: Store<any>, _state: RootState) {
+  return (entity: string): Query => new Query(this, entity)
+}
 
-  /**
-   * Get all data of given entity.
-   */
-  all (this: Store<any>, _state: RootState) {
-    const database = this.$db()
-    return (entity: string): Collection => (new Query(database, entity)).all()
-  },
+/**
+ * Get all data of given entity.
+ */
+function all (this: Store<any>, _state: RootState) {
+  return (entity: string): Collection => (new Query(this, entity)).all()
+}
 
-  /**
-   * Find a data of the given entity by given id.
-   */
-  find (this: Store<any>, _state: RootState) {
-    const database = this.$db()
-    return (entity: string, id: string | number | Array<any>): Item => {
-      return (new Query(database, entity)).find(id)
-    }
-  },
-
-  /**
-   * Find a data of the given entity by given id.
-   */
-  findIn (this: Store<any>, _state: RootState) {
-    const database = this.$db()
-    return (entity: string, idList: Array<string | number | Array<any>>): Item[] => {
-      return (new Query(database, entity)).findIn(idList)
-    }
+/**
+ * Find a data of the given entity by given id.
+ */
+function find (this: Store<any>, _state: RootState) {
+  return (entity: string, id: string | number | Array<any>): Item => {
+    return (new Query(this, entity)).find(id)
   }
+}
+
+/**
+ * Find a data of the given entity by given id.
+ */
+function findIn (this: Store<any>, _state: RootState) {
+  return (entity: string, idList: Array<string | number | Array<any>>): Item[] => {
+    return (new Query(this, entity)).findIn(idList)
+  }
+}
+
+const RootGetters: GettersContract = {
+  query,
+  all,
+  find,
+  findIn
 }
 
 export default RootGetters

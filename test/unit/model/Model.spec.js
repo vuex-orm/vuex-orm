@@ -1,6 +1,11 @@
+import Uid from 'app/support/Uid'
 import Model from 'app/model/Model'
 
 describe('Unit – Model', () => {
+  beforeEach(() => {
+    Uid.reset()
+  })
+
   it('can fetch empty fields when model fields is not declared', () => {
     class User extends Model {
       static entity = 'users'
@@ -112,6 +117,26 @@ describe('Unit – Model', () => {
     }
 
     expect(User.localKey()).toBe('id')
+  })
+
+  it('can get generate missing primary keys', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static primaryKey = ['id', 'name', 'email']
+
+      static fields () {
+        return {
+          id: this.uid(),
+          name: this.attr(null),
+          email: this.attr(undefined)
+        }
+      }
+    }
+
+    const user = (new User()).$generatePrimaryId()
+
+    expect(user.$toJson()).toEqual({ id: '$uid1', name: '$uid2', email: '$uid3' })
   })
 
   it('should return right model when getting a model from a record if the record is in a hierarchy', () => {
