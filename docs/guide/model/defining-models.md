@@ -140,7 +140,7 @@ class User extends Model {
 
 ### UID Type
 
-There is `this.uid()` method, which will generate Unique ID if the field is not present.
+The `this.uid()` method generates a Unique ID if the field is not present.
 
 ```js
 class User extends Model {
