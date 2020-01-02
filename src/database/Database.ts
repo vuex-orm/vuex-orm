@@ -332,7 +332,7 @@ export default class Database {
    */
   private createSchema (): void {
     this.entities.forEach((entity) => {
-      this.schemas[entity.name] = Schema.create(entity.model)
+      this.registerSchema(entity)
     })
   }
 
