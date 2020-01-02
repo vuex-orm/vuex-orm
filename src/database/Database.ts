@@ -51,9 +51,9 @@ export default class Database {
   schemas: Schemas = {}
 
   /**
-￼   * Whether the database has already been installed to Vuex or not.
-￼   * Model registration steps depend on its value.
-￼   */
+   * Whether the database has already been installed to Vuex or not.
+   * Model registration steps depend on its value.
+   */
   isStarted: boolean = false
 
   /**
@@ -207,8 +207,8 @@ export default class Database {
   }
 
   /**
-￼   * Append entity registered after start
-￼   */
+   * Append entity registered after start
+   */
   private registerModule (entity: Entity): void {
     this.store.registerModule([ this.namespace, entity.name ], this.createSubModule(entity))
   }
