@@ -51,6 +51,12 @@ export default class Database {
   schemas: Schemas = {}
 
   /**
+￼   * Whether the database has already been installed to Vuex or not.
+￼   * Model registration steps depend on its value.
+￼   */
+  isStarted: boolean = false
+
+  /**
    * Initialize the database before a user can start using it.
    */
   start (store: Store<any>, namespace: string): void {
@@ -61,6 +67,8 @@ export default class Database {
 
     this.registerModules()
     this.createSchema()
+
+    this.isStarted = true
   }
 
   /**
@@ -69,12 +77,19 @@ export default class Database {
   register (model: typeof Model, module: Module<any, any> = {}): void {
     this.checkModelTypeMappingCapability(model)
 
-    this.entities.push({
+    const entity: Entity = {
       name: model.entity,
       base: model.baseEntity || model.entity,
       model: this.createBindingModel(model),
       module
-    })
+    }
+
+    this.entities.push(entity)
+
+    if (this.isStarted) {
+      this.registerModule(entity)
+      this.registerSchema(entity)
+    }
   }
 
   /**
@@ -192,13 +207,20 @@ export default class Database {
   }
 
   /**
+￼   * Append entity registered after start
+￼   */
+  private registerModule (entity: Entity): void {
+    this.store.registerModule([ this.namespace, entity.name ], this.createSubModule(entity))
+  }
+
+  /**
    * Create Vuex Module from the registered entities.
    */
   private createModule (): Module<any, any> {
     const module = this.createRootModule()
 
     this.entities.forEach((entity) => {
-      module.getters[entity.name] = (_state: RootState, getters: any) => () => getters.query(entity.name)
+      module.getters[entity.name] = (_state: RootState, getters: any) => () => getters.query(entity.name) // TODO SZM deletable
       module.modules[entity.name] = this.createSubModule(entity)
     })
 
@@ -312,6 +334,13 @@ export default class Database {
     this.entities.forEach((entity) => {
       this.schemas[entity.name] = Schema.create(entity.model)
     })
+  }
+
+  /**
+   * Append schema registered after start
+   */
+  private registerSchema (entity: Entity): void {
+    this.schemas[entity.name] = Schema.create(entity.model)
   }
 
   /**
