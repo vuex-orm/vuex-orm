@@ -220,7 +220,6 @@ export default class Database {
     const module = this.createRootModule()
 
     this.entities.forEach((entity) => {
-      module.getters[entity.name] = (_state: RootState, getters: any) => () => getters.query(entity.name) // TODO SZM deletable
       module.modules[entity.name] = this.createSubModule(entity)
     })
 

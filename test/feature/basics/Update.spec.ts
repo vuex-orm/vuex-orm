@@ -86,7 +86,7 @@ describe('Feature – Basics – Update', () => {
 
     await store.dispatch('entities/users/update', { key_1: 1, key_2: 2, age: 24 })
 
-    const user = store.getters['entities/users']().where('key_1', 1).where('key_2', 2).first()
+    const user = store.getters['entities/users/query']().where('key_1', 1).where('key_2', 2).first()
 
     expect(user.name).toBe('John Doe')
     expect(user.age).toBe(24)
