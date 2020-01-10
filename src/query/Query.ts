@@ -651,6 +651,16 @@ export default class Query<T extends Model = Model> {
       )
     }
 
+    // If query is called on derived entity return only ids belonging to respective entity
+    if (!this.appliedOnBase) {
+      const types = this.baseModel.types()
+      const typeKey = this.baseModel.typeKey
+
+      return Object
+        .keys(this.state.data)
+        .filter(id => types[this.state.data[id][typeKey]] && types[this.state.data[id][typeKey]].entity == this.model.entity)
+    }
+
     // If none is set, return all keys.
     return Object.keys(this.state.data)
   }
@@ -1291,23 +1301,16 @@ export default class Query<T extends Model = Model> {
       return new forceModel(record) as T
     }
 
-    const newModel = this.model.getModelFromRecord(record)
-
-    if (newModel !== null) {
-      return new newModel(record) as T
+    if (!this.appliedOnBase && record[this.baseModel.typeKey] === undefined) {
+      record = {
+        ...record,
+        [this.baseModel.typeKey]: this.baseModel.getTypeKeyValueFromModel(this.model)
+      }
     }
 
-    if (!this.appliedOnBase && record[this.model.typeKey] === undefined) {
-      const typeValue = this.model.getTypeKeyValueFromModel()
+    const newModel = this.model.getModelFromRecord(record) || this.getBaseModel(this.entity)
 
-      record = { ...record, [this.model.typeKey]: typeValue }
-
-      return new this.model(record) as T
-    }
-
-    const baseModel = this.getBaseModel(this.entity)
-
-    return new baseModel(record) as T
+    return new newModel(record) as T
   }
 
   /**
@@ -1324,7 +1327,7 @@ export default class Query<T extends Model = Model> {
 
       const record = records[id]
 
-      const modelForRecordInStore = this.model.getModelFromRecord(recordInStore)
+      const modelForRecordInStore = this.model.getModelFromRecord(record)
 
       if (modelForRecordInStore === null) {
         instances[id] = this.hydrate({ ...recordInStore, ...record })

@@ -53,8 +53,9 @@ export default class HasManyBy extends Relation {
       return
     }
 
-    record[this.foreignKey] = key.map((parentId: any) => {
-      return this.parent.getIdFromRecord(_data[this.parent.entity][parentId])
+    record[this.foreignKey] = key.map((parent: any) => {
+      const attachment = typeof parent === 'object' ? _data[parent.schema][parent.id] : _data[this.parent.entity][parent]
+      return this.parent.getIdFromRecord(attachment)
     })
   }
 

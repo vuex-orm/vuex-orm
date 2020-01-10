@@ -631,15 +631,8 @@ export default class Model {
    * pass record with `{ type: 'admin' }`, then the method will likely to
    * return SuperUser class.
    */
-  static getModelFromRecord(record: Record | Model): typeof Model | null {
-    // If the given record is already a model instance, return the
-    // model object.
-    if (record instanceof this) {
-      return record.$self()
-    }
-
-    // Else, get the corresponding model for the type value if there's any.
-    return this.getTypeModel(record[this.typeKey])
+  static getModelFromRecord (record: Record | Model): typeof Model | null {
+    return record instanceof Model ? record.$self() : this.getTypeModel(record[this.typeKey])
   }
 
   /**

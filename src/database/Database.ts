@@ -74,9 +74,7 @@ export default class Database {
   /**
    * Register a model and a module to Database.
    */
-  register(model: typeof Model, module: Module<any, any> = {}): void {
-    this.checkModelTypeMappingCapability(model)
-
+  register (model: typeof Model, module: Module<any, any> = {}): void {
     const entity: Entity = {
       name: model.entity,
       base: model.baseEntity || model.entity,
@@ -369,37 +367,5 @@ export default class Database {
    */
   private connect(): void {
     this.store.$db = () => this
-  }
-
-  /**
-   * Warn user if the given model is a type of an inherited model that is being
-   * defined without overwriting `Model.types()` because the user will not be
-   * able to use the type mapping feature in this case.
-   */
-  private checkModelTypeMappingCapability(model: typeof Model): void {
-    // We'll not be logging any warning if it's on a production environment,
-    // so let's return here if it is.
-    /* istanbul ignore next */
-    if (!__DEV__) {
-      return
-    }
-
-    // If the model doesn't have `baseEntity` property set, we'll assume it is
-    // not an inherited model so we can stop here.
-    if (!model.baseEntity) {
-      return
-    }
-
-    // Now it seems like the model is indeed an inherited model. Let's check if
-    // it has `types()` method declared, or we'll warn the user that it's not
-    // possible to use type mapping feature.
-    const baseModel = this.model(model.baseEntity)
-
-    if (baseModel && baseModel.types === Model.types) {
-      console.warn(
-        `[Vuex ORM] Model \`${model.name}\` extends \`${baseModel.name}\` which doesn't ` +
-          'overwrite Model.types(). You will not be able to use type mapping.'
-      )
-    }
   }
 }

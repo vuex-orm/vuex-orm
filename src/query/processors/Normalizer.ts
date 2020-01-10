@@ -3,6 +3,7 @@ import Utils from '../../support/Utils'
 import Record from '../../data/Record'
 import NormalizedData from '../../data/NormalizedData'
 import Query from '../../query/Query'
+import Schema from '../../schema/Schema'
 
 export default class Normalizer {
   /**
@@ -13,10 +14,9 @@ export default class Normalizer {
       return {}
     }
 
-    const entity = query.database.schemas[query.model.entity]
+    const schema = new Schema(query.model)
+    const normalizerSchema = Utils.isArray(record) ? schema.many(query.model) : schema.one()
 
-    const schema = Utils.isArray(record) ? [entity] : entity
-
-    return normalize(record, schema).entities as NormalizedData
+    return normalize(record, normalizerSchema).entities as NormalizedData
   }
 }
