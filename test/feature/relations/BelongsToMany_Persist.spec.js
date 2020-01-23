@@ -32,7 +32,8 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
       static fields () {
         return {
           role_id: this.attr(null),
-          user_id: this.attr(null)
+          user_id: this.attr(null),
+          level: this.attr(null)
         }
       }
     }
@@ -42,7 +43,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     await store.dispatch('entities/users/create', {
       data: {
         id: 1,
-        permissions: [{ id: 1 }, { id: 2 }]
+        permissions: [{ id: 1, roles_users: { level: 1 } }, { id: 2 }]
       }
     })
 
@@ -55,8 +56,8 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
         2: { $id: '2', id: 2 }
       },
       roleUser: {
-        '[1,1]': { $id: '[1,1]', role_id: 1, user_id: 1 },
-        '[2,1]': { $id: '[2,1]', role_id: 2, user_id: 1 }
+        '[1,1]': { $id: '[1,1]', role_id: 1, user_id: 1, level: 1 },
+        '[2,1]': { $id: '[2,1]', role_id: 2, user_id: 1, level: null }
       }
     })
 

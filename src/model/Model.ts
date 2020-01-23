@@ -171,7 +171,8 @@ export default class Model {
     foreignPivotKey: string,
     relatedPivotKey: string,
     parentKey?: string,
-    relatedKey?: string
+    relatedKey?: string,
+    pivotKey?: string
   ): Attributes.BelongsToMany {
     return new Attributes.BelongsToMany(
       this,
@@ -180,7 +181,8 @@ export default class Model {
       foreignPivotKey,
       relatedPivotKey,
       this.localKey(parentKey),
-      this.relation(related).localKey(relatedKey)
+      this.relation(related).localKey(relatedKey),
+      this.pivotKey(related, pivotKey)
     )
   }
 
@@ -503,6 +505,20 @@ export default class Model {
     }
 
     return typeof this.primaryKey === 'string' ? this.primaryKey : 'id'
+  }
+
+  /**
+   * Get the pivot key with related.
+   */
+  static pivotKey (related: typeof Model | string, pivotKey?: string): string {
+    if (pivotKey) {
+      return pivotKey
+    }
+
+    return [
+      (typeof related === "string" ? related : related.entity),
+      this.entity
+    ].sort().join('_')
   }
 
   /**

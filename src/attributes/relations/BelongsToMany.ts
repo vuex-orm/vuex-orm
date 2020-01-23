@@ -50,6 +50,11 @@ export default class BelongsToMany extends Relation {
   relatedKey: string
 
   /**
+   * The key name of the pivot data.
+   */
+  pivotKey: string
+
+  /**
    * Create a new belongs to instance.
    */
   constructor (
@@ -59,7 +64,8 @@ export default class BelongsToMany extends Relation {
     foreignPivotKey: string,
     relatedPivotKey: string,
     parentKey: string,
-    relatedKey: string
+    relatedKey: string,
+    pivotKey: string
   ) {
     super(model) /* istanbul ignore next */
 
@@ -69,6 +75,7 @@ export default class BelongsToMany extends Relation {
     this.relatedPivotKey = relatedPivotKey
     this.parentKey = parentKey
     this.relatedKey = relatedKey
+    this.pivotKey = pivotKey
   }
 
   /**
@@ -181,12 +188,14 @@ export default class BelongsToMany extends Relation {
       const relatedId = data[this.related.entity][id][this.relatedKey]
       const pivotKey = JSON.stringify([relatedId, parentId])
       const pivotRecord = data[this.pivot.entity] ? data[this.pivot.entity][pivotKey] : {}
+      const pivotData = data[this.related.entity][id][this.pivotKey] || {};
 
       data[this.pivot.entity] = {
         ...data[this.pivot.entity],
 
         [pivotKey]: {
           ...pivotRecord,
+          ...pivotData,
           $id: pivotKey,
           [this.foreignPivotKey]: parentId,
           [this.relatedPivotKey]: relatedId
