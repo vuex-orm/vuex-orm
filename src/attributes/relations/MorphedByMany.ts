@@ -46,6 +46,11 @@ export default class MorphedByMany extends Relation {
   relatedKey: string
 
   /**
+   * The key name of the pivot data.
+   */
+  pivotKey: string
+
+  /**
    * Create a new belongs to instance.
    */
   constructor (
@@ -56,7 +61,8 @@ export default class MorphedByMany extends Relation {
     id: string,
     type: string,
     parentKey: string,
-    relatedKey: string
+    relatedKey: string,
+    pivotKey: string
   ) {
     super(model) /* istanbul ignore next */
 
@@ -67,6 +73,7 @@ export default class MorphedByMany extends Relation {
     this.type = type
     this.parentKey = parentKey
     this.relatedKey = relatedKey
+    this.pivotKey = pivotKey
   }
 
   /**
@@ -174,11 +181,13 @@ export default class MorphedByMany extends Relation {
     related.forEach((id) => {
       const parentId = record[this.parentKey]
       const pivotKey = `${id}_${parentId}_${this.related.entity}`
+      const pivotData = data[this.related.entity][id][this.pivotKey] || {}
 
       data[this.pivot.entity] = {
         ...data[this.pivot.entity],
 
         [pivotKey]: {
+          ...pivotData,
           $id: pivotKey,
           [this.relatedId]: parentId,
           [this.id]: this.model.getIdFromRecord(data[this.related.entity][id]),

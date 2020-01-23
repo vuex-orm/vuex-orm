@@ -182,7 +182,7 @@ export default class Model {
       relatedPivotKey,
       this.localKey(parentKey),
       this.relation(related).localKey(relatedKey),
-      this.pivotKey(related, pivotKey)
+      this.pivotKey(pivotKey)
     )
   }
 
@@ -217,7 +217,8 @@ export default class Model {
     id: string,
     type: string,
     parentKey?: string,
-    relatedKey?: string
+    relatedKey?: string,
+    pivotKey?: string
   ): Attributes.MorphToMany {
     return new Attributes.MorphToMany(
       this,
@@ -227,7 +228,8 @@ export default class Model {
       id,
       type,
       this.localKey(parentKey),
-      this.relation(related).localKey(relatedKey)
+      this.relation(related).localKey(relatedKey),
+      this.pivotKey(pivotKey)
     )
   }
 
@@ -241,7 +243,8 @@ export default class Model {
     id: string,
     type: string,
     parentKey?: string,
-    relatedKey?: string
+    relatedKey?: string,
+    pivotKey?: string
   ): Attributes.MorphedByMany {
     return new Attributes.MorphedByMany(
       this,
@@ -251,7 +254,8 @@ export default class Model {
       id,
       type,
       this.localKey(parentKey),
-      this.relation(related).localKey(relatedKey)
+      this.relation(related).localKey(relatedKey),
+      this.pivotKey(pivotKey)
     )
   }
 
@@ -508,17 +512,14 @@ export default class Model {
   }
 
   /**
-   * Get the pivot key with related.
+   * Get pivot key.
    */
-  static pivotKey (related: typeof Model | string, pivotKey?: string): string {
-    if (pivotKey) {
-      return pivotKey
+  static pivotKey (key?: string): string {
+    if (key) {
+      return key
     }
 
-    return [
-      (typeof related === "string" ? related : related.entity),
-      this.entity
-    ].sort().join('_')
+    return 'pivot'
   }
 
   /**

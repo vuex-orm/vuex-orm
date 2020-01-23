@@ -188,7 +188,7 @@ export default class BelongsToMany extends Relation {
       const relatedId = data[this.related.entity][id][this.relatedKey]
       const pivotKey = JSON.stringify([relatedId, parentId])
       const pivotRecord = data[this.pivot.entity] ? data[this.pivot.entity][pivotKey] : {}
-      const pivotData = data[this.related.entity][id][this.pivotKey] || {};
+      const pivotData = data[this.related.entity][id][this.pivotKey] || {}
 
       data[this.pivot.entity] = {
         ...data[this.pivot.entity],
