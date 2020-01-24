@@ -153,7 +153,10 @@ export default class BelongsToMany extends Relation {
       const related = relateds[record[this.relatedPivotKey]]
 
       if (related) {
-        records[id] = records[id].concat(related)
+        records[id] = records[id].concat(related.map((model: Record) => {
+          model[this.pivotKey] = record
+          return model
+        }))
       }
 
       return records

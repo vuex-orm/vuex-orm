@@ -151,7 +151,10 @@ export default class MorphedByMany extends Relation {
 
       const related = relateds[record[this.id]]
 
-      records[id] = records[id].concat(related)
+      records[id] = records[id].concat(related.map((model: Record) => {
+        model[this.pivotKey] = record
+        return model
+      }))
 
       return records
     }, {} as Records)
