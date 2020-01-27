@@ -63,6 +63,67 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
+  it('can create a data with belongs to many relation where pivot composite key reversed', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          permissions: this.belongsToMany(Role, UserRole, 'user_id', 'role_id')
+        }
+      }
+    }
+
+    class Role extends Model {
+      static entity = 'roles'
+
+      static fields () {
+        return {
+          id: this.attr(null)
+        }
+      }
+    }
+
+    class UserRole extends Model {
+      static entity = 'userRole'
+
+      static primaryKey = ['user_id', 'role_id']
+
+      static fields () {
+        return {
+          role_id: this.attr(null),
+          user_id: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }, { model: Role }, { model: UserRole }])
+
+    await store.dispatch('entities/users/create', {
+      data: {
+        id: 1,
+        permissions: [{ id: 1 }, { id: 2 }]
+      }
+    })
+
+    const expected = createState({
+      users: {
+        1: { $id: '1', id: 1, permissions: [] }
+      },
+      roles: {
+        1: { $id: '1', id: 1 },
+        2: { $id: '2', id: 2 }
+      },
+      userRole: {
+        '[1,1]': { $id: '[1,1]', role_id: 1, user_id: 1 },
+        '[1,2]': { $id: '[1,2]', role_id: 2, user_id: 1 }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
+
   it('can create a data without relation', async () => {
     class User extends Model {
       static entity = 'users'
