@@ -12,7 +12,7 @@ if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 });
 
 var _core = createCommonjsModule(function (module) {
-var core = module.exports = { version: '2.6.9' };
+var core = module.exports = { version: '2.6.11' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 });
 var _core_1 = _core.version;
@@ -518,10 +518,10 @@ var Container = /** @class */ (function () {
     function Container() {
     }
     /**
-     * Register the database.
+     * Register the store instance.
      */
-    Container.register = function (database) {
-        this.database = database;
+    Container.register = function (store) {
+        this.store = store;
     };
     return Container;
 }());
@@ -530,8 +530,8 @@ var install = (function (database, options) {
     if (options === void 0) { options = {}; }
     var namespace = options.namespace || 'entities';
     return function (store) {
-        Container.register(database);
         database.start(store, namespace);
+        Container.register(store);
     };
 });
 
@@ -621,13 +621,17 @@ function __spreadArrays() {
 }
 
 /**
+ * Gets the size of collection by returning its length for array-like values
+ * or the number of own enumerable string keyed properties for objects.
+ */
+function size(collection) {
+    return Array.isArray(collection) ? collection.length : Object.keys(collection).length;
+}
+/**
  * Check if the given array or object is empty.
  */
-function isEmpty(data) {
-    if (Array.isArray(data)) {
-        return data.length === 0;
-    }
-    return Object.keys(data).length === 0;
+function isEmpty(collection) {
+    return size(collection) === 0;
 }
 /**
  * Iterates over own enumerable string keyed properties of an object and
@@ -650,27 +654,14 @@ function mapValues(object, iteratee) {
     }, newObject);
 }
 /**
- * Creates an object composed of the object properties predicate returns
- * truthy for. The predicate is invoked with two arguments: (value, key).
- */
-function pickBy(object, predicate) {
-    return Object.keys(object).reduce(function (records, key) {
-        var value = object[key];
-        if (predicate(value, key)) {
-            records[key] = value;
-        }
-        return records;
-    }, {});
-}
-/**
  * Creates an array of elements, sorted in specified order by the results
  * of running each element in a collection thru each iteratee.
  */
-function orderBy(collection, keys, directions) {
+function orderBy(collection, iteratees, directions) {
     var index = -1;
     var result = collection.map(function (value) {
-        var criteria = keys.map(function (key) {
-            return typeof key === 'function' ? key(value) : value[key];
+        var criteria = iteratees.map(function (iteratee) {
+            return typeof iteratee === 'function' ? iteratee(value) : value[iteratee];
         });
         return { criteria: criteria, index: ++index, value: value };
     });
@@ -679,31 +670,19 @@ function orderBy(collection, keys, directions) {
     });
 }
 /**
- * Creates an object composed of keys generated from the results of running
- * each element of collection thru iteratee.
- */
-function groupBy(collection, iteratee) {
-    return collection.reduce(function (records, record) {
-        var key = iteratee(record);
-        if (records[key] === undefined) {
-            records[key] = [];
-        }
-        records[key].push(record);
-        return records;
-    }, {});
-}
-/**
- * The base implementation of `_.sortBy` which uses `comparer` to define the
- * sort order of `array` and replaces criteria objects with their
- * corresponding values.
+ * Creates an array of elements, sorted in ascending order by the results of
+ * running each element in a collection thru each iteratee. This method
+ * performs a stable sort, that is, it preserves the original sort order
+ * of equal elements.
  */
 function baseSortBy(array, comparer) {
     var length = array.length;
     array.sort(comparer);
+    var newArray = [];
     while (length--) {
-        array[length] = array[length].value;
+        newArray[length] = array[length].value;
     }
-    return array;
+    return newArray;
 }
 /**
  * Used by `orderBy` to compare multiple properties of a value to another
@@ -714,11 +693,11 @@ function baseSortBy(array, comparer) {
  * ascending sort order of corresponding values.
  */
 function compareMultiple(object, other, orders) {
+    var index = -1;
     var objCriteria = object.criteria;
     var othCriteria = other.criteria;
     var length = objCriteria.length;
     var ordersLength = orders.length;
-    var index = -1;
     while (++index < length) {
         var result = compareAscending(objCriteria[index], othCriteria[index]);
         if (result) {
@@ -736,22 +715,50 @@ function compareMultiple(object, other, orders) {
  */
 function compareAscending(value, other) {
     if (value !== other) {
-        if (value > other) {
+        var valIsDefined = value !== undefined;
+        var valIsNull = value === null;
+        var valIsReflexive = value === value;
+        var othIsDefined = other !== undefined;
+        var othIsNull = other === null;
+        var othIsReflexive = other === other;
+        value = typeof value === 'number' ? String(value) : value;
+        other = typeof other === 'number' ? String(other) : other;
+        if ((!othIsNull && value > other) ||
+            (valIsNull && othIsDefined && othIsReflexive) ||
+            (!valIsDefined && othIsReflexive) ||
+            !valIsReflexive) {
             return 1;
         }
-        if (value < other) {
+        if ((!valIsNull && value < other) ||
+            (othIsNull && valIsDefined && valIsReflexive) ||
+            (!othIsDefined && valIsReflexive) ||
+            !othIsReflexive) {
             return -1;
         }
     }
     return 0;
 }
+/**
+ * Creates an object composed of keys generated from the results of running
+ * each element of collection thru iteratee.
+ */
+function groupBy(collection, iteratee) {
+    return collection.reduce(function (records, record) {
+        var key = iteratee(record);
+        if (records[key] === undefined) {
+            records[key] = [];
+        }
+        records[key].push(record);
+        return records;
+    }, {});
+}
 var Utils = {
+    size: size,
     isEmpty: isEmpty,
     forOwn: forOwn,
     groupBy: groupBy,
     mapValues: mapValues,
-    orderBy: orderBy,
-    pickBy: pickBy
+    orderBy: orderBy
 };
 
 var Attribute = /** @class */ (function () {
@@ -1590,7 +1597,10 @@ var BelongsToMany = /** @class */ (function (_super) {
             var _a, _b;
             var parentId = record[_this.parentKey];
             var relatedId = data[_this.related.entity][id][_this.relatedKey];
-            var pivotKey = JSON.stringify([relatedId, parentId]);
+            var pivotKey = JSON.stringify([
+                _this.pivot.primaryKey[0] === _this.foreignPivotKey ? parentId : relatedId,
+                _this.pivot.primaryKey[1] === _this.foreignPivotKey ? parentId : relatedId
+            ]);
             var pivotRecord = data[_this.pivot.entity] ? data[_this.pivot.entity][pivotKey] : {};
             data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = __assign(__assign({}, pivotRecord), (_b = { $id: pivotKey }, _b[_this.foreignPivotKey] = parentId, _b[_this.relatedPivotKey] = relatedId, _b)), _a));
         });
@@ -1628,11 +1638,13 @@ var MorphTo = /** @class */ (function (_super) {
      */
     MorphTo.prototype.make = function (value, parent, _key) {
         var related = parent[this.type];
-        var model = this.model.relation(related);
-        if (!model) {
+        try {
+            var model = this.model.relation(related);
+            return this.makeOneRelation(value, model);
+        }
+        catch (_a) {
             return null;
         }
-        return this.makeOneRelation(value, model);
     };
     /**
      * Load the morph to relationship for the collection.
@@ -2014,52 +2026,80 @@ var MorphedByMany = /** @class */ (function (_super) {
     return MorphedByMany;
 }(Relation));
 
-var Serializer = /** @class */ (function () {
-    function Serializer() {
+var defaultOption = {
+    relations: true
+};
+/**
+ * Serialize the given model to attributes. This method will ignore
+ * relationships, and it includes the index id.
+ */
+function toAttributes(model) {
+    var record = toJson(model, { relations: false });
+    record.$id = model.$id;
+    return record;
+}
+/**
+ * Serialize given model POJO.
+ */
+function toJson(model, option) {
+    if (option === void 0) { option = {}; }
+    option = __assign(__assign({}, defaultOption), option);
+    var record = {};
+    var fields = model.$fields();
+    for (var key in fields) {
+        var f = fields[key];
+        var v = model[key];
+        if (f instanceof Relation) {
+            record[key] = option.relations ? relation(v) : emptyRelation(v);
+            continue;
+        }
+        record[key] = value(model[key]);
     }
-    /**
-     * Serialize given model fields value to json.
-     */
-    Serializer.serialize = function (model) {
-        var _this = this;
-        var keys = Object.keys(model.$fields());
-        return keys.reduce(function (record, key) {
-            var value = model[key];
-            record[key] = _this.serializeValue(value);
-            return record;
-        }, {});
-    };
-    /**
-     * Serialize given value.
-     */
-    Serializer.serializeValue = function (value) {
-        if (value instanceof Model) {
-            return this.serializeItem(value);
-        }
-        if (Array.isArray(value)) {
-            return this.serializeCollection(value);
-        }
-        return value;
-    };
-    /**
-     * Serialize an item into json.
-     */
-    Serializer.serializeItem = function (item) {
-        return item.$toJson();
-    };
-    /**
-     * Serialize a collection into json.
-     */
-    Serializer.serializeCollection = function (collection) {
-        return collection.map(function (item) {
-            if (item instanceof Model) {
-                return item.$toJson();
-            }
-            return item;
-        });
-    };
-    return Serializer;
-}());
+    return record;
+}
+/**
+ * Serialize given value.
+ */
+function value(v) {
+    if (v === null) {
+        return null;
+    }
+    if (Array.isArray(v)) {
+        return array(v);
+    }
+    if (typeof v === 'object') {
+        return object(v);
+    }
+    return v;
+}
+/**
+ * Serialize an array into json.
+ */
+function array(a) {
+    return a.map(function (v) { return value(v); });
+}
+/**
+ * Serialize an object into json.
+ */
+function object(o) {
+    var obj = {};
+    for (var key in o) {
+        obj[key] = value(o[key]);
+    }
+    return obj;
+}
+function relation(relation) {
+    if (relation === null) {
+        return null;
+    }
+    if (Array.isArray(relation)) {
+        return relation.map(function (model) { return model.$toJson(); });
+    }
+    return relation.$toJson();
+}
+function emptyRelation(relation) {
+    return Array.isArray(relation) ? [] : null;
+}
 
 var Model = /** @class */ (function () {
     /**
@@ -2193,16 +2233,16 @@ var Model = /** @class */ (function () {
         return {};
     };
     /**
-     * Get the database instance from the container.
-     */
-    Model.database = function () {
-        return Container.database;
-    };
-    /**
      * Get the store instance from the container.
      */
     Model.store = function () {
-        return this.database().store;
+        return Container.store;
+    };
+    /**
+     * Get the database instance from store.
+     */
+    Model.database = function () {
+        return this.store().$db();
     };
     /**
      * Create a namespaced method name for Vuex Module from the given
@@ -2242,7 +2282,7 @@ var Model = /** @class */ (function () {
         if (this.cachedFields[this.entity]) {
             return this.cachedFields[this.entity];
         }
-        this.cachedFields[this.entity] = __assign({ $id: this.string(null).nullable() }, this.fields());
+        this.cachedFields[this.entity] = this.fields();
         return this.cachedFields[this.entity];
     };
     /**
@@ -2445,7 +2485,11 @@ var Model = /** @class */ (function () {
      * it'll return `null`.
      */
     Model.getTypeModel = function (name) {
-        return this.types()[name] || null;
+        var model = this.types()[name];
+        if (!model) {
+            return null;
+        }
+        return model;
     };
     /**
      * Given a Model, this returns the corresponding key in the InheritanceTypes mapping
@@ -2454,7 +2498,7 @@ var Model = /** @class */ (function () {
         var modelToCheck = model || this;
         var types = this.types();
         for (var type in types) {
-            if (types[type] === modelToCheck) {
+            if (types[type].entity === modelToCheck.entity) {
                 return type;
             }
         }
@@ -2480,7 +2524,7 @@ var Model = /** @class */ (function () {
      * in the model schema.
      */
     Model.hydrate = function (record) {
-        return (new this(record)).$toJson();
+        return (new this(record)).$getAttributes();
     };
     /**
      * Get the constructor of this model.
@@ -2499,6 +2543,13 @@ var Model = /** @class */ (function () {
      */
     Model.prototype.$fields = function () {
         return this.$self().getFields();
+    };
+    /**
+     * Set index id.
+     */
+    Model.prototype.$setIndexId = function (id) {
+        this.$id = id;
+        return this;
     };
     /**
      * Get the store instance from the container.
@@ -2662,19 +2713,29 @@ var Model = /** @class */ (function () {
      * be filled with its default value defined at model fields definition.
      */
     Model.prototype.$fill = function (record) {
-        var data = record || {};
+        if (record === void 0) { record = {}; }
         var fields = this.$fields();
         for (var key in fields) {
             var field = fields[key];
-            var value = data[key];
-            this[key] = field.make(value, data, key);
+            var value = record[key];
+            this[key] = field.make(value, record, key);
         }
+        // If the record contains index id, set it to the model.
+        record.$id !== undefined && this.$setIndexId(record.$id);
+    };
+    /**
+     * Get all of the current attributes on the model. It includes index id
+     * value as well. This method is mainly used when saving a model to
+     * the store.
+     */
+    Model.prototype.$getAttributes = function () {
+        return toAttributes(this);
     };
     /**
      * Serialize field values into json.
      */
     Model.prototype.$toJson = function () {
-        return Serializer.serialize(this);
+        return toJson(this);
     };
     /**
      * The primary key to be used for the model.
@@ -3336,7 +3397,7 @@ var Normalizer = /** @class */ (function () {
         if (Utils.isEmpty(record)) {
             return {};
         }
-        var entity = query.database().schemas[query.model.entity];
+        var entity = query.database.schemas[query.model.entity];
         var schema = Array.isArray(record) ? [entity] : entity;
         return normalize$1(record, schema).entities;
     };
@@ -3441,7 +3502,7 @@ var WhereFilter = /** @class */ (function () {
         return function (where) {
             // Function with Record and Query as argument.
             if (typeof where.field === 'function') {
-                var newQuery = new Query(query.rootState, query.entity);
+                var newQuery = new Query(query.database, query.entity);
                 var result = _this.executeWhereClosure(newQuery, record, where.field);
                 if (typeof result === 'boolean') {
                     return result;
@@ -3785,7 +3846,7 @@ var Query = /** @class */ (function () {
     /**
      * Create a new Query instance.
      */
-    function Query(state, entity) {
+    function Query(database, entity) {
         /**
          * This flag lets us know if current Query instance applies to
          * a base class or not (in order to know when to filter out
@@ -3839,45 +3900,22 @@ var Query = /** @class */ (function () {
          * The relationships that should be eager loaded with the result.
          */
         this.load = {};
-        // All entitites with same base class are stored in the same state.
-        var baseModel = this.getBaseModel(entity);
-        this.rootState = state;
-        this.state = state[baseModel.entity];
+        this.database = database;
         this.entity = entity;
+        this.baseModel = this.getBaseModel(entity);
         this.model = this.getModel(entity);
-        this.appliedOnBase = baseModel.entity === entity;
+        this.rootState = this.database.getState();
+        this.state = this.rootState[this.baseModel.entity];
+        this.appliedOnBase = this.baseModel.entity === this.entity;
     }
-    /**
-     * Get the database from the container.
-     */
-    Query.database = function () {
-        return Container.database;
-    };
-    /**
-     * Get model of given name from the container.
-     */
-    Query.getModel = function (name) {
-        return this.database().model(name);
-    };
-    /**
-     * Get base model of given name from the container.
-     */
-    Query.getBaseModel = function (name) {
-        return this.database().baseModel(name);
-    };
-    /**
-     * Get all models from the container.
-     */
-    Query.getModels = function () {
-        return this.database().models();
-    };
     /**
      * Delete all records from the store.
      */
-    Query.deleteAll = function (state) {
-        var models = this.getModels();
+    Query.deleteAll = function (database) {
+        var models = database.models();
         for (var entity in models) {
-            state[entity] && (new this(state, entity)).deleteAll();
+            var state = database.getState()[entity];
+            state && (new this(database, entity)).deleteAll();
         }
     };
     /**
@@ -3918,32 +3956,26 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.newQuery = function (entity) {
         entity = entity || this.entity;
-        return (new Query(this.rootState, entity));
-    };
-    /**
-     * Get the database from the container.
-     */
-    Query.prototype.database = function () {
-        return this.self().database();
+        return (new Query(this.database, entity));
     };
     /**
      * Get model of given name from the container.
      */
     Query.prototype.getModel = function (name) {
         var entity = name || this.entity;
-        return this.self().getModel(entity);
+        return this.database.model(entity);
     };
     /**
      * Get all models from the container.
      */
     Query.prototype.getModels = function () {
-        return this.self().getModels();
+        return this.database.models();
     };
     /**
      * Get base model of given name from the container.
      */
     Query.prototype.getBaseModel = function (name) {
-        return this.self().getBaseModel(name);
+        return this.database.baseModel(name);
     };
     /**
      * Returns all record of the query chain result. This method is alias
@@ -4178,7 +4210,7 @@ var Query = /** @class */ (function () {
             }
             var model = _this.hydrate(record);
             // Ignore if the model is not current type of model.
-            if (!_this.appliedOnBase && !(model instanceof _this.model)) {
+            if (!_this.appliedOnBase && !(_this.model.entity === model.$self().entity)) {
                 return models;
             }
             models.push(model);
@@ -4382,7 +4414,7 @@ var Query = /** @class */ (function () {
                 return "continue";
             }
             models.push(model);
-            recordsToBeInserted[id] = model.$toJson();
+            recordsToBeInserted[id] = model.$getAttributes();
         };
         var this_1 = this;
         for (var id in records) {
@@ -4507,7 +4539,7 @@ var Query = /** @class */ (function () {
             if (beforeHooks.some(function (hook) { return hook(model, _this.entity) === false; })) {
                 return "continue";
             }
-            this_2.state.data = __assign(__assign({}, this_2.state.data), (_a = {}, _a[id] = model.$toJson(), _a));
+            this_2.state.data = __assign(__assign({}, this_2.state.data), (_a = {}, _a[id] = model.$getAttributes(), _a));
             afterHooks.forEach(function (hook) { hook(model, _this.entity); });
             updated.push(model);
         };
@@ -4636,7 +4668,7 @@ var Query = /** @class */ (function () {
         }
         // Otherwise, we should filter out any derived entities from being deleted
         // so we'll add such filter here.
-        return this.deleteByCondition(function (model) { return model instanceof _this.model; });
+        return this.deleteByCondition(function (model) { return model.$self().entity === _this.model.entity; });
     };
     /**
      * Delete a record from the store by given id.
@@ -4728,7 +4760,7 @@ var Query = /** @class */ (function () {
         }
         this.state.data = Object.entries(this.state.data).reduce(function (records, _a) {
             var id = _a[0], record = _a[1];
-            if (!(_this.model.getModelFromRecord(record) === _this.model)) {
+            if (!(_this.model.getModelFromRecord(record).entity === _this.model.entity)) {
                 records[id] = record;
             }
             return records;
@@ -4851,27 +4883,35 @@ var RootGetters = {
     /**
      * Create a new Query instance.
      */
-    query: function (state) { return function (entity) {
-        return new Query(state, entity);
-    }; },
+    query: function (_state) {
+        var database = this.$db();
+        return function (entity) { return new Query(database, entity); };
+    },
     /**
      * Get all data of given entity.
      */
-    all: function (state) { return function (entity) {
-        return (new Query(state, entity)).all();
-    }; },
+    all: function (_state) {
+        var database = this.$db();
+        return function (entity) { return (new Query(database, entity)).all(); };
+    },
     /**
      * Find a data of the given entity by given id.
      */
-    find: function (state) { return function (entity, id) {
-        return (new Query(state, entity)).find(id);
-    }; },
+    find: function (_state) {
+        var database = this.$db();
+        return function (entity, id) {
+            return (new Query(database, entity)).find(id);
+        };
+    },
     /**
      * Find a data of the given entity by given id.
      */
-    findIn: function (state) { return function (entity, idList) {
-        return (new Query(state, entity)).findIn(idList);
-    }; }
+    findIn: function (_state) {
+        var database = this.$db();
+        return function (entity, idList) {
+            return (new Query(database, entity)).findIn(idList);
+        };
+    }
 };
 
 function destroy$1(context, payload) {
@@ -4992,21 +5032,21 @@ var OptionsBuilder = /** @class */ (function () {
  * `delete`, but named `destroy` here because `delete` can't be declared at
  * this scope level.
  */
-function destroy$2(state, payload) {
+function destroy$2(_state, payload) {
     var entity = payload.entity;
     var where = payload.where;
     var result = payload.result;
-    result.data = (new Query(state, entity)).delete(where);
+    result.data = (new Query(this.$db(), entity)).delete(where);
 }
 /**
  * Delete all data from the store.
  */
-function deleteAll$2(state, payload) {
+function deleteAll$2(_state, payload) {
     if (payload && payload.entity) {
-        (new Query(state, payload.entity)).deleteAll();
+        (new Query(this.$db(), payload.entity)).deleteAll();
         return;
     }
-    Query.deleteAll(state);
+    Query.deleteAll(this.$db());
 }
 var RootMutations = {
     /**
@@ -5019,57 +5059,57 @@ var RootMutations = {
     /**
      * Create new data with all fields filled by default values.
      */
-    new: function (state, payload) {
+    new: function (_state, payload) {
         var entity = payload.entity;
         var result = payload.result;
-        result.data = (new Query(state, entity)).new();
+        result.data = (new Query(this.$db(), entity)).new();
     },
     /**
      * Save given data to the store by replacing all existing records in the
      * store. If you want to save data without replacing existing records,
      * use the `insert` method instead.
      */
-    create: function (state, payload) {
+    create: function (_state, payload) {
         var entity = payload.entity;
         var data = payload.data;
         var options = OptionsBuilder.createPersistOptions(payload);
         var result = payload.result;
-        result.data = (new Query(state, entity)).create(data, options);
+        result.data = (new Query(this.$db(), entity)).create(data, options);
     },
     /**
      * Insert given data to the state. Unlike `create`, this method will not
      * remove existing data within the state, but it will update the data
      * with the same primary key.
      */
-    insert: function (state, payload) {
+    insert: function (_state, payload) {
         var entity = payload.entity;
         var data = payload.data;
         var options = OptionsBuilder.createPersistOptions(payload);
         var result = payload.result;
-        result.data = (new Query(state, entity)).insert(data, options);
+        result.data = (new Query(this.$db(), entity)).insert(data, options);
     },
     /**
      * Update data in the store.
      */
-    update: function (state, payload) {
+    update: function (_state, payload) {
         var entity = payload.entity;
         var data = payload.data;
         var where = payload.where || null;
         var options = OptionsBuilder.createPersistOptions(payload);
         var result = payload.result;
-        result.data = (new Query(state, entity)).update(data, where, options);
+        result.data = (new Query(this.$db(), entity)).update(data, where, options);
     },
     /**
      * Insert or update given data to the state. Unlike `insert`, this method
      * will not replace existing data within the state, but it will update only
      * the submitted data with the same primary key.
      */
-    insertOrUpdate: function (state, payload) {
+    insertOrUpdate: function (_state, payload) {
         var entity = payload.entity;
         var data = payload.data;
         var options = OptionsBuilder.createPersistOptions(payload);
         var result = payload.result;
-        result.data = (new Query(state, entity)).insertOrUpdate(data, options);
+        result.data = (new Query(this.$db(), entity)).insertOrUpdate(data, options);
     },
     delete: destroy$2,
     deleteAll: deleteAll$2
@@ -5212,66 +5252,22 @@ var Schema = /** @class */ (function () {
     return Schema;
 }());
 
-var Builder = /** @class */ (function () {
-    function Builder() {
-    }
-    /**
-     * Create module from the given modules.
-     */
-    Builder.create = function (namespace, models, modules) {
-        var tree = {
-            namespaced: true,
-            state: { $name: namespace },
-            getters: RootGetters,
-            actions: RootActions,
-            mutations: RootMutations,
-            modules: {}
-        };
-        return this.createModules(tree, namespace, models, modules);
-    };
-    /**
-     * Creates module tree to be registered under top level module
-     * from the given entities.
-     */
-    Builder.createModules = function (tree, namespace, models, modules) {
-        var _this = this;
-        Object.keys(modules).forEach(function (name) {
-            var model = models[name];
-            var module = modules[name];
-            tree.modules[name] = { namespaced: true };
-            tree.modules[name].state = _this.createState(namespace, name, model, module);
-            tree.getters[name] = function (_state, getters, _rootState, _rootGetters) { return function () {
-                return getters.query(name);
-            }; };
-            tree.modules[name].getters = __assign(__assign({}, Getters), module.getters);
-            tree.modules[name].actions = __assign(__assign({}, Actions), module.actions);
-            tree.modules[name].mutations = module.mutations || {};
-        });
-        return tree;
-    };
-    /**
-     * Get new state to be registered to the modules.
-     */
-    Builder.createState = function (namespace, name, model, module) {
-        var modelState = typeof model.state === 'function' ? model.state() : model.state;
-        var moduleState = typeof module.state === 'function' ? module.state() : module.state;
-        return __assign(__assign(__assign({}, modelState), moduleState), { $connection: namespace, $name: name, data: {} });
-    };
-    return Builder;
-}());
-
 var Database = /** @class */ (function () {
     function Database() {
         /**
-         * The list of entities registered to the Vuex Store. It contains models and
-         * modules with its name.
+         * The list of entities. It contains models and modules with its name.
+         * The name is going to be the namespace for the Vuex Modules.
          */
         this.entities = [];
         /**
-         * The database schema definition. This schema is going to be used when
-         * normalizing the data before persisting them to the Vuex Store.
+         * The normalizr schema.
          */
         this.schemas = {};
+        /**
+         * Whether the database has already been installed to Vuex or not.
+         * Model registration steps depend on its value.
+         */
+        this.isStarted = false;
     }
     /**
      * Initialize the database before a user can start using it.
@@ -5279,8 +5275,10 @@ var Database = /** @class */ (function () {
     Database.prototype.start = function (store, namespace) {
         this.store = store;
         this.namespace = namespace;
+        this.connect();
         this.registerModules();
         this.createSchema();
+        this.isStarted = true;
     };
     /**
      * Register a model and a module to Database.
@@ -5288,24 +5286,33 @@ var Database = /** @class */ (function () {
     Database.prototype.register = function (model, module) {
         if (module === void 0) { module = {}; }
         this.checkModelTypeMappingCapability(model);
-        this.entities.push({
+        var entity = {
             name: model.entity,
             base: model.baseEntity || model.entity,
-            model: model,
+            model: this.createBindingModel(model),
             module: module
-        });
+        };
+        this.entities.push(entity);
+        if (this.isStarted) {
+            this.registerModule(entity);
+            this.registerSchema(entity);
+        }
     };
-    /**
-     * Get the model of the given name from the entities list.
-     */
-    Database.prototype.model = function (name) {
-        return this.models()[name];
+    Database.prototype.model = function (model) {
+        var m = this.models()[typeof model === 'string' ? model : model.entity];
+        if (!m) {
+            throw new Error("[Vuex ORM] Could not find the model `" + name + "`. Please check if you " +
+                'have registered the model to the database.');
+        }
+        return m;
     };
-    /**
-     * Get the base model of the given name from the entities list.
-     */
-    Database.prototype.baseModel = function (name) {
-        return this.baseModels()[name];
+    Database.prototype.baseModel = function (model) {
+        var m = this.baseModels()[typeof model === 'string' ? model : model.entity];
+        if (!m) {
+            throw new Error("[Vuex ORM] Could not find the model `" + name + "`. Please check if you " +
+                'have registered the model to the database.');
+        }
+        return m;
     };
     /**
      * Get all models from the entities list.
@@ -5330,7 +5337,12 @@ var Database = /** @class */ (function () {
      * Get the module of the given name from the entities list.
      */
     Database.prototype.module = function (name) {
-        return this.modules()[name];
+        var module = this.modules()[name];
+        if (!module) {
+            throw new Error("[Vuex ORM] Could not find the module `" + name + "`. Please check if you " +
+                'have registered the module to the database.');
+        }
+        return module;
     };
     /**
      * Get all modules from the entities list.
@@ -5342,11 +5354,136 @@ var Database = /** @class */ (function () {
         }, {});
     };
     /**
-     * Create the Vuex Module from the registered entities.
+     * Get the root state from the store.
+     */
+    Database.prototype.getState = function () {
+        return this.store.state[this.namespace];
+    };
+    /**
+     * Create a new model that binds the database.
+     */
+    Database.prototype.createBindingModel = function (model) {
+        var database = this;
+        var c = /** @class */ (function (_super) {
+            __extends(class_1, _super);
+            function class_1() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            class_1.store = function () {
+                return database.store;
+            };
+            return class_1;
+        }(model));
+        Object.defineProperty(c, 'name', { get: function () { return model.name; } });
+        return c;
+    };
+    /**
+     * Create Vuex Module from the registered entities, and register to
+     * the store.
      */
     Database.prototype.registerModules = function () {
-        var modules = Builder.create(this.namespace, this.models(), this.modules());
-        this.store.registerModule(this.namespace, modules);
+        this.store.registerModule(this.namespace, this.createModule());
+    };
+    /**
+     * Generate module from the given entity, and register to the store.
+     */
+    Database.prototype.registerModule = function (entity) {
+        this.store.registerModule([this.namespace, entity.name], this.createSubModule(entity));
+    };
+    /**
+     * Create Vuex Module from the registered entities.
+     */
+    Database.prototype.createModule = function () {
+        var _this = this;
+        var module = this.createRootModule();
+        this.entities.forEach(function (entity) {
+            module.modules[entity.name] = _this.createSubModule(entity);
+        });
+        return module;
+    };
+    /**
+     * Create root module.
+     */
+    Database.prototype.createRootModule = function () {
+        return {
+            namespaced: true,
+            state: this.createRootState(),
+            getters: this.createRootGetters(),
+            actions: this.createRootActions(),
+            mutations: this.createRootMutations(),
+            modules: {}
+        };
+    };
+    /**
+     * Create root state.
+     */
+    Database.prototype.createRootState = function () {
+        var _this = this;
+        return function () { return ({ $name: _this.namespace }); };
+    };
+    /**
+     * Create root getters. For the getters, we bind the store instance to each
+     * function to retrieve database instances within getters. We only need this
+     * for the getter since actions and mutations are already bound to store.
+     */
+    Database.prototype.createRootGetters = function () {
+        var _this = this;
+        return mapValues(RootGetters, function (_getter, name) {
+            return RootGetters[name].bind(_this.store);
+        });
+    };
+    /**
+     * Create root actions.
+     */
+    Database.prototype.createRootActions = function () {
+        return RootActions;
+    };
+    /**
+     * Create root mutations.
+     */
+    Database.prototype.createRootMutations = function () {
+        return RootMutations;
+    };
+    /**
+     * Create sub module.
+     */
+    Database.prototype.createSubModule = function (entity) {
+        return {
+            namespaced: true,
+            state: this.createSubState(entity),
+            getters: this.createSubGetters(entity),
+            actions: this.createSubActions(entity),
+            mutations: this.createSubMutations(entity)
+        };
+    };
+    /**
+     * Create sub state.
+     */
+    Database.prototype.createSubState = function (entity) {
+        var _this = this;
+        var name = entity.name, model = entity.model, module = entity.module;
+        var modelState = typeof model.state === 'function' ? model.state() : model.state;
+        var moduleState = typeof module.state === 'function' ? module.state() : module.state;
+        return function () { return (__assign(__assign(__assign({}, modelState), moduleState), { $connection: _this.namespace, $name: name, data: {} })); };
+    };
+    /**
+     * Create sub getters.
+     */
+    Database.prototype.createSubGetters = function (entity) {
+        return __assign(__assign({}, Getters), entity.module.getters);
+    };
+    /**
+     * Create sub actions.
+     */
+    Database.prototype.createSubActions = function (entity) {
+        return __assign(__assign({}, Actions), entity.module.actions);
+    };
+    /**
+     * Create sub mutations.
+     */
+    Database.prototype.createSubMutations = function (entity) {
+        var _a;
+        return _a = entity.module.mutations, (_a !== null && _a !== void 0 ? _a : {});
     };
     /**
      * Create the schema definition from registered entities list and set it to
@@ -5356,8 +5493,21 @@ var Database = /** @class */ (function () {
     Database.prototype.createSchema = function () {
         var _this = this;
         this.entities.forEach(function (entity) {
-            _this.schemas[entity.name] = Schema.create(entity.model);
+            _this.registerSchema(entity);
         });
+    };
+    /**
+     * Generate schema from the given entity.
+     */
+    Database.prototype.registerSchema = function (entity) {
+        this.schemas[entity.name] = Schema.create(entity.model);
+    };
+    /**
+     * Inject database to the store instance.
+     */
+    Database.prototype.connect = function () {
+        var _this = this;
+        this.store.$db = function () { return _this; };
     };
     /**
      * Warn user if the given model is a type of an inherited model that is being
@@ -5381,7 +5531,8 @@ var Database = /** @class */ (function () {
         // possible to use type mapping feature.
         var baseModel = this.model(model.baseEntity);
         if (baseModel && baseModel.types === Model.types) {
-            console.warn("Model " + model.name + " extends " + baseModel.name + " which doesn't overwrite Model.types(). You will not be able to use type mapping.");
+            console.warn("[Vuex ORM] Model `" + model.name + "` extends `" + baseModel.name + "` which doesn't " +
+                'overwrite Model.types(). You will not be able to use type mapping.');
         }
     };
     return Database;
