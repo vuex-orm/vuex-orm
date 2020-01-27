@@ -152,7 +152,7 @@ sidebarDepth: 2
     static fields () {
       return {
         id: this.attr(null),
-        name: this.attr('')
+        name: this.attr('John Doe')
       }
     }
   }
@@ -161,7 +161,18 @@ sidebarDepth: 2
 
   user.$fields()
 
-  // { username: { ... }, name: { ... } }
+  /*
+    {
+      username: {
+        value: null,     // default value
+        ...
+      },
+      name: {
+        value: John Doe, // default value
+        ...
+      }
+    }
+  */
   ```
 
 ### $id

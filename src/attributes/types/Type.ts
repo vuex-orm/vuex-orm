@@ -4,11 +4,6 @@ import Attribute from '../Attribute'
 
 export default abstract class Type extends Attribute {
   /**
-   * The default value of the field.
-   */
-  value: any
-
-  /**
    * Whether if the attribute can accept `null` as a value.
    */
   isNullable: boolean = false
