@@ -207,10 +207,10 @@ export default class Database {
   }
 
   /**
-   * Append entity registered after start
+   * Generate module from the given entity, and register to the store.
    */
   private registerModule (entity: Entity): void {
-    this.store.registerModule([ this.namespace, entity.name ], this.createSubModule(entity))
+    this.store.registerModule([this.namespace, entity.name], this.createSubModule(entity))
   }
 
   /**
@@ -336,7 +336,7 @@ export default class Database {
   }
 
   /**
-   * Append schema registered after start
+   * Generate schema from the given entity.
    */
   private registerSchema (entity: Entity): void {
     this.schemas[entity.name] = Schema.create(entity.model)

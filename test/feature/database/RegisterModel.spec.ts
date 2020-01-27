@@ -12,31 +12,8 @@ describe('Feature – Database - Register Model', () => {
 
     static fields () {
       return {
-        id: this.increment(),
-        name: this.string()
-      }
-    }
-  }
-
-  const userModule = {
-    state: {
-      currentId: null
-    },
-    getters: {
-      current: state => () => state.data[state.currentId]
-    },
-    mutations: {
-      setCurrent (state, id) {
-        state.currentId = id
-      }
-    },
-    actions: {
-      login ({ commit, state }, name) {
-        const id = Object.keys(state.data).find(key => state.data[key].name === name)
-        commit('setCurrent', id)
-      },
-      logout ({ commit }) {
-        commit('setCurrent', null)
+        id: this.uid(),
+        name: this.string('')
       }
     }
   }
@@ -46,10 +23,37 @@ describe('Feature – Database - Register Model', () => {
 
     static fields () {
       return {
-        id: this.increment(),
-        name: this.string(),
-        userId: this.attr(),
-        user: this.belongsTo(User, 'userId')
+        id: this.uid(),
+        user_id: this.attr(null),
+        name: this.string(''),
+        user: this.belongsTo(User, 'user_id')
+      }
+    }
+  }
+
+  const userModule = {
+    state: {
+      currentId: null
+    },
+
+    getters: {
+      current: (state: any) => () => state.data[state.currentId]
+    },
+
+    mutations: {
+      setCurrent (state: any, id: number) {
+        state.currentId = id
+      }
+    },
+
+    actions: {
+      login ({ commit, state }: any, name: string) {
+        const id = Object.keys(state.data).find(key => state.data[key].name === name)
+        commit('setCurrent', id)
+      },
+
+      logout ({ commit }: any) {
+        commit('setCurrent', null)
       }
     }
   }
@@ -104,9 +108,11 @@ describe('Feature – Database - Register Model', () => {
     const getCurrentUser = store.getters['entities/users/current']
 
     expect(getCurrentUser()).toBeUndefined()
-    store.dispatch('entities/users/login', 'user 2')
+
+    await store.dispatch('entities/users/login', 'user 2')
     expect(getCurrentUser()).toEqual(user)
-    store.dispatch('entities/users/logout')
+
+    await store.dispatch('entities/users/logout')
     expect(getCurrentUser()).toBeUndefined()
   })
 
@@ -149,7 +155,6 @@ describe('Feature – Database - Register Model', () => {
 
     database.register(User, userModule)
 
-
     await store.dispatch('entities/users/create', {
       data: [
         { name: 'user 1' },
@@ -162,9 +167,11 @@ describe('Feature – Database - Register Model', () => {
     const getCurrentUser = store.getters['entities/users/current']
 
     expect(getCurrentUser()).toBeUndefined()
-    store.dispatch('entities/users/login', 'user 2')
+
+    await store.dispatch('entities/users/login', 'user 2')
     expect(getCurrentUser()).toEqual(user)
-    store.dispatch('entities/users/logout')
+
+    await store.dispatch('entities/users/logout')
     expect(getCurrentUser()).toBeUndefined()
   })
 
