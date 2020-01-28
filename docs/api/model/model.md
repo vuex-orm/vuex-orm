@@ -83,7 +83,7 @@ sidebarDepth: 2
   */
   ```
 
-  > **NOTE:** `hydrate` method will not "normalize" the given data. It will fill any missing field, but it wouldn't attach correct id value to the foreign field, for example adding `id` value of the user to the `user_id` field of the post, or increment the value specified by `increment` attribute.
+  > **NOTE:** `hydrate` method will not "normalize" the given data. It will fill any missing field, but it wouldn't attach correct id value to the foreign field, for example adding `id` value of the user to the `user_id` field of the post, or increment the value specified by the `uid` attribute.
 
 ## Instance Methods
 

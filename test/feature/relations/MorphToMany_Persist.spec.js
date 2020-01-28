@@ -129,7 +129,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     expect(store.state.entities.posts.data).toEqual(expected)
   })
 
-  it('can create a morph to many relation data with increment id set on pivot model', async () => {
+  it('can create a morph to many relation data with uid as id set on pivot model', async () => {
     class Post extends Model {
       static entity = 'posts'
 
@@ -205,13 +205,13 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
-  it('can create a morph to many relation data with increment id set on parent model', async () => {
+  it('can create a morph to many relation data with uid as id set on parent model', async () => {
     class Post extends Model {
       static entity = 'posts'
 
       static fields () {
         return {
-          id: this.increment(),
+          id: this.uid(),
           title: this.attr(''),
           tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
         }

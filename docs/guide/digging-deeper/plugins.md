@@ -47,7 +47,7 @@ The following components are included within the `components` argument.
 - String
 - Number
 - Boolean
-- Increment
+- Uid
 - Relation
 - HasOne
 - BelongsTo
