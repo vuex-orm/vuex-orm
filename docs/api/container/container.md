@@ -10,9 +10,9 @@ The Container is the global object that holds Vuex Store instance. The only purp
 
 ### store
 
-- **`static store: Database`**
+- **`static store: Vuex.Store<any>`**
 
-  The store instance that Vuex ORM is beeing installed.
+  The store instance that Vuex ORM is being installed.
 
 ## Static Methods
 

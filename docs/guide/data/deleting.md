@@ -1,6 +1,6 @@
 # Deleting
 
-You can delete data from the store by calling the `delete` Method on the Model class. The first argument is the ID—primary key value—of the record you want to delete.
+You can delete data from the store by calling the `delete` method on the Model class. The first argument is the ID—primary key value—of the record you want to delete.
 
 ```vue
 <template>

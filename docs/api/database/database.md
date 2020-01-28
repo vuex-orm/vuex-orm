@@ -4,11 +4,11 @@ sidebarDepth: 2
 
 # Database
 
-Database is the object that holds all Models and Modules that registered to the Vuex ORM. It is also responsible for generating the whole database relational schema from registered models. This schema is used to "Normalize" data before persisting to the Vuex Store.
+The Database is the object that holds all Models and Modules that are registered to the Vuex ORM. It is also responsible for generating the whole database relational schema from registered models. This schema is used to "Normalize" data before persisting to the Vuex Store.
 
-When using Vuex ORM, you would probably never need to use Database class after it's registered to the Vuex Store. But for those who are curious, we'll describe why object such as Database exists in the first place.
+When using Vuex ORM, you will unlikely need to use the Database class after it's registered to the Vuex Store. But for those who are curious, we'll describe why the Database object exists in the first place.
 
-In Vuex ORM, any Model could have any relationships with other Models. To resolve those relationships, we need to store all Models somewhere so that a Model can reference each other. That's where Database comes in to play. You can get any registered Model like this.
+In Vuex ORM, any Model can have any type of relationship with other Models. To resolve those relationships, we need to store all Models somewhere so that a Model can reference each other. That's where the Database comes in to play. You can get any registered Model like this.
 
 ```js
 const database = new Database()
@@ -36,19 +36,19 @@ class User extends Model {
 }
 ```
 
-So, can't we just resolve relationship directly from the Model? Unfortunately no, we can't. The biggest reason is that Vuex ORM is built on top of Vuex, and Vuex ORM is calling Vuex Getters/Actions/Mutations to interact with Vuex Store. In fact, you can call Vuex Actions directly to create or fetch data.
+So, can't we just resolve relationship directly from the Model? Unfortunately no, we can't. The primary reason is that Vuex ORM is built on top of Vuex, and Vuex ORM is calling Vuex Getters/Actions/Mutations to interact with the Vuex Store. In fact, you can call Vuex Actions directly to create or fetch data.
 
-Vuex Module doesn't have access to Model. It must resolve the Model from the entity name, which is `string`. When a user calls actions like `store.dispatch('entities/users/insert', { ... })`, we must somehow get User Model by the namespace, which is `users` in `entities/users/insert`. Well, Vuex ORM actions are getting Models from the Database.
+Vuex Module doesn't have access to Model. It must resolve the Model from the entity name, which is a `string`. When a user calls actions like `store.dispatch('entities/users/insert', { ... })`, we must somehow get User Model by the namespace, which is `users` in `entities/users/insert`. Well, Vuex ORM actions are getting Models from the Database.
 
 Finally, the created Database instance is registered to the Vuex Store instance, then it's registered to the [Container](../container/container) so we have access to it from everywhere.
 
-You can access the database instance through store instance, or Container.
+You can access the database instance through the store instance, or Container.
 
 ```js
-// Through store instance.
+// Through the store instance.
 this.$store.$db()
 
-// Through container.
+// Through the Container object.
 import { Container } from '@vuex-orm/core'
 
 Container.store.$db()

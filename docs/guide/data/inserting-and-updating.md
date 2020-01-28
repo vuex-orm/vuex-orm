@@ -145,7 +145,7 @@ class User extends Model {
 
   static fields () {
     return {
-      id: this.increment(),
+      id: this.uid(),
       name: this.string('Default Name')
     }
   }
@@ -209,7 +209,7 @@ User.create({
 }
 ```
 
-Note that records should always be created with the primary key value provided. Leaving the primary key empty (`''`, `undefined` or `null`) will result in index keys `_no_key_X` and a high probability of inconsistent behavior. This also means that a primary key of type `increment` is recommended when using the `new` method. [See here](../model/defining-models.md#primary-key-and-index-key) to learn more about primary key and index key.
+Note that records should always be created with the primary key value provided. Leaving the primary key empty (`''`, `undefined` or `null`) will result in index keys `_no_key_X` and a high probability of inconsistent behavior. This also means that a primary key of type `uid` is recommended when using the `new` method. [See here](../model/defining-models.md#primary-key-and-index-key) to learn more about primary key and index key.
 
 ### Inserting Relationships
 

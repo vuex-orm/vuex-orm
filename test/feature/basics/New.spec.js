@@ -7,7 +7,7 @@ describe('Feature – Basics – New', () => {
 
     static fields () {
       return {
-        id: this.increment(null),
+        id: this.uid(),
         name: this.attr('Default Doe')
       }
     }
