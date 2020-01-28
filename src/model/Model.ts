@@ -109,7 +109,9 @@ export default class Model {
    * @deprecated Use `uid` attribute instead.
    */
   static increment (): Attributes.Uid {
-    console.warn('[Vuex ORM] Attribtue type `increment` has been deprecated and replaced with `uid`')
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[Vuex ORM] Attribute type `increment` has been deprecated and replaced with `uid`.')
+    }
     return this.uid()
   }
 
