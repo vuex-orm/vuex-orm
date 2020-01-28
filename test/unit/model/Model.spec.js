@@ -232,4 +232,23 @@ describe('Unit – Model', () => {
 
     expect(record).toEqual({ $id: null, id: null, name: 'Default Doe' })
   })
+
+  it('should warn user that increment is deprecated', () => {
+    const spy = jest.spyOn(global.console, 'warn').mockImplementation()
+
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.increment()
+        }
+      }
+    }
+
+    const user = new User()
+
+    expect(user.id).toBe('$uid1')
+    expect(spy).toHaveBeenCalled()
+  })
 })
