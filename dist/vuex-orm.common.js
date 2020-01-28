@@ -2154,6 +2154,10 @@ var Model = /** @class */ (function () {
      * @deprecated Use `uid` attribute instead.
      */
     Model.increment = function () {
+        /* istanbul ignore next */
+        if (process.env.NODE_ENV !== 'production') {
+            console.warn('[Vuex ORM] Attribute type `increment` has been deprecated and replaced with `uid`.');
+        }
         return this.uid();
     };
     /**
