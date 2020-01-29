@@ -98,7 +98,8 @@ export default class Database {
   model <T extends typeof Model> (model: T): T
   model (model: string): typeof Model
   model (model: typeof Model | string): typeof Model | string {
-    const m = this.models()[typeof model === 'string' ? model : model.entity]
+    const name = typeof model === 'string' ? model : model.entity
+    const m = this.models()[name]
 
     if (!m) {
       throw new Error(
@@ -116,7 +117,8 @@ export default class Database {
   baseModel <T extends typeof Model> (model: T): T
   baseModel (model: string): typeof Model
   baseModel (model: typeof Model | string): typeof Model | string {
-    const m = this.baseModels()[typeof model === 'string' ? model : model.entity]
+    const name = typeof model === 'string' ? model : model.entity
+    const m = this.baseModels()[name]
 
     if (!m) {
       throw new Error(
