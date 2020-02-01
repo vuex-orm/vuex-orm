@@ -163,8 +163,10 @@ function compareAscending (value: any, other: any): number {
     const othIsNull = other === null
     const othIsReflexive = other === other
 
-    value = typeof value === 'number' ? String(value) : value
-    other = typeof other === 'number' ? String(other) : other
+    if (typeof value !== "number" || typeof other !== "number") {
+      value = String(value)
+      other = String(other)
+    }
 
     if (
       (!othIsNull && value > other) ||

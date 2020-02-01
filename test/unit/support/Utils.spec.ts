@@ -6,13 +6,15 @@ describe('Unit - Utils', () => {
       const collection = [
         { id: 2 },
         { id: 3 },
+        { id: 10 },
         { id: 1 }
       ]
 
       const expected = [
         { id: 1 },
         { id: 2 },
-        { id: 3 }
+        { id: 3 },
+        { id: 10 }
       ]
 
       expect(Utils.orderBy(collection, ['id'], ['asc'])).toEqual(expected)
@@ -22,10 +24,12 @@ describe('Unit - Utils', () => {
       const collection = [
         { id: 2 },
         { id: 3 },
+        { id: 10 },
         { id: 1 }
       ]
 
       const expected = [
+        { id: 10 },
         { id: 3 },
         { id: 2 },
         { id: 1 }

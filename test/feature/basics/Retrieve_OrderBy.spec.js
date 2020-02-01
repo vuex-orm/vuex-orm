@@ -21,7 +21,7 @@ describe('Feature – Retrieve – Order By', () => {
         { id: 1, name: 'John' },
         { id: 2, name: 'Andy' },
         { id: 3, name: 'Roger' },
-        { id: 4, name: 'Andy' }
+        { id: 10, name: 'Andy' }
       ]
     })
 
@@ -29,7 +29,7 @@ describe('Feature – Retrieve – Order By', () => {
       { $id: '1', id: 1, name: 'John' },
       { $id: '2', id: 2, name: 'Andy' },
       { $id: '3', id: 3, name: 'Roger' },
-      { $id: '4', id: 4, name: 'Andy' }
+      { $id: '10', id: 10, name: 'Andy' }
     ]
 
     const result1 = store.getters['entities/users/query']().orderBy('id').get()
@@ -49,12 +49,12 @@ describe('Feature – Retrieve – Order By', () => {
         { id: 1, name: 'John' },
         { id: 2, name: 'Andy' },
         { id: 3, name: 'Roger' },
-        { id: 4, name: 'Andy' }
+        { id: 10, name: 'Andy' }
       ]
     })
 
     const expected = [
-      { $id: '4', id: 4, name: 'Andy' },
+      { $id: '10', id: 10, name: 'Andy' },
       { $id: '2', id: 2, name: 'Andy' },
       { $id: '1', id: 1, name: 'John' },
       { $id: '3', id: 3, name: 'Roger' }
