@@ -1,11 +1,25 @@
 {
-  "extends": "standard",
-  "parser": "babel-eslint",
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "standard-with-typescript"
+  ],
   "overrides": [
     {
-      "files": ["test/**/*.js"],
+      "files": [
+        "test/**/*.{js,ts}"
+      ],
       "env": {
         "jest": true
+      },
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": "off"
       }
     }
   ]
