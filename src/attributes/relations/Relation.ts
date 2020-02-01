@@ -119,7 +119,7 @@ export default abstract class Relation extends Attribute {
       return null
     }
 
-    const relatedModel = model.getModelFromRecord(record) || model
+    const relatedModel = model.getModelFromRecord(record) ?? model
 
     return new relatedModel(record)
   }
@@ -135,7 +135,7 @@ export default abstract class Relation extends Attribute {
     return records.filter((record: any) => {
       return this.isOneRelation(record)
     }).map((record: Record) => {
-      const relatedModel = model.getModelFromRecord(record) || model
+      const relatedModel = model.getModelFromRecord(record) ?? model
 
       return new relatedModel(record)
     })

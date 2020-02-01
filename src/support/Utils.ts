@@ -83,7 +83,7 @@ export function keyBy<T extends object> (collection: T[], key: string): Record<s
  * Creates an array of elements, sorted in specified order by the results
  * of running each element in a collection thru each iteratee.
  */
-export function orderBy<T> (collection: T[], iteratees: (((record: T) => any) | string)[], directions: string[]): T[] {
+export function orderBy<T> (collection: T[], iteratees: Array<((record: T) => any) | string>, directions: string[]): T[] {
   let index = -1
 
   const result = collection.map((value) => {
@@ -105,7 +105,7 @@ export function orderBy<T> (collection: T[], iteratees: (((record: T) => any) | 
  * performs a stable sort, that is, it preserves the original sort order
  * of equal elements.
  */
-function baseSortBy<T> (array: SortableArray<T>[], comparer: (a: SortableArray<T>, B: SortableArray<T>) => number): T[] {
+function baseSortBy<T> (array: Array<SortableArray<T>>, comparer: (a: SortableArray<T>, B: SortableArray<T>) => number): T[] {
   let length = array.length
 
   array.sort(comparer)

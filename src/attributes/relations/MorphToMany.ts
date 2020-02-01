@@ -81,7 +81,7 @@ export default class MorphToMany extends Relation {
    * relationship doesn't have any foreign key, it would do nothing.
    */
   attach (_key: any, _record: Record, _data: NormalizedData): void {
-    return
+
   }
 
   /**
@@ -155,9 +155,9 @@ export default class MorphToMany extends Relation {
   createPivots (parent: typeof Model, data: NormalizedData, key: string): NormalizedData {
     Utils.forOwn(data[parent.entity], (record) => {
       const relatedIds = parent.query().newQuery(this.pivot.entity)
-                                       .where(this.id, record[this.parentKey])
-                                       .where(this.type, parent.entity)
-                                       .get()
+        .where(this.id, record[this.parentKey])
+        .where(this.type, parent.entity)
+        .get()
 
       const relateds = (record[key] || []).filter((relatedId: any) => !relatedIds.includes(relatedId))
 

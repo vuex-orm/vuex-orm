@@ -36,7 +36,7 @@ export default abstract class Type extends Attribute {
    * Mutate the given value by mutator.
    */
   mutate (value: any, key: string): any {
-    const mutator = this.mutator || this.model.mutators()[key]
+    const mutator = this.mutator ?? this.model.mutators()[key]
 
     return mutator ? mutator(value) : value
   }

@@ -83,7 +83,7 @@ export default class BelongsToMany extends Relation {
    * relationship doesn't have any foreign key, it would do nothing.
    */
   attach (_key: any, _record: Record, _data: NormalizedData): void {
-    return
+
   }
 
   /**

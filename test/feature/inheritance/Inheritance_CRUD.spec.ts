@@ -96,7 +96,7 @@ describe('Feature - Inheritance - CRUD', () => {
   })
 
   it('should clean only corresponding entities (and derived ones) when calling create', async () => {
-    createStore([Person, Adult, Child ])
+    createStore([Person, Adult, Child])
 
     await Person.insert({
       data: [

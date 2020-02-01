@@ -22,14 +22,14 @@ const all = (state: State, _getters: any, _rootState: RootState, rootGetters: an
 /**
  * Find a data of the given entity by given id.
  */
-const find = (state: State, _getters: any, _rootState: RootState, rootGetters: any) => (id: string | number | (number | string)[]): Item => {
+const find = (state: State, _getters: any, _rootState: RootState, rootGetters: any) => (id: string | number | Array<number | string>): Item => {
   return rootGetters[`${state.$connection}/find`](state.$name, id)
 }
 
 /**
  * Find array of data of the given entity by given ids.
  */
-const findIn = (state: State, _getters: any, _rootState: RootState, rootGetters: any) => (idList: Array<string | number | (number | string)[]>): Collection => {
+const findIn = (state: State, _getters: any, _rootState: RootState, rootGetters: any) => (idList: Array<string | number | Array<number | string>>): Collection => {
   return rootGetters[`${state.$connection}/findIn`](state.$name, idList)
 }
 

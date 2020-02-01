@@ -48,7 +48,7 @@ async function insert (this: Store<any>, _context: ActionContext, payload: Paylo
 async function update (this: Store<any>, _context: ActionContext, payload: Payloads.Update): Promise<Item | Collection | Collections> {
   const entity = payload.entity
   const data = payload.data
-  const where = payload.where || null
+  const where = payload.where ?? null
   const options = OptionsBuilder.createPersistOptions(payload)
 
   return (new Query(this, entity)).update(data, where, options)
@@ -84,7 +84,7 @@ async function destroy (this: Store<any>, _context: ActionContext, payload: any)
  * Delete all data from the store.
  */
 async function deleteAll (this: Store<any>, _context: ActionContext, payload?: Payloads.DeleteAll): Promise<void> {
-  if (payload && payload.entity) {
+  if (payload?.entity) {
     (new Query(this, payload.entity)).deleteAll()
 
     return

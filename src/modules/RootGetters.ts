@@ -23,7 +23,7 @@ function all (this: Store<any>, _state: RootState) {
  * Find a data of the given entity by given id.
  */
 function find (this: Store<any>, _state: RootState) {
-  return (entity: string, id: string | number | Array<any>): Item => {
+  return (entity: string, id: string | number | any[]): Item => {
     return (new Query(this, entity)).find(id)
   }
 }
@@ -32,7 +32,7 @@ function find (this: Store<any>, _state: RootState) {
  * Find a data of the given entity by given id.
  */
 function findIn (this: Store<any>, _state: RootState) {
-  return (entity: string, idList: Array<string | number | Array<any>>): Item[] => {
+  return (entity: string, idList: Array<string | number | any[]>): Item[] => {
     return (new Query(this, entity)).findIn(idList)
   }
 }

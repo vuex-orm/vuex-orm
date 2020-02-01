@@ -102,7 +102,7 @@ describe('Feature - Inheritance - Discriminator field', () => {
       static baseEntity = 'person'
     }
 
-    createStore([Person, Adult, Child ])
+    createStore([Person, Adult, Child])
 
     await Person.insert({
       data: [

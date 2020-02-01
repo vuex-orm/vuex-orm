@@ -24,7 +24,7 @@ export default class WhereFilter {
     const whereTypes = Utils.groupBy(query.wheres, where => where.boolean)
     const comparator = this.getComparator(query, record)
 
-    let results: boolean[] = []
+    const results: boolean[] = []
 
     whereTypes.and && results.push(whereTypes.and.every(comparator))
 
@@ -52,7 +52,7 @@ export default class WhereFilter {
 
         // And check if current record is part of the result.
         return !Utils.isEmpty(matchingRecords.filter((rec: Instance): boolean => {
-          return rec['$id'] === record['$id']
+          return rec.$id === record.$id
         }))
       }
 

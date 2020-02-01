@@ -94,7 +94,7 @@ export default class BelongsTo extends Relation {
       const id = model[this.foreignKey]
       const relation = id !== null ? dictionary[id] : null
 
-      model[name] = relation || null
+      model[name] = relation ?? null
     })
   }
 

@@ -23,7 +23,7 @@ function isModel (model: any): model is typeof Model {
 /**
  * Create a new store instance.
  */
-export function createStore (entities: Entities[] | typeof Model[], namespace: string = 'entities'): Store<any> {
+export function createStore (entities: Entities[] | Array<typeof Model>, namespace: string = 'entities'): Store<any> {
   const database = new Database()
 
   entities.forEach((entity: Entities | typeof Model) => {

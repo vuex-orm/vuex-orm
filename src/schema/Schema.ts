@@ -37,7 +37,7 @@ export default class Schema {
    * Create a single schema for the given model.
    */
   one (model?: typeof Model): Normalizr.Entity {
-    model = model || this.model
+    model = model ?? this.model
 
     if (this.schemas[model.entity]) {
       return this.schemas[model.entity]

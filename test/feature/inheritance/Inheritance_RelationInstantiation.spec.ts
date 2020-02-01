@@ -100,7 +100,7 @@ describe('Feature - Inheritance - Relation instantiation', () => {
       employees!: Employee[]
     }
 
-    createStore([Employee, HumanResources, ChiefExecutiveOfficer, Firm ])
+    createStore([Employee, HumanResources, ChiefExecutiveOfficer, Firm])
 
     const firm = new Firm({
       id: 1,

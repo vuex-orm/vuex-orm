@@ -346,14 +346,14 @@ export default class Model {
   /**
    * Find a record.
    */
-  static find<T extends typeof Model> (this: T, id: string | number | (number | string)[]): Item<InstanceOf<T>> {
+  static find<T extends typeof Model> (this: T, id: string | number | Array<number | string>): Item<InstanceOf<T>> {
     return this.getters('find')(id)
   }
 
   /**
    * Get the record of the given array of ids.
    */
-  static findIn<T extends typeof Model> (this: T, idList: (number | string | (number | string)[])[]): Collection<InstanceOf<T>> {
+  static findIn<T extends typeof Model> (this: T, idList: Array<number | string | Array<number | string>>): Collection<InstanceOf<T>> {
     return this.getters('findIn')(idList)
   }
 
@@ -404,7 +404,7 @@ export default class Model {
   /**
    * Delete records that matches the given condition.
    */
-  static delete<M extends typeof Model> (this: M, id: string | number | (number | string)[]): Promise<Item<InstanceOf<M>>>
+  static delete<M extends typeof Model> (this: M, id: string | number | Array<number | string>): Promise<Item<InstanceOf<M>>>
   static delete<M extends typeof Model> (this: M, condition: Predicate<InstanceOf<M>>): Promise<Collection<InstanceOf<M>>>
   static delete<M extends typeof Model> (this: M, payload: any): any {
     return this.dispatch('delete', payload)
@@ -438,14 +438,14 @@ export default class Model {
    * If the model has composite key, it's going to return array of ids. If any
    * composite key missing, it will return `null`.
    */
-  static getIdFromRecord (record: Record): string | number | (string | number)[] | null {
+  static getIdFromRecord (record: Record): string | number | Array<string | number> | null {
     const key = this.primaryKey
 
     if (typeof key === 'string') {
       return this.getIdFromValue(record[key])
     }
 
-    const ids = key.reduce<(string | number)[]>((keys, k) => {
+    const ids = key.reduce<Array<string | number>>((keys, k) => {
       const id = this.getIdFromValue(record[k])
 
       id !== null && keys.push(id)
@@ -545,8 +545,8 @@ export default class Model {
   /**
    * Get all `belongsToMany` fields from the schema.
    */
-  static pivotFields (): { [key: string]: Attributes.BelongsToMany | Attributes.MorphToMany | Attributes.MorphedByMany }[] {
-    const fields: { [key: string]: Attributes.BelongsToMany | Attributes.MorphToMany | Attributes.MorphedByMany }[] = []
+  static pivotFields (): Array<{ [key: string]: Attributes.BelongsToMany | Attributes.MorphToMany | Attributes.MorphedByMany }> {
+    const fields: Array<{ [key: string]: Attributes.BelongsToMany | Attributes.MorphToMany | Attributes.MorphedByMany }> = []
 
     Utils.forOwn(this.getFields(), (field, key) => {
       if (field instanceof Attributes.BelongsToMany || field instanceof Attributes.MorphToMany || field instanceof Attributes.MorphedByMany) {
@@ -589,7 +589,7 @@ export default class Model {
    * Given a Model, this returns the corresponding key in the InheritanceTypes mapping
    */
   static getTypeKeyValueFromModel (model?: typeof Model): string | null {
-    const modelToCheck = model || this
+    const modelToCheck = model ?? this
     const types = this.types()
     for (const type in types) {
       if (types[type].entity === modelToCheck.entity) {
@@ -695,14 +695,14 @@ export default class Model {
   /**
    * Find a record.
    */
-  $find<T extends Model> (this: T, id: string | number | (number | string)[]): Item<T> {
+  $find<T extends Model> (this: T, id: string | number | Array<number | string>): Item<T> {
     return this.$getters('find')(id)
   }
 
   /**
    * Find record of the given array of ids.
    */
-  $findIn<T extends Model> (this: T, idList: (number | string | (number | string)[])[]): Collection<T> {
+  $findIn<T extends Model> (this: T, idList: Array<number | string | Array<number | string>>): Collection<T> {
     return this.$getters('findIn')(idList)
   }
 

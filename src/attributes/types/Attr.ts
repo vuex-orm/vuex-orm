@@ -8,7 +8,7 @@ export default class Attr extends Type {
    * Create a new attr instance.
    */
   constructor (model: typeof Model, value: any, mutator?: Mutator<any>) {
-     /* istanbul ignore next */
+    /* istanbul ignore next */
     super(model, value, mutator)
   }
 

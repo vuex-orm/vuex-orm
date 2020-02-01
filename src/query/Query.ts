@@ -212,7 +212,7 @@ export default class Query<T extends Model = Model> {
    * Create a new query instance.
    */
   newQuery (entity?: string): Query {
-    entity = entity || this.entity
+    entity = entity ?? this.entity
 
     return (new Query(this.store, entity))
   }
@@ -221,7 +221,7 @@ export default class Query<T extends Model = Model> {
    * Get model of given name from the container.
    */
   getModel (name?: string): typeof Model {
-    const entity = name || this.entity
+    const entity = name ?? this.entity
 
     return this.database.model(entity)
   }
@@ -251,7 +251,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Find the record by the given id.
    */
-  find (id: number | string | (number | string)[]): Data.Item<T> {
+  find (id: number | string | Array<number | string>): Data.Item<T> {
     const indexId = Array.isArray(id) ? JSON.stringify(id) : id
 
     const record = this.state.data[indexId]
@@ -266,7 +266,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Get the record of the given array of ids.
    */
-  findIn (idList: (number | string | (number | string)[])[]): Data.Collection<T> {
+  findIn (idList: Array<number | string | Array<number | string>>): Data.Collection<T> {
     return idList.reduce<Data.Collection<T>>((collection, id) => {
       const indexId = Array.isArray(id) ? JSON.stringify(id) : id
 
@@ -352,7 +352,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Filter records by their primary keys.
    */
-  whereIdIn (values: (string | number)[]): this {
+  whereIdIn (values: Array<string | number>): this {
     return this.where(this.model.primaryKey, values)
   }
 
@@ -364,7 +364,7 @@ export default class Query<T extends Model = Model> {
    * for the distinction between where and orWhere in normal queries, but
    * Fk lookups are always "and" type.
    */
-  whereFk (field: string, value: string | number | (string | number)[]): this {
+  whereFk (field: string, value: string | number | Array<string | number>): this {
     const values = Array.isArray(value) ? value : [value]
 
     // If lookup filed is the primary key. Initialize or get intersection,
@@ -393,7 +393,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Set id filter for the given where condition.
    */
-  private setIdFilter (value: string | number | (string | number)[]): void {
+  private setIdFilter (value: string | number | Array<string | number>): void {
     const values = Array.isArray(value) ? value : [value]
 
     // Initialize or get intersection, because boolean and could have a
@@ -412,7 +412,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Set joined id filter for the given where condition.
    */
-  private setJoinedIdFilter (values: (string | number)[]): void {
+  private setJoinedIdFilter (values: Array<string | number>): void {
     // Initialize or get intersection, because boolean and could have a
     // condition such as `whereId(1).whereId(2).get()`.
     if (this.joinedIdFilter === null) {
@@ -560,7 +560,7 @@ export default class Query<T extends Model = Model> {
    * Get a list of id that should be used to lookup when fetching records
    * from the state.
    */
-  private getIdsToLookup (): (string | number)[] {
+  private getIdsToLookup (): Array<string | number> {
     // If both id filter and joined id filter are set, intersect them.
     if (this.idFilter && this.joinedIdFilter) {
       return Array.from(this.idFilter.values()).filter((id) => {
@@ -569,9 +569,9 @@ export default class Query<T extends Model = Model> {
     }
 
     // If only either one is set, return which one is set.
-    if (this.idFilter || this.joinedIdFilter) {
+    if (this.idFilter ?? this.joinedIdFilter) {
       return Array.from(
-        (this.idFilter || this.joinedIdFilter as Set<string | number>).values()
+        (this.idFilter ?? this.joinedIdFilter as Set<string | number>).values()
       )
     }
 
@@ -959,8 +959,8 @@ export default class Query<T extends Model = Model> {
    * Insert or update the records.
    */
   insertOrUpdateRecords (records: Data.Records): Data.Collection<T> {
-    let toBeInserted: Data.Records = {}
-    let toBeUpdated: Data.Records = {}
+    const toBeInserted: Data.Records = {}
+    const toBeUpdated: Data.Records = {}
 
     Object.keys(records).forEach((id) => {
       const record = records[id]
@@ -1051,7 +1051,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Delete matching records with the given condition from the store.
    */
-  delete (condition: string | number | (number | string)[]): Data.Item
+  delete (condition: string | number | Array<number | string>): Data.Item
   delete (condition: Contracts.Predicate): Data.Collection
   delete (condition: any): any {
     if (typeof condition === 'function') {
@@ -1081,7 +1081,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Delete a record from the store by given id.
    */
-  private deleteById (id: string | number | (number | string)[]): Data.Item {
+  private deleteById (id: string | number | Array<number | string>): Data.Item {
     const item = this.find(id)
 
     if (!item) {
@@ -1230,7 +1230,7 @@ export default class Query<T extends Model = Model> {
    */
   private convertCollectionToRecords (collection: Data.Collection<T>): Data.Records {
     return collection.reduce<Data.Records>((carry, model) => {
-      carry[model['$id'] as string] = model.$getAttributes()
+      carry[model.$id as string] = model.$getAttributes()
 
       return carry
     }, {})

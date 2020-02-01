@@ -24,6 +24,6 @@ export interface InsertOrUpdate extends PersistOptions {
   data: Record | Record[]
 }
 
-export type DeleteById = string | number | (number | string)[]
+export type DeleteById = string | number | Array<number | string>
 
 export type DeleteByCondition = Predicate

@@ -113,7 +113,7 @@ export default class Loader {
 
     for (const name in query.load) {
       const constraints = query.load[name]
-      let relation = fields[name]
+      const relation = fields[name]
 
       if (relation instanceof Relation) {
         relation.load(query, collection, name, constraints)
