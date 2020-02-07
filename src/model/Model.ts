@@ -48,6 +48,16 @@ export default class Model {
   static state: ModelState | (() => ModelState) = {}
 
   /**
+   * Vuex Store instance. This should never !== null and is a placeholder to be proxied by Model.withStore()
+   */
+  static _store: Vuex.Store<any> | null = null
+
+  /**
+   * Vuex Store instance
+   */
+  _store: Vuex.Store<any>
+
+  /**
    * The cached attribute fields of the model.
    */
   static cachedFields: FieldCache
@@ -60,7 +70,8 @@ export default class Model {
   /**
    * Create a new model instance.
    */
-  constructor (record?: Record) {
+  constructor (record?: Record, store?: Vuex.Store<any>) {
+    this._store = store || this.$self().store()
     this.$fill(record)
   }
 
@@ -277,7 +288,23 @@ export default class Model {
    * Get the store instance from the container.
    */
   static store (): Vuex.Store<any> {
-    return Container.store
+    return this._store || Container.store
+  }
+
+  /**
+   * Get a proxy Model that changes the store to the specified store for future operations.
+   * The store must already be initialised by a database that the model is registered with.
+   */
+  static withStore (store: Vuex.Store<any>) {
+    return new Proxy(this, {
+      get (target, prop, receiver) {
+        if (prop === '_store') {
+          return store
+        } else {
+          return Reflect.get(target, prop, receiver)
+        }
+      }
+    })
   }
 
   /**
@@ -623,7 +650,7 @@ export default class Model {
    * in the model schema.
    */
   static hydrate (record?: Record): Record {
-    return (new this(record)).$getAttributes()
+    return (new this(record, this.store())).$getAttributes()
   }
 
   /**
@@ -660,7 +687,7 @@ export default class Model {
    * Get the store instance from the container.
    */
   $store (): Vuex.Store<any> {
-    return this.$self().store()
+    return this._store
   }
 
   /**
