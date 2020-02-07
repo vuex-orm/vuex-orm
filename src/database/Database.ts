@@ -190,8 +190,8 @@ export default class Database {
     const database = this
 
     const c = class extends model {
-      static store (): Store<any> {
-        return database.store
+      static database (): Database {
+        return database
       }
     }
 
