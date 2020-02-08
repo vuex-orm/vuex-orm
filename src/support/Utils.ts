@@ -208,6 +208,27 @@ export function groupBy (collection: any[], iteratee: (record: any) => any): any
   }, {} as any)
 }
 
+/**
+ * Creates a deep clone of an object or array.
+ */
+export function cloneDeep (data: any): any {
+  if (data === null) {
+    return null
+  }
+
+  const clone = Object.assign({}, data)
+
+  Object.keys(clone).forEach(
+    key => (clone[key] = typeof data[key] === 'object' ? cloneDeep(data[key]) : data[key])
+  )
+
+  return Array.isArray(data) && data.length
+    ? (clone.length = data.length) && Array.from(clone)
+    : Array.isArray(data)
+      ? Array.from(data)
+      : clone
+}
+
 export default {
   size,
   isEmpty,
@@ -216,5 +237,6 @@ export default {
   mapValues,
   keyBy,
   orderBy,
-  groupBy
+  groupBy,
+  cloneDeep
 }
