@@ -45,13 +45,15 @@ export default class HasManyBy extends Relation {
    * Attach the relational key to the given data.
    */
   attach (key: any, record: Record, _data: NormalizedData): void {
+    if (key === undefined || key === null) {
+      return
+    }
+
     if (key.length === 0) {
       return
     }
 
-    record[this.foreignKey] = key.map((parentId: any) => {
-      return this.parent.getIdFromRecord(_data[this.parent.entity][parentId])
-    })
+    record[this.foreignKey] = key
   }
 
   /**
