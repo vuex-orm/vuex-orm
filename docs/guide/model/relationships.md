@@ -281,9 +281,52 @@ class User extends Model {
 
 ## Has One By
 
-Has One by doesn't technically exist but the same 
-effect can be achieved by using the `this.belongsTo()` attribute while passing itself as the target key.
+Has One by or `this.hasOneBy()` doesn't technically exist but the same effect can be achieved by using the `this.belongsTo()` attribute, while passing itself as the target key.
 
+Has One By is similar to a One To One relationship, but having the foreign key at the parent Model as a local key. For example, there could be a situation where you must parse data that looks like the following:
+
+```js
+{
+  nodes: {
+    1: { id: 1 },
+  },
+  clusters: {
+    1: {
+      id: 1,
+      nodeid: 1,
+    }
+  }
+}
+```
+
+As you can see, `clusters` have `hasOne` relationship with `nodes`, but `nodes` does not have a `cluster_id`. You can't use `this.hasOne()` in this case because there is no foreign key to look for. In such cases, you may use `this.belongsTo()` relationship.
+
+```js
+class Node extends Model {
+  static entity = 'nodes'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      name: this.attr(null)
+    }
+  }
+}
+
+class Cluster extends Model {
+  static entity = 'clusters'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      node_id: this.attr(null),
+      node: this.belongsTo(Node, 'node')
+    }
+  }
+}
+```
+
+Now the cluster model is going to look for Nodes using the id at Cluster's own `node_id` attribute.
 
 ## Has Many By
 
@@ -291,10 +334,10 @@ Has Many By is similar to Has Many relations, but having foreign keys at parent 
 
 ```js
 {
-  nodes: {
+  nodes: [
     1: { id: 1 },
     2: { id: 1 }
-  },
+  ],
   clusters: {
     1: {
       id: 1,
