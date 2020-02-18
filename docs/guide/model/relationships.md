@@ -34,6 +34,7 @@ By defining relationships, Vuex ORM is going to use those relationships to const
 - [One To One](#one-to-one)
 - [One To Many](#one-to-many)
 - [Many To Many](#many-to-many)
+- [Has One By](#has-one-by)
 - [Has Many By](#has-many-by)
 - [Has Many Through](#has-many-through)
 - [One To One (Polymorphic)](#one-to-one-polymorphic)
@@ -203,69 +204,6 @@ class Post extends Model {
 }
 ```
 
-## Has Many By
-
-Has Many By is similar to Has Many relations, but having foreign keys at parent Model as an array. For example, there could be a situation where you must parse data looks something like:
-
-```js
-{
-  nodes: {
-    1: { id: 1 },
-    2: { id: 1 }
-  },
-  clusters: {
-    1: {
-      id: 1,
-      node_ids: [1, 2]
-    }
-  }
-}
-```
-
-As you can see, `clusters` have `hasMany` relationship with `nodes`, but `nodes` do not have `cluster_id`. You can't use `this.hasMany()` in this case because there is no foreign key to look for. In such cases, you may use `this.hasManyBy()` relationship.
-
-```js
-class Node extends Model {
-  static entity = 'nodes'
-
-  static fields () {
-    return {
-      id: this.attr(null),
-      name: this.attr(null)
-    }
-  }
-}
-
-class Cluster extends Model {
-  static entity = 'clusters'
-
-  static fields () {
-    return {
-      id: this.attr(null),
-      node_ids: this.attr(null),
-      nodes: this.hasManyBy(Node, 'node_ids')
-    }
-  }
-}
-```
-
-Now the cluster model is going to look for Nodes using ids at Cluster's own `node_ids` attributes.
-
-As always, you can pass the third argument to specify which id to look for.
-
-```js
-class Cluster extends Model {
-  static entity = 'clusters'
-
-  static fields () {
-    return {
-      id: this.attr(null),
-      node_ids: this.attr(null),
-      nodes: this.hasManyBy(Node, 'node_ids', 'other_key')
-    }
-  }
-}
-```
 
 ## Many To Many
 
@@ -336,6 +274,76 @@ class User extends Model {
         'user_local_id',
         'role_local_id'
       )
+    }
+  }
+}
+```
+
+## Has One By
+
+Has One by doesn't technically exist but the same 
+effect can be achieved by using the `this.belongsTo()` attribute while passing itself as the target key.
+
+
+## Has Many By
+
+Has Many By is similar to Has Many relations, but having foreign keys at parent Model as an array. For example, there could be a situation where you must parse data looks something like:
+
+```js
+{
+  nodes: {
+    1: { id: 1 },
+    2: { id: 1 }
+  },
+  clusters: {
+    1: {
+      id: 1,
+      node_ids: [1, 2]
+    }
+  }
+}
+```
+
+As you can see, `clusters` have `hasMany` relationship with `nodes`, but `nodes` do not have `cluster_id`. You can't use `this.hasMany()` in this case because there is no foreign key to look for. In such cases, you may use `this.hasManyBy()` relationship.
+
+```js
+class Node extends Model {
+  static entity = 'nodes'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      name: this.attr(null)
+    }
+  }
+}
+
+class Cluster extends Model {
+  static entity = 'clusters'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      node_ids: this.attr(null),
+      nodes: this.hasManyBy(Node, 'node_ids')
+    }
+  }
+}
+```
+
+Now the cluster model is going to look for Nodes using ids at Cluster's own `node_ids` attributes.
+
+As always, you can pass the third argument to specify which id to look for.
+
+```js
+class Cluster extends Model {
+  static entity = 'clusters'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      node_ids: this.attr(null),
+      nodes: this.hasManyBy(Node, 'node_ids', 'other_key')
     }
   }
 }
