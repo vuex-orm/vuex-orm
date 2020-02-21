@@ -138,7 +138,7 @@ const users = User.query().get()
 */
 ```
 
-Use may use `first` method to fetch a single data for the entity. It will return the very first item of the query results.
+You may use `first` method to fetch a single data for the entity. It will return the very first item of the query results.
 
 ```js
 // Get the first user of the query.
