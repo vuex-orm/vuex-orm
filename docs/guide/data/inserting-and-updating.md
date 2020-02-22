@@ -479,7 +479,7 @@ User.insert({
 }
 ```
 
-Note that there is a cavent with "Has Many Through" relationship. When creating data that contains "Has Many Through" relationship without intermediate pivot records, the intermediate record will not be generated. Let's say you have the following model definitions.
+Note that there is a caveat with "Has Many Through" relationship. When creating data that contains "Has Many Through" relationship without intermediate pivot records, the intermediate record will not be generated. Let's say you have the following model definitions.
 
 ```js
 class Country extends Model {

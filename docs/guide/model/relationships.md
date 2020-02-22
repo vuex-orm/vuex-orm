@@ -439,7 +439,7 @@ this.hasManyThrough(
 )
 ```
 
-> **NOTE:** When creating data that contains `hasManyThrough` relationship without intermediate relation, the intermediate record will not be generated. [See here](inserting-relationships#creating-has-many-through-relationship) for more details.
+> **NOTE:** When creating data that contains `hasManyThrough` relationship without intermediate relation, the intermediate record will not be generated. [See here](../data/inserting-and-updating.html#generating-pivot-records) for more details.
 
 ## One To One (Polymorphic)
 
