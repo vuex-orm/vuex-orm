@@ -6,7 +6,7 @@ import Model from '../model/Model'
 
 export default class IdAttribute {
   /**
-   * Creates a closure that generates the required id for an entity.
+   * Creates a closure that generates the required id's for an entity.
    */
   static create (model: typeof Model): schema.StrategyFunction<string> {
     return (value: any, _parentValue: any, _key: string): string => {
