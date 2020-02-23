@@ -4,17 +4,17 @@ import Record from '../data/Record'
 import UidAttribute from '../attributes/types/Uid'
 import Model from '../model/Model'
 
-export default class ProcessStrategy {
+export default class IdAttribute {
   /**
-   * Create the process strategy.
+   * Creates a closure that generates the required id for an entity.
    */
-  static create (model: typeof Model): schema.StrategyFunction<Record> {
-    return (value: any, _parentValue: any, _key: string): Record => {
+  static create (model: typeof Model): schema.StrategyFunction<string> {
+    return (value: any, _parentValue: any, _key: string): string => {
       this.generateIds(value, model)
 
-      this.generateIndexId(value, model)
+      const indexId = this.generateIndexId(value, model)
 
-      return value
+      return indexId
     }
   }
 
@@ -40,7 +40,9 @@ export default class ProcessStrategy {
   /**
    * Generate index id field (which is `$id`) and attach to the given record.
    */
-  private static generateIndexId (record: Record, model: typeof Model): void {
+  private static generateIndexId (record: Record, model: typeof Model): string {
     record.$id = model.getIndexIdFromRecord(record)
+
+    return record.$id
   }
 }

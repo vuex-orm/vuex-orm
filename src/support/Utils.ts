@@ -208,6 +208,33 @@ export function groupBy (collection: any[], iteratee: (record: any) => any): any
   }, {} as any)
 }
 
+/**
+ * Deep clone the given target object.
+ */
+export function cloneDeep <T extends object> (target: T): T {
+  if (target === null) {
+    return target
+  }
+
+  if (target instanceof Array) {
+    const cp = [] as any[];
+
+    (target as any[]).forEach((v) => cp.push(v))
+
+    return cp.map((n: any) => cloneDeep<any>(n)) as any
+  }
+
+  if (typeof target === 'object' && isEmpty(target)) {
+    const cp = { ...(target as { [key: string]: any }) } as { [key: string]: any; }
+
+    Object.keys(cp).forEach((k) => (cp[k] = cloneDeep<any>(cp[k])))
+
+    return cp as T
+  }
+
+  return target
+}
+
 export default {
   size,
   isEmpty,
@@ -216,5 +243,6 @@ export default {
   mapValues,
   keyBy,
   orderBy,
-  groupBy
+  groupBy,
+  cloneDeep
 }
