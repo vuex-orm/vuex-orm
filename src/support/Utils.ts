@@ -224,7 +224,7 @@ export function cloneDeep <T extends object> (target: T): T {
     return cp.map((n: any) => cloneDeep<any>(n)) as any
   }
 
-  if (typeof target === 'object' && isEmpty(target)) {
+  if (typeof target === 'object' && target !== {}) {
     const cp = { ...(target as { [key: string]: any }) } as { [key: string]: any; }
 
     Object.keys(cp).forEach((k) => (cp[k] = cloneDeep<any>(cp[k])))
