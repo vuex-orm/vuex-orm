@@ -919,7 +919,7 @@ const user = await User.update({
 
 ## Insert or Update
 
-The ` insertOrUpdate` method will insert new data if the data doesn't exist in the store, and update data if it does.
+The `insertOrUpdate` method will insert new data if any records do not exist in the store, and update the data of records that do exist.
 
 ```js
 // Initial State.
@@ -1024,8 +1024,8 @@ See `body` of Post ID of 1 got removed. This is because Post ID 1 got "inserted"
   }
 }
 
-// We would destroy post's body field if we use `insert`.
-User.insert({
+// Using `insertOrUpdate` will update any existing records while inserting new records that don't exist.
+User.insertOrUpdate({
   id: 1,
   name: 'John',
   posts: [
@@ -1034,7 +1034,7 @@ User.insert({
   ]
 })
 
-// State after `insert`.
+// State after `insertOrUpdate`.
 {
   entities: {
     users: {
