@@ -365,7 +365,7 @@ export default class Model {
   }
 
   /**
-   * Check wether the associated database contains data
+   * Check wether the associated database contains data.
    */
   static exists<T extends typeof Model> (this: T): boolean {
     return this.query().exists()
