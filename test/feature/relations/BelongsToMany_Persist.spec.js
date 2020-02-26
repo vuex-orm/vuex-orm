@@ -326,9 +326,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
       static fields () {
         return {
-          id: this.attr(null),
-          roleUsers: this.hasMany(RoleUser, 'role_id'),
-          users: this.belongsToMany(User, RoleUser, 'role_id', 'user_id')
+          id: this.attr(null)
         }
       }
     }
@@ -343,38 +341,21 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
           id: this.attr(null),
           role_id: this.attr(null),
           user_id: this.attr(null),
-          type: this.attr(''),
-          user: this.belongsTo(User, 'user_id'),
-          role: this.belongsTo(Role, 'role_id')
+          type: this.attr('')
         }
       }
     }
 
     const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
-    await store.dispatch('entities/users/insertOrUpdate', {
+    await store.dispatch('entities/users/insert', {
       data: {
         id: 1,
         name: 'Jane Doe',
         roleUsers: [
-          {
-            id: 1,
-            role_id: 1,
-            user_id: 1,
-            type: 'administrator'
-          },
-          {
-            id: 2,
-            role_id: 1,
-            user_id: 1,
-            type: 'general'
-          },
-          {
-            id: 3,
-            role_id: 2,
-            user_id: 1,
-            type: 'general'
-          }
+          { id: 1, role_id: 1, user_id: 1, type: 'administrator' },
+          { id: 2, role_id: 1, user_id: 1, type: 'general' },
+          { id: 3, role_id: 2, user_id: 1, type: 'general' }
         ],
         roles: [
           { id: 1 },
@@ -388,13 +369,13 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
         1: { $id: '1', id: 1, name: 'Jane Doe', roleUsers: [], roles: [] }
       },
       roles: {
-        1: { $id: '1', id: 1, roleUsers: [], users: [] },
-        2: { $id: '2', id: 2, roleUsers: [], users: [] }
+        1: { $id: '1', id: 1 },
+        2: { $id: '2', id: 2 }
       },
       roleUsers: {
-        1: { $id: '1', id: 1, user_id: 1, role_id: 1, type: 'administrator', user: null, role: null },
-        2: { $id: '2', id: 2, user_id: 1, role_id: 1, type: 'general', user: null, role: null },
-        3: { $id: '3', id: 3, user_id: 1, role_id: 2, type: 'general', user: null, role: null }
+        1: { $id: '1', id: 1, user_id: 1, role_id: 1, type: 'administrator' },
+        2: { $id: '2', id: 2, user_id: 1, role_id: 1, type: 'general' },
+        3: { $id: '3', id: 3, user_id: 1, role_id: 2, type: 'general' }
       }
     })
 
@@ -420,9 +401,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
       static fields () {
         return {
-          id: this.attr(null),
-          roleUsers: this.hasMany(RoleUser, 'role_id'),
-          users: this.belongsToMany(User, RoleUser, 'role_id', 'user_id')
+          id: this.attr(null)
         }
       }
     }
@@ -436,30 +415,20 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
         return {
           role_id: this.attr(null),
           user_id: this.attr(null),
-          type: this.attr(''),
-          user: this.belongsTo(User, 'user_id'),
-          role: this.belongsTo(Role, 'role_id')
+          type: this.attr('')
         }
       }
     }
 
     const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
-    await store.dispatch('entities/users/insertOrUpdate', {
+    await store.dispatch('entities/users/insert', {
       data: {
         id: 1,
         name: 'Jane Doe',
         roleUsers: [
-          {
-            role_id: 1,
-            user_id: 1,
-            type: 'administrator'
-          },
-          {
-            role_id: 2,
-            user_id: 1,
-            type: 'general'
-          }
+          { role_id: 1, user_id: 1, type: 'administrator' },
+          { role_id: 2, user_id: 1, type: 'general' }
         ],
         roles: [
           { id: 1 },
@@ -473,12 +442,12 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
         1: { $id: '1', id: 1, name: 'Jane Doe', roleUsers: [], roles: [] }
       },
       roles: {
-        1: { $id: '1', id: 1, roleUsers: [], users: [] },
-        2: { $id: '2', id: 2, roleUsers: [], users: [] }
+        1: { $id: '1', id: 1 },
+        2: { $id: '2', id: 2 }
       },
       roleUsers: {
-        '[1,1]': { $id: '[1,1]', user_id: 1, role_id: 1, type: 'administrator', user: null, role: null },
-        '[2,1]': { $id: '[2,1]', user_id: 1, role_id: 2, type: 'general', user: null, role: null }
+        '[1,1]': { $id: '[1,1]', user_id: 1, role_id: 1, type: 'administrator' },
+        '[2,1]': { $id: '[2,1]', user_id: 1, role_id: 2, type: 'general' }
       }
     })
 
@@ -523,10 +492,13 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
     const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
-    await store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/insert', {
       data: {
         id: 1,
-        permissions: [{ id: 1, role_user: { level: 1 } }, { id: 2 }]
+        permissions: [
+          { id: 1, role_user: { level: 1 } },
+          { id: 2 }
+        ]
       }
     })
 
