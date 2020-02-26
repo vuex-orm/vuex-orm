@@ -177,7 +177,8 @@ export default class Model {
     foreignPivotKey: string,
     relatedPivotKey: string,
     parentKey?: string,
-    relatedKey?: string
+    relatedKey?: string,
+    pivotKey?: string
   ): Attributes.BelongsToMany {
     return new Attributes.BelongsToMany(
       this,
@@ -186,7 +187,8 @@ export default class Model {
       foreignPivotKey,
       relatedPivotKey,
       this.localKey(parentKey),
-      this.relation(related).localKey(relatedKey)
+      this.relation(related).localKey(relatedKey),
+      this.pivotKey(pivotKey)
     )
   }
 
@@ -221,7 +223,8 @@ export default class Model {
     id: string,
     type: string,
     parentKey?: string,
-    relatedKey?: string
+    relatedKey?: string,
+    pivotKey?: string
   ): Attributes.MorphToMany {
     return new Attributes.MorphToMany(
       this,
@@ -231,7 +234,8 @@ export default class Model {
       id,
       type,
       this.localKey(parentKey),
-      this.relation(related).localKey(relatedKey)
+      this.relation(related).localKey(relatedKey),
+      this.pivotKey(pivotKey)
     )
   }
 
@@ -245,7 +249,8 @@ export default class Model {
     id: string,
     type: string,
     parentKey?: string,
-    relatedKey?: string
+    relatedKey?: string,
+    pivotKey?: string
   ): Attributes.MorphedByMany {
     return new Attributes.MorphedByMany(
       this,
@@ -255,7 +260,8 @@ export default class Model {
       id,
       type,
       this.localKey(parentKey),
-      this.relation(related).localKey(relatedKey)
+      this.relation(related).localKey(relatedKey),
+      this.pivotKey(pivotKey)
     )
   }
 
@@ -509,6 +515,17 @@ export default class Model {
     }
 
     return typeof this.primaryKey === 'string' ? this.primaryKey : 'id'
+  }
+
+  /**
+   * Get pivot key.
+   */
+  static pivotKey (key?: string): string {
+    if (key) {
+      return key
+    }
+
+    return 'pivot'
   }
 
   /**

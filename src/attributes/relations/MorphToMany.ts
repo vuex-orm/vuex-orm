@@ -46,6 +46,11 @@ export default class MorphToMany extends Relation {
   relatedKey: string
 
   /**
+   * The key name of the pivot data.
+   */
+  pivotKey: string
+
+  /**
    * Create a new belongs to instance.
    */
   constructor (
@@ -56,7 +61,8 @@ export default class MorphToMany extends Relation {
     id: string,
     type: string,
     parentKey: string,
-    relatedKey: string
+    relatedKey: string,
+    pivotKey: string
   ) {
     super(model) /* istanbul ignore next */
 
@@ -67,6 +73,7 @@ export default class MorphToMany extends Relation {
     this.type = type
     this.parentKey = parentKey
     this.relatedKey = relatedKey
+    this.pivotKey = pivotKey
   }
 
   /**
@@ -143,7 +150,10 @@ export default class MorphToMany extends Relation {
 
       const related = relateds[record[this.relatedId]]
 
-      records[id] = records[id].concat(related)
+      records[id] = records[id].concat(related.map((model: Record) => {
+        model[this.pivotKey] = record
+        return model
+      }))
 
       return records
     }, {} as Records)
@@ -179,11 +189,13 @@ export default class MorphToMany extends Relation {
       const parentId = record[this.parentKey]
       const relatedId = data[this.related.entity][id][this.relatedKey]
       const pivotKey = `${parentId}_${id}_${parent.entity}`
+      const pivotData = data[this.related.entity][id][this.pivotKey] || {}
 
       data[this.pivot.entity] = {
         ...data[this.pivot.entity],
 
         [pivotKey]: {
+          ...pivotData,
           $id: pivotKey,
           [this.relatedId]: relatedId,
           [this.id]: parentId,
