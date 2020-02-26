@@ -2181,10 +2181,6 @@ var Model = /** @class */ (function () {
      * @deprecated Use `uid` attribute instead.
      */
     Model.increment = function () {
-        /* istanbul ignore next */
-        if (process.env.NODE_ENV !== 'production') {
-            console.warn('[Vuex ORM] Attribute type `increment` has been deprecated and replaced with `uid`.');
-        }
         return this.uid();
     };
     /**
@@ -5162,39 +5158,6 @@ var RootMutations = {
     delete: destroy$2
 };
 
-function use (plugin, options) {
-    if (options === void 0) { options = {}; }
-    var components = {
-        Model: Model,
-        Attribute: Attribute,
-        Type: Type,
-        Attr: Attr,
-        String: String$1,
-        Number: Number,
-        Boolean: Boolean,
-        Uid: Uid$1,
-        Relation: Relation,
-        HasOne: HasOne,
-        BelongsTo: BelongsTo,
-        HasMany: HasMany,
-        HasManyBy: HasManyBy,
-        BelongsToMany: BelongsToMany,
-        HasManyThrough: HasManyThrough,
-        MorphTo: MorphTo,
-        MorphOne: MorphOne,
-        MorphMany: MorphMany,
-        MorphToMany: MorphToMany,
-        MorphedByMany: MorphedByMany,
-        Getters: Getters,
-        Actions: Actions,
-        RootGetters: RootGetters,
-        RootActions: RootActions,
-        RootMutations: RootMutations,
-        Query: Query
-    };
-    plugin.install(components, options);
-}
-
 var ProcessStrategy = /** @class */ (function () {
     function ProcessStrategy() {
     }
@@ -5567,25 +5530,46 @@ var Database = /** @class */ (function () {
         // We'll not be logging any warning if it's on a production environment,
         // so let's return here if it is.
         /* istanbul ignore next */
-        if (process.env.NODE_ENV === 'production') {
+        {
             return;
-        }
-        // If the model doesn't have `baseEntity` property set, we'll assume it is
-        // not an inherited model so we can stop here.
-        if (!model.baseEntity) {
-            return;
-        }
-        // Now it seems like the model is indeed an inherited model. Let's check if
-        // it has `types()` method declared, or we'll warn the user that it's not
-        // possible to use type mapping feature.
-        var baseModel = this.model(model.baseEntity);
-        if (baseModel && baseModel.types === Model.types) {
-            console.warn("[Vuex ORM] Model `" + model.name + "` extends `" + baseModel.name + "` which doesn't " +
-                'overwrite Model.types(). You will not be able to use type mapping.');
         }
     };
     return Database;
 }());
+
+function use (plugin, options) {
+    if (options === void 0) { options = {}; }
+    var components = {
+        Model: Model,
+        Attribute: Attribute,
+        Type: Type,
+        Attr: Attr,
+        String: String$1,
+        Number: Number,
+        Boolean: Boolean,
+        Uid: Uid$1,
+        Relation: Relation,
+        HasOne: HasOne,
+        BelongsTo: BelongsTo,
+        HasMany: HasMany,
+        HasManyBy: HasManyBy,
+        BelongsToMany: BelongsToMany,
+        HasManyThrough: HasManyThrough,
+        MorphTo: MorphTo,
+        MorphOne: MorphOne,
+        MorphMany: MorphMany,
+        MorphToMany: MorphToMany,
+        MorphedByMany: MorphedByMany,
+        Getters: Getters,
+        Actions: Actions,
+        RootGetters: RootGetters,
+        RootActions: RootActions,
+        RootMutations: RootMutations,
+        Query: Query,
+        Database: Database
+    };
+    plugin.install(components, options);
+}
 
 var index_cjs = {
     install: install,
