@@ -461,7 +461,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
       static fields () {
         return {
           id: this.attr(null),
-          permissions: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id', 'id', 'id', 'role_user')
+          permissions: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id').as('role_user')
         }
       }
     }

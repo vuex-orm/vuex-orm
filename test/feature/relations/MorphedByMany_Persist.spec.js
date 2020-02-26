@@ -209,8 +209,8 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
         return {
           id: this.attr(null),
           name: this.attr(''),
-          posts: this.morphedByMany(Post, Taggable, 'tag_id', 'taggable_id', 'taggable_type', 'id', 'id', 'tag'),
-          videos: this.morphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type', 'id', 'id', 'tag')
+          posts: this.morphedByMany(Post, Taggable, 'tag_id', 'taggable_id', 'taggable_type').as('tag'),
+          videos: this.morphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type').as('tag')
         }
       }
     }

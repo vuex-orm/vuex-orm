@@ -52,7 +52,7 @@ export default class BelongsToMany extends Relation {
   /**
    * The key name of the pivot data.
    */
-  pivotKey: string
+  pivotKey: string = 'pivot'
 
   /**
    * Create a new belongs to instance.
@@ -64,8 +64,7 @@ export default class BelongsToMany extends Relation {
     foreignPivotKey: string,
     relatedPivotKey: string,
     parentKey: string,
-    relatedKey: string,
-    pivotKey: string
+    relatedKey: string
   ) {
     super(model) /* istanbul ignore next */
 
@@ -75,7 +74,15 @@ export default class BelongsToMany extends Relation {
     this.relatedPivotKey = relatedPivotKey
     this.parentKey = parentKey
     this.relatedKey = relatedKey
-    this.pivotKey = pivotKey
+  }
+
+  /**
+   * Specify the custom pivot accessor to use for the relationship.
+   */
+  as (accessor: string): this {
+    this.pivotKey = accessor
+
+    return this
   }
 
   /**
