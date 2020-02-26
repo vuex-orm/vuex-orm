@@ -29,11 +29,6 @@ export type Modules = Record<string, Module<State, any>>
 
 export default class Database {
   /**
-   * The Vuex Store instance.
-   */
-  store!: Store<any>
-
-  /**
    * The namespace for the Vuex Module. Vuex ORM will create Vuex Modules from the
    * registered models and modules and define them under this namespace.
    */
@@ -60,12 +55,11 @@ export default class Database {
    * Initialize the database before a user can start using it.
    */
   start (store: Store<any>, namespace: string): void {
-    this.store = store
     this.namespace = namespace
 
-    this.connect()
+    this.connect(store)
 
-    this.registerModules()
+    this.registerModules(store)
     this.createSchema()
 
     this.isStarted = true
@@ -87,7 +81,7 @@ export default class Database {
     this.entities.push(entity)
 
     if (this.isStarted) {
-      this.registerModule(entity)
+      this.registerModule(entity, model.store())
       this.registerSchema(entity)
     }
   }
@@ -179,8 +173,8 @@ export default class Database {
   /**
    * Get the root state from the store.
    */
-  getState (): RootState {
-    return this.store.state[this.namespace]
+  getState (store: Store<any>): RootState {
+    return store.state[this.namespace]
   }
 
   /**
@@ -190,8 +184,8 @@ export default class Database {
     const database = this
 
     const c = class extends model {
-      static store (): Store<any> {
-        return database.store
+      static database (): Database {
+        return database
       }
     }
 
@@ -204,22 +198,22 @@ export default class Database {
    * Create Vuex Module from the registered entities, and register to
    * the store.
    */
-  private registerModules (): void {
-    this.store.registerModule(this.namespace, this.createModule())
+  private registerModules (store: Store<any>): void {
+    store.registerModule(this.namespace, this.createModule(store))
   }
 
   /**
    * Generate module from the given entity, and register to the store.
    */
-  private registerModule (entity: Entity): void {
-    this.store.registerModule([this.namespace, entity.name], this.createSubModule(entity))
+  private registerModule (entity: Entity, store: Store<any>): void {
+    store.registerModule([this.namespace, entity.name], this.createSubModule(entity))
   }
 
   /**
    * Create Vuex Module from the registered entities.
    */
-  private createModule (): Module<any, any> {
-    const module = this.createRootModule()
+  private createModule (store: Store<any>): Module<any, any> {
+    const module = this.createRootModule(store)
 
     this.entities.forEach((entity) => {
       module.modules[entity.name] = this.createSubModule(entity)
@@ -231,11 +225,11 @@ export default class Database {
   /**
    * Create root module.
    */
-  private createRootModule (): ModuleContract {
+  private createRootModule (store: Store<any>): ModuleContract {
     return {
       namespaced: true,
       state: this.createRootState(),
-      getters: this.createRootGetters(),
+      getters: this.createRootGetters(store),
       actions: this.createRootActions(),
       mutations: this.createRootMutations(),
       modules: {}
@@ -254,9 +248,9 @@ export default class Database {
    * function to retrieve database instances within getters. We only need this
    * for the getter since actions and mutations are already bound to store.
    */
-  private createRootGetters (): RootGettersContract {
+  private createRootGetters (store: Store<any>): RootGettersContract {
     return mapValues(RootGetters, (_getter, name) => {
-      return RootGetters[name].bind(this.store)
+      return RootGetters[name].bind(store)
     })
   }
 
@@ -347,8 +341,8 @@ export default class Database {
   /**
    * Inject database to the store instance.
    */
-  private connect (): void {
-    this.store.$db = () => this
+  private connect (store: Store<any>): void {
+    store.$db = () => this
   }
 
   /**
