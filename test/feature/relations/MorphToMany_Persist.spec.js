@@ -293,7 +293,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
       static fields () {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type', 'id', 'id', 'tag_pivot')
+          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type').as('tag_pivot')
         }
       }
     }
