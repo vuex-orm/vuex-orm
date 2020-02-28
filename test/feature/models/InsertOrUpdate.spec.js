@@ -16,18 +16,14 @@ describe('Feature – Models – Insert Or Update', () => {
   it('can insert or update records via static method', async () => {
     const store = createStore([{ model: User }])
 
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' }
-      ]
-    })
+    await User.insert([
+      { id: 1, name: 'John Doe' }
+    ])
 
-    await User.insertOrUpdate({
-      data: [
-        { id: 1, name: 'Jane Doe' },
-        { id: 2, name: 'Johnny Doe' }
-      ]
-    })
+    await User.insertOrUpdate([
+      { id: 1, name: 'Jane Doe' },
+      { id: 2, name: 'Johnny Doe' }
+    ])
 
     const expected = createState({
       users: {
@@ -44,18 +40,14 @@ describe('Feature – Models – Insert Or Update', () => {
 
     const user = new User()
 
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' }
-      ]
-    })
+    await User.insert([
+      { id: 1, name: 'John Doe' }
+    ])
 
-    await user.$insertOrUpdate({
-      data: [
-        { id: 1, name: 'Jane Doe' },
-        { id: 2, name: 'Johnny Doe' }
-      ]
-    })
+    await user.$insertOrUpdate([
+      { id: 1, name: 'Jane Doe' },
+      { id: 2, name: 'Johnny Doe' }
+    ])
 
     const expected = createState({
       users: {

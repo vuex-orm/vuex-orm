@@ -34,7 +34,24 @@ describe('Feature – Models – Insert', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
-  it('can insert list of record via static method', async () => {
+  it('can insert a record via static method by passing object literal', async () => {
+    const store = createStore([{ model: User }])
+
+    await User.insert({ id: 1, name: 'John Doe' })
+
+    await User.insert({ id: 2, name: 'Jane Doe' })
+
+    const expected = createState({
+      users: {
+        1: { $id: '1', id: 1, name: 'John Doe' },
+        2: { $id: '2', id: 2, name: 'Jane Doe' }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
+
+  it('can insert a list of records via static method', async () => {
     const store = createStore([{ model: User }])
 
     await User.insert({
@@ -43,6 +60,24 @@ describe('Feature – Models – Insert', () => {
         { id: 2, name: 'Jane Doe' }
       ]
     })
+
+    const expected = createState({
+      users: {
+        1: { $id: '1', id: 1, name: 'John Doe' },
+        2: { $id: '2', id: 2, name: 'Jane Doe' }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
+
+  it('can insert a list of records via static method by passing array', async () => {
+    const store = createStore([{ model: User }])
+
+    await User.insert([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' }
+    ])
 
     const expected = createState({
       users: {
@@ -91,7 +126,26 @@ describe('Feature – Models – Insert', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
-  it('can insert list of record via instance method', async () => {
+  it('can insert a record via instance method by passing object literal', async () => {
+    const store = createStore([{ model: User }])
+
+    const user = new User()
+
+    await user.$insert({ id: 1, name: 'John Doe' })
+
+    await user.$insert({ id: 2, name: 'Jane Doe' })
+
+    const expected = createState({
+      users: {
+        1: { $id: '1', id: 1, name: 'John Doe' },
+        2: { $id: '2', id: 2, name: 'Jane Doe' }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
+
+  it('can insert a list of records via instance method', async () => {
     const store = createStore([{ model: User }])
 
     const user = new User()
@@ -102,6 +156,26 @@ describe('Feature – Models – Insert', () => {
         { id: 2, name: 'Jane Doe' }
       ]
     })
+
+    const expected = createState({
+      users: {
+        1: { $id: '1', id: 1, name: 'John Doe' },
+        2: { $id: '2', id: 2, name: 'Jane Doe' }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
+
+  it('can insert a list of records via instance method by passing array', async () => {
+    const store = createStore([{ model: User }])
+
+    const user = new User()
+
+    await user.$insert([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' }
+    ])
 
     const expected = createState({
       users: {

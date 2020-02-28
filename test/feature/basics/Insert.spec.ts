@@ -16,7 +16,7 @@ describe('Feature – Basics – Insert', () => {
   it('can insert a record', async () => {
     const store = createStore([{ model: User }])
 
-    await User.insert({
+    await store.dispatch('entities/users/insert', {
       data: { id: 1, name: 'John Doe' }
     })
 
@@ -32,7 +32,7 @@ describe('Feature – Basics – Insert', () => {
   it('does nothing if an empty object is passed', async () => {
     const store = createStore([{ model: User }])
 
-    await User.insert({
+    await store.dispatch('entities/users/insert', {
       data: {}
     })
 
@@ -46,7 +46,7 @@ describe('Feature – Basics – Insert', () => {
   it('can insert record with primary key value of `null`', async () => {
     const store = createStore([{ model: User }])
 
-    await User.insert({
+    await store.dispatch('entities/users/insert', {
       data: { id: null, name: 'John Doe' }
     })
 

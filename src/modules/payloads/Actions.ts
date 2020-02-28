@@ -4,12 +4,18 @@ import PersistOptions from '../../query/options/PersistOptions'
 
 export type Condition = (record: Record) => boolean
 
-export interface Create extends PersistOptions {
-  data: Record | Record[]
+export type Create = CreateObject | Record[]
+
+export interface CreateObject extends PersistOptions {
+  data?: Record | Record[]
+  [key: string]: any
 }
 
-export interface Insert extends PersistOptions {
-  data: Record | Record[]
+export type Insert = InsertObject | Record[]
+
+export interface InsertObject extends PersistOptions {
+  data?: Record | Record[]
+  [key: string]: any
 }
 
 export type Update = UpdateObject | Record[]
@@ -20,8 +26,11 @@ export interface UpdateObject extends PersistOptions {
   [key: string]: any
 }
 
-export interface InsertOrUpdate extends PersistOptions {
-  data: Record | Record[]
+export type InsertOrUpdate = InsertOrUpdateObject | Record[]
+
+export interface InsertOrUpdateObject extends PersistOptions {
+  data?: Record | Record[]
+  [key: string]: any
 }
 
 export type DeleteById = string | number | (number | string)[]

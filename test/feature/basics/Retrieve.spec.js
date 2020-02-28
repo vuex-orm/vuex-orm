@@ -90,7 +90,7 @@ describe('Feature – Retrieve', () => {
   it('can retrieve array of items by their ids', async () => {
     const store = createStore([{ model: User }])
 
-    User.insert({
+    store.dispatch('entities/users/insert', {
       data: [{ id: 1 }, { id: 2 }, { id: 3 }]
     })
 

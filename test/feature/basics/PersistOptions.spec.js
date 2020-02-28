@@ -1,7 +1,7 @@
 import { createStore } from 'test/support/Helpers'
 import Model from 'app/model/Model'
 
-describe('Feature – Basics – Create', () => {
+describe('Feature – Basics – Persist Options', () => {
   class User extends Model {
     static entity = 'users'
 
@@ -28,21 +28,17 @@ describe('Feature – Basics – Create', () => {
   it('can `create` related records', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    await User.create({
-      data: { id: 1 }
-    })
+    await User.create({ id: 1 })
 
-    await Post.create({
-      data: { id: 1 }
-    })
+    await Post.create({ id: 1 })
 
-    await User.insert({
-      data: {
+    await User.insert(
+      {
         id: 2,
         posts: [{ id: 2 }, { id: 3 }]
       },
-      create: ['posts']
-    })
+      { create: ['posts'] }
+    )
 
     expect(store.state.entities.users.data['1'].id).toBe(1)
     expect(store.state.entities.users.data['2'].id).toBe(2)
@@ -54,21 +50,17 @@ describe('Feature – Basics – Create', () => {
   it('can `insert` related records', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    await User.create({
-      data: { id: 1 }
-    })
+    await User.create({ id: 1 })
 
-    await Post.create({
-      data: { id: 1 }
-    })
+    await Post.create({ id: 1 })
 
-    await User.create({
-      data: {
+    await User.create(
+      {
         id: 2,
         posts: [{ id: 2 }, { id: 3 }]
       },
-      insert: ['posts']
-    })
+      { insert: ['posts'] }
+    )
 
     expect(store.state.entities.users.data['1']).toBe(undefined)
     expect(store.state.entities.users.data['2'].id).toBe(2)
@@ -80,27 +72,23 @@ describe('Feature – Basics – Create', () => {
   it('can `update` related records', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    await User.create({
-      data: { id: 1 }
-    })
+    await User.create({ id: 1 })
 
-    await Post.create({
-      data: [
-        { id: 1, title: 'Title 01' },
-        { id: 2, title: 'Title 02' }
-      ]
-    })
+    await Post.create([
+      { id: 1, title: 'Title 01' },
+      { id: 2, title: 'Title 02' }
+    ])
 
-    await User.create({
-      data: {
+    await User.create(
+      {
         id: 2,
         posts: [
           { id: 1, title: 'Title 01-Edit' },
           { id: 2, title: 'Title 02-Edit' }
         ]
       },
-      update: ['posts']
-    })
+      { update: ['posts'] }
+    )
 
     expect(store.state.entities.users.data['1']).toBe(undefined)
     expect(store.state.entities.users.data['2'].id).toBe(2)
@@ -113,27 +101,23 @@ describe('Feature – Basics – Create', () => {
   it('can `insertOrUpdate` related records', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    await User.create({
-      data: { id: 1 }
-    })
+    await User.create({ id: 1 })
 
-    await Post.create({
-      data: [
-        { id: 1, title: 'Title 01' },
-        { id: 2, title: 'Title 02' }
-      ]
-    })
+    await Post.create([
+      { id: 1, title: 'Title 01' },
+      { id: 2, title: 'Title 02' }
+    ])
 
-    await User.create({
-      data: {
+    await User.create(
+      {
         id: 2,
         posts: [
           { id: 2, title: 'Title 02-Edit' },
           { id: 3, title: 'Title 03' }
         ]
       },
-      insertOrUpdate: ['posts']
-    })
+      { insertOrUpdate: ['posts'] }
+    )
 
     expect(store.state.entities.users.data['1']).toBe(undefined)
     expect(store.state.entities.users.data['2'].id).toBe(2)

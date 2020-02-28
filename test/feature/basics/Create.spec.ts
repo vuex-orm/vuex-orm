@@ -13,10 +13,10 @@ describe('Feature – Basics – Create', () => {
     }
   }
 
-  it('can create a data', async () => {
+  it('can create a record', async () => {
     const store = createStore([{ model: User }])
 
-    await User.create({
+    await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe' }
     })
 
@@ -28,7 +28,7 @@ describe('Feature – Basics – Create', () => {
     expect(store.state.entities.users.data).toEqual(expected)
   })
 
-  it('can create list of data', async () => {
+  it('can create a list of records', async () => {
     const store = createStore([{ model: User }])
 
     await store.dispatch('entities/users/create', {
@@ -110,7 +110,7 @@ describe('Feature – Basics – Create', () => {
     expect(store.state.entities.users.data).toEqual(expected)
   })
 
-  it('returns a newly created data', async () => {
+  it('returns a newly created record', async () => {
     const store = createStore([{ model: User }])
 
     const collection = await store.dispatch('entities/users/create', {
@@ -124,7 +124,7 @@ describe('Feature – Basics – Create', () => {
     expect(collection).toEqual(expected)
   })
 
-  it('returns list of newly created data', async () => {
+  it('returns list of newly created record', async () => {
     const store = createStore([{ model: User }])
 
     const collection = await store.dispatch('entities/users/create', {
@@ -144,7 +144,7 @@ describe('Feature – Basics – Create', () => {
     expect(collection).toEqual(expected)
   })
 
-  it('returns null when creating empty data', async () => {
+  it('returns null when creating an empty record', async () => {
     const store = createStore([{ model: User }])
 
     const collection = await store.dispatch('entities/users/create', { data: {} })
