@@ -73,7 +73,7 @@ const people = Person.all()
 /* 
 [
   Person { id: 1, name: 'John Doe' },
-  Adult { id: 2, name: 'Jane Doe', job: 'Software Engineer' }
+  Adult  { id: 2, name: 'Jane Doe', job: 'Software Engineer' }
 ]
 */
 ```
@@ -127,19 +127,17 @@ Now, you can create mixed types of records at once.
 
 ```js
 // Creating mixed data.
-Person.insert({ 
-  data: [
-    { type:'PERSON', id: 1, name: 'John Doe' },
-    { type:'ADULT', id: 2, name: 'Jane Doe', job: 'Software Engineer' }
-  ]
-})
+Person.insert([
+  { type: 'PERSON', id: 1, name: 'John Doe' },
+  { type: 'ADULT',  id: 2, name: 'Jane Doe', job: 'Software Engineer' }
+])
 
 const people = Person.all()
 
 /* 
 [
   Person { id: 1, name: 'John Doe' },
-  Adult { id: 2, name: 'Jane Doe', job: 'Software Engineer' }
+  Adult  { id: 2, name: 'Jane Doe', job: 'Software Engineer' }
 ]
 */
 ```
@@ -188,19 +186,17 @@ class Adult extends Person {
 And now you may use custome type field when inserting data.
 
 ```js
-Person.insert({ 
-  data: [
-    { person_type: 'PERSON', id: 1, name: 'John Doe' },
-    { person_type: 'ADULT', id: 2, name: 'Jane Doe', job: 'Software Engineer' }
-  ]
-})
+Person.insert([
+  { person_type: 'PERSON', id: 1, name: 'John Doe' },
+  { person_type: 'ADULT',  id: 2, name: 'Jane Doe', job: 'Software Engineer' }
+])
 
 const people = Person.all()
 
 /* 
 [
   Person { id: 1, name: 'John Doe' },
-  Adult { id: 2, name: 'Jane Doe', job: 'Software Engineer' }
+  Adult  { id: 2, name: 'Jane Doe', job: 'Software Engineer' }
 ]
 */
 ```
@@ -247,19 +243,17 @@ Then you can fetch the key with its results.
 
 ```js
 // Creating mixed data
-Person.insert({ 
-  data: [
-    { type:'PERSON', id: 1, name: 'John Doe' },
-    { type:'ADULT', id: 2, name: 'Jane Doe', job: 'Software Engineer' }
-  ]
-})
+Person.insert([
+  { type: 'PERSON', id: 1, name: 'John Doe' },
+  { type: 'ADULT',  id: 2, name: 'Jane Doe', job: 'Software Engineer' }
+])
 
 const people = Person.all()
 
 /* 
 [
   Person { id: 1, name: 'John Doe', type: 'PERSON' },
-  Adult { id: 2, name: 'Jane Doe', job: 'Software Engineer', type: 'ADULT' }
+  Adult  { id: 2, name: 'Jane Doe', job: 'Software Engineer', type: 'ADULT' }
 ]
 */
 ```
@@ -315,20 +309,24 @@ class Address extends Model {
 And let's see what would happen in this case.
 
 ```js
-Address.insert({
-  data: [
-    { id: 1, city: 'TOKYO' },
-    { id: 2, city: 'PARIS' },
-    { id: 3, city: 'BERLIN' }
-  ]
-})
+Address.insert([
+  { id: 1, city: 'TOKYO' },
+  { id: 2, city: 'PARIS' },
+  { id: 3, city: 'BERLIN' }
+])
 
 Person.insert({
-  data: { id: 1, home_address_id: 1, name: 'John Doe' }
+  id: 1,
+  home_address_id: 1,
+  name: 'John Doe'
 })
 
 Adult.insert({
-  data: { id: 2, home_address_id: 2, work_address_id: 3, name: 'Jane Doe', job: 'Software Engineer' }
+  id: 2,
+  home_address_id: 2,
+  work_address_id: 3,
+  name: 'Jane Doe',
+  job: 'Software Engineer'
 })
 
 const people = Person.query().with(['home_address', 'work_address']).get()
@@ -540,9 +538,7 @@ import Adult from '@/models/Adult';
 
 export default {
   created () {
-    Adult.insert({
-      data: { id: 1, name: 'John Doe', job: 'Software Engineer' }
-    })
+    Adult.insert({ id: 1, name: 'John Doe', job: 'Software Engineer' })
   }
 }
 ```

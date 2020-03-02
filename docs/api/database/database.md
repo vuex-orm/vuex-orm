@@ -4,45 +4,13 @@ sidebarDepth: 2
 
 # Database
 
-The Database is the object that holds all Models and Modules that are registered to the Vuex ORM. It is also responsible for generating the whole database relational schema from registered models. This schema is used to "Normalize" data before persisting to the Vuex Store.
+The Database holds all models and modules registered to Vuex ORM. It is also responsible for generating the database relational schema from the registered models. This schema is used to "Normalize" data before persisting to the Vuex Store.
 
-When using Vuex ORM, you will unlikely need to use the Database class after it's registered to the Vuex Store. But for those who are curious, we'll describe why the Database object exists in the first place.
+In Vuex ORM, models may have relations with other models. To resolve those relations, models require some form of tracking in order to communicate with one another.
 
-In Vuex ORM, any Model can have any type of relationship with other Models. To resolve those relationships, we need to store all Models somewhere so that a Model can reference each other. That's where the Database comes in to play. You can get any registered Model like this.
+The Database is designed to track all registered models, build relational schema from those models, and register the database to the Vuex Store instance (contained in [Container](/api/container/container)).
 
-```js
-const database = new Database()
-
-database.register(User)
-
-const user = database.model('users')
-```
-
-You might wonder why do we need to store all Models in one place since the related Models are passed at Model when defining relationships like below.
-
-```js
-import { Model } from '@vuex-orm/core'
-import Post from './Post'
-
-class User extends Model {
-  static entity = 'users'
-
-  static fields () {
-    return {
-      id: this.attr(null),
-      posts: this.hasMany(Post, 'user_id')  // <- Passing related Model.
-    }
-  }
-}
-```
-
-So, can't we just resolve relationship directly from the Model? Unfortunately no, we can't. The primary reason is that Vuex ORM is built on top of Vuex, and Vuex ORM is calling Vuex Getters/Actions/Mutations to interact with the Vuex Store. In fact, you can call Vuex Actions directly to create or fetch data.
-
-Vuex Module doesn't have access to Model. It must resolve the Model from the entity name, which is a `string`. When a user calls actions like `store.dispatch('entities/users/insert', { ... })`, we must somehow get User Model by the namespace, which is `users` in `entities/users/insert`. Well, Vuex ORM actions are getting Models from the Database.
-
-Finally, the created Database instance is registered to the Vuex Store instance, then it's registered to the [Container](../container/container) so we have access to it from everywhere.
-
-You can access the database instance through the store instance, or Container.
+The database instance can be accessed through the store instance, or [Container](/api/container/container).
 
 ```js
 // Through the store instance.
@@ -54,77 +22,69 @@ import { Container } from '@vuex-orm/core'
 Container.store.$db()
 ```
 
+
 ## Instance Properties
 
-### store
+### `store`
 
-- **`store!: Vuex.Store<any>`**
+- **Type**: `Vuex.Store`
 
   The Vuex Store instance.
 
-### namespace
+### `namespace`
 
-- **`namespace!: string`**
+- **Type**: `string = 'entities'`
 
-  The namespace of the Vuex Store Module where all entities are registered under. the default is `entities`.
+  The namespace of the Vuex Store module where all entities are registered under.
+  
+  The default namespace is `entities` and can be configured during setup.
 
-### entities
+- **See also**: [Changing the Namespace](/guide/model/database-registration.md#changing-the-namespace)
 
-- **`entities: Entity[] = []`**
+### `entities`
 
-  The list of entities registered to the Vuex Store. It contains models and modules with its name. The Entity interface looks like below.
+- **Type**: `Array<Object>`
 
-  ```ts
-  interface Entity {
-    name: string
-    base: string
-    model: typeof Model
-    module: Vuex.Module<any, any>
-  }
-  ```
+  The collection of entities registered to the Vuex Store. It contains references to the models and corresponding modules.
 
-### schema
+### `schema`
 
-- **`schemas: Schemas = {}`**
+- **Type**: `Object`
 
-  The database schema definition. This schema is going to be used when normalizing the data before persisting them to the Vuex Store. Schemas interface is a list of Normalizr schema.
+  The database schema definition. This schema is used when normalizing data before persisting it to the Vuex Store.
 
-  ```ts
-  interface Schemas {
-    [entity: string]: NormalizrSchema.Entity
-  }
-  ```
 
 ## Instance Methods
 
-### register
+### `register`
 
-- **`register(model: typeof Model, module: Vuex.Module<any, any> = {}): void`**
+- **Type**: `(model: Model, module: Object) => void`
 
-  Register a model and a module to Database.
+  Register a model and a Vuex module to the Database.
 
   ```js
+  const database = new Database()
+
+  // With a Vuex module.
   database.register(User, users)
-  ```
 
-  You can omit registering a module.
-
-  ```js
+  // Without a Vuex module.
   database.register(User)
   ```
 
-### start
+### `start`
 
-- **`start (store: Vuex.Store<any>, namespace: string): void`**
+- **Type**: `(store: Vuex.Store, namespace: string) => void`
 
-  This method will generate Vuex Module and Normalizr schema tree from the registered Models. It will be called when adding Vuex ORM to Vuex as a plugin.
+  Generate Vuex Module and Normalizr schema tree from the registered models. This method is invoked when adding Vuex ORM to Vuex as a plugin.
 
-### model
+### `model`
 
-- **`model<T extends typeof Model>(model: T): T`**<br>
-  **`model(model: string): typeof Model`**
+- **Type**: `(model: Model | string): Model`
 
-  Get the model of the given name from the entities list. It is going to through error if the model was not found.
+  Get the model by entity from the entities list. If a model is passed as the argument, then the model [entity](/api/model/model.md#entity)  will be used.
+
+  Throws an error if the model is not found.
 
   ```js
   const user = database.model('users')
@@ -132,11 +92,11 @@ Container.store.$db()
   // User
   ```
 
-### models
+### `models`
 
-- **`models (): { [name: string]: typeof Model }`**
+- **Type**: `() => Object`
 
-  Get all models from the entities list. The result will be object with key being the entity name for the Model.
+  Get all models from the entities list. The result will be a plain object with key being the entity name for the model.
 
   ```js
   const models = database.model()
@@ -144,21 +104,26 @@ Container.store.$db()
   // { users: User, posts: Post }
   ```
 
-### baseModel
+### `baseModel`
 
-- **`baseModel<T extends typeof Model>(model: T): T`**<br>
-  **`baseModel(model: string): typeof Model`**
+- **Type**: `(model: Model | string) => Model`
 
-  Get the base model of the given name from the entities list. The base Model is only relevant when the model is inheriting another model to achieve Single Table inheritance feature. It is going to through error if the model was not found.
+  Get the base model by entity from the entities list. If a model is passed as the argument, then the model [baseEntity](/api/model/model.md#baseentity)  will be used.
+  
+   The `baseModel` is only relevant when the model is inheriting another model to achieve Single Table Inheritance.
+   
+   Throws an error if the model is not found.
  
-### module
+### `module`
 
-- **`module (name: string): Vuex.Module<any, any>`**
+- **Type**: `(name: string) => Vuex.Module`
 
-  Get the module of the given name from the entities list. It is going to through error if the module was not found.
+  Get the module by entity from the entities list.
 
-### modules
+  Throws an error if the model is not found.
 
-- **`modules (): { [name: string]: Vuex.Module<any, any> }`**
+### `modules`
 
-  Get all modules from the entities list. The result will be object with key being the entity name for the Module.
+- **Type**: `() => Object`
+
+  Get all modules from the entities list. The result will be a plain object with key being the entity name for the module.
