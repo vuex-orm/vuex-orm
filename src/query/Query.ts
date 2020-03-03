@@ -147,7 +147,7 @@ export default class Query<T extends Model = Model> {
     this.entity = entity
     this.baseEntity = this.baseModel.entity
 
-    this.rootState = this.database.getState()
+    this.rootState = this.database.getState(store)
     this.state = this.rootState[this.baseEntity]
 
     this.appliedOnBase = this.baseEntity === this.entity
@@ -161,7 +161,7 @@ export default class Query<T extends Model = Model> {
     const models = database.models()
 
     for (const entity in models) {
-      const state = database.getState()[entity]
+      const state = database.getState(store)[entity]
       state && (new this(store, entity)).deleteAll()
     }
   }
