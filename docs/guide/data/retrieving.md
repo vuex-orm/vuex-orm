@@ -223,13 +223,13 @@ const user = User.query()
 ## Exists
 
 The `exists` method allows you to check wether a query chain would return any records. The method will return either `true` or `false`.
-```js
-// Check whether an user with id 5 exists
-const resultExists = User.query().where('id', 5).exists()
 
-// Check whether the user store contains any data
+```js
+// Check whether the user store contains any data.
 const resultExists = User.exists()
 
+// Check whether an user with id 5 exists.
+const resultExists = User.query().where('id', 5).exists()
 ```
 
 ## Order By
