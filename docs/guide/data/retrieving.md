@@ -61,7 +61,7 @@ If your model has a composite primary key, you can retrieve data by passing an a
 import { Model } from '@vuex-orm/core'
 
 class Subscription extends Model {
-  static entity = 'users'
+  static entity = 'subscription'
 
   static primaryKey = ['video_id', 'user_id']
 
@@ -78,7 +78,7 @@ Then, you can retrieve Subscription records as below. Remember that the value or
 
 ```js
 // Get a subscription with video_id 1 and user_id 2.
-const subscription = User.find([1, 2])
+const subscription = Subscription.find([1, 2])
 
 // { video_id: 1, user_id: 2 }
 ```
