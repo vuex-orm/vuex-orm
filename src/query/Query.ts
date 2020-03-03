@@ -326,7 +326,6 @@ export default class Query<T extends Model = Model> {
     return records.length > 0
   }
 
-
   /**
    * Add a and where clause to the query.
    */
