@@ -198,9 +198,10 @@ export default class Database {
         return class ${model.name} extends model {}
       `)(model)
     } catch {
-      /* istanbul ignore next */
+      /* istanbul ignore next: rollback (mostly <= IE10) */
       proxy = class extends model {}
 
+      /* istanbul ignore next: allocate model name */
       Object.defineProperty(proxy, 'name', { get: () => model.name })
     }
 
