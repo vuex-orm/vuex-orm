@@ -318,6 +318,16 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
+   * Checks whether a result of the query chain exists.
+   */
+  exists (): boolean {
+    const records = this.select()
+
+    return records.length > 0
+  }
+
+
+  /**
    * Add a and where clause to the query.
    */
   where (field: any, value?: any): this {

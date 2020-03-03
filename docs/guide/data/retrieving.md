@@ -220,6 +220,18 @@ const user = User.query()
   .get()
 ```
 
+## Exists
+
+The `exists` method allows you to check wether a query chain would return any records. The method will return either `true` or `false`.
+```js
+// Check whether an user with id 5 exists
+const resultExists = User.query().where('id', 5).exists()
+
+// Check whether the user store contains any data
+const resultExists = User.exists()
+
+```
+
 ## Order By
 
 The `orderBy` method allows you to sort the result of the query by a given field. The first argument to the orderBy method should be the column you wish to sort by, while the second argument controls the direction of the sort, and may be either `asc` or `desc`. If there is no 2nd argument, the direction is going to be `asc`.
