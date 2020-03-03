@@ -1532,6 +1532,10 @@
 	     */
 	    function BelongsToMany(model, related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey) {
 	        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+	        /**
+	         * The key name of the pivot data.
+	         */
+	        _this.pivotKey = 'pivot';
 	        _this.related = _this.model.relation(related);
 	        _this.pivot = _this.model.relation(pivot);
 	        _this.foreignPivotKey = foreignPivotKey;
@@ -1540,6 +1544,13 @@
 	        _this.relatedKey = relatedKey;
 	        return _this;
 	    }
+	    /**
+	     * Specify the custom pivot accessor to use for the relationship.
+	     */
+	    BelongsToMany.prototype.as = function (accessor) {
+	        this.pivotKey = accessor;
+	        return this;
+	    };
 	    /**
 	     * Define the normalizr schema for the relationship.
 	     */
@@ -1600,7 +1611,10 @@
 	            }
 	            var related = relateds[record[_this.relatedPivotKey]];
 	            if (related) {
-	                records[id] = records[id].concat(related);
+	                records[id] = records[id].concat(related.map(function (model) {
+	                    model[_this.pivotKey] = record;
+	                    return model;
+	                }));
 	            }
 	            return records;
 	        }, {});
@@ -1635,7 +1649,8 @@
 	                _this.pivot.primaryKey[1] === _this.foreignPivotKey ? parentId : relatedId
 	            ]);
 	            var pivotRecord = data[_this.pivot.entity] ? data[_this.pivot.entity][pivotKey] : {};
-	            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = __assign(__assign({}, pivotRecord), (_b = { $id: pivotKey }, _b[_this.foreignPivotKey] = parentId, _b[_this.relatedPivotKey] = relatedId, _b)), _a));
+	            var pivotData = data[_this.related.entity][id][_this.pivotKey] || {};
+	            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = __assign(__assign(__assign({}, pivotRecord), pivotData), (_b = { $id: pivotKey }, _b[_this.foreignPivotKey] = parentId, _b[_this.relatedPivotKey] = relatedId, _b)), _a));
 	        });
 	    };
 	    return BelongsToMany;
@@ -1832,6 +1847,10 @@
 	     */
 	    function MorphToMany(model, related, pivot, relatedId, id, type, parentKey, relatedKey) {
 	        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+	        /**
+	         * The key name of the pivot data.
+	         */
+	        _this.pivotKey = 'pivot';
 	        _this.related = _this.model.relation(related);
 	        _this.pivot = _this.model.relation(pivot);
 	        _this.relatedId = relatedId;
@@ -1841,6 +1860,13 @@
 	        _this.relatedKey = relatedKey;
 	        return _this;
 	    }
+	    /**
+	     * Specify the custom pivot accessor to use for the relationship.
+	     */
+	    MorphToMany.prototype.as = function (accessor) {
+	        this.pivotKey = accessor;
+	        return this;
+	    };
 	    /**
 	     * Define the normalizr schema for the relationship.
 	     */
@@ -1900,7 +1926,10 @@
 	                records[id] = [];
 	            }
 	            var related = relateds[record[_this.relatedId]];
-	            records[id] = records[id].concat(related);
+	            records[id] = records[id].concat(related.map(function (model) {
+	                model[_this.pivotKey] = record;
+	                return model;
+	            }));
 	            return records;
 	        }, {});
 	    };
@@ -1932,13 +1961,8 @@
 	            var parentId = record[_this.parentKey];
 	            var relatedId = data[_this.related.entity][id][_this.relatedKey];
 	            var pivotKey = parentId + "_" + id + "_" + parent.entity;
-	            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = (_b = {
-	                    $id: pivotKey
-	                },
-	                _b[_this.relatedId] = relatedId,
-	                _b[_this.id] = parentId,
-	                _b[_this.type] = parent.entity,
-	                _b), _a));
+	            var pivotData = data[_this.related.entity][id][_this.pivotKey] || {};
+	            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = __assign(__assign({}, pivotData), (_b = { $id: pivotKey }, _b[_this.relatedId] = relatedId, _b[_this.id] = parentId, _b[_this.type] = parent.entity, _b)), _a));
 	        });
 	    };
 	    return MorphToMany;
@@ -1951,6 +1975,10 @@
 	     */
 	    function MorphedByMany(model, related, pivot, relatedId, id, type, parentKey, relatedKey) {
 	        var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+	        /**
+	         * The key name of the pivot data.
+	         */
+	        _this.pivotKey = 'pivot';
 	        _this.related = _this.model.relation(related);
 	        _this.pivot = _this.model.relation(pivot);
 	        _this.relatedId = relatedId;
@@ -1960,6 +1988,13 @@
 	        _this.relatedKey = relatedKey;
 	        return _this;
 	    }
+	    /**
+	     * Specify the custom pivot accessor to use for the relationship.
+	     */
+	    MorphedByMany.prototype.as = function (accessor) {
+	        this.pivotKey = accessor;
+	        return this;
+	    };
 	    /**
 	     * Define the normalizr schema for the relationship.
 	     */
@@ -2020,7 +2055,10 @@
 	                records[id] = [];
 	            }
 	            var related = relateds[record[_this.id]];
-	            records[id] = records[id].concat(related);
+	            records[id] = records[id].concat(related.map(function (model) {
+	                model[_this.pivotKey] = record;
+	                return model;
+	            }));
 	            return records;
 	        }, {});
 	    };
@@ -2047,13 +2085,8 @@
 	            var _a, _b;
 	            var parentId = record[_this.parentKey];
 	            var pivotKey = id + "_" + parentId + "_" + _this.related.entity;
-	            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = (_b = {
-	                    $id: pivotKey
-	                },
-	                _b[_this.relatedId] = parentId,
-	                _b[_this.id] = _this.model.getIdFromRecord(data[_this.related.entity][id]),
-	                _b[_this.type] = _this.related.entity,
-	                _b), _a));
+	            var pivotData = data[_this.related.entity][id][_this.pivotKey] || {};
+	            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = __assign(__assign({}, pivotData), (_b = { $id: pivotKey }, _b[_this.relatedId] = parentId, _b[_this.id] = _this.model.getIdFromRecord(data[_this.related.entity][id]), _b[_this.type] = _this.related.entity, _b)), _a));
 	        });
 	    };
 	    return MorphedByMany;
@@ -2345,6 +2378,12 @@
 	     */
 	    Model.query = function () {
 	        return this.getters('query')();
+	    };
+	    /**
+	     * Check wether the associated database contains data.
+	     */
+	    Model.exists = function () {
+	        return this.query().exists();
 	    };
 	    /**
 	     * Create new data with all fields filled by default values.
@@ -4144,6 +4183,13 @@
 	        return this.item(this.hydrate(records[records.length - 1]));
 	    };
 	    /**
+	     * Checks whether a result of the query chain exists.
+	     */
+	    Query.prototype.exists = function () {
+	        var records = this.select();
+	        return records.length > 0;
+	    };
+	    /**
 	     * Add a and where clause to the query.
 	     */
 	    Query.prototype.where = function (field, value) {
@@ -5166,39 +5212,6 @@
 	    delete: destroy$2
 	};
 
-	function use (plugin, options) {
-	    if (options === void 0) { options = {}; }
-	    var components = {
-	        Model: Model,
-	        Attribute: Attribute,
-	        Type: Type,
-	        Attr: Attr,
-	        String: String$1,
-	        Number: Number,
-	        Boolean: Boolean,
-	        Uid: Uid$1,
-	        Relation: Relation,
-	        HasOne: HasOne,
-	        BelongsTo: BelongsTo,
-	        HasMany: HasMany,
-	        HasManyBy: HasManyBy,
-	        BelongsToMany: BelongsToMany,
-	        HasManyThrough: HasManyThrough,
-	        MorphTo: MorphTo,
-	        MorphOne: MorphOne,
-	        MorphMany: MorphMany,
-	        MorphToMany: MorphToMany,
-	        MorphedByMany: MorphedByMany,
-	        Getters: Getters,
-	        Actions: Actions,
-	        RootGetters: RootGetters,
-	        RootActions: RootActions,
-	        RootMutations: RootMutations,
-	        Query: Query
-	    };
-	    plugin.install(components, options);
-	}
-
 	var ProcessStrategy = /** @class */ (function () {
 	    function ProcessStrategy() {
 	    }
@@ -5590,6 +5603,40 @@
 	    };
 	    return Database;
 	}());
+
+	function use (plugin, options) {
+	    if (options === void 0) { options = {}; }
+	    var components = {
+	        Model: Model,
+	        Attribute: Attribute,
+	        Type: Type,
+	        Attr: Attr,
+	        String: String$1,
+	        Number: Number,
+	        Boolean: Boolean,
+	        Uid: Uid$1,
+	        Relation: Relation,
+	        HasOne: HasOne,
+	        BelongsTo: BelongsTo,
+	        HasMany: HasMany,
+	        HasManyBy: HasManyBy,
+	        BelongsToMany: BelongsToMany,
+	        HasManyThrough: HasManyThrough,
+	        MorphTo: MorphTo,
+	        MorphOne: MorphOne,
+	        MorphMany: MorphMany,
+	        MorphToMany: MorphToMany,
+	        MorphedByMany: MorphedByMany,
+	        Getters: Getters,
+	        Actions: Actions,
+	        RootGetters: RootGetters,
+	        RootActions: RootActions,
+	        RootMutations: RootMutations,
+	        Query: Query,
+	        Database: Database
+	    };
+	    plugin.install(components, options);
+	}
 
 	var index_cjs = {
 	    install: install,
