@@ -186,34 +186,27 @@ export default class Database {
   /**
    * Create a new model that binds the database.
    *
-   * When utilising code targeted at ES5 mixed with code targeted at ES6
-   * causes a runtime error when using mixin classes. Implemented workaround
-   * until babel releases fix (https://github.com/babel/babel/issues/9367).
+   * Transpiled classes cannot extend native classes. Implemented a workaround
+   * until Babel releases a fix (https://github.com/babel/babel/issues/9367).
    */
   private createBindingModel (model: typeof Model): typeof Model {
-    const database = this
-
     let proxy: typeof Model
 
     try {
-      proxy = new Function('model', 'database', `
+      proxy = new Function('model', `
         'use strict';
-        return class extends model {
-          static store () {
-            return database.store
-          }
-        }
-      `)(model, database) as typeof Model
+        return class ${model.name} extends model {}
+      `)(model)
     } catch {
       /* istanbul ignore next */
-      proxy = class extends model {
-        static store (): Store<any> {
-          return database.store
-        }
-      }
+      proxy = class extends model {}
+
+      Object.defineProperty(proxy, 'name', { get: () => model.name })
     }
 
-    Object.defineProperty(proxy, 'name', { get: () => model.name })
+    Object.defineProperty(proxy, 'store', {
+      value: (): Store<any> => this.store
+    })
 
     return proxy
   }
