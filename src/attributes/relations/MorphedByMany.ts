@@ -46,6 +46,11 @@ export default class MorphedByMany extends Relation {
   relatedKey: string
 
   /**
+   * The key name of the pivot data.
+   */
+  pivotKey: string = 'pivot'
+
+  /**
    * Create a new belongs to instance.
    */
   constructor (
@@ -67,6 +72,15 @@ export default class MorphedByMany extends Relation {
     this.type = type
     this.parentKey = parentKey
     this.relatedKey = relatedKey
+  }
+
+  /**
+   * Specify the custom pivot accessor to use for the relationship.
+   */
+  as (accessor: string): this {
+    this.pivotKey = accessor
+
+    return this
   }
 
   /**
@@ -144,7 +158,10 @@ export default class MorphedByMany extends Relation {
 
       const related = relateds[record[this.id]]
 
-      records[id] = records[id].concat(related)
+      records[id] = records[id].concat(related.map((model: Record) => {
+        model[this.pivotKey] = record
+        return model
+      }))
 
       return records
     }, {} as Records)
@@ -174,11 +191,13 @@ export default class MorphedByMany extends Relation {
     related.forEach((id) => {
       const parentId = record[this.parentKey]
       const pivotKey = `${id}_${parentId}_${this.related.entity}`
+      const pivotData = data[this.related.entity][id][this.pivotKey] || {}
 
       data[this.pivot.entity] = {
         ...data[this.pivot.entity],
 
         [pivotKey]: {
+          ...pivotData,
           $id: pivotKey,
           [this.relatedId]: parentId,
           [this.id]: this.model.getIdFromRecord(data[this.related.entity][id]),

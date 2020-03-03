@@ -29,6 +29,7 @@ import RootGettersContract from '../modules/contracts/RootGetters'
 import RootActionsContract from '../modules/contracts/RootActions'
 import RootMutationsContract from '../modules/contracts/RootMutations'
 import Query from '../query/Query'
+import Database from '../database/Database'
 
 export interface PluginComponents {
   Model: typeof Model
@@ -57,6 +58,7 @@ export interface PluginComponents {
   RootActions: RootActionsContract
   RootMutations: RootMutationsContract
   Query: typeof Query
+  Database: typeof Database
 }
 
 export interface Options {
@@ -96,7 +98,8 @@ export default function (plugin: Plugin, options: Options = {}): void {
     RootGetters,
     RootActions,
     RootMutations,
-    Query
+    Query,
+    Database
   }
 
   plugin.install(components, options)

@@ -32,7 +32,8 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     static fields () {
       return {
         role_id: this.attr(null),
-        user_id: this.attr(null)
+        user_id: this.attr(null),
+        level: this.attr(null)
       }
     }
   }
@@ -60,6 +61,25 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     expect(user.roles.length).toBe(2)
     expect(user.roles[0].id).toBe(2)
     expect(user.roles[1].id).toBe(3)
+
+    const userWithoutRoles = User.query().with('roles').find(2)
+    expect(userWithoutRoles.roles.length).toBe(0)
+  })
+
+  it('can resolve belongs to many relation with pivot data', async () => {
+    createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+
+    await User.create({
+      data: [{ id: 1, roles: [{ id: 2, pivot: { level: 1 } }, { id: 3, pivot: { level: 2 } }] }, { id: 2 }]
+    })
+
+    const user = User.query().with('roles').find(1)
+
+    expect(user.roles.length).toBe(2)
+    expect(user.roles[0].id).toBe(2)
+    expect(user.roles[0].pivot.level).toBe(1)
+    expect(user.roles[1].id).toBe(3)
+    expect(user.roles[1].pivot.level).toBe(2)
 
     const userWithoutRoles = User.query().with('roles').find(2)
     expect(userWithoutRoles.roles.length).toBe(0)
@@ -182,7 +202,8 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       static fields () {
         return {
           role_id: this.attr(null),
-          user_id: this.attr(null)
+          user_id: this.attr(null),
+          level: this.attr(null)
         }
       }
     }
@@ -195,7 +216,8 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       static fields () {
         return {
           role_id: this.attr(null),
-          permission_id: this.attr('')
+          permission_id: this.attr(''),
+          type: this.attr(null)
         }
       }
     }
@@ -208,7 +230,8 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
         roles: [
           {
             id: 1,
-            permissions: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]
+            permissions: [{ id: 1, pivot: { type: 'can' } }, { id: 2, pivot: { type: 'cant' } }, { id: 3 }, { id: 4 }],
+            pivot: { level: 1 }
           }
         ]
       },
@@ -230,9 +253,13 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     expect(users[0].id).toBe(1)
     expect(users[0].roles.length).toBe(1)
     expect(users[0].roles[0].id).toBe(1)
+    expect(users[0].roles[0].pivot.level).toBe(1)
     expect(users[0].roles[0].permissions.length).toBe(4)
     expect(users[0].roles[0].permissions[0].id).toBe(1)
+    expect(users[0].roles[0].permissions[0].pivot.type).toBe('can')
     expect(users[0].roles[0].permissions[1].id).toBe(2)
+    expect(users[0].roles[0].permissions[1].pivot.type).toBe('cant')
+    expect(users[0].roles[0].permissions[2].pivot.type).toBe(null)
 
     expect(users[1].id).toBe(2)
     expect(users[1].roles.length).toBe(1)

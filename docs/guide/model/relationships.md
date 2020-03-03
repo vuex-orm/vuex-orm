@@ -270,9 +270,8 @@ class Cluster extends Model {
 ## Many To Many
 
 Many-to-many relations are slightly more complicated than other relationships. An example of such a relationship is a user with many roles, where the roles are also shared by other users. For example, many users may have the role of "Admin". To define this relationship, three models are needed: User, Role, and RoleUser.
-The RoleUser contains the fields to hold id of User and Role model. We'll define `user_id` and `role_id` fields here.
 
-The name of RoleUser model could be anything, but for this example, we'll keep it this way to make it easy to understand.
+The RoleUser contains the fields to hold id of User and Role model. We'll define `user_id` and `role_id` fields here. The name of RoleUser model could be anything, but for this example, we'll keep it this way to make it easy to understand.
 
 Many-to-many relationships are defined by defining `this.belongsToMany()`.
 
@@ -315,7 +314,7 @@ class RoleUser extends Model {
 The argument order of the `belongsToMany` attribute is:
 
 1. The Related model which is in this case Role.
-2. Intermediate pivot model which is RoleUser.
+2. Intermediate pivot model which is in this case RoleUser.
 3. Field of the pivot model that holds the id value of the parent – User – model.
 4. Field of the pivot model that holds the id value of the related – Role – model.
 
@@ -382,6 +381,54 @@ class RoleUser extends Model {
 ```
 
 As you can see, the relationship is defined the same as its User counterpart, except referencing the User model and the order of 3rd and 4th argument is inversed.
+
+### Access Intermediate Model
+
+Working with many-to-many relations requires the presence of an intermediate model. Vuex ORM provides some helpful ways of interacting with this model. For example, let's assume our `User` object has many `Role` objects that it is related to. After accessing this relationship, we may access the intermediate model using the `pivot` attribute on the models.
+
+```js
+const user = User.query().with('roles').first()
+
+user.roles.forEach((role) => {
+  console.log(role.pivot)
+})
+```
+
+Notice that each `Role` model we retrieve is automatically assigned a `pivot` attribute. This attribute contains a model representing the intermediate model and may be used like any other model.
+
+### Customizing The `pivot` Attribute Name
+
+As noted earlier, attributes from the intermediate model may be accessed on models using the `pivot` attribute. However, you are free to customize the name of this attribute to better reflect its purpose within your application.
+
+For example, if your application contains users that may subscribe to podcasts, you probably have a many-to-many relationship between users and podcasts. If this is the case, you may wish to rename your intermediate table accessor to `subscription` instead of `pivot`. This can be done using the `as` method when defining the relationship:
+
+```js
+class User extends Model {
+  static entity = 'users'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      podcasts: this.belongsToMany(
+        Podcast,
+        Subscription,
+        'user_id',
+        'podcast_id'
+      ).as('subscription')
+    }
+  }
+}
+```
+
+Once this is done, you may access the intermediate table data using the customized name.
+
+```js
+const user = User.query().with('podcasts').first()
+
+user.podcasts.forEach((podcast) => {
+  console.log(podcast.subscription)
+})
+```
 
 ## Has Many Through
 
@@ -746,4 +793,51 @@ class Tag extends Model {
     }
   }
 }
+```
+
+### Access Intermediate Model
+
+As the same as `belongsToMany` relationship, you may access the intermediate model for polymorphic many-to-many relationship through `pivot` attribute on the model.
+
+```js
+const post = Post.query().with('tags').first()
+
+post.tags.forEach((tag) => {
+  console.log(tag.pivot)
+})
+```
+
+Each `Tag` model we retrieve is automatically assigned a `pivot` attribute. This attribute contains a model representing the intermediate model and may be used like any other model.
+
+### Customizing The `pivot` Attribute Name
+
+Again, as the same as `belongsToMany` relationship, you are free to customize the name of this attribute through `as` method.
+
+```js
+class Post extends Model {
+  static entity = 'posts'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      tags: this.morphToMany(
+        Tag,
+        Taggable,
+        'tag_id',
+        'taggable_id',
+        'taggable_type'
+      ).as('intermediate')
+    }
+  }
+}
+```
+
+The `as` method is also available for `morphedByMany` relationship. Once this is done, you may access the intermediate table data using the customized name.
+
+```js
+const post = Post.query().with('tags').first()
+
+post.tags.forEach((tag) => {
+  console.log(tag.intermediate)
+})
 ```

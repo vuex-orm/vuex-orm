@@ -32,7 +32,8 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
       static fields () {
         return {
           role_id: this.attr(null),
-          user_id: this.attr(null)
+          user_id: this.attr(null),
+          level: this.attr(null)
         }
       }
     }
@@ -42,7 +43,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     await store.dispatch('entities/users/create', {
       data: {
         id: 1,
-        permissions: [{ id: 1 }, { id: 2 }]
+        permissions: [{ id: 1, pivot: { level: 1 } }, { id: 2 }]
       }
     })
 
@@ -55,8 +56,8 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
         2: { $id: '2', id: 2 }
       },
       roleUser: {
-        '[1,1]': { $id: '[1,1]', role_id: 1, user_id: 1 },
-        '[2,1]': { $id: '[2,1]', role_id: 2, user_id: 1 }
+        '[1,1]': { $id: '[1,1]', role_id: 1, user_id: 1, level: 1 },
+        '[2,1]': { $id: '[2,1]', role_id: 2, user_id: 1, level: null }
       }
     })
 
@@ -217,7 +218,8 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
       static fields () {
         return {
           role_id: this.attr(null),
-          user_id: this.attr(null)
+          user_id: this.attr(null),
+          level: this.attr(null)
         }
       }
     }
@@ -231,7 +233,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
           team_id: 1,
           id: 1,
           roles: [
-            { id: 2 },
+            { id: 2, pivot: { level: 1 } },
             { id: 3 }
           ]
         }]
@@ -243,7 +245,9 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     expect(store.state.entities.roles.data['2'].id).toBe(2)
     expect(store.state.entities.roles.data['3'].id).toBe(3)
     expect(store.state.entities.roleUser.data['[2,1]'].$id).toStrictEqual('[2,1]')
+    expect(store.state.entities.roleUser.data['[2,1]'].level).toBe(1)
     expect(store.state.entities.roleUser.data['[3,1]'].$id).toStrictEqual('[3,1]')
+    expect(store.state.entities.roleUser.data['[3,1]'].level).toBe(null)
   })
 
   it('can retrieve data by filtering with `whereHas`', async () => {
@@ -322,9 +326,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
       static fields () {
         return {
-          id: this.attr(null),
-          roleUsers: this.hasMany(RoleUser, 'role_id'),
-          users: this.belongsToMany(User, RoleUser, 'role_id', 'user_id')
+          id: this.attr(null)
         }
       }
     }
@@ -339,38 +341,21 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
           id: this.attr(null),
           role_id: this.attr(null),
           user_id: this.attr(null),
-          type: this.attr(''),
-          user: this.belongsTo(User, 'user_id'),
-          role: this.belongsTo(Role, 'role_id')
+          type: this.attr('')
         }
       }
     }
 
     const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
-    await store.dispatch('entities/users/insertOrUpdate', {
+    await store.dispatch('entities/users/insert', {
       data: {
         id: 1,
         name: 'Jane Doe',
         roleUsers: [
-          {
-            id: 1,
-            role_id: 1,
-            user_id: 1,
-            type: 'administrator'
-          },
-          {
-            id: 2,
-            role_id: 1,
-            user_id: 1,
-            type: 'general'
-          },
-          {
-            id: 3,
-            role_id: 2,
-            user_id: 1,
-            type: 'general'
-          }
+          { id: 1, role_id: 1, user_id: 1, type: 'administrator' },
+          { id: 2, role_id: 1, user_id: 1, type: 'general' },
+          { id: 3, role_id: 2, user_id: 1, type: 'general' }
         ],
         roles: [
           { id: 1 },
@@ -384,13 +369,13 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
         1: { $id: '1', id: 1, name: 'Jane Doe', roleUsers: [], roles: [] }
       },
       roles: {
-        1: { $id: '1', id: 1, roleUsers: [], users: [] },
-        2: { $id: '2', id: 2, roleUsers: [], users: [] }
+        1: { $id: '1', id: 1 },
+        2: { $id: '2', id: 2 }
       },
       roleUsers: {
-        1: { $id: '1', id: 1, user_id: 1, role_id: 1, type: 'administrator', user: null, role: null },
-        2: { $id: '2', id: 2, user_id: 1, role_id: 1, type: 'general', user: null, role: null },
-        3: { $id: '3', id: 3, user_id: 1, role_id: 2, type: 'general', user: null, role: null }
+        1: { $id: '1', id: 1, user_id: 1, role_id: 1, type: 'administrator' },
+        2: { $id: '2', id: 2, user_id: 1, role_id: 1, type: 'general' },
+        3: { $id: '3', id: 3, user_id: 1, role_id: 2, type: 'general' }
       }
     })
 
@@ -416,9 +401,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
       static fields () {
         return {
-          id: this.attr(null),
-          roleUsers: this.hasMany(RoleUser, 'role_id'),
-          users: this.belongsToMany(User, RoleUser, 'role_id', 'user_id')
+          id: this.attr(null)
         }
       }
     }
@@ -432,30 +415,20 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
         return {
           role_id: this.attr(null),
           user_id: this.attr(null),
-          type: this.attr(''),
-          user: this.belongsTo(User, 'user_id'),
-          role: this.belongsTo(Role, 'role_id')
+          type: this.attr('')
         }
       }
     }
 
     const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
-    await store.dispatch('entities/users/insertOrUpdate', {
+    await store.dispatch('entities/users/insert', {
       data: {
         id: 1,
         name: 'Jane Doe',
         roleUsers: [
-          {
-            role_id: 1,
-            user_id: 1,
-            type: 'administrator'
-          },
-          {
-            role_id: 2,
-            user_id: 1,
-            type: 'general'
-          }
+          { role_id: 1, user_id: 1, type: 'administrator' },
+          { role_id: 2, user_id: 1, type: 'general' }
         ],
         roles: [
           { id: 1 },
@@ -469,12 +442,77 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
         1: { $id: '1', id: 1, name: 'Jane Doe', roleUsers: [], roles: [] }
       },
       roles: {
-        1: { $id: '1', id: 1, roleUsers: [], users: [] },
-        2: { $id: '2', id: 2, roleUsers: [], users: [] }
+        1: { $id: '1', id: 1 },
+        2: { $id: '2', id: 2 }
       },
       roleUsers: {
-        '[1,1]': { $id: '[1,1]', user_id: 1, role_id: 1, type: 'administrator', user: null, role: null },
-        '[2,1]': { $id: '[2,1]', user_id: 1, role_id: 2, type: 'general', user: null, role: null }
+        '[1,1]': { $id: '[1,1]', user_id: 1, role_id: 1, type: 'administrator' },
+        '[2,1]': { $id: '[2,1]', user_id: 1, role_id: 2, type: 'general' }
+      }
+    })
+
+    expect(store.state.entities).toEqual(expected)
+  })
+
+  it('can create a data with belongs to many relation with pivot data having custom key', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          permissions: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id').as('role_user')
+        }
+      }
+    }
+
+    class Role extends Model {
+      static entity = 'roles'
+
+      static fields () {
+        return {
+          id: this.attr(null)
+        }
+      }
+    }
+
+    class RoleUser extends Model {
+      static entity = 'roleUser'
+
+      static primaryKey = ['role_id', 'user_id']
+
+      static fields () {
+        return {
+          role_id: this.attr(null),
+          user_id: this.attr(null),
+          level: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+
+    await store.dispatch('entities/users/insert', {
+      data: {
+        id: 1,
+        permissions: [
+          { id: 1, role_user: { level: 1 } },
+          { id: 2 }
+        ]
+      }
+    })
+
+    const expected = createState({
+      users: {
+        1: { $id: '1', id: 1, permissions: [] }
+      },
+      roles: {
+        1: { $id: '1', id: 1 },
+        2: { $id: '2', id: 2 }
+      },
+      roleUser: {
+        '[1,1]': { $id: '[1,1]', role_id: 1, user_id: 1, level: 1 },
+        '[2,1]': { $id: '[2,1]', role_id: 2, user_id: 1, level: null }
       }
     })
 

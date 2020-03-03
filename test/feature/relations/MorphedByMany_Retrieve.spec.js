@@ -44,7 +44,8 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
           id: this.attr(null),
           tag_id: this.attr(null),
           taggable_id: this.attr(null),
-          taggable_type: this.attr(null)
+          taggable_type: this.attr(null),
+          is_public: this.attr(null)
         }
       }
     }
@@ -65,17 +66,20 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
 
     await Taggable.create({
       data: [
-        { id: 1, tag_id: 1, taggable_id: 1, taggable_type: 'posts' },
-        { id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos' },
-        { id: 3, tag_id: 1, taggable_id: 5, taggable_type: 'posts' },
-        { id: 4, tag_id: 1, taggable_id: 4, taggable_type: 'videos' }
+        { id: 1, tag_id: 1, taggable_id: 1, taggable_type: 'posts', is_public: false },
+        { id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos', is_public: true },
+        { id: 3, tag_id: 1, taggable_id: 5, taggable_type: 'posts', is_public: true },
+        { id: 4, tag_id: 1, taggable_id: 4, taggable_type: 'videos', is_public: false }
       ]
     })
 
     const tag = Tag.query().with('posts').with('videos').find(1)
 
     expect(tag.posts.length).toBe(2)
+    expect(tag.posts[0].pivot.is_public).toBe(false)
+    expect(tag.posts[1].pivot.is_public).toBe(true)
     expect(tag.videos.length).toBe(1)
+    expect(tag.videos[0].pivot.is_public).toBe(false)
 
     const tagWithoutReferences = Tag.query().with('posts').with('videos').find(3)
 
