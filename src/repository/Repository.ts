@@ -70,6 +70,13 @@ export default class Repository<M extends typeof Model> {
   }
 
   /**
+   * Update records.
+   */
+  update (payload: Payloads.Update): Promise<Collections> {
+    return this.dispatch('update', payload)
+  }
+
+  /**
    * Delete records that matches the given condition.
    */
   delete (id: string | number | (number | string)[]): Promise<Item<InstanceOf<M>>>
