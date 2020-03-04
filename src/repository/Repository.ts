@@ -1,8 +1,9 @@
 import { Store } from 'vuex'
 import Database from '../database/Database'
-import { Collections, InstanceOf } from '../data'
+import { Item, Collection, Collections, InstanceOf } from '../data'
 import Model from '../model/Model'
 import * as Payloads from '../modules/payloads/Actions'
+import Predicate from '../query/contracts/Predicate'
 
 export default class Repository<M extends typeof Model> {
   /**
@@ -66,5 +67,21 @@ export default class Repository<M extends typeof Model> {
    */
   insert (payload: Payloads.Insert): Promise<Collections> {
     return this.dispatch('insert', payload)
+  }
+
+  /**
+   * Delete records that matches the given condition.
+   */
+  delete (id: string | number | (number | string)[]): Promise<Item<InstanceOf<M>>>
+  delete (condition: Predicate<InstanceOf<M>>): Promise<Collection<InstanceOf<M>>>
+  delete (payload: any): any {
+    return this.dispatch('delete', payload)
+  }
+
+  /**
+   * Delete all records from the store.
+   */
+  deleteAll (): Promise<Collection<InstanceOf<M>>> {
+    return this.dispatch('deleteAll')
   }
 }
