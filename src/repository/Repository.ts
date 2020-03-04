@@ -53,6 +53,15 @@ export default class Repository<M extends typeof Model> {
   }
 
   /**
+   * Save given data to the store by replacing all existing records in the
+   * store. If you want to save data without replacing existing records,
+   * use the `insert` method instead.
+   */
+  create (payload: Payloads.Create): Promise<Collections> {
+    return this.dispatch('create', payload)
+  }
+
+  /**
    * Insert records.
    */
   insert (payload: Payloads.Insert): Promise<Collections> {
