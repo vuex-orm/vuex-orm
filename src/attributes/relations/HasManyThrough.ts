@@ -124,7 +124,7 @@ export default class HasManyThrough extends Relation {
    * Create a new indexed map for the through relation.
    */
   mapThroughRelations (throughs: Collection, relatedQuery: Query): Records {
-    const relateds = this.mapManyRelations(relatedQuery.get(), this.secondKey)
+    const relations = this.mapManyRelations(relatedQuery.get(), this.secondKey)
 
     return throughs.reduce<Record>((records, record) => {
       const id = record[this.firstKey]
@@ -133,7 +133,7 @@ export default class HasManyThrough extends Relation {
         records[id] = []
       }
 
-      const related = relateds[record[this.secondLocalKey]] as Record | undefined
+      const related = relations.get(record[this.secondLocalKey])
 
       if (related === undefined) {
         return records

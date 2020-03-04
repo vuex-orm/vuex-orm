@@ -21,7 +21,7 @@ export default class MorphToMany extends Relation {
   pivot: typeof Model
 
   /**
-   * The field name that conatins id of the related model.
+   * The field name that contains id of the related model.
    */
   relatedId: string
 
@@ -31,7 +31,7 @@ export default class MorphToMany extends Relation {
   id: string
 
   /**
-   * The field name fthat contains type of the parent model.
+   * The field name that contains type of the parent model.
    */
   type: string
 
@@ -146,16 +146,24 @@ export default class MorphToMany extends Relation {
    * Create a new indexed map for the pivot relation.
    */
   mapPivotRelations (pivots: Collection, relatedQuery: Query): Records {
-    const relateds = this.mapManyRelations(relatedQuery.get(), this.relatedKey)
+    const relations = this.mapManyRelations(relatedQuery.get(), this.relatedKey)
 
-    return pivots.reduce((records, record) => {
+    if (relatedQuery.orders.length) {
+      return this.mapRelationsByOrders(pivots, relations, this.id, this.relatedId)
+    }
+
+    return pivots.reduce<Record>((records, record) => {
       const id = record[this.id]
 
       if (!records[id]) {
         records[id] = []
       }
 
-      const related = relateds[record[this.relatedId]]
+      const related = relations.get(record[this.relatedId])
+
+      if (related === undefined || related.length === 0) {
+        return records
+      }
 
       records[id] = records[id].concat(related.map((model: Record) => {
         model[this.pivotKey] = record
@@ -163,7 +171,7 @@ export default class MorphToMany extends Relation {
       }))
 
       return records
-    }, {} as Records)
+    }, {})
   }
 
   /**
