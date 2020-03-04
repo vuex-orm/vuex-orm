@@ -222,7 +222,7 @@ const user = User.query()
 
 ## Exists
 
-The `exists` method allows you to check wether a query chain would return any records. The method will return either `true` or `false`.
+The `exists` method allows you to check whether a query chain would return any records. The method will return either `true` or `false`.
 
 ```js
 // Check whether the user store contains any data.
