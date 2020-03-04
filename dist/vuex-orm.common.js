@@ -5423,21 +5423,32 @@ var Database = /** @class */ (function () {
     };
     /**
      * Create a new model that binds the database.
+     *
+     * Transpiled classes cannot extend native classes. Implemented a workaround
+     * until Babel releases a fix (https://github.com/babel/babel/issues/9367).
      */
     Database.prototype.createBindingModel = function (model) {
-        var database = this;
-        var c = /** @class */ (function (_super) {
-            __extends(class_1, _super);
-            function class_1() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            class_1.store = function () {
-                return database.store;
-            };
-            return class_1;
-        }(model));
-        Object.defineProperty(c, 'name', { get: function () { return model.name; } });
-        return c;
+        var _this = this;
+        var proxy;
+        try {
+            proxy = new Function('model', "\n        'use strict';\n        return class " + model.name + " extends model {}\n      ")(model);
+        }
+        catch (_a) {
+            /* istanbul ignore next: rollback (mostly <= IE10) */
+            proxy = /** @class */ (function (_super) {
+                __extends(proxy, _super);
+                function proxy() {
+                    return _super !== null && _super.apply(this, arguments) || this;
+                }
+                return proxy;
+            }(model));
+            /* istanbul ignore next: allocate model name */
+            Object.defineProperty(proxy, 'name', { get: function () { return model.name; } });
+        }
+        Object.defineProperty(proxy, 'store', {
+            value: function () { return _this.store; }
+        });
+        return proxy;
     };
     /**
      * Create Vuex Module from the registered entities, and register to
