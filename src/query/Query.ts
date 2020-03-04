@@ -990,10 +990,12 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Persist data into the state.
+   * Persist data into the state while preserving it's original structure.
    */
   persist (method: Options.PersistMethods, data: Data.Record | Data.Record[], options: Options.PersistOptions): Data.Collections {
-    const normalizedData = this.normalize(data)
+    const clonedData = Utils.cloneDeep(data)
+
+    const normalizedData = this.normalize(clonedData)
 
     if (Utils.isEmpty(normalizedData)) {
       if (method === 'create') {

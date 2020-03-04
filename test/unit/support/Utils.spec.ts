@@ -122,4 +122,39 @@ describe('Unit - Utils', () => {
       expect(Utils.orderBy(collection, [v => v.id], ['asc'])).toEqual(expected)
     })
   })
+
+  describe('#cloneDeep', () => {
+    it('can create a deep clone of an object', () => {
+      const data = {
+        id: 1,
+        nested: [
+          {
+            id: 1,
+            deep: [
+              {
+                id: 1,
+                deeper: {
+                  id: 2,
+                },
+              },
+              {
+                id: 2,
+                deeper: {
+                  id: 3,
+                },
+              }
+            ]
+          }
+        ]
+      }
+
+      const clone = Utils.cloneDeep(data);
+
+      expect(clone).toStrictEqual(data)
+
+      delete data.nested[0].deep[0].deeper.id
+
+      expect(clone).not.toStrictEqual(data)
+    })
+  })
 })
