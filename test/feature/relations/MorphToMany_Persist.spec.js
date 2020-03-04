@@ -43,7 +43,8 @@ describe('Features – Relations – Morph To Many – Persist', () => {
         return {
           tag_id: this.attr(null),
           taggable_id: this.attr(null),
-          taggable_type: this.attr(null)
+          taggable_type: this.attr(null),
+          public: this.attr(null)
         }
       }
     }
@@ -54,7 +55,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
       data: {
         id: 1,
         tags: [
-          { id: 2, name: 'news' },
+          { id: 2, name: 'news', pivot: { public: true } },
           { id: 3, name: 'cast' }
         ]
       }
@@ -65,8 +66,10 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     expect(store.state.entities.tags.data['3'].id).toBe(3)
     expect(store.state.entities.taggables.data['1_2_posts'].taggable_id).toBe(1)
     expect(store.state.entities.taggables.data['1_2_posts'].taggable_type).toBe('posts')
+    expect(store.state.entities.taggables.data['1_2_posts'].public).toBe(true)
     expect(store.state.entities.taggables.data['1_3_posts'].taggable_id).toBe(1)
     expect(store.state.entities.taggables.data['1_3_posts'].taggable_type).toBe('posts')
+    expect(store.state.entities.taggables.data['1_3_posts'].public).toBe(null)
   })
 
   it('can create a morph to many data without relation field', async () => {
@@ -281,6 +284,69 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     })
 
     expect(store.state.entities).toEqual(expected)
+  })
+
+  it('can create a morph to many relation data with pivot data having custom key', async () => {
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type').as('tag_pivot')
+        }
+      }
+    }
+
+    class Video extends Model {
+      static entity = 'videos'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+        }
+      }
+    }
+
+    class Tag extends Model {
+      static entity = 'tags'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          name: this.attr('')
+        }
+      }
+    }
+
+    class Taggable extends Model {
+      static entity = 'taggables'
+
+      static fields () {
+        return {
+          tag_id: this.attr(null),
+          taggable_id: this.attr(null),
+          taggable_type: this.attr(null),
+          public: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+
+    await Post.create({
+      data: {
+        id: 1,
+        tags: [
+          { id: 2, name: 'news', tag_pivot: { public: true } },
+          { id: 3, name: 'cast' }
+        ]
+      }
+    })
+
+    expect(store.state.entities.taggables.data['1_2_posts'].public).toBe(true)
+    expect(store.state.entities.taggables.data['1_3_posts'].public).toBe(null)
   })
 
   it('can resolve a morph to many relation', async () => {

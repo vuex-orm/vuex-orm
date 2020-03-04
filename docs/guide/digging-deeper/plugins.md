@@ -40,6 +40,7 @@ const plugin = {
 The following components are included within the `components` argument.
 
 - Model
+- Database
 - Query
 - Attribute
 - Type

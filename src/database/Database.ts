@@ -185,19 +185,31 @@ export default class Database {
 
   /**
    * Create a new model that binds the database.
+   *
+   * Transpiled classes cannot extend native classes. Implemented a workaround
+   * until Babel releases a fix (https://github.com/babel/babel/issues/9367).
    */
   private createBindingModel (model: typeof Model): typeof Model {
-    const database = this
+    let proxy: typeof Model
 
-    const c = class extends model {
-      static store (): Store<any> {
-        return database.store
-      }
+    try {
+      proxy = new Function('model', `
+        'use strict';
+        return class ${model.name} extends model {}
+      `)(model)
+    } catch {
+      /* istanbul ignore next: rollback (mostly <= IE10) */
+      proxy = class extends model {}
+
+      /* istanbul ignore next: allocate model name */
+      Object.defineProperty(proxy, 'name', { get: () => model.name })
     }
 
-    Object.defineProperty(c, 'name', { get: () => model.name })
+    Object.defineProperty(proxy, 'store', {
+      value: (): Store<any> => this.store
+    })
 
-    return c
+    return proxy
   }
 
   /**

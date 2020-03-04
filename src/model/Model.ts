@@ -365,6 +365,13 @@ export default class Model {
   }
 
   /**
+   * Check wether the associated database contains data.
+   */
+  static exists<T extends typeof Model> (this: T): boolean {
+    return this.query().exists()
+  }
+
+  /**
    * Create new data with all fields filled by default values.
    */
   static new (): Promise<Model> {

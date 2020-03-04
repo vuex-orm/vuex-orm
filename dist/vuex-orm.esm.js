@@ -1526,6 +1526,10 @@ var BelongsToMany = /** @class */ (function (_super) {
      */
     function BelongsToMany(model, related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey) {
         var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+        /**
+         * The key name of the pivot data.
+         */
+        _this.pivotKey = 'pivot';
         _this.related = _this.model.relation(related);
         _this.pivot = _this.model.relation(pivot);
         _this.foreignPivotKey = foreignPivotKey;
@@ -1534,6 +1538,13 @@ var BelongsToMany = /** @class */ (function (_super) {
         _this.relatedKey = relatedKey;
         return _this;
     }
+    /**
+     * Specify the custom pivot accessor to use for the relationship.
+     */
+    BelongsToMany.prototype.as = function (accessor) {
+        this.pivotKey = accessor;
+        return this;
+    };
     /**
      * Define the normalizr schema for the relationship.
      */
@@ -1594,7 +1605,10 @@ var BelongsToMany = /** @class */ (function (_super) {
             }
             var related = relateds[record[_this.relatedPivotKey]];
             if (related) {
-                records[id] = records[id].concat(related);
+                records[id] = records[id].concat(related.map(function (model) {
+                    model[_this.pivotKey] = record;
+                    return model;
+                }));
             }
             return records;
         }, {});
@@ -1629,7 +1643,8 @@ var BelongsToMany = /** @class */ (function (_super) {
                 _this.pivot.primaryKey[1] === _this.foreignPivotKey ? parentId : relatedId
             ]);
             var pivotRecord = data[_this.pivot.entity] ? data[_this.pivot.entity][pivotKey] : {};
-            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = __assign(__assign({}, pivotRecord), (_b = { $id: pivotKey }, _b[_this.foreignPivotKey] = parentId, _b[_this.relatedPivotKey] = relatedId, _b)), _a));
+            var pivotData = data[_this.related.entity][id][_this.pivotKey] || {};
+            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = __assign(__assign(__assign({}, pivotRecord), pivotData), (_b = { $id: pivotKey }, _b[_this.foreignPivotKey] = parentId, _b[_this.relatedPivotKey] = relatedId, _b)), _a));
         });
     };
     return BelongsToMany;
@@ -1826,6 +1841,10 @@ var MorphToMany = /** @class */ (function (_super) {
      */
     function MorphToMany(model, related, pivot, relatedId, id, type, parentKey, relatedKey) {
         var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+        /**
+         * The key name of the pivot data.
+         */
+        _this.pivotKey = 'pivot';
         _this.related = _this.model.relation(related);
         _this.pivot = _this.model.relation(pivot);
         _this.relatedId = relatedId;
@@ -1835,6 +1854,13 @@ var MorphToMany = /** @class */ (function (_super) {
         _this.relatedKey = relatedKey;
         return _this;
     }
+    /**
+     * Specify the custom pivot accessor to use for the relationship.
+     */
+    MorphToMany.prototype.as = function (accessor) {
+        this.pivotKey = accessor;
+        return this;
+    };
     /**
      * Define the normalizr schema for the relationship.
      */
@@ -1894,7 +1920,10 @@ var MorphToMany = /** @class */ (function (_super) {
                 records[id] = [];
             }
             var related = relateds[record[_this.relatedId]];
-            records[id] = records[id].concat(related);
+            records[id] = records[id].concat(related.map(function (model) {
+                model[_this.pivotKey] = record;
+                return model;
+            }));
             return records;
         }, {});
     };
@@ -1926,13 +1955,8 @@ var MorphToMany = /** @class */ (function (_super) {
             var parentId = record[_this.parentKey];
             var relatedId = data[_this.related.entity][id][_this.relatedKey];
             var pivotKey = parentId + "_" + id + "_" + parent.entity;
-            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = (_b = {
-                    $id: pivotKey
-                },
-                _b[_this.relatedId] = relatedId,
-                _b[_this.id] = parentId,
-                _b[_this.type] = parent.entity,
-                _b), _a));
+            var pivotData = data[_this.related.entity][id][_this.pivotKey] || {};
+            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = __assign(__assign({}, pivotData), (_b = { $id: pivotKey }, _b[_this.relatedId] = relatedId, _b[_this.id] = parentId, _b[_this.type] = parent.entity, _b)), _a));
         });
     };
     return MorphToMany;
@@ -1945,6 +1969,10 @@ var MorphedByMany = /** @class */ (function (_super) {
      */
     function MorphedByMany(model, related, pivot, relatedId, id, type, parentKey, relatedKey) {
         var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+        /**
+         * The key name of the pivot data.
+         */
+        _this.pivotKey = 'pivot';
         _this.related = _this.model.relation(related);
         _this.pivot = _this.model.relation(pivot);
         _this.relatedId = relatedId;
@@ -1954,6 +1982,13 @@ var MorphedByMany = /** @class */ (function (_super) {
         _this.relatedKey = relatedKey;
         return _this;
     }
+    /**
+     * Specify the custom pivot accessor to use for the relationship.
+     */
+    MorphedByMany.prototype.as = function (accessor) {
+        this.pivotKey = accessor;
+        return this;
+    };
     /**
      * Define the normalizr schema for the relationship.
      */
@@ -2014,7 +2049,10 @@ var MorphedByMany = /** @class */ (function (_super) {
                 records[id] = [];
             }
             var related = relateds[record[_this.id]];
-            records[id] = records[id].concat(related);
+            records[id] = records[id].concat(related.map(function (model) {
+                model[_this.pivotKey] = record;
+                return model;
+            }));
             return records;
         }, {});
     };
@@ -2041,13 +2079,8 @@ var MorphedByMany = /** @class */ (function (_super) {
             var _a, _b;
             var parentId = record[_this.parentKey];
             var pivotKey = id + "_" + parentId + "_" + _this.related.entity;
-            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = (_b = {
-                    $id: pivotKey
-                },
-                _b[_this.relatedId] = parentId,
-                _b[_this.id] = _this.model.getIdFromRecord(data[_this.related.entity][id]),
-                _b[_this.type] = _this.related.entity,
-                _b), _a));
+            var pivotData = data[_this.related.entity][id][_this.pivotKey] || {};
+            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = __assign(__assign({}, pivotData), (_b = { $id: pivotKey }, _b[_this.relatedId] = parentId, _b[_this.id] = _this.model.getIdFromRecord(data[_this.related.entity][id]), _b[_this.type] = _this.related.entity, _b)), _a));
         });
     };
     return MorphedByMany;
@@ -2339,6 +2372,12 @@ var Model = /** @class */ (function () {
      */
     Model.query = function () {
         return this.getters('query')();
+    };
+    /**
+     * Check wether the associated database contains data.
+     */
+    Model.exists = function () {
+        return this.query().exists();
     };
     /**
      * Create new data with all fields filled by default values.
@@ -4138,6 +4177,13 @@ var Query = /** @class */ (function () {
         return this.item(this.hydrate(records[records.length - 1]));
     };
     /**
+     * Checks whether a result of the query chain exists.
+     */
+    Query.prototype.exists = function () {
+        var records = this.select();
+        return records.length > 0;
+    };
+    /**
      * Add a and where clause to the query.
      */
     Query.prototype.where = function (field, value) {
@@ -5160,39 +5206,6 @@ var RootMutations = {
     delete: destroy$2
 };
 
-function use (plugin, options) {
-    if (options === void 0) { options = {}; }
-    var components = {
-        Model: Model,
-        Attribute: Attribute,
-        Type: Type,
-        Attr: Attr,
-        String: String$1,
-        Number: Number,
-        Boolean: Boolean,
-        Uid: Uid$1,
-        Relation: Relation,
-        HasOne: HasOne,
-        BelongsTo: BelongsTo,
-        HasMany: HasMany,
-        HasManyBy: HasManyBy,
-        BelongsToMany: BelongsToMany,
-        HasManyThrough: HasManyThrough,
-        MorphTo: MorphTo,
-        MorphOne: MorphOne,
-        MorphMany: MorphMany,
-        MorphToMany: MorphToMany,
-        MorphedByMany: MorphedByMany,
-        Getters: Getters,
-        Actions: Actions,
-        RootGetters: RootGetters,
-        RootActions: RootActions,
-        RootMutations: RootMutations,
-        Query: Query
-    };
-    plugin.install(components, options);
-}
-
 var ProcessStrategy = /** @class */ (function () {
     function ProcessStrategy() {
     }
@@ -5408,21 +5421,32 @@ var Database = /** @class */ (function () {
     };
     /**
      * Create a new model that binds the database.
+     *
+     * Transpiled classes cannot extend native classes. Implemented a workaround
+     * until Babel releases a fix (https://github.com/babel/babel/issues/9367).
      */
     Database.prototype.createBindingModel = function (model) {
-        var database = this;
-        var c = /** @class */ (function (_super) {
-            __extends(class_1, _super);
-            function class_1() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            class_1.store = function () {
-                return database.store;
-            };
-            return class_1;
-        }(model));
-        Object.defineProperty(c, 'name', { get: function () { return model.name; } });
-        return c;
+        var _this = this;
+        var proxy;
+        try {
+            proxy = new Function('model', "\n        'use strict';\n        return class " + model.name + " extends model {}\n      ")(model);
+        }
+        catch (_a) {
+            /* istanbul ignore next: rollback (mostly <= IE10) */
+            proxy = /** @class */ (function (_super) {
+                __extends(proxy, _super);
+                function proxy() {
+                    return _super !== null && _super.apply(this, arguments) || this;
+                }
+                return proxy;
+            }(model));
+            /* istanbul ignore next: allocate model name */
+            Object.defineProperty(proxy, 'name', { get: function () { return model.name; } });
+        }
+        Object.defineProperty(proxy, 'store', {
+            value: function () { return _this.store; }
+        });
+        return proxy;
     };
     /**
      * Create Vuex Module from the registered entities, and register to
@@ -5584,6 +5608,40 @@ var Database = /** @class */ (function () {
     };
     return Database;
 }());
+
+function use (plugin, options) {
+    if (options === void 0) { options = {}; }
+    var components = {
+        Model: Model,
+        Attribute: Attribute,
+        Type: Type,
+        Attr: Attr,
+        String: String$1,
+        Number: Number,
+        Boolean: Boolean,
+        Uid: Uid$1,
+        Relation: Relation,
+        HasOne: HasOne,
+        BelongsTo: BelongsTo,
+        HasMany: HasMany,
+        HasManyBy: HasManyBy,
+        BelongsToMany: BelongsToMany,
+        HasManyThrough: HasManyThrough,
+        MorphTo: MorphTo,
+        MorphOne: MorphOne,
+        MorphMany: MorphMany,
+        MorphToMany: MorphToMany,
+        MorphedByMany: MorphedByMany,
+        Getters: Getters,
+        Actions: Actions,
+        RootGetters: RootGetters,
+        RootActions: RootActions,
+        RootMutations: RootMutations,
+        Query: Query,
+        Database: Database
+    };
+    plugin.install(components, options);
+}
 
 var index = {
     install: install,

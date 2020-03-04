@@ -341,6 +341,120 @@ The insertion method works for all relationship types including complex ones suc
 
 Though there are few things that you should know about when inserting relationship in a slightly complex manner.
 
+### Inserting Many To Many Relationships
+
+When inserting many-to-many relationships, such as `belongsToMany` or `morphToMany`, any data nested under the `pivot` attribute will be inserted as well.
+
+Let's take a look at an example. Here we have `User` belonging to many `Role` through `RoleUser`.
+
+```js
+class User extends Model {
+  static entity = 'users'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      roles: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
+    }
+  }
+}
+
+class Role extends Model {
+  static entity = 'roles'
+
+  static fields () {
+    return {
+      id: this.attr(null)
+    }
+  }
+}
+
+class RoleUser extends Model {
+  static entity = 'role_user'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      role_id: this.attr(null),
+      user_id: this.attr(null),
+      level: this.number(1)
+    }
+  }
+}
+```
+
+Having these structures, you may include intermediate data (`RoleUser` data) under `pivot` attribute.
+
+```js
+// Create user data with nested roles and its intermediate data.
+User.insert({
+  data: {
+    id: 1,
+    roles: [
+      {
+        id: 1,
+        pivot: { id: 1, level: 2 }
+      },
+      {
+        id: 2,
+        pivot: { id: 2, level: 3 }
+      }
+    ]
+  }
+})
+
+// State after `insert`.
+{
+  entities: {
+    users: {
+      1: { id: 1 }
+    },
+    roles: {
+      1: { id: 1 },
+      2: { id: 2 }
+    },
+    role_user: {
+      1: { id: 1, user_id: 1, role_id: 1, level: 2 },
+      2: { id: 2, user_id: 1, role_id: 2, level: 3 }
+    }
+  }
+}
+```
+
+Note that you may customize the name of `pivot` attributes by using the `as` method when defining the relationship.
+
+```js
+class User extends Model {
+  static entity = 'users'
+
+  static fields () {
+    return {
+      id: this.attr(null),
+      roles: this.belongsToMany(
+        Role,
+        RoleUser,
+        'user_id',
+        'role_id'
+      ).as('permission')
+    }
+  }
+}
+```
+
+In this case, you must pass intermediate data to the key that matches the customized name.
+
+```js
+User.insert({
+  data: {
+    id: 1,
+    roles: [{
+      id: 1,
+      permission: { id: 1, level: 2 }
+    }]
+  }
+})
+```
+
 ### Generating Missing Foreign Keys
 
 If data is missing its foreign keys, Vuex ORM will automatically generate them during the inserting process. For example, let's say you have the following Model definition.
@@ -446,7 +560,7 @@ class RoleUser extends Model {
 }
 ```
 
-When inserting data, you insert User data its related Role data without RoleUser data. Still, in this case, Vuex ORM will generate required intermediate pivot records.
+When inserting data, you insert User data and its related Role data but without RoleUser data. Still, in this case, Vuex ORM will generate required intermediate pivot records.
 
 ```js
 // Insert User data with Role data.
@@ -472,14 +586,14 @@ User.insert({
       2: { id: 2, name: 'operator' }
     },
     role_user: {
-      1_1: { role_id: 1, user_id: 1 },
-      2_1: { role_id: 2, user_id: 1 }
+      '[1,1]': { role_id: 1, user_id: 1 },
+      '[2,1]': { role_id: 2, user_id: 1 }
     }
   }
 }
 ```
 
-Note that there is a caveat with "Has Many Through" relationship. When creating data that contains "Has Many Through" relationship without intermediate pivot records, the intermediate record will not be generated. Let's say you have the following model definitions.
+However, note that there is a caveat with "Has Many Through" relationship. When creating data that contains "Has Many Through" relationship without intermediate pivot records, the intermediate record will not be generated. Let's say you have the following model definitions.
 
 ```js
 class Country extends Model {
@@ -556,24 +670,6 @@ Vuex ORM will normalize the data and save them to the store as below.
 See there is no users record, and `user_id` at `posts` becomes empty. This happens because Vuex ORM wouldn't have any idea how post data relate to the intermediate User. Hence if you create data like this, you wouldn't be able to retrieve them by getters anymore. In such cases, it is recommended to create data with the intermediate records.
 
 ```js
-const data = {
-  id: 1,
-  users: [
-    {
-      id: 1,
-      posts: [
-        { id: 1 }
-      ]
-    },
-    {
-      id: 2,
-      posts: [
-        { id: 2 }
-      ]
-    }
-  ]
-}
-
 Country.create({
   data: {
     id: 1,
@@ -919,7 +1015,7 @@ const user = await User.update({
 
 ## Insert or Update
 
-The ` insertOrUpdate` method will insert new data if the data doesn't exist in the store, and update data if it does.
+The `insertOrUpdate` method will insert new data if any records do not exist in the store, and update the data of records that do exist.
 
 ```js
 // Initial State.
@@ -1024,8 +1120,8 @@ See `body` of Post ID of 1 got removed. This is because Post ID 1 got "inserted"
   }
 }
 
-// We would destroy post's body field if we use `insert`.
-User.insert({
+// Using `insertOrUpdate` will update any existing records while inserting new records that don't exist.
+User.insertOrUpdate({
   id: 1,
   name: 'John',
   posts: [
@@ -1034,7 +1130,7 @@ User.insert({
   ]
 })
 
-// State after `insert`.
+// State after `insertOrUpdate`.
 {
   entities: {
     users: {
