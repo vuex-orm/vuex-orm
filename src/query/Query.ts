@@ -139,7 +139,7 @@ export default class Query<T extends Model = Model> {
    */
   constructor (store: Store<any>, entity: string) {
     this.store = store
-    this.database = store.$db()
+    this.database = store.$database
 
     this.model = this.getModel(entity)
     this.baseModel = this.getBaseModel(entity)
@@ -157,7 +157,7 @@ export default class Query<T extends Model = Model> {
    * Delete all records from the store.
    */
   static deleteAll (store: Store<any>): void {
-    const database = store.$db()
+    const database = store.$database
     const models = database.models()
 
     for (const entity in models) {

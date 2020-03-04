@@ -1,6 +1,7 @@
 import { Store, Plugin } from 'vuex'
 import Container from '../container/Container'
 import Database from '../database/Database'
+import HackedDatabase from '../database/HackedDatabase'
 import Model from '../model/Model'
 import Repository from '../repository/Repository'
 
@@ -23,16 +24,36 @@ export default function install (database: Database, options: Options = {}): Plu
  * Mixin Vuex ORM feature to the store.
  */
 function mixin (store: Store<any>, database: Database, namespace: string): void {
+  registerDatabase(store, database)
   mixinRepoFunction(store)
+  mixinDbFunction(store)
   registerToContainer(store)
-  startDatabase(store, database, namespace)
+  startDatabase(store, namespace)
 }
 
 /**
- * Start the database.
+ * Register the database to the store.
  */
-function startDatabase (store: Store<any>, database: Database, namespace: string): void {
-  database.start(store, namespace)
+function registerDatabase (store: Store<any>, database: Database): void {
+  store.$database = database
+}
+
+/**
+ * Mixin repo function to the store.
+ */
+function mixinRepoFunction (store: Store<any>): void {
+  store.$repo = function<M extends typeof Model>(model: M): Repository<M> {
+    return new Repository(this, model)
+  }
+}
+
+/**
+ * Mixin db function to the store.
+ */
+function mixinDbFunction (store: Store<any>): void {
+  store.$db = function (): HackedDatabase {
+    return new HackedDatabase(this.$database)
+  }
 }
 
 /**
@@ -43,10 +64,8 @@ function registerToContainer (store: Store<any>): void {
 }
 
 /**
- * Mixin repo function to the store.
+ * Start the database.
  */
-function mixinRepoFunction (store: Store<any>): void {
-  store.$repo = function<M extends typeof Model>(model: M): Repository<M> {
-    return new Repository(this, model)
-  }
+function startDatabase (store: Store<any>, namespace: string): void {
+  store.$database.start(store, namespace)
 }

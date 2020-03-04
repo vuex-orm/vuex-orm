@@ -28,7 +28,7 @@ export default class Repository<M extends typeof Model> {
    * Get the database instance from the store instance.
    */
   database (): Database {
-    return this.store.$db()
+    return this.store.$database
   }
 
   /**

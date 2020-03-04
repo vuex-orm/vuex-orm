@@ -1,32 +1,9 @@
 import { createStoreFromDatabase } from 'test/support/Helpers'
-import Database from '@/database/Database'
-import Model from '@/model/Model'
+import Database from 'app/database/Database'
+import HackedDatabase from 'app/database/HackedDatabase'
+import Model from 'app/model/Model'
 
 describe('Unit – Database', () => {
-  it('registers itself to the store instance', () => {
-    const database = new Database()
-
-    const store = createStoreFromDatabase(database)
-
-    expect(store.$db()).toBe(database)
-  })
-
-  it('binds the store instance to the registered models.', () => {
-    class User extends Model { static entity = 'users' }
-
-    const database1 = new Database()
-    const database2 = new Database()
-
-    database1.register(User)
-    database2.register(User)
-
-    const store1 = createStoreFromDatabase(database1)
-    const store2 = createStoreFromDatabase(database2)
-
-    expect(store1.$db().model('users').database()).toBe(database1)
-    expect(store2.$db().model('users').database()).toBe(database2)
-  })
-
   it('can fetch all models', () => {
     class User extends Model { static entity = 'users' }
     class Post extends Model { static entity = 'posts' }
@@ -38,8 +15,8 @@ describe('Unit – Database', () => {
 
     const models = database.models()
 
-    expect(models.users.prototype).toBeInstanceOf(User)
-    expect(models.posts.prototype).toBeInstanceOf(Post)
+    expect(models.users).toBe(User)
+    expect(models.posts).toBe(Post)
   })
 
   it('can fetch a model by string', () => {
@@ -53,7 +30,7 @@ describe('Unit – Database', () => {
 
     const model = database.model('users')
 
-    expect(model.prototype).toBeInstanceOf(User)
+    expect(model).toBe(User)
   })
 
   it('can fetch a model by type', () => {
@@ -67,7 +44,7 @@ describe('Unit – Database', () => {
 
     const model = database.model(User)
 
-    expect(model.prototype).toBeInstanceOf(User)
+    expect(model).toBe(User)
   })
 
   it('throws when a model is not found', () => {
@@ -96,9 +73,9 @@ describe('Unit – Database', () => {
 
     const models = database.baseModels()
 
-    expect(models.users.prototype).toBeInstanceOf(User)
-    expect(models.guests.prototype).toBeInstanceOf(User)
-    expect(models.admins.prototype).toBeInstanceOf(User)
+    expect(models.users).toBe(User)
+    expect(models.guests).toBe(User)
+    expect(models.admins).toBe(User)
   })
 
   it('can fetch a base model by string', () => {
@@ -115,7 +92,7 @@ describe('Unit – Database', () => {
 
     const model = database.baseModel('guests')
 
-    expect(model.prototype).toBeInstanceOf(User)
+    expect(model).toBe(User)
   })
 
   it('can fetch a base model by type', () => {
@@ -132,7 +109,7 @@ describe('Unit – Database', () => {
 
     const model = database.baseModel(Guest)
 
-    expect(model.prototype).toBeInstanceOf(User)
+    expect(model).toBe(User)
   })
 
   it('throws when a base model is not found', () => {
@@ -195,5 +172,31 @@ describe('Unit – Database', () => {
     database.register(User, users)
 
     expect(() => database.module('posts')).toThrowError('[Vuex ORM]')
+  })
+
+  it('registers a hacked database to the store instance', () => {
+    const database = new Database()
+
+    const store = createStoreFromDatabase(database)
+
+    expect(store.$db()).toBeInstanceOf(HackedDatabase)
+  })
+
+  it('binds the store instance to the registered models.', () => {
+    class User extends Model { static entity = 'users' }
+
+    const database1 = new Database()
+    const database2 = new Database()
+
+    database1.register(User)
+    database2.register(User)
+
+    const store1 = createStoreFromDatabase(database1)
+    const store2 = createStoreFromDatabase(database2)
+
+    expect(store1.$db().model('users').database()).toBe(database1)
+    expect(store2.$db().model('users').database()).toBe(database2)
+
+    expect(store1.$db().model(User)).not.toBe(User)
   })
 })
