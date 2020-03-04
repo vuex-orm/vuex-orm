@@ -1,6 +1,6 @@
 import { Store } from 'vuex'
 import Database from '../database/Database'
-import { Collections } from '../data'
+import { Collections, InstanceOf } from '../data'
 import Model from '../model/Model'
 import * as Payloads from '../modules/payloads/Actions'
 
@@ -43,6 +43,13 @@ export default class Repository<M extends typeof Model> {
    */
   dispatch (method: string, payload?: any): Promise<any> {
     return this.store.dispatch(this.namespace(method), payload)
+  }
+
+  /**
+   * Create new data with all fields filled by default values.
+   */
+  new (): Promise<InstanceOf<M>> {
+    return this.dispatch('new')
   }
 
   /**
