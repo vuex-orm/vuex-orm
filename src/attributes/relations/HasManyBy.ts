@@ -4,7 +4,6 @@ import { Record, NormalizedData, Collection } from '../../data'
 import Model from '../../model/Model'
 import Query from '../../query/Query'
 import Constraint from '../../query/contracts/RelationshipConstraint'
-import DictionaryOne from '../contracts/DictionaryOne'
 import Relation from './Relation'
 
 export default class HasManyBy extends Relation {
@@ -69,7 +68,7 @@ export default class HasManyBy extends Relation {
 
     this.addConstraintForHasManyBy(relatedQuery, collection)
 
-    const relations = this.mapSingleRelations(relatedQuery.get(), this.ownerKey) as DictionaryOne
+    const relations = this.mapSingleRelations(relatedQuery.get(), this.ownerKey)
 
     collection.forEach((item) => {
       const related = this.getRelatedRecords(relations, item[this.foreignKey])
@@ -92,13 +91,15 @@ export default class HasManyBy extends Relation {
   /**
    * Get related records.
    */
-  getRelatedRecords (records: DictionaryOne, keys: string[]): Collection {
-    return keys.reduce<Collection>((items, id) => {
-      const related = records[id]
+  getRelatedRecords (relations: Map<string, Record>, keys: string[]): Record[] {
+    const records: Record[] = []
 
-      related && items.push(related)
+    relations.forEach((record, id) => {
+      if (keys.indexOf(id) !== -1) {
+        records.push(record)
+      }
+    })
 
-      return items
-    }, [])
+    return records
   }
 }

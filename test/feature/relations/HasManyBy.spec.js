@@ -232,4 +232,50 @@ describe('Features – Relations – Has Many By', () => {
 
     expect(users).toEqual(expected)
   })
+
+  it('can apply `orderBy` constraint on nested relations', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          post_ids: this.attr([]),
+          posts: this.hasManyBy(Post, 'post_ids')
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null)
+        }
+      }
+    }
+
+    createStore([{ model: User }, { model: Post }])
+
+    await User.insert({
+      data: { id: 1, posts: [{ id: 1 }, { id: 3 }, { id: 2 }] }
+    })
+
+    const ascending = User.query()
+      .with('posts', query => { query.orderBy('id', 'asc') })
+      .find(1)
+
+    expect(ascending.posts[0].id).toBe(1)
+    expect(ascending.posts[1].id).toBe(2)
+    expect(ascending.posts[2].id).toBe(3)
+
+    const descending = User.query()
+      .with('posts', query => { query.orderBy('id', 'desc') })
+      .find(1)
+
+    expect(descending.posts[0].id).toBe(3)
+    expect(descending.posts[1].id).toBe(2)
+    expect(descending.posts[2].id).toBe(1)
+  })
 })

@@ -57,14 +57,18 @@ export default abstract class Relation extends Attribute {
   /**
    * Create a new indexed map for the single relation by specified key.
    */
-  mapSingleRelations (collection: Record[], key: string): Records {
-    return collection.reduce((records, record) => {
+  mapSingleRelations (collection: Record[], key: string): Map<string, Record> {
+    const relations = new Map<string, Record>()
+
+    collection.forEach((record) => {
       const id = record[key]
 
-      records[id] = record
+      if (!relations.get(id)) {
+        relations.set(id, record)
+      }
+    })
 
-      return records
-    }, {} as Records)
+    return relations
   }
 
   /**

@@ -76,7 +76,7 @@ export default class MorphOne extends Relation {
     const relations = this.mapSingleRelations(relatedQuery.get(), this.id)
 
     collection.forEach((item) => {
-      const related = relations[item[this.localKey]]
+      const related = relations.get(item[this.localKey])
 
       item[name] = related || null
     })
