@@ -6,7 +6,7 @@ Many applications deal with data that is nested or relational in nature. For exa
 
 To nicely handle such data, one approach is to split the nested data into separate modules and decouple them from each other. Simply put, it's kind of like treating a portion of your store as if it were a database, and keep that data in a normalized form.
 
-[This is an excellent article](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) that describes the difficulty of nested data structures. It also explains how to design normalized state, and Vuex ORM is heavily inspired by it.
+[This is an excellent article](https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape/) that describes the difficulty of nested data structures. It also explains how to design normalized state, and Vuex ORM is heavily inspired by it.
 
 Note that in this documentation, we're borrowing many examples and texts from the article. I would like to credit [Redux](https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape) and the author of the section [Mark Erikson](https://github.com/markerikson) for the beautiful piece of article.
 
