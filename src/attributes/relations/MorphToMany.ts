@@ -161,6 +161,7 @@ export default class MorphToMany extends Relation {
 
       const related = relations.get(record[this.relatedId])
 
+      /* istanbul ignore if */
       if (related === undefined || related.length === 0) {
         return records
       }

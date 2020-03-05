@@ -63,9 +63,7 @@ export default abstract class Relation extends Attribute {
     collection.forEach((record) => {
       const id = record[key]
 
-      if (!relations.get(id)) {
-        relations.set(id, record)
-      }
+      !relations.get(id) && relations.set(id, record)
     })
 
     return relations

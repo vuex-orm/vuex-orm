@@ -162,6 +162,7 @@ export default class MorphedByMany extends Relation {
 
       const related = relations.get(record[this.id])
 
+      /* istanbul ignore if */
       if (related === undefined || related.length === 0) {
         return records
       }
