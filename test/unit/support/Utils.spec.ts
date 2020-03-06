@@ -134,21 +134,21 @@ describe('Unit - Utils', () => {
               {
                 id: 1,
                 deeper: {
-                  id: 2,
-                },
+                  id: 2
+                }
               },
               {
                 id: 2,
                 deeper: {
-                  id: 3,
-                },
+                  id: 3
+                }
               }
             ]
           }
         ]
       }
 
-      const clone = Utils.cloneDeep(data);
+      const clone = Utils.cloneDeep(data)
 
       expect(clone).toStrictEqual(data)
 
