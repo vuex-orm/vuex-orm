@@ -369,7 +369,7 @@ export default class Query<T extends Model = Model> {
     if (this.model.isCompositeKey()) {
       const idList = values.reduce<string[]>((keys, value) => {
         return [...keys, JSON.stringify(value)]
-      }, []);
+      }, [])
 
       return this.where('$id', idList)
     }
@@ -408,7 +408,7 @@ export default class Query<T extends Model = Model> {
    * direct look up.
    */
   private isIdfilterable (field: any): boolean {
-    return (field === this.model.primaryKey || field === '$id') && !this.cancelIdFilter;
+    return (field === this.model.primaryKey || field === '$id') && !this.cancelIdFilter
   }
 
   /**
