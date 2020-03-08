@@ -267,7 +267,7 @@ export default class Query<T extends Model = Model> {
    * Get the record of the given array of ids.
    */
   findIn (idList: (number | string | (number | string)[])[]): Data.Collection<T> {
-    return idList.reduce<Data.Collection<T>>((collection, id) => {
+    const records = idList.reduce<Data.Collection<T>>((collection, id) => {
       const indexId = Array.isArray(id) ? JSON.stringify(id) : id
 
       const record = this.state.data[indexId]
@@ -280,6 +280,8 @@ export default class Query<T extends Model = Model> {
 
       return collection
     }, [])
+
+    return this.collect(records)
   }
 
   /**
