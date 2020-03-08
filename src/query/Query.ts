@@ -835,7 +835,7 @@ export default class Query<T extends Model = Model> {
     // Now since the condition is either String or Number, let's check if the
     // model's primary key is not a composite key. If yes, we can't set the
     // condition as ID value for the record so throw an error and abort.
-    if (Array.isArray(this.model.primaryKey)) {
+    if (this.model.isCompositePrimaryKey()) {
       throw new Error(`
         You can't specify \`where\` value as \`string\` or \`number\` when you
         have a composite key defined in your model. Please include composite
