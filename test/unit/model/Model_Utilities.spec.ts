@@ -39,6 +39,24 @@ describe('Unit – Model - Utilities', () => {
     expect(Subscription.isPrimaryKey('created_at')).toBe(false)
   })
 
+  it('can check if the primary key is a composite primary key', () => {
+    class Subscription extends Model {
+      static entity = 'users'
+
+      static primaryKey = ['user_id', 'video_id']
+
+      static fields () {
+        return {
+          user_id: this.attr(null),
+          video_id: this.attr(null),
+          created_at: this.attr(null)
+        }
+      }
+    }
+
+    expect(Subscription.isCompositeKey()).toBe(true)
+  })
+
   it('can get primary key value out of record', () => {
     class User extends Model {
       static entity = 'users'

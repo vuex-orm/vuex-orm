@@ -354,14 +354,26 @@ export default class Query<T extends Model = Model> {
   /**
    * Filter records by their primary key.
    */
-  whereId (value: number | string): this {
+  whereId (value: number | string | (string | number)[]): this {
+    if (this.model.isCompositeKey()) {
+      return this.where('$id', JSON.stringify(value))
+    }
+
     return this.where(this.model.primaryKey, value)
   }
 
   /**
    * Filter records by their primary keys.
    */
-  whereIdIn (values: (string | number)[]): this {
+  whereIdIn (values: (string | number | (number | string)[])[]): this {
+    if (this.model.isCompositeKey()) {
+      const idList = values.reduce<string[]>((keys, value) => {
+        return [...keys, JSON.stringify(value)]
+      }, []);
+
+      return this.where('$id', idList)
+    }
+
     return this.where(this.model.primaryKey, values)
   }
 
@@ -392,11 +404,11 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Check whether the given field and value combination is filterable through
-   * primary key direct look up.
+   * Check whether the given field is filterable through primary key
+   * direct look up.
    */
   private isIdfilterable (field: any): boolean {
-    return field === this.model.primaryKey && !this.cancelIdFilter
+    return (field === this.model.primaryKey || field === '$id') && !this.cancelIdFilter;
   }
 
   /**
@@ -560,7 +572,7 @@ export default class Query<T extends Model = Model> {
       return
     }
 
-    this.where(this.model.primaryKey, Array.from(this.idFilter.values()))
+    this.where(this.model.isCompositeKey() ? '$id' : this.model.primaryKey, Array.from(this.idFilter.values()))
 
     this.idFilter = null
   }

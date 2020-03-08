@@ -438,6 +438,13 @@ export default class Model {
   }
 
   /**
+   * Check if the primary key is a composite key.
+   */
+  static isCompositeKey (): boolean {
+    return Array.isArray(this.primaryKey)
+  }
+
+  /**
    * Get the id (value of primary key) from teh given record. If primary key is
    * not present, or it is invalid primary key value, which is other than
    * `string` or `number`, it's going to return `null`.
