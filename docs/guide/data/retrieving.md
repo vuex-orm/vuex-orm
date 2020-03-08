@@ -208,6 +208,16 @@ You may also use `whereIdIn` method to get multiple records by id look up. The a
 const user = User.query().whereIdIn([1, 2]).get()
 ```
 
+#### Composite Primary Keys
+
+Both `whereId` and `whereIdIn` support models with [composite primary keys](/guide/model/defining-models.md#primary-key).
+
+```js
+const user = User.query().whereId([1, 2]).first()
+
+const users = User.query().whereIdIn([[1, 2], [3, 2]]).get()
+```
+
 ### Or Statement
 
 You may chain where constraints together as well as add `or` conditions to the query. The `orWhere` method accepts the same arguments as the `where` method.
