@@ -54,7 +54,7 @@ describe('Unit – Model - Utilities', () => {
       }
     }
 
-    expect(Subscription.isCompositeKey()).toBe(true)
+    expect(Subscription.isCompositePrimaryKey()).toBe(true)
   })
 
   it('can get primary key value out of record', () => {

@@ -355,7 +355,7 @@ export default class Query<T extends Model = Model> {
    * Filter records by their primary key.
    */
   whereId (value: number | string | (string | number)[]): this {
-    if (this.model.isCompositeKey()) {
+    if (this.model.isCompositePrimaryKey()) {
       return this.where('$id', JSON.stringify(value))
     }
 
@@ -366,7 +366,7 @@ export default class Query<T extends Model = Model> {
    * Filter records by their primary keys.
    */
   whereIdIn (values: (string | number | (number | string)[])[]): this {
-    if (this.model.isCompositeKey()) {
+    if (this.model.isCompositePrimaryKey()) {
       const idList = values.reduce<string[]>((keys, value) => {
         return [...keys, JSON.stringify(value)]
       }, [])
@@ -572,7 +572,7 @@ export default class Query<T extends Model = Model> {
       return
     }
 
-    this.where(this.model.isCompositeKey() ? '$id' : this.model.primaryKey, Array.from(this.idFilter.values()))
+    this.where(this.model.isCompositePrimaryKey() ? '$id' : this.model.primaryKey, Array.from(this.idFilter.values()))
 
     this.idFilter = null
   }

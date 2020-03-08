@@ -440,7 +440,7 @@ export default class Model {
   /**
    * Check if the primary key is a composite key.
    */
-  static isCompositeKey (): boolean {
+  static isCompositePrimaryKey (): boolean {
     return Array.isArray(this.primaryKey)
   }
 
