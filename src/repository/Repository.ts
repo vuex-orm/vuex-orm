@@ -62,6 +62,27 @@ export default class Repository<M extends typeof Model> {
   }
 
   /**
+   * Get all records.
+   */
+  all (): Collection<InstanceOf<M>> {
+    return this.getters('all')()
+  }
+
+  /**
+   * Find a record.
+   */
+  find (id: string | number | (number | string)[]): Item<InstanceOf<M>> {
+    return this.getters('find')(id)
+  }
+
+  /**
+   * Get the record of the given array of ids.
+   */
+  findIn (idList: (number | string | (number | string)[])[]): Collection<InstanceOf<M>> {
+    return this.getters('findIn')(idList)
+  }
+
+  /**
    * Get query instance.
    */
   query (): Query<InstanceOf<M>> {
