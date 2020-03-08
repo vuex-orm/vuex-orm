@@ -148,16 +148,20 @@ export default class BelongsToMany extends Relation {
    * Create a new indexed map for the pivot relation.
    */
   mapPivotRelations (pivots: Collection, relatedQuery: Query): Records {
-    const relateds = this.mapManyRelations(relatedQuery.get(), this.relatedKey)
+    const relations = this.mapManyRelations(relatedQuery.get(), this.relatedKey)
 
-    return pivots.reduce((records, record) => {
+    if (relatedQuery.orders.length) {
+      return this.mapRelationsByOrders(pivots, relations, this.foreignPivotKey, this.relatedPivotKey)
+    }
+
+    return pivots.reduce<Record>((records, record) => {
       const id = record[this.foreignPivotKey]
 
       if (!records[id]) {
         records[id] = []
       }
 
-      const related = relateds[record[this.relatedPivotKey]]
+      const related = relations.get(record[this.relatedPivotKey])
 
       if (related) {
         records[id] = records[id].concat(related.map((model: Record) => {
@@ -167,7 +171,7 @@ export default class BelongsToMany extends Relation {
       }
 
       return records
-    }, {} as Records)
+    }, {})
   }
 
   /**

@@ -226,6 +226,98 @@ describe('Feature – Relations – Retrieve – With', () => {
     expect(users).toEqual(expected)
   })
 
+  it('can resolve child relation for multiple records', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          posts: this.hasMany(Post, 'user_id')
+        }
+      }
+    }
+
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          user_id: this.attr(null),
+          comments: this.hasMany(Comment, 'post_id')
+        }
+      }
+    }
+
+    class Comment extends Model {
+      static entity = 'comments'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          post_id: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([
+      { model: User },
+      { model: Post },
+      { model: Comment }
+    ])
+
+    await store.dispatch('entities/users/create', {
+      data: [
+        {
+          id: 1,
+          posts: [
+            {
+              id: 1,
+              user_id: 1,
+              comments: [
+                { id: 1, post_id: 1 },
+                { id: 2, post_id: 1 }
+              ]
+            }
+          ]
+        },
+        {
+          id: 2
+        }
+      ]
+    })
+
+    const expected = [
+      {
+        $id: '1',
+        id: 1,
+        posts: [
+          {
+            $id: '1',
+            id: 1,
+            user_id: 1,
+            comments: [
+              { $id: '1', id: 1, post_id: 1 },
+              { $id: '2', id: 2, post_id: 1 }
+            ]
+          }
+        ]
+      },
+      {
+        $id: '2',
+        id: 2,
+        posts: []
+      }
+    ]
+
+    const users = await store.getters['entities/users/query']()
+      .with('posts.comments')
+      .findIn([1, 2])
+
+    expect(users).toEqual(expected)
+  })
+
   it('can resolve even deeper child relation', () => {
     class User extends Model {
       static entity = 'users'
@@ -571,7 +663,7 @@ describe('Feature – Relations – Retrieve – With', () => {
     expect(user2).toEqual(expected)
   })
 
-  it('ignores any unkown relationship name', async () => {
+  it('ignores any unknown relationship name', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -605,7 +697,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     })
 
-    const user = User.query().with('unkown').first()
+    const user = User.query().with('unknown').first()
 
     expect(user.posts.length).toBe(0)
   })

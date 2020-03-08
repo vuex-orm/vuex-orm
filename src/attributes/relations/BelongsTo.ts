@@ -14,7 +14,7 @@ export default class BelongsTo extends Relation {
   parent: typeof Model
 
   /**
-   * The foregin key of the model.
+   * The foreign key of the model.
    */
   foreignKey: string
 
