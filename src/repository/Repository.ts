@@ -90,6 +90,13 @@ export default class Repository<M extends typeof Model> {
   }
 
   /**
+   * Check wether the associated database contains data.
+   */
+  exists (): boolean {
+    return this.query().exists()
+  }
+
+  /**
    * Create new data with all fields filled by default values.
    */
   new (): Promise<InstanceOf<M>> {

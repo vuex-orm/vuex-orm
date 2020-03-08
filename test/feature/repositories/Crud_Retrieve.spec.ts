@@ -158,4 +158,28 @@ describe('Feature - Repositories - CRUD Retrieve', () => {
     expect(users[1].idA).toBe(5)
     expect(users[1].idB).toBe(6)
   })
+
+  it('can check whether record exists', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields () {
+        return {
+          id: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([User])
+
+    const userRepo = store.$repo(User)
+
+    expect(userRepo.exists()).toBe(false)
+
+    await userRepo.insert({
+      data: { id: 1 }
+    })
+
+    expect(userRepo.exists()).toBe(true)
+  })
 })
