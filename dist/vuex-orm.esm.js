@@ -4450,7 +4450,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.findIn = function (idList) {
         var _this = this;
-        var records = idList.reduce(function (collection, id) {
+        return idList.reduce(function (collection, id) {
             var indexId = Array.isArray(id) ? JSON.stringify(id) : id;
             var record = _this.state.data[indexId];
             if (!record) {
@@ -4459,7 +4459,6 @@ var Query = /** @class */ (function () {
             collection.push(_this.hydrate(record));
             return collection;
         }, []);
-        return this.collect(records);
     };
     /**
      * Returns all record of the query chain result.
