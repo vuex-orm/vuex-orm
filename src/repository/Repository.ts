@@ -1,6 +1,6 @@
 import { Store } from 'vuex'
 import Database from '../database/Database'
-import { Item, Collection, Collections, InstanceOf } from '../data'
+import { Record, Item, Collection, Collections, InstanceOf } from '../data'
 import Model from '../model/Model'
 import * as Payloads from '../modules/payloads/Actions'
 import Predicate from '../query/contracts/Predicate'
@@ -44,6 +44,13 @@ export default class Repository<M extends typeof Model> {
    */
   dispatch (method: string, payload?: any): Promise<any> {
     return this.store.dispatch(this.namespace(method), payload)
+  }
+
+  /**
+   * Create a new model instance.
+   */
+  make (record?: Record): InstanceOf<M> {
+    return new this.model(record) as InstanceOf<M>
   }
 
   /**
