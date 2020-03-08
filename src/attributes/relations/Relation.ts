@@ -57,31 +57,59 @@ export default abstract class Relation extends Attribute {
   /**
    * Create a new indexed map for the single relation by specified key.
    */
-  mapSingleRelations (collection: Record[], key: string): Records {
-    return collection.reduce((records, record) => {
+  mapSingleRelations (collection: Record[], key: string): Map<string, Record> {
+    const relations = new Map<string, Record>()
+
+    collection.forEach((record) => {
       const id = record[key]
 
-      records[id] = record
+      !relations.get(id) && relations.set(id, record)
+    })
 
-      return records
-    }, {} as Records)
+    return relations
   }
 
   /**
    * Create a new indexed map for the many relation by specified key.
    */
-  mapManyRelations (collection: Record[], key: string): Records {
-    return collection.reduce((records, record) => {
+  mapManyRelations (collection: Record[], key: string): Map<string, Record> {
+    const relations = new Map<string, Record>()
+
+    collection.forEach((record) => {
       const id = record[key]
 
-      if (!records[id]) {
-        records[id] = []
+      let ownerKeys = relations.get(id)
+
+      if (!ownerKeys) {
+        ownerKeys = []
+        relations.set(id, ownerKeys)
       }
 
-      records[id].push(record)
+      ownerKeys.push(record)
+    })
 
-      return records
-    }, {} as Records)
+    return relations
+  }
+
+  /**
+   * Create a new indexed map for relations with order constraints.
+   */
+  mapRelationsByOrders (collection: Collection, relations: Map<string, Record>, ownerKey: string, relationKey: string): Records {
+    const records: Records = {}
+
+    relations.forEach((related, id) => {
+      collection.filter(record => record[relationKey] === id).forEach((record) => {
+        const id = record[ownerKey]
+
+        if (!records[id]) {
+          records[id] = []
+        }
+
+        records[id] = records[id].concat(related)
+      })
+    })
+
+    return records
   }
 
   /**

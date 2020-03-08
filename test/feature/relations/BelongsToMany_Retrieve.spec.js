@@ -323,4 +323,31 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     expect(users[0].roles.length).toBe(1)
     expect(users[0].roles[0].id).toBe(1)
   })
+
+  it('can apply `orderBy` constraint on nested relations', async () => {
+    createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+
+    await User.create({
+      data: {
+        id: 1,
+        roles: [{ id: 1 }, { id: 3 }, { id: 2 }]
+      }
+    })
+
+    const ascending = User.query()
+      .with('roles', query => { query.orderBy('id', 'asc') })
+      .find(1)
+
+    expect(ascending.roles[0].id).toBe(1)
+    expect(ascending.roles[1].id).toBe(2)
+    expect(ascending.roles[2].id).toBe(3)
+
+    const descending = User.query()
+      .with('roles', query => { query.orderBy('id', 'desc') })
+      .find(1)
+
+    expect(descending.roles[0].id).toBe(3)
+    expect(descending.roles[1].id).toBe(2)
+    expect(descending.roles[2].id).toBe(1)
+  })
 })

@@ -326,4 +326,83 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
     expect(post.tags[0].name).toBe('news')
     expect(post.tags[1].name).toBe('cast')
   })
+
+  it('can apply `orderBy` constraint on nested relations', async () => {
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+        }
+      }
+    }
+
+    class Video extends Model {
+      static entity = 'videos'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+        }
+      }
+    }
+
+    class Tag extends Model {
+      static entity = 'tags'
+
+      static fields () {
+        return {
+          id: this.attr(null)
+        }
+      }
+    }
+
+    class Taggable extends Model {
+      static entity = 'taggables'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          tag_id: this.attr(null),
+          taggable_id: this.attr(null),
+          taggable_type: this.attr(null)
+        }
+      }
+    }
+
+    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+
+    await Post.insert({
+      data: {
+        id: 1,
+        tags: [{ id: 1 }, { id: 3 }, { id: 2 }]
+      }
+    })
+
+    await Video.insert({
+      data: {
+        id: 1,
+        tags: [{ id: 1 }, { id: 3 }, { id: 2 }]
+      }
+    })
+
+    const post = Post.query()
+      .with('tags', query => { query.orderBy('id', 'asc') })
+      .find(1)
+
+    expect(post.tags[0].id).toBe(1)
+    expect(post.tags[1].id).toBe(2)
+    expect(post.tags[2].id).toBe(3)
+
+    const video = Video.query()
+      .with('tags', query => { query.orderBy('id', 'desc') })
+      .find(1)
+
+    expect(video.tags[0].id).toBe(3)
+    expect(video.tags[1].id).toBe(2)
+    expect(video.tags[2].id).toBe(1)
+  })
 })

@@ -198,4 +198,62 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
 
     expect(video.comments.length).toBe(0)
   })
+
+  it('can apply `orderBy` constraint on nested relations', async () => {
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+        }
+      }
+    }
+
+    class Video extends Model {
+      static entity = 'videos'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+        }
+      }
+    }
+
+    class Comment extends Model {
+      static entity = 'comments'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          commentable_id: this.attr(null),
+          commentable_type: this.attr(null)
+        }
+      }
+    }
+
+    createStore([{ model: Post }, { model: Video }, { model: Comment }])
+
+    await Post.insert({
+      data: { id: 1, comments: [{ id: 1 }, { id: 3 }, { id: 2 }] }
+    })
+
+    await Video.insert({
+      data: { id: 1, comments: [{ id: 4 }, { id: 6 }, { id: 5 }] }
+    })
+
+    const post = Post.query().with('comments', query => { query.orderBy('id', 'asc') }).find(1)
+
+    expect(post.comments[0].id).toBe(1)
+    expect(post.comments[1].id).toBe(2)
+    expect(post.comments[2].id).toBe(3)
+
+    const video = Video.query().with('comments', query => { query.orderBy('id', 'desc') }).find(1)
+
+    expect(video.comments[0].id).toBe(6)
+    expect(video.comments[1].id).toBe(5)
+    expect(video.comments[2].id).toBe(4)
+  })
 })
