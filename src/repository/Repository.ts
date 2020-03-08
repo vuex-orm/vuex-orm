@@ -3,6 +3,7 @@ import Database from '../database/Database'
 import { Record, Item, Collection, Collections, InstanceOf } from '../data'
 import Model from '../model/Model'
 import * as Payloads from '../modules/payloads/Actions'
+import Query from '../query/Query'
 import Predicate from '../query/contracts/Predicate'
 
 export default class Repository<M extends typeof Model> {
@@ -40,6 +41,13 @@ export default class Repository<M extends typeof Model> {
   }
 
   /**
+   * Call Vuex Getetrs.
+   */
+  getters (method: string): any {
+    return this.store.getters[this.namespace(method)]
+  }
+
+  /**
    * Dispatch Vuex Action.
    */
   dispatch (method: string, payload?: any): Promise<any> {
@@ -51,6 +59,13 @@ export default class Repository<M extends typeof Model> {
    */
   make (record?: Record): InstanceOf<M> {
     return new this.model(record) as InstanceOf<M>
+  }
+
+  /**
+   * Get query instance.
+   */
+  query (): Query<InstanceOf<M>> {
+    return this.getters('query')()
   }
 
   /**
