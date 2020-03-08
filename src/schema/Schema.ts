@@ -2,7 +2,7 @@ import { schema as Normalizr, Schema as NormalizrSchema } from 'normalizr'
 import Model from '../model/Model'
 import Relation from '../attributes/relations/Relation'
 import Schemas from './Schemas'
-import ProcessStrategy from './ProcessStrategy'
+import IdAttribute from './IdAttribute'
 
 export default class Schema {
   /**
@@ -44,8 +44,7 @@ export default class Schema {
     }
 
     const schema = new Normalizr.Entity(model.entity, {}, {
-      idAttribute: '$id',
-      processStrategy: ProcessStrategy.create(model)
+      idAttribute: IdAttribute.create(model)
     })
 
     this.schemas[model.entity] = schema
