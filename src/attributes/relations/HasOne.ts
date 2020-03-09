@@ -14,7 +14,7 @@ export default class HasOne extends Relation {
   related: typeof Model
 
   /**
-   * The foregin key of the related model.
+   * The foreign key of the related model.
    */
   foreignKey: string
 

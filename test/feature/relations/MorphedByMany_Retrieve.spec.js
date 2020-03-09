@@ -247,4 +247,74 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
     expect(tag.posts.length).toBe(2)
     expect(tag.videos.length).toBe(1)
   })
+
+  it('can apply `orderBy` constraint on nested relations', async () => {
+    class Post extends Model {
+      static entity = 'posts'
+
+      static fields () {
+        return {
+          id: this.attr(null)
+        }
+      }
+    }
+
+    class Video extends Model {
+      static entity = 'videos'
+
+      static fields () {
+        return {
+          id: this.attr(null)
+        }
+      }
+    }
+
+    class Tag extends Model {
+      static entity = 'tags'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          posts: this.morphedByMany(Post, Taggable, 'tag_id', 'taggable_id', 'taggable_type'),
+          videos: this.morphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+        }
+      }
+    }
+
+    class Taggable extends Model {
+      static entity = 'taggables'
+
+      static fields () {
+        return {
+          id: this.attr(null),
+          tag_id: this.attr(null),
+          taggable_id: this.attr(null),
+          taggable_type: this.attr(null)
+        }
+      }
+    }
+
+    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+
+    await Tag.create({
+      data: {
+        id: 1,
+        posts: [{ id: 1 }, { id: 3 }, { id: 2 }],
+        videos: [{ id: 1 }, { id: 3 }, { id: 2 }]
+      }
+    })
+
+    const tag = Tag.query()
+      .with('posts', query => { query.orderBy('id', 'asc') })
+      .with('videos', query => { query.orderBy('id', 'desc') })
+      .find(1)
+
+    expect(tag.posts[0].id).toBe(1)
+    expect(tag.posts[1].id).toBe(2)
+    expect(tag.posts[2].id).toBe(3)
+
+    expect(tag.videos[0].id).toBe(3)
+    expect(tag.videos[1].id).toBe(2)
+    expect(tag.videos[2].id).toBe(1)
+  })
 })

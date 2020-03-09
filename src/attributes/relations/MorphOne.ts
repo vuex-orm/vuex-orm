@@ -20,7 +20,7 @@ export default class MorphOne extends Relation {
   id: string
 
   /**
-   * The field name fthat contains type of the parent model.
+   * The field name that contains type of the parent model.
    */
   type: string
 
@@ -76,7 +76,7 @@ export default class MorphOne extends Relation {
     const relations = this.mapSingleRelations(relatedQuery.get(), this.id)
 
     collection.forEach((item) => {
-      const related = relations[item[this.localKey]]
+      const related = relations.get(item[this.localKey])
 
       item[name] = related || null
     })

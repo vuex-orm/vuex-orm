@@ -267,7 +267,7 @@ export default class Query<T extends Model = Model> {
    * Get the record of the given array of ids.
    */
   findIn (idList: (number | string | (number | string)[])[]): Data.Collection<T> {
-    return idList.reduce<Data.Collection<T>>((collection, id) => {
+    const records = idList.reduce<Data.Collection<T>>((collection, id) => {
       const indexId = Array.isArray(id) ? JSON.stringify(id) : id
 
       const record = this.state.data[indexId]
@@ -280,6 +280,8 @@ export default class Query<T extends Model = Model> {
 
       return collection
     }, [])
+
+    return this.collect(records)
   }
 
   /**
@@ -343,7 +345,7 @@ export default class Query<T extends Model = Model> {
    * Add a or where clause to the query.
    */
   orWhere (field: any, value?: any): this {
-    // Cacncel id filter usage, since "or" needs full scan.
+    // Cancel id filter usage, since "or" needs full scan.
     this.cancelIdFilter = true
 
     this.wheres.push({ field, value, boolean: 'or' })
@@ -637,7 +639,7 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Limit the given records by the lmilt and offset.
+   * Limit the given records by the limit and offset.
    */
   filterLimit (records: Data.Collection<T>): Data.Collection<T> {
     return Filter.limit<T>(this, records)
@@ -990,10 +992,12 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Persist data into the state.
+   * Persist data into the state while preserving it's original structure.
    */
   persist (method: Options.PersistMethods, data: Data.Record | Data.Record[], options: Options.PersistOptions): Data.Collections {
-    const normalizedData = this.normalize(data)
+    const clonedData = Utils.cloneDeep(data)
+
+    const normalizedData = this.normalize(clonedData)
 
     if (Utils.isEmpty(normalizedData)) {
       if (method === 'create') {

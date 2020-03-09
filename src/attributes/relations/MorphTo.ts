@@ -15,7 +15,7 @@ export default class MorphTo extends Relation {
   id: string
 
   /**
-   * The field name fthat contains type of the parent model.
+   * The field name that contains type of the parent model.
    */
   type: string
 
@@ -64,18 +64,18 @@ export default class MorphTo extends Relation {
   load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void {
     const types = this.getTypes(collection)
 
-    const relateds = types.reduce<NormalizedData>((relateds, type) => {
+    const relations = types.reduce((related, type) => {
       const relatedQuery = this.getRelation(query, type, constraints)
 
-      relateds[type] = this.mapSingleRelations(relatedQuery.get(), '$id')
+      related[type] = this.mapSingleRelations(relatedQuery.get(), '$id')
 
-      return relateds
-    }, {} as NormalizedData)
+      return related
+    }, {})
 
     collection.forEach((item) => {
       const id = item[this.id]
       const type = item[this.type]
-      const related = relateds[type][id]
+      const related = relations[type].get(String(id))
 
       item[name] = related || null
     })

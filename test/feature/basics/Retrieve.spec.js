@@ -29,7 +29,7 @@ describe('Feature – Retrieve', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve all records by chaind all method', () => {
+  it('can retrieve all records by chained all method', () => {
     const store = createStore([{ model: User }])
 
     store.dispatch('entities/users/create', {
@@ -108,7 +108,7 @@ describe('Feature – Retrieve', () => {
     expect(users2).toEqual([])
   })
 
-  it('can retrieve a single item by chaind find method', () => {
+  it('can retrieve a single item by chained find method', () => {
     const store = createStore([{ model: User }])
 
     store.dispatch('entities/users/create', {
