@@ -416,20 +416,20 @@ export default class Query<T extends Model = Model> {
   private normalizeIndexId (value: Options.PrimaryKey): string | number {
     if (this.model.isCompositePrimaryKey()) {
       if (!Array.isArray(value)) {
-        throw new Error(`
-          [Vuex ORM] Entity \`${this.entity}\` is configured with a composite primary key
-          and expects an array value but instead received: \`${JSON.stringify(value)}\`
-        `)
+        throw new Error(
+          '[Vuex ORM] Entity `' + this.entity + '` is configured with a composite ' +
+          'primary key and expects an array value but instead received: ' + JSON.stringify(value)
+        )
       }
 
       return JSON.stringify(value)
     }
 
     if (Array.isArray(value)) {
-      throw new Error(`
-        [Vuex ORM] Entity \`${this.entity}\` expects a single value but
-        instead received an array: \`${JSON.stringify(value)}\`
-      `)
+      throw new Error(
+        '[Vuex ORM] Entity `' + this.entity + '` expects a single value but ' +
+        'instead received: ' + JSON.stringify(value)
+      )
     }
 
     return value
@@ -868,11 +868,11 @@ export default class Query<T extends Model = Model> {
     // model's primary key is not a composite key. If yes, we can't set the
     // condition as ID value for the record so throw an error and abort.
     if (this.model.isCompositePrimaryKey()) {
-      throw new Error(`
-        You can't specify \`where\` value as \`string\` or \`number\` when you
-        have a composite key defined in your model. Please include composite
-        keys to the \`data\` fields.
-      `)
+      throw new Error(
+        '[Vuex ORM] You can\'t specify `where` value as `string` or `number` ' +
+        'when you have a composite key defined in your model. Please include ' +
+        'composite keys to the `data` fields.'
+      )
     }
 
     // Finally, let's add condition as the primary key of the object and

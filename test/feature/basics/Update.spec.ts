@@ -548,11 +548,11 @@ describe('Feature – Basics – Update', () => {
         data: { age: 24 }
       })
     } catch (e) {
-      expect(e.message).toBe(`
-        You can't specify \`where\` value as \`string\` or \`number\` when you
-        have a composite key defined in your model. Please include composite
-        keys to the \`data\` fields.
-      `)
+      expect(e.message).toBe(
+        '[Vuex ORM] You can\'t specify `where` value as `string` or `number` ' +
+        'when you have a composite key defined in your model. Please include ' +
+        'composite keys to the `data` fields.'
+      )
     }
   })
 
