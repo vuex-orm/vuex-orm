@@ -143,8 +143,28 @@ describe('Feature – Retrieve – Where - Composite Keys', () => {
     const users = store.getters['entities/users/query']()
       .whereIdIn([[2, 2], [3, 2]])
       .orWhere('key_1', 1)
-      .all()
+      .get()
 
     expect(users).toEqual(expected)
+  })
+
+  it('throws error when passing value other than an array to `whereId`', () => {
+    const store = createStore([{ model: User }])
+
+    expect(() => {
+      store.getters['entities/users/query']()
+        .whereId(2)
+        .get()
+    }).toThrowError('[Vuex ORM]')
+  })
+
+  it('throws error when passing value other than a nested array to `whereIdIn`', () => {
+    const store = createStore([{ model: User }])
+
+    expect(() => {
+      store.getters['entities/users/query']()
+        .whereIdIn([2, 2])
+        .get()
+    }).toThrowError('[Vuex ORM]')
   })
 })

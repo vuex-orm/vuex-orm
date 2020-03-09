@@ -13,84 +13,134 @@ describe('Feature – Models – Find', () => {
     }
   }
 
-  it('can fetch a record via static method', async () => {
-    createStore([{ model: User }])
+  describe('#static', () => {
+    it('can fetch a record', async () => {
+      createStore([{ model: User }])
 
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
+      await User.insert({
+        data: [
+          { id: 1, name: 'John Doe' },
+          { id: 2, name: 'Jane Doe' }
+        ]
+      })
+
+      const user = User.find(1)
+
+      const expected = { $id: '1', id: 1, name: 'John Doe' }
+
+      expect(user).toEqual(expected)
+      expect(user).toBeInstanceOf(User)
     })
 
-    const user = User.find(1)
+    it('can fetch array of records', async () => {
+      createStore([{ model: User }])
 
-    const expected = { $id: '1', id: 1, name: 'John Doe' }
+      await User.insert({
+        data: [
+          { id: 1, name: 'John Doe' },
+          { id: 2, name: 'Jane Doe' },
+          { id: 3, name: 'Smith Doe' }
+        ]
+      })
 
-    expect(user).toEqual(expected)
-    expect(user).toBeInstanceOf(User)
+      const users = User.findIn([1, 3])
+
+      const expected = [
+        { $id: '1', id: 1, name: 'John Doe' },
+        { $id: '3', id: 3, name: 'Smith Doe' }
+      ]
+
+      expect(users).toEqual(expected)
+      expect(users[0]).toBeInstanceOf(User)
+      expect(users[1]).toBeInstanceOf(User)
+    })
+
+    it('returns empty collection when passing a primitive value', async () => {
+      createStore([{ model: User }])
+
+      await User.insert({
+        data: { id: 1, name: 'John Doe' }
+      })
+
+      const user = User.findIn(1)
+
+      expect(user).toEqual([])
+    })
+
+    it('throws error when passing non-primitive value to `find`', async () => {
+      createStore([{ model: User }])
+
+      expect(() => User.find([1, 1])).toThrowError('[Vuex ORM]')
+    })
   })
 
-  it('can fetch a record via instance method', async () => {
-    createStore([{ model: User }])
+  describe('#instance', () => {
+    it('can fetch a record', async () => {
+      createStore([{ model: User }])
 
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
+      await User.insert({
+        data: [
+          { id: 1, name: 'John Doe' },
+          { id: 2, name: 'Jane Doe' }
+        ]
+      })
+
+      const u = new User()
+
+      const user = u.$find(1)
+
+      const expected = { $id: '1', id: 1, name: 'John Doe' }
+
+      expect(user).toEqual(expected)
+      expect(user).toBeInstanceOf(User)
     })
 
-    const u = new User()
+    it('can fetch array of records', async () => {
+      createStore([{ model: User }])
 
-    const user = u.$find(1)
+      await User.insert({
+        data: [
+          { id: 1, name: 'John Doe' },
+          { id: 2, name: 'Jane Doe' },
+          { id: 3, name: 'Smith Doe' }
+        ]
+      })
 
-    const expected = { $id: '1', id: 1, name: 'John Doe' }
+      const u = new User()
 
-    expect(user).toEqual(expected)
-    expect(user).toBeInstanceOf(User)
-  })
+      const users = u.$findIn([1, 3])
 
-  it('can fetch array of records via static method', async () => {
-    createStore([{ model: User }])
-
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' },
-        { id: 3, name: 'Smith Doe' }
+      const expected = [
+        { $id: '1', id: 1, name: 'John Doe' },
+        { $id: '3', id: 3, name: 'Smith Doe' }
       ]
+
+      expect(users).toEqual(expected)
+      expect(users[0]).toBeInstanceOf(User)
+      expect(users[1]).toBeInstanceOf(User)
     })
 
-    const users = User.findIn([1, 3])
+    it('returns empty collection when passing a primitive value', async () => {
+      createStore([{ model: User }])
 
-    const expected = [{ $id: '1', id: 1, name: 'John Doe' }, { $id: '3', id: 3, name: 'Smith Doe' }]
+      await User.insert({
+        data: { id: 1, name: 'John Doe' }
+      })
 
-    expect(users).toEqual(expected)
-    expect(users[0]).toBeInstanceOf(User)
-    expect(users[1]).toBeInstanceOf(User)
-  })
+      const u = new User()
 
-  it('can fetch array of records via instance method', async () => {
-    createStore([{ model: User }])
+      const user = u.$findIn(1)
 
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' },
-        { id: 3, name: 'Smith Doe' }
-      ]
+      expect(user).toEqual([])
     })
 
-    const u = new User()
+    it('throws error when passing non-primitive value to `find`', async () => {
+      createStore([{ model: User }])
 
-    const users = u.$findIn([1, 3])
+      const u = new User()
 
-    const expected = [{ $id: '1', id: 1, name: 'John Doe' }, { $id: '3', id: 3, name: 'Smith Doe' }]
-
-    expect(users).toEqual(expected)
-    expect(users[0]).toBeInstanceOf(User)
-    expect(users[1]).toBeInstanceOf(User)
+      expect(() => u.$find([1, 1])).toThrowError('[Vuex ORM]')
+    })
   })
 
   describe('with composite primary key', () => {
@@ -107,84 +157,123 @@ describe('Feature – Models – Find', () => {
         }
       }
     }
-    it('can fetch a record via static method', async () => {
-      createStore([{ model: User }])
 
-      await User.insert({
-        data: [
-          { id: 1, workspace_id: 1, name: 'John Doe' },
-          { id: 2, workspace_id: 1, name: 'Jane Doe' }
-        ]
+    describe('#static', () => {
+      it('can fetch a record', async () => {
+        createStore([{ model: User }])
+
+        await User.insert({
+          data: [
+            { id: 1, workspace_id: 1, name: 'John Doe' },
+            { id: 2, workspace_id: 1, name: 'Jane Doe' }
+          ]
+        })
+
+        const user = User.find([1, 1])
+
+        const expected = { $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' }
+
+        expect(user).toEqual(expected)
+        expect(user).toBeInstanceOf(User)
       })
 
-      const user = User.find([1, 1])
+      it('can fetch array of records', async () => {
+        createStore([{ model: User }])
 
-      const expected = { $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' }
+        await User.insert({
+          data: [
+            { id: 1, workspace_id: 1, name: 'John Doe' },
+            { id: 2, workspace_id: 1, name: 'Jane Doe' },
+            { id: 3, workspace_id: 1, name: 'Smith Doe' }
+          ]
+        })
 
-      expect(user).toEqual(expected)
-      expect(user).toBeInstanceOf(User)
+        const users = User.findIn([[1, 1], [1, 3]])
+
+        const expected = [
+          { $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' },
+          { $id: '[1,3]', id: 3, workspace_id: 1, name: 'Smith Doe' }
+        ]
+
+        expect(users).toEqual(expected)
+        expect(users[0]).toBeInstanceOf(User)
+        expect(users[1]).toBeInstanceOf(User)
+      })
+
+      it('throws error when passing value other than an array to `find`', async () => {
+        createStore([{ model: User }])
+
+        expect(() => User.find(1)).toThrowError('[Vuex ORM]')
+      })
+
+      it('throws error when passing value other than a nested array to `findIn`', async () => {
+        createStore([{ model: User }])
+
+        expect(() => User.findIn([1, 1])).toThrowError('[Vuex ORM]')
+      })
     })
 
-    it('can fetch a record via instance method', async () => {
-      createStore([{ model: User }])
+    describe('#instance', () => {
+      it('can fetch a record', async () => {
+        createStore([{ model: User }])
 
-      await User.insert({
-        data: [
-          { id: 1, workspace_id: 1, name: 'John Doe' },
-          { id: 2, workspace_id: 1, name: 'Jane Doe' }
-        ]
+        await User.insert({
+          data: [
+            { id: 1, workspace_id: 1, name: 'John Doe' },
+            { id: 2, workspace_id: 1, name: 'Jane Doe' }
+          ]
+        })
+
+        const u = new User()
+
+        const user = u.$find([1, 1])
+
+        const expected = { $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' }
+
+        expect(user).toEqual(expected)
+        expect(user).toBeInstanceOf(User)
       })
 
-      const u = new User()
+      it('can fetch array of records', async () => {
+        createStore([{ model: User }])
 
-      const user = u.$find([1, 1])
+        await User.insert({
+          data: [
+            { id: 1, workspace_id: 1, name: 'John Doe' },
+            { id: 2, workspace_id: 1, name: 'Jane Doe' },
+            { id: 3, workspace_id: 1, name: 'Smith Doe' }
+          ]
+        })
 
-      const expected = { $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' }
+        const u = new User()
 
-      expect(user).toEqual(expected)
-      expect(user).toBeInstanceOf(User)
-    })
+        const users = u.$findIn([[1, 1], [1, 3]])
 
-    it('can fetch array of records via static method', async () => {
-      createStore([{ model: User }])
-
-      await User.insert({
-        data: [
-          { id: 1, workspace_id: 1, name: 'John Doe' },
-          { id: 2, workspace_id: 1, name: 'Jane Doe' },
-          { id: 3, workspace_id: 1, name: 'Smith Doe' }
+        const expected = [
+          { $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' },
+          { $id: '[1,3]', id: 3, workspace_id: 1, name: 'Smith Doe' }
         ]
+
+        expect(users).toEqual(expected)
+        expect(users[0]).toBeInstanceOf(User)
+        expect(users[1]).toBeInstanceOf(User)
       })
 
-      const users = User.findIn([[1, 1], [1, 3]])
+      it('throws error when passing value other than an array to `find`', async () => {
+        createStore([{ model: User }])
 
-      const expected = [{ $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' }, { $id: '[1,3]', id: 3, workspace_id: 1, name: 'Smith Doe' }]
+        const u = new User()
 
-      expect(users).toEqual(expected)
-      expect(users[0]).toBeInstanceOf(User)
-      expect(users[1]).toBeInstanceOf(User)
-    })
-
-    it('can fetch array of records via instance method', async () => {
-      createStore([{ model: User }])
-
-      await User.insert({
-        data: [
-          { id: 1, workspace_id: 1, name: 'John Doe' },
-          { id: 2, workspace_id: 1, name: 'Jane Doe' },
-          { id: 3, workspace_id: 1, name: 'Smith Doe' }
-        ]
+        expect(() => u.$find(1)).toThrowError('[Vuex ORM]')
       })
 
-      const u = new User()
+      it('throws error when passing value other than a nested array to `findIn`', async () => {
+        createStore([{ model: User }])
 
-      const users = u.$findIn(['[1,1]', '[1,3]'])
+        const u = new User()
 
-      const expected = [{ $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' }, { $id: '[1,3]', id: 3, workspace_id: 1, name: 'Smith Doe' }]
-
-      expect(users).toEqual(expected)
-      expect(users[0]).toBeInstanceOf(User)
-      expect(users[1]).toBeInstanceOf(User)
+        expect(() => u.$findIn([1, 1])).toThrowError('[Vuex ORM]')
+      })
     })
   })
 })
