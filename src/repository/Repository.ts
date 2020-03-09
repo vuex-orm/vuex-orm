@@ -127,6 +127,13 @@ export default class Repository<M extends typeof Model> {
   }
 
   /**
+   * Insert or update records.
+   */
+  insertOrUpdate (payload: Payloads.InsertOrUpdate): Promise<Collections> {
+    return this.dispatch('insertOrUpdate', payload)
+  }
+
+  /**
    * Delete records that matches the given condition.
    */
   delete (id: string | number | (number | string)[]): Promise<Item<InstanceOf<M>>>
