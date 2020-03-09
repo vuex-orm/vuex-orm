@@ -29,9 +29,7 @@ describe('Hooks – Local Binding', () => {
 
     createStore([{ model: User }])
 
-    await User.insert({
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.insert({ id: 1, name: 'John Doe', age: 20 })
 
     const user = User.find(1)
 

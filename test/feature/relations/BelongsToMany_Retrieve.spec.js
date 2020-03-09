@@ -41,20 +41,14 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
   it('can resolve belongs to many relation', async () => {
     createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
-    await User.create({
-      data: [{ id: 1 }, { id: 2 }]
-    })
+    await User.create([{ id: 1 }, { id: 2 }])
 
-    await Role.create({
-      data: [{ id: 2 }, { id: 3 }]
-    })
+    await Role.create([{ id: 2 }, { id: 3 }])
 
-    await RoleUser.create({
-      data: [
-        { user_id: 1, role_id: 2 },
-        { user_id: 1, role_id: 3 }
-      ]
-    })
+    await RoleUser.create([
+      { user_id: 1, role_id: 2 },
+      { user_id: 1, role_id: 3 }
+    ])
 
     const user = User.query().with('roles').find(1)
 
@@ -69,9 +63,16 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
   it('can resolve belongs to many relation with pivot data', async () => {
     createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
-    await User.create({
-      data: [{ id: 1, roles: [{ id: 2, pivot: { level: 1 } }, { id: 3, pivot: { level: 2 } }] }, { id: 2 }]
-    })
+    await User.create([
+      {
+        id: 1,
+        roles: [
+          { id: 2, pivot: { level: 1 } },
+          { id: 3, pivot: { level: 2 } }
+        ]
+      },
+      { id: 2 }
+    ])
 
     const user = User.query().with('roles').find(1)
 
@@ -88,20 +89,14 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
   it('can resolve inverse belongs to many relation', async () => {
     createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
-    await User.create({
-      data: { id: 1 }
-    })
+    await User.create({ id: 1 })
 
-    await Role.create({
-      data: [{ id: 2 }, { id: 3 }]
-    })
+    await Role.create([{ id: 2 }, { id: 3 }])
 
-    await RoleUser.create({
-      data: [
-        { user_id: 1, role_id: 2 },
-        { user_id: 1, role_id: 3 }
-      ]
-    })
+    await RoleUser.create([
+      { user_id: 1, role_id: 2 },
+      { user_id: 1, role_id: 3 }
+    ])
 
     const role = Role.query().with('users').find(2)
 
@@ -112,9 +107,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
   it('returns empty collection if the relation is not found', () => {
     createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
-    User.create({
-      data: { id: 1 }
-    })
+    User.create({ id: 1 })
 
     const user = User.query().with('roles').first()
 
@@ -124,13 +117,9 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
   it('returns empty collection if the Role relation from RoleUser is not found', async () => {
     createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
-    await User.create({
-      data: { id: 1 }
-    })
+    await User.create({ id: 1 })
 
-    await RoleUser.create({
-      data: [{ user_id: 1 }]
-    })
+    await RoleUser.create([{ user_id: 1 }])
 
     const user = User.query().with('roles').first()
 
@@ -140,21 +129,15 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
   it('can resolve belongs to many relation with has constraint', async () => {
     createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
-    await User.create({
-      data: { id: 1 }
-    })
+    await User.create({ id: 1 })
 
-    await Role.create({
-      data: [{ id: 2 }, { id: 3 }]
-    })
+    await Role.create([{ id: 2 }, { id: 3 }])
 
-    await RoleUser.create({
-      data: [
-        { user_id: 1, role_id: 2 },
-        { user_id: 1, role_id: 3 },
-        { user_id: 2, role_id: 4 }
-      ]
-    })
+    await RoleUser.create([
+      { user_id: 1, role_id: 2 },
+      { user_id: 1, role_id: 3 },
+      { user_id: 2, role_id: 4 }
+    ])
 
     const roles = Role.query().has('users').get()
 
@@ -246,7 +229,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       }
     ]
 
-    await User.create({ data })
+    await User.create(data)
 
     const users = User.query().with('roles.permissions').get()
 
@@ -305,17 +288,11 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
 
     createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
-    await User.create({
-      data: [{ id: 1 }]
-    })
+    await User.create([{ id: 1 }])
 
-    await Role.create({
-      data: { id: 1 }
-    })
+    await Role.create({ id: 1 })
 
-    await RoleUser.create({
-      data: { id: 1, user_id: 1, role_id: 1 }
-    })
+    await RoleUser.create({ id: 1, user_id: 1, role_id: 1 })
 
     const users = User.query().with('roles').get()
 
@@ -328,10 +305,8 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
     await User.create({
-      data: {
-        id: 1,
-        roles: [{ id: 1 }, { id: 3 }, { id: 2 }]
-      }
+      id: 1,
+      roles: [{ id: 1 }, { id: 3 }, { id: 2 }]
     })
 
     const ascending = User.query()

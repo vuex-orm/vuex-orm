@@ -20,9 +20,11 @@ describe('Feature – Hooks – Local Select', () => {
 
     createStore([{ model: User }])
 
-    await User.create({
-      data: [{ id: 1, role: 'admin' }, { id: 2, role: 'admin' }, { id: 3, role: 'user' }]
-    })
+    await User.create([
+      { id: 1, role: 'admin' },
+      { id: 2, role: 'admin' },
+      { id: 3, role: 'user' }
+    ])
 
     const results = User.query().get()
 

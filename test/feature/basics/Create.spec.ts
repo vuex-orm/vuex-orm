@@ -147,7 +147,9 @@ describe('Feature – Basics – Create', () => {
   it('returns null when creating an empty record', async () => {
     const store = createStore([{ model: User }])
 
-    const collection = await store.dispatch('entities/users/create', { data: {} })
+    const collection = await store.dispatch('entities/users/create', {
+      data: {}
+    })
 
     expect(collection).toEqual({})
   })

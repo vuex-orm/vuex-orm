@@ -124,23 +124,23 @@ describe('Feature – Retrieve', () => {
 
   describe('#first', () => {
     it('can retrieve the first item from the store', async () => {
-      createStore([{ model: User }])
+      const store = createStore([{ model: User }])
 
-      await User.insert({
+      await store.dispatch('entities/users/insert', {
         data: [{ id: 1 }, { id: 2 }]
       })
 
       const expected = { $id: '1', id: 1 }
 
-      const user = User.query().first()
+      const user = store.getters['entities/users/query']().first()
 
       expect(user).toEqual(expected)
     })
 
     it('returns `null` if it can not find any record', () => {
-      createStore([{ model: User }])
+      const store = createStore([{ model: User }])
 
-      const user = User.query().first()
+      const user = store.getters['entities/users/query']().first()
 
       expect(user).toBe(null)
     })
@@ -148,23 +148,23 @@ describe('Feature – Retrieve', () => {
 
   describe('#last', () => {
     it('can retrieve the last item from the store', async () => {
-      createStore([{ model: User }])
+      const store = createStore([{ model: User }])
 
-      User.insert({
+      await store.dispatch('entities/users/insert', {
         data: [{ id: 1 }, { id: 2 }]
       })
 
       const expected = { $id: '2', id: 2 }
 
-      const user = User.query().last()
+      const user = store.getters['entities/users/query']().last()
 
       expect(user).toEqual(expected)
     })
 
     it('returns `null` if it can not find any record', () => {
-      createStore([{ model: User }])
+      const store = createStore([{ model: User }])
 
-      const user = User.query().last()
+      const user = store.getters['entities/users/query']().last()
 
       expect(user).toBe(null)
     })

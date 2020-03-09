@@ -52,26 +52,18 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
 
     createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
-    await Post.create({
-      data: [{ id: 1 }, { id: 5 }]
-    })
+    await Post.create([{ id: 1 }, { id: 5 }])
 
-    await Video.create({
-      data: [{ id: 3 }, { id: 4 }, { id: 5 }]
-    })
+    await Video.create([{ id: 3 }, { id: 4 }, { id: 5 }])
 
-    await Tag.create({
-      data: [{ id: 1, name: 'news' }, { id: 3, name: 'without references' }]
-    })
+    await Tag.create([{ id: 1, name: 'news' }, { id: 3, name: 'without references' }])
 
-    await Taggable.create({
-      data: [
-        { id: 1, tag_id: 1, taggable_id: 1, taggable_type: 'posts', is_public: false },
-        { id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos', is_public: true },
-        { id: 3, tag_id: 1, taggable_id: 5, taggable_type: 'posts', is_public: true },
-        { id: 4, tag_id: 1, taggable_id: 4, taggable_type: 'videos', is_public: false }
-      ]
-    })
+    await Taggable.create([
+      { id: 1, tag_id: 1, taggable_id: 1, taggable_type: 'posts', is_public: false },
+      { id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos', is_public: true },
+      { id: 3, tag_id: 1, taggable_id: 5, taggable_type: 'posts', is_public: true },
+      { id: 4, tag_id: 1, taggable_id: 4, taggable_type: 'videos', is_public: false }
+    ])
 
     const tag = Tag.query().with('posts').with('videos').find(1)
 
@@ -140,26 +132,18 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
 
     createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
-    await Post.create({
-      data: [{ post_id: 1 }, { post_id: 5 }]
-    })
+    await Post.create([{ post_id: 1 }, { post_id: 5 }])
 
-    await Video.create({
-      data: [{ id: 3 }, { id: 4 }, { id: 5 }]
-    })
+    await Video.create([{ id: 3 }, { id: 4 }, { id: 5 }])
 
-    await Tag.create({
-      data: { tag_id: 1, name: 'news' }
-    })
+    await Tag.create({ tag_id: 1, name: 'news' })
 
-    await Taggable.create({
-      data: [
-        { id: 1, tag_id: 1, taggable_id: 1, taggable_type: 'posts' },
-        { id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos' },
-        { id: 3, tag_id: 1, taggable_id: 5, taggable_type: 'posts' },
-        { id: 4, tag_id: 1, taggable_id: 4, taggable_type: 'videos' }
-      ]
-    })
+    await Taggable.create([
+      { id: 1, tag_id: 1, taggable_id: 1, taggable_type: 'posts' },
+      { id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos' },
+      { id: 3, tag_id: 1, taggable_id: 5, taggable_type: 'posts' },
+      { id: 4, tag_id: 1, taggable_id: 4, taggable_type: 'videos' }
+    ])
 
     const tag = Tag.query().with('posts').with('videos').find(1)
 
@@ -218,29 +202,21 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
 
     createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
-    await Post.create({
-      data: [
-        { id: 1, post_id: 100 },
-        { id: 5, post_id: 105 }
-      ]
-    })
+    await Post.create([
+      { id: 1, post_id: 100 },
+      { id: 5, post_id: 105 }
+    ])
 
-    await Video.create({
-      data: [{ id: 3 }, { id: 4 }, { id: 5 }]
-    })
+    await Video.create([{ id: 3 }, { id: 4 }, { id: 5 }])
 
-    await Tag.create({
-      data: { id: 1, tag_id: 200, name: 'news' }
-    })
+    await Tag.create({ id: 1, tag_id: 200, name: 'news' })
 
-    await Taggable.create({
-      data: [
-        { id: 1, tag_id: 200, taggable_id: 100, taggable_type: 'posts' },
-        { id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos' },
-        { id: 3, tag_id: 200, taggable_id: 105, taggable_type: 'posts' },
-        { id: 4, tag_id: 200, taggable_id: 4, taggable_type: 'videos' }
-      ]
-    })
+    await Taggable.create([
+      { id: 1, tag_id: 200, taggable_id: 100, taggable_type: 'posts' },
+      { id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos' },
+      { id: 3, tag_id: 200, taggable_id: 105, taggable_type: 'posts' },
+      { id: 4, tag_id: 200, taggable_id: 4, taggable_type: 'videos' }
+    ])
 
     const tag = Tag.query().with('posts').with('videos').find(1)
 
@@ -297,11 +273,9 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
     createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
     await Tag.create({
-      data: {
-        id: 1,
-        posts: [{ id: 1 }, { id: 3 }, { id: 2 }],
-        videos: [{ id: 1 }, { id: 3 }, { id: 2 }]
-      }
+      id: 1,
+      posts: [{ id: 1 }, { id: 3 }, { id: 2 }],
+      videos: [{ id: 1 }, { id: 3 }, { id: 2 }]
     })
 
     const tag = Tag.query()

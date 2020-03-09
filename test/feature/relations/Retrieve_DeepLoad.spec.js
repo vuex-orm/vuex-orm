@@ -44,23 +44,21 @@ describe('Relations – Deep Load', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Post }, { model: Comment }])
+    createStore([{ model: User }, { model: Post }, { model: Comment }])
 
-    store.dispatch('entities/posts/create', {
-      data: {
+    Post.create({
+      id: 1,
+      comments: [{
         id: 1,
-        comments: [{
+        user_id: 1,
+        user: {
           id: 1,
-          user_id: 1,
-          user: {
-            id: 1,
-            name: 'John Doe'
-          }
-        }]
-      }
+          name: 'John Doe'
+        }
+      }]
     })
 
-    const post = store.getters['entities/posts/query']().withAll().first()
+    const post = Post.query().withAll().first()
 
     const expected = {
       $id: '1',

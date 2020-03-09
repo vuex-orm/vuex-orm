@@ -25,43 +25,46 @@ describe('Feature – Relations – Retrieve – Has', () => {
     }
   }
 
-  it('can query data depending on relationship existence', () => {
-    const store = createStore([{ model: User }, { model: Post }])
+  it('can query data depending on relationship existence', async () => {
+    createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
-      data: [{ id: 1 }, { id: 2 }, { id: 3 }]
-    })
+    await User.create([{ id: 1 }, { id: 2 }, { id: 3 }])
 
-    store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
-    })
+    await Post.create([
+      { id: 1, user_id: 1 },
+      { id: 2, user_id: 2 },
+      { id: 3, user_id: 2 }
+    ])
 
-    const expected = [{ $id: '1', id: 1, posts: [] }, { $id: '2', id: 2, posts: [] }]
+    const expected = [
+      { $id: '1', id: 1, posts: [] },
+      { $id: '2', id: 2, posts: [] }
+    ]
 
-    const users = store.getters['entities/users/query']().has('posts').get()
+    const users = User.query().has('posts').get()
 
     expect(users).toEqual(expected)
   })
 
-  it('can query data depending on relationship absence', () => {
-    const store = createStore([{ model: User }, { model: Post }])
+  it('can query data depending on relationship absence', async () => {
+    createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
-      data: [{ id: 1 }, { id: 2 }, { id: 3 }]
-    })
+    await User.create([{ id: 1 }, { id: 2 }, { id: 3 }])
 
-    store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
-    })
+    await Post.create([
+      { id: 1, user_id: 1 },
+      { id: 2, user_id: 2 },
+      { id: 3, user_id: 2 }
+    ])
 
     const expected = [{ $id: '3', id: 3, posts: [] }]
 
-    const users = store.getters['entities/users/query']().hasNot('posts').get()
+    const users = User.query().hasNot('posts').get()
 
     expect(users).toEqual(expected)
   })
 
-  it('can query data depending on relationship existence with constraint', () => {
+  it('can query data depending on relationship existence with constraint', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -85,28 +88,26 @@ describe('Feature – Relations – Retrieve – Has', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Phone }, { model: Post }])
+    createStore([{ model: User }, { model: Phone }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
-      data: [{ id: 1 }, { id: 2 }, { id: 3 }]
-    })
+    await User.create([{ id: 1 }, { id: 2 }, { id: 3 }])
 
-    store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
-    })
+    await Post.create([
+      { id: 1, user_id: 1 },
+      { id: 2, user_id: 2 },
+      { id: 3, user_id: 2 }
+    ])
 
-    store.dispatch('entities/phones/create', {
-      data: [{ id: 1, user_id: 2 }]
-    })
+    await Phone.create([{ id: 1, user_id: 2 }])
 
     const expected1 = [{ $id: '1', id: 1, phone: null, posts: [] }]
     const expected2 = [{ $id: '2', id: 2, phone: null, posts: [] }]
 
-    const users1 = store.getters['entities/users/query']()
+    const users1 = User.query()
       .whereHas('posts', query => query.where('id', 1))
       .get()
 
-    const users2 = store.getters['entities/users/query']()
+    const users2 = User.query()
       .whereHas('phone', query => query.where('id', 1))
       .get()
 
@@ -114,63 +115,69 @@ describe('Feature – Relations – Retrieve – Has', () => {
     expect(users2).toEqual(expected2)
   })
 
-  it('can query data depending on relationship absence with constraint', () => {
-    const store = createStore([{ model: User }, { model: Post }])
+  it('can query data depending on relationship absence with constraint', async () => {
+    createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
-      data: [{ id: 1 }, { id: 2 }, { id: 3 }]
-    })
+    await User.create([{ id: 1 }, { id: 2 }, { id: 3 }])
 
-    store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
-    })
+    await Post.create([
+      { id: 1, user_id: 1 },
+      { id: 2, user_id: 2 },
+      { id: 3, user_id: 2 }
+    ])
 
-    const expected = [{ $id: '2', id: 2, posts: [] }, { $id: '3', id: 3, posts: [] }]
+    const expected = [
+      { $id: '2', id: 2, posts: [] },
+      { $id: '3', id: 3, posts: [] }
+    ]
 
-    const users = store.getters['entities/users/query']()
+    const users = User.query()
       .whereHasNot('posts', query => query.where('id', 1))
       .get()
 
     expect(users).toEqual(expected)
   })
 
-  it('can query data depending on relationship existence with number', () => {
-    const store = createStore([{ model: User }, { model: Post }])
+  it('can query data depending on relationship existence with number', async () => {
+    createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
-      data: [{ id: 1 }, { id: 2 }, { id: 3 }]
-    })
+    await User.create([{ id: 1 }, { id: 2 }, { id: 3 }])
 
-    store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
-    })
+    await Post.create([
+      { id: 1, user_id: 1 },
+      { id: 2, user_id: 2 },
+      { id: 3, user_id: 2 }
+    ])
 
     const expected = [{ $id: '2', id: 2, posts: [] }]
 
-    const users = store.getters['entities/users/query']().has('posts', 2).get()
+    const users = User.query().has('posts', 2).get()
 
     expect(users).toEqual(expected)
   })
 
-  it('can query data depending on relationship absence with number', () => {
-    const store = createStore([{ model: User }, { model: Post }])
+  it('can query data depending on relationship absence with number', async () => {
+    createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
-      data: [{ id: 1 }, { id: 2 }, { id: 3 }]
-    })
+    await User.create([{ id: 1 }, { id: 2 }, { id: 3 }])
 
-    store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
-    })
+    await Post.create([
+      { id: 1, user_id: 1 },
+      { id: 2, user_id: 2 },
+      { id: 3, user_id: 2 }
+    ])
 
-    const expected = [{ $id: '1', id: 1, posts: [] }, { $id: '3', id: 3, posts: [] }]
+    const expected = [
+      { $id: '1', id: 1, posts: [] },
+      { $id: '3', id: 3, posts: [] }
+    ]
 
-    const users = store.getters['entities/users/query']().hasNot('posts', 2).get()
+    const users = User.query().hasNot('posts', 2).get()
 
     expect(users).toEqual(expected)
   })
 
-  it('can query data depending on relationship existence with string conditions', () => {
+  it('can query data depending on relationship existence with string conditions', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -194,45 +201,43 @@ describe('Feature – Relations – Retrieve – Has', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Phone }, { model: Post }])
+    createStore([{ model: User }, { model: Phone }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
-      data: [{ id: 1 }, { id: 2 }, { id: 3 }]
-    })
+    await User.create([{ id: 1 }, { id: 2 }, { id: 3 }])
 
-    store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
-    })
+    await Post.create([
+      { id: 1, user_id: 1 },
+      { id: 2, user_id: 2 },
+      { id: 3, user_id: 2 }
+    ])
 
-    store.dispatch('entities/phones/create', {
-      data: [{ id: 1, user_id: 1 }]
-    })
+    await Phone.create([{ id: 1, user_id: 1 }])
 
-    expect(store.getters['entities/users/query']().has('posts', 1).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }, { $id: '2', id: 2, phone: null, posts: [] }])
-    expect(store.getters['entities/users/query']().has('posts', '=', 1).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
-    expect(store.getters['entities/users/query']().has('posts', '>', 1).get()).toEqual([{ $id: '2', id: 2, phone: null, posts: [] }])
-    expect(store.getters['entities/users/query']().has('posts', '>=', 1).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }, { $id: '2', id: 2, phone: null, posts: [] }])
-    expect(store.getters['entities/users/query']().has('posts', '<', 2).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
-    expect(store.getters['entities/users/query']().has('posts', '<=', 2).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }, { $id: '2', id: 2, phone: null, posts: [] }])
-    expect(store.getters['entities/users/query']().has('posts', 'unkown', 1).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
+    expect(User.query().has('posts', 1).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }, { $id: '2', id: 2, phone: null, posts: [] }])
+    expect(User.query().has('posts', '=', 1).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
+    expect(User.query().has('posts', '>', 1).get()).toEqual([{ $id: '2', id: 2, phone: null, posts: [] }])
+    expect(User.query().has('posts', '>=', 1).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }, { $id: '2', id: 2, phone: null, posts: [] }])
+    expect(User.query().has('posts', '<', 2).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
+    expect(User.query().has('posts', '<=', 2).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }, { $id: '2', id: 2, phone: null, posts: [] }])
+    expect(User.query().has('posts', 'unknown', 1).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
 
-    expect(store.getters['entities/users/query']().has('phone', '=', 1).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
+    expect(User.query().has('phone', '=', 1).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
   })
 
-  it('can query data depending on relationship absence with string conditions', () => {
-    const store = createStore([{ model: User }, { model: Post }])
+  it('can query data depending on relationship absence with string conditions', async () => {
+    createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
-      data: [{ id: 1 }, { id: 2 }, { id: 3 }]
-    })
+    await User.create([{ id: 1 }, { id: 2 }, { id: 3 }])
 
-    store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
-    })
+    await Post.create([
+      { id: 1, user_id: 1 },
+      { id: 2, user_id: 2 },
+      { id: 3, user_id: 2 }
+    ])
 
-    expect(store.getters['entities/users/query']().hasNot('posts', '>', 1).get()).toEqual([{ $id: '1', id: 1, posts: [] }, { $id: '3', id: 3, posts: [] }])
-    expect(store.getters['entities/users/query']().hasNot('posts', '>=', 1).get()).toEqual([{ $id: '3', id: 3, posts: [] }])
-    expect(store.getters['entities/users/query']().hasNot('posts', '<', 2).get()).toEqual([{ $id: '2', id: 2, posts: [] }, { $id: '3', id: 3, posts: [] }])
-    expect(store.getters['entities/users/query']().hasNot('posts', '<=', 2).get()).toEqual([{ $id: '3', id: 3, posts: [] }])
+    expect(User.query().hasNot('posts', '>', 1).get()).toEqual([{ $id: '1', id: 1, posts: [] }, { $id: '3', id: 3, posts: [] }])
+    expect(User.query().hasNot('posts', '>=', 1).get()).toEqual([{ $id: '3', id: 3, posts: [] }])
+    expect(User.query().hasNot('posts', '<', 2).get()).toEqual([{ $id: '2', id: 2, posts: [] }, { $id: '3', id: 3, posts: [] }])
+    expect(User.query().hasNot('posts', '<=', 2).get()).toEqual([{ $id: '3', id: 3, posts: [] }])
   })
 })

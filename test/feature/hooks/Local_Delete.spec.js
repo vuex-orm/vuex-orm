@@ -20,13 +20,11 @@ describe('Hooks – Local Delete', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
-      data: { id: 1, name: 'John Doe' }
-    })
+    await User.create({ id: 1, name: 'John Doe' })
 
-    await store.dispatch('entities/users/delete', 1)
+    await User.delete(1)
 
     expect(hit).toBe(true)
   })
@@ -53,14 +51,12 @@ describe('Hooks – Local Delete', () => {
 
     const store = createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
-    })
+    await User.create([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' }
+    ])
 
-    await store.dispatch('entities/users/delete', 2)
+    await User.delete(2)
 
     const expected = createState({
       users: {
@@ -91,16 +87,14 @@ describe('Hooks – Local Delete', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
-    })
+    await User.create([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' }
+    ])
 
-    await store.dispatch('entities/users/delete', 2)
+    await User.delete(2)
 
     expect(hit).toBe(true)
   })

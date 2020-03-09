@@ -63,9 +63,7 @@ describe('Feature – Inheritance', () => {
   it('sets right class for derived entity', async () => {
     createStore([Person, Adult])
 
-    await Adult.insert({
-      data: { id: 1, name: 'John Doe' }
-    })
+    await Adult.insert({ id: 1, name: 'John Doe' })
 
     expect(Adult.find(1)).toBeInstanceOf(Adult)
   })
@@ -73,9 +71,7 @@ describe('Feature – Inheritance', () => {
   it('should inherit fields from root entity', async () => {
     createStore([Person, Adult])
 
-    await Adult.insert({
-      data: { id: 2, name: 'John Doe' }
-    })
+    await Adult.insert({ id: 2, name: 'John Doe' })
 
     const adult = Adult.find(2) as Adult
 
@@ -86,13 +82,9 @@ describe('Feature – Inheritance', () => {
   it('should have own fields only on derived entity', async () => {
     createStore([Person, Adult])
 
-    await Person.insert({
-      data: { id: 1, name: 'John' }
-    })
+    await Person.insert({ id: 1, name: 'John' })
 
-    await Adult.insert({
-      data: { id: 2, name: 'Jane', job: 'Software Engineer' }
-    })
+    await Adult.insert({ id: 2, name: 'Jane', job: 'Software Engineer' })
 
     const person = Person.find(1) as any
     expect(person.job).toBe(undefined)

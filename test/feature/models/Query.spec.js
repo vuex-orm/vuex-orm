@@ -16,12 +16,10 @@ describe('Feature – Models – Query', () => {
   it('can begin query chain via static method', async () => {
     createStore([{ model: User }])
 
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
-    })
+    await User.insert([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' }
+    ])
 
     const users = User.query().get()
 
@@ -37,12 +35,10 @@ describe('Feature – Models – Query', () => {
   it('can begin query chain via instance method', async () => {
     createStore([{ model: User }])
 
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
-    })
+    await User.insert([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' }
+    ])
 
     const u = new User()
 

@@ -26,9 +26,7 @@ describe('Feature – Hooks – Global Create', () => {
       model.role = 'admin'
     })
 
-    await User.create({
-      data: [{ id: 1, role: 'admin' }, { id: 2, role: 'user' }]
-    })
+    await User.create([{ id: 1, role: 'admin' }, { id: 2, role: 'user' }])
 
     const results = User.all()
 
@@ -42,9 +40,7 @@ describe('Feature – Hooks – Global Create', () => {
     Query.on('beforeCreate', (model, entity) => { model.role = 'admin' })
     Query.on('beforeCreate', (model, entity) => { model.role = 'not admin' })
 
-    await User.create({
-      data: [{ id: 1, role: 'admin' }, { id: 2, role: 'user' }]
-    })
+    await User.create([{ id: 1, role: 'admin' }, { id: 2, role: 'user' }])
 
     const results = User.all()
 
@@ -61,9 +57,7 @@ describe('Feature – Hooks – Global Create', () => {
       }
     })
 
-    await User.create({
-      data: [{ id: 1, role: 'admin' }, { id: 2, role: 'user' }]
-    })
+    await User.create([{ id: 1, role: 'admin' }, { id: 2, role: 'user' }])
 
     const results = User.all()
 
@@ -80,9 +74,7 @@ describe('Feature – Hooks – Global Create', () => {
       hit = true
     })
 
-    await User.create({
-      data: { id: 1, role: 'admin' }
-    })
+    await User.create({ id: 1, role: 'admin' })
 
     expect(hit).toBe(true)
   })

@@ -28,10 +28,8 @@ describe('Features – Relations – Has One', () => {
     const store = createStore([{ model: User }, { model: Phone }])
 
     await User.insert({
-      data: {
-        id: 1,
-        phone: { id: 1, user_id: 1 }
-      }
+      id: 1,
+      phone: { id: 1, user_id: 1 }
     })
 
     const expected = createState({
@@ -49,9 +47,7 @@ describe('Features – Relations – Has One', () => {
   it('can create data when the has one relation is empty', async () => {
     const store = createStore([{ model: User }, { model: Phone }])
 
-    await User.insert({
-      data: { $id: '1', id: 1 }
-    })
+    await User.insert({ $id: '1', id: 1 })
 
     const expected = createState({
       users: {
@@ -67,10 +63,8 @@ describe('Features – Relations – Has One', () => {
     const store = createStore([{ model: User }, { model: Phone }])
 
     await User.insert({
-      data: {
-        id: 1,
-        phone: null
-      }
+      id: 1,
+      phone: null
     })
 
     const expected = createState({
@@ -86,9 +80,7 @@ describe('Features – Relations – Has One', () => {
   it('can create data when the has one relation is set to primitive value', async () => {
     const store = createStore([{ model: User }, { model: Phone }])
 
-    await User.insert({
-      data: { id: 1, phone: 1 }
-    })
+    await User.insert({ id: 1, phone: 1 })
 
     const expected = createState({
       users: {
@@ -103,18 +95,16 @@ describe('Features – Relations – Has One', () => {
   it('it can create data containing mixed fields value', async () => {
     const store = createStore([{ model: User }, { model: Phone }])
 
-    await User.insert({
-      data: [
-        {
-          id: 1,
-          phone: { id: 1, user_id: 1 }
-        },
-        {
-          id: 2,
-          phone: null
-        }
-      ]
-    })
+    await User.insert([
+      {
+        id: 1,
+        phone: { id: 1, user_id: 1 }
+      },
+      {
+        id: 2,
+        phone: null
+      }
+    ])
 
     const expected = createState({
       users: {
@@ -145,10 +135,8 @@ describe('Features – Relations – Has One', () => {
     const store = createStore([{ model: User }, { model: Phone }])
 
     await User.insert({
-      data: {
-        id: 1,
-        phone: { id: 1 }
-      }
+      id: 1,
+      phone: { id: 1 }
     })
 
     const expected = createState({
@@ -167,10 +155,8 @@ describe('Features – Relations – Has One', () => {
     createStore([{ model: User }, { model: Phone }])
 
     await User.insert({
-      data: {
-        id: 1,
-        phone: { id: 1 }
-      }
+      id: 1,
+      phone: { id: 1 }
     })
 
     const expected = {
@@ -192,9 +178,7 @@ describe('Features – Relations – Has One', () => {
   it('can resolve the empty has one relation', async () => {
     const store = createStore([{ model: User }, { model: Phone }])
 
-    await User.insert({
-      data: { id: 1 }
-    })
+    await User.insert({ id: 1 })
 
     const expected = { $id: '1', id: 1, phone: null }
 

@@ -28,9 +28,7 @@ describe('Feature – Hooks – Global Delete', () => {
       hit = true
     })
 
-    await User.create({
-      data: { id: 1, role: 'user' }
-    })
+    await User.create({ id: 1, role: 'user' })
 
     await User.delete(1)
 
@@ -47,9 +45,7 @@ describe('Feature – Hooks – Global Delete', () => {
       return false
     })
 
-    await User.create({
-      data: { id: 1, role: 'user' }
-    })
+    await User.create({ id: 1, role: 'user' })
 
     await User.delete(1)
 
@@ -67,9 +63,7 @@ describe('Feature – Hooks – Global Delete', () => {
       hit = true
     })
 
-    await User.create({
-      data: { id: 1, role: 'user' }
-    })
+    await User.create({ id: 1, role: 'user' })
 
     await User.delete(1)
 

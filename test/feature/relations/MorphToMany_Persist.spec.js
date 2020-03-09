@@ -52,13 +52,11 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
     await Post.create({
-      data: {
-        id: 1,
-        tags: [
-          { id: 2, name: 'news', pivot: { public: true } },
-          { id: 3, name: 'cast' }
-        ]
-      }
+      id: 1,
+      tags: [
+        { id: 2, name: 'news', pivot: { public: true } },
+        { id: 3, name: 'cast' }
+      ]
     })
 
     expect(store.state.entities.posts.data['1'].id).toBe(1)
@@ -121,9 +119,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
 
     const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
-    await store.dispatch('entities/posts/create', {
-      data: { id: 1 }
-    })
+    await Post.create({ id: 1 })
 
     const expected = {
       1: { $id: '1', id: 1, tags: [] }
@@ -181,13 +177,11 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
     await Post.create({
-      data: {
-        id: 1,
-        tags: [
-          { id: 2, name: 'news' },
-          { id: 3, name: 'cast' }
-        ]
-      }
+      id: 1,
+      tags: [
+        { id: 2, name: 'news' },
+        { id: 3, name: 'cast' }
+      ]
     })
 
     const expected = createState({
@@ -259,13 +253,11 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
     await Post.create({
-      data: {
-        title: 'Post title.',
-        tags: [
-          { id: 2, name: 'news' },
-          { id: 3, name: 'cast' }
-        ]
-      }
+      title: 'Post title.',
+      tags: [
+        { id: 2, name: 'news' },
+        { id: 3, name: 'cast' }
+      ]
     })
 
     const expected = createState({
@@ -336,13 +328,11 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
     await Post.create({
-      data: {
-        id: 1,
-        tags: [
-          { id: 2, name: 'news', tag_pivot: { public: true } },
-          { id: 3, name: 'cast' }
-        ]
-      }
+      id: 1,
+      tags: [
+        { id: 2, name: 'news', tag_pivot: { public: true } },
+        { id: 3, name: 'cast' }
+      ]
     })
 
     expect(store.state.entities.taggables.data['1_2_posts'].public).toBe(true)
@@ -396,28 +386,26 @@ describe('Features – Relations – Morph To Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
-    await store.dispatch('entities/posts/create', {
-      data: [
-        {
-          id: 1,
-          tags: [
-            { id: 1, name: 'news' },
-            { id: 2, name: 'cast' }
-          ]
-        },
-        {
-          id: 2,
-          tags: [
-            { id: 1, name: 'news' },
-            { id: 2, name: 'cast' }
-          ]
-        }
-      ]
-    })
+    await Post.create([
+      {
+        id: 1,
+        tags: [
+          { id: 1, name: 'news' },
+          { id: 2, name: 'cast' }
+        ]
+      },
+      {
+        id: 2,
+        tags: [
+          { id: 1, name: 'news' },
+          { id: 2, name: 'cast' }
+        ]
+      }
+    ])
 
-    const post = store.getters['entities/posts/query']().with('tags').find(1)
+    const post = Post.query().with('tags').find(1)
 
     expect(post).toBeInstanceOf(Post)
     expect(post.tags.length).toBe(2)

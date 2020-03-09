@@ -53,12 +53,10 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
     const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
     await Tag.create({
-      data: {
-        id: 1,
-        name: 'news',
-        posts: [{ id: 1, pivot: { public: true } }, { id: 2 }],
-        videos: [{ id: 3, pivot: { public: true } }, { id: 4 }]
-      }
+      id: 1,
+      name: 'news',
+      posts: [{ id: 1, pivot: { public: true } }, { id: 2 }],
+      videos: [{ id: 3, pivot: { public: true } }, { id: 4 }]
     })
 
     expect(store.state.entities.posts.data['1'].id).toBe(1)
@@ -128,22 +126,20 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
 
     const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
-    await Tag.create({
-      data: [
-        {
-          id: 1,
-          name: 'news',
-          posts: [{ id: 1 }, { id: 2 }],
-          videos: [{ id: 3 }, { id: 4 }]
-        },
-        {
-          id: 2,
-          name: 'cast',
-          posts: [{ id: 2 }, { id: 3 }],
-          videos: [{ id: 3 }, { id: 5 }]
-        }
-      ]
-    })
+    await Tag.create([
+      {
+        id: 1,
+        name: 'news',
+        posts: [{ id: 1 }, { id: 2 }],
+        videos: [{ id: 3 }, { id: 4 }]
+      },
+      {
+        id: 2,
+        name: 'cast',
+        posts: [{ id: 2 }, { id: 3 }],
+        videos: [{ id: 3 }, { id: 5 }]
+      }
+    ])
 
     expect(store.state.entities.posts.data['1'].id).toBe(1)
     expect(store.state.entities.posts.data['2'].id).toBe(2)
@@ -232,12 +228,10 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
     const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
 
     await Tag.create({
-      data: {
-        id: 1,
-        name: 'news',
-        posts: [{ id: 1, tag: { public: true } }, { id: 2 }],
-        videos: [{ id: 3, tag: { public: true } }, { id: 4 }]
-      }
+      id: 1,
+      name: 'news',
+      posts: [{ id: 1, tag: { public: true } }, { id: 2 }],
+      videos: [{ id: 3, tag: { public: true } }, { id: 4 }]
     })
 
     expect(store.state.entities.posts.data['1'].id).toBe(1)

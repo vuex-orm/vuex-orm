@@ -19,13 +19,11 @@ describe('Hooks – Local Insert', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    await store.dispatch('entities/users/insert', {
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.insert({ id: 1, name: 'John Doe', age: 20 })
 
-    const user = store.getters['entities/users/find'](1)
+    const user = User.find(1)
 
     const expected = new User({ $id: '1', id: 1, name: 'John Doe', age: 30 })
 
@@ -49,20 +47,18 @@ describe('Hooks – Local Insert', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    await store.dispatch('entities/users/insert', {
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.insert({ id: 1, name: 'John Doe', age: 20 })
 
-    const user = store.getters['entities/users/find'](1)
+    const user = User.find(1)
 
     const expected = new User({ $id: '1', id: 1, name: 'John Doe', age: 20 })
 
     expect(user).toEqual(expected)
   })
 
-  it('can cancel the insert by returing false from `beforeCreate` hook', async () => {
+  it('can cancel the insert by returning false from `beforeCreate` hook', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -114,10 +110,8 @@ describe('Hooks – Local Insert', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    await store.dispatch('entities/users/insert', {
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.insert({ id: 1, name: 'John Doe', age: 20 })
   })
 })

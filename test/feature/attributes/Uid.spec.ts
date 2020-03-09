@@ -20,9 +20,7 @@ describe('Feature – Attributes – Uid', () => {
     it('generates uid as a default value', async () => {
       const store = createStore([{ model: User }])
 
-      await User.create({
-        data: [{}, {}, {}]
-      })
+      await User.create([{}, {}, {}])
 
       const expected = createState({
         users: {
@@ -38,9 +36,10 @@ describe('Feature – Attributes – Uid', () => {
     it('will do nothing if the value exists', async () => {
       const store = createStore([{ model: User }])
 
-      await User.create({
-        data: [{ id: 1, id2: 'id1' }, { id: 2, id2: 'id2' }]
-      })
+      await User.create([
+        { id: 1, id2: 'id1' },
+        { id: 2, id2: 'id2' }
+      ])
 
       const expected = createState({
         users: {
@@ -68,9 +67,7 @@ describe('Feature – Attributes – Uid', () => {
     it('generates user provided uid as a default value', async () => {
       const store = createStore([{ model: User }])
 
-      await User.create({
-        data: [{}]
-      })
+      await User.create([{}])
 
       const expected = createState({
         users: {

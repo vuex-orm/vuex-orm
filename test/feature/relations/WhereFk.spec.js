@@ -19,16 +19,16 @@ describe('Feature – Retrieve – Where', () => {
     }
   }
 
-  it('can handle previously filled _joinedIdFilter', () => {
-    const store = createStore([{ model: User }])
+  it('can handle previously filled _joinedIdFilter', async () => {
+    createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
-      data: []
-    })
+    await User.create([])
 
-    const query = store.getters['entities/users/query']()
+    const query = User.query()
+
     query.whereFk('id', [1])
     query.whereFk('id', [1, 2])
+
     const expected = [1]
 
     expect(Array.from(query.joinedIdFilter.values())).toEqual(expected)

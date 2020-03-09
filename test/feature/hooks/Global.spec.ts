@@ -20,11 +20,13 @@ describe('Feature – Hooks – Global', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
-      data: [{ id: 1, role: 'admin' }, { id: 2, role: 'admin' }, { id: 3, role: 'user' }]
-    })
+    await User.create([
+      { id: 1, role: 'admin' },
+      { id: 2, role: 'admin' },
+      { id: 3, role: 'user' }
+    ])
 
     const expected = [
       { $id: '1', id: 1, role: 'admin' }
@@ -39,7 +41,7 @@ describe('Feature – Hooks – Global', () => {
 
     const hookId = Query.on('afterWhere', callbackFunction)
 
-    const result = store.getters['entities/users/query']().where('role', 'admin').get()
+    const result = User.query().where('role', 'admin').get()
 
     expect(result).toEqual(expected)
 
@@ -71,21 +73,28 @@ describe('Feature – Hooks – Global', () => {
     }
 
     const persistedHookId1 = Query.on('afterWhere', callbackFunction)
+
     expect(Query.hooks.afterWhere.length).toBe(1)
-    store.getters['entities/users/all']()
+
+    User.all()
+
     expect(Query.hooks.afterWhere.length).toBe(1)
 
     const persistedHookId2 = Query.on('beforeSelect', callbackFunction)
+
     expect(Query.hooks.beforeSelect.length).toBe(1)
 
-    store.getters['entities/users/all']()
+    User.all()
+
     expect(Query.hooks.beforeSelect.length).toBe(1)
 
     const removed1 = Query.off(persistedHookId1)
+
     expect(removed1).toBe(true)
     expect(Query.hooks.afterWhere.length).toBe(0)
 
     const removed2 = Query.off(persistedHookId2)
+
     expect(removed2).toBe(true)
     expect(Query.hooks.beforeSelect.length).toBe(0)
   })

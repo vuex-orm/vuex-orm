@@ -19,15 +19,13 @@ describe('Hooks – Local Update', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    await store.dispatch('entities/users/insert', {
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.insert({ id: 1, name: 'John Doe', age: 20 })
 
-    await store.dispatch('entities/users/update', { id: 1, name: 'Jane Doe' })
+    await User.update({ id: 1, name: 'Jane Doe' })
 
-    const user = store.getters['entities/users/find'](1)
+    const user = User.find(1)
 
     const expected = new User({ $id: '1', id: 1, name: 'Jane Doe', age: 30 })
 
@@ -51,15 +49,13 @@ describe('Hooks – Local Update', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    await store.dispatch('entities/users/insert', {
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.insert({ id: 1, name: 'John Doe', age: 20 })
 
-    await store.dispatch('entities/users/update', { id: 1, name: 'Jane Doe', age: 30 })
+    await User.update({ id: 1, name: 'Jane Doe', age: 30 })
 
-    const user = store.getters['entities/users/find'](1)
+    const user = User.find(1)
 
     const expected = new User({ $id: '1', id: 1, name: 'Jane Doe', age: 30 })
 
@@ -83,18 +79,16 @@ describe('Hooks – Local Update', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    const data = [
+    await User.insert([
       { id: 1, name: 'John Doe', age: 20 },
       { id: 2, name: 'Jane Doe', age: 24 }
-    ]
+    ])
 
-    await store.dispatch('entities/users/insert', { data })
+    await User.update({ id: 1, name: 'Johnny Doe' })
 
-    await store.dispatch('entities/users/update', { id: 1, name: 'Johnny Doe' })
-
-    const result = store.getters['entities/users/all']()
+    const result = User.all()
 
     expect(result.length).toBe(2)
     expect(result[0].id).toBe(1)
@@ -124,13 +118,11 @@ describe('Hooks – Local Update', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    await store.dispatch('entities/users/insert', {
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.insert({ id: 1, name: 'John Doe', age: 20 })
 
-    await store.dispatch('entities/users/update', { id: 1, age: 30 })
+    await User.update({ id: 1, age: 30 })
 
     expect(hit).toBe(true)
   })

@@ -8,7 +8,7 @@ describe('Feature – Hooks – Global Select', () => {
     Query.lastHookId = 0
   })
 
-  it('can process afterWhere hook', () => {
+  it('can process afterWhere hook', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -20,11 +20,13 @@ describe('Feature – Hooks – Global Select', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
-      data: [{ id: 1, role: 'admin' }, { id: 2, role: 'admin' }, { id: 3, role: 'user' }]
-    })
+    await User.create([
+      { id: 1, role: 'admin' },
+      { id: 2, role: 'admin' },
+      { id: 3, role: 'user' }
+    ])
 
     const expected = [
       { $id: '1', id: 1, role: 'admin' }
@@ -36,7 +38,7 @@ describe('Feature – Hooks – Global Select', () => {
       return records.filter(r => r.id === 1)
     })
 
-    const result = store.getters['entities/users/query']().where('role', 'admin').get()
+    const result = User.query().where('role', 'admin').get()
 
     expect(result).toEqual(expected)
 

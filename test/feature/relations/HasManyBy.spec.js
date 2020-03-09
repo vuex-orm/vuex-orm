@@ -28,13 +28,11 @@ describe('Features – Relations – Has Many By', () => {
     const store = createStore([{ model: User }, { model: Post }])
 
     await User.insert({
-      data: {
-        id: 1,
-        posts: [
-          { id: 1 },
-          { id: 2 }
-        ]
-      }
+      id: 1,
+      posts: [
+        { id: 1 },
+        { id: 2 }
+      ]
     })
 
     const expected = createState({
@@ -75,9 +73,7 @@ describe('Features – Relations – Has Many By', () => {
 
     const store = createStore([{ model: User }, { model: Post }])
 
-    await User.insert({
-      data: { id: 1, posts: [] }
-    })
+    await User.insert({ id: 1, posts: [] })
 
     const expected = createState({
       users: {
@@ -114,9 +110,7 @@ describe('Features – Relations – Has Many By', () => {
 
     const store = createStore([{ model: User }, { model: Post }])
 
-    await User.insert({
-      data: { id: 1, posts: null }
-    })
+    await User.insert({ id: 1, posts: null })
 
     const expected = createState({
       users: {
@@ -154,13 +148,11 @@ describe('Features – Relations – Has Many By', () => {
     createStore([{ model: User }, { model: Post }])
 
     await User.insert({
-      data: {
-        id: 1,
-        posts: [
-          { id: 1 },
-          { id: 2 }
-        ]
-      }
+      id: 1,
+      posts: [
+        { id: 1 },
+        { id: 2 }
+      ]
     })
 
     const user = User.query().with('posts').find(1)
@@ -203,12 +195,10 @@ describe('Features – Relations – Has Many By', () => {
 
     createStore([{ model: User }, { model: Post }])
 
-    await User.insert({
-      data: [
-        { id: 1, posts: [{ id: 1 }, { id: 2 }] },
-        { id: 2, post_ids: [], posts: [] }
-      ]
-    })
+    await User.insert([
+      { id: 1, posts: [{ id: 1 }, { id: 2 }] },
+      { id: 2, post_ids: [], posts: [] }
+    ])
 
     const users = User.query().with('posts').get()
 
@@ -258,9 +248,7 @@ describe('Features – Relations – Has Many By', () => {
 
     createStore([{ model: User }, { model: Post }])
 
-    await User.insert({
-      data: { id: 1, posts: [{ id: 1 }, { id: 3 }, { id: 2 }] }
-    })
+    await User.insert({ id: 1, posts: [{ id: 1 }, { id: 3 }, { id: 2 }] })
 
     const ascending = User.query()
       .with('posts', query => { query.orderBy('id', 'asc') })

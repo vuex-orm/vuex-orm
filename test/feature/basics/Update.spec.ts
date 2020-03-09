@@ -13,10 +13,6 @@ describe('Feature – Basics – Update', () => {
           age: this.attr(null)
         }
       }
-
-      id!: any
-      name!: any
-      age!: any
     }
 
     const store = createStore([{ model: User }])
@@ -29,7 +25,7 @@ describe('Feature – Basics – Update', () => {
       data: { id: 0, age: 24 }
     })
 
-    const user = User.find(0) as User
+    const user = store.getters['entities/users/find'](0)
 
     expect(user.name).toBe('John Doe')
     expect(user.age).toBe(24)

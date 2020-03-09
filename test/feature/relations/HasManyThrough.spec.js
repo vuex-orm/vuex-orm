@@ -39,13 +39,11 @@ describe('Features – Relations – Has Many Through', () => {
     const store = createStore([{ model: Country }, { model: User }, { model: Post }])
 
     await Country.insert({
-      data: {
-        id: 1,
-        posts: [
-          { id: 1 },
-          { id: 2 }
-        ]
-      }
+      id: 1,
+      posts: [
+        { id: 1 },
+        { id: 2 }
+      ]
     })
 
     const expected = createState({
@@ -98,29 +96,23 @@ describe('Features – Relations – Has Many Through', () => {
 
     createStore([{ model: Country }, { model: User }, { model: Post }])
 
-    await User.insert({
-      data: [
-        { id: 1, country_id: 1 },
-        { id: 2, country_id: 1 },
-        { id: 3, country_id: 2 }
-      ]
-    })
+    await User.insert([
+      { id: 1, country_id: 1 },
+      { id: 2, country_id: 1 },
+      { id: 3, country_id: 2 }
+    ])
 
-    await Post.insert({
-      data: [
-        { id: 1, user_id: 1 },
-        { id: 2, user_id: 2 },
-        { id: 3, user_id: 3 },
-        { id: 4, user_id: 1 }
-      ]
-    })
+    await Post.insert([
+      { id: 1, user_id: 1 },
+      { id: 2, user_id: 2 },
+      { id: 3, user_id: 3 },
+      { id: 4, user_id: 1 }
+    ])
 
-    await Country.insert({
-      data: [
-        { id: 1 },
-        { id: 2 }
-      ]
-    })
+    await Country.insert([
+      { id: 1 },
+      { id: 2 }
+    ])
 
     const country = Country.query().with('posts').find(1)
 
@@ -175,29 +167,23 @@ describe('Features – Relations – Has Many Through', () => {
 
     createStore([{ model: Country }, { model: User }, { model: Post }])
 
-    await User.insert({
-      data: [
-        { id: 'string-id-1', country_id: 'string-id-1' },
-        { id: 'string-id-2', country_id: 'string-id-1' },
-        { id: 'string-id-3', country_id: 'string-id-2' }
-      ]
-    })
+    await User.insert([
+      { id: 'string-id-1', country_id: 'string-id-1' },
+      { id: 'string-id-2', country_id: 'string-id-1' },
+      { id: 'string-id-3', country_id: 'string-id-2' }
+    ])
 
-    await Post.insert({
-      data: [
-        { id: 'string-id-1', user_id: 'string-id-1' },
-        { id: 'string-id-2', user_id: 'string-id-2' },
-        { id: 'string-id-3', user_id: 'string-id-3' },
-        { id: 'string-id-4', user_id: 'string-id-1' }
-      ]
-    })
+    await Post.insert([
+      { id: 'string-id-1', user_id: 'string-id-1' },
+      { id: 'string-id-2', user_id: 'string-id-2' },
+      { id: 'string-id-3', user_id: 'string-id-3' },
+      { id: 'string-id-4', user_id: 'string-id-1' }
+    ])
 
-    await Country.insert({
-      data: [
-        { id: 'string-id-1' },
-        { id: 'string-id-2' }
-      ]
-    })
+    await Country.insert([
+      { id: 'string-id-1' },
+      { id: 'string-id-2' }
+    ])
 
     const country = Country.query().with('posts').find('string-id-1')
 
@@ -249,9 +235,7 @@ describe('Features – Relations – Has Many Through', () => {
 
     createStore([{ model: Country }, { model: User }, { model: Post }])
 
-    await Country.insert({
-      data: [{ id: 1 }]
-    })
+    await Country.insert([{ id: 1 }])
 
     const country = Country.query().with('posts').find(1)
 
@@ -295,15 +279,11 @@ describe('Features – Relations – Has Many Through', () => {
     createStore([{ model: Country }, { model: User }, { model: Post }])
 
     await User.insert({
-      data: {
-        id: 1,
-        country_id: 1
-      }
+      id: 1,
+      country_id: 1
     })
 
-    await Country.insert({
-      data: [{ id: 1 }]
-    })
+    await Country.insert([{ id: 1 }])
 
     const country = Country.query().with('posts').find(1)
 
@@ -352,28 +332,22 @@ describe('Features – Relations – Has Many Through', () => {
 
     createStore([{ model: Country }, { model: User }, { model: Post }])
 
-    await User.insert({
-      data: [
-        { u_id: 1, country_id: 1 },
-        { u_id: 2, country_id: 1 },
-        { u_id: 3, country_id: 2 }
-      ]
-    })
+    await User.insert([
+      { u_id: 1, country_id: 1 },
+      { u_id: 2, country_id: 1 },
+      { u_id: 3, country_id: 2 }
+    ])
 
-    await Post.insert({
-      data: [
-        { p_id: 1, user_id: 1 },
-        { p_id: 2, user_id: 2 },
-        { p_id: 3, user_id: 3 }
-      ]
-    })
+    await Post.insert([
+      { p_id: 1, user_id: 1 },
+      { p_id: 2, user_id: 2 },
+      { p_id: 3, user_id: 3 }
+    ])
 
-    await Country.insert({
-      data: [
-        { c_id: 1 },
-        { c_id: 2 }
-      ]
-    })
+    await Country.insert([
+      { c_id: 1 },
+      { c_id: 2 }
+    ])
 
     const country = Country.query().with('posts').find(1)
 
@@ -423,28 +397,22 @@ describe('Features – Relations – Has Many Through', () => {
 
     createStore([{ model: Country }, { model: User }, { model: Post }])
 
-    await User.insert({
-      data: [
-        { id: 11, u_id: 1, country_id: 1 },
-        { id: 12, u_id: 2, country_id: 1 },
-        { id: 13, u_id: 3, country_id: 2 }
-      ]
-    })
+    await User.insert([
+      { id: 11, u_id: 1, country_id: 1 },
+      { id: 12, u_id: 2, country_id: 1 },
+      { id: 13, u_id: 3, country_id: 2 }
+    ])
 
-    await Post.insert({
-      data: [
-        { id: 11, p_id: 1, user_id: 1 },
-        { id: 12, p_id: 2, user_id: 2 },
-        { id: 13, p_id: 3, user_id: 3 }
-      ]
-    })
+    await Post.insert([
+      { id: 11, p_id: 1, user_id: 1 },
+      { id: 12, p_id: 2, user_id: 2 },
+      { id: 13, p_id: 3, user_id: 3 }
+    ])
 
-    await Country.insert({
-      data: [
-        { id: 11, c_id: 1 },
-        { id: 12, c_id: 2 }
-      ]
-    })
+    await Country.insert([
+      { id: 11, c_id: 1 },
+      { id: 12, c_id: 2 }
+    ])
 
     const country = Country.query().with('posts').find(11)
 

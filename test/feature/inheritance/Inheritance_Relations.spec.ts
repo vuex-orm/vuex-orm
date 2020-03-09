@@ -54,16 +54,12 @@ describe('Feature - Inheritance - Relations', () => {
 
     createStore([Person, Adult, Job])
 
-    await Job.insert({
-      data: { id: 1, title: 'Software Engineer', adult_id: 2 }
-    })
+    await Job.insert({ id: 1, title: 'Software Engineer', adult_id: 2 })
 
-    await Person.insert({
-      data: [
-        { id: 1, name: 'John', type: 'PERSON' },
-        { id: 2, name: 'Jane', type: 'ADULT' }
-      ]
-    })
+    await Person.insert([
+      { id: 1, name: 'John', type: 'PERSON' },
+      { id: 2, name: 'Jane', type: 'ADULT' }
+    ])
 
     const adult = Adult.query().with('jobs').all()
 
@@ -126,16 +122,12 @@ describe('Feature - Inheritance - Relations', () => {
 
     createStore([Person, Adult, Job])
 
-    await Job.insert({
-      data: { id: 1, title: 'Software Engineer', adult_id: 2 }
-    })
+    await Job.insert({ id: 1, title: 'Software Engineer', adult_id: 2 })
 
-    await Person.insert({
-      data: [
-        { id: 1, name: 'John', type: 'PERSON' },
-        { id: 2, name: 'Jane', type: 'ADULT' }
-      ]
-    })
+    await Person.insert([
+      { id: 1, name: 'John', type: 'PERSON' },
+      { id: 2, name: 'Jane', type: 'ADULT' }
+    ])
 
     const job = Job.query().with('adult').all()
 
@@ -196,19 +188,15 @@ describe('Feature - Inheritance - Relations', () => {
 
     createStore([Person, Adult, Role])
 
-    await Role.insert({
-      data: [
-        { id: 1, roleName: 'Role 1' },
-        { id: 2, roleName: 'Role 2' }
-      ]
-    })
+    await Role.insert([
+      { id: 1, roleName: 'Role 1' },
+      { id: 2, roleName: 'Role 2' }
+    ])
 
-    await Person.insert({
-      data: [
-        { id: 1, name: 'John', type: 'PERSON', role_id: 1 },
-        { id: 2, name: 'Jane', type: 'ADULT', role_id: 1 }
-      ]
-    })
+    await Person.insert([
+      { id: 1, name: 'John', type: 'PERSON', role_id: 1 },
+      { id: 2, name: 'Jane', type: 'ADULT', role_id: 1 }
+    ])
 
     const roles = Role.query().with('people').all()
     expect(roles.length).toBe(2)
@@ -269,19 +257,15 @@ describe('Feature - Inheritance - Relations', () => {
 
     createStore([Person, Adult, Role])
 
-    await Role.insert({
-      data: [
-        { id: 1, roleName: 'Role 1' },
-        { id: 2, roleName: 'Role 2' }
-      ]
-    })
+    await Role.insert([
+      { id: 1, roleName: 'Role 1' },
+      { id: 2, roleName: 'Role 2' }
+    ])
 
-    await Person.insert({
-      data: [
-        { id: 1, name: 'John', type: 'PERSON', role_id: 1 },
-        { id: 2, name: 'Jane', type: 'ADULT', role_id: 2 }
-      ]
-    })
+    await Person.insert([
+      { id: 1, name: 'John', type: 'PERSON', role_id: 1 },
+      { id: 2, name: 'Jane', type: 'ADULT', role_id: 2 }
+    ])
 
     // Reverse check: getting all people and their associated role.
     const people = Person.query().with('role').all()
@@ -352,13 +336,11 @@ describe('Feature - Inheritance - Relations', () => {
 
     createStore([Person, Adult, Child])
 
-    await Person.insert({
-      data: [
-        { id: 1, name: 'John', type: 'ADULT', child_id: 3 },
-        { id: 2, name: 'Jane', type: 'ADULT', child_id: 3 },
-        { id: 3, name: 'Jane', type: 'CHILD' }
-      ]
-    })
+    await Person.insert([
+      { id: 1, name: 'John', type: 'ADULT', child_id: 3 },
+      { id: 2, name: 'Jane', type: 'ADULT', child_id: 3 },
+      { id: 3, name: 'Jane', type: 'CHILD' }
+    ])
 
     const adults = Adult.query().with('child').all()
     expect(adults.length).toBe(2)
@@ -421,16 +403,12 @@ describe('Feature - Inheritance - Relations', () => {
 
     createStore([Person, Adult, Job])
 
-    await Job.insert({
-      data: { id: 1, title: 'Software Engineer', adult_id: 2 }
-    })
+    await Job.insert({ id: 1, title: 'Software Engineer', adult_id: 2 })
 
-    await Person.insert({
-      data: [
-        { id: 1, name: 'John', type: 'PERSON' },
-        { id: 2, name: 'Jane', type: 'ADULT' }
-      ]
-    })
+    await Person.insert([
+      { id: 1, name: 'John', type: 'PERSON' },
+      { id: 2, name: 'Jane', type: 'ADULT' }
+    ])
 
     const persons = Person.query().with(['jobs', 'dummy']).all()
     expect(persons.length).toBe(2)

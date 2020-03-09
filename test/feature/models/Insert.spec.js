@@ -17,27 +17,6 @@ describe('Feature – Models – Insert', () => {
   it('can insert a record via static method', async () => {
     const store = createStore([{ model: User }])
 
-    await User.insert({
-      data: { id: 1, name: 'John Doe' }
-    })
-
-    await User.insert({
-      data: { id: 2, name: 'Jane Doe' }
-    })
-
-    const expected = createState({
-      users: {
-        1: { $id: '1', id: 1, name: 'John Doe' },
-        2: { $id: '2', id: 2, name: 'Jane Doe' }
-      }
-    })
-
-    expect(store.state.entities).toEqual(expected)
-  })
-
-  it('can insert a record via static method by passing object literal', async () => {
-    const store = createStore([{ model: User }])
-
     await User.insert({ id: 1, name: 'John Doe' })
 
     await User.insert({ id: 2, name: 'Jane Doe' })
@@ -53,26 +32,6 @@ describe('Feature – Models – Insert', () => {
   })
 
   it('can insert a list of records via static method', async () => {
-    const store = createStore([{ model: User }])
-
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
-    })
-
-    const expected = createState({
-      users: {
-        1: { $id: '1', id: 1, name: 'John Doe' },
-        2: { $id: '2', id: 2, name: 'Jane Doe' }
-      }
-    })
-
-    expect(store.state.entities).toEqual(expected)
-  })
-
-  it('can insert a list of records via static method by passing array', async () => {
     const store = createStore([{ model: User }])
 
     await User.insert([
@@ -93,41 +52,16 @@ describe('Feature – Models – Insert', () => {
   it('returns inserted records via static method', async () => {
     createStore([{ model: User }])
 
-    const data = await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
-    })
+    const data = await User.insert([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' }
+    ])
 
     expect(data.users.length).toBe(2)
     expect(data.users[0]).toBeInstanceOf(User)
   })
 
   it('can insert a record via instance method', async () => {
-    const store = createStore([{ model: User }])
-
-    const user = new User()
-
-    await user.$insert({
-      data: { id: 1, name: 'John Doe' }
-    })
-
-    await user.$insert({
-      data: { id: 2, name: 'Jane Doe' }
-    })
-
-    const expected = createState({
-      users: {
-        1: { $id: '1', id: 1, name: 'John Doe' },
-        2: { $id: '2', id: 2, name: 'Jane Doe' }
-      }
-    })
-
-    expect(store.state.entities).toEqual(expected)
-  })
-
-  it('can insert a record via instance method by passing object literal', async () => {
     const store = createStore([{ model: User }])
 
     const user = new User()
@@ -147,28 +81,6 @@ describe('Feature – Models – Insert', () => {
   })
 
   it('can insert a list of records via instance method', async () => {
-    const store = createStore([{ model: User }])
-
-    const user = new User()
-
-    await user.$insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
-    })
-
-    const expected = createState({
-      users: {
-        1: { $id: '1', id: 1, name: 'John Doe' },
-        2: { $id: '2', id: 2, name: 'Jane Doe' }
-      }
-    })
-
-    expect(store.state.entities).toEqual(expected)
-  })
-
-  it('can insert a list of records via instance method by passing array', async () => {
     const store = createStore([{ model: User }])
 
     const user = new User()
@@ -193,12 +105,10 @@ describe('Feature – Models – Insert', () => {
 
     const user = new User()
 
-    const data = await user.$insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
-    })
+    const data = await user.$insert([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' }
+    ])
 
     expect(data.users.length).toBe(2)
     expect(data.users[0]).toBeInstanceOf(User)
@@ -288,9 +198,7 @@ describe('Feature – Models – Insert', () => {
 
     expect(data).toEqual(dataBefore)
 
-    await Author.insert({
-      data
-    })
+    await Author.insert(data)
 
     const expected = createState({
       authors: {

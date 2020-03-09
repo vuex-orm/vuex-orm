@@ -16,12 +16,10 @@ describe('Feature – Models – Find', () => {
   it('can fetch a record via static method', async () => {
     createStore([{ model: User }])
 
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
-    })
+    await User.insert([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' }
+    ])
 
     const user = User.find(1)
 
@@ -34,12 +32,10 @@ describe('Feature – Models – Find', () => {
   it('can fetch a record via instance method', async () => {
     createStore([{ model: User }])
 
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
-    })
+    await User.insert([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' }
+    ])
 
     const u = new User()
 
@@ -54,13 +50,11 @@ describe('Feature – Models – Find', () => {
   it('can fetch array of records via static method', async () => {
     createStore([{ model: User }])
 
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' },
-        { id: 3, name: 'Smith Doe' }
-      ]
-    })
+    await User.insert([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' },
+      { id: 3, name: 'Smith Doe' }
+    ])
 
     const users = User.findIn([1, 3])
 
@@ -74,13 +68,11 @@ describe('Feature – Models – Find', () => {
   it('can fetch array of records via instance method', async () => {
     createStore([{ model: User }])
 
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' },
-        { id: 3, name: 'Smith Doe' }
-      ]
-    })
+    await User.insert([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' },
+      { id: 3, name: 'Smith Doe' }
+    ])
 
     const u = new User()
 
@@ -110,12 +102,10 @@ describe('Feature – Models – Find', () => {
     it('can fetch a record via static method', async () => {
       createStore([{ model: User }])
 
-      await User.insert({
-        data: [
-          { id: 1, workspace_id: 1, name: 'John Doe' },
-          { id: 2, workspace_id: 1, name: 'Jane Doe' }
-        ]
-      })
+      await User.insert([
+        { id: 1, workspace_id: 1, name: 'John Doe' },
+        { id: 2, workspace_id: 1, name: 'Jane Doe' }
+      ])
 
       const user = User.find([1, 1])
 
@@ -128,12 +118,10 @@ describe('Feature – Models – Find', () => {
     it('can fetch a record via instance method', async () => {
       createStore([{ model: User }])
 
-      await User.insert({
-        data: [
-          { id: 1, workspace_id: 1, name: 'John Doe' },
-          { id: 2, workspace_id: 1, name: 'Jane Doe' }
-        ]
-      })
+      await User.insert([
+        { id: 1, workspace_id: 1, name: 'John Doe' },
+        { id: 2, workspace_id: 1, name: 'Jane Doe' }
+      ])
 
       const u = new User()
 
@@ -148,13 +136,11 @@ describe('Feature – Models – Find', () => {
     it('can fetch array of records via static method', async () => {
       createStore([{ model: User }])
 
-      await User.insert({
-        data: [
-          { id: 1, workspace_id: 1, name: 'John Doe' },
-          { id: 2, workspace_id: 1, name: 'Jane Doe' },
-          { id: 3, workspace_id: 1, name: 'Smith Doe' }
-        ]
-      })
+      await User.insert([
+        { id: 1, workspace_id: 1, name: 'John Doe' },
+        { id: 2, workspace_id: 1, name: 'Jane Doe' },
+        { id: 3, workspace_id: 1, name: 'Smith Doe' }
+      ])
 
       const users = User.findIn([[1, 1], [1, 3]])
 
@@ -168,13 +154,11 @@ describe('Feature – Models – Find', () => {
     it('can fetch array of records via instance method', async () => {
       createStore([{ model: User }])
 
-      await User.insert({
-        data: [
-          { id: 1, workspace_id: 1, name: 'John Doe' },
-          { id: 2, workspace_id: 1, name: 'Jane Doe' },
-          { id: 3, workspace_id: 1, name: 'Smith Doe' }
-        ]
-      })
+      await User.insert([
+        { id: 1, workspace_id: 1, name: 'John Doe' },
+        { id: 2, workspace_id: 1, name: 'Jane Doe' },
+        { id: 3, workspace_id: 1, name: 'Smith Doe' }
+      ])
 
       const u = new User()
 

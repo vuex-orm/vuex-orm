@@ -21,9 +21,7 @@ describe('Hooks – Local Create', () => {
 
     const store = createStore([{ model: User }])
 
-    await User.create({
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.create({ id: 1, name: 'John Doe', age: 20 })
 
     const expected = createState({
       users: {
@@ -51,20 +49,18 @@ describe('Hooks – Local Create', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.create({ id: 1, name: 'John Doe', age: 20 })
 
-    const user = store.getters['entities/users/find'](1)
+    const user = User.find(1)
 
     const expected = new User({ $id: '1', id: 1, name: 'John Doe', age: 20 })
 
     expect(user).toEqual(expected)
   })
 
-  it('can cancel the create by returing false from `beforeCreate` hook', async () => {
+  it('can cancel the create by returning false from `beforeCreate` hook', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -83,16 +79,14 @@ describe('Hooks – Local Create', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    const data = [
+    await User.create([
       { id: 1, name: 'John Doe', age: 20 },
       { id: 2, name: 'Jane Doe', age: 24 }
-    ]
+    ])
 
-    await store.dispatch('entities/users/create', { data })
-
-    const result = store.getters['entities/users/all']()
+    const result = User.all()
 
     expect(result.length).toBe(1)
     expect(result[0].id).toBe(2)
@@ -116,10 +110,8 @@ describe('Hooks – Local Create', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.create({ id: 1, name: 'John Doe', age: 20 })
   })
 })

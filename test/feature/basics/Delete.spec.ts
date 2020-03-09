@@ -35,9 +35,7 @@ describe('Feature – Basics – Delete', () => {
   it('can delete a record by specifying the id', async () => {
     const store = getStore()
 
-    await User.create({
-      data: [{ id: 1 }, { id: 2 }]
-    })
+    await User.create([{ id: 1 }, { id: 2 }])
 
     await User.delete(1)
 
@@ -54,9 +52,7 @@ describe('Feature – Basics – Delete', () => {
   it('can delete a record by specifying id as a string', async () => {
     const store = getStore()
 
-    await User.create({
-      data: [{ id: 'string_id_1' }, { id: 'string_id_2' }]
-    })
+    await User.create([{ id: 'string_id_1' }, { id: 'string_id_2' }])
 
     await User.delete('string_id_2')
 
@@ -73,13 +69,11 @@ describe('Feature – Basics – Delete', () => {
   it('can delete records by specifying a closure', async () => {
     const store = getStore()
 
-    await User.create({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' },
-        { id: 3, name: 'Jane Doe' }
-      ]
-    })
+    await User.create([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' },
+      { id: 3, name: 'Jane Doe' }
+    ])
 
     await User.delete(user => user.name === 'Jane Doe')
 
@@ -96,9 +90,7 @@ describe('Feature – Basics – Delete', () => {
   it('does nothing if the specified id does not exist', async () => {
     const store = getStore()
 
-    await User.create({
-      data: [{ id: 1 }, { id: 2 }]
-    })
+    await User.create([{ id: 1 }, { id: 2 }])
 
     await User.delete(3)
 
@@ -116,9 +108,7 @@ describe('Feature – Basics – Delete', () => {
   it('returns deleted item', async () => {
     const store = getStore()
 
-    await User.create({
-      data: [{ id: 1 }, { id: 2 }]
-    })
+    await User.create([{ id: 1 }, { id: 2 }])
 
     const user = await User.delete(1) as User
 
@@ -138,13 +128,11 @@ describe('Feature – Basics – Delete', () => {
   it('returns all deleted records as a collection when specifying a closure', async () => {
     const store = getStore()
 
-    await User.create({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' },
-        { id: 3, name: 'Jane Doe' }
-      ]
-    })
+    await User.create([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' },
+      { id: 3, name: 'Jane Doe' }
+    ])
 
     const users = await User.delete(user => user.name === 'Jane Doe')
 
@@ -167,12 +155,10 @@ describe('Feature – Basics – Delete', () => {
   it('deletes itself by instance method', async () => {
     const store = getStore()
 
-    await User.create({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
-    })
+    await User.create([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' }
+    ])
 
     const user = User.find(2) as User
 
@@ -191,9 +177,7 @@ describe('Feature – Basics – Delete', () => {
   it('can delete all records in the entity', async () => {
     const store = getStore()
 
-    await User.create({
-      data: [{ id: 1 }, { id: 2 }]
-    })
+    await User.create([{ id: 1 }, { id: 2 }])
 
     await User.deleteAll()
 
@@ -208,9 +192,7 @@ describe('Feature – Basics – Delete', () => {
   it('can delete all records in the entity by the instance method', async () => {
     const store = getStore()
 
-    await User.create({
-      data: [{ id: 1 }, { id: 2 }]
-    })
+    await User.create([{ id: 1 }, { id: 2 }])
 
     await (new User()).$deleteAll()
 
@@ -225,13 +207,9 @@ describe('Feature – Basics – Delete', () => {
   it('can delete all records in the entire entities', async () => {
     const store = getStore()
 
-    await User.create({
-      data: [{ id: 1 }, { id: 2 }]
-    })
+    await User.create([{ id: 1 }, { id: 2 }])
 
-    await Post.create({
-      data: [{ id: 3 }, { id: 4 }]
-    })
+    await Post.create([{ id: 3 }, { id: 4 }])
 
     await store.dispatch('entities/deleteAll')
 
