@@ -1,4 +1,5 @@
 import { Create, Insert, Update, InsertOrUpdate } from '../payloads/Actions'
+import OptionsBuilder from './OptionsBuilder'
 
 export type PersistPayload = Create | Insert | Update | InsertOrUpdate
 
@@ -23,5 +24,21 @@ export default class PayloadBuilder {
 
     // It can safely be assumed the user is providing payload with `data` intact.
     return payload
+  }
+
+  /**
+   * Normalize persist payload by converting the new style of persisting data
+   * through method arguments, while maintaining existing style (data key),
+   * to pass on to the module API.
+   */
+  static normalize (payload?: any, options?: any): PersistPayload {
+    const persistPayload = this.createPersistPayload(payload)
+    const persistOptions = OptionsBuilder.createPersistOptions(payload)
+
+    return {
+      ...persistPayload,
+      ...persistOptions,
+      ...options
+    }
   }
 }

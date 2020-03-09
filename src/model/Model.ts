@@ -21,8 +21,7 @@ import FieldCache from './contracts/FieldCache'
 import ModelState from './contracts/State'
 import InheritanceTypes from './contracts/InheritanceTypes'
 import { toAttributes, toJson } from './Serialize'
-import PayloadBuilder, { PersistPayload } from '../modules/support/PayloadBuilder'
-import OptionsBuilder from '../modules/support/OptionsBuilder'
+import PayloadBuilder from '../modules/support/PayloadBuilder'
 
 export default class Model {
   /**
@@ -387,28 +386,28 @@ export default class Model {
    * use the `insert` method instead.
    */
   static create<T extends typeof Model> (this: T, payload: Payloads.Create, options?: PersistOptions.Create): Promise<Collections> {
-    return this.dispatch('create', this.createPersistPayload(payload, options))
+    return this.dispatch('create', PayloadBuilder.normalize(payload, options))
   }
 
   /**
    * Insert records.
    */
   static insert<T extends typeof Model> (this: T, payload: Payloads.Insert, options?: PersistOptions.Insert): Promise<Collections> {
-    return this.dispatch('insert', this.createPersistPayload(payload, options))
+    return this.dispatch('insert', PayloadBuilder.normalize(payload, options))
   }
 
   /**
    * Update records.
    */
   static update<T extends typeof Model> (this: T, payload: Payloads.Update, options?: PersistOptions.Update): Promise<Collections> {
-    return this.dispatch('update', this.createPersistPayload(payload, options))
+    return this.dispatch('update', PayloadBuilder.normalize(payload, options))
   }
 
   /**
    * Insert or update records.
    */
   static insertOrUpdate<T extends typeof Model> (this: T, payload: Payloads.InsertOrUpdate, options?: PersistOptions.InsertOrUpdate): Promise<Collections> {
-    return this.dispatch('insertOrUpdate', this.createPersistPayload(payload, options))
+    return this.dispatch('insertOrUpdate', PayloadBuilder.normalize(payload, options))
   }
 
   /**
@@ -637,22 +636,6 @@ export default class Model {
   }
 
   /**
-   * Create persist payload that converts the new style of persisting data
-   * through method arguments, while maintaining existing style (data key),
-   * to send to the module API.
-   */
-  static createPersistPayload (payload?: any, options?: any): PersistPayload {
-    const persistPayload = PayloadBuilder.createPersistPayload(payload)
-    const persistOptions = OptionsBuilder.createPersistOptions(payload)
-
-    return {
-      ...persistPayload,
-      ...persistOptions,
-      ...options
-    }
-  }
-
-  /**
    * Get the constructor of this model.
    */
   $self (): typeof Model {
@@ -712,15 +695,6 @@ export default class Model {
   }
 
   /**
-   * Create persist payload that converts the new style of persisting data
-   * through method arguments, while maintaining existing style (data key),
-   * to send to the module API.
-   */
-  $createPersistPayload (payload?: any, options?: any): PersistPayload {
-    return this.$self().createPersistPayload(payload, options)
-  }
-
-  /**
    * Get all records.
    */
   $all<T extends Model> (this: T): Collection<T> {
@@ -752,14 +726,14 @@ export default class Model {
    * Create records.
    */
   async $create (payload: Payloads.Create, options?: PersistOptions.Create): Promise<Collections> {
-    return this.$dispatch('create', this.$createPersistPayload(payload, options))
+    return this.$dispatch('create', PayloadBuilder.normalize(payload, options))
   }
 
   /**
    * Insert records.
    */
   async $insert (payload: Payloads.Insert, options?: PersistOptions.Insert): Promise<Collections> {
-    return this.$dispatch('insert', this.$createPersistPayload(payload, options))
+    return this.$dispatch('insert', PayloadBuilder.normalize(payload, options))
   }
 
   /**
@@ -767,11 +741,11 @@ export default class Model {
    */
   async $update (payload: Payloads.Update, options?: PersistOptions.Update): Promise<Collections> {
     if (Array.isArray(payload)) {
-      return this.$dispatch('update', this.$createPersistPayload(payload, options))
+      return this.$dispatch('update', PayloadBuilder.normalize(payload, options))
     }
 
     if (payload.where !== undefined || (options && options.where !== undefined)) {
-      return this.$dispatch('update', this.$createPersistPayload(payload, options))
+      return this.$dispatch('update', PayloadBuilder.normalize(payload, options))
     }
 
     if (this.$self().getIndexIdFromRecord(payload) === null) {
@@ -782,17 +756,17 @@ export default class Model {
 
       options.where = this.$id
 
-      return this.$dispatch('update', this.$createPersistPayload(payload, options))
+      return this.$dispatch('update', PayloadBuilder.normalize(payload, options))
     }
 
-    return this.$dispatch('update', this.$createPersistPayload(payload, options))
+    return this.$dispatch('update', PayloadBuilder.normalize(payload, options))
   }
 
   /**
    * Insert or update records.
    */
   async $insertOrUpdate (payload: Payloads.InsertOrUpdate, options?: PersistOptions.InsertOrUpdate): Promise<Collections> {
-    return this.$dispatch('insertOrUpdate', this.$createPersistPayload(payload, options))
+    return this.$dispatch('insertOrUpdate', PayloadBuilder.normalize(payload, options))
   }
 
   /**
