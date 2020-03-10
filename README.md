@@ -51,7 +51,7 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex 
   <img src="https://avatars1.githubusercontent.com/u/3213608?s=460&v=4" alt="geraldbiggs" width="64">
 </a>
 <a href="https://github.com/cuebit">
-  <img src="https://avatars0.githubusercontent.com/u/1493221?s=460&v=4" alt="Cue" width="48">
+  <img src="https://avatars0.githubusercontent.com/u/1493221?s=460&v=4" alt="Cue" width="64">
 </a>
 
 #### A Love Sponsors
