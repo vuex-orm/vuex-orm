@@ -35,7 +35,7 @@ In the above example, state for the User Model will be accessible by `store.stat
 
 ## Fields
 
-`static fields()` should return the schema of the data. Like `static entity`, you may think this as columns for the dababase.
+`static fields()` should return the schema of the data. Like `static entity`, you may think this as columns for a database table.
 
 ```js
 class User extends Model {

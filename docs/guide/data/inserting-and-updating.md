@@ -575,7 +575,7 @@ User.insert({
   }
 })
 
-// State after `insert`. See there's a intermidiate `role_user` records.
+// State after `insert`. See there's a intermediate `role_user` records.
 {
   entities: {
     users: {
@@ -754,7 +754,7 @@ const entities = await User.create({
 */
 ```
 
-The `new` method will also return the newly created record, but it'll return only one reocrd since it's obvious that there's no relational data.
+The `new` method will also return the newly created record, but it'll return only one record since it's obvious that there's no relational data.
 
 ```js
 const user = await User.new()

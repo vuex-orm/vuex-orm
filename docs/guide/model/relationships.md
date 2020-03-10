@@ -380,7 +380,7 @@ class RoleUser extends Model {
 }
 ```
 
-As you can see, the relationship is defined the same as its User counterpart, except referencing the User model and the order of 3rd and 4th argument is inversed.
+As you can see, the relationship is defined the same as its `User` counterpart, except referencing the `User` model and the order of 3rd and 4th argument is reversed.
 
 ### Access Intermediate Model
 

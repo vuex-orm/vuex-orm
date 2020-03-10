@@ -6,7 +6,7 @@ Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http
 
 ## Sponsors
 
-Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex ORM community :two_hearts:
+Vuex ORM is sponsored by awesome folks. Big love to all of them from the whole Vuex ORM community :two_hearts:
 
 ### Super Love Sponsors
 
