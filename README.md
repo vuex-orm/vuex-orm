@@ -50,6 +50,9 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex 
 <a href="https://github.com/geraldbiggs">
   <img src="https://avatars1.githubusercontent.com/u/3213608?s=460&v=4" alt="geraldbiggs" width="64">
 </a>
+<a href="https://github.com/cuebit">
+  <img src="https://avatars0.githubusercontent.com/u/1493221?s=460&v=4" alt="Cue" width="48">
+</a>
 
 #### A Love Sponsors
 
@@ -58,9 +61,6 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex 
 </a>
 <a href="https://github.com/bpuig">
   <img src="https://avatars3.githubusercontent.com/u/22938625?s=460&v=4" alt="bpuig" width="48">
-</a>
-<a href="https://github.com/cuebit">
-  <img src="https://avatars0.githubusercontent.com/u/1493221?s=460&v=4" alt="Cue" width="48">
 </a>
 
 ## Documentation
