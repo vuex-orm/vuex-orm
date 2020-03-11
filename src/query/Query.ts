@@ -265,7 +265,7 @@ export default class Query<T extends Model = Model> {
    * Get the record of the given array of ids.
    */
   findIn (values: Options.PrimaryKey[]): Data.Collection<T> {
-    if (!Array.isArray(values)) {
+    if (!Utils.isArray(values)) {
       return []
     }
 
@@ -388,7 +388,7 @@ export default class Query<T extends Model = Model> {
    * Fk lookups are always "and" type.
    */
   whereFk (field: string, value: Options.PrimaryKey): this {
-    const values = Array.isArray(value) ? value : [value]
+    const values = Utils.isArray(value) ? value : [value]
 
     // If lookup filed is the primary key. Initialize or get intersection,
     // because boolean and could have a condition such as
@@ -415,7 +415,7 @@ export default class Query<T extends Model = Model> {
    */
   private normalizeIndexId (value: Options.PrimaryKey): string | number {
     if (this.model.isCompositePrimaryKey()) {
-      if (!Array.isArray(value)) {
+      if (!Utils.isArray(value)) {
         throw new Error(
           '[Vuex ORM] Entity `' + this.entity + '` is configured with a composite ' +
           'primary key and expects an array value but instead received: ' + JSON.stringify(value)
@@ -425,7 +425,7 @@ export default class Query<T extends Model = Model> {
       return JSON.stringify(value)
     }
 
-    if (Array.isArray(value)) {
+    if (Utils.isArray(value)) {
       throw new Error(
         '[Vuex ORM] Entity `' + this.entity + '` expects a single value but ' +
         'instead received: ' + JSON.stringify(value)
@@ -447,7 +447,7 @@ export default class Query<T extends Model = Model> {
    * Set id filter for the given where condition.
    */
   private setIdFilter (value: string | number | (string | number)[]): void {
-    const values = Array.isArray(value) ? value : [value]
+    const values = Utils.isArray(value) ? value : [value]
 
     // Initialize or get intersection, because boolean and could have a
     // condition such as `whereIdIn([1,2,3]).whereIdIn([1,2]).get()`.
@@ -829,7 +829,7 @@ export default class Query<T extends Model = Model> {
    */
   update (data: Data.Record | Data.Record[] | UpdateClosure, condition: UpdateCondition, options: Options.PersistOptions): Data.Item<T> | Data.Collection<T> | Data.Collections {
     // If the data is array, simply normalize the data and update them.
-    if (Array.isArray(data)) {
+    if (Utils.isArray(data)) {
       return this.persist('update', data, options)
     }
 
@@ -867,7 +867,7 @@ export default class Query<T extends Model = Model> {
     // Now since the condition is either String or Number, let's check if the
     // model's primary key is not a composite key. If yes, we can't set the
     // condition as ID value for the record so throw an error and abort.
-    if (this.model.isCompositePrimaryKey() && !Array.isArray(condition)) {
+    if (this.model.isCompositePrimaryKey() && !Utils.isArray(condition)) {
       throw new Error(
         '[Vuex ORM] You can\'t specify `where` value as `string` or `number` ' +
         'when you have a composite key defined in your model. Please include ' +

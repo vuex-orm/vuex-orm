@@ -1,3 +1,4 @@
+import { isArray } from '../../support/Utils'
 import Item from '../../data/Item'
 import Collection from '../../data/Collection'
 import Model from '../../model/Model'
@@ -127,7 +128,7 @@ export default class Rollcaller {
    * Get count of the relationship.
    */
   private static getRelationshipCount (relation: Collection | Item): number {
-    if (Array.isArray(relation)) {
+    if (isArray(relation)) {
       return relation.length
     }
 

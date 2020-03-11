@@ -1,3 +1,4 @@
+import { isArray } from '../support/Utils'
 import Item from '../data/Item'
 import Collection from '../data/Collection'
 import Collections from '../data/Collections'
@@ -49,7 +50,7 @@ async function update (context: ActionContext, payload: Payloads.Update): Promis
 
   // If the payload is an array, then the payload should be an array of
   // data so let's pass the whole payload as data.
-  if (Array.isArray(payload)) {
+  if (isArray(payload)) {
     return context.dispatch(`${state.$connection}/update`, { entity, data: payload }, { root: true })
   }
 

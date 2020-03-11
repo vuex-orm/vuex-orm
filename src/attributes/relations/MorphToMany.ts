@@ -187,7 +187,7 @@ export default class MorphToMany extends Relation {
 
       const relateds = (record[key] || []).filter((relatedId: any) => !relatedIds.includes(relatedId))
 
-      if (!Array.isArray(relateds) || relateds.length === 0) {
+      if (!Utils.isArray(relateds) || relateds.length === 0) {
         return
       }
 

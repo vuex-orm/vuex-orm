@@ -17,7 +17,7 @@ export default class Normalizer {
 
     const entity = query.database.schemas[query.model.entity]
 
-    const schema = Array.isArray(data) ? [entity] : entity
+    const schema = Utils.isArray(data) ? [entity] : entity
 
     return normalize(data, schema).entities as NormalizedData
   }
