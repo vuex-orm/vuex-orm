@@ -384,6 +384,8 @@ As you can see, the relationship is defined the same as its `User` counterpart, 
 
 ### Access Intermediate Model
 
+> Since: 0.36.0+
+
 Working with many-to-many relations requires the presence of an intermediate model. Vuex ORM provides some helpful ways of interacting with this model. For example, let's assume our `User` object has many `Role` objects that it is related to. After accessing this relationship, we may access the intermediate model using the `pivot` attribute on the models.
 
 ```js
@@ -397,6 +399,8 @@ user.roles.forEach((role) => {
 Notice that each `Role` model we retrieve is automatically assigned a `pivot` attribute. This attribute contains a model representing the intermediate model and may be used like any other model.
 
 ### Customizing The `pivot` Attribute Name
+
+> Since: 0.36.0+
 
 As noted earlier, attributes from the intermediate model may be accessed on models using the `pivot` attribute. However, you are free to customize the name of this attribute to better reflect its purpose within your application.
 
@@ -797,6 +801,8 @@ class Tag extends Model {
 
 ### Access Intermediate Model
 
+> Since: 0.36.0+
+
 As the same as `belongsToMany` relationship, you may access the intermediate model for polymorphic many-to-many relationship through `pivot` attribute on the model.
 
 ```js
@@ -810,6 +816,8 @@ post.tags.forEach((tag) => {
 Each `Tag` model we retrieve is automatically assigned a `pivot` attribute. This attribute contains a model representing the intermediate model and may be used like any other model.
 
 ### Customizing The `pivot` Attribute Name
+
+> Since: 0.36.0+
 
 Again, as the same as `belongsToMany` relationship, you are free to customize the name of this attribute through `as` method.
 

@@ -343,7 +343,7 @@ Though there are few things that you should know about when inserting relationsh
 
 ### Inserting Many To Many Relationships
 
-When inserting many-to-many relationships, such as `belongsToMany` or `morphToMany`, any data nested under the `pivot` attribute will be inserted as well.
+Since 0.36.0+, when inserting many-to-many relationships such as `belongsToMany` or `morphToMany`, any data nested under the `pivot` attribute will be inserted into intermediate models.
 
 Let's take a look at an example. Here we have `User` belonging to many `Role` through `RoleUser`.
 
