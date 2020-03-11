@@ -26,42 +26,51 @@ Vuex ORM is a plugin for [Vuex](https://github.com/vuejs/vuex) to enable Object-
 
 Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape) and ["Updating Normalized Data"](https://redux.js.org/recipes/structuring-reducers/updating-normalized-data). Learn more about the concept and motivation of Vuex ORM at [What is Vuex ORM?](https://vuex-orm.github.io/vuex-orm/guide/prologue/what-is-vuex-orm.html).
 
-## Sponsors
+<h2 align="center">Sponsors</h2>
 
-Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex ORM community :two_hearts:
+<p align="center">Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex ORM community :two_hearts:</p>
 
-### Super Love Sponsors
+<h4 align="center">Super Love Sponsors</h4>
 
-<a href="https://github.com/petertoth">
-  <img src="https://avatars2.githubusercontent.com/u/3661783?s=460&v=4" alt="Peter Tóth" width="88">
-</a>
-<a href="https://github.com/phaust">
-  <img src="https://avatars1.githubusercontent.com/u/2367770?s=460&v=4" alt="Mario Kolli" width="88">
-</a>
-<a href="https://github.com/cannikan">
-  <img src="https://avatars2.githubusercontent.com/u/21893904?s=460&v=4" alt="Cannikan" width="88">
-</a>
-<a href="https://github.com/somazx">
-  <img src="https://avatars0.githubusercontent.com/u/7306?s=460&v=4" alt="Andy Koch" width="88">
-</a>
+<div align="center">
+  <a href="https://github.com/petertoth">
+    <img src="https://avatars2.githubusercontent.com/u/3661783?s=460&v=4" alt="Peter Tóth" width="88">
+  </a>
+  <a href="https://github.com/phaust">
+    <img src="https://avatars1.githubusercontent.com/u/2367770?s=460&v=4" alt="Mario Kolli" width="88">
+  </a>
+  <a href="https://github.com/cannikan">
+    <img src="https://avatars2.githubusercontent.com/u/21893904?s=460&v=4" alt="Cannikan" width="88">
+  </a>
+  <a href="https://github.com/somazx">
+    <img src="https://avatars0.githubusercontent.com/u/7306?s=460&v=4" alt="Andy Koch" width="88">
+  </a>
+  <a href="https://github.com/dylancopeland">
+    <img src="https://avatars1.githubusercontent.com/u/99355?s=460&v=4" alt="Dylan Copeland" width="88">
+  </a>
+</div>
 
-#### Big Love Sponsors
+<h4 align="center">Big Love Sponsors</h4>
 
-<a href="https://github.com/geraldbiggs">
-  <img src="https://avatars1.githubusercontent.com/u/3213608?s=460&v=4" alt="geraldbiggs" width="64">
-</a>
-<a href="https://github.com/cuebit">
-  <img src="https://avatars0.githubusercontent.com/u/1493221?s=460&v=4" alt="Cue" width="64">
-</a>
+<p align="center">
+  <a href="https://github.com/geraldbiggs">
+    <img src="https://avatars1.githubusercontent.com/u/3213608?s=460&v=4" alt="geraldbiggs" width="64">
+  </a>
+  <a href="https://github.com/cuebit">
+    <img src="https://avatars0.githubusercontent.com/u/1493221?s=460&v=4" alt="Cue" width="64">
+  </a>
+</p>
 
-#### A Love Sponsors
+<h4 align="center">A Love Sponsors</h4>
 
-<a href="https://github.com/georgechaduneli">
-  <img src="https://avatars1.githubusercontent.com/u/9340753?s=460&v=4" alt="George Chaduneli" width="48">
-</a>
-<a href="https://github.com/bpuig">
-  <img src="https://avatars3.githubusercontent.com/u/22938625?s=460&v=4" alt="bpuig" width="48">
-</a>
+<p align="center">
+  <a href="https://github.com/georgechaduneli">
+    <img src="https://avatars1.githubusercontent.com/u/9340753?s=460&v=4" alt="George Chaduneli" width="48">
+  </a>
+  <a href="https://github.com/bpuig">
+    <img src="https://avatars3.githubusercontent.com/u/22938625?s=460&v=4" alt="bpuig" width="48">
+  </a>
+</p>
 
 ## Documentation
 
