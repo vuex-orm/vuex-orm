@@ -183,7 +183,7 @@ export default class MorphedByMany extends Relation {
     Utils.forOwn(data[parent.entity], (record) => {
       const related = record[key]
 
-      if (!Array.isArray(related)) {
+      if (!Utils.isArray(related)) {
         return
       }
 

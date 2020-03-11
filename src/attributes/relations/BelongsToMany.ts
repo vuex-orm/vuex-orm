@@ -178,7 +178,7 @@ export default class BelongsToMany extends Relation {
    * Create pivot records for the given records if needed.
    */
   createPivots (parent: typeof Model, data: NormalizedData, key: string): NormalizedData {
-    if (this.pivot.primaryKey instanceof Array === false) return data
+    if (!Utils.isArray(this.pivot.primaryKey)) return data
 
     Utils.forOwn(data[parent.entity], (record) => {
       const related = record[key]

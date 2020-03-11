@@ -62,7 +62,7 @@ export default class WhereFilter {
       }
 
       // Check if field value is in given where Array.
-      if (Array.isArray(where.value)) {
+      if (Utils.isArray(where.value)) {
         return where.value.indexOf(record[where.field]) !== -1
       }
 
