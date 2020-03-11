@@ -2,7 +2,7 @@
 
 Vuex ORM is a plugin for [Vuex](https://github.com/vuejs/vuex) to enable Object-Relational Mapping access to the Vuex Store. Vuex ORM lets you create "normalized" data schema within Vuex Store with relationships such as "Has One" and "Belongs To Many" like any other usual ORM library. It also provides fluent API to get, search and update Store state.
 
-Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape) and ["Updating Normalized Data"](https://redux.js.org/recipes/structuring-reducers/updating-normalized-data). Learn more about the concept and motivation of Vuex ORM at [What is Vuex ORM?](https://vuex-orm.github.io/vuex-orm/guide/prologue/what-is-vuex-orm.html).
+Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape) and ["Updating Normalized Data"](https://redux.js.org/recipes/structuring-reducers/updating-normalized-data). Learn more about the concept and motivation of Vuex ORM at [What is Vuex ORM?](/guide/prologue/what-is-vuex-orm.md).
 
 ## Sponsors
 
@@ -53,9 +53,9 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from the whole V
 ## Table of Contents
 
 - Prologue
-    - [What is Vuex ORM?](guide/prologue/what-is-vuex-orm.md)
-    - [Installation](guide/prologue/installation.md)
-    - [Getting Started](guide/prologue/getting-started.md)
+    - [What is Vuex ORM?](/guide/prologue/what-is-vuex-orm.md)
+    - [Installation](/guide/prologue/installation.md)
+    - [Getting Started](/guide/prologue/getting-started.md)
 - Model
     - [Defining Models](/guide/model/defining-models.md)
     - [Relationships](/guide/model/relationships.md)
@@ -74,9 +74,9 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from the whole V
     - [Server Side Rendering](/guide/digging-deeper/server-side-rendering.md)
     - [Plugins](/guide/digging-deeper/plugins.md)
 - API Reference
-    - [Container](api/container/container.md)
-    - [Database](api/database/database.md)
-    - [Model](api/model/model.md)
+    - [Container](/api/container/container.md)
+    - [Database](/api/database/database.md)
+    - [Model](/api/model/model.md)
 
 ## Questions & Discussions
 
