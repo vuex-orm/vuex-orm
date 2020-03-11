@@ -251,10 +251,8 @@ export default class Query<T extends Model = Model> {
   /**
    * Find the record by the given id.
    */
-  find (id: number | string | (number | string)[]): Data.Item<T> {
-    const indexId = Array.isArray(id) ? JSON.stringify(id) : id
-
-    const record = this.state.data[indexId]
+  find (value: Options.PrimaryKey): Data.Item<T> {
+    const record = this.state.data[this.normalizeIndexId(value)]
 
     if (!record) {
       return null
@@ -266,11 +264,13 @@ export default class Query<T extends Model = Model> {
   /**
    * Get the record of the given array of ids.
    */
-  findIn (idList: (number | string | (number | string)[])[]): Data.Collection<T> {
-    const records = idList.reduce<Data.Collection<T>>((collection, id) => {
-      const indexId = Array.isArray(id) ? JSON.stringify(id) : id
+  findIn (values: Options.PrimaryKey[]): Data.Collection<T> {
+    if (!Array.isArray(values)) {
+      return []
+    }
 
-      const record = this.state.data[indexId]
+    const records = values.reduce<Data.Collection<T>>((collection, value) => {
+      const record = this.state.data[this.normalizeIndexId(value)]
 
       if (!record) {
         return collection
@@ -356,14 +356,26 @@ export default class Query<T extends Model = Model> {
   /**
    * Filter records by their primary key.
    */
-  whereId (value: number | string): this {
+  whereId (value: Options.PrimaryKey): this {
+    if (this.model.isCompositePrimaryKey()) {
+      return this.where('$id', this.normalizeIndexId(value))
+    }
+
     return this.where(this.model.primaryKey, value)
   }
 
   /**
    * Filter records by their primary keys.
    */
-  whereIdIn (values: (string | number)[]): this {
+  whereIdIn (values: Options.PrimaryKey[]): this {
+    if (this.model.isCompositePrimaryKey()) {
+      const idList = values.reduce<string[]>((keys, value) => {
+        return [...keys, this.normalizeIndexId(value)] as string[]
+      }, [])
+
+      return this.where('$id', idList)
+    }
+
     return this.where(this.model.primaryKey, values)
   }
 
@@ -375,7 +387,7 @@ export default class Query<T extends Model = Model> {
    * for the distinction between where and orWhere in normal queries, but
    * Fk lookups are always "and" type.
    */
-  whereFk (field: string, value: string | number | (string | number)[]): this {
+  whereFk (field: string, value: Options.PrimaryKey): this {
     const values = Array.isArray(value) ? value : [value]
 
     // If lookup filed is the primary key. Initialize or get intersection,
@@ -394,11 +406,41 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Check whether the given field and value combination is filterable through
-   * primary key direct look up.
+   * Convert value to string for composite primary keys as it expects an array.
+   * Otherwise return as is.
+   *
+   * Throws an error when malformed value is given:
+   * - Composite primary key defined on model, expects value to be array.
+   * - Normal primary key defined on model, expects a primitive value.
+   */
+  private normalizeIndexId (value: Options.PrimaryKey): string | number {
+    if (this.model.isCompositePrimaryKey()) {
+      if (!Array.isArray(value)) {
+        throw new Error(
+          '[Vuex ORM] Entity `' + this.entity + '` is configured with a composite ' +
+          'primary key and expects an array value but instead received: ' + JSON.stringify(value)
+        )
+      }
+
+      return JSON.stringify(value)
+    }
+
+    if (Array.isArray(value)) {
+      throw new Error(
+        '[Vuex ORM] Entity `' + this.entity + '` expects a single value but ' +
+        'instead received: ' + JSON.stringify(value)
+      )
+    }
+
+    return value
+  }
+
+  /**
+   * Check whether the given field is filterable through primary key
+   * direct look up.
    */
   private isIdfilterable (field: any): boolean {
-    return field === this.model.primaryKey && !this.cancelIdFilter
+    return (field === this.model.primaryKey || field === '$id') && !this.cancelIdFilter
   }
 
   /**
@@ -562,7 +604,7 @@ export default class Query<T extends Model = Model> {
       return
     }
 
-    this.where(this.model.primaryKey, Array.from(this.idFilter.values()))
+    this.where(this.model.isCompositePrimaryKey() ? '$id' : this.model.primaryKey, Array.from(this.idFilter.values()))
 
     this.idFilter = null
   }
@@ -825,12 +867,12 @@ export default class Query<T extends Model = Model> {
     // Now since the condition is either String or Number, let's check if the
     // model's primary key is not a composite key. If yes, we can't set the
     // condition as ID value for the record so throw an error and abort.
-    if (Array.isArray(this.model.primaryKey)) {
-      throw new Error(`
-        You can't specify \`where\` value as \`string\` or \`number\` when you
-        have a composite key defined in your model. Please include composite
-        keys to the \`data\` fields.
-      `)
+    if (this.model.isCompositePrimaryKey() && !Array.isArray(condition)) {
+      throw new Error(
+        '[Vuex ORM] You can\'t specify `where` value as `string` or `number` ' +
+        'when you have a composite key defined in your model. Please include ' +
+        'composite keys to the `data` fields.'
+      )
     }
 
     // Finally, let's add condition as the primary key of the object and
@@ -851,7 +893,7 @@ export default class Query<T extends Model = Model> {
    * Update the state by id.
    */
   updateById (data: Data.Record | UpdateClosure, id: string | number): Data.Item<T> {
-    id = typeof id === 'number' ? id.toString() : id
+    id = typeof id === 'number' ? id.toString() : this.normalizeIndexId(id)
 
     const record = this.state.data[id]
 

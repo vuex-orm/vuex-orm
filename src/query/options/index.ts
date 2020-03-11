@@ -11,6 +11,7 @@ import Constraint from './Constraint'
 import Load from './Load'
 import PersistMethods from './PersistMethods'
 import PersistOptions from './PersistOptions'
+import PrimaryKey from './PrimaryKey'
 
 export {
   Where,
@@ -25,5 +26,6 @@ export {
   Constraint,
   Load,
   PersistMethods,
-  PersistOptions
+  PersistOptions,
+  PrimaryKey
 }
