@@ -754,7 +754,10 @@ export default class Model {
     }
 
     if (this.$self().getIndexIdFromRecord(payload) === null) {
-      return this.$dispatch('update', { where: this.$id, data: payload })
+      return this.$dispatch('update', {
+        where: this.$self().getIdFromRecord(this),
+        data: payload
+      })
     }
 
     return this.$dispatch('update', payload)

@@ -228,6 +228,39 @@ describe('Feature – Basics – Update', () => {
     expect(user.age).toBe(24)
   })
 
+  it('can update record by specifying condition with composite id', async () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static primaryKey = ['key_1', 'key_2']
+
+      static fields () {
+        return {
+          key_1: this.attr(null),
+          key_2: this.attr(null),
+          name: this.attr(''),
+          age: this.attr(null)
+        }
+      }
+    }
+
+    const store = createStore([{ model: User }])
+
+    await store.dispatch('entities/users/create', {
+      data: { key_1: 1, key_2: 2, name: 'John Doe', age: 30 }
+    })
+
+    await store.dispatch('entities/users/update', {
+      data: { age: 24 },
+      where: [1, 2]
+    })
+
+    const user = store.getters['entities/users/query']().first()
+    expect(user.key_1).toBe(1)
+    expect(user.key_2).toBe(2)
+    expect(user.age).toBe(24)
+  })
+
   it('can update record by specifying condition with closure', async () => {
     class User extends Model {
       static entity = 'users'

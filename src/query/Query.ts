@@ -867,7 +867,7 @@ export default class Query<T extends Model = Model> {
     // Now since the condition is either String or Number, let's check if the
     // model's primary key is not a composite key. If yes, we can't set the
     // condition as ID value for the record so throw an error and abort.
-    if (this.model.isCompositePrimaryKey()) {
+    if (this.model.isCompositePrimaryKey() && !Array.isArray(condition)) {
       throw new Error(
         '[Vuex ORM] You can\'t specify `where` value as `string` or `number` ' +
         'when you have a composite key defined in your model. Please include ' +
@@ -893,7 +893,7 @@ export default class Query<T extends Model = Model> {
    * Update the state by id.
    */
   updateById (data: Data.Record | UpdateClosure, id: string | number): Data.Item<T> {
-    id = typeof id === 'number' ? id.toString() : id
+    id = typeof id === 'number' ? id.toString() : this.normalizeIndexId(id)
 
     const record = this.state.data[id]
 
