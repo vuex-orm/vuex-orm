@@ -7,7 +7,7 @@ describe('Relations – Deep Load', () => {
    * user attached to the comment should be `null`.
    * See: https://github.com/vuex-orm/vuex-orm/issues/152
    */
-  it('can retrieve deep nested morphMany relation', () => {
+  it('can retrieve deep nested morphMany relation', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -46,7 +46,7 @@ describe('Relations – Deep Load', () => {
 
     const store = createStore([{ model: User }, { model: Post }, { model: Comment }])
 
-    store.dispatch('entities/posts/create', {
+    await store.dispatch('entities/posts/create', {
       data: {
         id: 1,
         comments: [{

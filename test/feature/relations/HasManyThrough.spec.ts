@@ -1,3 +1,4 @@
+/* tslint:disable:variable-name */
 import { createStore, createState } from 'test/support/Helpers'
 import Model from '@/model/Model'
 

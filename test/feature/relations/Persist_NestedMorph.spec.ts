@@ -2,7 +2,7 @@ import { createStore, createState } from 'test/support/Helpers'
 import Model from '@/model/Model'
 
 describe('Features – Relations – Persist – Nested Morph', () => {
-  it('can create data with nested morph one and morph to relationship', () => {
+  it('can create data with nested morph one and morph to relationship', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -40,7 +40,7 @@ describe('Features – Relations – Persist – Nested Morph', () => {
 
     const store = createStore([{ model: User }, { model: Post }, { model: Comment }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: {
         id: 1,
         comments: [

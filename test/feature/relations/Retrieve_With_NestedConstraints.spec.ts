@@ -1,8 +1,9 @@
+/* tslint:disable:variable-name */
 import { createStore } from 'test/support/Helpers'
 import Model from '@/model/Model'
 
 describe('Feature – Relations – With – Nested Constraints', () => {
-  it('can apply `with` constraints to nested relationships', () => {
+  it('can apply `with` constraints to nested relationships', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -64,11 +65,11 @@ describe('Feature – Relations – With – Nested Constraints', () => {
 
     createStore([{ model: User }, { model: Post }, { model: Comment }])
 
-    User.create({ data: { id: 1 } })
+    await User.create({ data: { id: 1 } })
 
-    Post.create({ data: { id: 1, user_id: 1 } })
+    await Post.create({ data: { id: 1, user_id: 1 } })
 
-    Comment.create({
+    await Comment.create({
       data: [
         { id: 1, post_id: 1, title: 'Title01' },
         { id: 2, post_id: 1, title: 'Title01' },

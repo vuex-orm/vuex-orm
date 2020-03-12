@@ -19,10 +19,10 @@ describe('Feature – Retrieve – Order By', () => {
     }
   }
 
-  it('can sort by model fields in asc order', () => {
+  it('can sort by model fields in asc order', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John' },
         { id: 2, name: 'Andy' },
@@ -39,18 +39,16 @@ describe('Feature – Retrieve – Order By', () => {
     ]
 
     const result1 = store.getters['entities/users/query']().orderBy('id').get()
-
     expect(result1).toEqual(expected)
 
     const result2 = store.getters['entities/users/query']().orderBy('id', 'asc').get()
-
     expect(result2).toEqual(expected)
   })
 
-  it('can sort by model fields in desc order', () => {
+  it('can sort by model fields in desc order', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John' },
         { id: 2, name: 'Andy' },
@@ -74,10 +72,10 @@ describe('Feature – Retrieve – Order By', () => {
     expect(result).toEqual(expected)
   })
 
-  it('can sort using a function ', () => {
+  it('can sort using a function ', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John' },
         { id: 2, name: 'Andy' },
@@ -98,10 +96,10 @@ describe('Feature – Retrieve – Order By', () => {
     expect(result).toEqual(expected)
   })
 
-  it('can sort using a function in desc order', () => {
+  it('can sort using a function in desc order', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John' },
         { id: 2, name: 'Andy' }
@@ -120,10 +118,10 @@ describe('Feature – Retrieve – Order By', () => {
     expect(result).toEqual(expected)
   })
 
-  it('can sort by model fields with first method', () => {
+  it('can sort by model fields with first method', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John' },
         { id: 2, name: 'Andy' },

@@ -15,10 +15,10 @@ describe('Feature – Retrieve – Where - Composite Keys', () => {
     }
   }
 
-  it('can retrieve records that matches the whereId clause', () => {
+  it('can retrieve records that matches the whereId clause', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { key_1: 1, key_2: 2 },
         { key_1: 2, key_2: 2 }
@@ -34,10 +34,10 @@ describe('Feature – Retrieve – Where - Composite Keys', () => {
     expect(user).toEqual(expected)
   })
 
-  it('can retrieve records that matches the whereId clause using intersection ("and" boolean)', () => {
+  it('can retrieve records that matches the whereId clause using intersection ("and" boolean)', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { key_1: 1, key_2: 2 },
         { key_1: 2, key_2: 2 }
@@ -52,10 +52,10 @@ describe('Feature – Retrieve – Where - Composite Keys', () => {
     expect(users).toEqual([])
   })
 
-  it('can retrieve records that matches the whereId and orWhere', () => {
+  it('can retrieve records that matches the whereId and orWhere', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { key_1: 1, key_2: 2 },
         { key_1: 2, key_2: 2 }
@@ -75,10 +75,10 @@ describe('Feature – Retrieve – Where - Composite Keys', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the whereIdIn clause', () => {
+  it('can retrieve records that matches the whereIdIn clause', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { key_1: 1, key_2: 2 },
         { key_1: 2, key_2: 2 },
@@ -98,10 +98,10 @@ describe('Feature – Retrieve – Where - Composite Keys', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the whereIdIn clause using intersection ("and" boolean)', () => {
+  it('can retrieve records that matches the whereIdIn clause using intersection ("and" boolean)', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { key_1: 1, key_2: 2 },
         { key_1: 2, key_2: 2 },
@@ -121,10 +121,10 @@ describe('Feature – Retrieve – Where - Composite Keys', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the whereIdIn and orWhere', () => {
+  it('can retrieve records that matches the whereIdIn and orWhere', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { key_1: 1, key_2: 2 },
         { key_1: 2, key_2: 2 },

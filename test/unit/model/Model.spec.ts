@@ -280,6 +280,7 @@ describe('Unit – Model', () => {
 
       static fields () {
         return {
+          // tslint:disable-next-line:deprecation
           id: this.increment()
         }
       }

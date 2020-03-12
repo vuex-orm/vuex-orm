@@ -1,3 +1,4 @@
+/* tslint:disable:variable-name */
 import { createStore } from 'test/support/Helpers'
 import Model from '@/model/Model'
 
@@ -133,10 +134,10 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     expect(role.users[0].id).toBe(1)
   })
 
-  it('returns empty collection if the relation is not found', () => {
+  it('returns empty collection if the relation is not found', async () => {
     createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
-    User.create({
+    await User.create({
       data: { id: 1 }
     })
 

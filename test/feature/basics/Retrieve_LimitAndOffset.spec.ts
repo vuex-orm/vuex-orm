@@ -12,10 +12,10 @@ describe('Feature – Retrieve – Limit And Offset', () => {
     }
   }
 
-  it('can limit number of records', () => {
+  it('can limit number of records', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]
     })
 
@@ -28,10 +28,10 @@ describe('Feature – Retrieve – Limit And Offset', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can limit number of records from an offset', () => {
+  it('can limit number of records from an offset', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1 },
         { id: 2 },

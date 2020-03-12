@@ -30,7 +30,7 @@ describe('Model – Store', () => {
     expect(user.name).toBe('John Doe')
   })
 
-  it('can access the store instance as instance method', () => {
+  it('can access the store instance as instance method', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -50,7 +50,8 @@ describe('Model – Store', () => {
 
     const store = createStore([{ model: User }])
 
-    ;(new User()).create()
+    const u = new User()
+    await u.create()
 
     const user = store.getters['entities/users/find'](1)
 
@@ -58,7 +59,7 @@ describe('Model – Store', () => {
     expect(user.name).toBe('John Doe')
   })
 
-  it('can dispatch an action as static method', () => {
+  it('can dispatch an action as static method', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -78,7 +79,7 @@ describe('Model – Store', () => {
 
     const store = createStore([{ model: User }])
 
-    User.create()
+    await User.create()
 
     const user = store.getters['entities/users/find'](1)
 
@@ -86,7 +87,7 @@ describe('Model – Store', () => {
     expect(user.name).toBe('John Doe')
   })
 
-  it('can dispatch an action as instance method', () => {
+  it('can dispatch an action as instance method', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -106,7 +107,8 @@ describe('Model – Store', () => {
 
     const store = createStore([{ model: User }])
 
-    ;(new User()).create()
+    const u = new User()
+    await u.create()
 
     const user = store.getters['entities/users/find'](1)
 

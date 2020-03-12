@@ -2,7 +2,7 @@ import { createStore, createState } from 'test/support/Helpers'
 import Model from '@/model/Model'
 
 describe('Features – Relations – Morph One – Persist', () => {
-  it('can create data containing the morph one relation', () => {
+  it('can create data containing the morph one relation', async () => {
     class Post extends Model {
       static entity = 'posts'
 
@@ -30,7 +30,7 @@ describe('Features – Relations – Morph One – Persist', () => {
 
     const store = createStore([{ model: Post }, { model: Comment }])
 
-    store.dispatch('entities/posts/create', {
+    await store.dispatch('entities/posts/create', {
       data: {
         id: 1,
         comment: {
@@ -300,7 +300,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     expect(store.state.entities.comments.data['2'].commentable_type).toBe('posts')
   })
 
-  it('can create data containing the empty morph one relation', () => {
+  it('can create data containing the empty morph one relation', async () => {
     class Post extends Model {
       static entity = 'posts'
 
@@ -328,7 +328,7 @@ describe('Features – Relations – Morph One – Persist', () => {
 
     const store = createStore([{ model: Post }, { model: Comment }])
 
-    store.dispatch('entities/posts/create', {
+    await store.dispatch('entities/posts/create', {
       data: [
         {
           id: 1,

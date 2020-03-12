@@ -24,10 +24,10 @@ describe('Features – Relations – Belongs To', () => {
     }
   }
 
-  it('can create data containing the belongs to relation', () => {
+  it('can create data containing the belongs to relation', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/posts/create', {
+    await store.dispatch('entities/posts/create', {
       data: {
         id: 1,
         user_id: 1,
@@ -47,10 +47,10 @@ describe('Features – Relations – Belongs To', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
-  it('can create data when the belongs to relation is `null`', () => {
+  it('can create data when the belongs to relation is `null`', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/posts/create', {
+    await store.dispatch('entities/posts/create', {
       data: {
         id: 1,
         user_id: 1,
@@ -68,10 +68,10 @@ describe('Features – Relations – Belongs To', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
-  it('can create data when the belongs to relation is set to related model key', () => {
+  it('can create data when the belongs to relation is set to related model key', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/posts/create', {
+    await store.dispatch('entities/posts/create', {
       data: {
         id: 1,
         user: 1
@@ -88,10 +88,10 @@ describe('Features – Relations – Belongs To', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
-  it('can generate relation field', () => {
+  it('can generate relation field', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/posts/create', {
+    await store.dispatch('entities/posts/create', {
       data: {
         id: 1,
         user: { id: 1 }
@@ -129,10 +129,10 @@ describe('Features – Relations – Belongs To', () => {
     expect(result).toEqual(expected)
   })
 
-  it('can resolve the belongs to relation', () => {
+  it('can resolve the belongs to relation', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/posts/create', {
+    await store.dispatch('entities/posts/create', {
       data: {
         id: 1,
         user: { id: 1 }
@@ -154,10 +154,10 @@ describe('Features – Relations – Belongs To', () => {
     expect(post).toEqual(expected)
   })
 
-  it('resolves to null if there is no belongs to relation', () => {
+  it('resolves to null if there is no belongs to relation', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/posts/create', {
+    await store.dispatch('entities/posts/create', {
       data: {
         id: 1,
         user_id: 1
@@ -176,10 +176,10 @@ describe('Features – Relations – Belongs To', () => {
     expect(post).toEqual(expected)
   })
 
-  it('can resolve belongs to relation which its id is 0', () => {
+  it('can resolve belongs to relation which its id is 0', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/posts/create', {
+    await store.dispatch('entities/posts/create', {
       data: {
         id: 1,
         user: { id: 0 }
@@ -201,7 +201,7 @@ describe('Features – Relations – Belongs To', () => {
     expect(post).toEqual(expected)
   })
 
-  it('can resolve belongs to relation with custom foreign key', () => {
+  it('can resolve belongs to relation with custom foreign key', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -227,7 +227,7 @@ describe('Features – Relations – Belongs To', () => {
 
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/posts/create', {
+    await store.dispatch('entities/posts/create', {
       data: {
         id: 1,
         user_id: 2,

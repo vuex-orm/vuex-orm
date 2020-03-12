@@ -1,3 +1,4 @@
+/* tslint:disable:variable-name */
 import { createStore, createState } from 'test/support/Helpers'
 import Model from '@/model/Model'
 
@@ -50,7 +51,7 @@ describe('Feature – Models – Save', () => {
     const user = new User()
     user.id = 1
     user.name = 'John Doe'
-    user.$save()
+    await user.$save()
 
     const expected = createState({
       users: {
@@ -64,16 +65,16 @@ describe('Feature – Models – Save', () => {
   it('can save a new record and ignore references', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    const user = await new User()
+    const user = new User()
     user.id = 1
     user.name = 'John Doe'
-    user.$save()
+    await user.$save()
 
-    const post = await new Post()
+    const post = new Post()
     post.id = 1
     post.user_id = user.id
     post.user = user
-    post.$save()
+    await post.$save()
 
     const expected = createState({
       users: {

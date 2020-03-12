@@ -2,7 +2,7 @@ import { createStore, createState } from 'test/support/Helpers'
 import Model from '@/model/Model'
 
 describe('Features – Relations – Morph To', () => {
-  it('can create data containing the morph to relation', () => {
+  it('can create data containing the morph to relation', async () => {
     class Post extends Model {
       static entity = 'posts'
 
@@ -30,7 +30,7 @@ describe('Features – Relations – Morph To', () => {
 
     const store = createStore([{ model: Post }, { model: Comment }])
 
-    store.dispatch('entities/comments/create', {
+    await store.dispatch('entities/comments/create', {
       data: {
         id: 1,
         body: 'The Body',

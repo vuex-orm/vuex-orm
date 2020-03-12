@@ -1,3 +1,4 @@
+/* tslint:disable:variable-name */
 import { createStore } from 'test/support/Helpers'
 import Model from '@/model/Model'
 
@@ -182,7 +183,7 @@ describe('Feature – Relations – Retrieve – With', () => {
     expect(user2.posts[1].user).toBe(null)
   })
 
-  it('can resolve child relation', () => {
+  it('can resolve child relation', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -240,7 +241,7 @@ describe('Feature – Relations – Retrieve – With', () => {
 
     const store = createStore([{ model: User }, { model: Post }, { model: Comment }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: {
         id: 1,
         posts: [
@@ -403,7 +404,7 @@ describe('Feature – Relations – Retrieve – With', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can resolve even deeper child relation', () => {
+  it('can resolve even deeper child relation', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -482,7 +483,7 @@ describe('Feature – Relations – Retrieve – With', () => {
 
     const store = createStore([{ model: User }, { model: Post }, { model: Comment }, { model: Like }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: {
         id: 1,
         posts: [
@@ -536,7 +537,7 @@ describe('Feature – Relations – Retrieve – With', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can resolve child relations with multiple sub relations with pipe', () => {
+  it('can resolve child relations with multiple sub relations with pipe', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -615,7 +616,7 @@ describe('Feature – Relations – Retrieve – With', () => {
 
     const store = createStore([{ model: User }, { model: Post }, { model: Comment }, { model: Like }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: {
         id: 1,
         posts: [
@@ -687,7 +688,7 @@ describe('Feature – Relations – Retrieve – With', () => {
     expect(user2).toEqual(expected)
   })
 
-  it('can resolve child relations with multiple sub relations in array', () => {
+  it('can resolve child relations with multiple sub relations in array', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -736,7 +737,7 @@ describe('Feature – Relations – Retrieve – With', () => {
 
     const store = createStore([{ model: User }, { model: Post }, { model: Comment }, { model: Like }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: {
         id: 1,
         posts: [

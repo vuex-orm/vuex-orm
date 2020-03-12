@@ -32,10 +32,10 @@ describe('Feature – Retrieve – Where', () => {
     }
   }
 
-  it('can retrieve records that matches the where clause', () => {
+  it('can retrieve records that matches the where clause', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 20, active: true },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -56,10 +56,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the whereId clause', () => {
+  it('can retrieve records that matches the whereId clause', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 20, active: true },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -78,10 +78,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the whereId clause using intersection ("and" boolean)', () => {
+  it('can retrieve records that matches the whereId clause using intersection ("and" boolean)', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 20, active: true },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -97,10 +97,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual([])
   })
 
-  it('can retrieve records that matches the whereId and orWhere', () => {
+  it('can retrieve records that matches the whereId and orWhere', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 20, active: true },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -121,10 +121,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the whereIdIn clause', () => {
+  it('can retrieve records that matches the whereIdIn clause', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 20, active: true },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -144,10 +144,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the whereIdIn clause using intersection ("and" boolean)', () => {
+  it('can retrieve records that matches the whereIdIn clause using intersection ("and" boolean)', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 20, active: true },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -167,10 +167,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the whereIdIn and orWhere', () => {
+  it('can retrieve records that matches the whereIdIn and orWhere', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 20, active: true },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -192,10 +192,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that contains the value in the where clause array', () => {
+  it('can retrieve records that contains the value in the where clause array', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 20, active: true },
         { id: 2, name: 'Jane', age: 24, active: true },
@@ -216,10 +216,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches in the where clause value as a closure', () => {
+  it('can retrieve records that matches in the where clause value as a closure', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 20, active: true },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -239,10 +239,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches in the where clause as a closure', () => {
+  it('can retrieve records that matches in the where clause as a closure', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 20, active: true },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -262,10 +262,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the where query with a function that accesses variables from outside the scope', () => {
+  it('can retrieve records that matches the where query with a function that accesses variables from outside the scope', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 20, active: true },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -287,10 +287,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the where query with nested query builder', () => {
+  it('can retrieve records that matches the where query with nested query builder', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 20, active: true },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -310,10 +310,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that match the where query by comparing model instance.', () => {
+  it('can retrieve records that match the where query by comparing model instance.', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 24, active: false },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -334,10 +334,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the where query with complex nested query builder', () => {
+  it('can retrieve records that matches the where query with complex nested query builder', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 24, active: false },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -360,10 +360,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the orWhere query', () => {
+  it('can retrieve records that matches the orWhere query', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 20, active: true },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -384,10 +384,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records with only the orWhere query', () => {
+  it('can retrieve records with only the orWhere query', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 20, active: true },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -406,14 +406,14 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the where query with 2 nested query builders, starting with orWhere', () => {
+  it('can retrieve records that matches the where query with 2 nested query builders, starting with orWhere', async () => {
     const store = createStore([
       {
         model: User
       }
     ])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         {
           id: 1,
@@ -454,10 +454,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the where query with 2 nested query builders, starting with where', () => {
+  it('can retrieve records that matches the where query with 2 nested query builders, starting with where', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 21, active: true },
         { id: 2, name: 'Jane', age: 20, active: true },
@@ -484,10 +484,10 @@ describe('Feature – Retrieve – Where', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve records that matches the where query several nested query builders', () => {
+  it('can retrieve records that matches the where query several nested query builders', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         { id: 1, name: 'John', age: 21, active: true },
         { id: 2, name: 'Jane', age: 20, active: true },

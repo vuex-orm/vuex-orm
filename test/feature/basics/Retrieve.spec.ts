@@ -12,10 +12,10 @@ describe('Feature – Retrieve', () => {
     }
   }
 
-  it('can retrieve all records as a model instance by all method', () => {
+  it('can retrieve all records as a model instance by all method', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [{ id: 1 }, { id: 2 }]
     })
 
@@ -29,10 +29,10 @@ describe('Feature – Retrieve', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve all records by chained all method', () => {
+  it('can retrieve all records by chained all method', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [{ id: 1 }, { id: 2 }]
     })
 
@@ -46,10 +46,10 @@ describe('Feature – Retrieve', () => {
     expect(users).toEqual(expected)
   })
 
-  it('can retrieve all records as a model instance by get method', () => {
+  it('can retrieve all records as a model instance by get method', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [{ id: 1 }, { id: 2 }]
     })
 
@@ -63,10 +63,10 @@ describe('Feature – Retrieve', () => {
     expect(users).toEqual(expected)
   })
 
-  it('returns empty array when multiple record can not be found', () => {
+  it('returns empty array when multiple record can not be found', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [{ id: 1 }, { id: 2 }]
     })
 
@@ -75,10 +75,10 @@ describe('Feature – Retrieve', () => {
     expect(users).toEqual([])
   })
 
-  it('can retrieve a single item by id', () => {
+  it('can retrieve a single item by id', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [{ id: 1 }, { id: 2 }]
     })
 
@@ -90,7 +90,7 @@ describe('Feature – Retrieve', () => {
   it('can retrieve array of items by their ids', async () => {
     const store = createStore([{ model: User }])
 
-    User.insert({
+    await store.dispatch('entities/users/insert', {
       data: [{ id: 1 }, { id: 2 }, { id: 3 }]
     })
 
@@ -108,10 +108,10 @@ describe('Feature – Retrieve', () => {
     expect(users2).toEqual([])
   })
 
-  it('can retrieve a single item by chained find method', () => {
+  it('can retrieve a single item by chained find method', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [{ id: 1 }, { id: 2 }]
     })
 
@@ -150,7 +150,7 @@ describe('Feature – Retrieve', () => {
     it('can retrieve the last item from the store', async () => {
       createStore([{ model: User }])
 
-      User.insert({
+      await User.insert({
         data: [{ id: 1 }, { id: 2 }]
       })
 
@@ -170,10 +170,10 @@ describe('Feature – Retrieve', () => {
     })
   })
 
-  it('returns null when single item can not be found', () => {
+  it('returns null when single item can not be found', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [{ id: 1 }, { id: 2 }]
     })
 
@@ -182,10 +182,10 @@ describe('Feature – Retrieve', () => {
     expect(user).toBe(null)
   })
 
-  it('returns null when passing `undefined` to the `find` method', () => {
+  it('returns null when passing `undefined` to the `find` method', async () => {
     const store = createStore([{ model: User }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [{ id: 1 }, { id: 2 }]
     })
 

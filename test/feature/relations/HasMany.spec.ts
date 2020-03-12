@@ -24,10 +24,10 @@ describe('Features – Relations – Has Many', () => {
     }
   }
 
-  it('can create data containing the has many relation', () => {
+  it('can create data containing the has many relation', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: {
         id: 1,
         posts: [
@@ -50,14 +50,14 @@ describe('Features – Relations – Has Many', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
-  it('can update data and insert has many relation', () => {
+  it('can update data and insert has many relation', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: { id: 1 }
     })
 
-    store.dispatch('entities/users/update', {
+    await store.dispatch('entities/users/update', {
       insert: ['posts'],
       data: {
         id: 1,
@@ -81,10 +81,10 @@ describe('Features – Relations – Has Many', () => {
     expect(store.state.entities).toEqual(expected)
   })
 
-  it('can resolve the has many relation', () => {
+  it('can resolve the has many relation', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [
         {
           id: 1,
@@ -121,7 +121,7 @@ describe('Features – Relations – Has Many', () => {
     expect(user).toEqual(expected)
   })
 
-  it('can resolve the has many relation with custom primary key', () => {
+  it('can resolve the has many relation with custom primary key', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -137,7 +137,7 @@ describe('Features – Relations – Has Many', () => {
 
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: {
         user_id: 1,
         posts: [
@@ -161,7 +161,7 @@ describe('Features – Relations – Has Many', () => {
     expect(user).toEqual(expected)
   })
 
-  it('can resolve the has many using the local key', () => {
+  it('can resolve the has many using the local key', async () => {
     class User extends Model {
       static entity = 'users'
 
@@ -187,7 +187,7 @@ describe('Features – Relations – Has Many', () => {
 
     const store = createStore([{ model: User }, { model: Post }])
 
-    User.create({
+    await User.create({
       data: {
         id: 1,
         local_key: 'local_key',

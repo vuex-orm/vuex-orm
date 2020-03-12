@@ -26,14 +26,14 @@ describe('Feature – Relations – Retrieve – Constraint', () => {
     }
   }
 
-  it('can resolve relation constraint', () => {
+  it('can resolve relation constraint', async () => {
     const store = createStore([{ model: User }, { model: Post }])
 
-    store.dispatch('entities/users/create', {
+    await store.dispatch('entities/users/create', {
       data: [{ id: 1 }, { id: 2 }, { id: 3 }]
     })
 
-    store.dispatch('entities/posts/create', {
+    await store.dispatch('entities/posts/create', {
       data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 1 }, { id: 3, user_id: 2 }]
     })
 
