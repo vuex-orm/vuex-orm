@@ -1,4 +1,4 @@
-import Model from 'app/model/Model'
+import Model from '@/model/Model'
 
 describe('Unit – Model - Serialization', () => {
   it('can serialize own fields into json', () => {

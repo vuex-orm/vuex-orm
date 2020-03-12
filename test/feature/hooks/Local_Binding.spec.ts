@@ -1,12 +1,21 @@
 import { createStore } from 'test/support/Helpers'
-import { Model, Fields } from 'app/index'
+import Model from '@/model/Model'
 
 describe('Hooks – Local Binding', () => {
   it('should be scoped to the model class', async () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields (): Fields {
+      // @Attribute
+      id!: number
+
+      // @Attribute('')
+      name!: string
+
+      // @Attribute
+      age!: number
+
+      static fields () {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -14,27 +23,21 @@ describe('Hooks – Local Binding', () => {
         }
       }
 
-      static beforeCreate (user: User): void {
+      static beforeCreate (user: User) {
         this.setAge(user)
       }
 
-      static setAge (user: User): void {
+      static setAge (user: User) {
         user.age = 30
       }
-
-      id!: any
-      name!: any
-      age!: any
     }
 
     createStore([{ model: User }])
 
     await User.insert({ id: 1, name: 'John Doe', age: 20 })
 
-    const user = User.find(1)
-
     const expected = { $id: '1', id: 1, name: 'John Doe', age: 30 }
 
-    expect(user).toEqual(expected)
+    expect(User.find(1)).toEqual(expected)
   })
 })

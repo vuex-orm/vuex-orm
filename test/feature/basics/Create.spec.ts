@@ -1,11 +1,11 @@
 import { createStore } from 'test/support/Helpers'
-import { Model, Fields } from 'app/index'
+import Model from '@/model/Model'
 
 describe('Feature – Basics – Create', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields (): Fields {
+    static fields () {
       return {
         id: this.attr(null),
         name: this.attr('JD')

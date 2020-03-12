@@ -115,12 +115,12 @@ const subscriptions = Subscription.findIn([[1, 1], [1, 2]])
 
 ## Query Builder
 
-The `query` method will return the Query Builder that provides fluent API to search and fetch data from the store. You can use the query builder to construct more complex query conditions.
+The `query` method will return the Query Builder that provides fluent API to search and fetch data from the store. You can use the Query Builder to construct more complex query conditions.
 
-You can obtain query builder by calling the `query` method.
+You can obtain Query Builder by calling the `query` method.
 
 ```js
-// Get Query Builder instanse.
+// Get Query Builder instance.
 const query = User.query()
 ```
 
@@ -182,7 +182,7 @@ const user = User.query().where((user) => {
 
 > **NOTE:** When returning the result of the condition, you must explicitly return a boolean, `true` or `false`. It will not work if you return a falsy value other than `false`, for example, `undefined` or `null`. See [GitHub Issue #402](https://github.com/vuex-orm/vuex-orm/issues/402) for more details.
 
-When passing a closure to the 1st argument, it will also receive query builder as the 2nd argument. By using the query builder, you may nest the where clause. This is useful when you want "group" the where clauses.
+When passing a closure to the 1st argument, it will also receive Query Builder as the 2nd argument. By using the Query Builder, you may nest the where clause. This is useful when you want "group" the where clauses.
 
 ```js
 // Retrieve all users with role of user, and age of 20 or id of 1.
@@ -206,6 +206,16 @@ You may also use `whereIdIn` method to get multiple records by id look up. The a
 
 ```js
 const user = User.query().whereIdIn([1, 2]).get()
+```
+
+#### Composite Primary Keys
+
+Both `whereId` and `whereIdIn` support models with [composite primary keys](/guide/model/defining-models.md#primary-key).
+
+```js
+const user = User.query().whereId([1, 2]).first()
+
+const users = User.query().whereIdIn([[1, 2], [3, 2]]).get()
 ```
 
 ### Or Statement
@@ -306,7 +316,7 @@ const user = User.query().offset(1).limit(2).get()
 
 ## Aggregates
 
-The query builder also provides aggregate methods. Available methods are `count`, `max`, `min` and `sum`.
+The Query Builder also provides aggregate methods. Available methods are `count`, `max`, `min` and `sum`.
 
 ```js
 const users = User.query().count()

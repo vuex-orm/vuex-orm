@@ -918,11 +918,17 @@ function __spreadArrays() {
 }
 
 /**
+ * Check if the given value is the type of array.
+ */
+function isArray(value) {
+    return Array.isArray(value);
+}
+/**
  * Gets the size of collection by returning its length for array-like values
  * or the number of own enumerable string keyed properties for objects.
  */
 function size(collection) {
-    return Array.isArray(collection) ? collection.length : Object.keys(collection).length;
+    return isArray(collection) ? collection.length : Object.keys(collection).length;
 }
 /**
  * Check if the given array or object is empty.
@@ -1081,7 +1087,7 @@ function cloneDeep(target) {
     if (target === null) {
         return target;
     }
-    if (target instanceof Array) {
+    if (isArray(target)) {
         var cp_1 = [];
         target.forEach(function (v) { return cp_1.push(v); });
         return cp_1.map(function (n) { return cloneDeep(n); });
@@ -1094,6 +1100,7 @@ function cloneDeep(target) {
     return target;
 }
 var Utils = {
+    isArray: isArray,
     size: size,
     isEmpty: isEmpty,
     forOwn: forOwn,
@@ -1410,7 +1417,7 @@ var Relation = /** @class */ (function (_super) {
      * Check if the given record is a single relation, which is an object.
      */
     Relation.prototype.isOneRelation = function (record) {
-        if (!Array.isArray(record) && record !== null && typeof record === 'object') {
+        if (!isArray(record) && record !== null && typeof record === 'object') {
             return true;
         }
         return false;
@@ -1420,7 +1427,7 @@ var Relation = /** @class */ (function (_super) {
      * of object.
      */
     Relation.prototype.isManyRelation = function (records) {
-        if (!Array.isArray(records)) {
+        if (!isArray(records)) {
             return false;
         }
         if (records.length < 1) {
@@ -1960,7 +1967,7 @@ var BelongsToMany = /** @class */ (function (_super) {
      */
     BelongsToMany.prototype.createPivots = function (parent, data, key) {
         var _this = this;
-        if (this.pivot.primaryKey instanceof Array === false)
+        if (!Utils.isArray(this.pivot.primaryKey))
             return data;
         Utils.forOwn(data[parent.entity], function (record) {
             var related = record[key];
@@ -2287,7 +2294,7 @@ var MorphToMany = /** @class */ (function (_super) {
                 .where(_this.type, parent.entity)
                 .get();
             var relateds = (record[key] || []).filter(function (relatedId) { return !relatedIds.includes(relatedId); });
-            if (!Array.isArray(relateds) || relateds.length === 0) {
+            if (!Utils.isArray(relateds) || relateds.length === 0) {
                 return;
             }
             _this.createPivotRecord(parent, data, record, relateds);
@@ -2419,7 +2426,7 @@ var MorphedByMany = /** @class */ (function (_super) {
         var _this = this;
         Utils.forOwn(data[parent.entity], function (record) {
             var related = record[key];
-            if (!Array.isArray(related)) {
+            if (!Utils.isArray(related)) {
                 return;
             }
             _this.createPivotRecord(data, record, related);
@@ -2480,7 +2487,7 @@ function value(v) {
     if (v === null) {
         return null;
     }
-    if (Array.isArray(v)) {
+    if (isArray(v)) {
         return array(v);
     }
     if (typeof v === 'object') {
@@ -2508,13 +2515,13 @@ function relation(relation) {
     if (relation === null) {
         return null;
     }
-    if (Array.isArray(relation)) {
+    if (isArray(relation)) {
         return relation.map(function (model) { return model.$toJson(); });
     }
     return relation.$toJson();
 }
 function emptyRelation(relation) {
-    return Array.isArray(relation) ? [] : null;
+    return isArray(relation) ? [] : null;
 }
 
 var Model = /** @class */ (function () {
@@ -2782,10 +2789,16 @@ var Model = /** @class */ (function () {
      * in the composite key.
      */
     Model.isPrimaryKey = function (key) {
-        if (!Array.isArray(this.primaryKey)) {
+        if (!Utils.isArray(this.primaryKey)) {
             return this.primaryKey === key;
         }
         return this.primaryKey.includes(key);
+    };
+    /**
+     * Check if the primary key is a composite key.
+     */
+    Model.isCompositePrimaryKey = function () {
+        return Utils.isArray(this.primaryKey);
     };
     /**
      * Get the id (value of primary key) from teh given record. If primary key is
@@ -2840,7 +2853,7 @@ var Model = /** @class */ (function () {
         if (id === null) {
             return null;
         }
-        if (Array.isArray(id)) {
+        if (Utils.isArray(id)) {
             return JSON.stringify(id);
         }
         return String(id);
@@ -3056,14 +3069,17 @@ var Model = /** @class */ (function () {
     Model.prototype.$update = function (payload) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                if (Array.isArray(payload)) {
+                if (Utils.isArray(payload)) {
                     return [2 /*return*/, this.$dispatch('update', payload)];
                 }
                 if (payload.where !== undefined) {
                     return [2 /*return*/, this.$dispatch('update', payload)];
                 }
                 if (this.$self().getIndexIdFromRecord(payload) === null) {
-                    return [2 /*return*/, this.$dispatch('update', { where: this.$id, data: payload })];
+                    return [2 /*return*/, this.$dispatch('update', {
+                            where: this.$self().getIdFromRecord(this),
+                            data: payload
+                        })];
                 }
                 return [2 /*return*/, this.$dispatch('update', payload)];
             });
@@ -3114,7 +3130,7 @@ var Model = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 primaryKey = this.$primaryKey();
-                if (!Array.isArray(primaryKey)) {
+                if (!Utils.isArray(primaryKey)) {
                     return [2 /*return*/, this.$dispatch('delete', this[primaryKey])];
                 }
                 return [2 /*return*/, this.$dispatch('delete', function (model) {
@@ -3161,7 +3177,7 @@ var Model = /** @class */ (function () {
     Model.prototype.$generatePrimaryId = function () {
         var _this = this;
         var key = this.$self().primaryKey;
-        var keys = Array.isArray(key) ? key : [key];
+        var keys = Utils.isArray(key) ? key : [key];
         keys.forEach(function (k) {
             if (_this[k] === undefined || _this[k] === null) {
                 _this[k] = Uid.make();
@@ -3295,7 +3311,7 @@ function update(context, payload) {
             entity = state.$name;
             // If the payload is an array, then the payload should be an array of
             // data so let's pass the whole payload as data.
-            if (Array.isArray(payload)) {
+            if (isArray(payload)) {
                 return [2 /*return*/, context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true })];
             }
             // If the payload doesn't have `data` property, we'll assume that
@@ -3895,10 +3911,9 @@ var Normalizer = /** @class */ (function () {
         if (Utils.isEmpty(record)) {
             return {};
         }
-        var data = Utils.cloneDeep(record);
         var entity = query.database.schemas[query.model.entity];
-        var schema = Array.isArray(data) ? [entity] : entity;
-        return normalize$1(data, schema).entities;
+        var schema = Utils.isArray(record) ? [entity] : entity;
+        return normalize$1(record, schema).entities;
     };
     return Normalizer;
 }());
@@ -4018,7 +4033,7 @@ var WhereFilter = /** @class */ (function () {
                 return where.value(record[where.field]);
             }
             // Check if field value is in given where Array.
-            if (Array.isArray(where.value)) {
+            if (Utils.isArray(where.value)) {
                 return where.value.indexOf(record[where.field]) !== -1;
             }
             // Simple equal check.
@@ -4105,7 +4120,7 @@ var Loader = /** @class */ (function () {
             return;
         }
         // If we passed an array, we dispatch the bits to with queries.
-        if (Array.isArray(name)) {
+        if (isArray(name)) {
             name.forEach(function (relationName) { return _this.with(query, relationName, constraint); });
             return;
         }
@@ -4314,7 +4329,7 @@ var Rollcaller = /** @class */ (function () {
      * Get count of the relationship.
      */
     Rollcaller.getRelationshipCount = function (relation) {
-        if (Array.isArray(relation)) {
+        if (isArray(relation)) {
             return relation.length;
         }
         return relation ? 1 : 0;
@@ -4489,9 +4504,8 @@ var Query = /** @class */ (function () {
     /**
      * Find the record by the given id.
      */
-    Query.prototype.find = function (id) {
-        var indexId = Array.isArray(id) ? JSON.stringify(id) : id;
-        var record = this.state.data[indexId];
+    Query.prototype.find = function (value) {
+        var record = this.state.data[this.normalizeIndexId(value)];
         if (!record) {
             return null;
         }
@@ -4500,11 +4514,13 @@ var Query = /** @class */ (function () {
     /**
      * Get the record of the given array of ids.
      */
-    Query.prototype.findIn = function (idList) {
+    Query.prototype.findIn = function (values) {
         var _this = this;
-        var records = idList.reduce(function (collection, id) {
-            var indexId = Array.isArray(id) ? JSON.stringify(id) : id;
-            var record = _this.state.data[indexId];
+        if (!Utils.isArray(values)) {
+            return [];
+        }
+        var records = values.reduce(function (collection, value) {
+            var record = _this.state.data[_this.normalizeIndexId(value)];
             if (!record) {
                 return collection;
             }
@@ -4570,12 +4586,22 @@ var Query = /** @class */ (function () {
      * Filter records by their primary key.
      */
     Query.prototype.whereId = function (value) {
+        if (this.model.isCompositePrimaryKey()) {
+            return this.where('$id', this.normalizeIndexId(value));
+        }
         return this.where(this.model.primaryKey, value);
     };
     /**
      * Filter records by their primary keys.
      */
     Query.prototype.whereIdIn = function (values) {
+        var _this = this;
+        if (this.model.isCompositePrimaryKey()) {
+            var idList = values.reduce(function (keys, value) {
+                return __spreadArrays(keys, [_this.normalizeIndexId(value)]);
+            }, []);
+            return this.where('$id', idList);
+        }
         return this.where(this.model.primaryKey, values);
     };
     /**
@@ -4587,7 +4613,7 @@ var Query = /** @class */ (function () {
      * Fk lookups are always "and" type.
      */
     Query.prototype.whereFk = function (field, value) {
-        var values = Array.isArray(value) ? value : [value];
+        var values = Utils.isArray(value) ? value : [value];
         // If lookup filed is the primary key. Initialize or get intersection,
         // because boolean and could have a condition such as
         // `whereId(1).whereId(2).get()`.
@@ -4600,18 +4626,40 @@ var Query = /** @class */ (function () {
         return this;
     };
     /**
-     * Check whether the given field and value combination is filterable through
-     * primary key direct look up.
+     * Convert value to string for composite primary keys as it expects an array.
+     * Otherwise return as is.
+     *
+     * Throws an error when malformed value is given:
+     * - Composite primary key defined on model, expects value to be array.
+     * - Normal primary key defined on model, expects a primitive value.
+     */
+    Query.prototype.normalizeIndexId = function (value) {
+        if (this.model.isCompositePrimaryKey()) {
+            if (!Utils.isArray(value)) {
+                throw new Error('[Vuex ORM] Entity `' + this.entity + '` is configured with a composite ' +
+                    'primary key and expects an array value but instead received: ' + JSON.stringify(value));
+            }
+            return JSON.stringify(value);
+        }
+        if (Utils.isArray(value)) {
+            throw new Error('[Vuex ORM] Entity `' + this.entity + '` expects a single value but ' +
+                'instead received: ' + JSON.stringify(value));
+        }
+        return value;
+    };
+    /**
+     * Check whether the given field is filterable through primary key
+     * direct look up.
      */
     Query.prototype.isIdfilterable = function (field) {
-        return field === this.model.primaryKey && !this.cancelIdFilter;
+        return (field === this.model.primaryKey || field === '$id') && !this.cancelIdFilter;
     };
     /**
      * Set id filter for the given where condition.
      */
     Query.prototype.setIdFilter = function (value) {
         var _this = this;
-        var values = Array.isArray(value) ? value : [value];
+        var values = Utils.isArray(value) ? value : [value];
         // Initialize or get intersection, because boolean and could have a
         // condition such as `whereIdIn([1,2,3]).whereIdIn([1,2]).get()`.
         if (this.idFilter === null) {
@@ -4734,7 +4782,7 @@ var Query = /** @class */ (function () {
         if (!this.cancelIdFilter || this.idFilter === null) {
             return;
         }
-        this.where(this.model.primaryKey, Array.from(this.idFilter.values()));
+        this.where(this.model.isCompositePrimaryKey() ? '$id' : this.model.primaryKey, Array.from(this.idFilter.values()));
         this.idFilter = null;
     };
     /**
@@ -4911,7 +4959,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.update = function (data, condition, options) {
         // If the data is array, simply normalize the data and update them.
-        if (Array.isArray(data)) {
+        if (Utils.isArray(data)) {
             return this.persist('update', data, options);
         }
         // OK, the data is not an array. Now let's check `data` to see what we can
@@ -4943,8 +4991,10 @@ var Query = /** @class */ (function () {
         // Now since the condition is either String or Number, let's check if the
         // model's primary key is not a composite key. If yes, we can't set the
         // condition as ID value for the record so throw an error and abort.
-        if (Array.isArray(this.model.primaryKey)) {
-            throw new Error("\n        You can't specify `where` value as `string` or `number` when you\n        have a composite key defined in your model. Please include composite\n        keys to the `data` fields.\n      ");
+        if (this.model.isCompositePrimaryKey() && !Utils.isArray(condition)) {
+            throw new Error('[Vuex ORM] You can\'t specify `where` value as `string` or `number` ' +
+                'when you have a composite key defined in your model. Please include ' +
+                'composite keys to the `data` fields.');
         }
         // Finally, let's add condition as the primary key of the object and
         // then normalize them to update the records.
@@ -4962,7 +5012,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.updateById = function (data, id) {
         var _a;
-        id = typeof id === 'number' ? id.toString() : id;
+        id = typeof id === 'number' ? id.toString() : this.normalizeIndexId(id);
         var record = this.state.data[id];
         if (!record) {
             return null;
@@ -5591,7 +5641,7 @@ var IdAttribute = /** @class */ (function () {
      * UID for it.
      */
     IdAttribute.generateIds = function (record, model) {
-        var keys = Array.isArray(model.primaryKey) ? model.primaryKey : [model.primaryKey];
+        var keys = isArray(model.primaryKey) ? model.primaryKey : [model.primaryKey];
         keys.forEach(function (k) {
             if (record[k] !== undefined && record[k] !== null) {
                 return;

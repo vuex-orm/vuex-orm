@@ -1,5 +1,5 @@
 import { createStore } from 'test/support/Helpers'
-import Model from 'app/model/Model'
+import Model from '@/model/Model'
 
 describe('Feature - Inheritance - Relations', () => {
   it('can fetch a related data defined on derived entity', async () => {

@@ -1,6 +1,6 @@
 # Single Table Inheritance
 
-Vuex ORM supports Single Table Inheritance (STI) or Sub-classing through ES6 extension (use of the `class ... extends ...` syntax). STI is a way to emulate object-oriented inheritance in a relational database. If you're coming from Ruby on Rails land, you might be familier with it.
+Vuex ORM supports Single Table Inheritance (STI) or Sub-classing through ES6 extension (use of the `class ... extends ...` syntax). STI is a way to emulate object-oriented inheritance in a relational database. If you're coming from Ruby on Rails land, you may be familiar with it.
 
 Basically, it will allow you to get different Model instance based on types of records in the same entity. For example, you might have `users` entity, and you could have a field called `type` and it could be `Person`, `Adult`, or `Child`. Now, when you fetch these records, sometime it's useful if we can get each type in its own Model instance. Here is where STI comes in to play nicely.
 
@@ -185,7 +185,7 @@ class Adult extends Person {
 }
 ```
 
-And now you may use custome type field when inserting data.
+And now you may use a custom `type` field when inserting data.
 
 ```js
 Person.insert({ 

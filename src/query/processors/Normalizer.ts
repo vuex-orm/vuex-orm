@@ -13,12 +13,10 @@ export default class Normalizer {
       return {}
     }
 
-    const data = Utils.cloneDeep(record)
-
     const entity = query.database.schemas[query.model.entity]
 
-    const schema = Array.isArray(data) ? [entity] : entity
+    const schema = Utils.isArray(record) ? [entity] : entity
 
-    return normalize(data, schema).entities as NormalizedData
+    return normalize(record, schema).entities as NormalizedData
   }
 }

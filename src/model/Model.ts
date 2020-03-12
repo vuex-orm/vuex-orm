@@ -432,11 +432,18 @@ export default class Model {
    * in the composite key.
    */
   static isPrimaryKey (key: string): boolean {
-    if (!Array.isArray(this.primaryKey)) {
+    if (!Utils.isArray(this.primaryKey)) {
       return this.primaryKey === key
     }
 
     return this.primaryKey.includes(key)
+  }
+
+  /**
+   * Check if the primary key is a composite key.
+   */
+  static isCompositePrimaryKey (): boolean {
+    return Utils.isArray(this.primaryKey)
   }
 
   /**
@@ -502,7 +509,7 @@ export default class Model {
       return null
     }
 
-    if (Array.isArray(id)) {
+    if (Utils.isArray(id)) {
       return JSON.stringify(id)
     }
 
@@ -681,7 +688,7 @@ export default class Model {
   }
 
   /**
-   * Call Vuex Getetrs.
+   * Call Vuex Getters.
    */
   $getters (method: string): any {
     return this.$self().getters(method)
@@ -740,7 +747,7 @@ export default class Model {
    * Update records.
    */
   async $update (payload: Payloads.Update, options?: PersistOptions.Update): Promise<Collections> {
-    if (Array.isArray(payload)) {
+    if (Utils.isArray(payload)) {
       return this.$dispatch('update', PayloadBuilder.normalize(payload, options))
     }
 
@@ -754,7 +761,7 @@ export default class Model {
         options = {}
       }
 
-      options.where = this.$id
+      options.where = this.$self().getIdFromRecord(this)
 
       return this.$dispatch('update', PayloadBuilder.normalize(payload, options))
     }
@@ -796,7 +803,7 @@ export default class Model {
   async $delete (): Promise<Item<this>> {
     const primaryKey = this.$primaryKey()
 
-    if (!Array.isArray(primaryKey)) {
+    if (!Utils.isArray(primaryKey)) {
       return this.$dispatch('delete', this[primaryKey])
     }
 
@@ -843,7 +850,7 @@ export default class Model {
    */
   $generatePrimaryId (): this {
     const key = this.$self().primaryKey
-    const keys = Array.isArray(key) ? key : [key]
+    const keys = Utils.isArray(key) ? key : [key]
 
     keys.forEach((k) => {
       if (this[k] === undefined || this[k] === null) {

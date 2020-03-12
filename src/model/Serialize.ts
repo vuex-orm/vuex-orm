@@ -1,3 +1,4 @@
+import { isArray } from '../support/Utils'
 import Record from '../data/Record'
 import Item from '../data/Item'
 import Collection from '../data/Collection'
@@ -57,7 +58,7 @@ function value (v: any): any {
     return null
   }
 
-  if (Array.isArray(v)) {
+  if (isArray(v)) {
     return array(v)
   }
 
@@ -98,7 +99,7 @@ function relation (relation: Item | Collection): Record | Record[] | null {
     return null
   }
 
-  if (Array.isArray(relation)) {
+  if (isArray(relation)) {
     return relation.map(model => model.$toJson())
   }
 
@@ -111,5 +112,5 @@ function relation (relation: Item | Collection): Record | Record[] | null {
 function emptyRelation (relation: Item): null
 function emptyRelation (relation: Collection): []
 function emptyRelation (relation: Item | Collection): [] | null {
-  return Array.isArray(relation) ? [] : null
+  return isArray(relation) ? [] : null
 }

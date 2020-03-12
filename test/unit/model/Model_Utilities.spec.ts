@@ -1,4 +1,4 @@
-import Model from 'app/model/Model'
+import Model from '@/model/Model'
 
 describe('Unit – Model - Utilities', () => {
   it('can check if the key is primary key', () => {
@@ -37,6 +37,24 @@ describe('Unit – Model - Utilities', () => {
     expect(Subscription.isPrimaryKey('user_id')).toBe(true)
     expect(Subscription.isPrimaryKey('video_id')).toBe(true)
     expect(Subscription.isPrimaryKey('created_at')).toBe(false)
+  })
+
+  it('can check if the primary key is a composite primary key', () => {
+    class Subscription extends Model {
+      static entity = 'users'
+
+      static primaryKey = ['user_id', 'video_id']
+
+      static fields () {
+        return {
+          user_id: this.attr(null),
+          video_id: this.attr(null),
+          created_at: this.attr(null)
+        }
+      }
+    }
+
+    expect(Subscription.isCompositePrimaryKey()).toBe(true)
   })
 
   it('can get primary key value out of record', () => {

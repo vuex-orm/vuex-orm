@@ -207,7 +207,7 @@ You should import models through injected database instance when you're doing SS
 
 ## Retrieving Data
 
-To retrieve inserted data, Vuex ORM provides a fluent query builder for it. You may think of it as Vuex Getters with additional features added. You would want to retrieve data in `computed` property as you would do when using Vuex.
+To retrieve inserted data, Vuex ORM provides a fluent [Query Builder](../data/retrieving.md#query-builder) for it. You may think of it as Vuex Getters with additional features added. You would want to retrieve data in `computed` property as you would do when using Vuex.
 
 ```vue
 <template>
@@ -233,7 +233,7 @@ export default {
 </script>
 ```
 
-Note that the above method will not include Users within returned posts. If you want to load any relationships, you can use `with` chain with the query builder.
+Note that the above method will not include Users within returned posts. If you want to load any relationships, you can use `with` chain with the [Query Builder](../data/retrieving.md#query-builder).
 
 ```vue
 <template>

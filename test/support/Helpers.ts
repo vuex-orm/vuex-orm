@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import Vuex, { Store, Module } from 'vuex'
-import VuexORM from 'app/index'
-import { mapValues } from 'app/support/Utils'
-import Database from 'app/database/Database'
-import Model from 'app/model/Model'
-import State from 'app/modules/contracts/State'
+import VuexORM from '@/index'
+import { mapValues } from '@/support/Utils'
+import Database from '@/database/Database'
+import Model from '@/model/Model'
+import State from '@/modules/contracts/State'
 
 Vue.use(Vuex)
 

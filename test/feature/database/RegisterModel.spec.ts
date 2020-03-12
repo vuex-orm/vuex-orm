@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import VuexORM from 'app/index'
-import Database from 'app/database/Database'
-import Model from 'app/model/Model'
+import VuexORM from '@/index'
+import Database from '@/database/Database'
+import Model from '@/model/Model'
 
 Vue.use(Vuex)
 

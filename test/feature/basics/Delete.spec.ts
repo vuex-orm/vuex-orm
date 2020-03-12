@@ -1,9 +1,15 @@
 import { createStore, createState } from 'test/support/Helpers'
-import Model from 'app/model/Model'
+import Model from '@/model/Model'
 
 describe('Feature – Basics – Delete', () => {
   class User extends Model {
     static entity = 'users'
+
+    // @Attribute
+    id!: number
+
+    // @Str('')
+    name!: string
 
     static fields () {
       return {
@@ -11,26 +17,22 @@ describe('Feature – Basics – Delete', () => {
         name: this.string('')
       }
     }
-
-    id!: any
-    name!: string
   }
 
   class Post extends Model {
     static entity = 'posts'
+
+    // @Num
+    id!: number
 
     static fields () {
       return {
         id: this.number(null)
       }
     }
-
-    id!: any
   }
 
-  function getStore () {
-    return createStore([{ model: User }, { model: Post }])
-  }
+  const getStore = () => createStore([{ model: User }, { model: Post }])
 
   it('can delete a record by specifying the id', async () => {
     const store = getStore()
@@ -110,10 +112,10 @@ describe('Feature – Basics – Delete', () => {
 
     await User.create([{ id: 1 }, { id: 2 }])
 
-    const user = await User.delete(1) as User
+    const user = await User.delete(1)
 
     expect(user).toBeInstanceOf(User)
-    expect(user.id).toBe(1)
+    expect(user?.id).toBe(1)
 
     const expected = createState({
       users: {

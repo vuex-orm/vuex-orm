@@ -1,10 +1,10 @@
 # Inserting & Updating
 
-You may insert new data, or update existing data through various Model methods. All data created through Vuex ORM gets persisted to Vuex Store.
+You may insert new data or update existing data through various Model methods. All data created through Vuex ORM gets persisted to Vuex Store.
 
 ## Inserts
 
-To create a new data, you can use `insert`, `create` , and `new` method. They all insert new records to the Vuex Store but behaves in a slightly different manner.
+To create new data, you can use the `insert`, `create` , and `new` methods. They all insert new records to the Vuex Store but behave in a slightly different manner.
 
 The `insert` method will simply insert new records. You should pass an object containing records in `data` key to the method.
 
@@ -343,7 +343,7 @@ Though there are few things that you should know about when inserting relationsh
 
 ### Inserting Many To Many Relationships
 
-When inserting many-to-many relationships, such as `belongsToMany` or `morphToMany`, any data nested under the `pivot` attribute will be inserted as well.
+Since 0.36.0+, when inserting many-to-many relationships such as `belongsToMany` or `morphToMany`, any data nested under the `pivot` attribute will be inserted into intermediate models.
 
 Let's take a look at an example. Here we have `User` belonging to many `Role` through `RoleUser`.
 
@@ -575,7 +575,7 @@ User.insert({
   }
 })
 
-// State after `insert`. See there's a intermidiate `role_user` records.
+// State after `insert`. See there's a intermediate `role_user` records.
 {
   entities: {
     users: {
@@ -754,7 +754,7 @@ const entities = await User.create({
 */
 ```
 
-The `new` method will also return the newly created record, but it'll return only one reocrd since it's obvious that there's no relational data.
+The `new` method will also return the newly created record, but it'll return only one record since it's obvious that there's no relational data.
 
 ```js
 const user = await User.new()
@@ -863,7 +863,7 @@ User.update({
 }
 ```
 
-`data` also could be `Function`. The `Function` will receive the target record as an argument. Then you can modify any properties. This is especially useful when you want to interact with the field that contains `Array` or `Object`.
+`data` also could be a `Function`. The `Function` will receive the target record as an argument. Then you can modify any properties. This is especially useful when you want to interact with the field that contains `Array` or `Object`.
 
 ```js
 // Initial State.
@@ -927,9 +927,49 @@ User.update({
 }
 ```
 
+It is also possible to pass an array of objects to the `data` property when those objects contain the primary key.
+
+```js
+// Initial State.
+{
+  entities: {
+    users: {
+      1: { id: 1, name: 'John', age: 20 },
+      2: { id: 2, name: 'Jane', age: 30 },
+      3: { id: 3, name: 'Harry', age: 37 }
+    }
+  }
+}
+
+// Update by passing an array of objects.
+User.update({
+  data: [
+    { 
+      id: 2, // <- Primary key must exist.
+      age: 24
+    },
+    {
+      id: 3,
+      age: 40
+    }
+  ] 
+})
+
+// State after `update`.
+{
+  entities: {
+    users: {
+      1: { id: 1, name: 'John', age: 20 },
+      2: { id: 2, name: 'Jane', age: 24 },
+      3: { id: 3, name: 'Harry', age: 40 }
+    }
+  }
+}
+```
+
 ### Updating Relationships
 
-Updating relationships works as same as insert methods such as `insert` and `create`. Any data you pass to `data` field will be normalized and updated accordingly in Vuex Store. Note that you can't specify `where` field for relationships, so don't forget to include the primary key for the relationships.
+Updating relationships works the same as insert methods such as `insert` and `create`. Any data you pass to `data` field will be normalized and updated accordingly in Vuex Store. Note that you can't specify `where` field for relationships, so don't forget to include the primary key for the relationships.
 
 ```js
 // Initial State.

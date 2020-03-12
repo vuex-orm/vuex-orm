@@ -1,4 +1,4 @@
-import Utils from 'app/support/Utils'
+import Utils from '@/support/Utils'
 
 describe('Unit - Utils', () => {
   describe('#orderBy', () => {

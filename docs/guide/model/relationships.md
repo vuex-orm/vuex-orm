@@ -380,9 +380,11 @@ class RoleUser extends Model {
 }
 ```
 
-As you can see, the relationship is defined the same as its User counterpart, except referencing the User model and the order of 3rd and 4th argument is inversed.
+As you can see, the relationship is defined the same as its `User` counterpart, except referencing the `User` model and the order of 3rd and 4th argument is reversed.
 
 ### Access Intermediate Model
+
+> Since: 0.36.0+
 
 Working with many-to-many relations requires the presence of an intermediate model. Vuex ORM provides some helpful ways of interacting with this model. For example, let's assume our `User` object has many `Role` objects that it is related to. After accessing this relationship, we may access the intermediate model using the `pivot` attribute on the models.
 
@@ -397,6 +399,8 @@ user.roles.forEach((role) => {
 Notice that each `Role` model we retrieve is automatically assigned a `pivot` attribute. This attribute contains a model representing the intermediate model and may be used like any other model.
 
 ### Customizing The `pivot` Attribute Name
+
+> Since: 0.36.0+
 
 As noted earlier, attributes from the intermediate model may be accessed on models using the `pivot` attribute. However, you are free to customize the name of this attribute to better reflect its purpose within your application.
 
@@ -535,7 +539,7 @@ class Image extends Model {
 }
 ```
 
-Take note of the `imageable_id` and `imageable_type` columns on the images table. The `imageable_id` column will contain the ID value of the post or user, while the `imageable_type` column will contain the class name of the parent Model. The `imageable_type` column is used by Eloquent to determine which "type" of parent model to return when accessing the imageable relation.
+Take note of the `imageable_id` and `imageable_type` columns on the images table. The `imageable_id` column will contain the ID value of the post or user, while the `imageable_type` column will contain the class name of the parent Model. The `imageable_type` column is used to determine which "type" of parent model to return when accessing the imageable relation.
 
 `this.morphMany` method defined at both User and Post model is the definition of the relationship. Now you may fetch image for the model as usual.
 
@@ -797,6 +801,8 @@ class Tag extends Model {
 
 ### Access Intermediate Model
 
+> Since: 0.36.0+
+
 As the same as `belongsToMany` relationship, you may access the intermediate model for polymorphic many-to-many relationship through `pivot` attribute on the model.
 
 ```js
@@ -810,6 +816,8 @@ post.tags.forEach((tag) => {
 Each `Tag` model we retrieve is automatically assigned a `pivot` attribute. This attribute contains a model representing the intermediate model and may be used like any other model.
 
 ### Customizing The `pivot` Attribute Name
+
+> Since: 0.36.0+
 
 Again, as the same as `belongsToMany` relationship, you are free to customize the name of this attribute through `as` method.
 
