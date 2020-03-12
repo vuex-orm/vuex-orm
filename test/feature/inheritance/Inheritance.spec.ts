@@ -1,5 +1,5 @@
 import { createStore } from 'test/support/Helpers'
-import Model from 'app/model/Model'
+import Model from '@/model/Model'
 
 describe('Feature – Inheritance', () => {
   class Person extends Model {

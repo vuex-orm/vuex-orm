@@ -1,6 +1,6 @@
 import { createStore } from 'test/support/Helpers'
-import Model from 'app/model/Model'
-import Query from 'app/query/Query'
+import Model from '@/model/Model'
+import Query from '@/query/Query'
 
 describe('Feature – Hooks – Global', () => {
   beforeEach(() => {
@@ -12,6 +12,12 @@ describe('Feature – Hooks – Global', () => {
     class User extends Model {
       static entity = 'users'
 
+      // @Attribute
+      id!: number
+
+      // @Attribute('')
+      role!: string
+
       static fields () {
         return {
           id: this.attr(null),
@@ -20,31 +26,27 @@ describe('Feature – Hooks – Global', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
+    await User.create({
       data: [{ id: 1, role: 'admin' }, { id: 2, role: 'admin' }, { id: 3, role: 'user' }]
     })
 
-    const expected = [
-      { $id: '1', id: 1, role: 'admin' }
-    ]
+    const expected = [{ $id: '1', id: 1, role: 'admin' }]
 
     const callbackFunction = function (this: Query, records: any) {
       expect(records.length).toBe(2)
       expect(this).toBeInstanceOf(Query)
 
-      return records.filter((r: any) => r.id === 1)
+      return records.filter((r: User) => r.id === 1)
     }
 
     const hookId = Query.on('afterWhere', callbackFunction)
 
-    const result = store.getters['entities/users/query']().where('role', 'admin').get()
-
-    expect(result).toEqual(expected)
+    const users = User.query().where('role', 'admin').get()
+    expect(users).toEqual(expected)
 
     const removeBoolean = Query.off(hookId)
-
     expect(removeBoolean).toBe(true)
   })
 
@@ -52,6 +54,12 @@ describe('Feature – Hooks – Global', () => {
     class User extends Model {
       static entity = 'users'
 
+      // @Attribute
+      id!: number
+
+      // @Attribute('')
+      role!: string
+
       static fields () {
         return {
           id: this.attr(null),
@@ -60,25 +68,27 @@ describe('Feature – Hooks – Global', () => {
       }
     }
 
-    const store = createStore([{ model: User }])
+    createStore([{ model: User }])
 
-    await store.dispatch('entities/users/create', {
-      data: [{ id: 1, role: 'admin' }, { id: 2, role: 'admin' }, { id: 3, role: 'user' }]
+    await User.create({
+      data: [
+        { id: 1, role: 'admin' },
+        { id: 2, role: 'admin' },
+        { id: 3, role: 'user' }
+      ]
     })
 
-    const callbackFunction = function (records: any) {
-      return records
-    }
+    const callbackFunction = (records: any) => records
 
     const persistedHookId1 = Query.on('afterWhere', callbackFunction)
     expect(Query.hooks.afterWhere.length).toBe(1)
-    store.getters['entities/users/all']()
+    User.all()
     expect(Query.hooks.afterWhere.length).toBe(1)
 
     const persistedHookId2 = Query.on('beforeSelect', callbackFunction)
     expect(Query.hooks.beforeSelect.length).toBe(1)
 
-    store.getters['entities/users/all']()
+    User.all()
     expect(Query.hooks.beforeSelect.length).toBe(1)
 
     const removed1 = Query.off(persistedHookId1)

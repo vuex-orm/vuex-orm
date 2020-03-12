@@ -1,5 +1,5 @@
 import { createStore, createState } from 'test/support/Helpers'
-import Model from 'app/model/Model'
+import Model from '@/model/Model'
 
 describe('Feature – Basics – Delete Composite Key', () => {
   class User extends Model {
@@ -15,9 +15,7 @@ describe('Feature – Basics – Delete Composite Key', () => {
     }
   }
 
-  function getStore () {
-    return createStore([{ model: User }])
-  }
+  const getStore = () => createStore([{ model: User }])
 
   it('can delete a record by specifying the composite id as an array', async () => {
     const store = getStore()

@@ -1,5 +1,5 @@
 import { createStore, createState } from 'test/support/Helpers'
-import { Model, Fields } from 'app/index'
+import { Model, Fields } from '@/index'
 
 describe('Features – Relations – Has One', () => {
   class User extends Model {
