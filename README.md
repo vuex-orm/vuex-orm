@@ -17,7 +17,7 @@
   <a href="https://standardjs.com">
     <img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="JavaScript Style Guide">
   </a>
-  <a href="https://github.com/vuex-orm/vuex-orm/blob/master/LICENSE.md">
+  <a href="https://github.com/vuex-orm/vuex-orm/blob/master/LICENSE">
     <img src="https://img.shields.io/npm/l/@vuex-orm/core.svg" alt="License">
   </a>
 </p>
