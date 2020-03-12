@@ -1,10 +1,19 @@
 import { createStore } from 'test/support/Helpers'
-import Model from 'app/model/Model'
+import Model from '@/model/Model'
 
 describe('Feature – Basics – Update', () => {
   it('can update record by including primary key in the data', async () => {
     class User extends Model {
       static entity = 'users'
+
+      // @Attribute
+      id!: number
+
+      // @Attribute('')
+      name!: string
+
+      // @Attribute
+      age!: number
 
       static fields () {
         return {
@@ -13,10 +22,6 @@ describe('Feature – Basics – Update', () => {
           age: this.attr(null)
         }
       }
-
-      id!: any
-      name!: any
-      age!: any
     }
 
     createStore([{ model: User }])

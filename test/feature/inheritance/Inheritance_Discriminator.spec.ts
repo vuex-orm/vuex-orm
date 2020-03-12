@@ -1,5 +1,5 @@
 import { createStore } from 'test/support/Helpers'
-import Model from 'app/model/Model'
+import Model from '@/model/Model'
 
 describe('Feature - Inheritance - Discriminator field', () => {
   it('uses default `type` field when no typeKey is defined', async () => {

@@ -3,13 +3,12 @@
     "target": "es5",
     "module": "esnext",
     "strict": true,
-    "allowJs": true,
     "importHelpers": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
-    "rootDir": "src",
+    "rootDir": ".",
     "outDir": "lib",
     "declaration": true,
     "sourceMap": true,
@@ -28,8 +27,7 @@
     ],
 
     "paths": {
-      "*": ["*"],
-      "app/*": ["src/*"],
+      "@/*": ["src/*"],
       "test/*": ["test/*"]
     }
   },

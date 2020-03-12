@@ -1,6 +1,6 @@
 import { createStoreFromDatabase } from 'test/support/Helpers'
-import Database from 'app/database/Database'
-import Model from 'app/model/Model'
+import Database from '@/database/Database'
+import Model from '@/model/Model'
 
 describe('Unit – Database', () => {
   it('registers itself to the store instance', () => {

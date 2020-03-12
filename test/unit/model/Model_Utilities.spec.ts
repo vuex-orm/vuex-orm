@@ -1,4 +1,4 @@
-import Model from 'app/model/Model'
+import Model from '@/model/Model'
 
 describe('Unit – Model - Utilities', () => {
   it('can check if the key is primary key', () => {
