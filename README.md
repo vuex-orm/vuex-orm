@@ -70,6 +70,9 @@ Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http
   <a href="https://github.com/bpuig">
     <img src="https://avatars3.githubusercontent.com/u/22938625?s=460&v=4" alt="bpuig" width="48">
   </a>
+  <a href="https://github.com/robokozo">
+    <img src="https://avatars2.githubusercontent.com/u/1719221?s=400&u=b5739798ee9a3d713f5ca3bd3d6a086c13d229a3&v=4" alt="John" width="48">
+  </a>
 </p>
 
 ## Documentation
