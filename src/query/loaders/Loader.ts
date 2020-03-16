@@ -11,7 +11,7 @@ export default class Loader {
   static with (query: Query, name: string | string[], constraint: Constraint | null): void {
     // If the name of the relation is `*`, we'll load all relationships.
     if (name === '*') {
-      this.withAll(query)
+      this.withAll(query, constraint)
 
       return
     }
@@ -30,7 +30,7 @@ export default class Loader {
   /**
    * Set all relationships to be eager loaded with the query.
    */
-  static withAll (query: Query, constraint: Constraint = () => null): void {
+  static withAll (query: Query, constraint: Constraint | null): void {
     const fields = query.model.getFields()
 
     for (const field in fields) {

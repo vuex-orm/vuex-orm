@@ -533,6 +533,15 @@ const user = User.query().with('posts.comments', (query) => {
 }).get()
 ```
 
+Similarly, you may add constraints to wilcard relations. For example, `posts` may have `comments` and `tags`, all of which will be ordered by the `created_at` field.
+
+```js
+const user = User.query().with('posts.*', (query) => {
+  // This constraint will be applied to all relations belonging to `posts`
+  query.orderBy('created_at', 'desc')
+}).get()
+```
+
 If you need to add constraints to each relation, you could always nest constraints. This is the most flexible way of defining constraints to the relationships.
 
 ```js
