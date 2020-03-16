@@ -168,7 +168,7 @@ You may pass a closure to the 2nd argument when you need more powerful constrain
 
 ```js
 // Get users with age higher than 20.
-const user = User.query().where('age', value => value > 20).get()
+const user = User.query().where('age', (value) => value > 20).get()
 ```
 
 Or, you may pass a closure to the 1st argument to get full control of the condition. The argument is the data itself.
@@ -418,7 +418,7 @@ const user = User.query()
 
 ### Load All Relations
 
-You can load all relations using the `withAll` method.
+You can load all relations on a model using the `withAll` method.
 
 ```js
 const user = User.query().withAll().first()
@@ -449,6 +449,14 @@ const user = User.query().withAll().first()
     ]
   }
 */
+```
+
+Constraints may also be added for more granular control.
+
+```js
+const user = User.query().withAll((query) => {
+  query.has('comments')
+}).first()
 ```
 
 To fetch all sub relations of a relation using the dot syntax, use `*`.
@@ -530,6 +538,15 @@ When you add constraints to the "nested" relation, the constraints will be appli
 const user = User.query().with('posts.comments', (query) => {
   // This constraint will be applied to the `comments`, not `posts`.
   query.where('type', 'review')
+}).get()
+```
+
+Similarly, you may add constraints to wildcard relations. For example, `posts` may have `comments` and `tags`, all of which will be ordered by the `created_at` field.
+
+```js
+const user = User.query().with('posts.*', (query) => {
+  // This constraint will be applied to all relations belonging to `posts`
+  query.orderBy('created_at', 'desc')
 }).get()
 ```
 
