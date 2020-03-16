@@ -2,7 +2,6 @@ import { Store, Plugin } from 'vuex'
 import Container from '../container/Container'
 import Database from '../database/Database'
 import HackedDatabase from '../database/HackedDatabase'
-import Model from '../model/Model'
 import Repository from '../repository/Repository'
 
 export type Install = (database: Database, options?: Options) => Plugin<any>
@@ -42,8 +41,21 @@ function registerDatabase (store: Store<any>, database: Database): void {
  * Mixin repo function to the store.
  */
 function mixinRepoFunction (store: Store<any>): void {
-  store.$repo = function<M extends typeof Model>(model: M): Repository<M> {
-    return new Repository(this, model)
+  store.$repo = function (modelOrRepository: any): any {
+    const repository = modelOrRepository._isRepository
+      ? new modelOrRepository(this)
+      : new Repository(this, modelOrRepository)
+
+    if (!repository.model) {
+      throw new Error(
+        '[Vuex ORM] The repository was instantiated without a model being ' +
+        'set. It happens when you forgot to register the model to the ' +
+        'custom repository. Please check if you have correctly set `model` ' +
+        'property at the repository class.'
+      )
+    }
+
+    return repository
   }
 }
 

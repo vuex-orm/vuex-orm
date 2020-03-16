@@ -1,4 +1,5 @@
 import { Store } from 'vuex'
+import { ConstructorOf as BaseConstructorOf } from '../types'
 import Database from '../database/Database'
 import { Record, Item, Collection, Collections } from '../data'
 import Model from '../model/Model'
@@ -6,12 +7,18 @@ import * as Payloads from '../modules/payloads/Actions'
 import Query from '../query/Query'
 import Predicate from '../query/contracts/Predicate'
 
-type ConstructorOf<C> = {
-  new (...args: any[]): C
+interface ConstructorOf<C> extends BaseConstructorOf<C> {
   entity: string
 }
 
 export default class Repository<M extends Model> {
+  /**
+   * A special flag to indicate if this is the repository class or not. It's
+   * used when retrieving repository instance from `store.$repo()` method to
+   * determine whether the passed in class is either a repository or a model.
+   */
+  static _isRepository: boolean = true
+
   /**
    * The store instance for the repository.
    */
@@ -20,14 +27,17 @@ export default class Repository<M extends Model> {
   /**
    * The model for the repository.
    */
-  model: ConstructorOf<M>
+  model!: ConstructorOf<M>
 
   /**
    * Create a new repository instance.
    */
-  constructor (store: Store<any>, model: ConstructorOf<M>) {
+  constructor (store: Store<any>, model?: ConstructorOf<M>) {
     this.store = store
-    this.model = model
+
+    if (model) {
+      this.model = model
+    }
   }
 
   /**

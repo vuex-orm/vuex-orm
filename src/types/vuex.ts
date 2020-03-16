@@ -1,3 +1,4 @@
+import { ConstructorOf } from '../types'
 import Database from '../database/Database'
 import HackedDatabase from '../database/HackedDatabase'
 import Model from '../model/Model'
@@ -13,7 +14,8 @@ declare module 'vuex' {
     /**
      * Get a new repository instance for the given model.
      */
-    $repo <M extends typeof Model> (model: M): Repository<M>
+    $repo <R extends Repository<Model>> (repository: ConstructorOf<R>): R
+    $repo <M extends Model> (model: ConstructorOf<M>): Repository<M>
 
     /**
      * Get the database attached to the store. It's the old syntax and should
