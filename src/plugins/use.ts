@@ -1,3 +1,4 @@
+import Repository from '../repository/Repository'
 import Model from '../model/Model'
 import Attribute from '../attributes/Attribute'
 import Type from '../attributes/types/Type'
@@ -32,6 +33,7 @@ import Query from '../query/Query'
 import Database from '../database/Database'
 
 export interface PluginComponents {
+  Repository: typeof Repository
   Model: typeof Model
   Attribute: typeof Attribute
   Type: typeof Type
@@ -73,6 +75,7 @@ export type Use = (plugin: Plugin, options?: Options) => void
 
 export default function (plugin: Plugin, options: Options = {}): void {
   const components: PluginComponents = {
+    Repository,
     Model,
     Attribute,
     Type,
