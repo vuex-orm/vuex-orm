@@ -1,12 +1,17 @@
 import { Store } from 'vuex'
 import Database from '../database/Database'
-import { Record, Item, Collection, Collections, InstanceOf } from '../data'
+import { Record, Item, Collection, Collections } from '../data'
 import Model from '../model/Model'
 import * as Payloads from '../modules/payloads/Actions'
 import Query from '../query/Query'
 import Predicate from '../query/contracts/Predicate'
 
-export default class Repository<M extends typeof Model> {
+type ConstructorOf<C> = {
+  new (...args: any[]): C
+  entity: string
+}
+
+export default class Repository<M extends Model> {
   /**
    * The store instance for the repository.
    */
@@ -15,12 +20,12 @@ export default class Repository<M extends typeof Model> {
   /**
    * The model for the repository.
    */
-  model: M
+  model: ConstructorOf<M>
 
   /**
    * Create a new repository instance.
    */
-  constructor (store: Store<any>, model: M) {
+  constructor (store: Store<any>, model: ConstructorOf<M>) {
     this.store = store
     this.model = model
   }
@@ -57,35 +62,35 @@ export default class Repository<M extends typeof Model> {
   /**
    * Create a new model instance.
    */
-  make (record?: Record): InstanceOf<M> {
-    return new this.model(record) as InstanceOf<M>
+  make (record?: Record): M {
+    return new this.model(record)
   }
 
   /**
    * Get all records.
    */
-  all (): Collection<InstanceOf<M>> {
+  all (): Collection<M> {
     return this.getters('all')()
   }
 
   /**
    * Find a record.
    */
-  find (id: string | number | (number | string)[]): Item<InstanceOf<M>> {
+  find (id: string | number | (number | string)[]): Item<M> {
     return this.getters('find')(id)
   }
 
   /**
    * Get the record of the given array of ids.
    */
-  findIn (idList: (number | string | (number | string)[])[]): Collection<InstanceOf<M>> {
+  findIn (idList: (number | string | (number | string)[])[]): Collection<M> {
     return this.getters('findIn')(idList)
   }
 
   /**
    * Get query instance.
    */
-  query (): Query<InstanceOf<M>> {
+  query (): Query<M> {
     return this.getters('query')()
   }
 
@@ -99,7 +104,7 @@ export default class Repository<M extends typeof Model> {
   /**
    * Create new data with all fields filled by default values.
    */
-  new (): Promise<InstanceOf<M>> {
+  new (): Promise<M> {
     return this.dispatch('new')
   }
 
@@ -136,8 +141,8 @@ export default class Repository<M extends typeof Model> {
   /**
    * Delete records that matches the given condition.
    */
-  delete (id: string | number | (number | string)[]): Promise<Item<InstanceOf<M>>>
-  delete (condition: Predicate<InstanceOf<M>>): Promise<Collection<InstanceOf<M>>>
+  delete (id: string | number | (number | string)[]): Promise<Item<M>>
+  delete (condition: Predicate<M>): Promise<Collection<M>>
   delete (payload: any): any {
     return this.dispatch('delete', payload)
   }
@@ -145,7 +150,7 @@ export default class Repository<M extends typeof Model> {
   /**
    * Delete all records from the store.
    */
-  deleteAll (): Promise<Collection<InstanceOf<M>>> {
+  deleteAll (): Promise<Collection<M>> {
     return this.dispatch('deleteAll')
   }
 }
