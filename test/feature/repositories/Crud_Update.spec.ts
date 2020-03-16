@@ -1,5 +1,5 @@
 import { createStore, createState } from 'test/support/Helpers'
-import { Model } from 'app/index'
+import { Model } from '@/index'
 
 describe('Feature - Repositories - CRUD Update', () => {
   it('can update record by including primary key in the data', async () => {

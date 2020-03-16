@@ -1,5 +1,5 @@
 import { createStore } from 'test/support/Helpers'
-import { Model, Repository } from 'app/index'
+import { Model, Repository } from '@/index'
 
 describe('Feature - Repositories - Store', () => {
   it('can retrieve a new repository instance from the store', () => {

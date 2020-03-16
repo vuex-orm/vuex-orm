@@ -1,5 +1,5 @@
 import { createStore, createState } from 'test/support/Helpers'
-import { Model } from 'app/index'
+import { Model } from '@/index'
 
 describe('Feature - Repositories - CRUD Delete', () => {
   class User extends Model {

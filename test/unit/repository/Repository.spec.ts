@@ -1,5 +1,5 @@
 import { createStore } from 'test/support/Helpers'
-import { Model } from 'app/index'
+import { Model } from '@/index'
 
 describe('Unit - Repository', () => {
   it('can instantiate a new model instance without a record', () => {

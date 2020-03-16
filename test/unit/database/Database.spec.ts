@@ -1,7 +1,7 @@
 import { createStoreFromDatabase } from 'test/support/Helpers'
-import Database from 'app/database/Database'
-import HackedDatabase from 'app/database/HackedDatabase'
-import Model from 'app/model/Model'
+import Database from '@/database/Database'
+import HackedDatabase from '@/database/HackedDatabase'
+import Model from '@/model/Model'
 
 describe('Unit – Database', () => {
   it('can fetch all models', () => {

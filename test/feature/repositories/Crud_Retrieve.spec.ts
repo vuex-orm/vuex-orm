@@ -1,5 +1,5 @@
 import { createStore } from 'test/support/Helpers'
-import { Model, Query } from 'app/index'
+import { Model, Query } from '@/index'
 
 describe('Feature - Repositories - CRUD Retrieve', () => {
   it('can get a new query instance', () => {
