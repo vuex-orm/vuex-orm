@@ -518,8 +518,8 @@ export default class Query<T extends Model = Model> {
   /**
    * Query all relations.
    */
-  withAll (): this {
-    Loader.withAll(this)
+  withAll (constraint: Contracts.RelationshipConstraint | null = null): this {
+    Loader.withAll(this, constraint)
 
     return this
   }

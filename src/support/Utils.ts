@@ -218,7 +218,7 @@ export function groupBy (collection: any[], iteratee: (record: any) => any): any
 /**
  * Deep clone the given target object.
  */
-export function cloneDeep <T extends object> (target: T): T {
+export function cloneDeep<T extends object> (target: T): T {
   if (target === null) {
     return target
   }
