@@ -21,7 +21,7 @@ export default class MorphedByMany extends Relation {
   pivot: typeof Model
 
   /**
-   * The field name that conatins id of the related model.
+   * The field name that contains id of the related model.
    */
   relatedId: string
 
@@ -31,7 +31,7 @@ export default class MorphedByMany extends Relation {
   id: string
 
   /**
-   * The field name fthat contains type of the parent model.
+   * The field name that contains type of the parent model.
    */
   type: string
 
@@ -53,7 +53,7 @@ export default class MorphedByMany extends Relation {
   /**
    * Create a new belongs to instance.
    */
-  constructor (
+  constructor(
     model: typeof Model,
     related: Entity,
     pivot: Entity,
@@ -77,7 +77,7 @@ export default class MorphedByMany extends Relation {
   /**
    * Specify the custom pivot accessor to use for the relationship.
    */
-  as (accessor: string): this {
+  as(accessor: string): this {
     this.pivotKey = accessor
 
     return this
@@ -86,7 +86,7 @@ export default class MorphedByMany extends Relation {
   /**
    * Define the normalizr schema for the relationship.
    */
-  define (schema: Schema): NormalizrSchema {
+  define(schema: Schema): NormalizrSchema {
     return schema.many(this.related)
   }
 
@@ -94,7 +94,7 @@ export default class MorphedByMany extends Relation {
    * Attach the relational key to the given data. Since morphed by many
    * relationship doesn't have any foreign key, it would do nothing.
    */
-  attach (_key: any, _record: Record, _data: NormalizedData): void {
+  attach(_key: any, _record: Record, _data: NormalizedData): void {
     return
   }
 
@@ -102,15 +102,24 @@ export default class MorphedByMany extends Relation {
    * Make value to be set to model property. This method is used when
    * instantiating a model or creating a plain object from a model.
    */
-  make (value: any, _parent: Record, _key: string): Model[] {
+  make(value: any, _parent: Record, _key: string): Model[] {
     return this.makeManyRelation(value, this.related)
   }
 
   /**
    * Load the morph many relationship for the record.
    */
-  load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void {
-    const relatedQuery = this.getRelation(query, this.related.entity, constraints)
+  load(
+    query: Query,
+    collection: Collection,
+    name: string,
+    constraints: Constraint[]
+  ): void {
+    const relatedQuery = this.getRelation(
+      query,
+      this.related.entity,
+      constraints
+    )
 
     const pivotQuery = query.newQuery(this.pivot.entity)
 
@@ -132,49 +141,75 @@ export default class MorphedByMany extends Relation {
   /**
    * Set the constraints for the pivot relation.
    */
-  addEagerConstraintForPivot (query: Query, collection: Collection, type: string): void {
-    query.whereFk(this.type, type).whereFk(this.relatedId, this.getKeys(collection, this.parentKey))
+  addEagerConstraintForPivot(
+    query: Query,
+    collection: Collection,
+    type: string
+  ): void {
+    query
+      .whereFk(this.type, type)
+      .whereFk(this.relatedId, this.getKeys(collection, this.parentKey))
   }
 
   /**
    * Set the constraints for the related relation.
    */
-  addEagerConstraintForRelated (query: Query, collection: Collection): void {
+  addEagerConstraintForRelated(query: Query, collection: Collection): void {
     query.whereFk(this.relatedKey, this.getKeys(collection, this.id))
   }
 
   /**
    * Create a new indexed map for the pivot relation.
    */
-  mapPivotRelations (pivots: Collection, relatedQuery: Query): Records {
-    const relateds = this.mapManyRelations(relatedQuery.get(), this.relatedKey)
+  mapPivotRelations(pivots: Collection, relatedQuery: Query): Records {
+    const relations = this.mapManyRelations(relatedQuery.get(), this.relatedKey)
 
-    return pivots.reduce((records, record) => {
+    if (relatedQuery.orders.length) {
+      return this.mapRelationsByOrders(
+        pivots,
+        relations,
+        this.relatedId,
+        this.id
+      )
+    }
+
+    return pivots.reduce<Record>((records, record) => {
       const id = record[this.relatedId]
 
       if (!records[id]) {
         records[id] = []
       }
 
-      const related = relateds[record[this.id]]
+      const related = relations.get(record[this.id])
 
-      records[id] = records[id].concat(related.map((model: Record) => {
-        model[this.pivotKey] = record
-        return model
-      }))
+      /* istanbul ignore if */
+      if (related === undefined || related.length === 0) {
+        return records
+      }
+
+      records[id] = records[id].concat(
+        related.map((model: Record) => {
+          model[this.pivotKey] = record
+          return model
+        })
+      )
 
       return records
-    }, {} as Records)
+    }, {})
   }
 
   /**
    * Create pivot records for the given records if needed.
    */
-  createPivots (parent: typeof Model, data: NormalizedData, key: string): NormalizedData {
+  createPivots(
+    parent: typeof Model,
+    data: NormalizedData,
+    key: string
+  ): NormalizedData {
     Utils.forOwn(data[parent.entity], (record) => {
       const related = record[key]
 
-      if (!Array.isArray(related)) {
+      if (!Utils.isArray(related)) {
         return
       }
 
@@ -187,7 +222,11 @@ export default class MorphedByMany extends Relation {
   /**
    * Create a pivot record.
    */
-  createPivotRecord (data: NormalizedData, record: Record, related: any[]): void {
+  createPivotRecord(
+    data: NormalizedData,
+    record: Record,
+    related: any[]
+  ): void {
     related.forEach((id) => {
       const parentId = record[this.parentKey]
       const pivotKey = `${id}_${parentId}_${this.related.entity}`

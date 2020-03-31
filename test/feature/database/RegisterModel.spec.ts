@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import VuexORM from 'app/index'
-import Database from 'app/database/Database'
-import Model from 'app/model/Model'
+import VuexORM from '@/index'
+import Database from '@/database/Database'
+import Model from '@/model/Model'
 
 Vue.use(Vuex)
 
@@ -10,7 +10,7 @@ describe('Feature – Database - Register Model', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    static fields() {
       return {
         id: this.uid(),
         name: this.string('')
@@ -21,7 +21,7 @@ describe('Feature – Database - Register Model', () => {
   class Hobby extends Model {
     static entity = 'hobbies'
 
-    static fields () {
+    static fields() {
       return {
         id: this.uid(),
         user_id: this.attr(null),
@@ -41,18 +41,20 @@ describe('Feature – Database - Register Model', () => {
     },
 
     mutations: {
-      setCurrent (state: any, id: number) {
+      setCurrent(state: any, id: number) {
         state.currentId = id
       }
     },
 
     actions: {
-      login ({ commit, state }: any, name: string) {
-        const id = Object.keys(state.data).find(key => state.data[key].name === name)
+      login({ commit, state }: any, name: string) {
+        const id = Object.keys(state.data).find(
+          (key) => state.data[key].name === name
+        )
         commit('setCurrent', id)
       },
 
-      logout ({ commit }: any) {
+      logout({ commit }: any) {
         commit('setCurrent', null)
       }
     }
@@ -78,7 +80,9 @@ describe('Feature – Database - Register Model', () => {
       }
     })
 
-    const hobby = store.getters['entities/hobbies/query']().with('user').first()
+    const hobby = store.getters['entities/hobbies/query']()
+      .with('user')
+      .first()
     const user = store.getters['entities/users/query']().first()
 
     expect(hobby.name).toEqual('my hobby')
@@ -97,14 +101,12 @@ describe('Feature – Database - Register Model', () => {
     })
 
     await store.dispatch('entities/users/create', {
-      data: [
-        { name: 'user 1' },
-        { name: 'user 2' },
-        { name: 'user 3' }
-      ]
+      data: [{ name: 'user 1' }, { name: 'user 2' }, { name: 'user 3' }]
     })
 
-    const user = store.getters['entities/users/query']().where('name', 'user 2').first()
+    const user = store.getters['entities/users/query']()
+      .where('name', 'user 2')
+      .first()
     const getCurrentUser = store.getters['entities/users/current']
 
     expect(getCurrentUser()).toBeUndefined()
@@ -137,7 +139,9 @@ describe('Feature – Database - Register Model', () => {
       }
     })
 
-    const hobby = store.getters['entities/hobbies/query']().with('user').first()
+    const hobby = store.getters['entities/hobbies/query']()
+      .with('user')
+      .first()
     const user = store.getters['entities/users/query']().first()
 
     expect(hobby.name).toEqual('my hobby')
@@ -156,14 +160,12 @@ describe('Feature – Database - Register Model', () => {
     database.register(User, userModule)
 
     await store.dispatch('entities/users/create', {
-      data: [
-        { name: 'user 1' },
-        { name: 'user 2' },
-        { name: 'user 3' }
-      ]
+      data: [{ name: 'user 1' }, { name: 'user 2' }, { name: 'user 3' }]
     })
 
-    const user = store.getters['entities/users/query']().where('name', 'user 2').first()
+    const user = store.getters['entities/users/query']()
+      .where('name', 'user 2')
+      .first()
     const getCurrentUser = store.getters['entities/users/current']
 
     expect(getCurrentUser()).toBeUndefined()

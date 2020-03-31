@@ -2,7 +2,7 @@ import { schema as Normalizr, Schema as NormalizrSchema } from 'normalizr'
 import Model from '../model/Model'
 import Relation from '../attributes/relations/Relation'
 import Schemas from './Schemas'
-import ProcessStrategy from './ProcessStrategy'
+import IdAttribute from './IdAttribute'
 
 export default class Schema {
   /**
@@ -18,35 +18,40 @@ export default class Schema {
   /**
    * Create a new schema instance.
    */
-  constructor (model: typeof Model) {
+  constructor(model: typeof Model) {
     this.model = model
 
     const models = model.database().models()
 
-    Object.keys(models).forEach((name) => { this.one(models[name]) })
+    Object.keys(models).forEach((name) => {
+      this.one(models[name])
+    })
   }
 
   /**
    * Create a schema for the given model.
    */
-  static create (model: typeof Model): Normalizr.Entity {
-    return (new this(model)).one()
+  static create(model: typeof Model): Normalizr.Entity {
+    return new this(model).one()
   }
 
   /**
    * Create a single schema for the given model.
    */
-  one (model?: typeof Model): Normalizr.Entity {
+  one(model?: typeof Model): Normalizr.Entity {
     model = model || this.model
 
     if (this.schemas[model.entity]) {
       return this.schemas[model.entity]
     }
 
-    const schema = new Normalizr.Entity(model.entity, {}, {
-      idAttribute: '$id',
-      processStrategy: ProcessStrategy.create(model)
-    })
+    const schema = new Normalizr.Entity(
+      model.entity,
+      {},
+      {
+        idAttribute: IdAttribute.create(model)
+      }
+    )
 
     this.schemas[model.entity] = schema
 
@@ -60,21 +65,21 @@ export default class Schema {
   /**
    * Create an array schema for the given model.
    */
-  many (model: typeof Model): Normalizr.Array {
+  many(model: typeof Model): Normalizr.Array {
     return new Normalizr.Array(this.one(model))
   }
 
   /**
    * Create an union schema for the given model.
    */
-  union (callback: Normalizr.SchemaFunction): Normalizr.Union {
+  union(callback: Normalizr.SchemaFunction): Normalizr.Union {
     return new Normalizr.Union(this.schemas, callback)
   }
 
   /**
    * Create a dfinition for the given model.
    */
-  definition (model: typeof Model): NormalizrSchema {
+  definition(model: typeof Model): NormalizrSchema {
     const fields = model.getFields()
 
     return Object.keys(fields).reduce<NormalizrSchema>((definition, key) => {

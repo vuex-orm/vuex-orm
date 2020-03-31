@@ -6,7 +6,7 @@ The rule of thumb is if you want to do [SSR](https://vuejs.org/v2/guide/ssr.html
 
 ## Import Statement
 
-Use the ordinally `import` statement to fetch models. If you're not doing SSR, this is probably the simplest way to access a model object.
+Use the ES6 static `import` statement to fetch models. If you're not doing SSR, this is probably the simplest way to access a model object.
 
 ```js
 import User from '@/models/User'

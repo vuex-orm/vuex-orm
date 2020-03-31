@@ -7,7 +7,11 @@ export default class Boolean extends Type {
   /**
    * Create a new number instance.
    */
-  constructor (model: typeof Model, value: boolean, mutator?: Mutator<boolean | null>) {
+  constructor(
+    model: typeof Model,
+    value: boolean,
+    mutator?: Mutator<boolean | null>
+  ) {
     /* istanbul ignore next */
     super(model, value, mutator)
   }
@@ -15,14 +19,14 @@ export default class Boolean extends Type {
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  make (value: any, _parent: Record, key: string): boolean | null {
+  make(value: any, _parent: Record, key: string): boolean | null {
     return this.mutate(this.fix(value), key)
   }
 
   /**
    * Transform given data to the boolean.
    */
-  fix (value: any): boolean | null {
+  fix(value: any): boolean | null {
     if (value === undefined) {
       return this.value
     }

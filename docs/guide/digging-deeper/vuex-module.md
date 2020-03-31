@@ -65,9 +65,9 @@ Note that the callback function passed to the `commit` method is called within t
 
 ## Defining Modules
 
-You can register the Vuex Module alongside with Model under the same namespace. Modules are simple [Vuex Modules](https://vuex.vuejs.org/en/modules.html) that whould correspond to the Models. You are free to add any additional module functionalities such as Actions or Mutations as you wish.
+You can register the Vuex Module alongside with Model under the same namespace. Modules are simple [Vuex Modules](https://vuex.vuejs.org/en/modules.html) that would correspond to the Models. You are free to add any additional module functionalities such as Actions or Mutations as you wish.
 
-To define and register the module, you can create ordinally Vuex Module and pass it as 2nd argument to the `database.register` method.
+To define and register the module, you can create an ordinary Vuex Module and pass it as 2nd argument to the `database.register` method.
 
 ```js
 const users = {
@@ -87,7 +87,7 @@ database.register(User, users)
 
 > **WARNING:** Do not create state named `data`. The key name `data` is reserved, and Vuex ORM will override its value when storing data.
 
-You may interact with the Store as you ordinally would with Vuex. If you have defined some additional state, getters, actions, and mutations, you can call them through the Vuex Module syntax.
+You may interact with the Store as you ordinarily would with Vuex. If you have defined some additional state, getters, actions, and mutations, you can call them through the Vuex Module syntax.
 
 ```js
 const users = {

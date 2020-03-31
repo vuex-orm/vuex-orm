@@ -516,6 +516,301 @@ _export(_export.P + _export.F * _failsIsRegexp(STARTS_WITH), 'String', {
 
 var startsWith = _core.String.startsWith;
 
+// true  -> String#at
+// false -> String#codePointAt
+var _stringAt = function (TO_STRING) {
+  return function (that, pos) {
+    var s = String(_defined(that));
+    var i = _toInteger(pos);
+    var l = s.length;
+    var a, b;
+    if (i < 0 || i >= l) return TO_STRING ? '' : undefined;
+    a = s.charCodeAt(i);
+    return a < 0xd800 || a > 0xdbff || i + 1 === l || (b = s.charCodeAt(i + 1)) < 0xdc00 || b > 0xdfff
+      ? TO_STRING ? s.charAt(i) : a
+      : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
+  };
+};
+
+var _iterators = {};
+
+var _objectDps = _descriptors ? Object.defineProperties : function defineProperties(O, Properties) {
+  _anObject(O);
+  var keys = _objectKeys(Properties);
+  var length = keys.length;
+  var i = 0;
+  var P;
+  while (length > i) _objectDp.f(O, P = keys[i++], Properties[P]);
+  return O;
+};
+
+var document$1 = _global.document;
+var _html = document$1 && document$1.documentElement;
+
+// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
+
+
+
+var IE_PROTO$1 = _sharedKey('IE_PROTO');
+var Empty = function () { /* empty */ };
+var PROTOTYPE$1 = 'prototype';
+
+// Create object with fake `null` prototype: use iframe Object with cleared prototype
+var createDict = function () {
+  // Thrash, waste and sodomy: IE GC bug
+  var iframe = _domCreate('iframe');
+  var i = _enumBugKeys.length;
+  var lt = '<';
+  var gt = '>';
+  var iframeDocument;
+  iframe.style.display = 'none';
+  _html.appendChild(iframe);
+  iframe.src = 'javascript:'; // eslint-disable-line no-script-url
+  // createDict = iframe.contentWindow.Object;
+  // html.removeChild(iframe);
+  iframeDocument = iframe.contentWindow.document;
+  iframeDocument.open();
+  iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);
+  iframeDocument.close();
+  createDict = iframeDocument.F;
+  while (i--) delete createDict[PROTOTYPE$1][_enumBugKeys[i]];
+  return createDict();
+};
+
+var _objectCreate = Object.create || function create(O, Properties) {
+  var result;
+  if (O !== null) {
+    Empty[PROTOTYPE$1] = _anObject(O);
+    result = new Empty();
+    Empty[PROTOTYPE$1] = null;
+    // add "__proto__" for Object.getPrototypeOf polyfill
+    result[IE_PROTO$1] = O;
+  } else result = createDict();
+  return Properties === undefined ? result : _objectDps(result, Properties);
+};
+
+var def = _objectDp.f;
+
+var TAG = _wks('toStringTag');
+
+var _setToStringTag = function (it, tag, stat) {
+  if (it && !_has(it = stat ? it : it.prototype, TAG)) def(it, TAG, { configurable: true, value: tag });
+};
+
+var IteratorPrototype = {};
+
+// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
+_hide(IteratorPrototype, _wks('iterator'), function () { return this; });
+
+var _iterCreate = function (Constructor, NAME, next) {
+  Constructor.prototype = _objectCreate(IteratorPrototype, { next: _propertyDesc(1, next) });
+  _setToStringTag(Constructor, NAME + ' Iterator');
+};
+
+// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
+
+
+var IE_PROTO$2 = _sharedKey('IE_PROTO');
+var ObjectProto = Object.prototype;
+
+var _objectGpo = Object.getPrototypeOf || function (O) {
+  O = _toObject(O);
+  if (_has(O, IE_PROTO$2)) return O[IE_PROTO$2];
+  if (typeof O.constructor == 'function' && O instanceof O.constructor) {
+    return O.constructor.prototype;
+  } return O instanceof Object ? ObjectProto : null;
+};
+
+var ITERATOR = _wks('iterator');
+var BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`
+var FF_ITERATOR = '@@iterator';
+var KEYS = 'keys';
+var VALUES = 'values';
+
+var returnThis = function () { return this; };
+
+var _iterDefine = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED) {
+  _iterCreate(Constructor, NAME, next);
+  var getMethod = function (kind) {
+    if (!BUGGY && kind in proto) return proto[kind];
+    switch (kind) {
+      case KEYS: return function keys() { return new Constructor(this, kind); };
+      case VALUES: return function values() { return new Constructor(this, kind); };
+    } return function entries() { return new Constructor(this, kind); };
+  };
+  var TAG = NAME + ' Iterator';
+  var DEF_VALUES = DEFAULT == VALUES;
+  var VALUES_BUG = false;
+  var proto = Base.prototype;
+  var $native = proto[ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT];
+  var $default = $native || getMethod(DEFAULT);
+  var $entries = DEFAULT ? !DEF_VALUES ? $default : getMethod('entries') : undefined;
+  var $anyNative = NAME == 'Array' ? proto.entries || $native : $native;
+  var methods, key, IteratorPrototype;
+  // Fix native
+  if ($anyNative) {
+    IteratorPrototype = _objectGpo($anyNative.call(new Base()));
+    if (IteratorPrototype !== Object.prototype && IteratorPrototype.next) {
+      // Set @@toStringTag to native iterators
+      _setToStringTag(IteratorPrototype, TAG, true);
+      // fix for some old engines
+      if ( typeof IteratorPrototype[ITERATOR] != 'function') _hide(IteratorPrototype, ITERATOR, returnThis);
+    }
+  }
+  // fix Array#{values, @@iterator}.name in V8 / FF
+  if (DEF_VALUES && $native && $native.name !== VALUES) {
+    VALUES_BUG = true;
+    $default = function values() { return $native.call(this); };
+  }
+  // Define iterator
+  if ( (BUGGY || VALUES_BUG || !proto[ITERATOR])) {
+    _hide(proto, ITERATOR, $default);
+  }
+  // Plug for library
+  _iterators[NAME] = $default;
+  _iterators[TAG] = returnThis;
+  if (DEFAULT) {
+    methods = {
+      values: DEF_VALUES ? $default : getMethod(VALUES),
+      keys: IS_SET ? $default : getMethod(KEYS),
+      entries: $entries
+    };
+    if (FORCED) for (key in methods) {
+      if (!(key in proto)) _redefine(proto, key, methods[key]);
+    } else _export(_export.P + _export.F * (BUGGY || VALUES_BUG), NAME, methods);
+  }
+  return methods;
+};
+
+var $at = _stringAt(true);
+
+// 21.1.3.27 String.prototype[@@iterator]()
+_iterDefine(String, 'String', function (iterated) {
+  this._t = String(iterated); // target
+  this._i = 0;                // next index
+// 21.1.5.2.1 %StringIteratorPrototype%.next()
+}, function () {
+  var O = this._t;
+  var index = this._i;
+  var point;
+  if (index >= O.length) return { value: undefined, done: true };
+  point = $at(O, index);
+  this._i += point.length;
+  return { value: point, done: false };
+});
+
+// call something on iterator step with safe closing on error
+
+var _iterCall = function (iterator, fn, value, entries) {
+  try {
+    return entries ? fn(_anObject(value)[0], value[1]) : fn(value);
+  // 7.4.6 IteratorClose(iterator, completion)
+  } catch (e) {
+    var ret = iterator['return'];
+    if (ret !== undefined) _anObject(ret.call(iterator));
+    throw e;
+  }
+};
+
+// check on default Array iterator
+
+var ITERATOR$1 = _wks('iterator');
+var ArrayProto$1 = Array.prototype;
+
+var _isArrayIter = function (it) {
+  return it !== undefined && (_iterators.Array === it || ArrayProto$1[ITERATOR$1] === it);
+};
+
+var _createProperty = function (object, index, value) {
+  if (index in object) _objectDp.f(object, index, _propertyDesc(0, value));
+  else object[index] = value;
+};
+
+// getting tag from 19.1.3.6 Object.prototype.toString()
+
+var TAG$1 = _wks('toStringTag');
+// ES3 wrong here
+var ARG = _cof(function () { return arguments; }()) == 'Arguments';
+
+// fallback for IE11 Script Access Denied error
+var tryGet = function (it, key) {
+  try {
+    return it[key];
+  } catch (e) { /* empty */ }
+};
+
+var _classof = function (it) {
+  var O, T, B;
+  return it === undefined ? 'Undefined' : it === null ? 'Null'
+    // @@toStringTag case
+    : typeof (T = tryGet(O = Object(it), TAG$1)) == 'string' ? T
+    // builtinTag case
+    : ARG ? _cof(O)
+    // ES3 arguments fallback
+    : (B = _cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
+};
+
+var ITERATOR$2 = _wks('iterator');
+
+var core_getIteratorMethod = _core.getIteratorMethod = function (it) {
+  if (it != undefined) return it[ITERATOR$2]
+    || it['@@iterator']
+    || _iterators[_classof(it)];
+};
+
+var ITERATOR$3 = _wks('iterator');
+var SAFE_CLOSING = false;
+
+try {
+  var riter = [7][ITERATOR$3]();
+  riter['return'] = function () { SAFE_CLOSING = true; };
+  // eslint-disable-next-line no-throw-literal
+  Array.from(riter, function () { throw 2; });
+} catch (e) { /* empty */ }
+
+var _iterDetect = function (exec, skipClosing) {
+  if (!skipClosing && !SAFE_CLOSING) return false;
+  var safe = false;
+  try {
+    var arr = [7];
+    var iter = arr[ITERATOR$3]();
+    iter.next = function () { return { done: safe = true }; };
+    arr[ITERATOR$3] = function () { return iter; };
+    exec(arr);
+  } catch (e) { /* empty */ }
+  return safe;
+};
+
+_export(_export.S + _export.F * !_iterDetect(function (iter) { Array.from(iter); }), 'Array', {
+  // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
+  from: function from(arrayLike /* , mapfn = undefined, thisArg = undefined */) {
+    var O = _toObject(arrayLike);
+    var C = typeof this == 'function' ? this : Array;
+    var aLen = arguments.length;
+    var mapfn = aLen > 1 ? arguments[1] : undefined;
+    var mapping = mapfn !== undefined;
+    var index = 0;
+    var iterFn = core_getIteratorMethod(O);
+    var length, result, step, iterator;
+    if (mapping) mapfn = _ctx(mapfn, aLen > 2 ? arguments[2] : undefined, 2);
+    // if object isn't iterable or it's array with default iterator - use simple case
+    if (iterFn != undefined && !(C == Array && _isArrayIter(iterFn))) {
+      for (iterator = iterFn.call(O), result = new C(); !(step = iterator.next()).done; index++) {
+        _createProperty(result, index, mapping ? _iterCall(iterator, mapfn, [step.value, index], true) : step.value);
+      }
+    } else {
+      length = _toLength(O.length);
+      for (result = new C(length); length > index; index++) {
+        _createProperty(result, index, mapping ? mapfn(O[index], index) : O[index]);
+      }
+    }
+    result.length = index;
+    return result;
+  }
+});
+
+var from_1 = _core.Array.from;
+
 var Container = /** @class */ (function () {
     function Container() {
     }
@@ -623,11 +918,17 @@ function __spreadArrays() {
 }
 
 /**
+ * Check if the given value is the type of array.
+ */
+function isArray(value) {
+    return Array.isArray(value);
+}
+/**
  * Gets the size of collection by returning its length for array-like values
  * or the number of own enumerable string keyed properties for objects.
  */
 function size(collection) {
-    return Array.isArray(collection) ? collection.length : Object.keys(collection).length;
+    return isArray(collection) ? collection.length : Object.keys(collection).length;
 }
 /**
  * Check if the given array or object is empty.
@@ -779,7 +1080,27 @@ function groupBy(collection, iteratee) {
         return records;
     }, {});
 }
+/**
+ * Deep clone the given target object.
+ */
+function cloneDeep(target) {
+    if (target === null) {
+        return target;
+    }
+    if (isArray(target)) {
+        var cp_1 = [];
+        target.forEach(function (v) { return cp_1.push(v); });
+        return cp_1.map(function (n) { return cloneDeep(n); });
+    }
+    if (typeof target === 'object' && target !== {}) {
+        var cp_2 = __assign({}, target);
+        Object.keys(cp_2).forEach(function (k) { return (cp_2[k] = cloneDeep(cp_2[k])); });
+        return cp_2;
+    }
+    return target;
+}
 var Utils = {
+    isArray: isArray,
     size: size,
     isEmpty: isEmpty,
     forOwn: forOwn,
@@ -787,7 +1108,8 @@ var Utils = {
     mapValues: mapValues,
     keyBy: keyBy,
     orderBy: orderBy,
-    groupBy: groupBy
+    groupBy: groupBy,
+    cloneDeep: cloneDeep
 };
 
 var Uid = /** @class */ (function () {
@@ -1052,30 +1374,50 @@ var Relation = /** @class */ (function (_super) {
      * Create a new indexed map for the single relation by specified key.
      */
     Relation.prototype.mapSingleRelations = function (collection, key) {
-        return collection.reduce(function (records, record) {
+        var relations = new Map();
+        collection.forEach(function (record) {
             var id = record[key];
-            records[id] = record;
-            return records;
-        }, {});
+            !relations.get(id) && relations.set(id, record);
+        });
+        return relations;
     };
     /**
      * Create a new indexed map for the many relation by specified key.
      */
     Relation.prototype.mapManyRelations = function (collection, key) {
-        return collection.reduce(function (records, record) {
+        var relations = new Map();
+        collection.forEach(function (record) {
             var id = record[key];
-            if (!records[id]) {
-                records[id] = [];
+            var ownerKeys = relations.get(id);
+            if (!ownerKeys) {
+                ownerKeys = [];
+                relations.set(id, ownerKeys);
             }
-            records[id].push(record);
-            return records;
-        }, {});
+            ownerKeys.push(record);
+        });
+        return relations;
+    };
+    /**
+     * Create a new indexed map for relations with order constraints.
+     */
+    Relation.prototype.mapRelationsByOrders = function (collection, relations, ownerKey, relationKey) {
+        var records = {};
+        relations.forEach(function (related, id) {
+            collection.filter(function (record) { return record[relationKey] === id; }).forEach(function (record) {
+                var id = record[ownerKey];
+                if (!records[id]) {
+                    records[id] = [];
+                }
+                records[id] = records[id].concat(related);
+            });
+        });
+        return records;
     };
     /**
      * Check if the given record is a single relation, which is an object.
      */
     Relation.prototype.isOneRelation = function (record) {
-        if (!Array.isArray(record) && record !== null && typeof record === 'object') {
+        if (!isArray(record) && record !== null && typeof record === 'object') {
             return true;
         }
         return false;
@@ -1085,7 +1427,7 @@ var Relation = /** @class */ (function (_super) {
      * of object.
      */
     Relation.prototype.isManyRelation = function (records) {
-        if (!Array.isArray(records)) {
+        if (!isArray(records)) {
             return false;
         }
         if (records.length < 1) {
@@ -1427,12 +1769,14 @@ var HasManyBy = /** @class */ (function (_super) {
     /**
      * Get related records.
      */
-    HasManyBy.prototype.getRelatedRecords = function (records, keys) {
-        return keys.reduce(function (items, id) {
-            var related = records[id];
-            related && items.push(related);
-            return items;
-        }, []);
+    HasManyBy.prototype.getRelatedRecords = function (relations, keys) {
+        var records = [];
+        relations.forEach(function (record, id) {
+            if (keys.indexOf(id) !== -1) {
+                records.push(record);
+            }
+        });
+        return records;
     };
     return HasManyBy;
 }(Relation));
@@ -1504,13 +1848,13 @@ var HasManyThrough = /** @class */ (function (_super) {
      */
     HasManyThrough.prototype.mapThroughRelations = function (throughs, relatedQuery) {
         var _this = this;
-        var relateds = this.mapManyRelations(relatedQuery.get(), this.secondKey);
+        var relations = this.mapManyRelations(relatedQuery.get(), this.secondKey);
         return throughs.reduce(function (records, record) {
             var id = record[_this.firstKey];
             if (!records[id]) {
                 records[id] = [];
             }
-            var related = relateds[record[_this.secondLocalKey]];
+            var related = relations.get(record[_this.secondLocalKey]);
             if (related === undefined) {
                 return records;
             }
@@ -1528,6 +1872,10 @@ var BelongsToMany = /** @class */ (function (_super) {
      */
     function BelongsToMany(model, related, pivot, foreignPivotKey, relatedPivotKey, parentKey, relatedKey) {
         var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+        /**
+         * The key name of the pivot data.
+         */
+        _this.pivotKey = 'pivot';
         _this.related = _this.model.relation(related);
         _this.pivot = _this.model.relation(pivot);
         _this.foreignPivotKey = foreignPivotKey;
@@ -1536,6 +1884,13 @@ var BelongsToMany = /** @class */ (function (_super) {
         _this.relatedKey = relatedKey;
         return _this;
     }
+    /**
+     * Specify the custom pivot accessor to use for the relationship.
+     */
+    BelongsToMany.prototype.as = function (accessor) {
+        this.pivotKey = accessor;
+        return this;
+    };
     /**
      * Define the normalizr schema for the relationship.
      */
@@ -1588,15 +1943,21 @@ var BelongsToMany = /** @class */ (function (_super) {
      */
     BelongsToMany.prototype.mapPivotRelations = function (pivots, relatedQuery) {
         var _this = this;
-        var relateds = this.mapManyRelations(relatedQuery.get(), this.relatedKey);
+        var relations = this.mapManyRelations(relatedQuery.get(), this.relatedKey);
+        if (relatedQuery.orders.length) {
+            return this.mapRelationsByOrders(pivots, relations, this.foreignPivotKey, this.relatedPivotKey);
+        }
         return pivots.reduce(function (records, record) {
             var id = record[_this.foreignPivotKey];
             if (!records[id]) {
                 records[id] = [];
             }
-            var related = relateds[record[_this.relatedPivotKey]];
+            var related = relations.get(record[_this.relatedPivotKey]);
             if (related) {
-                records[id] = records[id].concat(related);
+                records[id] = records[id].concat(related.map(function (model) {
+                    model[_this.pivotKey] = record;
+                    return model;
+                }));
             }
             return records;
         }, {});
@@ -1606,7 +1967,7 @@ var BelongsToMany = /** @class */ (function (_super) {
      */
     BelongsToMany.prototype.createPivots = function (parent, data, key) {
         var _this = this;
-        if (this.pivot.primaryKey instanceof Array === false)
+        if (!Utils.isArray(this.pivot.primaryKey))
             return data;
         Utils.forOwn(data[parent.entity], function (record) {
             var related = record[key];
@@ -1631,7 +1992,8 @@ var BelongsToMany = /** @class */ (function (_super) {
                 _this.pivot.primaryKey[1] === _this.foreignPivotKey ? parentId : relatedId
             ]);
             var pivotRecord = data[_this.pivot.entity] ? data[_this.pivot.entity][pivotKey] : {};
-            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = __assign(__assign({}, pivotRecord), (_b = { $id: pivotKey }, _b[_this.foreignPivotKey] = parentId, _b[_this.relatedPivotKey] = relatedId, _b)), _a));
+            var pivotData = data[_this.related.entity][id][_this.pivotKey] || {};
+            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = __assign(__assign(__assign({}, pivotRecord), pivotData), (_b = { $id: pivotKey }, _b[_this.foreignPivotKey] = parentId, _b[_this.relatedPivotKey] = relatedId, _b)), _a));
         });
     };
     return BelongsToMany;
@@ -1681,15 +2043,15 @@ var MorphTo = /** @class */ (function (_super) {
     MorphTo.prototype.load = function (query, collection, name, constraints) {
         var _this = this;
         var types = this.getTypes(collection);
-        var relateds = types.reduce(function (relateds, type) {
+        var relations = types.reduce(function (related, type) {
             var relatedQuery = _this.getRelation(query, type, constraints);
-            relateds[type] = _this.mapSingleRelations(relatedQuery.get(), '$id');
-            return relateds;
+            related[type] = _this.mapSingleRelations(relatedQuery.get(), '$id');
+            return related;
         }, {});
         collection.forEach(function (item) {
             var id = item[_this.id];
             var type = item[_this.type];
-            var related = relateds[type][id];
+            var related = relations[type].get(String(id));
             item[name] = related || null;
         });
     };
@@ -1749,7 +2111,7 @@ var MorphOne = /** @class */ (function (_super) {
         this.addEagerConstraintForMorphOne(relatedQuery, collection, query.entity);
         var relations = this.mapSingleRelations(relatedQuery.get(), this.id);
         collection.forEach(function (item) {
-            var related = relations[item[_this.localKey]];
+            var related = relations.get(item[_this.localKey]);
             item[name] = related || null;
         });
     };
@@ -1808,7 +2170,7 @@ var MorphMany = /** @class */ (function (_super) {
         this.addEagerConstraintForMorphMany(relatedQuery, collection, query.entity);
         var relations = this.mapManyRelations(relatedQuery.get(), this.id);
         collection.forEach(function (item) {
-            var related = relations[item[_this.localKey]];
+            var related = relations.get(item[_this.localKey]);
             item[name] = related || [];
         });
     };
@@ -1828,6 +2190,10 @@ var MorphToMany = /** @class */ (function (_super) {
      */
     function MorphToMany(model, related, pivot, relatedId, id, type, parentKey, relatedKey) {
         var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+        /**
+         * The key name of the pivot data.
+         */
+        _this.pivotKey = 'pivot';
         _this.related = _this.model.relation(related);
         _this.pivot = _this.model.relation(pivot);
         _this.relatedId = relatedId;
@@ -1837,6 +2203,13 @@ var MorphToMany = /** @class */ (function (_super) {
         _this.relatedKey = relatedKey;
         return _this;
     }
+    /**
+     * Specify the custom pivot accessor to use for the relationship.
+     */
+    MorphToMany.prototype.as = function (accessor) {
+        this.pivotKey = accessor;
+        return this;
+    };
     /**
      * Define the normalizr schema for the relationship.
      */
@@ -1889,14 +2262,24 @@ var MorphToMany = /** @class */ (function (_super) {
      */
     MorphToMany.prototype.mapPivotRelations = function (pivots, relatedQuery) {
         var _this = this;
-        var relateds = this.mapManyRelations(relatedQuery.get(), this.relatedKey);
+        var relations = this.mapManyRelations(relatedQuery.get(), this.relatedKey);
+        if (relatedQuery.orders.length) {
+            return this.mapRelationsByOrders(pivots, relations, this.id, this.relatedId);
+        }
         return pivots.reduce(function (records, record) {
             var id = record[_this.id];
             if (!records[id]) {
                 records[id] = [];
             }
-            var related = relateds[record[_this.relatedId]];
-            records[id] = records[id].concat(related);
+            var related = relations.get(record[_this.relatedId]);
+            /* istanbul ignore if */
+            if (related === undefined || related.length === 0) {
+                return records;
+            }
+            records[id] = records[id].concat(related.map(function (model) {
+                model[_this.pivotKey] = record;
+                return model;
+            }));
             return records;
         }, {});
     };
@@ -1911,7 +2294,7 @@ var MorphToMany = /** @class */ (function (_super) {
                 .where(_this.type, parent.entity)
                 .get();
             var relateds = (record[key] || []).filter(function (relatedId) { return !relatedIds.includes(relatedId); });
-            if (!Array.isArray(relateds) || relateds.length === 0) {
+            if (!Utils.isArray(relateds) || relateds.length === 0) {
                 return;
             }
             _this.createPivotRecord(parent, data, record, relateds);
@@ -1928,13 +2311,8 @@ var MorphToMany = /** @class */ (function (_super) {
             var parentId = record[_this.parentKey];
             var relatedId = data[_this.related.entity][id][_this.relatedKey];
             var pivotKey = parentId + "_" + id + "_" + parent.entity;
-            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = (_b = {
-                    $id: pivotKey
-                },
-                _b[_this.relatedId] = relatedId,
-                _b[_this.id] = parentId,
-                _b[_this.type] = parent.entity,
-                _b), _a));
+            var pivotData = data[_this.related.entity][id][_this.pivotKey] || {};
+            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = __assign(__assign({}, pivotData), (_b = { $id: pivotKey }, _b[_this.relatedId] = relatedId, _b[_this.id] = parentId, _b[_this.type] = parent.entity, _b)), _a));
         });
     };
     return MorphToMany;
@@ -1947,6 +2325,10 @@ var MorphedByMany = /** @class */ (function (_super) {
      */
     function MorphedByMany(model, related, pivot, relatedId, id, type, parentKey, relatedKey) {
         var _this = _super.call(this, model) /* istanbul ignore next */ || this;
+        /**
+         * The key name of the pivot data.
+         */
+        _this.pivotKey = 'pivot';
         _this.related = _this.model.relation(related);
         _this.pivot = _this.model.relation(pivot);
         _this.relatedId = relatedId;
@@ -1956,6 +2338,13 @@ var MorphedByMany = /** @class */ (function (_super) {
         _this.relatedKey = relatedKey;
         return _this;
     }
+    /**
+     * Specify the custom pivot accessor to use for the relationship.
+     */
+    MorphedByMany.prototype.as = function (accessor) {
+        this.pivotKey = accessor;
+        return this;
+    };
     /**
      * Define the normalizr schema for the relationship.
      */
@@ -2009,14 +2398,24 @@ var MorphedByMany = /** @class */ (function (_super) {
      */
     MorphedByMany.prototype.mapPivotRelations = function (pivots, relatedQuery) {
         var _this = this;
-        var relateds = this.mapManyRelations(relatedQuery.get(), this.relatedKey);
+        var relations = this.mapManyRelations(relatedQuery.get(), this.relatedKey);
+        if (relatedQuery.orders.length) {
+            return this.mapRelationsByOrders(pivots, relations, this.relatedId, this.id);
+        }
         return pivots.reduce(function (records, record) {
             var id = record[_this.relatedId];
             if (!records[id]) {
                 records[id] = [];
             }
-            var related = relateds[record[_this.id]];
-            records[id] = records[id].concat(related);
+            var related = relations.get(record[_this.id]);
+            /* istanbul ignore if */
+            if (related === undefined || related.length === 0) {
+                return records;
+            }
+            records[id] = records[id].concat(related.map(function (model) {
+                model[_this.pivotKey] = record;
+                return model;
+            }));
             return records;
         }, {});
     };
@@ -2027,7 +2426,7 @@ var MorphedByMany = /** @class */ (function (_super) {
         var _this = this;
         Utils.forOwn(data[parent.entity], function (record) {
             var related = record[key];
-            if (!Array.isArray(related)) {
+            if (!Utils.isArray(related)) {
                 return;
             }
             _this.createPivotRecord(data, record, related);
@@ -2043,13 +2442,8 @@ var MorphedByMany = /** @class */ (function (_super) {
             var _a, _b;
             var parentId = record[_this.parentKey];
             var pivotKey = id + "_" + parentId + "_" + _this.related.entity;
-            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = (_b = {
-                    $id: pivotKey
-                },
-                _b[_this.relatedId] = parentId,
-                _b[_this.id] = _this.model.getIdFromRecord(data[_this.related.entity][id]),
-                _b[_this.type] = _this.related.entity,
-                _b), _a));
+            var pivotData = data[_this.related.entity][id][_this.pivotKey] || {};
+            data[_this.pivot.entity] = __assign(__assign({}, data[_this.pivot.entity]), (_a = {}, _a[pivotKey] = __assign(__assign({}, pivotData), (_b = { $id: pivotKey }, _b[_this.relatedId] = parentId, _b[_this.id] = _this.model.getIdFromRecord(data[_this.related.entity][id]), _b[_this.type] = _this.related.entity, _b)), _a));
         });
     };
     return MorphedByMany;
@@ -2093,7 +2487,7 @@ function value(v) {
     if (v === null) {
         return null;
     }
-    if (Array.isArray(v)) {
+    if (isArray(v)) {
         return array(v);
     }
     if (typeof v === 'object') {
@@ -2121,13 +2515,13 @@ function relation(relation) {
     if (relation === null) {
         return null;
     }
-    if (Array.isArray(relation)) {
+    if (isArray(relation)) {
         return relation.map(function (model) { return model.$toJson(); });
     }
     return relation.$toJson();
 }
 function emptyRelation(relation) {
-    return Array.isArray(relation) ? [] : null;
+    return isArray(relation) ? [] : null;
 }
 
 var Model = /** @class */ (function () {
@@ -2343,6 +2737,12 @@ var Model = /** @class */ (function () {
         return this.getters('query')();
     };
     /**
+     * Check wether the associated database contains data.
+     */
+    Model.exists = function () {
+        return this.query().exists();
+    };
+    /**
      * Create new data with all fields filled by default values.
      */
     Model.new = function () {
@@ -2389,10 +2789,16 @@ var Model = /** @class */ (function () {
      * in the composite key.
      */
     Model.isPrimaryKey = function (key) {
-        if (!Array.isArray(this.primaryKey)) {
+        if (!Utils.isArray(this.primaryKey)) {
             return this.primaryKey === key;
         }
         return this.primaryKey.includes(key);
+    };
+    /**
+     * Check if the primary key is a composite key.
+     */
+    Model.isCompositePrimaryKey = function () {
+        return Utils.isArray(this.primaryKey);
     };
     /**
      * Get the id (value of primary key) from teh given record. If primary key is
@@ -2447,7 +2853,7 @@ var Model = /** @class */ (function () {
         if (id === null) {
             return null;
         }
-        if (Array.isArray(id)) {
+        if (Utils.isArray(id)) {
             return JSON.stringify(id);
         }
         return String(id);
@@ -2663,14 +3069,17 @@ var Model = /** @class */ (function () {
     Model.prototype.$update = function (payload) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                if (Array.isArray(payload)) {
+                if (Utils.isArray(payload)) {
                     return [2 /*return*/, this.$dispatch('update', payload)];
                 }
                 if (payload.where !== undefined) {
                     return [2 /*return*/, this.$dispatch('update', payload)];
                 }
                 if (this.$self().getIndexIdFromRecord(payload) === null) {
-                    return [2 /*return*/, this.$dispatch('update', { where: this.$id, data: payload })];
+                    return [2 /*return*/, this.$dispatch('update', {
+                            where: this.$self().getIdFromRecord(this),
+                            data: payload
+                        })];
                 }
                 return [2 /*return*/, this.$dispatch('update', payload)];
             });
@@ -2721,7 +3130,7 @@ var Model = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 primaryKey = this.$primaryKey();
-                if (!Array.isArray(primaryKey)) {
+                if (!Utils.isArray(primaryKey)) {
                     return [2 /*return*/, this.$dispatch('delete', this[primaryKey])];
                 }
                 return [2 /*return*/, this.$dispatch('delete', function (model) {
@@ -2768,7 +3177,7 @@ var Model = /** @class */ (function () {
     Model.prototype.$generatePrimaryId = function () {
         var _this = this;
         var key = this.$self().primaryKey;
-        var keys = Array.isArray(key) ? key : [key];
+        var keys = Utils.isArray(key) ? key : [key];
         keys.forEach(function (k) {
             if (_this[k] === undefined || _this[k] === null) {
                 _this[k] = Uid.make();
@@ -2902,7 +3311,7 @@ function update(context, payload) {
             entity = state.$name;
             // If the payload is an array, then the payload should be an array of
             // data so let's pass the whole payload as data.
-            if (Array.isArray(payload)) {
+            if (isArray(payload)) {
                 return [2 /*return*/, context.dispatch(state.$connection + "/update", { entity: entity, data: payload }, { root: true })];
             }
             // If the payload doesn't have `data` property, we'll assume that
@@ -2981,38 +3390,22 @@ function _createClass(Constructor, protoProps, staticProps) {
   return Constructor;
 }
 
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
+function _extends() {
+  _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
 
-  return obj;
-}
-
-function _objectSpread(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = arguments[i] != null ? arguments[i] : {};
-    var ownKeys = Object.keys(source);
-
-    if (typeof Object.getOwnPropertySymbols === 'function') {
-      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-      }));
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
     }
 
-    ownKeys.forEach(function (key) {
-      _defineProperty(target, key, source[key]);
-    });
-  }
+    return target;
+  };
 
-  return target;
+  return _extends.apply(this, arguments);
 }
 
 function _inheritsLoose(subClass, superClass) {
@@ -3088,17 +3481,22 @@ function () {
         idAttribute = _options$idAttribute === void 0 ? 'id' : _options$idAttribute,
         _options$mergeStrateg = _options.mergeStrategy,
         mergeStrategy = _options$mergeStrateg === void 0 ? function (entityA, entityB) {
-      return _objectSpread({}, entityA, entityB);
+      return _extends({}, entityA, entityB);
     } : _options$mergeStrateg,
         _options$processStrat = _options.processStrategy,
         processStrategy = _options$processStrat === void 0 ? function (input) {
-      return _objectSpread({}, input);
-    } : _options$processStrat;
+      return _extends({}, input);
+    } : _options$processStrat,
+        _options$fallbackStra = _options.fallbackStrategy,
+        fallbackStrategy = _options$fallbackStra === void 0 ? function (key, schema) {
+      return undefined;
+    } : _options$fallbackStra;
     this._key = key;
     this._getId = typeof idAttribute === 'function' ? idAttribute : getDefaultGetId(idAttribute);
     this._idAttribute = idAttribute;
     this._mergeStrategy = mergeStrategy;
     this._processStrategy = processStrategy;
+    this._fallbackStrategy = fallbackStrategy;
     this.define(definition);
   }
 
@@ -3106,10 +3504,10 @@ function () {
 
   _proto.define = function define(definition) {
     this.schema = Object.keys(definition).reduce(function (entitySchema, key) {
-      var _objectSpread2;
+      var _extends2;
 
       var schema = definition[key];
-      return _objectSpread({}, entitySchema, (_objectSpread2 = {}, _objectSpread2[key] = schema, _objectSpread2));
+      return _extends({}, entitySchema, (_extends2 = {}, _extends2[key] = schema, _extends2));
     }, this.schema || {});
   };
 
@@ -3121,27 +3519,43 @@ function () {
     return this._mergeStrategy(entityA, entityB);
   };
 
+  _proto.fallback = function fallback(id, schema) {
+    return this._fallbackStrategy(id, schema);
+  };
+
   _proto.normalize = function normalize(input, parent, key, visit, addEntity, visitedEntities) {
     var _this = this;
 
-    if (visitedEntities.some(function (entity) {
-      return entity === input;
-    })) {
-      return this.getId(input, parent, key);
+    var id = this.getId(input, parent, key);
+    var entityType = this.key;
+
+    if (!(entityType in visitedEntities)) {
+      visitedEntities[entityType] = {};
     }
 
-    visitedEntities.push(input);
+    if (!(id in visitedEntities[entityType])) {
+      visitedEntities[entityType][id] = [];
+    }
+
+    if (visitedEntities[entityType][id].some(function (entity) {
+      return entity === input;
+    })) {
+      return id;
+    }
+
+    visitedEntities[entityType][id].push(input);
 
     var processedEntity = this._processStrategy(input, parent, key);
 
     Object.keys(this.schema).forEach(function (key) {
       if (processedEntity.hasOwnProperty(key) && typeof processedEntity[key] === 'object') {
         var schema = _this.schema[key];
-        processedEntity[key] = visit(processedEntity[key], processedEntity, key, schema, addEntity, visitedEntities);
+        var resolvedSchema = typeof schema === 'function' ? schema(input) : schema;
+        processedEntity[key] = visit(processedEntity[key], processedEntity, key, resolvedSchema, addEntity, visitedEntities);
       }
     });
     addEntity(this, processedEntity, input, parent, key);
-    return this.getId(input, parent, key);
+    return id;
   };
 
   _proto.denormalize = function denormalize(entity, unvisit) {
@@ -3228,7 +3642,7 @@ function () {
       return value;
     }
 
-    var id = isImmutable(value) ? value.get('id') : value.id;
+    var id = this.isSingleSchema ? undefined : isImmutable(value) ? value.get('id') : value.id;
     var schema = this.isSingleSchema ? this.schema : this.schema[schemaKey];
     return unvisit(id || value, schema);
   };
@@ -3284,10 +3698,10 @@ function (_PolymorphicSchema) {
     var _this = this;
 
     return Object.keys(input).reduce(function (output, key, index) {
-      var _objectSpread2;
+      var _extends2;
 
       var value = input[key];
-      return value !== undefined && value !== null ? _objectSpread({}, output, (_objectSpread2 = {}, _objectSpread2[key] = _this.normalizeValue(value, input, key, visit, addEntity, visitedEntities), _objectSpread2)) : output;
+      return value !== undefined && value !== null ? _extends({}, output, (_extends2 = {}, _extends2[key] = _this.normalizeValue(value, input, key, visit, addEntity, visitedEntities), _extends2)) : output;
     }, {});
   };
 
@@ -3295,10 +3709,10 @@ function (_PolymorphicSchema) {
     var _this2 = this;
 
     return Object.keys(input).reduce(function (output, key) {
-      var _objectSpread3;
+      var _extends3;
 
       var entityOrId = input[key];
-      return _objectSpread({}, output, (_objectSpread3 = {}, _objectSpread3[key] = _this2.denormalizeValue(entityOrId, unvisit), _objectSpread3));
+      return _extends({}, output, (_extends3 = {}, _extends3[key] = _this2.denormalizeValue(entityOrId, unvisit), _extends3));
     }, {});
   };
 
@@ -3365,11 +3779,12 @@ function (_PolymorphicSchema) {
 }(PolymorphicSchema);
 
 var _normalize = function normalize(schema, input, parent, key, visit, addEntity, visitedEntities) {
-  var object = _objectSpread({}, input);
+  var object = _extends({}, input);
 
   Object.keys(schema).forEach(function (key) {
     var localSchema = schema[key];
-    var value = visit(input[key], input, key, localSchema, addEntity, visitedEntities);
+    var resolvedLocalSchema = typeof localSchema === 'function' ? localSchema(input) : localSchema;
+    var value = visit(input[key], input, key, resolvedLocalSchema, addEntity, visitedEntities);
 
     if (value === undefined || value === null) {
       delete object[key];
@@ -3385,7 +3800,7 @@ var _denormalize = function denormalize(schema, input, unvisit) {
     return denormalizeImmutable(schema, input, unvisit);
   }
 
-  var object = _objectSpread({}, input);
+  var object = _extends({}, input);
 
   Object.keys(schema).forEach(function (key) {
     if (object[key] != null) {
@@ -3406,10 +3821,10 @@ function () {
 
   _proto.define = function define(definition) {
     this.schema = Object.keys(definition).reduce(function (entitySchema, key) {
-      var _objectSpread2;
+      var _extends2;
 
       var schema = definition[key];
-      return _objectSpread({}, entitySchema, (_objectSpread2 = {}, _objectSpread2[key] = schema, _objectSpread2));
+      return _extends({}, entitySchema, (_extends2 = {}, _extends2[key] = schema, _extends2));
     }, this.schema || {});
   };
 
@@ -3473,12 +3888,12 @@ var schema = {
 };
 var normalize$1 = function normalize(input, schema) {
   if (!input || typeof input !== 'object') {
-    throw new Error("Unexpected input given to normalize. Expected type to be \"object\", found \"" + typeof input + "\".");
+    throw new Error("Unexpected input given to normalize. Expected type to be \"object\", found \"" + (input === null ? 'null' : typeof input) + "\".");
   }
 
   var entities = {};
   var addEntity = addEntities(entities);
-  var visitedEntities = [];
+  var visitedEntities = {};
   var result = visit(input, input, null, schema, addEntity, visitedEntities);
   return {
     entities: entities,
@@ -3490,14 +3905,14 @@ var Normalizer = /** @class */ (function () {
     function Normalizer() {
     }
     /**
-     * Normalize the data given data.
+     * Normalize the record.
      */
     Normalizer.process = function (query, record) {
         if (Utils.isEmpty(record)) {
             return {};
         }
         var entity = query.database.schemas[query.model.entity];
-        var schema = Array.isArray(record) ? [entity] : entity;
+        var schema = Utils.isArray(record) ? [entity] : entity;
         return normalize$1(record, schema).entities;
     };
     return Normalizer;
@@ -3618,7 +4033,7 @@ var WhereFilter = /** @class */ (function () {
                 return where.value(record[where.field]);
             }
             // Check if field value is in given where Array.
-            if (Array.isArray(where.value)) {
+            if (Utils.isArray(where.value)) {
                 return where.value.indexOf(record[where.field]) !== -1;
             }
             // Simple equal check.
@@ -3705,7 +4120,7 @@ var Loader = /** @class */ (function () {
             return;
         }
         // If we passed an array, we dispatch the bits to with queries.
-        if (Array.isArray(name)) {
+        if (isArray(name)) {
             name.forEach(function (relationName) { return _this.with(query, relationName, constraint); });
             return;
         }
@@ -3914,7 +4329,7 @@ var Rollcaller = /** @class */ (function () {
      * Get count of the relationship.
      */
     Rollcaller.getRelationshipCount = function (relation) {
-        if (Array.isArray(relation)) {
+        if (isArray(relation)) {
             return relation.length;
         }
         return relation ? 1 : 0;
@@ -4089,9 +4504,8 @@ var Query = /** @class */ (function () {
     /**
      * Find the record by the given id.
      */
-    Query.prototype.find = function (id) {
-        var indexId = Array.isArray(id) ? JSON.stringify(id) : id;
-        var record = this.state.data[indexId];
+    Query.prototype.find = function (value) {
+        var record = this.state.data[this.normalizeIndexId(value)];
         if (!record) {
             return null;
         }
@@ -4100,17 +4514,20 @@ var Query = /** @class */ (function () {
     /**
      * Get the record of the given array of ids.
      */
-    Query.prototype.findIn = function (idList) {
+    Query.prototype.findIn = function (values) {
         var _this = this;
-        return idList.reduce(function (collection, id) {
-            var indexId = Array.isArray(id) ? JSON.stringify(id) : id;
-            var record = _this.state.data[indexId];
+        if (!Utils.isArray(values)) {
+            return [];
+        }
+        var records = values.reduce(function (collection, value) {
+            var record = _this.state.data[_this.normalizeIndexId(value)];
             if (!record) {
                 return collection;
             }
             collection.push(_this.hydrate(record));
             return collection;
         }, []);
+        return this.collect(records);
     };
     /**
      * Returns all record of the query chain result.
@@ -4140,6 +4557,13 @@ var Query = /** @class */ (function () {
         return this.item(this.hydrate(records[records.length - 1]));
     };
     /**
+     * Checks whether a result of the query chain exists.
+     */
+    Query.prototype.exists = function () {
+        var records = this.select();
+        return records.length > 0;
+    };
+    /**
      * Add a and where clause to the query.
      */
     Query.prototype.where = function (field, value) {
@@ -4153,7 +4577,7 @@ var Query = /** @class */ (function () {
      * Add a or where clause to the query.
      */
     Query.prototype.orWhere = function (field, value) {
-        // Cacncel id filter usage, since "or" needs full scan.
+        // Cancel id filter usage, since "or" needs full scan.
         this.cancelIdFilter = true;
         this.wheres.push({ field: field, value: value, boolean: 'or' });
         return this;
@@ -4162,12 +4586,22 @@ var Query = /** @class */ (function () {
      * Filter records by their primary key.
      */
     Query.prototype.whereId = function (value) {
+        if (this.model.isCompositePrimaryKey()) {
+            return this.where('$id', this.normalizeIndexId(value));
+        }
         return this.where(this.model.primaryKey, value);
     };
     /**
      * Filter records by their primary keys.
      */
     Query.prototype.whereIdIn = function (values) {
+        var _this = this;
+        if (this.model.isCompositePrimaryKey()) {
+            var idList = values.reduce(function (keys, value) {
+                return __spreadArrays(keys, [_this.normalizeIndexId(value)]);
+            }, []);
+            return this.where('$id', idList);
+        }
         return this.where(this.model.primaryKey, values);
     };
     /**
@@ -4179,7 +4613,7 @@ var Query = /** @class */ (function () {
      * Fk lookups are always "and" type.
      */
     Query.prototype.whereFk = function (field, value) {
-        var values = Array.isArray(value) ? value : [value];
+        var values = Utils.isArray(value) ? value : [value];
         // If lookup filed is the primary key. Initialize or get intersection,
         // because boolean and could have a condition such as
         // `whereId(1).whereId(2).get()`.
@@ -4192,18 +4626,40 @@ var Query = /** @class */ (function () {
         return this;
     };
     /**
-     * Check whether the given field and value combination is filterable through
-     * primary key direct look up.
+     * Convert value to string for composite primary keys as it expects an array.
+     * Otherwise return as is.
+     *
+     * Throws an error when malformed value is given:
+     * - Composite primary key defined on model, expects value to be array.
+     * - Normal primary key defined on model, expects a primitive value.
+     */
+    Query.prototype.normalizeIndexId = function (value) {
+        if (this.model.isCompositePrimaryKey()) {
+            if (!Utils.isArray(value)) {
+                throw new Error('[Vuex ORM] Entity `' + this.entity + '` is configured with a composite ' +
+                    'primary key and expects an array value but instead received: ' + JSON.stringify(value));
+            }
+            return JSON.stringify(value);
+        }
+        if (Utils.isArray(value)) {
+            throw new Error('[Vuex ORM] Entity `' + this.entity + '` expects a single value but ' +
+                'instead received: ' + JSON.stringify(value));
+        }
+        return value;
+    };
+    /**
+     * Check whether the given field is filterable through primary key
+     * direct look up.
      */
     Query.prototype.isIdfilterable = function (field) {
-        return field === this.model.primaryKey && !this.cancelIdFilter;
+        return (field === this.model.primaryKey || field === '$id') && !this.cancelIdFilter;
     };
     /**
      * Set id filter for the given where condition.
      */
     Query.prototype.setIdFilter = function (value) {
         var _this = this;
-        var values = Array.isArray(value) ? value : [value];
+        var values = Utils.isArray(value) ? value : [value];
         // Initialize or get intersection, because boolean and could have a
         // condition such as `whereIdIn([1,2,3]).whereIdIn([1,2]).get()`.
         if (this.idFilter === null) {
@@ -4326,7 +4782,7 @@ var Query = /** @class */ (function () {
         if (!this.cancelIdFilter || this.idFilter === null) {
             return;
         }
-        this.where(this.model.primaryKey, Array.from(this.idFilter.values()));
+        this.where(this.model.isCompositePrimaryKey() ? '$id' : this.model.primaryKey, Array.from(this.idFilter.values()));
         this.idFilter = null;
     };
     /**
@@ -4385,7 +4841,7 @@ var Query = /** @class */ (function () {
         return Filter.orderBy(this, records);
     };
     /**
-     * Limit the given records by the lmilt and offset.
+     * Limit the given records by the limit and offset.
      */
     Query.prototype.filterLimit = function (records) {
         return Filter.limit(this, records);
@@ -4503,7 +4959,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.update = function (data, condition, options) {
         // If the data is array, simply normalize the data and update them.
-        if (Array.isArray(data)) {
+        if (Utils.isArray(data)) {
             return this.persist('update', data, options);
         }
         // OK, the data is not an array. Now let's check `data` to see what we can
@@ -4535,8 +4991,10 @@ var Query = /** @class */ (function () {
         // Now since the condition is either String or Number, let's check if the
         // model's primary key is not a composite key. If yes, we can't set the
         // condition as ID value for the record so throw an error and abort.
-        if (Array.isArray(this.model.primaryKey)) {
-            throw new Error("\n        You can't specify `where` value as `string` or `number` when you\n        have a composite key defined in your model. Please include composite\n        keys to the `data` fields.\n      ");
+        if (this.model.isCompositePrimaryKey() && !Utils.isArray(condition)) {
+            throw new Error('[Vuex ORM] You can\'t specify `where` value as `string` or `number` ' +
+                'when you have a composite key defined in your model. Please include ' +
+                'composite keys to the `data` fields.');
         }
         // Finally, let's add condition as the primary key of the object and
         // then normalize them to update the records.
@@ -4554,7 +5012,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.updateById = function (data, id) {
         var _a;
-        id = typeof id === 'number' ? id.toString() : id;
+        id = typeof id === 'number' ? id.toString() : this.normalizeIndexId(id);
         var record = this.state.data[id];
         if (!record) {
             return null;
@@ -4663,11 +5121,12 @@ var Query = /** @class */ (function () {
         return __spreadArrays(this.insertRecords(toBeInserted), this.updateRecords(toBeUpdated));
     };
     /**
-     * Persist data into the state.
+     * Persist data into the state while preserving it's original structure.
      */
     Query.prototype.persist = function (method, data, options) {
         var _this = this;
-        var normalizedData = this.normalize(data);
+        var clonedData = Utils.cloneDeep(data);
+        var normalizedData = this.normalize(clonedData);
         if (Utils.isEmpty(normalizedData)) {
             if (method === 'create') {
                 this.emptyState();
@@ -5162,51 +5621,18 @@ var RootMutations = {
     delete: destroy$2
 };
 
-function use (plugin, options) {
-    if (options === void 0) { options = {}; }
-    var components = {
-        Model: Model,
-        Attribute: Attribute,
-        Type: Type,
-        Attr: Attr,
-        String: String$1,
-        Number: Number,
-        Boolean: Boolean,
-        Uid: Uid$1,
-        Relation: Relation,
-        HasOne: HasOne,
-        BelongsTo: BelongsTo,
-        HasMany: HasMany,
-        HasManyBy: HasManyBy,
-        BelongsToMany: BelongsToMany,
-        HasManyThrough: HasManyThrough,
-        MorphTo: MorphTo,
-        MorphOne: MorphOne,
-        MorphMany: MorphMany,
-        MorphToMany: MorphToMany,
-        MorphedByMany: MorphedByMany,
-        Getters: Getters,
-        Actions: Actions,
-        RootGetters: RootGetters,
-        RootActions: RootActions,
-        RootMutations: RootMutations,
-        Query: Query
-    };
-    plugin.install(components, options);
-}
-
-var ProcessStrategy = /** @class */ (function () {
-    function ProcessStrategy() {
+var IdAttribute = /** @class */ (function () {
+    function IdAttribute() {
     }
     /**
-     * Create the process strategy.
+     * Creates a closure that generates the required id's for an entity.
      */
-    ProcessStrategy.create = function (model) {
+    IdAttribute.create = function (model) {
         var _this = this;
         return function (value, _parentValue, _key) {
             _this.generateIds(value, model);
-            _this.generateIndexId(value, model);
-            return value;
+            var indexId = _this.generateIndexId(value, model);
+            return indexId;
         };
     };
     /**
@@ -5214,8 +5640,8 @@ var ProcessStrategy = /** @class */ (function () {
      * value set, it will do nothing. If a key is missing, it will generate
      * UID for it.
      */
-    ProcessStrategy.generateIds = function (record, model) {
-        var keys = Array.isArray(model.primaryKey) ? model.primaryKey : [model.primaryKey];
+    IdAttribute.generateIds = function (record, model) {
+        var keys = isArray(model.primaryKey) ? model.primaryKey : [model.primaryKey];
         keys.forEach(function (k) {
             if (record[k] !== undefined && record[k] !== null) {
                 return;
@@ -5227,10 +5653,11 @@ var ProcessStrategy = /** @class */ (function () {
     /**
      * Generate index id field (which is `$id`) and attach to the given record.
      */
-    ProcessStrategy.generateIndexId = function (record, model) {
+    IdAttribute.generateIndexId = function (record, model) {
         record.$id = model.getIndexIdFromRecord(record);
+        return record.$id;
     };
-    return ProcessStrategy;
+    return IdAttribute;
 }());
 
 var Schema = /** @class */ (function () {
@@ -5262,8 +5689,7 @@ var Schema = /** @class */ (function () {
             return this.schemas[model.entity];
         }
         var schema$1 = new schema.Entity(model.entity, {}, {
-            idAttribute: '$id',
-            processStrategy: ProcessStrategy.create(model)
+            idAttribute: IdAttribute.create(model)
         });
         this.schemas[model.entity] = schema$1;
         var definition = this.definition(model);
@@ -5410,21 +5836,32 @@ var Database = /** @class */ (function () {
     };
     /**
      * Create a new model that binds the database.
+     *
+     * Transpiled classes cannot extend native classes. Implemented a workaround
+     * until Babel releases a fix (https://github.com/babel/babel/issues/9367).
      */
     Database.prototype.createBindingModel = function (model) {
-        var database = this;
-        var c = /** @class */ (function (_super) {
-            __extends(class_1, _super);
-            function class_1() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            class_1.store = function () {
-                return database.store;
-            };
-            return class_1;
-        }(model));
-        Object.defineProperty(c, 'name', { get: function () { return model.name; } });
-        return c;
+        var _this = this;
+        var proxy;
+        try {
+            proxy = new Function('model', "\n        'use strict';\n        return class " + model.name + " extends model {}\n      ")(model);
+        }
+        catch (_a) {
+            /* istanbul ignore next: rollback (mostly <= IE10) */
+            proxy = /** @class */ (function (_super) {
+                __extends(proxy, _super);
+                function proxy() {
+                    return _super !== null && _super.apply(this, arguments) || this;
+                }
+                return proxy;
+            }(model));
+            /* istanbul ignore next: allocate model name */
+            Object.defineProperty(proxy, 'name', { get: function () { return model.name; } });
+        }
+        Object.defineProperty(proxy, 'store', {
+            value: function () { return _this.store; }
+        });
+        return proxy;
     };
     /**
      * Create Vuex Module from the registered entities, and register to
@@ -5586,6 +6023,40 @@ var Database = /** @class */ (function () {
     };
     return Database;
 }());
+
+function use (plugin, options) {
+    if (options === void 0) { options = {}; }
+    var components = {
+        Model: Model,
+        Attribute: Attribute,
+        Type: Type,
+        Attr: Attr,
+        String: String$1,
+        Number: Number,
+        Boolean: Boolean,
+        Uid: Uid$1,
+        Relation: Relation,
+        HasOne: HasOne,
+        BelongsTo: BelongsTo,
+        HasMany: HasMany,
+        HasManyBy: HasManyBy,
+        BelongsToMany: BelongsToMany,
+        HasManyThrough: HasManyThrough,
+        MorphTo: MorphTo,
+        MorphOne: MorphOne,
+        MorphMany: MorphMany,
+        MorphToMany: MorphToMany,
+        MorphedByMany: MorphedByMany,
+        Getters: Getters,
+        Actions: Actions,
+        RootGetters: RootGetters,
+        RootActions: RootActions,
+        RootMutations: RootMutations,
+        Query: Query,
+        Database: Database
+    };
+    plugin.install(components, options);
+}
 
 var index_cjs = {
     install: install,

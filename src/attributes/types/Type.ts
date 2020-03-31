@@ -16,7 +16,7 @@ export default abstract class Type extends Attribute {
   /**
    * Create a new type instance.
    */
-  constructor (model: typeof Model, value: any, mutator?: (value: any) => any) {
+  constructor(model: typeof Model, value: any, mutator?: (value: any) => any) {
     super(model) /* istanbul ignore next */
 
     this.value = value
@@ -26,7 +26,7 @@ export default abstract class Type extends Attribute {
   /**
    * Set `isNullable` to be `true`.
    */
-  nullable (): this {
+  nullable(): this {
     this.isNullable = true
 
     return this
@@ -35,7 +35,7 @@ export default abstract class Type extends Attribute {
   /**
    * Mutate the given value by mutator.
    */
-  mutate (value: any, key: string): any {
+  mutate(value: any, key: string): any {
     const mutator = this.mutator || this.model.mutators()[key]
 
     return mutator ? mutator(value) : value

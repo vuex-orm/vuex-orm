@@ -1,19 +1,19 @@
 import { createStore } from 'test/support/Helpers'
-import Model from 'app/model/Model'
+import Model from '@/model/Model'
 
 describe('Feature - Inheritance - Discriminator field', () => {
   it('uses default `type` field when no typeKey is defined', async () => {
     class Person extends Model {
       static entity = 'person'
 
-      static types () {
+      static types() {
         return {
           PERSON: Person,
           ADULT: Adult
         }
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -41,14 +41,14 @@ describe('Feature - Inheritance - Discriminator field', () => {
 
       static typeKey = 'the_key'
 
-      static types () {
+      static types() {
         return {
           PERSON: Person,
           ADULT: Adult
         }
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -75,7 +75,7 @@ describe('Feature - Inheritance - Discriminator field', () => {
     class Person extends Model {
       static entity = 'person'
 
-      static types () {
+      static types() {
         return {
           PERSON: Person,
           ADULT: Adult,
@@ -83,7 +83,7 @@ describe('Feature - Inheritance - Discriminator field', () => {
         }
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -102,7 +102,7 @@ describe('Feature - Inheritance - Discriminator field', () => {
       static baseEntity = 'person'
     }
 
-    createStore([Person, Adult, Child ])
+    createStore([Person, Adult, Child])
 
     await Person.insert({
       data: [
@@ -129,14 +129,14 @@ describe('Feature - Inheritance - Discriminator field', () => {
     class Person extends Model {
       static entity = 'person'
 
-      static types () {
+      static types() {
         return {
           PERSON: Person,
           ADULT: Adult
         }
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -167,14 +167,14 @@ describe('Feature - Inheritance - Discriminator field', () => {
     class Person extends Model {
       static entity = 'person'
 
-      static types () {
+      static types() {
         return {
           0: Person,
           1: Adult
         }
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),

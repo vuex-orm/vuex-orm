@@ -1,15 +1,23 @@
 import { createStore, createState } from 'test/support/Helpers'
-import Uid from 'app/support/Uid'
-import { Model, Fields } from 'app/index'
+import Uid from '@/support/Uid'
+import Model from '@/model/Model'
 
 describe('Feature – Attributes – Uid', () => {
-  beforeEach(() => { Uid.reset() })
+  beforeEach(() => {
+    Uid.reset()
+  })
 
-  describe('no default value', () => {
+  describe('without default value', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields (): Fields {
+      // @Uid
+      id!: string
+
+      // @Uid
+      id2!: string
+
+      static fields() {
         return {
           id: this.uid(),
           id2: this.uid()
@@ -39,7 +47,10 @@ describe('Feature – Attributes – Uid', () => {
       const store = createStore([{ model: User }])
 
       await User.create({
-        data: [{ id: 1, id2: 'id1' }, { id: 2, id2: 'id2' }]
+        data: [
+          { id: 1, id2: 'id1' },
+          { id: 2, id2: 'id2' }
+        ]
       })
 
       const expected = createState({
@@ -57,7 +68,13 @@ describe('Feature – Attributes – Uid', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields (): Fields {
+      // @Uid(() => 1)
+      id!: number
+
+      // @Uid(() => 2)
+      id2!: number
+
+      static fields() {
         return {
           id: this.uid(() => 1),
           id2: this.uid(() => 2)
@@ -68,9 +85,7 @@ describe('Feature – Attributes – Uid', () => {
     it('generates user provided uid as a default value', async () => {
       const store = createStore([{ model: User }])
 
-      await User.create({
-        data: [{}]
-      })
+      await User.create({ data: [{}] })
 
       const expected = createState({
         users: {

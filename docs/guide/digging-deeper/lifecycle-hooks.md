@@ -28,11 +28,11 @@ class User extends Model {
   }
 
   static beforeCreate (model) {
-    // Do domething.
+    // Do something.
   }
 
   static afterDelete (model) {
-    // Do domething.
+    // Do something.
   }
 }
 ```

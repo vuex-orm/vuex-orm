@@ -1,5 +1,5 @@
 import { createStore, createState } from 'test/support/Helpers'
-import Model from 'app/model/Model'
+import Model from '@/model/Model'
 
 describe('Feature – Basics – Delete Composite Key', () => {
   class User extends Model {
@@ -7,7 +7,7 @@ describe('Feature – Basics – Delete Composite Key', () => {
 
     static primaryKey = ['first_id', 'second_id']
 
-    static fields () {
+    static fields() {
       return {
         first_id: this.attr(null),
         second_id: this.attr(null)
@@ -15,15 +15,16 @@ describe('Feature – Basics – Delete Composite Key', () => {
     }
   }
 
-  function getStore () {
-    return createStore([{ model: User }])
-  }
+  const getStore = () => createStore([{ model: User }])
 
   it('can delete a record by specifying the composite id as an array', async () => {
     const store = getStore()
 
     await User.create({
-      data: [{ first_id: 1, second_id: 1 }, { first_id: 1, second_id: 2 }]
+      data: [
+        { first_id: 1, second_id: 1 },
+        { first_id: 1, second_id: 2 }
+      ]
     })
 
     await User.delete([1, 1])

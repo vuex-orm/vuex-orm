@@ -2,13 +2,13 @@
 
 Vuex ORM is a plugin for [Vuex](https://github.com/vuejs/vuex) to enable Object-Relational Mapping access to the Vuex Store. Vuex ORM lets you create "normalized" data schema within Vuex Store with relationships such as "Has One" and "Belongs To Many" like any other usual ORM library. It also provides fluent API to get, search and update Store state.
 
-Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape) and ["Updating Normalized Data"](https://redux.js.org/recipes/structuring-reducers/updating-normalized-data). Learn more about the concept and motivation of Vuex ORM at [What is Vuex ORM?](https://vuex-orm.github.io/vuex-orm/guide/prologue/what-is-vuex-orm.html).
+Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape) and ["Updating Normalized Data"](https://redux.js.org/recipes/structuring-reducers/updating-normalized-data). Learn more about the concept and motivation of Vuex ORM at [What is Vuex ORM?](/guide/prologue/what-is-vuex-orm.md).
 
 ## Sponsors
 
-Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex ORM community :two_hearts:
+Vuex ORM is sponsored by awesome folks. Big love to all of them from the whole Vuex ORM community :two_hearts:
 
-### Super Love Sponsors
+#### Super Love Sponsors
 
 <br>
 
@@ -24,6 +24,9 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex 
 <a href="https://github.com/somazx">
   <img src="https://avatars0.githubusercontent.com/u/7306?s=460&v=4" alt="Andy Koch" width="88" style="border-radius: 8px;">
 </a>
+<a href="https://github.com/dylancopeland">
+  <img src="https://avatars1.githubusercontent.com/u/99355?s=460&v=4" alt="Dylan Copeland" width="88" style="border-radius: 8px;">
+</a>
 
 #### Big Love Sponsors
 
@@ -31,6 +34,9 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex 
 
 <a href="https://github.com/geraldbiggs">
   <img src="https://avatars1.githubusercontent.com/u/3213608?s=460&v=4" alt="geraldbiggs" width="64" style="border-radius: 8px;">
+</a>
+<a href="https://github.com/cuebit">
+  <img src="https://avatars0.githubusercontent.com/u/1493221?s=460&v=4" alt="Cue" width="64" style="border-radius: 8px;">
 </a>
 
 #### A Love Sponsors
@@ -43,16 +49,16 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex 
 <a href="https://github.com/bpuig">
   <img src="https://avatars3.githubusercontent.com/u/22938625?s=460&v=4" alt="bpuig" width="48" style="border-radius: 8px;">
 </a>
-<a href="https://github.com/cuebit">
-  <img src="https://avatars0.githubusercontent.com/u/1493221?s=460&v=4" alt="Cue" width="48" style="border-radius: 8px;">
+<a href="https://github.com/robokozo">
+  <img src="https://avatars2.githubusercontent.com/u/1719221?s=400&u=b5739798ee9a3d713f5ca3bd3d6a086c13d229a3&v=4" alt="John" width="48" style="border-radius: 8px;">
 </a>
 
 ## Table of Contents
 
 - Prologue
-    - [What is Vuex ORM?](guide/prologue/what-is-vuex-orm.md)
-    - [Installation](guide/prologue/installation.md)
-    - [Getting Started](guide/prologue/getting-started.md)
+    - [What is Vuex ORM?](/guide/prologue/what-is-vuex-orm.md)
+    - [Installation](/guide/prologue/installation.md)
+    - [Getting Started](/guide/prologue/getting-started.md)
 - Model
     - [Defining Models](/guide/model/defining-models.md)
     - [Relationships](/guide/model/relationships.md)
@@ -71,9 +77,9 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from whole Vuex 
     - [Server Side Rendering](/guide/digging-deeper/server-side-rendering.md)
     - [Plugins](/guide/digging-deeper/plugins.md)
 - API Reference
-    - [Container](api/container/container.md)
-    - [Database](api/database/database.md)
-    - [Model](api/model/model.md)
+    - [Container](/api/container/container.md)
+    - [Database](/api/database/database.md)
+    - [Model](/api/model/model.md)
 
 ## Questions & Discussions
 
@@ -97,10 +103,5 @@ Vuex ORM can be extended via plugins to add additional features. Here is a list 
 - [Vuex ORM Search](https://github.com/vuex-orm/plugin-search) – The plugin adds a search() method to filter records using fuzzy search logic from the [Fuse.js](http://fusejs.io).
 - [Vuex ORM Change Flags](https://github.com/vuex-orm/plugin-change-flags) - Vuex ORM plugin for adding IsDirty / IsNew flags to model entities.
 - [Vuex ORM Soft Delete](https://github.com/vuex-orm/plugin-soft-delete) – Vuex ORM plugin for adding soft delete feature to model entities.
-
-## Resources
-
-- [Vue](https://vuejs.org)
-- [Vuex](https://vuex.vuejs.org)
 
 You can find a list of awesome things related to Vuex ORM at [Awesome Vuex ORM](https://github.com/vuex-orm/awesome-vuex-orm).

@@ -8,26 +8,28 @@ import * as Payloads from './payloads/RootMutations'
  * Execute generic mutation. This method is used by `Model.commit` method so
  * that user can commit any state changes easily through models.
  */
-function $mutate (this: Store<any>, state: RootState, payload: Payloads.$Mutate): void {
+function $mutate(
+  this: Store<any>,
+  state: RootState,
+  payload: Payloads.$Mutate
+): void {
   payload.callback(state[payload.entity])
 }
 
 /**
  * Insert the given record.
  */
-function insert (this: Store<any>, state: RootState, payload: any): void {
+function insert(this: Store<any>, state: RootState, payload: any): void {
   const { entity, record } = payload
-
-  ;(new Connection(this, state.$name, entity)).insert(record)
+  new Connection(this, state.$name, entity).insert(record)
 }
 
 /**
  * Insert the given records.
  */
-function insertRecords (this: Store<any>, state: RootState, payload: any): void {
+function insertRecords(this: Store<any>, state: RootState, payload: any): void {
   const { entity, records } = payload
-
-  ;(new Connection(this, state.$name, entity)).insertRecords(records)
+  new Connection(this, state.$name, entity).insertRecords(records)
 }
 
 /**
@@ -35,10 +37,9 @@ function insertRecords (this: Store<any>, state: RootState, payload: any): void 
  * `delete`, but named `destroy` here because `delete` can't be declared at
  * this scope level.
  */
-function destroy (this: Store<any>, state: RootState, payload: any): void {
+function destroy(this: Store<any>, state: RootState, payload: any): void {
   const { entity, id } = payload
-
-  ;(new Connection(this, state.$name, entity)).delete(id)
+  new Connection(this, state.$name, entity).delete(id)
 }
 
 const RootMutations: MutationsContract = {

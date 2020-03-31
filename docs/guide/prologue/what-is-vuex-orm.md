@@ -6,7 +6,7 @@ Many applications deal with data that is nested or relational in nature. For exa
 
 To nicely handle such data, one approach is to split the nested data into separate modules and decouple them from each other. Simply put, it's kind of like treating a portion of your store as if it were a database, and keep that data in a normalized form.
 
-[This is an excellent article](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) that describes the difficulty of nested data structures. It also explains how to design normalized state, and Vuex ORM is heavily inspired by it.
+[This is an excellent article](https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape/) that describes the difficulty of nested data structures. It also explains how to design normalized state, and Vuex ORM is heavily inspired by it.
 
 Note that in this documentation, we're borrowing many examples and texts from the article. I would like to credit [Redux](https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape) and the author of the section [Mark Erikson](https://github.com/markerikson) for the beautiful piece of article.
 
@@ -74,7 +74,7 @@ The basic concepts of normalizing data are:
 - Each "data table" should store the individual items in an object, with the IDs of the items as keys and the items themselves as the values.
 - Any references to individual items should be done by the foreign keys.
 
-As you may notice, it's pretty much the same as how ordinally relational database system manages the relations. We could do the same for our store.
+As you may notice, it's pretty much the same as how ordinary relational database systems manage relations. We could do the same for our store.
 
 An example of a normalized state structure for the blog posts example above might look like:
 
@@ -200,7 +200,7 @@ With this simple method, Vuex ORM will automatically normalize the given data an
 
 Notice that Vuex ORM will even generate any missing foreign keys (in this case `user_id`) during the normalization process.
 
-Now, you can fetch these data using Model's fluent query builder just like ordinally ORM library.
+Now, you can fetch these data using Model's fluent [Query Builder](../data/retrieving.md#query-builder) just like any ordinary ORM library.
 
 ```js
 // Fetch all posts.

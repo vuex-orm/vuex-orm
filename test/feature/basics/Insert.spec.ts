@@ -1,11 +1,11 @@
 import { createStore, createState } from 'test/support/Helpers'
-import { Model, Fields } from 'app/index'
+import Model from '@/model/Model'
 
 describe('Feature – Basics – Insert', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields (): Fields {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.string('John Doe')
@@ -13,8 +13,10 @@ describe('Feature – Basics – Insert', () => {
     }
   }
 
+  const getStore = () => createStore([{ model: User }])
+
   it('can insert a record', async () => {
-    const store = createStore([{ model: User }])
+    const store = getStore()
 
     await User.insert({
       data: { id: 1, name: 'John Doe' }
@@ -30,7 +32,7 @@ describe('Feature – Basics – Insert', () => {
   })
 
   it('does nothing if an empty object is passed', async () => {
-    const store = createStore([{ model: User }])
+    const store = getStore()
 
     await User.insert({
       data: {}
@@ -44,7 +46,7 @@ describe('Feature – Basics – Insert', () => {
   })
 
   it('can insert record with primary key value of `null`', async () => {
-    const store = createStore([{ model: User }])
+    const store = getStore()
 
     await User.insert({
       data: { id: null, name: 'John Doe' }
@@ -52,7 +54,7 @@ describe('Feature – Basics – Insert', () => {
 
     const expected = createState({
       users: {
-        '$uid1': { $id: '$uid1', id: '$uid1', name: 'John Doe' }
+        $uid1: { $id: '$uid1', id: '$uid1', name: 'John Doe' }
       }
     })
 

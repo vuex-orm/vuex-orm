@@ -1,11 +1,11 @@
-import Model from 'app/model/Model'
+import Model from '@/model/Model'
 
 describe('Unit – Model - Serialization', () => {
   it('can serialize own fields into json', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -25,7 +25,7 @@ describe('Unit – Model - Serialization', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           phone: this.hasOne(Phone, 'user_id'),
@@ -37,7 +37,7 @@ describe('Unit – Model - Serialization', () => {
     class Phone extends Model {
       static entity = 'phones'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -48,7 +48,7 @@ describe('Unit – Model - Serialization', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -87,7 +87,7 @@ describe('Unit – Model - Serialization', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           phone: this.hasOne(Phone, 'user_id')
@@ -98,7 +98,7 @@ describe('Unit – Model - Serialization', () => {
     class Phone extends Model {
       static entity = 'phones'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -120,7 +120,7 @@ describe('Unit – Model - Serialization', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           array: this.attr([])

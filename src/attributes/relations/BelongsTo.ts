@@ -14,7 +14,7 @@ export default class BelongsTo extends Relation {
   parent: typeof Model
 
   /**
-   * The foregin key of the model.
+   * The foreign key of the model.
    */
   foreignKey: string
 
@@ -26,7 +26,12 @@ export default class BelongsTo extends Relation {
   /**
    * Create a new belongs to instance.
    */
-  constructor (model: typeof Model, parent: typeof Model | string, foreignKey: string, ownerKey: string) {
+  constructor(
+    model: typeof Model,
+    parent: typeof Model | string,
+    foreignKey: string,
+    ownerKey: string
+  ) {
     super(model) /* istanbul ignore next */
 
     this.parent = this.model.relation(parent)
@@ -37,7 +42,7 @@ export default class BelongsTo extends Relation {
   /**
    * Define the normalizr schema for the relationship.
    */
-  define (schema: Schema): NormalizrSchema {
+  define(schema: Schema): NormalizrSchema {
     return schema.one(this.parent)
   }
 
@@ -46,7 +51,7 @@ export default class BelongsTo extends Relation {
    * belongs to User, it will attach value to the `user_id` field of
    * Post record.
    */
-  attach (key: any, record: Record, data: NormalizedData): void {
+  attach(key: any, record: Record, data: NormalizedData): void {
     // See if the record has the foreign key, if yes, it means the user has
     // provided the key explicitly so do nothing and return.
     if (record[this.foreignKey] !== undefined) {
@@ -54,22 +59,28 @@ export default class BelongsTo extends Relation {
     }
 
     // If there is no foreign key, let's set it here.
-    record[this.foreignKey] = data[this.parent.entity] && data[this.parent.entity][key]
-      ? data[this.parent.entity][key][this.ownerKey]
-      : key
+    record[this.foreignKey] =
+      data[this.parent.entity] && data[this.parent.entity][key]
+        ? data[this.parent.entity][key][this.ownerKey]
+        : key
   }
 
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  make (value: any, _parent: Record, _key: string): Model | null {
+  make(value: any, _parent: Record, _key: string): Model | null {
     return this.makeOneRelation(value, this.parent)
   }
 
   /**
    * Load the belongs to relationship for the collection.
    */
-  load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void {
+  load(
+    query: Query,
+    collection: Collection,
+    name: string,
+    constraints: Constraint[]
+  ): void {
     const relation = this.getRelation(query, this.parent.entity, constraints)
 
     this.addEagerConstraints(relation, collection)
@@ -80,14 +91,18 @@ export default class BelongsTo extends Relation {
   /**
    * Set the constraints for an eager load of the relation.
    */
-  private addEagerConstraints (relation: Query, collection: Collection): void {
+  private addEagerConstraints(relation: Query, collection: Collection): void {
     relation.whereFk(this.ownerKey, this.getKeys(collection, this.foreignKey))
   }
 
   /**
    * Match the eagerly loaded results to their parents.
    */
-  private match (collection: Collection, relations: Collection, name: string): void {
+  private match(
+    collection: Collection,
+    relations: Collection,
+    name: string
+  ): void {
     const dictionary = this.buildDictionary(relations)
 
     collection.forEach((model) => {
@@ -101,7 +116,7 @@ export default class BelongsTo extends Relation {
   /**
    * Build model dictionary keyed by the relation's foreign key.
    */
-  private buildDictionary (relations: Collection): DictionaryOne {
+  private buildDictionary(relations: Collection): DictionaryOne {
     return relations.reduce<DictionaryOne>((dictionary, relation) => {
       const key = relation[this.ownerKey]
 

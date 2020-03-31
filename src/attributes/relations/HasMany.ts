@@ -14,7 +14,7 @@ export default class HasMany extends Relation {
   related: typeof Model
 
   /**
-   * The foregin key of the related model.
+   * The foreign key of the related model.
    */
   foreignKey: string
 
@@ -26,7 +26,12 @@ export default class HasMany extends Relation {
   /**
    * Create a new has many instance.
    */
-  constructor (model: typeof Model, related: typeof Model | string, foreignKey: string, localKey: string) {
+  constructor(
+    model: typeof Model,
+    related: typeof Model | string,
+    foreignKey: string,
+    localKey: string
+  ) {
     super(model) /* istanbul ignore next */
 
     this.related = this.model.relation(related)
@@ -37,18 +42,22 @@ export default class HasMany extends Relation {
   /**
    * Define the normalizr schema for the relationship.
    */
-  define (schema: Schema): NormalizrSchema {
+  define(schema: Schema): NormalizrSchema {
     return schema.many(this.related)
   }
 
   /**
    * Attach the relational key to the given data.
    */
-  attach (key: any, record: Record, data: NormalizedData): void {
+  attach(key: any, record: Record, data: NormalizedData): void {
     key.forEach((index: any) => {
       const related = data[this.related.entity]
 
-      if (!related || !related[index] || related[index][this.foreignKey] !== undefined) {
+      if (
+        !related ||
+        !related[index] ||
+        related[index][this.foreignKey] !== undefined
+      ) {
         return
       }
 
@@ -59,14 +68,19 @@ export default class HasMany extends Relation {
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  make (value: any, _parent: Record, _key: string): Model[] {
+  make(value: any, _parent: Record, _key: string): Model[] {
     return this.makeManyRelation(value, this.related)
   }
 
   /**
    * Load the has many relationship for the collection.
    */
-  load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void {
+  load(
+    query: Query,
+    collection: Collection,
+    name: string,
+    constraints: Constraint[]
+  ): void {
     const relation = this.getRelation(query, this.related.entity, constraints)
 
     this.addEagerConstraints(relation, collection)
@@ -77,14 +91,18 @@ export default class HasMany extends Relation {
   /**
    * Set the constraints for an eager load of the relation.
    */
-  private addEagerConstraints (relation: Query, collection: Collection): void {
+  private addEagerConstraints(relation: Query, collection: Collection): void {
     relation.whereFk(this.foreignKey, this.getKeys(collection, this.localKey))
   }
 
   /**
    * Match the eagerly loaded results to their parents.
    */
-  private match (collection: Collection, relations: Collection, name: string): void {
+  private match(
+    collection: Collection,
+    relations: Collection,
+    name: string
+  ): void {
     const dictionary = this.buildDictionary(relations)
 
     collection.forEach((model) => {
@@ -98,7 +116,7 @@ export default class HasMany extends Relation {
   /**
    * Build model dictionary keyed by the relation's foreign key.
    */
-  private buildDictionary (relations: Collection): DictionaryMany {
+  private buildDictionary(relations: Collection): DictionaryMany {
     return relations.reduce<DictionaryMany>((dictionary, relation) => {
       const key = relation[this.foreignKey]
 

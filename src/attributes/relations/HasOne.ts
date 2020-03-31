@@ -14,7 +14,7 @@ export default class HasOne extends Relation {
   related: typeof Model
 
   /**
-   * The foregin key of the related model.
+   * The foreign key of the related model.
    */
   foreignKey: string
 
@@ -26,7 +26,12 @@ export default class HasOne extends Relation {
   /**
    * Create a new has one instance.
    */
-  constructor (model: typeof Model, related: typeof Model | string, foreignKey: string, localKey: string) {
+  constructor(
+    model: typeof Model,
+    related: typeof Model | string,
+    foreignKey: string,
+    localKey: string
+  ) {
     super(model) /* istanbul ignore next */
 
     this.related = this.model.relation(related)
@@ -37,7 +42,7 @@ export default class HasOne extends Relation {
   /**
    * Define the normalizr schema for the relationship.
    */
-  define (schema: Schema): NormalizrSchema {
+  define(schema: Schema): NormalizrSchema {
     return schema.one(this.related)
   }
 
@@ -46,7 +51,7 @@ export default class HasOne extends Relation {
    * when User has one Phone, it will attach value to the
    * `user_id` field of Phone record.
    */
-  attach (key: any, record: Record, data: NormalizedData): void {
+  attach(key: any, record: Record, data: NormalizedData): void {
     // Check if the record has local key set. If not, set the local key to be
     // the id value. This happens if the user defines the custom local key
     // and didn't include it in the data being normalized.
@@ -67,14 +72,19 @@ export default class HasOne extends Relation {
    * Make value to be set to model property. This method is used when
    * instantiating a model or creating a plain object from a model.
    */
-  make (value: any, _parent: Record, _key: string): Model | null {
+  make(value: any, _parent: Record, _key: string): Model | null {
     return this.makeOneRelation(value, this.related)
   }
 
   /**
    * Load the has one relationship for the collection.
    */
-  load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void {
+  load(
+    query: Query,
+    collection: Collection,
+    name: string,
+    constraints: Constraint[]
+  ): void {
     const relation = this.getRelation(query, this.related.entity, constraints)
 
     this.addEagerConstraints(relation, collection)
@@ -85,14 +95,18 @@ export default class HasOne extends Relation {
   /**
    * Set the constraints for an eager load of the relation.
    */
-  private addEagerConstraints (relation: Query, collection: Collection): void {
+  private addEagerConstraints(relation: Query, collection: Collection): void {
     relation.whereFk(this.foreignKey, this.getKeys(collection, this.localKey))
   }
 
   /**
    * Match the eagerly loaded results to their parents.
    */
-  private match (collection: Collection, relations: Collection, name: string): void {
+  private match(
+    collection: Collection,
+    relations: Collection,
+    name: string
+  ): void {
     const dictionary = this.buildDictionary(relations)
 
     collection.forEach((model) => {
@@ -106,7 +120,7 @@ export default class HasOne extends Relation {
   /**
    * Build model dictionary keyed by the relation's foreign key.
    */
-  private buildDictionary (relations: Collection): DictionaryOne {
+  private buildDictionary(relations: Collection): DictionaryOne {
     return relations.reduce<DictionaryOne>((dictionary, relation) => {
       const key = relation[this.foreignKey]
 

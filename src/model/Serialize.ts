@@ -1,3 +1,4 @@
+import { isArray } from '../support/Utils'
 import Record from '../data/Record'
 import Item from '../data/Item'
 import Collection from '../data/Collection'
@@ -16,7 +17,7 @@ const defaultOption: Option = {
  * Serialize the given model to attributes. This method will ignore
  * relationships, and it includes the index id.
  */
-export function toAttributes (model: Model): Record {
+export function toAttributes(model: Model): Record {
   const record = toJson(model, { relations: false })
 
   record.$id = model.$id
@@ -27,7 +28,7 @@ export function toAttributes (model: Model): Record {
 /**
  * Serialize given model POJO.
  */
-export function toJson (model: Model, option: Option = {}): Record {
+export function toJson(model: Model, option: Option = {}): Record {
   option = { ...defaultOption, ...option }
 
   const record: Record = {}
@@ -52,12 +53,12 @@ export function toJson (model: Model, option: Option = {}): Record {
 /**
  * Serialize given value.
  */
-function value (v: any): any {
+function value(v: any): any {
   if (v === null) {
     return null
   }
 
-  if (Array.isArray(v)) {
+  if (isArray(v)) {
     return array(v)
   }
 
@@ -71,14 +72,14 @@ function value (v: any): any {
 /**
  * Serialize an array into json.
  */
-function array (a: any[]): any[] {
-  return a.map(v => value(v))
+function array(a: any[]): any[] {
+  return a.map((v) => value(v))
 }
 
 /**
  * Serialize an object into json.
  */
-function object (o: object): object {
+function object(o: object): object {
   const obj = {}
 
   for (const key in o) {
@@ -91,15 +92,15 @@ function object (o: object): object {
 /**
  * Serialize given relation into json.
  */
-function relation (relation: Item): Record | null
-function relation (relation: Collection): Record[]
-function relation (relation: Item | Collection): Record | Record[] | null {
+function relation(relation: Item): Record | null
+function relation(relation: Collection): Record[]
+function relation(relation: Item | Collection): Record | Record[] | null {
   if (relation === null) {
     return null
   }
 
-  if (Array.isArray(relation)) {
-    return relation.map(model => model.$toJson())
+  if (isArray(relation)) {
+    return relation.map((model) => model.$toJson())
   }
 
   return relation.$toJson()
@@ -108,8 +109,8 @@ function relation (relation: Item | Collection): Record | Record[] | null {
 /**
  * Serialize given relation into empty json.
  */
-function emptyRelation (relation: Item): null
-function emptyRelation (relation: Collection): []
-function emptyRelation (relation: Item | Collection): [] | null {
-  return Array.isArray(relation) ? [] : null
+function emptyRelation(relation: Item): null
+function emptyRelation(relation: Collection): []
+function emptyRelation(relation: Item | Collection): [] | null {
+  return isArray(relation) ? [] : null
 }

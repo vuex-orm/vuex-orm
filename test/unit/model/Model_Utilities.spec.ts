@@ -1,4 +1,4 @@
-import Model from 'app/model/Model'
+import Model from '@/model/Model'
 
 describe('Unit – Model - Utilities', () => {
   it('can check if the key is primary key', () => {
@@ -7,7 +7,7 @@ describe('Unit – Model - Utilities', () => {
 
       static primaryKey = 'id'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -25,7 +25,7 @@ describe('Unit – Model - Utilities', () => {
 
       static primaryKey = ['user_id', 'video_id']
 
-      static fields () {
+      static fields() {
         return {
           user_id: this.attr(null),
           video_id: this.attr(null),
@@ -39,11 +39,29 @@ describe('Unit – Model - Utilities', () => {
     expect(Subscription.isPrimaryKey('created_at')).toBe(false)
   })
 
+  it('can check if the primary key is a composite primary key', () => {
+    class Subscription extends Model {
+      static entity = 'users'
+
+      static primaryKey = ['user_id', 'video_id']
+
+      static fields() {
+        return {
+          user_id: this.attr(null),
+          video_id: this.attr(null),
+          created_at: this.attr(null)
+        }
+      }
+    }
+
+    expect(Subscription.isCompositePrimaryKey()).toBe(true)
+  })
+
   it('can get primary key value out of record', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -61,7 +79,7 @@ describe('Unit – Model - Utilities', () => {
 
       static primaryKey = ['user_id', 'video_id']
 
-      static fields () {
+      static fields() {
         return {
           user_id: this.attr(null),
           video_id: this.attr(null),
@@ -70,7 +88,12 @@ describe('Unit – Model - Utilities', () => {
       }
     }
 
-    expect(Subscription.getIdFromRecord({ user_id: 1, video_id: 2 })).toEqual([1, 2])
-    expect(Subscription.getIdFromRecord({ created_at: '1985-10-10 12:00:00' })).toBe(null)
+    expect(Subscription.getIdFromRecord({ user_id: 1, video_id: 2 })).toEqual([
+      1,
+      2
+    ])
+    expect(
+      Subscription.getIdFromRecord({ created_at: '1985-10-10 12:00:00' })
+    ).toBe(null)
   })
 })

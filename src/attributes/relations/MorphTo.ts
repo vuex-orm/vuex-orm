@@ -15,14 +15,14 @@ export default class MorphTo extends Relation {
   id: string
 
   /**
-   * The field name fthat contains type of the parent model.
+   * The field name that contains type of the parent model.
    */
   type: string
 
   /**
    * Create a new morph to instance.
    */
-  constructor (model: typeof Model, id: string, type: string) {
+  constructor(model: typeof Model, id: string, type: string) {
     super(model) /* istanbul ignore next */
 
     this.id = id
@@ -32,7 +32,7 @@ export default class MorphTo extends Relation {
   /**
    * Define the normalizr schema for the relationship.
    */
-  define (schema: Schema): NormalizrSchema {
+  define(schema: Schema): NormalizrSchema {
     return schema.union((_value, parentValue) => parentValue[this.type])
   }
 
@@ -40,14 +40,14 @@ export default class MorphTo extends Relation {
    * Attach the relational key to the given record. Since morph to
    * relationship doesn't have any foreign key, it would do nothing.
    */
-  attach (_key: any, _record: Record, _data: NormalizedData): void {
+  attach(_key: any, _record: Record, _data: NormalizedData): void {
     return
   }
 
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  make (value: any, parent: Record, _key: string): Model | null {
+  make(value: any, parent: Record, _key: string): Model | null {
     const related = parent[this.type] as string
 
     try {
@@ -61,21 +61,26 @@ export default class MorphTo extends Relation {
   /**
    * Load the morph to relationship for the collection.
    */
-  load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void {
+  load(
+    query: Query,
+    collection: Collection,
+    name: string,
+    constraints: Constraint[]
+  ): void {
     const types = this.getTypes(collection)
 
-    const relateds = types.reduce<NormalizedData>((relateds, type) => {
+    const relations = types.reduce((related, type) => {
       const relatedQuery = this.getRelation(query, type, constraints)
 
-      relateds[type] = this.mapSingleRelations(relatedQuery.get(), '$id')
+      related[type] = this.mapSingleRelations(relatedQuery.get(), '$id')
 
-      return relateds
-    }, {} as NormalizedData)
+      return related
+    }, {})
 
     collection.forEach((item) => {
       const id = item[this.id]
       const type = item[this.type]
-      const related = relateds[type][id]
+      const related = relations[type].get(String(id))
 
       item[name] = related || null
     })
@@ -84,7 +89,7 @@ export default class MorphTo extends Relation {
   /**
    * Get all types from the collection.
    */
-  getTypes (collection: Collection): string[] {
+  getTypes(collection: Collection): string[] {
     return collection.reduce<string[]>((types, item) => {
       const type = item[this.type]
 

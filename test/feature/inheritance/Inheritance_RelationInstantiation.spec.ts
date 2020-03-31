@@ -1,18 +1,18 @@
 import { createStore } from 'test/support/Helpers'
-import Model from 'app/model/Model'
+import Model from '@/model/Model'
 
 describe('Feature - Inheritance - Relation instantiation', () => {
   it('should choose the appropriate STI model class when instantiating a belongsTo relation', () => {
     class Employee extends Model {
       static entity = 'employee'
 
-      static types () {
+      static types() {
         return {
           boss: Boss
         }
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.string(''),
@@ -29,7 +29,7 @@ describe('Feature - Inheritance - Relation instantiation', () => {
     class Firm extends Model {
       static entity = 'firm'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           owner_id: this.attr(null),
@@ -57,14 +57,14 @@ describe('Feature - Inheritance - Relation instantiation', () => {
     class Employee extends Model {
       static entity = 'employee'
 
-      static types () {
+      static types() {
         return {
           HR: HumanResources,
           CEO: ChiefExecutiveOfficer
         }
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           firm_id: this.attr(null),
@@ -89,7 +89,7 @@ describe('Feature - Inheritance - Relation instantiation', () => {
     class Firm extends Model {
       static entity = 'firm'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.string(''),
@@ -100,7 +100,7 @@ describe('Feature - Inheritance - Relation instantiation', () => {
       employees!: Employee[]
     }
 
-    createStore([Employee, HumanResources, ChiefExecutiveOfficer, Firm ])
+    createStore([Employee, HumanResources, ChiefExecutiveOfficer, Firm])
 
     const firm = new Firm({
       id: 1,
@@ -111,22 +111,26 @@ describe('Feature - Inheritance - Relation instantiation', () => {
       ]
     })
 
-    expect(firm.employees.find(({ id }) => id === 1)).toBeInstanceOf(HumanResources)
-    expect(firm.employees.find(({ id }) => id === 2)).toBeInstanceOf(ChiefExecutiveOfficer)
+    expect(firm.employees.find(({ id }) => id === 1)).toBeInstanceOf(
+      HumanResources
+    )
+    expect(firm.employees.find(({ id }) => id === 2)).toBeInstanceOf(
+      ChiefExecutiveOfficer
+    )
   })
 
   it('should choose the appropriate STI model class when instantiating a morphTo relation', () => {
     class User extends Model {
       static entity = 'user'
 
-      static types () {
+      static types() {
         return {
           admin: Admin,
           user: User
         }
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.string(''),
@@ -143,7 +147,7 @@ describe('Feature - Inheritance - Relation instantiation', () => {
     class Image extends Model {
       static entity = 'image'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           url: this.attr(''),

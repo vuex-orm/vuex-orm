@@ -1,6 +1,6 @@
 import { createStoreFromDatabase } from 'test/support/Helpers'
-import Database from 'app/database/Database'
-import Model from 'app/model/Model'
+import Database from '@/database/Database'
+import Model from '@/model/Model'
 
 describe('Unit – Database', () => {
   it('registers itself to the store instance', () => {
@@ -12,7 +12,9 @@ describe('Unit – Database', () => {
   })
 
   it('binds the store instance to the registered models.', () => {
-    class User extends Model { static entity = 'users' }
+    class User extends Model {
+      static entity = 'users'
+    }
 
     const database1 = new Database()
     const database2 = new Database()
@@ -23,13 +25,27 @@ describe('Unit – Database', () => {
     const store1 = createStoreFromDatabase(database1)
     const store2 = createStoreFromDatabase(database2)
 
-    expect(store1.$db().model('users').database()).toBe(database1)
-    expect(store2.$db().model('users').database()).toBe(database2)
+    expect(
+      store1
+        .$db()
+        .model('users')
+        .database()
+    ).toBe(database1)
+    expect(
+      store2
+        .$db()
+        .model('users')
+        .database()
+    ).toBe(database2)
   })
 
   it('can fetch all models', () => {
-    class User extends Model { static entity = 'users' }
-    class Post extends Model { static entity = 'posts' }
+    class User extends Model {
+      static entity = 'users'
+    }
+    class Post extends Model {
+      static entity = 'posts'
+    }
 
     const database = new Database()
 
@@ -43,8 +59,12 @@ describe('Unit – Database', () => {
   })
 
   it('can fetch a model by string', () => {
-    class User extends Model { static entity = 'users' }
-    class Post extends Model { static entity = 'posts' }
+    class User extends Model {
+      static entity = 'users'
+    }
+    class Post extends Model {
+      static entity = 'posts'
+    }
 
     const database = new Database()
 
@@ -57,8 +77,12 @@ describe('Unit – Database', () => {
   })
 
   it('can fetch a model by type', () => {
-    class User extends Model { static entity = 'users' }
-    class Post extends Model { static entity = 'posts' }
+    class User extends Model {
+      static entity = 'users'
+    }
+    class Post extends Model {
+      static entity = 'posts'
+    }
 
     const database = new Database()
 
@@ -71,7 +95,9 @@ describe('Unit – Database', () => {
   })
 
   it('throws when a model is not found', () => {
-    class User extends Model { static entity = 'users' }
+    class User extends Model {
+      static entity = 'users'
+    }
 
     const database = new Database()
 
@@ -84,9 +110,17 @@ describe('Unit – Database', () => {
     // Suppress model inheritance warning.
     jest.spyOn(global.console, 'warn').mockImplementation()
 
-    class User extends Model { static entity = 'users' }
-    class Guest extends Model { static entity = 'guests'; static baseEntity = 'users' }
-    class Admin extends Model { static entity = 'admins'; static baseEntity = 'users' }
+    class User extends Model {
+      static entity = 'users'
+    }
+    class Guest extends Model {
+      static entity = 'guests'
+      static baseEntity = 'users'
+    }
+    class Admin extends Model {
+      static entity = 'admins'
+      static baseEntity = 'users'
+    }
 
     const database = new Database()
 
@@ -105,8 +139,13 @@ describe('Unit – Database', () => {
     // Suppress model inheritance warning.
     jest.spyOn(global.console, 'warn').mockImplementation()
 
-    class User extends Model { static entity = 'users' }
-    class Guest extends Model { static entity = 'guests'; static baseEntity = 'users' }
+    class User extends Model {
+      static entity = 'users'
+    }
+    class Guest extends Model {
+      static entity = 'guests'
+      static baseEntity = 'users'
+    }
 
     const database = new Database()
 
@@ -122,8 +161,13 @@ describe('Unit – Database', () => {
     // Suppress model inheritance warning.
     jest.spyOn(global.console, 'warn').mockImplementation()
 
-    class User extends Model { static entity = 'users' }
-    class Guest extends Model { static entity = 'guests'; static baseEntity = 'users' }
+    class User extends Model {
+      static entity = 'users'
+    }
+    class Guest extends Model {
+      static entity = 'guests'
+      static baseEntity = 'users'
+    }
 
     const database = new Database()
 
@@ -139,8 +183,13 @@ describe('Unit – Database', () => {
     // Suppress model inheritance warning.
     jest.spyOn(global.console, 'warn').mockImplementation()
 
-    class User extends Model { static entity = 'users' }
-    class Guest extends Model { static entity = 'guests'; static baseEntity = 'users' }
+    class User extends Model {
+      static entity = 'users'
+    }
+    class Guest extends Model {
+      static entity = 'guests'
+      static baseEntity = 'users'
+    }
 
     const database = new Database()
 
@@ -151,8 +200,12 @@ describe('Unit – Database', () => {
   })
 
   it('can fetch all modules', () => {
-    class User extends Model { static entity = 'users' }
-    class Post extends Model { static entity = 'posts' }
+    class User extends Model {
+      static entity = 'users'
+    }
+    class Post extends Model {
+      static entity = 'posts'
+    }
 
     const users = {}
     const posts = {}
@@ -169,8 +222,12 @@ describe('Unit – Database', () => {
   })
 
   it('can fetch a module', () => {
-    class User extends Model { static entity = 'users' }
-    class Post extends Model { static entity = 'posts' }
+    class User extends Model {
+      static entity = 'users'
+    }
+    class Post extends Model {
+      static entity = 'posts'
+    }
 
     const users = {}
     const posts = {}
@@ -186,7 +243,9 @@ describe('Unit – Database', () => {
   })
 
   it('throws when a module is not found', () => {
-    class User extends Model { static entity = 'users' }
+    class User extends Model {
+      static entity = 'users'
+    }
 
     const users = {}
 

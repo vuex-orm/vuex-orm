@@ -1,36 +1,38 @@
 import { createStore, createState } from 'test/support/Helpers'
-import Model from 'app/model/Model'
+import Model from '@/model/Model'
 
 describe('Feature – Basics – Delete', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    // @Attribute
+    id!: number
+
+    // @Str('')
+    name!: string
+
+    static fields() {
       return {
         id: this.attr(null),
         name: this.string('')
       }
     }
-
-    id!: any
-    name!: string
   }
 
   class Post extends Model {
     static entity = 'posts'
 
-    static fields () {
+    // @Num
+    id!: number
+
+    static fields() {
       return {
         id: this.number(null)
       }
     }
-
-    id!: any
   }
 
-  function getStore () {
-    return createStore([{ model: User }, { model: Post }])
-  }
+  const getStore = () => createStore([{ model: User }, { model: Post }])
 
   it('can delete a record by specifying the id', async () => {
     const store = getStore()
@@ -81,7 +83,7 @@ describe('Feature – Basics – Delete', () => {
       ]
     })
 
-    await User.delete(user => user.name === 'Jane Doe')
+    await User.delete((user) => user.name === 'Jane Doe')
 
     const expected = createState({
       users: {
@@ -120,10 +122,10 @@ describe('Feature – Basics – Delete', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    const user = await User.delete(1) as User
+    const user = await User.delete(1)
 
     expect(user).toBeInstanceOf(User)
-    expect(user.id).toBe(1)
+    expect(user?.id).toBe(1)
 
     const expected = createState({
       users: {
@@ -146,7 +148,7 @@ describe('Feature – Basics – Delete', () => {
       ]
     })
 
-    const users = await User.delete(user => user.name === 'Jane Doe')
+    const users = await User.delete((user) => user.name === 'Jane Doe')
 
     expect(users.length).toBe(2)
     expect(users[0]).toBeInstanceOf(User)
@@ -212,7 +214,7 @@ describe('Feature – Basics – Delete', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    await (new User()).$deleteAll()
+    await new User().$deleteAll()
 
     const expected = createState({
       users: {},
