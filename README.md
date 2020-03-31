@@ -110,16 +110,16 @@ We are excited that you are interested in contributing to Vuex ORM! Anything fro
 
 ### Pull Request Guidelines
 
-When submitting a new pull request, please make sure you follow the guideline below.
+When submitting a new pull request, please make sure to follow these guidelines:
 
-- **If adding a new feature:** Checkout a topic branch from `dev` branch, and merge back against `dev` branch.
-- **If fixing a bug:** Checkout a topic branch from `master` branch, and merge back against `master` branch.
+- **For feature requests:** Checkout a topic branch from `dev` branch, and merge back against `dev` branch.
+- **For bug fixes:** Checkout a topic branch from `master` branch, and merge back against `master` branch.
 
-These rules apply to documentations as well. If you're submitting documentation about a new feature that isn't released yet, you must checkout the `dev` branch, but for fixes, such as fixing a typo, you must checkout the `master` branch.
+These rules also apply to the documentation. If you're submitting documentation about a new feature that isn't released yet, you must checkout the `dev` branch, but for non-functional updates, such as fixing a typo, you may checkout and commit to the `master` branch.
 
 ### Scripts
 
-There are several npm scripts to help your development.
+There are several scripts to help with development.
 
 ```bash
 $ yarn build
@@ -165,4 +165,4 @@ Build and boot documentation server with [VuePress](https://vuepress.vuejs.org/)
 
 ## License
 
-The Vuex ORM is open-sourced software licensed under the [MIT license](LICENSE.md).
+The Vuex ORM is open-sourced software licensed under the [MIT License](./LICENSE).
