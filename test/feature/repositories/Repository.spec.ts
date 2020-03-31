@@ -2,7 +2,19 @@ import { createStore } from 'test/support/Helpers'
 import Repository from '@/repository/Repository'
 import Model from '@/model/Model'
 
-describe('Unit - Repository', () => {
+describe('Feature - Repository', () => {
+  it('can retrieve a new repository instance from the store', () => {
+    class User extends Model {
+      static entity = 'users'
+    }
+
+    const store = createStore([User])
+
+    const user = store.$repo(User)
+
+    expect(user).toBeInstanceOf(Repository)
+  })
+
   it('can instantiate a new model instance without a record', () => {
     class User extends Model {
       static entity = 'users'
@@ -41,6 +53,18 @@ describe('Unit - Repository', () => {
 
     expect(user).toBeInstanceOf(User)
     expect(user.name).toBe('John Doe')
+  })
+
+  it('injects store instance to the instantiated model.', () => {
+    class User extends Model {
+      static entity = 'users'
+    }
+
+    const store = createStore([User])
+
+    const user = store.$repo(User).make()
+
+    expect(user.$store()).toBe(store)
   })
 
   it('can retrieve a custom repository', () => {
