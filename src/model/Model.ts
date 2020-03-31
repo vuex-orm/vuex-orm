@@ -284,7 +284,7 @@ export default class Model {
    * Get the database instance from store.
    */
   static database (): Database {
-    return this.store().$db()
+    return this.store().$database
   }
 
   /**

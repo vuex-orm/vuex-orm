@@ -26,6 +26,7 @@ import MorphOne from './attributes/relations/MorphOne'
 import MorphMany from './attributes/relations/MorphMany'
 import MorphToMany from './attributes/relations/MorphToMany'
 import MorphedByMany from './attributes/relations/MorphedByMany'
+import Repository from './repository/Repository'
 import Getters from './modules/Getters'
 import Actions from './modules/Actions'
 import RootGetters from './modules/RootGetters'
@@ -73,6 +74,7 @@ export interface VuexORM {
   MorphMany: typeof MorphMany
   MorphToMany: typeof MorphToMany
   MorphedByMany: typeof MorphedByMany
+  Repository: typeof Repository
   Getters: GettersContract
   Actions: ActionsContract
   RootGetters: RootGettersContract
@@ -108,6 +110,7 @@ export {
   MorphMany,
   MorphToMany,
   MorphedByMany,
+  Repository,
   Getters,
   Actions,
   RootGetters,
@@ -151,6 +154,7 @@ export default {
   MorphMany,
   MorphToMany,
   MorphedByMany,
+  Repository,
   Getters,
   Actions,
   RootGetters,

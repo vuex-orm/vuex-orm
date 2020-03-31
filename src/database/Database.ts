@@ -46,6 +46,11 @@ export default class Database {
   entities: Entity[] = []
 
   /**
+   * The hacked models registered to the store.
+   */
+  hackedModels: Models = {}
+
+  /**
    * The normalizr schema.
    */
   schemas: Schemas = {}
@@ -63,8 +68,6 @@ export default class Database {
     this.store = store
     this.namespace = namespace
 
-    this.connect()
-
     this.registerModules()
     this.createSchema()
 
@@ -80,9 +83,11 @@ export default class Database {
     const entity: Entity = {
       name: model.entity,
       base: model.baseEntity || model.entity,
-      model: this.createBindingModel(model),
+      model,
       module
     }
+
+    this.hackedModels[model.entity] = this.createBindingModel(model)
 
     this.entities.push(entity)
 
@@ -354,13 +359,6 @@ export default class Database {
    */
   private registerSchema (entity: Entity): void {
     this.schemas[entity.name] = Schema.create(entity.model)
-  }
-
-  /**
-   * Inject database to the store instance.
-   */
-  private connect (): void {
-    this.store.$db = () => this
   }
 
   /**

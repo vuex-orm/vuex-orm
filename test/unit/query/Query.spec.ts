@@ -16,8 +16,8 @@ describe('Unit – Query', () => {
 
     const models = (new Query(store, 'users')).getModels()
 
-    expect(models.users.prototype).toBeInstanceOf(User)
-    expect(models.posts.prototype).toBeInstanceOf(Post)
+    expect(models.users).toBe(User)
+    expect(models.posts).toBe(Post)
   })
 
   it('can retrieve a specific model from the database instance', () => {
@@ -25,7 +25,7 @@ describe('Unit – Query', () => {
 
     const model = (new Query(store, 'users')).getModel('posts')
 
-    expect(model.prototype).toBeInstanceOf(Post)
+    expect(model).toBe(Post)
   })
 
   it('retrieves the model corresponds to the entity of Query if the name is not specified', () => {
@@ -33,6 +33,6 @@ describe('Unit – Query', () => {
 
     const model = (new Query(store, 'users')).getModel()
 
-    expect(model.prototype).toBeInstanceOf(User)
+    expect(model).toBe(User)
   })
 })
