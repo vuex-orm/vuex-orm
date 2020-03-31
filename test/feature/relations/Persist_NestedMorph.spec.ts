@@ -6,7 +6,7 @@ describe('Features – Relations – Persist – Nested Morph', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comments: this.hasMany(Comment, 'user_id')
@@ -17,7 +17,7 @@ describe('Features – Relations – Persist – Nested Morph', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -27,7 +27,7 @@ describe('Features – Relations – Persist – Nested Morph', () => {
     class Comment extends Model {
       static entity = 'comments'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null),
@@ -38,7 +38,11 @@ describe('Features – Relations – Persist – Nested Morph', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Post }, { model: Comment }])
+    const store = createStore([
+      { model: User },
+      { model: Post },
+      { model: Comment }
+    ])
 
     await User.create({
       id: 1,

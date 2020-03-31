@@ -15,7 +15,7 @@ describe('Hooks – Local Update', () => {
       // @Attribute
       age!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -23,7 +23,7 @@ describe('Hooks – Local Update', () => {
         }
       }
 
-      static beforeUpdate (user: User) {
+      static beforeUpdate(user: User) {
         user.age = 30
       }
     }
@@ -52,7 +52,7 @@ describe('Hooks – Local Update', () => {
       // @Attribute
       age!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -60,7 +60,7 @@ describe('Hooks – Local Update', () => {
         }
       }
 
-      static beforeUpdate (_user: User) {
+      static beforeUpdate(_user: User) {
         // Do nothing.
       }
     }
@@ -89,7 +89,7 @@ describe('Hooks – Local Update', () => {
       // @Attribute
       age!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -97,7 +97,7 @@ describe('Hooks – Local Update', () => {
         }
       }
 
-      static beforeUpdate (_user: User) {
+      static beforeUpdate(_user: User) {
         return false
       }
     }
@@ -133,7 +133,7 @@ describe('Hooks – Local Update', () => {
       // @Attribute
       age!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -141,7 +141,7 @@ describe('Hooks – Local Update', () => {
         }
       }
 
-      static afterUpdate (user: User) {
+      static afterUpdate(user: User) {
         hit = true
 
         expect(user).toBeInstanceOf(User)

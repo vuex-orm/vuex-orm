@@ -18,7 +18,7 @@ describe('Feature - Repositories - CRUD Retrieve', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -46,7 +46,7 @@ describe('Feature - Repositories - CRUD Retrieve', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -74,7 +74,7 @@ describe('Feature - Repositories - CRUD Retrieve', () => {
 
       static primaryKey = ['idA', 'idB']
 
-      static fields () {
+      static fields() {
         return {
           idA: this.attr(null),
           idB: this.attr(null)
@@ -90,7 +90,10 @@ describe('Feature - Repositories - CRUD Retrieve', () => {
     const userRepo = store.$repo(User)
 
     await userRepo.insert({
-      data: [{ idA: 1, idB: 2 }, { idA: 3, idB: 4 }]
+      data: [
+        { idA: 1, idB: 2 },
+        { idA: 3, idB: 4 }
+      ]
     })
 
     const user = userRepo.find([1, 2]) as User
@@ -103,7 +106,7 @@ describe('Feature - Repositories - CRUD Retrieve', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -132,7 +135,7 @@ describe('Feature - Repositories - CRUD Retrieve', () => {
 
       static primaryKey = ['idA', 'idB']
 
-      static fields () {
+      static fields() {
         return {
           idA: this.attr(null),
           idB: this.attr(null)
@@ -148,10 +151,17 @@ describe('Feature - Repositories - CRUD Retrieve', () => {
     const userRepo = store.$repo(User)
 
     await userRepo.insert({
-      data: [{ idA: 1, idB: 2 }, { idA: 3, idB: 4 }, { idA: 5, idB: 6 }]
+      data: [
+        { idA: 1, idB: 2 },
+        { idA: 3, idB: 4 },
+        { idA: 5, idB: 6 }
+      ]
     })
 
-    const users = userRepo.findIn([[1, 2], [5, 6]])
+    const users = userRepo.findIn([
+      [1, 2],
+      [5, 6]
+    ])
 
     expect(users[0].idA).toBe(1)
     expect(users[0].idB).toBe(2)
@@ -163,7 +173,7 @@ describe('Feature - Repositories - CRUD Retrieve', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }

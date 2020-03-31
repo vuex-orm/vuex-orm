@@ -12,7 +12,7 @@ describe('Feature – Hooks – Global Update', () => {
     // @Attribute('')
     role!: string
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         role: this.attr('')

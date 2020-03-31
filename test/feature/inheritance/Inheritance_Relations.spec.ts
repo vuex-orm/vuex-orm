@@ -6,14 +6,14 @@ describe('Feature - Inheritance - Relations', () => {
     class Person extends Model {
       static entity = 'person'
 
-      static types () {
+      static types() {
         return {
           ADULT: Adult,
           PERSON: Person
         }
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -29,7 +29,7 @@ describe('Feature - Inheritance - Relations', () => {
 
       static baseEntity = 'person'
 
-      static fields () {
+      static fields() {
         return {
           ...super.fields(),
           jobs: this.hasMany(Job, 'adult_id')
@@ -42,7 +42,7 @@ describe('Feature - Inheritance - Relations', () => {
     class Job extends Model {
       static entity = 'jobs'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           adult_id: this.attr(null),
@@ -61,7 +61,9 @@ describe('Feature - Inheritance - Relations', () => {
       { id: 2, name: 'Jane', type: 'ADULT' }
     ])
 
-    const adult = Adult.query().with('jobs').all()
+    const adult = Adult.query()
+      .with('jobs')
+      .all()
 
     expect(adult.length).toBe(1)
     expect(adult[0].id).toBe(2)
@@ -72,14 +74,14 @@ describe('Feature - Inheritance - Relations', () => {
     class Person extends Model {
       static entity = 'person'
 
-      static types () {
+      static types() {
         return {
           ADULT: Adult,
           PERSON: Person
         }
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -95,7 +97,7 @@ describe('Feature - Inheritance - Relations', () => {
 
       static baseEntity = 'person'
 
-      static fields () {
+      static fields() {
         return {
           ...super.fields(),
           jobs: this.hasMany(Job, 'adult_id')
@@ -108,7 +110,7 @@ describe('Feature - Inheritance - Relations', () => {
     class Job extends Model {
       static entity = 'jobs'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           adult_id: this.attr(null),
@@ -129,7 +131,9 @@ describe('Feature - Inheritance - Relations', () => {
       { id: 2, name: 'Jane', type: 'ADULT' }
     ])
 
-    const job = Job.query().with('adult').all()
+    const job = Job.query()
+      .with('adult')
+      .all()
 
     expect(job.length).toBe(1)
     expect(job[0].adult).not.toBe(null)
@@ -140,14 +144,14 @@ describe('Feature - Inheritance - Relations', () => {
     class Person extends Model {
       static entity = 'person'
 
-      static types () {
+      static types() {
         return {
           ADULT: Adult,
           PERSON: Person
         }
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -164,7 +168,7 @@ describe('Feature - Inheritance - Relations', () => {
 
       static baseEntity = 'person'
 
-      static fields () {
+      static fields() {
         return {
           ...super.fields()
         }
@@ -174,7 +178,7 @@ describe('Feature - Inheritance - Relations', () => {
     class Role extends Model {
       static entity = 'roles'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           roleName: this.attr(''),
@@ -198,15 +202,17 @@ describe('Feature - Inheritance - Relations', () => {
       { id: 2, name: 'Jane', type: 'ADULT', role_id: 1 }
     ])
 
-    const roles = Role.query().with('people').all()
+    const roles = Role.query()
+      .with('people')
+      .all()
     expect(roles.length).toBe(2)
 
     // Checking people have been fetched.
-    const role = roles.filter(r => r.id === 1)[0]
+    const role = roles.filter((r) => r.id === 1)[0]
     expect(role.people.length).toBe(2)
 
     // Checking that there is one Adult in the people array.
-    const adults = role.people.filter(p => p instanceof Adult)
+    const adults = role.people.filter((p) => p instanceof Adult)
     expect(adults.length).toBe(1)
     expect(adults[0].id).toBe(2)
   })
@@ -215,14 +221,14 @@ describe('Feature - Inheritance - Relations', () => {
     class Person extends Model {
       static entity = 'person'
 
-      static types () {
+      static types() {
         return {
           ADULT: Adult,
           PERSON: Person
         }
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -244,7 +250,7 @@ describe('Feature - Inheritance - Relations', () => {
     class Role extends Model {
       static entity = 'roles'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           roleName: this.attr(''),
@@ -268,14 +274,16 @@ describe('Feature - Inheritance - Relations', () => {
     ])
 
     // Reverse check: getting all people and their associated role.
-    const people = Person.query().with('role').all()
+    const people = Person.query()
+      .with('role')
+      .all()
     expect(people.length).toBe(2)
 
-    const firstPerson = people.filter(p => p.id === 1)[0]
+    const firstPerson = people.filter((p) => p.id === 1)[0]
     expect(firstPerson).toBeInstanceOf(Person)
     expect((firstPerson.role as Role).id).toBe(1)
 
-    const secondPerson = people.filter(p => p.id === 2)[0]
+    const secondPerson = people.filter((p) => p.id === 2)[0]
     expect(secondPerson).toBeInstanceOf(Adult)
     expect((secondPerson.role as Role).id).toBe(2)
   })
@@ -284,7 +292,7 @@ describe('Feature - Inheritance - Relations', () => {
     class Person extends Model {
       static entity = 'person'
 
-      static types () {
+      static types() {
         return {
           ADULT: Adult,
           PERSON: Person,
@@ -292,7 +300,7 @@ describe('Feature - Inheritance - Relations', () => {
         }
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -308,7 +316,7 @@ describe('Feature - Inheritance - Relations', () => {
 
       static baseEntity = 'person'
 
-      static fields () {
+      static fields() {
         return {
           ...super.fields(),
           child: this.belongsTo(Child, 'child_id'),
@@ -324,7 +332,7 @@ describe('Feature - Inheritance - Relations', () => {
 
       static baseEntity = 'person'
 
-      static fields () {
+      static fields() {
         return {
           ...super.fields(),
           parents: this.hasMany(Adult, 'child_id')
@@ -342,12 +350,16 @@ describe('Feature - Inheritance - Relations', () => {
       { id: 3, name: 'Jane', type: 'CHILD' }
     ])
 
-    const adults = Adult.query().with('child').all()
+    const adults = Adult.query()
+      .with('child')
+      .all()
     expect(adults.length).toBe(2)
     expect(adults[0].child.id).toBe(3)
     expect(adults[1].child.id).toBe(3)
 
-    const children = Child.query().with('parents').all()
+    const children = Child.query()
+      .with('parents')
+      .all()
     expect(children.length).toBe(1)
     expect(children[0].parents.length).toBe(2)
   })
@@ -356,14 +368,14 @@ describe('Feature - Inheritance - Relations', () => {
     class Person extends Model {
       static entity = 'person'
 
-      static types () {
+      static types() {
         return {
           ADULT: Adult,
           PERSON: Person
         }
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -378,7 +390,7 @@ describe('Feature - Inheritance - Relations', () => {
 
       static baseEntity = 'person'
 
-      static fields () {
+      static fields() {
         return {
           ...super.fields(),
           jobs: this.hasMany(Job, 'adult_id')
@@ -391,7 +403,7 @@ describe('Feature - Inheritance - Relations', () => {
     class Job extends Model {
       static entity = 'jobs'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           adult_id: this.attr(null),
@@ -410,10 +422,12 @@ describe('Feature - Inheritance - Relations', () => {
       { id: 2, name: 'Jane', type: 'ADULT' }
     ])
 
-    const persons = Person.query().with(['jobs', 'dummy']).all()
+    const persons = Person.query()
+      .with(['jobs', 'dummy'])
+      .all()
     expect(persons.length).toBe(2)
 
-    const adult = persons.filter(p => p.id === 2)[0] as Adult
+    const adult = persons.filter((p) => p.id === 2)[0] as Adult
     expect(adult.jobs.length).toBe(1)
   })
 })

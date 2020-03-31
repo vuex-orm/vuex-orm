@@ -13,7 +13,7 @@ describe('Features – Relations – Morph To', () => {
       // @MorphOne(Comment, 'commentable_id', 'commentable_type')
       comment!: Comment
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
@@ -39,7 +39,7 @@ describe('Features – Relations – Morph To', () => {
       // @MorphTo('commentable_id', 'commentable_type')
       commentable!: Post
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           body: this.attr(''),
@@ -89,10 +89,14 @@ describe('Features – Relations – Morph To', () => {
       // @MorphMany(Comment, 'commentable_id', 'commentable_type')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(
+            Comment,
+            'commentable_id',
+            'commentable_type'
+          )
         }
       }
     }
@@ -106,10 +110,14 @@ describe('Features – Relations – Morph To', () => {
       // @MorphMany(Comment, 'commentable_id', 'commentable_type')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(
+            Comment,
+            'commentable_id',
+            'commentable_type'
+          )
         }
       }
     }
@@ -132,7 +140,7 @@ describe('Features – Relations – Morph To', () => {
       // @MorphTo('commentable_id', 'commentable_type')
       commentable!: Post | Video
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           body: this.attr(''),
@@ -161,7 +169,9 @@ describe('Features – Relations – Morph To', () => {
       ]
     })
 
-    const comments = Comment.query().with('commentable').get()
+    const comments = Comment.query()
+      .with('commentable')
+      .get()
 
     expect(comments.length).toBe(4)
 
@@ -182,10 +192,14 @@ describe('Features – Relations – Morph To', () => {
       // @MorphMany(Comment, 'commentable_id', 'commentable_type')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(
+            Comment,
+            'commentable_id',
+            'commentable_type'
+          )
         }
       }
     }
@@ -199,10 +213,14 @@ describe('Features – Relations – Morph To', () => {
       // @MorphMany(Comment, 'commentable_id', 'commentable_type')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(
+            Comment,
+            'commentable_id',
+            'commentable_type'
+          )
         }
       }
     }
@@ -225,7 +243,7 @@ describe('Features – Relations – Morph To', () => {
       // @MorphTo('commentable_id', 'commentable_type')
       commentable!: Post | Video
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           body: this.attr(''),
@@ -243,7 +261,9 @@ describe('Features – Relations – Morph To', () => {
       body: 'Body 01'
     })
 
-    const comment = Comment.query().with('commentable').find(1) as Comment
+    const comment = Comment.query()
+      .with('commentable')
+      .find(1) as Comment
 
     expect(comment.commentable).toBe(null)
   })

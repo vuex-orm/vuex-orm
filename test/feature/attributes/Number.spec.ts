@@ -11,7 +11,7 @@ describe('Feature – Attributes – Number', () => {
     // @Num(0)
     num!: number
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         num: this.number(0)
@@ -81,7 +81,7 @@ describe('Feature – Attributes – Number', () => {
       // @Num(0, { nullable: true })
       num!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           num: this.number(0).nullable()

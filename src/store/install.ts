@@ -13,16 +13,21 @@ export interface Options {
 /**
  * Install Vuex ORM database to the store.
  */
-export default function install (database: Database, options: Options = {}): Plugin<any> {
+export default function install(
+  database: Database,
+  options: Options = {}
+): Plugin<any> {
   const namespace = options.namespace || 'entities'
 
-  return (store) => { mixin(store, database, namespace) }
+  return (store) => {
+    mixin(store, database, namespace)
+  }
 }
 
 /**
  * Mixin Vuex ORM feature to the store.
  */
-function mixin (store: Store<any>, database: Database, namespace: string): void {
+function mixin(store: Store<any>, database: Database, namespace: string): void {
   registerDatabase(store, database)
   mixinRepoFunction(store)
   mixinDbFunction(store)
@@ -33,15 +38,15 @@ function mixin (store: Store<any>, database: Database, namespace: string): void 
 /**
  * Register the database to the store.
  */
-function registerDatabase (store: Store<any>, database: Database): void {
+function registerDatabase(store: Store<any>, database: Database): void {
   store.$database = database
 }
 
 /**
  * Mixin repo function to the store.
  */
-function mixinRepoFunction (store: Store<any>): void {
-  store.$repo = function (modelOrRepository: any): any {
+function mixinRepoFunction(store: Store<any>): void {
+  store.$repo = function(modelOrRepository: any): any {
     const repository = modelOrRepository._isRepository
       ? new modelOrRepository(this)
       : new Repository(this, modelOrRepository)
@@ -49,9 +54,9 @@ function mixinRepoFunction (store: Store<any>): void {
     if (!repository.model) {
       throw new Error(
         '[Vuex ORM] The repository was instantiated without a model being ' +
-        'set. It happens when you forgot to register the model to the ' +
-        'custom repository. Please check if you have correctly set `model` ' +
-        'property at the repository class.'
+          'set. It happens when you forgot to register the model to the ' +
+          'custom repository. Please check if you have correctly set `model` ' +
+          'property at the repository class.'
       )
     }
 
@@ -62,13 +67,13 @@ function mixinRepoFunction (store: Store<any>): void {
 /**
  * Mixin db function to the store.
  */
-function mixinDbFunction (store: Store<any>): void {
-  store.$db = function (): HackedDatabase {
+function mixinDbFunction(store: Store<any>): void {
+  store.$db = function(): HackedDatabase {
     /* istanbul ignore next */
     if (process.env.NODE_ENV !== 'production') {
       console.warn(
         '[Vuex ORM] `store.$db()` method is deprecated. Please use ' +
-        '`store.$repo(Model)` method instead.'
+          '`store.$repo(Model)` method instead.'
       )
     }
 
@@ -79,13 +84,13 @@ function mixinDbFunction (store: Store<any>): void {
 /**
  * Register the store to the container.
  */
-function registerToContainer (store: Store<any>): void {
+function registerToContainer(store: Store<any>): void {
   Container.register(store)
 }
 
 /**
  * Start the database.
  */
-function startDatabase (store: Store<any>, namespace: string): void {
+function startDatabase(store: Store<any>, namespace: string): void {
   store.$database.start(store, namespace)
 }

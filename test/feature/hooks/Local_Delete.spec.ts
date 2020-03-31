@@ -14,14 +14,14 @@ describe('Hooks – Local Delete', () => {
       // @Attribute('')
       name!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
         }
       }
 
-      static beforeDelete () {
+      static beforeDelete() {
         hit = true
       }
     }
@@ -47,14 +47,14 @@ describe('Hooks – Local Delete', () => {
       // @Attribute('')
       name!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
         }
       }
 
-      static beforeDelete (record: User) {
+      static beforeDelete(record: User) {
         hit = true
 
         return !(record.name === 'Jane Doe')
@@ -91,14 +91,14 @@ describe('Hooks – Local Delete', () => {
       // @Attribute('')
       name!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
         }
       }
 
-      static afterDelete () {
+      static afterDelete() {
         hit = true
       }
     }
@@ -112,9 +112,7 @@ describe('Hooks – Local Delete', () => {
 
     await User.delete(2)
 
-    const expected = [
-      { $id: '1', id: 1, name: 'John Doe' }
-    ]
+    const expected = [{ $id: '1', id: 1, name: 'John Doe' }]
 
     expect(hit).toBe(true)
     expect(User.all()).toEqual(expected)

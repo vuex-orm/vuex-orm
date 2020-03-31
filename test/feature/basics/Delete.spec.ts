@@ -11,7 +11,7 @@ describe('Feature – Basics – Delete', () => {
     // @Str('')
     name!: string
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.string('')
@@ -25,7 +25,7 @@ describe('Feature – Basics – Delete', () => {
     // @Num
     id!: number
 
-    static fields () {
+    static fields() {
       return {
         id: this.number(null)
       }
@@ -77,7 +77,7 @@ describe('Feature – Basics – Delete', () => {
       { id: 3, name: 'Jane Doe' }
     ])
 
-    await User.delete(user => user.name === 'Jane Doe')
+    await User.delete((user) => user.name === 'Jane Doe')
 
     const expected = createState({
       users: {
@@ -136,7 +136,7 @@ describe('Feature – Basics – Delete', () => {
       { id: 3, name: 'Jane Doe' }
     ])
 
-    const users = await User.delete(user => user.name === 'Jane Doe')
+    const users = await User.delete((user) => user.name === 'Jane Doe')
 
     expect(users.length).toBe(2)
     expect(users[0]).toBeInstanceOf(User)
@@ -196,7 +196,7 @@ describe('Feature – Basics – Delete', () => {
 
     await User.create([{ id: 1 }, { id: 2 }])
 
-    await (new User()).$deleteAll()
+    await new User().$deleteAll()
 
     const expected = createState({
       users: {},

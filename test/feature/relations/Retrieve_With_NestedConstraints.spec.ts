@@ -12,7 +12,7 @@ describe('Feature – Relations – With – Nested Constraints', () => {
     // @HasMany(Post, 'user_id')
     posts!: Post[]
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         posts: this.hasMany(Post, 'user_id')
@@ -32,7 +32,7 @@ describe('Feature – Relations – With – Nested Constraints', () => {
     // @HasMany(Comment, 'post_id')
     comments!: Comment[]
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         user_id: this.attr(null),
@@ -53,7 +53,7 @@ describe('Feature – Relations – With – Nested Constraints', () => {
     // @Attribute
     user_id!: number
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         title: this.attr(''),
@@ -77,9 +77,11 @@ describe('Feature – Relations – With – Nested Constraints', () => {
       { id: 3, post_id: 1, title: 'Title02' }
     ])
 
-    const user = User.query().with('posts.comments', (query) => {
-      query.where('title', 'Title01')
-    }).find(1) as User
+    const user = User.query()
+      .with('posts.comments', (query) => {
+        query.where('title', 'Title01')
+      })
+      .find(1) as User
 
     expect(user.posts.length).toBe(1)
     expect(user.posts[0].comments.length).toBe(2)
@@ -89,7 +91,12 @@ describe('Feature – Relations – With – Nested Constraints', () => {
   it('can apply `withAll` constraints to nested relations', async () => {
     await User.create({ data: { id: 1 } })
 
-    await Post.create({ data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 1 }] })
+    await Post.create({
+      data: [
+        { id: 1, user_id: 1 },
+        { id: 2, user_id: 1 }
+      ]
+    })
 
     await Comment.create({
       data: [
@@ -99,9 +106,11 @@ describe('Feature – Relations – With – Nested Constraints', () => {
       ]
     })
 
-    const user = User.query().withAll((query) => {
-      query.where('id', 2)
-    }).find(1) as User
+    const user = User.query()
+      .withAll((query) => {
+        query.where('id', 2)
+      })
+      .find(1) as User
 
     expect(user.posts.length).toBe(1)
     expect(user.posts[0].comments.length).toEqual(0)
@@ -121,14 +130,16 @@ describe('Feature – Relations – With – Nested Constraints', () => {
       ]
     })
 
-    const user = User.query().with('posts.*', (query) => {
-      query.orderBy('title')
-    }).find(1) as User
+    const user = User.query()
+      .with('posts.*', (query) => {
+        query.orderBy('title')
+      })
+      .find(1) as User
 
     const expected = [
-      { '$id': '3', id: 3, title: 'Alpha', post_id: 1 },
-      { '$id': '1', id: 1, title: 'Beta', post_id: 1 },
-      { '$id': '2', id: 2, title: 'Cyprus', post_id: 1 }
+      { $id: '3', id: 3, title: 'Alpha', post_id: 1 },
+      { $id: '1', id: 1, title: 'Beta', post_id: 1 },
+      { $id: '2', id: 2, title: 'Cyprus', post_id: 1 }
     ]
 
     expect(user.posts.length).toBe(1)

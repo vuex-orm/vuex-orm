@@ -11,37 +11,75 @@ export default class Rollcaller {
   /**
    * Set where constraint based on relationship existence.
    */
-  static has (query: Query, relation: string, operator?: string | number, count?: number): void {
+  static has(
+    query: Query,
+    relation: string,
+    operator?: string | number,
+    count?: number
+  ): void {
     this.setHas(query, relation, 'exists', operator, count)
   }
 
   /**
    * Set where constraint based on relationship absence.
    */
-  static hasNot (query: Query, relation: string, operator?: string | number, count?: number): void {
+  static hasNot(
+    query: Query,
+    relation: string,
+    operator?: string | number,
+    count?: number
+  ): void {
     this.setHas(query, relation, 'doesntExist', operator, count)
   }
 
   /**
    * Add where has condition.
    */
-  static whereHas (query: Query, relation: string, constraint: HasConstraint): void {
+  static whereHas(
+    query: Query,
+    relation: string,
+    constraint: HasConstraint
+  ): void {
     this.setHas(query, relation, 'exists', undefined, undefined, constraint)
   }
 
   /**
    * Add where has not condition.
    */
-  static whereHasNot (query: Query, relation: string, constraint: HasConstraint): void {
-    this.setHas(query, relation, 'doesntExist', undefined, undefined, constraint)
+  static whereHasNot(
+    query: Query,
+    relation: string,
+    constraint: HasConstraint
+  ): void {
+    this.setHas(
+      query,
+      relation,
+      'doesntExist',
+      undefined,
+      undefined,
+      constraint
+    )
   }
 
   /**
    * Set `has` condition.
    */
-  private static setHas (query: Query, relation: string, type: string, operator: string | number = '>=', count: number = 1, constraint: HasConstraint | null = null): void {
+  private static setHas(
+    query: Query,
+    relation: string,
+    type: string,
+    operator: string | number = '>=',
+    count: number = 1,
+    constraint: HasConstraint | null = null
+  ): void {
     if (typeof operator === 'number') {
-      query.have.push({ relation, type, operator: '>=', count: operator, constraint })
+      query.have.push({
+        relation,
+        type,
+        operator: '>=',
+        count: operator,
+        constraint
+      })
 
       return
     }
@@ -63,7 +101,7 @@ export default class Rollcaller {
    * to performance concern, we'll apply `has` conditions this way to gain
    * maximum performance.
    */
-  static applyConstraints (query: Query): void {
+  static applyConstraints(query: Query): void {
     if (query.have.length === 0) {
       return
     }
@@ -79,7 +117,7 @@ export default class Rollcaller {
    * Add has constraints to the given query. It's going to set all relationship
    * as `with` alongside with its closure constraints.
    */
-  private static addHasWhereConstraints (query: Query, newQuery: Query): void {
+  private static addHasWhereConstraints(query: Query, newQuery: Query): void {
     query.have.forEach((constraint) => {
       newQuery.with(constraint.relation, constraint.constraint)
     })
@@ -88,13 +126,13 @@ export default class Rollcaller {
   /**
    * Add has constraints as where clause.
    */
-  private static addHasConstraints (query: Query, collection: Collection): void {
+  private static addHasConstraints(query: Query, collection: Collection): void {
     const comparators = this.getComparators(query)
 
     const ids: string[] = []
 
     collection.forEach((model) => {
-      if (comparators.every(comparator => comparator(model))) {
+      if (comparators.every((comparator) => comparator(model))) {
         ids.push(model.$self().getIdFromRecord(model) as string)
       }
     })
@@ -105,14 +143,14 @@ export default class Rollcaller {
   /**
    * Get comparators for the has clause.
    */
-  private static getComparators (query: Query): Predicate[] {
-    return query.have.map(constraint => this.getComparator(constraint))
+  private static getComparators(query: Query): Predicate[] {
+    return query.have.map((constraint) => this.getComparator(constraint))
   }
 
   /**
    * Get a comparator for the has clause.
    */
-  private static getComparator (constraint: Has): Predicate {
+  private static getComparator(constraint: Has): Predicate {
     const compare = this.getCountComparator(constraint.operator)
 
     return (model: Model): boolean => {
@@ -127,7 +165,7 @@ export default class Rollcaller {
   /**
    * Get count of the relationship.
    */
-  private static getRelationshipCount (relation: Collection | Item): number {
+  private static getRelationshipCount(relation: Collection | Item): number {
     if (isArray(relation)) {
       return relation.length
     }
@@ -138,7 +176,9 @@ export default class Rollcaller {
   /**
    * Get comparator function for the `has` clause.
    */
-  private static getCountComparator (operator: string): (x: number, y: number) => boolean {
+  private static getCountComparator(
+    operator: string
+  ): (x: number, y: number) => boolean {
     switch (operator) {
       case '=':
         return (x: number, y: number): boolean => x === y

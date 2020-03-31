@@ -16,7 +16,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @HasMany(Post, 'user_id')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           phone: this.hasOne(Phone, 'user_id'),
@@ -34,7 +34,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @Attribute
       user_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -51,7 +51,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @Attribute
       user_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -70,13 +70,17 @@ describe('Feature – Relations – Retrieve – With', () => {
       ]
     })
 
-    const user1 = User.query().with('*').first() as User
+    const user1 = User.query()
+      .with('*')
+      .first() as User
 
     expect(user1.phone.id).toBe(2)
     expect(user1.posts[0].id).toBe(3)
     expect(user1.posts[1].id).toBe(4)
 
-    const user2 = User.query().withAll().first() as User
+    const user2 = User.query()
+      .withAll()
+      .first() as User
 
     expect(user2.phone.id).toBe(2)
     expect(user2.posts[0].id).toBe(3)
@@ -96,7 +100,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @HasMany(Post, 'user_id')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           phone: this.hasOne(Phone, 'user_id'),
@@ -114,7 +118,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @Attribute
       user_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -134,7 +138,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @BelongsTo(User, 'user_id')
       user!: User
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null),
@@ -162,7 +166,9 @@ describe('Feature – Relations – Retrieve – With', () => {
       ]
     })
 
-    const user1 = User.query().withAllRecursive().first() as User
+    const user1 = User.query()
+      .withAllRecursive()
+      .first() as User
 
     expect(user1.phone.id).toBe(2)
     expect(user1.posts[0].id).toBe(3)
@@ -170,7 +176,9 @@ describe('Feature – Relations – Retrieve – With', () => {
     expect(user1.posts[1].id).toBe(4)
     expect(user1.posts[1].user.id).toBe(1)
 
-    const user2 = User.query().withAllRecursive(0).first() as User
+    const user2 = User.query()
+      .withAllRecursive(0)
+      .first() as User
 
     expect(user2.phone.id).toBe(2)
     expect(user2.posts[0].id).toBe(3)
@@ -189,7 +197,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @HasMany(Post, 'user_id')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           posts: this.hasMany(Post, 'user_id')
@@ -209,7 +217,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @HasMany(Comment, 'post_id')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null),
@@ -227,7 +235,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @Attribute
       post_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_id: this.attr(null)
@@ -284,7 +292,9 @@ describe('Feature – Relations – Retrieve – With', () => {
       ]
     }
 
-    const users = User.query().with('posts.comments').find(1)
+    const users = User.query()
+      .with('posts.comments')
+      .find(1)
 
     expect(users).toEqual(expected)
   })
@@ -299,7 +309,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @HasMany(Post, 'user_id')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           posts: this.hasMany(Post, 'user_id')
@@ -319,7 +329,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @HasMany(Comment, 'post_id')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null),
@@ -337,7 +347,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @Attribute
       post_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_id: this.attr(null)
@@ -389,7 +399,9 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     ]
 
-    const users = User.query().with('posts.comments').findIn([1, 2])
+    const users = User.query()
+      .with('posts.comments')
+      .findIn([1, 2])
 
     expect(users).toEqual(expected)
   })
@@ -404,7 +416,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @HasMany(Post, 'user_id')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           posts: this.hasMany(Post, 'user_id')
@@ -424,7 +436,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @HasMany(Comment, 'post_id')
       posts!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null),
@@ -445,7 +457,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @HasMany(Like, 'comment_id')
       likes!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_id: this.attr(null),
@@ -463,7 +475,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @Attribute
       comment_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comment_id: this.attr(null)
@@ -471,7 +483,12 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     }
 
-    createStore([{ model: User }, { model: Post }, { model: Comment }, { model: Like }])
+    createStore([
+      { model: User },
+      { model: Post },
+      { model: Comment },
+      { model: Like }
+    ])
 
     await User.create({
       id: 1,
@@ -504,8 +521,18 @@ describe('Feature – Relations – Retrieve – With', () => {
           id: 1,
           user_id: 1,
           comments: [
-            { $id: '1', id: 1, post_id: 1, likes: [{ $id: '1', id: 1, comment_id: 1 }] },
-            { $id: '2', id: 2, post_id: 1, likes: [{ $id: '2', id: 2, comment_id: 2 }] }
+            {
+              $id: '1',
+              id: 1,
+              post_id: 1,
+              likes: [{ $id: '1', id: 1, comment_id: 1 }]
+            },
+            {
+              $id: '2',
+              id: 2,
+              post_id: 1,
+              likes: [{ $id: '2', id: 2, comment_id: 2 }]
+            }
           ]
         },
         {
@@ -513,14 +540,26 @@ describe('Feature – Relations – Retrieve – With', () => {
           id: 2,
           user_id: 1,
           comments: [
-            { $id: '3', id: 3, post_id: 2, likes: [{ $id: '3', id: 3, comment_id: 3 }] },
-            { $id: '4', id: 4, post_id: 2, likes: [{ $id: '4', id: 4, comment_id: 4 }] }
+            {
+              $id: '3',
+              id: 3,
+              post_id: 2,
+              likes: [{ $id: '3', id: 3, comment_id: 3 }]
+            },
+            {
+              $id: '4',
+              id: 4,
+              post_id: 2,
+              likes: [{ $id: '4', id: 4, comment_id: 4 }]
+            }
           ]
         }
       ]
     }
 
-    const users = User.query().with('posts.comments.likes').find(1)
+    const users = User.query()
+      .with('posts.comments.likes')
+      .find(1)
 
     expect(users).toEqual(expected)
   })
@@ -535,7 +574,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @HasMany(Post, 'user_id')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           posts: this.hasMany(Post, 'user_id')
@@ -558,7 +597,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @HasMany(Like, 'post_id')
       likes!: Like[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null),
@@ -577,7 +616,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @Attribute
       post_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_id: this.attr(null)
@@ -594,7 +633,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @Attribute
       post_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_id: this.attr(null)
@@ -602,7 +641,12 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     }
 
-    createStore([{ model: User }, { model: Post }, { model: Comment }, { model: Like }])
+    createStore([
+      { model: User },
+      { model: Post },
+      { model: Comment },
+      { model: Like }
+    ])
 
     await User.create({
       id: 1,
@@ -667,8 +711,12 @@ describe('Feature – Relations – Retrieve – With', () => {
       ]
     }
 
-    const user1 = User.query().with('posts.comments|likes').find(1)
-    const user2 = User.query().with('posts.*').find(1)
+    const user1 = User.query()
+      .with('posts.comments|likes')
+      .find(1)
+    const user2 = User.query()
+      .with('posts.*')
+      .find(1)
 
     expect(user1).toEqual(expected)
     expect(user2).toEqual(expected)
@@ -678,7 +726,7 @@ describe('Feature – Relations – Retrieve – With', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           posts: this.hasMany(Post, 'user_id')
@@ -689,7 +737,7 @@ describe('Feature – Relations – Retrieve – With', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null),
@@ -702,7 +750,7 @@ describe('Feature – Relations – Retrieve – With', () => {
     class Comment extends Model {
       static entity = 'comments'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_id: this.attr(null)
@@ -713,7 +761,7 @@ describe('Feature – Relations – Retrieve – With', () => {
     class Like extends Model {
       static entity = 'likes'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_id: this.attr(null)
@@ -721,7 +769,12 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     }
 
-    createStore([{ model: User }, { model: Post }, { model: Comment }, { model: Like }])
+    createStore([
+      { model: User },
+      { model: Post },
+      { model: Comment },
+      { model: Like }
+    ])
 
     await User.create({
       id: 1,
@@ -786,8 +839,12 @@ describe('Feature – Relations – Retrieve – With', () => {
       ]
     }
 
-    const user1 = User.query().with(['posts.comments', 'posts.likes']).find(1)
-    const user2 = User.query().with(['posts.*']).find(1)
+    const user1 = User.query()
+      .with(['posts.comments', 'posts.likes'])
+      .find(1)
+    const user2 = User.query()
+      .with(['posts.*'])
+      .find(1)
 
     expect(user1).toEqual(expected)
     expect(user2).toEqual(expected)
@@ -803,7 +860,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @HasMany(Post, 'user_id')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           posts: this.hasMany(Post, 'user_id')
@@ -820,7 +877,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @Attribute
       user_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -832,12 +889,12 @@ describe('Feature – Relations – Retrieve – With', () => {
 
     await User.create({
       id: 1,
-      posts: [
-        { id: 1, user_id: 1 }
-      ]
+      posts: [{ id: 1, user_id: 1 }]
     })
 
-    const user = User.query().with('unknown').first() as User
+    const user = User.query()
+      .with('unknown')
+      .first() as User
 
     expect(user.posts.length).toBe(0)
   })
@@ -849,7 +906,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @Attribute
       id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -868,7 +925,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       // @BelongsTo(User, 'user_id')
       author!: User
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null),

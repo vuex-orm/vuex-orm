@@ -7,7 +7,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           permissions: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
@@ -18,7 +18,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class Role extends Model {
       static entity = 'roles'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -30,7 +30,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
       static primaryKey = ['role_id', 'user_id']
 
-      static fields () {
+      static fields() {
         return {
           role_id: this.attr(null),
           user_id: this.attr(null),
@@ -39,7 +39,11 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+    const store = createStore([
+      { model: User },
+      { model: Role },
+      { model: RoleUser }
+    ])
 
     await store.dispatch('entities/users/create', {
       data: {
@@ -69,7 +73,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           permissions: this.belongsToMany(Role, UserRole, 'user_id', 'role_id')
@@ -80,7 +84,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class Role extends Model {
       static entity = 'roles'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -92,7 +96,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
       static primaryKey = ['user_id', 'role_id']
 
-      static fields () {
+      static fields() {
         return {
           role_id: this.attr(null),
           user_id: this.attr(null)
@@ -100,7 +104,11 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Role }, { model: UserRole }])
+    const store = createStore([
+      { model: User },
+      { model: Role },
+      { model: UserRole }
+    ])
 
     await store.dispatch('entities/users/create', {
       data: {
@@ -130,7 +138,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           roles: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
@@ -141,7 +149,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class Role extends Model {
       static entity = 'roles'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -153,7 +161,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
       static primaryKey = ['role_id', 'user_id']
 
-      static fields () {
+      static fields() {
         return {
           role_id: this.attr(null),
           user_id: this.attr(null)
@@ -161,7 +169,11 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+    const store = createStore([
+      { model: User },
+      { model: Role },
+      { model: RoleUser }
+    ])
 
     await store.dispatch('entities/users/create', { data: { id: 1 } })
 
@@ -180,7 +192,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class Team extends Model {
       static entity = 'teams'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           users: this.hasMany(User, 'team_id')
@@ -191,7 +203,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           team_id: this.attr(null),
@@ -203,7 +215,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class Role extends Model {
       static entity = 'roles'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           users: this.belongsToMany(User, RoleUser, 'role_id', 'user_id')
@@ -216,7 +228,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
       static primaryKey = ['role_id', 'user_id']
 
-      static fields () {
+      static fields() {
         return {
           role_id: this.attr(null),
           user_id: this.attr(null),
@@ -225,19 +237,23 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: Team }, { model: User }, { model: Role }, { model: RoleUser }])
+    const store = createStore([
+      { model: Team },
+      { model: User },
+      { model: Role },
+      { model: RoleUser }
+    ])
 
     await Team.create({
       data: {
         id: 1,
-        users: [{
-          team_id: 1,
-          id: 1,
-          roles: [
-            { id: 2, pivot: { level: 1 } },
-            { id: 3 }
-          ]
-        }]
+        users: [
+          {
+            team_id: 1,
+            id: 1,
+            roles: [{ id: 2, pivot: { level: 1 } }, { id: 3 }]
+          }
+        ]
       }
     })
 
@@ -245,9 +261,13 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     expect(store.state.entities.users.data['1'].id).toBe(1)
     expect(store.state.entities.roles.data['2'].id).toBe(2)
     expect(store.state.entities.roles.data['3'].id).toBe(3)
-    expect(store.state.entities.roleUser.data['[2,1]'].$id).toStrictEqual('[2,1]')
+    expect(store.state.entities.roleUser.data['[2,1]'].$id).toStrictEqual(
+      '[2,1]'
+    )
     expect(store.state.entities.roleUser.data['[2,1]'].level).toBe(1)
-    expect(store.state.entities.roleUser.data['[3,1]'].$id).toStrictEqual('[3,1]')
+    expect(store.state.entities.roleUser.data['[3,1]'].$id).toStrictEqual(
+      '[3,1]'
+    )
     expect(store.state.entities.roleUser.data['[3,1]'].level).toBe(null)
   })
 
@@ -255,7 +275,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           roles: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
@@ -266,7 +286,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class Role extends Model {
       static entity = 'roles'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -278,7 +298,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
       static primaryKey = ['role_id', 'user_id']
 
-      static fields () {
+      static fields() {
         return {
           role_id: this.attr(null),
           user_id: this.attr(null)
@@ -286,7 +306,11 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+    const store = createStore([
+      { model: User },
+      { model: Role },
+      { model: RoleUser }
+    ])
 
     await store.dispatch('entities/users/create', {
       data: [{ id: 1 }, { id: 2 }]
@@ -297,12 +321,17 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     })
 
     await store.dispatch('entities/roleUser/create', {
-      data: [{ role_id: 1, user_id: 1 }, { role_id: 2, user_id: 2 }]
+      data: [
+        { role_id: 1, user_id: 1 },
+        { role_id: 2, user_id: 2 }
+      ]
     })
 
-    const users = store.getters['entities/users/query']().whereHas('roles', (query: Query) => {
-      query.where('id', 2)
-    }).get()
+    const users = store.getters['entities/users/query']()
+      .whereHas('roles', (query: Query) => {
+        query.where('id', 2)
+      })
+      .get()
 
     expect(users.length).toBe(1)
     expect(users[0].id).toBe(2)
@@ -312,7 +341,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -325,7 +354,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class Role extends Model {
       static entity = 'roles'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -337,7 +366,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
       static primaryKey = 'id'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           role_id: this.attr(null),
@@ -347,7 +376,11 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+    const store = createStore([
+      { model: User },
+      { model: Role },
+      { model: RoleUser }
+    ])
 
     await store.dispatch('entities/users/insert', {
       data: {
@@ -358,10 +391,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
           { id: 2, role_id: 1, user_id: 1, type: 'general' },
           { id: 3, role_id: 2, user_id: 1, type: 'general' }
         ],
-        roles: [
-          { id: 1 },
-          { id: 2 }
-        ]
+        roles: [{ id: 1 }, { id: 2 }]
       }
     })
 
@@ -387,7 +417,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -400,7 +430,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class Role extends Model {
       static entity = 'roles'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -412,7 +442,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
       static primaryKey = ['role_id', 'user_id']
 
-      static fields () {
+      static fields() {
         return {
           role_id: this.attr(null),
           user_id: this.attr(null),
@@ -421,7 +451,11 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+    const store = createStore([
+      { model: User },
+      { model: Role },
+      { model: RoleUser }
+    ])
 
     await store.dispatch('entities/users/insert', {
       data: {
@@ -431,10 +465,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
           { role_id: 1, user_id: 1, type: 'administrator' },
           { role_id: 2, user_id: 1, type: 'general' }
         ],
-        roles: [
-          { id: 1 },
-          { id: 2 }
-        ]
+        roles: [{ id: 1 }, { id: 2 }]
       }
     })
 
@@ -447,7 +478,12 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
         2: { $id: '2', id: 2 }
       },
       roleUsers: {
-        '[1,1]': { $id: '[1,1]', user_id: 1, role_id: 1, type: 'administrator' },
+        '[1,1]': {
+          $id: '[1,1]',
+          user_id: 1,
+          role_id: 1,
+          type: 'administrator'
+        },
         '[2,1]': { $id: '[2,1]', user_id: 1, role_id: 2, type: 'general' }
       }
     })
@@ -459,10 +495,15 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          permissions: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id').as('role_user')
+          permissions: this.belongsToMany(
+            Role,
+            RoleUser,
+            'user_id',
+            'role_id'
+          ).as('role_user')
         }
       }
     }
@@ -470,7 +511,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
     class Role extends Model {
       static entity = 'roles'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -482,7 +523,7 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
 
       static primaryKey = ['role_id', 'user_id']
 
-      static fields () {
+      static fields() {
         return {
           role_id: this.attr(null),
           user_id: this.attr(null),
@@ -491,15 +532,16 @@ describe('Feature – Relations – Belongs To Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+    const store = createStore([
+      { model: User },
+      { model: Role },
+      { model: RoleUser }
+    ])
 
     await store.dispatch('entities/users/insert', {
       data: {
         id: 1,
-        permissions: [
-          { id: 1, role_user: { level: 1 } },
-          { id: 2 }
-        ]
+        permissions: [{ id: 1, role_user: { level: 1 } }, { id: 2 }]
       }
     })
 

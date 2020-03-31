@@ -9,7 +9,7 @@ export default class Container {
   /**
    * Register the store instance.
    */
-  static register (store: Store<any>): void {
+  static register(store: Store<any>): void {
     this.store = store
   }
 }

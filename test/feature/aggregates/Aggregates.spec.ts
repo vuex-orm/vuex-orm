@@ -11,7 +11,7 @@ describe('Feature – Aggregates', () => {
     // @Attribute('')
     role!: string
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         role: this.attr('')
@@ -31,7 +31,11 @@ describe('Feature – Aggregates', () => {
     ])
 
     expect(User.query().count()).toBe(3)
-    expect(User.query().where('role', 'admin').count()).toBe(2)
+    expect(
+      User.query()
+        .where('role', 'admin')
+        .count()
+    ).toBe(2)
   })
 
   it('can get max value of the specified field', async () => {
@@ -44,7 +48,11 @@ describe('Feature – Aggregates', () => {
 
     expect(User.query().max('id')).toBe(12)
     expect(User.query().max('role')).toBe(0)
-    expect(User.query().where('role', 'admin').max('id')).toBe(11)
+    expect(
+      User.query()
+        .where('role', 'admin')
+        .max('id')
+    ).toBe(11)
   })
 
   it('can get min value of the specified field', async () => {
@@ -57,7 +65,11 @@ describe('Feature – Aggregates', () => {
 
     expect(User.query().min('id')).toBe(8)
     expect(User.query().min('role')).toBe(0)
-    expect(User.query().where('role', 'admin').min('id')).toBe(8)
+    expect(
+      User.query()
+        .where('role', 'admin')
+        .min('id')
+    ).toBe(8)
   })
 
   it('can get sum value of the specified field', async () => {
@@ -69,6 +81,10 @@ describe('Feature – Aggregates', () => {
     ])
 
     expect(User.query().sum('id')).toBe(31)
-    expect(User.query().where('role', 'admin').sum('id')).toBe(19)
+    expect(
+      User.query()
+        .where('role', 'admin')
+        .sum('id')
+    ).toBe(19)
   })
 })

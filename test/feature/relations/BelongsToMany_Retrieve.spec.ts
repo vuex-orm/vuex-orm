@@ -12,7 +12,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     // @BelongsToMany(Role, RoleUser, 'user_id', 'role_id')
     roles!: Role[]
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         roles: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
@@ -32,7 +32,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     // @Intermediate
     pivot!: RoleUser
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         users: this.belongsToMany(User, RoleUser, 'role_id', 'user_id')
@@ -54,7 +54,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     // @Attribute
     level!: number
 
-    static fields () {
+    static fields() {
       return {
         role_id: this.attr(null),
         user_id: this.attr(null),
@@ -75,13 +75,17 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       { user_id: 1, role_id: 3 }
     ])
 
-    const user = User.query().with('roles').find(1) as User
+    const user = User.query()
+      .with('roles')
+      .find(1) as User
 
     expect(user.roles.length).toBe(2)
     expect(user.roles[0].id).toBe(2)
     expect(user.roles[1].id).toBe(3)
 
-    const userWithoutRoles = User.query().with('roles').find(2) as User
+    const userWithoutRoles = User.query()
+      .with('roles')
+      .find(2) as User
     expect(userWithoutRoles.roles.length).toBe(0)
   })
 
@@ -99,7 +103,9 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       { id: 2 }
     ])
 
-    const user = User.query().with('roles').find(1) as User
+    const user = User.query()
+      .with('roles')
+      .find(1) as User
 
     expect(user.roles.length).toBe(2)
     expect(user.roles[0].id).toBe(2)
@@ -107,7 +113,9 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     expect(user.roles[1].id).toBe(3)
     expect(user.roles[1].pivot.level).toBe(2)
 
-    const userWithoutRoles = User.query().with('roles').find(2) as User
+    const userWithoutRoles = User.query()
+      .with('roles')
+      .find(2) as User
     expect(userWithoutRoles.roles.length).toBe(0)
   })
 
@@ -123,7 +131,9 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       { user_id: 1, role_id: 3 }
     ])
 
-    const role = Role.query().with('users').find(2) as Role
+    const role = Role.query()
+      .with('users')
+      .find(2) as Role
 
     expect(role.users.length).toBe(1)
     expect(role.users[0].id).toBe(1)
@@ -134,7 +144,9 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
 
     await User.create({ id: 1 })
 
-    const user = User.query().with('roles').first() as User
+    const user = User.query()
+      .with('roles')
+      .first() as User
 
     expect(user.roles).toEqual([])
   })
@@ -146,7 +158,9 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
 
     await RoleUser.create([{ user_id: 1 }])
 
-    const user = User.query().with('roles').first() as User
+    const user = User.query()
+      .with('roles')
+      .first() as User
 
     expect(user.roles).toEqual([])
   })
@@ -164,7 +178,9 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       { user_id: 2, role_id: 4 }
     ])
 
-    const roles = Role.query().has('users').get()
+    const roles = Role.query()
+      .has('users')
+      .get()
 
     expect(roles.length).toBe(2)
   })
@@ -182,7 +198,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       // @Intermediate
       pivot!: RoleUser
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           roles: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
@@ -202,10 +218,15 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       // @Intermediate
       pivot!: RoleUser
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          permissions: this.belongsToMany(Permission, RolePermission, 'role_id', 'permission_id')
+          permissions: this.belongsToMany(
+            Permission,
+            RolePermission,
+            'role_id',
+            'permission_id'
+          )
         }
       }
     }
@@ -219,7 +240,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       // @Intermediate
       pivot!: RolePermission
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -240,7 +261,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       // @Attribute
       level!: number
 
-      static fields () {
+      static fields() {
         return {
           role_id: this.attr(null),
           user_id: this.attr(null),
@@ -263,7 +284,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       // @Attribute
       type!: string
 
-      static fields () {
+      static fields() {
         return {
           role_id: this.attr(null),
           permission_id: this.attr(null),
@@ -272,7 +293,13 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       }
     }
 
-    createStore([{ model: User }, { model: Role }, { model: Permission }, { model: RoleUser }, { model: RolePermission }])
+    createStore([
+      { model: User },
+      { model: Role },
+      { model: Permission },
+      { model: RoleUser },
+      { model: RolePermission }
+    ])
 
     const data = [
       {
@@ -280,7 +307,12 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
         roles: [
           {
             id: 1,
-            permissions: [{ id: 1, pivot: { type: 'can' } }, { id: 2, pivot: { type: 'cant' } }, { id: 3 }, { id: 4 }],
+            permissions: [
+              { id: 1, pivot: { type: 'can' } },
+              { id: 2, pivot: { type: 'cant' } },
+              { id: 3 },
+              { id: 4 }
+            ],
             pivot: { level: 1 }
           }
         ]
@@ -298,7 +330,9 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
 
     await User.create(data)
 
-    const users = User.query().with('roles.permissions').get() as User[]
+    const users = User.query()
+      .with('roles.permissions')
+      .get() as User[]
 
     expect(users[0].id).toBe(1)
     expect(users[0].roles.length).toBe(1)
@@ -329,7 +363,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       // @BelongsToMany(Role, RoleUser, 'user_id', 'role_id')
       roles!: Role[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           roles: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
@@ -343,7 +377,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       // @Attribute
       id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -362,7 +396,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       // @Attribute
       user_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           role_id: this.attr(null),
@@ -379,7 +413,9 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
 
     await RoleUser.create({ id: 1, user_id: 1, role_id: 1 })
 
-    const users = User.query().with('roles').get()
+    const users = User.query()
+      .with('roles')
+      .get()
 
     expect(users[0].id).toBe(1)
     expect(users[0].roles.length).toBe(1)
@@ -395,7 +431,9 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     })
 
     const ascending = User.query()
-      .with('roles', query => { query.orderBy('id', 'asc') })
+      .with('roles', (query) => {
+        query.orderBy('id', 'asc')
+      })
       .find(1) as User
 
     expect(ascending.roles[0].id).toBe(1)
@@ -403,7 +441,9 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     expect(ascending.roles[2].id).toBe(3)
 
     const descending = User.query()
-      .with('roles', query => { query.orderBy('id', 'desc') })
+      .with('roles', (query) => {
+        query.orderBy('id', 'desc')
+      })
       .find(1) as User
 
     expect(descending.roles[0].id).toBe(3)

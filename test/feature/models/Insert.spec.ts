@@ -6,7 +6,7 @@ describe('Feature – Models – Insert', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.attr('')
@@ -118,7 +118,7 @@ describe('Feature – Models – Insert', () => {
     class Author extends Model {
       static entity = 'authors'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -131,7 +131,7 @@ describe('Feature – Models – Insert', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           author_id: this.attr(null),
@@ -146,7 +146,7 @@ describe('Feature – Models – Insert', () => {
     class Comment extends Model {
       static entity = 'comments'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           author_id: this.attr(null),
@@ -156,7 +156,11 @@ describe('Feature – Models – Insert', () => {
       }
     }
 
-    const store = createStore([{ model: Author }, { model: Post }, { model: Comment }])
+    const store = createStore([
+      { model: Author },
+      { model: Post },
+      { model: Comment }
+    ])
 
     const data = {
       $id: '1',

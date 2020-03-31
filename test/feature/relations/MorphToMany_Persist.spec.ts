@@ -7,10 +7,16 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -18,10 +24,16 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Video extends Model {
       static entity = 'videos'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -29,7 +41,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Tag extends Model {
       static entity = 'tags'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -40,7 +52,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Taggable extends Model {
       static entity = 'taggables'
 
-      static fields () {
+      static fields() {
         return {
           tag_id: this.attr(null),
           taggable_id: this.attr(null),
@@ -50,7 +62,12 @@ describe('Features – Relations – Morph To Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    const store = createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Post.create({
       id: 1,
@@ -64,10 +81,14 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     expect(store.state.entities.tags.data['2'].id).toBe(2)
     expect(store.state.entities.tags.data['3'].id).toBe(3)
     expect(store.state.entities.taggables.data['1_2_posts'].taggable_id).toBe(1)
-    expect(store.state.entities.taggables.data['1_2_posts'].taggable_type).toBe('posts')
+    expect(store.state.entities.taggables.data['1_2_posts'].taggable_type).toBe(
+      'posts'
+    )
     expect(store.state.entities.taggables.data['1_2_posts'].public).toBe(true)
     expect(store.state.entities.taggables.data['1_3_posts'].taggable_id).toBe(1)
-    expect(store.state.entities.taggables.data['1_3_posts'].taggable_type).toBe('posts')
+    expect(store.state.entities.taggables.data['1_3_posts'].taggable_type).toBe(
+      'posts'
+    )
     expect(store.state.entities.taggables.data['1_3_posts'].public).toBe(null)
   })
 
@@ -75,10 +96,16 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -86,10 +113,16 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Video extends Model {
       static entity = 'videos'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -97,7 +130,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Tag extends Model {
       static entity = 'tag'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -108,7 +141,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Taggable extends Model {
       static entity = 'taggables'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -118,7 +151,12 @@ describe('Features – Relations – Morph To Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    const store = createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Post.create({ id: 1 })
 
@@ -133,10 +171,16 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -144,10 +188,16 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Video extends Model {
       static entity = 'videos'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -155,7 +205,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Tag extends Model {
       static entity = 'tags'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -166,7 +216,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Taggable extends Model {
       static entity = 'taggables'
 
-      static fields () {
+      static fields() {
         return {
           tag_id: this.attr(null),
           taggable_id: this.attr(null),
@@ -175,7 +225,12 @@ describe('Features – Relations – Morph To Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    const store = createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Post.create({
       id: 1,
@@ -195,8 +250,18 @@ describe('Features – Relations – Morph To Many – Persist', () => {
         3: { $id: '3', id: 3, name: 'cast' }
       },
       taggables: {
-        '1_2_posts': { $id: '1_2_posts', tag_id: 2, taggable_id: 1, taggable_type: 'posts' },
-        '1_3_posts': { $id: '1_3_posts', tag_id: 3, taggable_id: 1, taggable_type: 'posts' }
+        '1_2_posts': {
+          $id: '1_2_posts',
+          tag_id: 2,
+          taggable_id: 1,
+          taggable_type: 'posts'
+        },
+        '1_3_posts': {
+          $id: '1_3_posts',
+          tag_id: 3,
+          taggable_id: 1,
+          taggable_type: 'posts'
+        }
       }
     })
 
@@ -207,11 +272,17 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.uid(),
           title: this.attr(''),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -219,10 +290,16 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Video extends Model {
       static entity = 'videos'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -230,7 +307,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Tag extends Model {
       static entity = 'tags'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -241,7 +318,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Taggable extends Model {
       static entity = 'taggables'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -251,7 +328,12 @@ describe('Features – Relations – Morph To Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    const store = createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Post.create({
       title: 'Post title.',
@@ -271,8 +353,20 @@ describe('Features – Relations – Morph To Many – Persist', () => {
         3: { $id: '3', id: 3, name: 'cast' }
       },
       taggables: {
-        $uid1_2_posts: { $id: '$uid1_2_posts', id: null, tag_id: 2, taggable_id: '$uid1', taggable_type: 'posts' },
-        $uid1_3_posts: { $id: '$uid1_3_posts', id: null, tag_id: 3, taggable_id: '$uid1', taggable_type: 'posts' }
+        $uid1_2_posts: {
+          $id: '$uid1_2_posts',
+          id: null,
+          tag_id: 2,
+          taggable_id: '$uid1',
+          taggable_type: 'posts'
+        },
+        $uid1_3_posts: {
+          $id: '$uid1_3_posts',
+          id: null,
+          tag_id: 3,
+          taggable_id: '$uid1',
+          taggable_type: 'posts'
+        }
       }
     })
 
@@ -283,10 +377,16 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type').as('tag_pivot')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          ).as('tag_pivot')
         }
       }
     }
@@ -294,10 +394,16 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Video extends Model {
       static entity = 'videos'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -305,7 +411,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Tag extends Model {
       static entity = 'tags'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -316,7 +422,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
     class Taggable extends Model {
       static entity = 'taggables'
 
-      static fields () {
+      static fields() {
         return {
           tag_id: this.attr(null),
           taggable_id: this.attr(null),
@@ -326,7 +432,12 @@ describe('Features – Relations – Morph To Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    const store = createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Post.create({
       id: 1,
@@ -350,10 +461,16 @@ describe('Features – Relations – Morph To Many – Persist', () => {
       // @MorphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
       tags!: Tag[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -367,10 +484,16 @@ describe('Features – Relations – Morph To Many – Persist', () => {
       // @MorphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
       tags!: Tag[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -384,7 +507,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
       // @Attribute('')
       name!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -407,7 +530,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
       // @Attribute
       taggable_type!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -417,7 +540,12 @@ describe('Features – Relations – Morph To Many – Persist', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Post.create([
       {
@@ -436,7 +564,9 @@ describe('Features – Relations – Morph To Many – Persist', () => {
       }
     ])
 
-    const post = Post.query().with('tags').find(1) as Post
+    const post = Post.query()
+      .with('tags')
+      .find(1) as Post
 
     expect(post).toBeInstanceOf(Post)
     expect(post.tags.length).toBe(2)

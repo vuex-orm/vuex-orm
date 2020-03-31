@@ -5,7 +5,7 @@ describe('Feature – Exists', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null)
       }
@@ -31,7 +31,15 @@ describe('Feature – Exists', () => {
 
     await User.create([{ id: 1 }, { id: 2 }])
 
-    expect(User.query().where('id', 3).exists()).toBe(false)
-    expect(User.query().where('id', 1).exists()).toBe(true)
+    expect(
+      User.query()
+        .where('id', 3)
+        .exists()
+    ).toBe(false)
+    expect(
+      User.query()
+        .where('id', 1)
+        .exists()
+    ).toBe(true)
   })
 })

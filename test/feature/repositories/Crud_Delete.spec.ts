@@ -5,7 +5,7 @@ describe('Feature - Repositories - CRUD Delete', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null)
       }
@@ -43,7 +43,7 @@ describe('Feature - Repositories - CRUD Delete', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    await user.delete(user => user.id === 2)
+    await user.delete((user) => user.id === 2)
 
     const expected = createState({
       users: {

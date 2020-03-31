@@ -9,19 +9,22 @@ export default class WhereFilter {
   /**
    * Filter the given data by registered where clause.
    */
-  static filter<T extends Model> (query: Query, records: Collection<T>): Collection<T> {
+  static filter<T extends Model>(
+    query: Query,
+    records: Collection<T>
+  ): Collection<T> {
     if (query.wheres.length === 0) {
       return records
     }
 
-    return records.filter(record => this.check(query, record))
+    return records.filter((record) => this.check(query, record))
   }
 
   /**
    * Checks if given Record matches the registered where clause.
    */
-  static check (query: Query, record: Instance): boolean {
-    const whereTypes = Utils.groupBy(query.wheres, where => where.boolean)
+  static check(query: Query, record: Instance): boolean {
+    const whereTypes = Utils.groupBy(query.wheres, (where) => where.boolean)
     const comparator = this.getComparator(query, record)
 
     let results: boolean[] = []
@@ -36,7 +39,10 @@ export default class WhereFilter {
   /**
    * Get comparator for the where clause.
    */
-  static getComparator (query: Query, record: Instance): (where: Options.Where) => boolean {
+  static getComparator(
+    query: Query,
+    record: Instance
+  ): (where: Options.Where) => boolean {
     return (where: Options.Where): boolean => {
       // Function with Record and Query as argument.
       if (typeof where.field === 'function') {
@@ -51,9 +57,11 @@ export default class WhereFilter {
         const matchingRecords = newQuery.get()
 
         // And check if current record is part of the result.
-        return !Utils.isEmpty(matchingRecords.filter((rec: Instance): boolean => {
-          return rec['$id'] === record['$id']
-        }))
+        return !Utils.isEmpty(
+          matchingRecords.filter((rec: Instance): boolean => {
+            return rec['$id'] === record['$id']
+          })
+        )
       }
 
       // Function with Record value as argument.
@@ -74,7 +82,11 @@ export default class WhereFilter {
   /**
    * Execute where closure.
    */
-  static executeWhereClosure (query: Query, record: Instance, closure: Options.WherePrimaryClosure): boolean | void {
+  static executeWhereClosure(
+    query: Query,
+    record: Instance,
+    closure: Options.WherePrimaryClosure
+  ): boolean | void {
     if (closure.length !== 3) {
       return closure(record, query)
     }

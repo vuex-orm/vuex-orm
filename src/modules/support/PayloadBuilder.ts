@@ -8,7 +8,7 @@ export default class PayloadBuilder {
    * Create downstream payload from input data to determine the style of data
    * being provided for downward compatibility.
    */
-  static createPersistPayload (payload: PersistPayload): PersistPayload {
+  static createPersistPayload(payload: PersistPayload): PersistPayload {
     // If the payload is an array, then the payload should be an array of
     // data therefore the whole payload should be declared as `data`.
     if (Array.isArray(payload)) {
@@ -31,7 +31,7 @@ export default class PayloadBuilder {
    * through method arguments, while maintaining existing style (data key),
    * to pass on to the module API.
    */
-  static normalize (payload?: any, options?: any): PersistPayload {
+  static normalize(payload?: any, options?: any): PersistPayload {
     const persistPayload = this.createPersistPayload(payload)
     const persistOptions = OptionsBuilder.createPersistOptions(payload)
 

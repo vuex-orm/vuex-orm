@@ -11,7 +11,7 @@ describe('Feature – Attributes – Boolean', () => {
     // @Bool(true)
     bool!: boolean
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         bool: this.boolean(true)
@@ -85,7 +85,7 @@ describe('Feature – Attributes – Boolean', () => {
       // @Bool(true, { nullable: true })
       bool!: boolean
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           bool: this.boolean(true).nullable()

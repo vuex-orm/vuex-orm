@@ -13,10 +13,14 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
       // @MorphMany(Comment, 'commentable_id', 'commentable_type')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(
+            Comment,
+            'commentable_id',
+            'commentable_type'
+          )
         }
       }
     }
@@ -30,10 +34,14 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
       // @MorphMany(Comment, 'commentable_id', 'commentable_type')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(
+            Comment,
+            'commentable_id',
+            'commentable_type'
+          )
         }
       }
     }
@@ -53,7 +61,7 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
       // @Attribute
       commentable_type!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           body: this.attr(''),
@@ -70,19 +78,43 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
     await Video.create({ id: 3 })
 
     await Comment.create([
-      { id: '1', body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
-      { id: '2', body: 'comment2', commentable_id: 3, commentable_type: 'videos' },
-      { id: '3', body: 'comment3', commentable_id: 1, commentable_type: 'posts' },
-      { id: '4', body: 'comment4', commentable_id: 5, commentable_type: 'posts' }
+      {
+        id: '1',
+        body: 'comment1',
+        commentable_id: 1,
+        commentable_type: 'posts'
+      },
+      {
+        id: '2',
+        body: 'comment2',
+        commentable_id: 3,
+        commentable_type: 'videos'
+      },
+      {
+        id: '3',
+        body: 'comment3',
+        commentable_id: 1,
+        commentable_type: 'posts'
+      },
+      {
+        id: '4',
+        body: 'comment4',
+        commentable_id: 5,
+        commentable_type: 'posts'
+      }
     ])
 
-    const post = Post.query().with('comments').find(1) as Post
+    const post = Post.query()
+      .with('comments')
+      .find(1) as Post
 
     expect(post.comments.length).toBe(2)
     expect(post.comments[0].body).toBe('comment1')
     expect(post.comments[1].body).toBe('comment3')
 
-    const postWithoutComments = Post.query().with('comments').find(6) as Post
+    const postWithoutComments = Post.query()
+      .with('comments')
+      .find(6) as Post
 
     expect(postWithoutComments.comments.length).toBe(0)
   })
@@ -99,10 +131,14 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
       // @MorphMany(Comment, 'commentable_id', 'commentable_type')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           post_id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(
+            Comment,
+            'commentable_id',
+            'commentable_type'
+          )
         }
       }
     }
@@ -116,10 +152,14 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
       // @MorphMany(Comment, 'commentable_id', 'commentable_type')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(
+            Comment,
+            'commentable_id',
+            'commentable_type'
+          )
         }
       }
     }
@@ -139,7 +179,7 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
       // @Attribute
       commentable_type!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           body: this.attr(''),
@@ -156,13 +196,35 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
     await Video.create({ id: 3 })
 
     await Comment.create([
-      { id: '1', body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
-      { id: '2', body: 'comment2', commentable_id: 3, commentable_type: 'videos' },
-      { id: '3', body: 'comment3', commentable_id: 1, commentable_type: 'posts' },
-      { id: '4', body: 'comment4', commentable_id: 5, commentable_type: 'posts' }
+      {
+        id: '1',
+        body: 'comment1',
+        commentable_id: 1,
+        commentable_type: 'posts'
+      },
+      {
+        id: '2',
+        body: 'comment2',
+        commentable_id: 3,
+        commentable_type: 'videos'
+      },
+      {
+        id: '3',
+        body: 'comment3',
+        commentable_id: 1,
+        commentable_type: 'posts'
+      },
+      {
+        id: '4',
+        body: 'comment4',
+        commentable_id: 5,
+        commentable_type: 'posts'
+      }
     ])
 
-    const post = Post.query().with('comments').find(1) as Post
+    const post = Post.query()
+      .with('comments')
+      .find(1) as Post
 
     expect(post.comments.length).toBe(2)
     expect(post.comments[0].body).toBe('comment1')
@@ -182,11 +244,16 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
       // @MorphMany(Comment, 'commentable_id', 'commentable_type', 'post_id')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type', 'post_id')
+          comments: this.morphMany(
+            Comment,
+            'commentable_id',
+            'commentable_type',
+            'post_id'
+          )
         }
       }
     }
@@ -200,10 +267,14 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
       // @MorphMany(Comment, 'commentable_id', 'commentable_type')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(
+            Comment,
+            'commentable_id',
+            'commentable_type'
+          )
         }
       }
     }
@@ -223,7 +294,7 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
       // @Attribute
       commentable_type!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           body: this.attr(''),
@@ -235,24 +306,51 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
 
     createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    await Post.create([{ id: 2, post_id: 1 }, { id: 3, post_id: 5 }])
+    await Post.create([
+      { id: 2, post_id: 1 },
+      { id: 3, post_id: 5 }
+    ])
 
     await Video.create([{ id: 3 }, { id: 4 }])
 
     await Comment.create([
-      { id: '1', body: 'comment1', commentable_id: 1, commentable_type: 'posts' },
-      { id: '2', body: 'comment2', commentable_id: 3, commentable_type: 'videos' },
-      { id: '3', body: 'comment3', commentable_id: 1, commentable_type: 'posts' },
-      { id: '4', body: 'comment4', commentable_id: 5, commentable_type: 'posts' }
+      {
+        id: '1',
+        body: 'comment1',
+        commentable_id: 1,
+        commentable_type: 'posts'
+      },
+      {
+        id: '2',
+        body: 'comment2',
+        commentable_id: 3,
+        commentable_type: 'videos'
+      },
+      {
+        id: '3',
+        body: 'comment3',
+        commentable_id: 1,
+        commentable_type: 'posts'
+      },
+      {
+        id: '4',
+        body: 'comment4',
+        commentable_id: 5,
+        commentable_type: 'posts'
+      }
     ])
 
-    const post = Post.query().with('comments').find(2) as Post
+    const post = Post.query()
+      .with('comments')
+      .find(2) as Post
 
     expect(post.comments.length).toBe(2)
     expect(post.comments[0].body).toBe('comment1')
     expect(post.comments[1].body).toBe('comment3')
 
-    const video = Video.query().with('comments').find(4) as Post
+    const video = Video.query()
+      .with('comments')
+      .find(4) as Post
 
     expect(video.comments.length).toBe(0)
   })
@@ -267,10 +365,14 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
       // @MorphMany(Comment, 'commentable_id', 'commentable_type')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(
+            Comment,
+            'commentable_id',
+            'commentable_type'
+          )
         }
       }
     }
@@ -284,10 +386,14 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
       // @MorphMany(Comment, 'commentable_id', 'commentable_type')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(
+            Comment,
+            'commentable_id',
+            'commentable_type'
+          )
         }
       }
     }
@@ -304,7 +410,7 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
       // @Attribute
       commentable_type!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           commentable_id: this.attr(null),
@@ -319,13 +425,21 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
 
     await Video.insert({ id: 1, comments: [{ id: 4 }, { id: 6 }, { id: 5 }] })
 
-    const post = Post.query().with('comments', query => { query.orderBy('id', 'asc') }).find(1) as Post
+    const post = Post.query()
+      .with('comments', (query) => {
+        query.orderBy('id', 'asc')
+      })
+      .find(1) as Post
 
     expect(post.comments[0].id).toBe(1)
     expect(post.comments[1].id).toBe(2)
     expect(post.comments[2].id).toBe(3)
 
-    const video = Video.query().with('comments', query => { query.orderBy('id', 'desc') }).find(1) as Post
+    const video = Video.query()
+      .with('comments', (query) => {
+        query.orderBy('id', 'desc')
+      })
+      .find(1) as Post
 
     expect(video.comments[0].id).toBe(6)
     expect(video.comments[1].id).toBe(5)

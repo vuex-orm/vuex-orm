@@ -8,7 +8,11 @@ export default class Loader {
   /**
    * Set the relationships that should be eager loaded with the query.
    */
-  static with (query: Query, name: string | string[], constraint: Constraint | null): void {
+  static with(
+    query: Query,
+    name: string | string[],
+    constraint: Constraint | null
+  ): void {
     // If the name of the relation is `*`, we'll load all relationships.
     if (name === '*') {
       this.withAll(query, constraint)
@@ -18,7 +22,7 @@ export default class Loader {
 
     // If we passed an array, we dispatch the bits to with queries.
     if (isArray(name)) {
-      name.forEach(relationName => this.with(query, relationName, constraint))
+      name.forEach((relationName) => this.with(query, relationName, constraint))
 
       return
     }
@@ -30,7 +34,7 @@ export default class Loader {
   /**
    * Set all relationships to be eager loaded with the query.
    */
-  static withAll (query: Query, constraint: Constraint | null): void {
+  static withAll(query: Query, constraint: Constraint | null): void {
     const fields = query.model.getFields()
 
     for (const field in fields) {
@@ -41,7 +45,7 @@ export default class Loader {
   /**
    * Set relationships to be recursively eager loaded with the query.
    */
-  static withAllRecursive (query: Query, depth: number): void {
+  static withAllRecursive(query: Query, depth: number): void {
     this.withAll(query, (relatedQuery) => {
       depth > 0 && relatedQuery.withAllRecursive(depth - 1)
     })
@@ -50,7 +54,11 @@ export default class Loader {
   /**
    * Set eager load relation and constraint.
    */
-  private static setEagerLoad (query: Query, name: string, constraint: Constraint | null = null): void {
+  private static setEagerLoad(
+    query: Query,
+    name: string,
+    constraint: Constraint | null = null
+  ): void {
     if (!query.load[name]) {
       query.load[name] = []
     }
@@ -61,7 +69,11 @@ export default class Loader {
   /**
    * Parse a list of relations into individuals.
    */
-  private static parseWithRelations (query: Query, relations: string[], constraint: Constraint | null): void {
+  private static parseWithRelations(
+    query: Query,
+    relations: string[],
+    constraint: Constraint | null
+  ): void {
     // First we'll get the very first relationship from teh whole relations.
     const relation = relations[0]
 
@@ -100,7 +112,12 @@ export default class Loader {
   /**
    * Parse the nested relationships in a relation.
    */
-  private static addNestedWiths (query: Query, name: string, children: string[], constraint: Constraint | null): void {
+  private static addNestedWiths(
+    query: Query,
+    name: string,
+    children: string[],
+    constraint: Constraint | null
+  ): void {
     this.setEagerLoad(query, name, (nestedQuery) => {
       nestedQuery.with(children.join('.'), constraint)
     })
@@ -109,7 +126,7 @@ export default class Loader {
   /**
    * Eager load the relationships for the given collection.
    */
-  static eagerLoadRelations (query: Query, collection: Collection): void {
+  static eagerLoadRelations(query: Query, collection: Collection): void {
     const fields = query.model.getFields()
 
     for (const name in query.load) {

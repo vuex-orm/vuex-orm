@@ -11,7 +11,7 @@ describe('Model – Relations – Morph One', () => {
     // @MorphOne(Comment, 'commentable_id', 'commentable_type')
     comment!: Comment
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
@@ -34,7 +34,7 @@ describe('Model – Relations – Morph One', () => {
     // @Attribute
     commentable_type!: string
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         body: this.attr(''),

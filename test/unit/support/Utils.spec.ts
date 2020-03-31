@@ -3,37 +3,17 @@ import Utils from '@/support/Utils'
 describe('Unit - Utils', () => {
   describe('#orderBy', () => {
     it('can order collection by given key in asc order', () => {
-      const collection = [
-        { id: 2 },
-        { id: 3 },
-        { id: 10 },
-        { id: 1 }
-      ]
+      const collection = [{ id: 2 }, { id: 3 }, { id: 10 }, { id: 1 }]
 
-      const expected = [
-        { id: 1 },
-        { id: 2 },
-        { id: 3 },
-        { id: 10 }
-      ]
+      const expected = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 10 }]
 
       expect(Utils.orderBy(collection, ['id'], ['asc'])).toEqual(expected)
     })
 
     it('can order collection by given key in desc order', () => {
-      const collection = [
-        { id: 2 },
-        { id: 3 },
-        { id: 10 },
-        { id: 1 }
-      ]
+      const collection = [{ id: 2 }, { id: 3 }, { id: 10 }, { id: 1 }]
 
-      const expected = [
-        { id: 10 },
-        { id: 3 },
-        { id: 2 },
-        { id: 1 }
-      ]
+      const expected = [{ id: 10 }, { id: 3 }, { id: 2 }, { id: 1 }]
 
       expect(Utils.orderBy(collection, ['id'], ['desc'])).toEqual(expected)
     })
@@ -81,7 +61,9 @@ describe('Unit - Utils', () => {
         { id: 3, name: 'Peter Ericsson' }
       ]
 
-      expect(Utils.orderBy(collection, ['id', 'name'], ['asc', 'asc'])).toEqual(expected)
+      expect(Utils.orderBy(collection, ['id', 'name'], ['asc', 'asc'])).toEqual(
+        expected
+      )
     })
 
     it('can order collection with multiple keys with mixed key types', () => {
@@ -103,23 +85,19 @@ describe('Unit - Utils', () => {
         { name: 'George Mac' }
       ]
 
-      expect(Utils.orderBy(collection, ['id', 'name'], ['asc', 'desc'])).toEqual(expected)
+      expect(
+        Utils.orderBy(collection, ['id', 'name'], ['asc', 'desc'])
+      ).toEqual(expected)
     })
 
     it('can order collection with function', () => {
-      const collection = [
-        { id: 2 },
-        { id: 3 },
-        { id: 1 }
-      ]
+      const collection = [{ id: 2 }, { id: 3 }, { id: 1 }]
 
-      const expected = [
-        { id: 1 },
-        { id: 2 },
-        { id: 3 }
-      ]
+      const expected = [{ id: 1 }, { id: 2 }, { id: 3 }]
 
-      expect(Utils.orderBy(collection, [v => v.id], ['asc'])).toEqual(expected)
+      expect(Utils.orderBy(collection, [(v) => v.id], ['asc'])).toEqual(
+        expected
+      )
     })
   })
 

@@ -5,7 +5,7 @@ describe('Features – Relations – Has One', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields (): Fields {
+    static fields(): Fields {
       return {
         id: this.attr(null),
         phone: this.hasOne(Phone, 'user_id')
@@ -16,7 +16,7 @@ describe('Features – Relations – Has One', () => {
   class Phone extends Model {
     static entity = 'phones'
 
-    static fields (): Fields {
+    static fields(): Fields {
       return {
         id: this.attr(null),
         user_id: this.attr(null)
@@ -123,7 +123,7 @@ describe('Features – Relations – Has One', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           local_key: this.attr(null),
@@ -141,7 +141,7 @@ describe('Features – Relations – Has One', () => {
 
     const expected = createState({
       users: {
-        1: { $id : '1', id: 1, local_key: '1', phone: null }
+        1: { $id: '1', id: 1, local_key: '1', phone: null }
       },
       phones: {
         1: { $id: '1', id: 1, user_id: '1' }
@@ -169,7 +169,9 @@ describe('Features – Relations – Has One', () => {
       }
     }
 
-    const user = User.query().with('phone').find(1)
+    const user = User.query()
+      .with('phone')
+      .find(1)
 
     expect(user).toEqual(expected)
     expect(user).toBeInstanceOf(User)
@@ -182,7 +184,9 @@ describe('Features – Relations – Has One', () => {
 
     const expected = { $id: '1', id: 1, phone: null }
 
-    const user = store.getters['entities/users/query']().with('phone').find(1)
+    const user = store.getters['entities/users/query']()
+      .with('phone')
+      .find(1)
 
     expect(user).toEqual(expected)
   })

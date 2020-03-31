@@ -15,7 +15,7 @@ describe('Hooks – Local Insert', () => {
       // @Attribute
       age!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -23,7 +23,7 @@ describe('Hooks – Local Insert', () => {
         }
       }
 
-      static beforeCreate (record: User) {
+      static beforeCreate(record: User) {
         record.age = 30
       }
     }
@@ -50,7 +50,7 @@ describe('Hooks – Local Insert', () => {
       // @Attribute
       age!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -58,7 +58,7 @@ describe('Hooks – Local Insert', () => {
         }
       }
 
-      static beforeCreate (_record: User) {
+      static beforeCreate(_record: User) {
         // Do nothing.
       }
     }
@@ -85,7 +85,7 @@ describe('Hooks – Local Insert', () => {
       // @Attribute
       age!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -93,7 +93,7 @@ describe('Hooks – Local Insert', () => {
         }
       }
 
-      static beforeCreate (record: User): boolean | void {
+      static beforeCreate(record: User): boolean | void {
         if (record.age === 20) {
           return false
         }
@@ -128,7 +128,7 @@ describe('Hooks – Local Insert', () => {
       // @Attribute
       age!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -136,7 +136,7 @@ describe('Hooks – Local Insert', () => {
         }
       }
 
-      static afterCreate (record: User) {
+      static afterCreate(record: User) {
         expect(record).toBeInstanceOf(User)
         expect(record.id).toBe(1)
       }

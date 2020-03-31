@@ -6,7 +6,7 @@ describe('Performance – Retrieve – Has Many', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           posts: this.hasMany(Post, 'user_id')
@@ -17,7 +17,7 @@ describe('Performance – Retrieve – Has Many', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -43,7 +43,9 @@ describe('Performance – Retrieve – Has Many', () => {
 
     const start = +new Date()
 
-    store.getters['entities/users/query']().with('posts').get()
+    store.getters['entities/users/query']()
+      .with('posts')
+      .get()
 
     const end = +new Date()
 

@@ -37,7 +37,7 @@ describe('Feature - Repository', () => {
       // @Attribute('')
       email!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(''),
           name: this.attr('')

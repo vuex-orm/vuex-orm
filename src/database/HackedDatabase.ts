@@ -10,16 +10,16 @@ export default class HackedDatabase {
   /**
    * Create a new hacked database.
    */
-  constructor (database: Database) {
+  constructor(database: Database) {
     this.database = database
   }
 
   /**
    * Get the hacked model of the given name from the entities list.
    */
-  model <M extends typeof Model> (model: M): M
-  model (model: string): typeof Model
-  model (model: typeof Model | string): typeof Model | string {
+  model<M extends typeof Model>(model: M): M
+  model(model: string): typeof Model
+  model(model: typeof Model | string): typeof Model | string {
     /* istanbul ignore next */
     const name = typeof model === 'string' ? model : model.entity
 

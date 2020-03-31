@@ -13,10 +13,16 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @MorphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
       tags!: Tag[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -30,10 +36,16 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @MorphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
       tags!: Tag[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -50,7 +62,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @Intermediate
       pivot!: Taggable
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -76,7 +88,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @Attribute
       is_public!: boolean
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -87,21 +99,49 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Post.create([{ id: 1 }, { id: 5 }, { id: 6 }])
 
     await Video.create({ id: 3 })
 
-    await Tag.create([{ id: 1, name: 'news' }, { id: 2, name: 'cast' }])
-
-    await Taggable.create([
-      { id: 1, tag_id: 1, taggable_id: 1, taggable_type: 'posts', is_public: true },
-      { id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos', is_public: true },
-      { id: 3, tag_id: 2, taggable_id: 1, taggable_type: 'posts', is_public: false }
+    await Tag.create([
+      { id: 1, name: 'news' },
+      { id: 2, name: 'cast' }
     ])
 
-    const post = Post.query().with('tags').find(1) as Post
+    await Taggable.create([
+      {
+        id: 1,
+        tag_id: 1,
+        taggable_id: 1,
+        taggable_type: 'posts',
+        is_public: true
+      },
+      {
+        id: 2,
+        tag_id: 2,
+        taggable_id: 3,
+        taggable_type: 'videos',
+        is_public: true
+      },
+      {
+        id: 3,
+        tag_id: 2,
+        taggable_id: 1,
+        taggable_type: 'posts',
+        is_public: false
+      }
+    ])
+
+    const post = Post.query()
+      .with('tags')
+      .find(1) as Post
 
     expect(post.tags.length).toBe(2)
     expect(post.tags[0].name).toBe('news')
@@ -109,7 +149,9 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
     expect(post.tags[1].name).toBe('cast')
     expect(post.tags[1].pivot.is_public).toBe(false)
 
-    const postWithoutTags = Post.query().with('tags').find(6) as Post
+    const postWithoutTags = Post.query()
+      .with('tags')
+      .find(6) as Post
 
     expect(postWithoutTags.tags.length).toBe(0)
   })
@@ -126,10 +168,16 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @MorphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
       tags!: Tag[]
 
-      static fields () {
+      static fields() {
         return {
           post_id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -143,10 +191,16 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @MorphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
       tags!: Tag[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -160,7 +214,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @Attribute('')
       name!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -183,7 +237,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @Attribute
       taggable_type!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -193,13 +247,21 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Post.create([{ post_id: 1 }, { post_id: 5 }])
 
     await Video.create({ id: 3 })
 
-    await Tag.create([{ id: 1, name: 'news' }, { id: 2, name: 'cast' }])
+    await Tag.create([
+      { id: 1, name: 'news' },
+      { id: 2, name: 'cast' }
+    ])
 
     await Taggable.create([
       { id: 1, tag_id: 1, taggable_id: 1, taggable_type: 'posts' },
@@ -207,7 +269,9 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       { id: 3, tag_id: 2, taggable_id: 1, taggable_type: 'posts' }
     ])
 
-    const post = Post.query().with('tags').find(1) as Post
+    const post = Post.query()
+      .with('tags')
+      .find(1) as Post
 
     expect(post.tags.length).toBe(2)
     expect(post.tags[0].name).toBe('news')
@@ -227,11 +291,18 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @MorphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type', 'post_id')
       tags!: Tag[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type', 'post_id')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type',
+            'post_id'
+          )
         }
       }
     }
@@ -245,10 +316,16 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @MorphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
       tags!: Tag[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -262,7 +339,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @Attribute('')
       name!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -285,7 +362,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @Attribute
       taggable_type!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -295,7 +372,12 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Post.create([
       { id: 1, post_id: 10 },
@@ -304,7 +386,10 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
 
     await Video.create({ id: 3 })
 
-    await Tag.create([{ id: 1, name: 'news' }, { id: 2, name: 'cast' }])
+    await Tag.create([
+      { id: 1, name: 'news' },
+      { id: 2, name: 'cast' }
+    ])
 
     await Taggable.create([
       { id: 1, tag_id: 1, taggable_id: 10, taggable_type: 'posts' },
@@ -312,7 +397,9 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       { id: 3, tag_id: 2, taggable_id: 10, taggable_type: 'posts' }
     ])
 
-    const post = Post.query().with('tags').find(1) as Post
+    const post = Post.query()
+      .with('tags')
+      .find(1) as Post
 
     expect(post.tags.length).toBe(2)
     expect(post.tags[0].name).toBe('news')
@@ -332,11 +419,19 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @MorphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type', 'post_id', 'tag_id')
       tags!: Tag[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type', 'post_id', 'tag_id')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type',
+            'post_id',
+            'tag_id'
+          )
         }
       }
     }
@@ -350,10 +445,16 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @MorphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
       tags!: Tag[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -370,7 +471,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @Attribute('')
       name!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -394,7 +495,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @Attribute
       taggable_type!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -404,7 +505,12 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Post.create([
       { id: 1, post_id: 10 },
@@ -424,7 +530,9 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       { id: 3, tag_id: 101, taggable_id: 10, taggable_type: 'posts' }
     ])
 
-    const post = Post.query().with('tags').find(1) as Post
+    const post = Post.query()
+      .with('tags')
+      .find(1) as Post
 
     expect(post.tags.length).toBe(2)
     expect(post.tags[0].name).toBe('news')
@@ -441,10 +549,16 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @MorphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
       tags!: Tag[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -458,10 +572,16 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @MorphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
       tags!: Tag[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          tags: this.morphToMany(
+            Tag,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -472,7 +592,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @Attribute
       id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -494,7 +614,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       // @Attribute
       taggable_type!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -504,7 +624,12 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Post.insert({
       id: 1,
@@ -517,7 +642,9 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
     })
 
     const post = Post.query()
-      .with('tags', query => { query.orderBy('id', 'asc') })
+      .with('tags', (query) => {
+        query.orderBy('id', 'asc')
+      })
       .find(1) as Post
 
     expect(post.tags[0].id).toBe(1)
@@ -525,7 +652,9 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
     expect(post.tags[2].id).toBe(3)
 
     const video = Video.query()
-      .with('tags', query => { query.orderBy('id', 'desc') })
+      .with('tags', (query) => {
+        query.orderBy('id', 'desc')
+      })
       .find(1) as Video
 
     expect(video.tags[0].id).toBe(3)

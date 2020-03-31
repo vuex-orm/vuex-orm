@@ -7,7 +7,7 @@ describe('Features – Relations – Has Many By', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_ids: this.attr([]),
@@ -19,7 +19,7 @@ describe('Features – Relations – Has Many By', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -30,10 +30,7 @@ describe('Features – Relations – Has Many By', () => {
 
     await User.insert({
       id: 1,
-      posts: [
-        { id: 1 },
-        { id: 2 }
-      ]
+      posts: [{ id: 1 }, { id: 2 }]
     })
 
     const expected = createState({
@@ -53,7 +50,7 @@ describe('Features – Relations – Has Many By', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_ids: this.attr([]),
@@ -65,7 +62,7 @@ describe('Features – Relations – Has Many By', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -90,7 +87,7 @@ describe('Features – Relations – Has Many By', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_ids: this.attr([]),
@@ -102,7 +99,7 @@ describe('Features – Relations – Has Many By', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -127,7 +124,7 @@ describe('Features – Relations – Has Many By', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_ids: this.attr([]),
@@ -139,7 +136,7 @@ describe('Features – Relations – Has Many By', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -150,13 +147,12 @@ describe('Features – Relations – Has Many By', () => {
 
     await User.insert({
       id: 1,
-      posts: [
-        { id: 1 },
-        { id: 2 }
-      ]
+      posts: [{ id: 1 }, { id: 2 }]
     })
 
-    const user = User.query().with('posts').find(1)
+    const user = User.query()
+      .with('posts')
+      .find(1)
 
     const expected = {
       $id: '1',
@@ -175,7 +171,7 @@ describe('Features – Relations – Has Many By', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_ids: this.attr([]),
@@ -187,7 +183,7 @@ describe('Features – Relations – Has Many By', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -201,7 +197,9 @@ describe('Features – Relations – Has Many By', () => {
       { id: 2, post_ids: [], posts: [] }
     ])
 
-    const users = User.query().with('posts').get()
+    const users = User.query()
+      .with('posts')
+      .get()
 
     const expected = [
       {
@@ -237,7 +235,7 @@ describe('Features – Relations – Has Many By', () => {
       // @HasManyBy(Post, 'post_ids')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_ids: this.attr([]),
@@ -252,7 +250,7 @@ describe('Features – Relations – Has Many By', () => {
       // @Attribute
       id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -264,7 +262,9 @@ describe('Features – Relations – Has Many By', () => {
     await User.insert({ id: 1, posts: [{ id: 1 }, { id: 3 }, { id: 2 }] })
 
     const ascending = User.query()
-      .with('posts', query => { query.orderBy('id', 'asc') })
+      .with('posts', (query) => {
+        query.orderBy('id', 'asc')
+      })
       .find(1) as User
 
     expect(ascending.posts[0].id).toBe(1)
@@ -272,7 +272,9 @@ describe('Features – Relations – Has Many By', () => {
     expect(ascending.posts[2].id).toBe(3)
 
     const descending = User.query()
-      .with('posts', query => { query.orderBy('id', 'desc') })
+      .with('posts', (query) => {
+        query.orderBy('id', 'desc')
+      })
       .find(1) as User
 
     expect(descending.posts[0].id).toBe(3)

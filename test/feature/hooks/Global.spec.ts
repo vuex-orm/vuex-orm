@@ -18,7 +18,7 @@ describe('Feature – Hooks – Global', () => {
       // @Attribute('')
       role!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           role: this.attr('')
@@ -36,7 +36,7 @@ describe('Feature – Hooks – Global', () => {
 
     const expected = [{ $id: '1', id: 1, role: 'admin' }]
 
-    const callbackFunction = function (this: Query, records: any) {
+    const callbackFunction = function(this: Query, records: any) {
       expect(records.length).toBe(2)
       expect(this).toBeInstanceOf(Query)
 
@@ -45,7 +45,9 @@ describe('Feature – Hooks – Global', () => {
 
     const hookId = Query.on('afterWhere', callbackFunction)
 
-    const users = User.query().where('role', 'admin').get()
+    const users = User.query()
+      .where('role', 'admin')
+      .get()
     expect(users).toEqual(expected)
 
     const removeBoolean = Query.off(hookId)
@@ -62,7 +64,7 @@ describe('Feature – Hooks – Global', () => {
       // @Attribute('')
       role!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           role: this.attr('')

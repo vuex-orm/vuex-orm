@@ -7,7 +7,7 @@ describe('Feature – Retrieve – Where - Composite Keys', () => {
 
     static primaryKey = ['key_1', 'key_2']
 
-    static fields () {
+    static fields() {
       return {
         key_1: this.attr(null),
         key_2: this.attr(null)
@@ -92,7 +92,10 @@ describe('Feature – Retrieve – Where - Composite Keys', () => {
     ]
 
     const users = store.getters['entities/users/query']()
-      .whereIdIn([[2, 2], [3, 2]])
+      .whereIdIn([
+        [2, 2],
+        [3, 2]
+      ])
       .get()
 
     expect(users).toEqual(expected)
@@ -109,13 +112,17 @@ describe('Feature – Retrieve – Where - Composite Keys', () => {
       ]
     })
 
-    const expected = [
-      { $id: '[2,2]', key_1: 2, key_2: 2 }
-    ]
+    const expected = [{ $id: '[2,2]', key_1: 2, key_2: 2 }]
 
     const users = store.getters['entities/users/query']()
-      .whereIdIn([[2, 2], [3, 2]])
-      .whereIdIn([[1, 2], [2, 2]])
+      .whereIdIn([
+        [2, 2],
+        [3, 2]
+      ])
+      .whereIdIn([
+        [1, 2],
+        [2, 2]
+      ])
       .get()
 
     expect(users).toEqual(expected)
@@ -139,7 +146,10 @@ describe('Feature – Retrieve – Where - Composite Keys', () => {
     ]
 
     const users = store.getters['entities/users/query']()
-      .whereIdIn([[2, 2], [3, 2]])
+      .whereIdIn([
+        [2, 2],
+        [3, 2]
+      ])
       .orWhere('key_1', 1)
       .get()
 

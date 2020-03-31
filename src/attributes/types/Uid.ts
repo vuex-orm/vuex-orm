@@ -6,7 +6,7 @@ export default class Uid extends Type {
   /**
    * Create a new uid instance.
    */
-  constructor (model: typeof Model, value?: () => string | number) {
+  constructor(model: typeof Model, value?: () => string | number) {
     /* istanbul ignore next */
     super(model, value)
   }
@@ -14,7 +14,7 @@ export default class Uid extends Type {
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  make (value?: any): string | number | null {
+  make(value?: any): string | number | null {
     if (typeof value === 'number' || typeof value === 'string') {
       return value
     }

@@ -15,7 +15,7 @@ describe('Feature – Models – Save', () => {
     // @HasMany(Post, 'user_id')
     posts!: Post[]
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.attr(''),
@@ -36,7 +36,7 @@ describe('Feature – Models – Save', () => {
     // @BelongsTo(User, 'user_id')
     user!: User
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         user_id: this.attr(null),

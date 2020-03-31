@@ -11,7 +11,7 @@ describe('Feature – Attributes – Number', () => {
       // @Num(0)
       num!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           num: this.number(0)
@@ -19,12 +19,12 @@ describe('Feature – Attributes – Number', () => {
       }
     }
 
-    expect((new User({})).num).toBe(0)
-    expect((new User({ num: 1 })).num).toBe(1)
-    expect((new User({ num: '2' })).num).toBe(2)
-    expect((new User({ num: true })).num).toBe(1)
-    expect((new User({ num: false })).num).toBe(0)
-    expect((new User({ num: null })).num).toBe(0)
+    expect(new User({}).num).toBe(0)
+    expect(new User({ num: 1 }).num).toBe(1)
+    expect(new User({ num: '2' }).num).toBe(2)
+    expect(new User({ num: true }).num).toBe(1)
+    expect(new User({ num: false }).num).toBe(0)
+    expect(new User({ num: null }).num).toBe(0)
   })
 
   it('can mutate the value by specifying mutator at attribute', () => {
@@ -37,7 +37,7 @@ describe('Feature – Attributes – Number', () => {
       // @Num(0)
       num!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           num: this.number(0, (value: any) => value + 1)
@@ -45,12 +45,12 @@ describe('Feature – Attributes – Number', () => {
       }
     }
 
-    expect((new User({})).num).toBe(1)
-    expect((new User({ num: 1 })).num).toBe(2)
-    expect((new User({ num: '2' })).num).toBe(3)
-    expect((new User({ num: true })).num).toBe(2)
-    expect((new User({ num: false })).num).toBe(1)
-    expect((new User({ num: null })).num).toBe(1)
+    expect(new User({}).num).toBe(1)
+    expect(new User({ num: 1 }).num).toBe(2)
+    expect(new User({ num: '2' }).num).toBe(3)
+    expect(new User({ num: true }).num).toBe(2)
+    expect(new User({ num: false }).num).toBe(1)
+    expect(new User({ num: null }).num).toBe(1)
   })
 
   it('can mutate the value by specifying mutator at mutators', () => {
@@ -63,27 +63,27 @@ describe('Feature – Attributes – Number', () => {
       // @Num(0)
       num!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           num: this.number(0)
         }
       }
 
-      static mutators () {
+      static mutators() {
         return {
-          num (value: any) {
+          num(value: any) {
             return value + 1
           }
         }
       }
     }
 
-    expect((new User({})).num).toBe(1)
-    expect((new User({ num: 1 })).num).toBe(2)
-    expect((new User({ num: '2' })).num).toBe(3)
-    expect((new User({ num: true })).num).toBe(2)
-    expect((new User({ num: false })).num).toBe(1)
-    expect((new User({ num: null })).num).toBe(1)
+    expect(new User({}).num).toBe(1)
+    expect(new User({ num: 1 }).num).toBe(2)
+    expect(new User({ num: '2' }).num).toBe(3)
+    expect(new User({ num: true }).num).toBe(2)
+    expect(new User({ num: false }).num).toBe(1)
+    expect(new User({ num: null }).num).toBe(1)
   })
 })

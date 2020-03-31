@@ -25,7 +25,12 @@ export default class HasManyBy extends Relation {
   /**
    * Create a new has many by instance.
    */
-  constructor (model: typeof Model, parent: typeof Model | string, foreignKey: string, ownerKey: string) {
+  constructor(
+    model: typeof Model,
+    parent: typeof Model | string,
+    foreignKey: string,
+    ownerKey: string
+  ) {
     super(model) /* istanbul ignore next */
 
     this.parent = this.model.relation(parent)
@@ -36,14 +41,14 @@ export default class HasManyBy extends Relation {
   /**
    * Define the normalizr schema for the relationship.
    */
-  define (schema: Schema): NormalizrSchema {
+  define(schema: Schema): NormalizrSchema {
     return schema.many(this.parent)
   }
 
   /**
    * Attach the relational key to the given data.
    */
-  attach (key: any, record: Record, _data: NormalizedData): void {
+  attach(key: any, record: Record, _data: NormalizedData): void {
     if (key.length === 0) {
       return
     }
@@ -56,15 +61,24 @@ export default class HasManyBy extends Relation {
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  make (value: any, _parent: Record, _key: string): Model[] {
+  make(value: any, _parent: Record, _key: string): Model[] {
     return this.makeManyRelation(value, this.parent)
   }
 
   /**
    * Load the has many by relationship for the collection.
    */
-  load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void {
-    const relatedQuery = this.getRelation(query, this.parent.entity, constraints)
+  load(
+    query: Query,
+    collection: Collection,
+    name: string,
+    constraints: Constraint[]
+  ): void {
+    const relatedQuery = this.getRelation(
+      query,
+      this.parent.entity,
+      constraints
+    )
 
     this.addConstraintForHasManyBy(relatedQuery, collection)
 
@@ -80,7 +94,7 @@ export default class HasManyBy extends Relation {
   /**
    * Set the constraints for an eager load of the relation.
    */
-  addConstraintForHasManyBy (query: Query, collection: Collection): void {
+  addConstraintForHasManyBy(query: Query, collection: Collection): void {
     const keys = collection.reduce<string[]>((keys, item) => {
       return keys.concat(item[this.foreignKey])
     }, [] as string[])
@@ -91,7 +105,7 @@ export default class HasManyBy extends Relation {
   /**
    * Get related records.
    */
-  getRelatedRecords (relations: Map<string, Record>, keys: string[]): Record[] {
+  getRelatedRecords(relations: Map<string, Record>, keys: string[]): Record[] {
     const records: Record[] = []
 
     relations.forEach((record, id) => {

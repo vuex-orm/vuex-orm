@@ -14,8 +14,8 @@ declare module 'vuex' {
     /**
      * Get a new repository instance for the given model.
      */
-    $repo <R extends Repository<Model>> (repository: ConstructorOf<R>): R
-    $repo <M extends Model> (model: ConstructorOf<M>): Repository<M>
+    $repo<R extends Repository<Model>>(repository: ConstructorOf<R>): R
+    $repo<M extends Model>(model: ConstructorOf<M>): Repository<M>
 
     /**
      * Get the database attached to the store. It's the old syntax and should
@@ -27,6 +27,6 @@ declare module 'vuex' {
      * TODO: Update the version.
      * @deprecated Since v0.XX.X
      */
-    $db (): HackedDatabase
+    $db(): HackedDatabase
   }
 }

@@ -6,7 +6,7 @@ describe('Feature - Repositories - CRUD New', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.uid(),
           name: this.string('John Doe')
@@ -20,7 +20,7 @@ describe('Feature - Repositories - CRUD New', () => {
 
     const expected = createState({
       users: {
-        '$uid1': { $id: '$uid1', id: '$uid1', name: 'John Doe' }
+        $uid1: { $id: '$uid1', id: '$uid1', name: 'John Doe' }
       }
     })
 

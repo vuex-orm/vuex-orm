@@ -11,31 +11,42 @@ export default abstract class Relation extends Attribute {
   /**
    * Define the normalizr schema for the relationship.
    */
-  abstract define (schema: Schema): NormalizrSchema
+  abstract define(schema: Schema): NormalizrSchema
 
   /**
    * Attach the relational key to the given data. Basically, this method
    * should attach any missing foreign keys to the normalized data.
    */
-  abstract attach (key: any, record: Record, data: NormalizedData): void
+  abstract attach(key: any, record: Record, data: NormalizedData): void
 
   /**
    * Load relationship records.
    */
-  abstract load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void
+  abstract load(
+    query: Query,
+    collection: Collection,
+    name: string,
+    constraints: Constraint[]
+  ): void
 
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  abstract make (value: any, parent: Record, key: string): Model | Model[] | null
+  abstract make(value: any, parent: Record, key: string): Model | Model[] | null
 
   /**
    * Get relation query instance with constraint attached.
    */
-  protected getRelation (query: Query, name: string, constraints: Constraint[]): Query {
+  protected getRelation(
+    query: Query,
+    name: string,
+    constraints: Constraint[]
+  ): Query {
     const relation = query.newQuery(name)
 
-    constraints.forEach(constraint => { constraint(relation) })
+    constraints.forEach((constraint) => {
+      constraint(relation)
+    })
 
     return relation
   }
@@ -43,7 +54,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Get specified keys from the given collection.
    */
-  protected getKeys (collection: Collection, key: string): string[] {
+  protected getKeys(collection: Collection, key: string): string[] {
     return collection.reduce<string[]>((models, model) => {
       if (model[key] === null || model[key] === undefined) {
         return models
@@ -58,7 +69,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Create a new indexed map for the single relation by specified key.
    */
-  mapSingleRelations (collection: Record[], key: string): Map<string, Record> {
+  mapSingleRelations(collection: Record[], key: string): Map<string, Record> {
     const relations = new Map<string, Record>()
 
     collection.forEach((record) => {
@@ -73,7 +84,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Create a new indexed map for the many relation by specified key.
    */
-  mapManyRelations (collection: Record[], key: string): Map<string, Record> {
+  mapManyRelations(collection: Record[], key: string): Map<string, Record> {
     const relations = new Map<string, Record>()
 
     collection.forEach((record) => {
@@ -95,19 +106,26 @@ export default abstract class Relation extends Attribute {
   /**
    * Create a new indexed map for relations with order constraints.
    */
-  mapRelationsByOrders (collection: Collection, relations: Map<string, Record>, ownerKey: string, relationKey: string): Records {
+  mapRelationsByOrders(
+    collection: Collection,
+    relations: Map<string, Record>,
+    ownerKey: string,
+    relationKey: string
+  ): Records {
     const records: Records = {}
 
     relations.forEach((related, id) => {
-      collection.filter(record => record[relationKey] === id).forEach((record) => {
-        const id = record[ownerKey]
+      collection
+        .filter((record) => record[relationKey] === id)
+        .forEach((record) => {
+          const id = record[ownerKey]
 
-        if (!records[id]) {
-          records[id] = []
-        }
+          if (!records[id]) {
+            records[id] = []
+          }
 
-        records[id] = records[id].concat(related)
-      })
+          records[id] = records[id].concat(related)
+        })
     })
 
     return records
@@ -116,7 +134,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Check if the given record is a single relation, which is an object.
    */
-  isOneRelation (record: any): boolean {
+  isOneRelation(record: any): boolean {
     if (!isArray(record) && record !== null && typeof record === 'object') {
       return true
     }
@@ -128,7 +146,7 @@ export default abstract class Relation extends Attribute {
    * Check if the given records is a many relation, which is an array
    * of object.
    */
-  isManyRelation (records: any): boolean {
+  isManyRelation(records: any): boolean {
     if (!isArray(records)) {
       return false
     }
@@ -143,7 +161,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Wrap the given object into a model instance.
    */
-  makeOneRelation (record: any, model: typeof Model): Model | null {
+  makeOneRelation(record: any, model: typeof Model): Model | null {
     if (!this.isOneRelation(record)) {
       return null
     }
@@ -156,17 +174,19 @@ export default abstract class Relation extends Attribute {
   /**
    * Wrap the given records into a collection of model instances.
    */
-  makeManyRelation (records: any, model: typeof Model): Collection {
+  makeManyRelation(records: any, model: typeof Model): Collection {
     if (!this.isManyRelation(records)) {
       return []
     }
 
-    return records.filter((record: any) => {
-      return this.isOneRelation(record)
-    }).map((record: Record) => {
-      const relatedModel = model.getModelFromRecord(record) || model
+    return records
+      .filter((record: any) => {
+        return this.isOneRelation(record)
+      })
+      .map((record: Record) => {
+        const relatedModel = model.getModelFromRecord(record) || model
 
-      return new relatedModel(record)
-    })
+        return new relatedModel(record)
+      })
   }
 }

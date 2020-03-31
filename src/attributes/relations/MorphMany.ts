@@ -32,7 +32,13 @@ export default class MorphMany extends Relation {
   /**
    * Create a new belongs to instance.
    */
-  constructor (model: typeof Model, related: Entity, id: string, type: string, localKey: string) {
+  constructor(
+    model: typeof Model,
+    related: Entity,
+    id: string,
+    type: string,
+    localKey: string
+  ) {
     super(model) /* istanbul ignore next */
 
     this.related = this.model.relation(related)
@@ -44,20 +50,21 @@ export default class MorphMany extends Relation {
   /**
    * Define the normalizr schema for the relationship.
    */
-  define (schema: Schema): NormalizrSchema {
+  define(schema: Schema): NormalizrSchema {
     return schema.many(this.related)
   }
 
   /**
    * Attach the relational key to the given data.
    */
-  attach (key: any, record: Record, data: NormalizedData): void {
+  attach(key: any, record: Record, data: NormalizedData): void {
     const relatedItems = data[this.related.entity]
 
     key.forEach((id: any) => {
       const relatedItem = relatedItems[id]
 
-      relatedItem[this.id] = relatedItem[this.id] || this.related.getIdFromRecord(record)
+      relatedItem[this.id] =
+        relatedItem[this.id] || this.related.getIdFromRecord(record)
       relatedItem[this.type] = relatedItem[this.type] || this.model.entity
     })
   }
@@ -65,15 +72,24 @@ export default class MorphMany extends Relation {
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  make (value: any, _parent: Record, _key: string): Model[] {
+  make(value: any, _parent: Record, _key: string): Model[] {
     return this.makeManyRelation(value, this.related)
   }
 
   /**
    * Load the morph many relationship for the record.
    */
-  load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void {
-    const relatedQuery = this.getRelation(query, this.related.entity, constraints)
+  load(
+    query: Query,
+    collection: Collection,
+    name: string,
+    constraints: Constraint[]
+  ): void {
+    const relatedQuery = this.getRelation(
+      query,
+      this.related.entity,
+      constraints
+    )
 
     this.addEagerConstraintForMorphMany(relatedQuery, collection, query.entity)
 
@@ -89,7 +105,13 @@ export default class MorphMany extends Relation {
   /**
    * Set the constraints for an eager load of the relation.
    */
-  addEagerConstraintForMorphMany (query: Query, collection: Collection, type: string): void {
-    query.whereFk(this.type, type).whereFk(this.id, this.getKeys(collection, this.localKey))
+  addEagerConstraintForMorphMany(
+    query: Query,
+    collection: Collection,
+    type: string
+  ): void {
+    query
+      .whereFk(this.type, type)
+      .whereFk(this.id, this.getKeys(collection, this.localKey))
   }
 }

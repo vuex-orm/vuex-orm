@@ -137,7 +137,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Create a new Query instance.
    */
-  constructor (store: Store<any>, entity: string) {
+  constructor(store: Store<any>, entity: string) {
     this.store = store
     this.database = store.$database
 
@@ -156,13 +156,13 @@ export default class Query<T extends Model = Model> {
   /**
    * Delete all records from the store.
    */
-  static deleteAll (store: Store<any>): void {
+  static deleteAll(store: Store<any>): void {
     const database = store.$database
     const models = database.models()
 
     for (const entity in models) {
       const state = database.getState()[entity]
-      state && (new this(store, entity)).deleteAll()
+      state && new this(store, entity).deleteAll()
     }
   }
 
@@ -170,7 +170,7 @@ export default class Query<T extends Model = Model> {
    * Register a global hook. It will return ID for the hook that users may use
    * it to unregister hooks.
    */
-  static on (on: string, callback: Contracts.HookableClosure): number {
+  static on(on: string, callback: Contracts.HookableClosure): number {
     const id = ++this.lastHookId
 
     if (!this.hooks[on]) {
@@ -185,11 +185,11 @@ export default class Query<T extends Model = Model> {
   /**
    * Unregister global hook with the given id.
    */
-  static off (id: number): boolean {
+  static off(id: number): boolean {
     return Object.keys(this.hooks).some((on) => {
       const hooks = this.hooks[on]
 
-      const index = hooks.findIndex(h => h.id === id)
+      const index = hooks.findIndex((h) => h.id === id)
 
       if (index === -1) {
         return false
@@ -204,23 +204,23 @@ export default class Query<T extends Model = Model> {
   /**
    * Get query class.
    */
-  self (): typeof Query {
+  self(): typeof Query {
     return this.constructor as typeof Query
   }
 
   /**
    * Create a new query instance.
    */
-  newQuery (entity?: string): Query {
+  newQuery(entity?: string): Query {
     entity = entity || this.entity
 
-    return (new Query(this.store, entity))
+    return new Query(this.store, entity)
   }
 
   /**
    * Get model of given name from the container.
    */
-  getModel (name?: string): typeof Model {
+  getModel(name?: string): typeof Model {
     const entity = name || this.entity
 
     return this.database.model(entity)
@@ -229,14 +229,14 @@ export default class Query<T extends Model = Model> {
   /**
    * Get all models from the container.
    */
-  getModels (): Models {
+  getModels(): Models {
     return this.database.models()
   }
 
   /**
    * Get base model of given name from the container.
    */
-  getBaseModel (name: string): typeof Model {
+  getBaseModel(name: string): typeof Model {
     return this.database.baseModel(name)
   }
 
@@ -244,14 +244,14 @@ export default class Query<T extends Model = Model> {
    * Returns all record of the query chain result. This method is alias
    * of the `get` method.
    */
-  all (): Data.Collection<T> {
+  all(): Data.Collection<T> {
     return this.get()
   }
 
   /**
    * Find the record by the given id.
    */
-  find (value: Options.PrimaryKey): Data.Item<T> {
+  find(value: Options.PrimaryKey): Data.Item<T> {
     const record = this.state.data[this.normalizeIndexId(value)]
 
     if (!record) {
@@ -264,7 +264,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Get the record of the given array of ids.
    */
-  findIn (values: Options.PrimaryKey[]): Data.Collection<T> {
+  findIn(values: Options.PrimaryKey[]): Data.Collection<T> {
     if (!Utils.isArray(values)) {
       return []
     }
@@ -287,7 +287,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Returns all record of the query chain result.
    */
-  get (): Data.Collection<T> {
+  get(): Data.Collection<T> {
     const records = this.select()
 
     return this.collect(records)
@@ -296,7 +296,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Returns the first record of the query chain result.
    */
-  first (): Data.Item<T> {
+  first(): Data.Item<T> {
     const records = this.select()
 
     if (records.length === 0) {
@@ -309,7 +309,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Returns the last record of the query chain result.
    */
-  last (): Data.Item<T> {
+  last(): Data.Item<T> {
     const records = this.select()
 
     if (records.length === 0) {
@@ -322,7 +322,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Checks whether a result of the query chain exists.
    */
-  exists (): boolean {
+  exists(): boolean {
     const records = this.select()
 
     return records.length > 0
@@ -331,7 +331,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Add a and where clause to the query.
    */
-  where (field: any, value?: any): this {
+  where(field: any, value?: any): this {
     if (this.isIdfilterable(field)) {
       this.setIdFilter(value)
     }
@@ -344,7 +344,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Add a or where clause to the query.
    */
-  orWhere (field: any, value?: any): this {
+  orWhere(field: any, value?: any): this {
     // Cancel id filter usage, since "or" needs full scan.
     this.cancelIdFilter = true
 
@@ -356,7 +356,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Filter records by their primary key.
    */
-  whereId (value: Options.PrimaryKey): this {
+  whereId(value: Options.PrimaryKey): this {
     if (this.model.isCompositePrimaryKey()) {
       return this.where('$id', this.normalizeIndexId(value))
     }
@@ -367,7 +367,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Filter records by their primary keys.
    */
-  whereIdIn (values: Options.PrimaryKey[]): this {
+  whereIdIn(values: Options.PrimaryKey[]): this {
     if (this.model.isCompositePrimaryKey()) {
       const idList = values.reduce<string[]>((keys, value) => {
         return [...keys, this.normalizeIndexId(value)] as string[]
@@ -387,7 +387,7 @@ export default class Query<T extends Model = Model> {
    * for the distinction between where and orWhere in normal queries, but
    * Fk lookups are always "and" type.
    */
-  whereFk (field: string, value: Options.PrimaryKey): this {
+  whereFk(field: string, value: Options.PrimaryKey): this {
     const values = Utils.isArray(value) ? value : [value]
 
     // If lookup filed is the primary key. Initialize or get intersection,
@@ -413,12 +413,15 @@ export default class Query<T extends Model = Model> {
    * - Composite primary key defined on model, expects value to be array.
    * - Normal primary key defined on model, expects a primitive value.
    */
-  private normalizeIndexId (value: Options.PrimaryKey): string | number {
+  private normalizeIndexId(value: Options.PrimaryKey): string | number {
     if (this.model.isCompositePrimaryKey()) {
       if (!Utils.isArray(value)) {
         throw new Error(
-          '[Vuex ORM] Entity `' + this.entity + '` is configured with a composite ' +
-          'primary key and expects an array value but instead received: ' + JSON.stringify(value)
+          '[Vuex ORM] Entity `' +
+            this.entity +
+            '` is configured with a composite ' +
+            'primary key and expects an array value but instead received: ' +
+            JSON.stringify(value)
         )
       }
 
@@ -427,8 +430,11 @@ export default class Query<T extends Model = Model> {
 
     if (Utils.isArray(value)) {
       throw new Error(
-        '[Vuex ORM] Entity `' + this.entity + '` expects a single value but ' +
-        'instead received: ' + JSON.stringify(value)
+        '[Vuex ORM] Entity `' +
+          this.entity +
+          '` expects a single value but ' +
+          'instead received: ' +
+          JSON.stringify(value)
       )
     }
 
@@ -439,14 +445,17 @@ export default class Query<T extends Model = Model> {
    * Check whether the given field is filterable through primary key
    * direct look up.
    */
-  private isIdfilterable (field: any): boolean {
-    return (field === this.model.primaryKey || field === '$id') && !this.cancelIdFilter
+  private isIdfilterable(field: any): boolean {
+    return (
+      (field === this.model.primaryKey || field === '$id') &&
+      !this.cancelIdFilter
+    )
   }
 
   /**
    * Set id filter for the given where condition.
    */
-  private setIdFilter (value: string | number | (string | number)[]): void {
+  private setIdFilter(value: string | number | (string | number)[]): void {
     const values = Utils.isArray(value) ? value : [value]
 
     // Initialize or get intersection, because boolean and could have a
@@ -458,14 +467,14 @@ export default class Query<T extends Model = Model> {
     }
 
     this.idFilter = new Set(
-      values.filter(v => (this.idFilter as Set<number | string>).has(v))
+      values.filter((v) => (this.idFilter as Set<number | string>).has(v))
     )
   }
 
   /**
    * Set joined id filter for the given where condition.
    */
-  private setJoinedIdFilter (values: (string | number)[]): void {
+  private setJoinedIdFilter(values: (string | number)[]): void {
     // Initialize or get intersection, because boolean and could have a
     // condition such as `whereId(1).whereId(2).get()`.
     if (this.joinedIdFilter === null) {
@@ -475,14 +484,17 @@ export default class Query<T extends Model = Model> {
     }
 
     this.joinedIdFilter = new Set(
-      values.filter(v => (this.joinedIdFilter as Set<number | string>).has(v))
+      values.filter((v) => (this.joinedIdFilter as Set<number | string>).has(v))
     )
   }
 
   /**
    * Add an order to the query.
    */
-  orderBy (key: Options.OrderKey, direction: Options.OrderDirection = 'asc'): this {
+  orderBy(
+    key: Options.OrderKey,
+    direction: Options.OrderDirection = 'asc'
+  ): this {
     this.orders.push({ key, direction })
 
     return this
@@ -491,7 +503,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Add an offset to the query.
    */
-  offset (offset: number): this {
+  offset(offset: number): this {
     this.offsetNumber = offset
 
     return this
@@ -500,7 +512,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Add limit to the query.
    */
-  limit (limit: number): this {
+  limit(limit: number): this {
     this.limitNumber = limit
 
     return this
@@ -509,7 +521,10 @@ export default class Query<T extends Model = Model> {
   /**
    * Set the relationships that should be loaded.
    */
-  with (name: string | string[], constraint: Contracts.RelationshipConstraint | null = null): this {
+  with(
+    name: string | string[],
+    constraint: Contracts.RelationshipConstraint | null = null
+  ): this {
     Loader.with(this, name, constraint)
 
     return this
@@ -518,7 +533,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Query all relations.
    */
-  withAll (constraint: Contracts.RelationshipConstraint | null = null): this {
+  withAll(constraint: Contracts.RelationshipConstraint | null = null): this {
     Loader.withAll(this, constraint)
 
     return this
@@ -527,7 +542,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Query all relations recursively.
    */
-  withAllRecursive (depth: number = 3): this {
+  withAllRecursive(depth: number = 3): this {
     Loader.withAllRecursive(this, depth)
 
     return this
@@ -536,7 +551,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Set where constraint based on relationship existence.
    */
-  has (relation: string, operator?: string | number, count?: number): this {
+  has(relation: string, operator?: string | number, count?: number): this {
     Rollcaller.has(this, relation, operator, count)
 
     return this
@@ -545,7 +560,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Set where constraint based on relationship absence.
    */
-  hasNot (relation: string, operator?: string | number, count?: number): this {
+  hasNot(relation: string, operator?: string | number, count?: number): this {
     Rollcaller.hasNot(this, relation, operator, count)
 
     return this
@@ -554,7 +569,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Add where has condition.
    */
-  whereHas (relation: string, constraint: Options.HasConstraint): this {
+  whereHas(relation: string, constraint: Options.HasConstraint): this {
     Rollcaller.whereHas(this, relation, constraint)
 
     return this
@@ -563,7 +578,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Add where has not condition.
    */
-  whereHasNot (relation: string, constraint: Options.HasConstraint): this {
+  whereHasNot(relation: string, constraint: Options.HasConstraint): this {
     Rollcaller.whereHasNot(this, relation, constraint)
 
     return this
@@ -573,7 +588,7 @@ export default class Query<T extends Model = Model> {
    * Get all records from the state and convert them into the array of
    * model instances.
    */
-  records (): Data.Collection<T> {
+  records(): Data.Collection<T> {
     this.finalizeIdFilter()
 
     return this.getIdsToLookup().reduce<Data.Collection<T>>((models, id) => {
@@ -586,7 +601,10 @@ export default class Query<T extends Model = Model> {
       const model = this.hydrate(record)
 
       // Ignore if the model is not current type of model.
-      if (!this.appliedOnBase && !(this.model.entity === model.$self().entity)) {
+      if (
+        !this.appliedOnBase &&
+        !(this.model.entity === model.$self().entity)
+      ) {
         return models
       }
 
@@ -599,12 +617,15 @@ export default class Query<T extends Model = Model> {
   /**
    * Check whether if id filters should on select. If not, clear out id filter.
    */
-  private finalizeIdFilter (): void {
+  private finalizeIdFilter(): void {
     if (!this.cancelIdFilter || this.idFilter === null) {
       return
     }
 
-    this.where(this.model.isCompositePrimaryKey() ? '$id' : this.model.primaryKey, Array.from(this.idFilter.values()))
+    this.where(
+      this.model.isCompositePrimaryKey() ? '$id' : this.model.primaryKey,
+      Array.from(this.idFilter.values())
+    )
 
     this.idFilter = null
   }
@@ -613,7 +634,7 @@ export default class Query<T extends Model = Model> {
    * Get a list of id that should be used to lookup when fetching records
    * from the state.
    */
-  private getIdsToLookup (): (string | number)[] {
+  private getIdsToLookup(): (string | number)[] {
     // If both id filter and joined id filter are set, intersect them.
     if (this.idFilter && this.joinedIdFilter) {
       return Array.from(this.idFilter.values()).filter((id) => {
@@ -624,7 +645,9 @@ export default class Query<T extends Model = Model> {
     // If only either one is set, return which one is set.
     if (this.idFilter || this.joinedIdFilter) {
       return Array.from(
-        (this.idFilter || this.joinedIdFilter as Set<string | number>).values()
+        (
+          this.idFilter || (this.joinedIdFilter as Set<string | number>)
+        ).values()
       )
     }
 
@@ -635,7 +658,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Process the query and filter data.
    */
-  select (): Data.Collection<T> {
+  select(): Data.Collection<T> {
     // At first, well apply any `has` condition to the query.
     Rollcaller.applyConstraints(this)
 
@@ -669,35 +692,35 @@ export default class Query<T extends Model = Model> {
   /**
    * Filter the given data by registered where clause.
    */
-  filterWhere (records: Data.Collection<T>): Data.Collection<T> {
+  filterWhere(records: Data.Collection<T>): Data.Collection<T> {
     return Filter.where<T>(this, records)
   }
 
   /**
    * Sort the given data by registered orders.
    */
-  filterOrderBy (records: Data.Collection<T>): Data.Collection<T> {
+  filterOrderBy(records: Data.Collection<T>): Data.Collection<T> {
     return Filter.orderBy<T>(this, records)
   }
 
   /**
    * Limit the given records by the limit and offset.
    */
-  filterLimit (records: Data.Collection<T>): Data.Collection<T> {
+  filterLimit(records: Data.Collection<T>): Data.Collection<T> {
     return Filter.limit<T>(this, records)
   }
 
   /**
    * Get the count of the retrieved data.
    */
-  count (): number {
+  count(): number {
     return this.get().length
   }
 
   /**
    * Get the max value of the specified filed.
    */
-  max (field: string): number {
+  max(field: string): number {
     const numbers = this.get().reduce<number[]>((numbers, item) => {
       if (typeof item[field] === 'number') {
         numbers.push(item[field])
@@ -712,7 +735,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Get the min value of the specified filed.
    */
-  min (field: string): number {
+  min(field: string): number {
     const numbers = this.get().reduce<number[]>((numbers, item) => {
       if (typeof item[field] === 'number') {
         numbers.push(item[field])
@@ -727,7 +750,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Get the sum value of the specified filed.
    */
-  sum (field: string): number {
+  sum(field: string): number {
     return this.get().reduce<number>((sum, item) => {
       if (typeof item[field] === 'number') {
         sum += item[field]
@@ -740,7 +763,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Create a item from given record.
    */
-  item (item: Data.Instance<T>): Data.Item<T> {
+  item(item: Data.Instance<T>): Data.Item<T> {
     if (Object.keys(this.load).length > 0) {
       Loader.eagerLoadRelations(this, [item])
     }
@@ -751,13 +774,13 @@ export default class Query<T extends Model = Model> {
   /**
    * Create a collection (array) from given records.
    */
-  collect (collection: Data.Collection<T>): Data.Collection<T> {
+  collect(collection: Data.Collection<T>): Data.Collection<T> {
     if (collection.length < 1) {
       return []
     }
 
     if (Object.keys(this.load).length > 0) {
-      collection = collection.map<T>(item => {
+      collection = collection.map<T>((item) => {
         const model = this.model.getModelFromRecord(item) as typeof Model
 
         return new model(item) as T
@@ -772,8 +795,8 @@ export default class Query<T extends Model = Model> {
   /**
    * Create new data with all fields filled by default values.
    */
-  new (): T {
-    const model = (new this.model()).$generateId() as T
+  new(): T {
+    const model = new this.model().$generateId() as T
 
     this.commitInsert(model.$getAttributes())
 
@@ -785,14 +808,17 @@ export default class Query<T extends Model = Model> {
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.
    */
-  create (data: Data.Record | Data.Record[], options: Options.PersistOptions): Data.Collections {
+  create(
+    data: Data.Record | Data.Record[],
+    options: Options.PersistOptions
+  ): Data.Collections {
     return this.persist('create', data, options)
   }
 
   /**
    * Create records to the state.
    */
-  createRecords (records: Data.Records): Data.Collection<T> {
+  createRecords(records: Data.Records): Data.Collection<T> {
     this.deleteAll()
 
     return this.insertRecords(records)
@@ -803,21 +829,22 @@ export default class Query<T extends Model = Model> {
    * remove existing data within the store, but it will update the data
    * with the same primary key.
    */
-  insert (data: Data.Record | Data.Record[], options: Options.PersistOptions): Data.Collections {
+  insert(
+    data: Data.Record | Data.Record[],
+    options: Options.PersistOptions
+  ): Data.Collections {
     return this.persist('insert', data, options)
   }
 
   /**
    * Insert records to the store.
    */
-  insertRecords (records: Data.Records): Data.Collection<T> {
+  insertRecords(records: Data.Records): Data.Collection<T> {
     let collection = this.mapHydrateRecords(records)
 
     collection = this.executeMutationHooks('beforeCreate', collection)
 
-    this.commitInsertRecords(
-      this.convertCollectionToRecords(collection)
-    )
+    this.commitInsertRecords(this.convertCollectionToRecords(collection))
 
     this.executeMutationHooks('afterCreate', collection)
 
@@ -827,7 +854,11 @@ export default class Query<T extends Model = Model> {
   /**
    * Update data in the state.
    */
-  update (data: Data.Record | Data.Record[] | UpdateClosure, condition: UpdateCondition, options: Options.PersistOptions): Data.Item<T> | Data.Collection<T> | Data.Collections {
+  update(
+    data: Data.Record | Data.Record[] | UpdateClosure,
+    condition: UpdateCondition,
+    options: Options.PersistOptions
+  ): Data.Item<T> | Data.Collection<T> | Data.Collections {
     // If the data is array, simply normalize the data and update them.
     if (Utils.isArray(data)) {
       return this.persist('update', data, options)
@@ -839,7 +870,9 @@ export default class Query<T extends Model = Model> {
       // If the data is closure, but if there's no condition, we wouldn't know
       // what record to update so raise an error and abort.
       if (!condition) {
-        throw new Error('You must specify `where` to update records by specifying `data` as a closure.')
+        throw new Error(
+          'You must specify `where` to update records by specifying `data` as a closure.'
+        )
       }
 
       // If the condition is a closure, then update records by the closure.
@@ -869,9 +902,9 @@ export default class Query<T extends Model = Model> {
     // condition as ID value for the record so throw an error and abort.
     if (this.model.isCompositePrimaryKey() && !Utils.isArray(condition)) {
       throw new Error(
-        '[Vuex ORM] You can\'t specify `where` value as `string` or `number` ' +
-        'when you have a composite key defined in your model. Please include ' +
-        'composite keys to the `data` fields.'
+        "[Vuex ORM] You can't specify `where` value as `string` or `number` " +
+          'when you have a composite key defined in your model. Please include ' +
+          'composite keys to the `data` fields.'
       )
     }
 
@@ -883,7 +916,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Update all records.
    */
-  updateRecords (records: Data.Records): Data.Collection<T> {
+  updateRecords(records: Data.Records): Data.Collection<T> {
     const models = this.hydrateRecordsByMerging(records)
 
     return this.performUpdate(models)
@@ -892,7 +925,10 @@ export default class Query<T extends Model = Model> {
   /**
    * Update the state by id.
    */
-  updateById (data: Data.Record | UpdateClosure, id: string | number): Data.Item<T> {
+  updateById(
+    data: Data.Record | UpdateClosure,
+    id: string | number
+  ): Data.Item<T> {
     id = typeof id === 'number' ? id.toString() : this.normalizeIndexId(id)
 
     const record = this.state.data[id]
@@ -915,18 +951,24 @@ export default class Query<T extends Model = Model> {
   /**
    * Update the state by condition.
    */
-  updateByCondition (data: Data.Record | UpdateClosure, condition: Contracts.Predicate): Data.Collection<T> {
-    const instances = Object.keys(this.state.data).reduce<Data.Instances<T>>((instances, id) => {
-      const instance = this.hydrate(this.state.data[id])
+  updateByCondition(
+    data: Data.Record | UpdateClosure,
+    condition: Contracts.Predicate
+  ): Data.Collection<T> {
+    const instances = Object.keys(this.state.data).reduce<Data.Instances<T>>(
+      (instances, id) => {
+        const instance = this.hydrate(this.state.data[id])
 
-      if (!condition(instance)) {
+        if (!condition(instance)) {
+          return instances
+        }
+
+        instances[id] = this.processUpdate(data, instance)
+
         return instances
-      }
-
-      instances[id] = this.processUpdate(data, instance)
-
-      return instances
-    }, {})
+      },
+      {}
+    )
 
     return this.performUpdate(instances)
   }
@@ -934,16 +976,22 @@ export default class Query<T extends Model = Model> {
   /**
    * Update the given record with given data.
    */
-  processUpdate (data: Data.Record | UpdateClosure, instance: Data.Instance<T>): Data.Instance<T> {
+  processUpdate(
+    data: Data.Record | UpdateClosure,
+    instance: Data.Instance<T>
+  ): Data.Instance<T> {
     if (typeof data === 'function') {
-      (data as UpdateClosure)(instance)
+      ;(data as UpdateClosure)(instance)
 
       return instance
     }
 
     // When the updated instance is not the base model, we tell te hydrate what model to use
     if (instance.constructor !== this.model && instance instanceof Model) {
-      return this.hydrate({ ...instance, ...data }, instance.constructor as typeof Model)
+      return this.hydrate(
+        { ...instance, ...data },
+        instance.constructor as typeof Model
+      )
     }
 
     return this.hydrate({ ...instance, ...data })
@@ -952,24 +1000,32 @@ export default class Query<T extends Model = Model> {
   /**
    * Commit `update` to the state.
    */
-  private performUpdate (models: Data.Instances<T>): Data.Collection<T> {
+  private performUpdate(models: Data.Instances<T>): Data.Collection<T> {
     models = this.updateIndexes(models)
 
-    const beforeHooks = this.buildHooks('beforeUpdate') as Contracts.MutationHook[]
-    const afterHooks = this.buildHooks('afterUpdate') as Contracts.MutationHook[]
+    const beforeHooks = this.buildHooks(
+      'beforeUpdate'
+    ) as Contracts.MutationHook[]
+    const afterHooks = this.buildHooks(
+      'afterUpdate'
+    ) as Contracts.MutationHook[]
 
     const updated: Data.Collection<T> = []
 
     for (const id in models) {
       const model = models[id]
 
-      if (beforeHooks.some(hook => hook(model, null, this.entity) === false)) {
+      if (
+        beforeHooks.some((hook) => hook(model, null, this.entity) === false)
+      ) {
         continue
       }
 
       this.commitInsert(model.$getAttributes())
 
-      afterHooks.forEach(hook => { hook(model, null, this.entity) })
+      afterHooks.forEach((hook) => {
+        hook(model, null, this.entity)
+      })
 
       updated.push(model)
     }
@@ -982,21 +1038,24 @@ export default class Query<T extends Model = Model> {
    * record's primary key. We must then update the index key to
    * correspond with new id value.
    */
-  private updateIndexes (instances: Data.Instances<T>): Data.Instances<T> {
-    return Object.keys(instances).reduce<Data.Instances<T>>((instances, key) => {
-      const instance = instances[key]
-      const id = String(this.model.getIndexIdFromRecord(instance))
+  private updateIndexes(instances: Data.Instances<T>): Data.Instances<T> {
+    return Object.keys(instances).reduce<Data.Instances<T>>(
+      (instances, key) => {
+        const instance = instances[key]
+        const id = String(this.model.getIndexIdFromRecord(instance))
 
-      if (key !== id) {
-        instance.$id = id
+        if (key !== id) {
+          instance.$id = id
 
-        instances[id] = instance
+          instances[id] = instance
 
-        delete instances[key]
-      }
+          delete instances[key]
+        }
 
-      return instances
-    }, instances)
+        return instances
+      },
+      instances
+    )
   }
 
   /**
@@ -1004,14 +1063,17 @@ export default class Query<T extends Model = Model> {
    * will not replace existing data within the state, but it will update only
    * the submitted data with the same primary key.
    */
-  insertOrUpdate (data: Data.Record | Data.Record[], options: Options.PersistOptions): Data.Collections {
+  insertOrUpdate(
+    data: Data.Record | Data.Record[],
+    options: Options.PersistOptions
+  ): Data.Collections {
     return this.persist('insertOrUpdate', data, options)
   }
 
   /**
    * Insert or update the records.
    */
-  insertOrUpdateRecords (records: Data.Records): Data.Collection<T> {
+  insertOrUpdateRecords(records: Data.Records): Data.Collection<T> {
     let toBeInserted: Data.Records = {}
     let toBeUpdated: Data.Records = {}
 
@@ -1036,7 +1098,11 @@ export default class Query<T extends Model = Model> {
   /**
    * Persist data into the state while preserving it's original structure.
    */
-  persist (method: Options.PersistMethods, data: Data.Record | Data.Record[], options: Options.PersistOptions): Data.Collections {
+  persist(
+    method: Options.PersistMethods,
+    data: Data.Record | Data.Record[],
+    options: Options.PersistOptions
+  ): Data.Collections {
     const clonedData = Utils.cloneDeep(data)
 
     const normalizedData = this.normalize(clonedData)
@@ -1049,25 +1115,31 @@ export default class Query<T extends Model = Model> {
       return {}
     }
 
-    return Object.entries(normalizedData).reduce<Data.Collections>((collections, [entity, records]) => {
-      const newQuery = this.newQuery(entity)
+    return Object.entries(normalizedData).reduce<Data.Collections>(
+      (collections, [entity, records]) => {
+        const newQuery = this.newQuery(entity)
 
-      const methodForEntity = this.getPersistMethod(entity, options, method)
+        const methodForEntity = this.getPersistMethod(entity, options, method)
 
-      const collection = newQuery.persistRecords(methodForEntity, records)
+        const collection = newQuery.persistRecords(methodForEntity, records)
 
-      if (collection.length > 0) {
-        collections[entity] = collection
-      }
+        if (collection.length > 0) {
+          collections[entity] = collection
+        }
 
-      return collections
-    }, {})
+        return collections
+      },
+      {}
+    )
   }
 
   /**
    * Persist given records to the store by the given method.
    */
-  persistRecords (method: Options.PersistMethods, records: Data.Records): Data.Collection<T> {
+  persistRecords(
+    method: Options.PersistMethods,
+    records: Data.Records
+  ): Data.Collection<T> {
     switch (method) {
       case 'create':
         return this.createRecords(records)
@@ -1083,7 +1155,11 @@ export default class Query<T extends Model = Model> {
   /**
    * Get persist method from given information.
    */
-  private getPersistMethod (entity: string, options: Options.PersistOptions, fallback: Options.PersistMethods): Options.PersistMethods {
+  private getPersistMethod(
+    entity: string,
+    options: Options.PersistOptions,
+    fallback: Options.PersistMethods
+  ): Options.PersistMethods {
     if (options.create && options.create.includes(entity)) {
       return 'create'
     }
@@ -1106,9 +1182,9 @@ export default class Query<T extends Model = Model> {
   /**
    * Delete matching records with the given condition from the store.
    */
-  delete (condition: string | number | (number | string)[]): Data.Item
-  delete (condition: Contracts.Predicate): Data.Collection
-  delete (condition: any): any {
+  delete(condition: string | number | (number | string)[]): Data.Item
+  delete(condition: Contracts.Predicate): Data.Collection
+  delete(condition: any): any {
     if (typeof condition === 'function') {
       return this.deleteByCondition(condition)
     }
@@ -1121,7 +1197,7 @@ export default class Query<T extends Model = Model> {
    * iterate over all records to ensure that before and after hook will be
    * called for each existing records.
    */
-  deleteAll (): Data.Collection {
+  deleteAll(): Data.Collection {
     // If the target entity is the base entity and not inherited entity, we can
     // just delete all records.
     if (this.appliedOnBase) {
@@ -1130,26 +1206,30 @@ export default class Query<T extends Model = Model> {
 
     // Otherwise, we should filter out any derived entities from being deleted
     // so we'll add such filter here.
-    return this.deleteByCondition(model => model.$self().entity === this.model.entity)
+    return this.deleteByCondition(
+      (model) => model.$self().entity === this.model.entity
+    )
   }
 
   /**
    * Delete a record from the store by given id.
    */
-  private deleteById (id: string | number | (number | string)[]): Data.Item {
+  private deleteById(id: string | number | (number | string)[]): Data.Item {
     const item = this.find(id)
 
     if (!item) {
       return null
     }
 
-    return this.deleteByCondition(model => model.$id === item.$id)[0]
+    return this.deleteByCondition((model) => model.$id === item.$id)[0]
   }
 
   /**
    * Perform the actual delete query to the store.
    */
-  private deleteByCondition (condition: Contracts.Predicate): Data.Collection<T> {
+  private deleteByCondition(
+    condition: Contracts.Predicate
+  ): Data.Collection<T> {
     let collection = this.mapHydrateAndFilterRecords(this.state.data, condition)
 
     collection = this.executeMutationHooks('beforeDelete', collection)
@@ -1158,7 +1238,7 @@ export default class Query<T extends Model = Model> {
       return []
     }
 
-    this.commitDelete(collection.map(model => model.$id as string))
+    this.commitDelete(collection.map((model) => model.$id as string))
 
     this.executeMutationHooks('afterDelete', collection)
 
@@ -1168,7 +1248,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Commit mutation.
    */
-  private commit (name: string, payload: any): void {
+  private commit(name: string, payload: any): void {
     this.store.commit(`${this.database.namespace}/${name}`, {
       entity: this.baseEntity,
       ...payload
@@ -1178,35 +1258,35 @@ export default class Query<T extends Model = Model> {
   /**
    * Commit insert mutation.
    */
-  private commitInsert (record: Data.Record): void {
+  private commitInsert(record: Data.Record): void {
     this.commit('insert', { record })
   }
 
   /**
    * Commit insert records mutation.
    */
-  private commitInsertRecords (records: Data.Record): void {
+  private commitInsertRecords(records: Data.Record): void {
     this.commit('insertRecords', { records })
   }
 
   /**
    * Commit delete mutation.
    */
-  private commitDelete (id: string[]): void {
+  private commitDelete(id: string[]): void {
     this.commit('delete', { id })
   }
 
   /**
    * Normalize the given data.
    */
-  normalize (data: Data.Record | Data.Record[]): Data.NormalizedData {
+  normalize(data: Data.Record | Data.Record[]): Data.NormalizedData {
     return Processor.normalize(this, data)
   }
 
   /**
    * Convert given record to the model instance.
    */
-  hydrate (record: Data.Record, forceModel?: typeof Model): Data.Instance<T> {
+  hydrate(record: Data.Record, forceModel?: typeof Model): Data.Instance<T> {
     if (forceModel) {
       return new forceModel(record) as T
     }
@@ -1234,7 +1314,7 @@ export default class Query<T extends Model = Model> {
    * Convert given records to instances by merging existing record. If there's
    * no existing record, that record will not be included in the result.
    */
-  hydrateRecordsByMerging (records: Data.Records): Data.Instances<T> {
+  hydrateRecordsByMerging(records: Data.Records): Data.Instances<T> {
     return Object.keys(records).reduce<Data.Instances<T>>((instances, id) => {
       const recordInStore = this.state.data[id]
 
@@ -1252,7 +1332,10 @@ export default class Query<T extends Model = Model> {
         return instances
       }
 
-      instances[id] = this.hydrate({ ...recordInStore, ...record }, modelForRecordInStore)
+      instances[id] = this.hydrate(
+        { ...recordInStore, ...record },
+        modelForRecordInStore
+      )
 
       return instances
     }, {})
@@ -1261,14 +1344,17 @@ export default class Query<T extends Model = Model> {
   /**
    * Convert all given records and return it as a collection.
    */
-  private mapHydrateRecords (records: Data.Records): Data.Collection<T> {
-    return Utils.map(records, record => this.hydrate(record))
+  private mapHydrateRecords(records: Data.Records): Data.Collection<T> {
+    return Utils.map(records, (record) => this.hydrate(record))
   }
 
   /**
    * Convert all given records and return it as a collection.
    */
-  private mapHydrateAndFilterRecords (records: Data.Records, condition: Contracts.Predicate): Data.Collection<T> {
+  private mapHydrateAndFilterRecords(
+    records: Data.Records,
+    condition: Contracts.Predicate
+  ): Data.Collection<T> {
     const collection: Data.Collection<T> = []
 
     for (const key in records) {
@@ -1283,7 +1369,9 @@ export default class Query<T extends Model = Model> {
   /**
    * Convert given collection to records by using index id as a key.
    */
-  private convertCollectionToRecords (collection: Data.Collection<T>): Data.Records {
+  private convertCollectionToRecords(
+    collection: Data.Collection<T>
+  ): Data.Records {
     return collection.reduce<Data.Records>((carry, model) => {
       carry[model['$id'] as string] = model.$getAttributes()
 
@@ -1297,14 +1385,14 @@ export default class Query<T extends Model = Model> {
    * - Everything if not in a inheritance scheme.
    * - Only derived instances if applied to a derived entity.
    */
-  private emptyState (): void {
+  private emptyState(): void {
     this.deleteAll()
   }
 
   /**
    * Build executable hook collection for the given hook.
    */
-  private buildHooks (on: string): Contracts.HookableClosure[] {
+  private buildHooks(on: string): Contracts.HookableClosure[] {
     const hooks = this.getGlobalHookAsArray(on)
 
     const localHook = this.model[on] as Contracts.HookableClosure | undefined
@@ -1318,16 +1406,16 @@ export default class Query<T extends Model = Model> {
    * Get global hook of the given name as array by stripping id key and keep
    * only hook functions.
    */
-  private getGlobalHookAsArray (on: string): Contracts.HookableClosure[] {
+  private getGlobalHookAsArray(on: string): Contracts.HookableClosure[] {
     const hooks = this.self().hooks[on]
 
-    return hooks ? hooks.map(h => h.callback.bind(this)) : []
+    return hooks ? hooks.map((h) => h.callback.bind(this)) : []
   }
 
   /**
    * Execute mutation hooks to the given collection.
    */
-  private executeMutationHooks (on: string, collection: T[]): T[] {
+  private executeMutationHooks(on: string, collection: T[]): T[] {
     const hooks = this.buildHooks(on) as Contracts.MutationHook[]
 
     if (hooks.length === 0) {
@@ -1335,14 +1423,17 @@ export default class Query<T extends Model = Model> {
     }
 
     return collection.filter((model) => {
-      return !hooks.some(hook => hook(model, null, this.entity) === false)
+      return !hooks.some((hook) => hook(model, null, this.entity) === false)
     })
   }
 
   /**
    * Execute retrieve hook for the given method.
    */
-  private executeSelectHook (on: string, models: Data.Collection<T>): Data.Collection<T> {
+  private executeSelectHook(
+    on: string,
+    models: Data.Collection<T>
+  ): Data.Collection<T> {
     const hooks = this.buildHooks(on) as Contracts.SelectHook[]
 
     return hooks.reduce<Data.Collection<T>>((collection, hook) => {

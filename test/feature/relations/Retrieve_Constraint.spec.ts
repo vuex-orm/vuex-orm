@@ -6,7 +6,7 @@ describe('Feature – Relations – Retrieve – Constraint', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         posts: this.hasMany(Post, 'user_id')
@@ -17,7 +17,7 @@ describe('Feature – Relations – Retrieve – Constraint', () => {
   class Post extends Model {
     static entity = 'posts'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         user_id: this.attr(null),
@@ -40,9 +40,7 @@ describe('Feature – Relations – Retrieve – Constraint', () => {
     const expected = {
       $id: '1',
       id: 1,
-      posts: [
-        { $id: '1', id: 1, user_id: 1, user: null }
-      ]
+      posts: [{ $id: '1', id: 1, user_id: 1, user: null }]
     }
 
     const user = store.getters['entities/users/query']()

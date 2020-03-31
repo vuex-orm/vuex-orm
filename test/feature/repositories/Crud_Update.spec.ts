@@ -6,7 +6,7 @@ describe('Feature - Repositories - CRUD Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.string('')

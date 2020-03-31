@@ -6,7 +6,7 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -16,7 +16,7 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
     class Video extends Model {
       static entity = 'videos'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -26,12 +26,24 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
     class Tag extends Model {
       static entity = 'tags'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
-          posts: this.morphedByMany(Post, Taggable, 'tag_id', 'taggable_id', 'taggable_type'),
-          videos: this.morphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          posts: this.morphedByMany(
+            Post,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          ),
+          videos: this.morphedByMany(
+            Video,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -39,7 +51,7 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
     class Taggable extends Model {
       static entity = 'taggables'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -50,7 +62,12 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    const store = createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Tag.create({
       id: 1,
@@ -65,23 +82,35 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
     expect(store.state.entities.videos.data['4'].id).toBe(4)
     expect(store.state.entities.tags.data['1'].id).toBe(1)
     expect(store.state.entities.taggables.data['1_1_posts'].taggable_id).toBe(1)
-    expect(store.state.entities.taggables.data['1_1_posts'].taggable_type).toBe('posts')
+    expect(store.state.entities.taggables.data['1_1_posts'].taggable_type).toBe(
+      'posts'
+    )
     expect(store.state.entities.taggables.data['1_1_posts'].public).toBe(true)
     expect(store.state.entities.taggables.data['2_1_posts'].taggable_id).toBe(2)
-    expect(store.state.entities.taggables.data['2_1_posts'].taggable_type).toBe('posts')
+    expect(store.state.entities.taggables.data['2_1_posts'].taggable_type).toBe(
+      'posts'
+    )
     expect(store.state.entities.taggables.data['2_1_posts'].public).toBe(null)
-    expect(store.state.entities.taggables.data['3_1_videos'].taggable_id).toBe(3)
-    expect(store.state.entities.taggables.data['3_1_videos'].taggable_type).toBe('videos')
+    expect(store.state.entities.taggables.data['3_1_videos'].taggable_id).toBe(
+      3
+    )
+    expect(
+      store.state.entities.taggables.data['3_1_videos'].taggable_type
+    ).toBe('videos')
     expect(store.state.entities.taggables.data['3_1_videos'].public).toBe(true)
-    expect(store.state.entities.taggables.data['4_1_videos'].taggable_id).toBe(4)
-    expect(store.state.entities.taggables.data['4_1_videos'].taggable_type).toBe('videos')
+    expect(store.state.entities.taggables.data['4_1_videos'].taggable_id).toBe(
+      4
+    )
+    expect(
+      store.state.entities.taggables.data['4_1_videos'].taggable_type
+    ).toBe('videos')
   })
 
   it('can create many morphed by many relation data', async () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -91,7 +120,7 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
     class Video extends Model {
       static entity = 'videos'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -101,12 +130,24 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
     class Tag extends Model {
       static entity = 'tags'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
-          posts: this.morphedByMany(Post, Taggable, 'tag_id', 'taggable_id', 'taggable_type'),
-          videos: this.morphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          posts: this.morphedByMany(
+            Post,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          ),
+          videos: this.morphedByMany(
+            Video,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -114,7 +155,7 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
     class Taggable extends Model {
       static entity = 'taggables'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -124,7 +165,12 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    const store = createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Tag.create([
       {
@@ -153,35 +199,59 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
     expect(store.state.entities.tags.data['2'].id).toBe(2)
 
     expect(store.state.entities.taggables.data['1_1_posts'].taggable_id).toBe(1)
-    expect(store.state.entities.taggables.data['1_1_posts'].taggable_type).toBe('posts')
+    expect(store.state.entities.taggables.data['1_1_posts'].taggable_type).toBe(
+      'posts'
+    )
 
     expect(store.state.entities.taggables.data['2_1_posts'].taggable_id).toBe(2)
-    expect(store.state.entities.taggables.data['2_1_posts'].taggable_type).toBe('posts')
+    expect(store.state.entities.taggables.data['2_1_posts'].taggable_type).toBe(
+      'posts'
+    )
 
-    expect(store.state.entities.taggables.data['3_1_videos'].taggable_id).toBe(3)
-    expect(store.state.entities.taggables.data['3_1_videos'].taggable_type).toBe('videos')
+    expect(store.state.entities.taggables.data['3_1_videos'].taggable_id).toBe(
+      3
+    )
+    expect(
+      store.state.entities.taggables.data['3_1_videos'].taggable_type
+    ).toBe('videos')
 
-    expect(store.state.entities.taggables.data['4_1_videos'].taggable_id).toBe(4)
-    expect(store.state.entities.taggables.data['4_1_videos'].taggable_type).toBe('videos')
+    expect(store.state.entities.taggables.data['4_1_videos'].taggable_id).toBe(
+      4
+    )
+    expect(
+      store.state.entities.taggables.data['4_1_videos'].taggable_type
+    ).toBe('videos')
 
     expect(store.state.entities.taggables.data['2_2_posts'].taggable_id).toBe(2)
-    expect(store.state.entities.taggables.data['2_2_posts'].taggable_type).toBe('posts')
+    expect(store.state.entities.taggables.data['2_2_posts'].taggable_type).toBe(
+      'posts'
+    )
 
     expect(store.state.entities.taggables.data['3_2_posts'].taggable_id).toBe(3)
-    expect(store.state.entities.taggables.data['3_2_posts'].taggable_type).toBe('posts')
+    expect(store.state.entities.taggables.data['3_2_posts'].taggable_type).toBe(
+      'posts'
+    )
 
-    expect(store.state.entities.taggables.data['3_2_videos'].taggable_id).toBe(3)
-    expect(store.state.entities.taggables.data['3_2_videos'].taggable_type).toBe('videos')
+    expect(store.state.entities.taggables.data['3_2_videos'].taggable_id).toBe(
+      3
+    )
+    expect(
+      store.state.entities.taggables.data['3_2_videos'].taggable_type
+    ).toBe('videos')
 
-    expect(store.state.entities.taggables.data['5_2_videos'].taggable_id).toBe(5)
-    expect(store.state.entities.taggables.data['5_2_videos'].taggable_type).toBe('videos')
+    expect(store.state.entities.taggables.data['5_2_videos'].taggable_id).toBe(
+      5
+    )
+    expect(
+      store.state.entities.taggables.data['5_2_videos'].taggable_type
+    ).toBe('videos')
   })
 
   it('can create a morphed by many relation data with pivot data having custom key', async () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -191,7 +261,7 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
     class Video extends Model {
       static entity = 'videos'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -201,12 +271,24 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
     class Tag extends Model {
       static entity = 'tags'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
-          posts: this.morphedByMany(Post, Taggable, 'tag_id', 'taggable_id', 'taggable_type').as('tag'),
-          videos: this.morphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type').as('tag')
+          posts: this.morphedByMany(
+            Post,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          ).as('tag'),
+          videos: this.morphedByMany(
+            Video,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          ).as('tag')
         }
       }
     }
@@ -214,7 +296,7 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
     class Taggable extends Model {
       static entity = 'taggables'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -225,7 +307,12 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    const store = createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Tag.create({
       id: 1,
@@ -240,15 +327,27 @@ describe('Feature – Relations – Morphed By Many – Persist', () => {
     expect(store.state.entities.videos.data['4'].id).toBe(4)
     expect(store.state.entities.tags.data['1'].id).toBe(1)
     expect(store.state.entities.taggables.data['1_1_posts'].taggable_id).toBe(1)
-    expect(store.state.entities.taggables.data['1_1_posts'].taggable_type).toBe('posts')
+    expect(store.state.entities.taggables.data['1_1_posts'].taggable_type).toBe(
+      'posts'
+    )
     expect(store.state.entities.taggables.data['1_1_posts'].public).toBe(true)
     expect(store.state.entities.taggables.data['2_1_posts'].taggable_id).toBe(2)
-    expect(store.state.entities.taggables.data['2_1_posts'].taggable_type).toBe('posts')
+    expect(store.state.entities.taggables.data['2_1_posts'].taggable_type).toBe(
+      'posts'
+    )
     expect(store.state.entities.taggables.data['2_1_posts'].public).toBe(null)
-    expect(store.state.entities.taggables.data['3_1_videos'].taggable_id).toBe(3)
-    expect(store.state.entities.taggables.data['3_1_videos'].taggable_type).toBe('videos')
+    expect(store.state.entities.taggables.data['3_1_videos'].taggable_id).toBe(
+      3
+    )
+    expect(
+      store.state.entities.taggables.data['3_1_videos'].taggable_type
+    ).toBe('videos')
     expect(store.state.entities.taggables.data['3_1_videos'].public).toBe(true)
-    expect(store.state.entities.taggables.data['4_1_videos'].taggable_id).toBe(4)
-    expect(store.state.entities.taggables.data['4_1_videos'].taggable_type).toBe('videos')
+    expect(store.state.entities.taggables.data['4_1_videos'].taggable_id).toBe(
+      4
+    )
+    expect(
+      store.state.entities.taggables.data['4_1_videos'].taggable_type
+    ).toBe('videos')
   })
 })

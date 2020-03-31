@@ -11,7 +11,7 @@ describe('Feature – Attributes – String', () => {
     // @Str('default')
     str!: string
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         str: this.string('default')
@@ -73,7 +73,7 @@ describe('Feature – Attributes – String', () => {
       // @Str('default', { nullable: true })
       str!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           str: this.string('default').nullable()

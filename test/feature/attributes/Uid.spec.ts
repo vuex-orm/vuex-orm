@@ -17,7 +17,7 @@ describe('Feature – Attributes – Uid', () => {
       // @Uid
       id2!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.uid(),
           id2: this.uid()
@@ -70,7 +70,7 @@ describe('Feature – Attributes – Uid', () => {
       // @Uid(() => 2)
       id2!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.uid(() => 1),
           id2: this.uid(() => 2)

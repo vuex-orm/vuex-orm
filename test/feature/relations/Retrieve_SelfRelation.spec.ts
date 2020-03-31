@@ -16,7 +16,7 @@ describe('Feature – Relations – Retrieve – Self Relation', () => {
       // @BelongsTo(Post, 'parent_id')
       parent!: Post
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           parent_id: this.attr(null),
@@ -30,7 +30,9 @@ describe('Feature – Relations – Retrieve – Self Relation', () => {
     await Post.insert({ id: 1, parent_id: null })
     await Post.insert({ id: 2, parent_id: 1 })
 
-    const post = Post.query().with('parent').find(2) as Post
+    const post = Post.query()
+      .with('parent')
+      .find(2) as Post
 
     expect(post.parent).toBeInstanceOf(Post)
   })

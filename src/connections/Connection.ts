@@ -33,7 +33,7 @@ export default class Connection {
   /**
    * Create a new connection instance.
    */
-  constructor (store: Store<any>, connection: string, entity: string) {
+  constructor(store: Store<any>, connection: string, entity: string) {
     this.store = store
     this.connection = connection
     this.entity = entity
@@ -44,21 +44,21 @@ export default class Connection {
   /**
    * Insert the given record.
    */
-  insert (record: Record): void {
+  insert(record: Record): void {
     this.state.data = { ...this.state.data, [record.$id]: record }
   }
 
   /**
    * Insert the given records.
    */
-  insertRecords (records: Records): void {
+  insertRecords(records: Records): void {
     this.state.data = { ...this.state.data, ...records }
   }
 
   /**
    * Delete records that matches the given id.
    */
-  delete (id: string[]): void {
+  delete(id: string[]): void {
     const data: Records = {}
 
     for (const i in this.state.data) {

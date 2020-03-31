@@ -5,7 +5,7 @@ describe('Features – Relations – Has Many', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         posts: this.hasMany(Post, 'user_id')
@@ -16,7 +16,7 @@ describe('Features – Relations – Has Many', () => {
   class Post extends Model {
     static entity = 'posts'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         user_id: this.attr(null)
@@ -29,15 +29,10 @@ describe('Features – Relations – Has Many', () => {
 
     await User.create({
       id: 1,
-      posts: [
-        { id: 1 },
-        { id: 2 }
-      ]
+      posts: [{ id: 1 }, { id: 2 }]
     })
 
-    const expectedUsers = [
-      { $id: '1', id: 1, posts: [] }
-    ]
+    const expectedUsers = [{ $id: '1', id: 1, posts: [] }]
 
     expect(User.all()).toEqual(expectedUsers)
 
@@ -57,19 +52,14 @@ describe('Features – Relations – Has Many', () => {
     await User.update(
       {
         id: 1,
-        posts: [
-          { id: 1 },
-          { id: 2 }
-        ]
+        posts: [{ id: 1 }, { id: 2 }]
       },
       {
         insert: ['posts']
       }
     )
 
-    const expectedUsers = [
-      { $id: '1', id: 1, posts: [] }
-    ]
+    const expectedUsers = [{ $id: '1', id: 1, posts: [] }]
 
     expect(User.all()).toEqual(expectedUsers)
 
@@ -87,10 +77,7 @@ describe('Features – Relations – Has Many', () => {
     await User.create([
       {
         id: 1,
-        posts: [
-          { id: 1 },
-          { id: 2 }
-        ]
+        posts: [{ id: 1 }, { id: 2 }]
       },
       {
         id: 2,
@@ -114,7 +101,9 @@ describe('Features – Relations – Has Many', () => {
       }
     ]
 
-    const user = User.query().with('posts').all()
+    const user = User.query()
+      .with('posts')
+      .all()
 
     expect(user).toEqual(expected)
   })
@@ -125,7 +114,7 @@ describe('Features – Relations – Has Many', () => {
 
       static primaryKey = 'user_id'
 
-      static fields () {
+      static fields() {
         return {
           user_id: this.attr(null),
           posts: this.hasMany(Post, 'user_id')
@@ -137,10 +126,7 @@ describe('Features – Relations – Has Many', () => {
 
     await User.create({
       user_id: 1,
-      posts: [
-        { id: 1 },
-        { id: 2 }
-      ]
+      posts: [{ id: 1 }, { id: 2 }]
     })
 
     const expected = {
@@ -152,7 +138,9 @@ describe('Features – Relations – Has Many', () => {
       ]
     }
 
-    const user = User.query().with('posts').find(1)
+    const user = User.query()
+      .with('posts')
+      .find(1)
 
     expect(user).toEqual(expected)
   })
@@ -161,7 +149,7 @@ describe('Features – Relations – Has Many', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           local_key: this.attr(null),
@@ -173,7 +161,7 @@ describe('Features – Relations – Has Many', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -195,9 +183,7 @@ describe('Features – Relations – Has Many', () => {
 
     expect(User.all()).toEqual(expectedUsers)
 
-    const expectedPosts = [
-      { $id: '1', id: 1, user_id: 'local_key' }
-    ]
+    const expectedPosts = [{ $id: '1', id: 1, user_id: 'local_key' }]
 
     expect(Post.all()).toEqual(expectedPosts)
   })

@@ -7,7 +7,7 @@ describe('Feature – Basics – Delete Composite Key', () => {
 
     static primaryKey = ['first_id', 'second_id']
 
-    static fields () {
+    static fields() {
       return {
         first_id: this.attr(null),
         second_id: this.attr(null)
