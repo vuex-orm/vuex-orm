@@ -20,6 +20,7 @@ export default class HackedDatabase {
   model <M extends typeof Model> (model: M): M
   model (model: string): typeof Model
   model (model: typeof Model | string): typeof Model | string {
+    /* istanbul ignore next */
     const name = typeof model === 'string' ? model : model.entity
 
     return this.database.hackedModels[name]

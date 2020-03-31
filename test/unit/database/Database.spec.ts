@@ -1,6 +1,5 @@
 import { createStoreFromDatabase } from 'test/support/Helpers'
 import Database from '@/database/Database'
-import HackedDatabase from '@/database/HackedDatabase'
 import Model from '@/model/Model'
 
 describe('Unit – Database', () => {
@@ -174,15 +173,9 @@ describe('Unit – Database', () => {
     expect(() => database.module('posts')).toThrowError('[Vuex ORM]')
   })
 
-  it('registers a hacked database to the store instance', () => {
-    const database = new Database()
-
-    const store = createStoreFromDatabase(database)
-
-    expect(store.$db()).toBeInstanceOf(HackedDatabase)
-  })
-
   it('binds the store instance to the registered models.', () => {
+    jest.spyOn(global.console, 'warn').mockImplementation()
+
     class User extends Model { static entity = 'users' }
 
     const database1 = new Database()
@@ -196,7 +189,17 @@ describe('Unit – Database', () => {
 
     expect(store1.$db().model('users').database()).toBe(database1)
     expect(store2.$db().model('users').database()).toBe(database2)
+  })
 
-    expect(store1.$db().model(User)).not.toBe(User)
+  it('warns when using the deprecated `$db` method', () => {
+    const warn = jest.spyOn(global.console, 'warn').mockImplementation()
+
+    const database = new Database()
+
+    const store = createStoreFromDatabase(database)
+
+    store.$db()
+
+    expect(warn).toBeCalled()
   })
 })
