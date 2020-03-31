@@ -67,7 +67,7 @@ describe('Feature – Vuex ORM', () => {
     const database = new VuexORM.Database()
 
     const users = {
-      state () {
+      state() {
         return {
           customState: 'Yes, it is custom'
         }

@@ -11,7 +11,7 @@ describe('Relations – Deep Load', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -22,10 +22,14 @@ describe('Relations – Deep Load', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
+          comments: this.morphMany(
+            Comment,
+            'commentable_id',
+            'commentable_type'
+          )
         }
       }
     }
@@ -33,7 +37,7 @@ describe('Relations – Deep Load', () => {
     class Comment extends Model {
       static entity = 'comments'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null),
@@ -44,35 +48,45 @@ describe('Relations – Deep Load', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Post }, { model: Comment }])
+    const store = createStore([
+      { model: User },
+      { model: Post },
+      { model: Comment }
+    ])
 
     await store.dispatch('entities/posts/create', {
       data: {
         id: 1,
-        comments: [{
-          id: 1,
-          user_id: 1,
-          user: {
+        comments: [
+          {
             id: 1,
-            name: 'John Doe'
+            user_id: 1,
+            user: {
+              id: 1,
+              name: 'John Doe'
+            }
           }
-        }]
+        ]
       }
     })
 
-    const post = store.getters['entities/posts/query']().withAll().first()
+    const post = store.getters['entities/posts/query']()
+      .withAll()
+      .first()
 
     const expected = {
       $id: '1',
       id: 1,
-      comments: [{
-        $id: '1',
-        id: 1,
-        user_id: 1,
-        commentable_id: 1,
-        commentable_type: 'posts',
-        user: null
-      }]
+      comments: [
+        {
+          $id: '1',
+          id: 1,
+          user_id: 1,
+          commentable_id: 1,
+          commentable_type: 'posts',
+          user: null
+        }
+      ]
     }
 
     expect(post).toEqual(expected)

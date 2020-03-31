@@ -6,7 +6,7 @@ describe('Performance – Retrieve – Has Many Through', () => {
     class Country extends Model {
       static entity = 'countries'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           posts: this.hasManyThrough(Post, User, 'country_id', 'user_id')
@@ -17,7 +17,7 @@ describe('Performance – Retrieve – Has Many Through', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           country_id: this.attr(null)
@@ -28,7 +28,7 @@ describe('Performance – Retrieve – Has Many Through', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -56,7 +56,11 @@ describe('Performance – Retrieve – Has Many Through', () => {
       }
     }
 
-    const store = createStore([{ model: Country }, { model: User }, { model: Post }])
+    const store = createStore([
+      { model: Country },
+      { model: User },
+      { model: Post }
+    ])
 
     await store.dispatch('entities/countries/create', { data: countries })
     await store.dispatch('entities/users/create', { data: users })
@@ -64,7 +68,9 @@ describe('Performance – Retrieve – Has Many Through', () => {
 
     const start = +new Date()
 
-    store.getters['entities/countries/query']().with('posts').get(1)
+    store.getters['entities/countries/query']()
+      .with('posts')
+      .get(1)
 
     const end = +new Date()
 

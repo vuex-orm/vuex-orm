@@ -5,7 +5,7 @@ describe('Feature – Retrieve', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null)
       }
@@ -19,7 +19,10 @@ describe('Feature – Retrieve', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    const expected = [{ $id: '1', id: 1 }, { $id: '2', id: 2 }]
+    const expected = [
+      { $id: '1', id: 1 },
+      { $id: '2', id: 2 }
+    ]
 
     const users = store.getters['entities/users/all']()
 
@@ -36,7 +39,10 @@ describe('Feature – Retrieve', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    const expected = [{ $id: '1', id: 1 }, { $id: '2', id: 2 }]
+    const expected = [
+      { $id: '1', id: 1 },
+      { $id: '2', id: 2 }
+    ]
 
     const users = store.getters['entities/users/query']().all()
 
@@ -53,7 +59,10 @@ describe('Feature – Retrieve', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    const expected = [{ $id: '1', id: 1 }, { $id: '2', id: 2 }]
+    const expected = [
+      { $id: '1', id: 1 },
+      { $id: '2', id: 2 }
+    ]
 
     const users = store.getters['entities/users/query']().get()
 
@@ -70,7 +79,9 @@ describe('Feature – Retrieve', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    const users = store.getters['entities/users/query']().where('id', 3).get()
+    const users = store.getters['entities/users/query']()
+      .where('id', 3)
+      .get()
 
     expect(users).toEqual([])
   })
@@ -94,7 +105,10 @@ describe('Feature – Retrieve', () => {
       data: [{ id: 1 }, { id: 2 }, { id: 3 }]
     })
 
-    const expected = [{ $id: '1', id: 1 }, { $id: '3', id: 3 }]
+    const expected = [
+      { $id: '1', id: 1 },
+      { $id: '3', id: 3 }
+    ]
 
     const users1 = store.getters['entities/users/findIn']([1, 3])
 

@@ -8,7 +8,7 @@ export default class Normalizer {
   /**
    * Normalize the record.
    */
-  static process (query: Query, record: Record | Record[]): NormalizedData {
+  static process(query: Query, record: Record | Record[]): NormalizedData {
     if (Utils.isEmpty(record)) {
       return {}
     }

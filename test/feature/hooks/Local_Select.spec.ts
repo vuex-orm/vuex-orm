@@ -12,14 +12,14 @@ describe('Feature – Hooks – Local Select', () => {
       // @Attribute('')
       role!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           role: this.attr('')
         }
       }
 
-      static beforeSelect (records: any) {
+      static beforeSelect(records: any) {
         return records.filter((record: User) => record.role === 'admin')
       }
     }

@@ -5,7 +5,7 @@ describe('Feature – Basics – Insert', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.string('John Doe')
@@ -54,7 +54,7 @@ describe('Feature – Basics – Insert', () => {
 
     const expected = createState({
       users: {
-        '$uid1': { $id: '$uid1', id: '$uid1', name: 'John Doe' }
+        $uid1: { $id: '$uid1', id: '$uid1', name: 'John Doe' }
       }
     })
 

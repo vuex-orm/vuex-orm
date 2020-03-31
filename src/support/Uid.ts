@@ -12,7 +12,7 @@ export default class Uid {
   /**
    * Generate an UUID.
    */
-  static make (): string {
+  static make(): string {
     this.count++
 
     return `${this.prefix}${this.count}`
@@ -21,7 +21,7 @@ export default class Uid {
   /**
    * Reset the count to 0.
    */
-  static reset (): void {
+  static reset(): void {
     this.count = 0
   }
 }

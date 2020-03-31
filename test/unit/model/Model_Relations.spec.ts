@@ -12,7 +12,7 @@ describe('Model – Relations', () => {
       // @HasOne(Profile, 'user_id')
       profile!: Profile
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           profile: this.hasOne(Profile, 'user_id')
@@ -29,7 +29,7 @@ describe('Model – Relations', () => {
       // @Attribute
       user_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -55,7 +55,7 @@ describe('Model – Relations', () => {
       // @Attribute
       id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -74,7 +74,7 @@ describe('Model – Relations', () => {
       // @BelongsTo(User, 'user_id')
       author!: User
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null),
@@ -105,7 +105,7 @@ describe('Model – Relations', () => {
       // @HasMany(Comment, 'post_id')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comments: this.hasMany(Comment, 'post_id')
@@ -122,7 +122,7 @@ describe('Model – Relations', () => {
       // @Attribute
       post_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_id: this.attr(null)
@@ -157,7 +157,7 @@ describe('Model – Relations', () => {
       // @HasManyBy(Comment, 'comments')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comments: this.hasManyBy(Comment, 'comments')
@@ -171,7 +171,7 @@ describe('Model – Relations', () => {
       // @Attribute
       id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -203,7 +203,7 @@ describe('Model – Relations', () => {
       // @HasMany(Comment, 'post_id')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comments: this.hasMany(Comment, 'post_id')
@@ -220,7 +220,7 @@ describe('Model – Relations', () => {
       // @Attribute
       post_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_id: this.attr(null)
@@ -250,7 +250,7 @@ describe('Model – Relations', () => {
       // @HasManyBy(Comment, 'comments')
       comments!: Comment[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comments: this.hasManyBy(Comment, 'comments')
@@ -264,7 +264,7 @@ describe('Model – Relations', () => {
       // @Attribute
       id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }

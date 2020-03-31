@@ -6,14 +6,14 @@ describe('Model – Store', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
         }
       }
 
-      static find () {
+      static find() {
         return this.store().getters[this.namespace('find')](1)
       }
     }
@@ -34,14 +34,14 @@ describe('Model – Store', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
         }
       }
 
-      create () {
+      create() {
         return this.$store().dispatch(this.$namespace('create'), {
           data: { id: 1, name: 'John Doe' }
         })
@@ -63,14 +63,14 @@ describe('Model – Store', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
         }
       }
 
-      static create () {
+      static create() {
         return this.dispatch('create', {
           data: { id: 1, name: 'John Doe' }
         })
@@ -91,14 +91,14 @@ describe('Model – Store', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
         }
       }
 
-      create () {
+      create() {
         return this.$dispatch('create', {
           data: { id: 1, name: 'John Doe' }
         })
@@ -120,14 +120,14 @@ describe('Model – Store', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
         }
       }
 
-      static find () {
+      static find() {
         return this.getters('find')(1)
       }
     }
@@ -148,14 +148,14 @@ describe('Model – Store', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
         }
       }
 
-      find () {
+      find() {
         return this.$getters('find')(1)
       }
     }
@@ -166,7 +166,7 @@ describe('Model – Store', () => {
       data: { id: 1, name: 'John Doe' }
     })
 
-    const user = (new User()).find()
+    const user = new User().find()
 
     expect(user.id).toBe(1)
     expect(user.name).toBe('John Doe')

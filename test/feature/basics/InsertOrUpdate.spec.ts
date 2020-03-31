@@ -5,7 +5,7 @@ describe('Feature – Basics – Insert Or Update', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.attr(''),
@@ -17,7 +17,7 @@ describe('Feature – Basics – Insert Or Update', () => {
   class Post extends Model {
     static entity = 'posts'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         user_id: this.attr(null),

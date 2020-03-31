@@ -6,7 +6,7 @@ describe('Performance – Retrieve – Belongs To Many', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -18,7 +18,7 @@ describe('Performance – Retrieve – Belongs To Many', () => {
     class Role extends Model {
       static entity = 'roles'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           roleType: this.attr('')
@@ -31,7 +31,7 @@ describe('Performance – Retrieve – Belongs To Many', () => {
 
       static primaryKey = ['role_id', 'user_id']
 
-      static fields () {
+      static fields() {
         return {
           role_id: this.attr(null),
           user_id: this.attr(null)
@@ -55,7 +55,11 @@ describe('Performance – Retrieve – Belongs To Many', () => {
       roleUser.push({ user_id: i, role_id: i })
     }
 
-    const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
+    const store = createStore([
+      { model: User },
+      { model: Role },
+      { model: RoleUser }
+    ])
 
     await store.dispatch('entities/users/create', { data: users })
     await store.dispatch('entities/roles/create', { data: roles })
@@ -63,7 +67,9 @@ describe('Performance – Retrieve – Belongs To Many', () => {
 
     const start = +new Date()
 
-    store.getters['entities/users/query']().with('roles').get()
+    store.getters['entities/users/query']()
+      .with('roles')
+      .get()
 
     const end = +new Date()
 

@@ -11,7 +11,7 @@ describe('Feature – Retrieve – Order By', () => {
     // @Attribute('')
     name!: string
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.attr('')
@@ -38,10 +38,14 @@ describe('Feature – Retrieve – Order By', () => {
       { $id: '10', id: 10, name: 'Andy' }
     ]
 
-    const result1 = store.getters['entities/users/query']().orderBy('id').get()
+    const result1 = store.getters['entities/users/query']()
+      .orderBy('id')
+      .get()
     expect(result1).toEqual(expected)
 
-    const result2 = store.getters['entities/users/query']().orderBy('id', 'asc').get()
+    const result2 = store.getters['entities/users/query']()
+      .orderBy('id', 'asc')
+      .get()
     expect(result2).toEqual(expected)
   })
 

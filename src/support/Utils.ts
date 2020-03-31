@@ -4,7 +4,11 @@ export interface Dictionary<T> {
 
 export type Predicate<T> = (value: T, key: string) => boolean
 
-export type ObjectIteratee<T extends object, TResult> = (value: T[keyof T], key: string, object: T) => TResult
+export type ObjectIteratee<T extends object, TResult> = (
+  value: T[keyof T],
+  key: string,
+  object: T
+) => TResult
 
 interface SortableArray<T> {
   criteria: any[]
@@ -15,7 +19,7 @@ interface SortableArray<T> {
 /**
  * Check if the given value is the type of array.
  */
-export function isArray (value: any): value is any[] {
+export function isArray(value: any): value is any[] {
   return Array.isArray(value)
 }
 
@@ -23,14 +27,16 @@ export function isArray (value: any): value is any[] {
  * Gets the size of collection by returning its length for array-like values
  * or the number of own enumerable string keyed properties for objects.
  */
-export function size (collection: any[] | object): number {
-  return isArray(collection) ? collection.length : Object.keys(collection).length
+export function size(collection: any[] | object): number {
+  return isArray(collection)
+    ? collection.length
+    : Object.keys(collection).length
 }
 
 /**
  * Check if the given array or object is empty.
  */
-export function isEmpty (collection: any[] | object): boolean {
+export function isEmpty(collection: any[] | object): boolean {
   return size(collection) === 0
 }
 
@@ -38,8 +44,11 @@ export function isEmpty (collection: any[] | object): boolean {
  * Iterates over own enumerable string keyed properties of an object and
  * invokes `iteratee` for each property.
  */
-export function forOwn<T extends object> (object: T, iteratee: ObjectIteratee<T, void>): void {
-  Object.keys(object).forEach(key => iteratee(object[key], key, object))
+export function forOwn<T extends object>(
+  object: T,
+  iteratee: ObjectIteratee<T, void>
+): void {
+  Object.keys(object).forEach((key) => iteratee(object[key], key, object))
 }
 
 /**
@@ -47,7 +56,10 @@ export function forOwn<T extends object> (object: T, iteratee: ObjectIteratee<T,
  * iteratee. The iteratee is invoked with three arguments:
  * (value, key, collection).
  */
-export function map<T extends object, TResult> (object: T, iteratee: ObjectIteratee<T, TResult>): TResult[] {
+export function map<T extends object, TResult>(
+  object: T,
+  iteratee: ObjectIteratee<T, TResult>
+): TResult[] {
   const result: TResult[] = []
 
   for (const key in object) {
@@ -63,7 +75,10 @@ export function map<T extends object, TResult> (object: T, iteratee: ObjectItera
  * iteratee. The iteratee is invoked with three arguments:
  * (value, key, object).
  */
-export function mapValues<T extends object, TResult> (object: T, iteratee: ObjectIteratee<T, TResult>): Dictionary<TResult> {
+export function mapValues<T extends object, TResult>(
+  object: T,
+  iteratee: ObjectIteratee<T, TResult>
+): Dictionary<TResult> {
   const newObject = Object.assign({}, object)
 
   return Object.keys(object).reduce((records, key) => {
@@ -76,7 +91,10 @@ export function mapValues<T extends object, TResult> (object: T, iteratee: Objec
  * Creates an object composed of keys generated from the results of running
  * each element of collection by the given key.
  */
-export function keyBy<T extends object> (collection: T[], key: string): Record<string, T> {
+export function keyBy<T extends object>(
+  collection: T[],
+  key: string
+): Record<string, T> {
   const o: Record<string, T> = {}
 
   collection.forEach((item) => {
@@ -90,7 +108,11 @@ export function keyBy<T extends object> (collection: T[], key: string): Record<s
  * Creates an array of elements, sorted in specified order by the results
  * of running each element in a collection thru each iteratee.
  */
-export function orderBy<T> (collection: T[], iteratees: (((record: T) => any) | string)[], directions: string[]): T[] {
+export function orderBy<T>(
+  collection: T[],
+  iteratees: (((record: T) => any) | string)[],
+  directions: string[]
+): T[] {
   let index = -1
 
   const result = collection.map((value) => {
@@ -112,7 +134,10 @@ export function orderBy<T> (collection: T[], iteratees: (((record: T) => any) | 
  * performs a stable sort, that is, it preserves the original sort order
  * of equal elements.
  */
-function baseSortBy<T> (array: SortableArray<T>[], comparer: (a: SortableArray<T>, B: SortableArray<T>) => number): T[] {
+function baseSortBy<T>(
+  array: SortableArray<T>[],
+  comparer: (a: SortableArray<T>, B: SortableArray<T>) => number
+): T[] {
   let length = array.length
 
   array.sort(comparer)
@@ -132,7 +157,7 @@ function baseSortBy<T> (array: SortableArray<T>[], comparer: (a: SortableArray<T
  * Otherwise, specify an order of "desc" for descending or "asc" for
  * ascending sort order of corresponding values.
  */
-function compareMultiple (object: any, other: any, orders: string[]): number {
+function compareMultiple(object: any, other: any, orders: string[]): number {
   let index = -1
 
   const objCriteria = object.criteria
@@ -160,7 +185,7 @@ function compareMultiple (object: any, other: any, orders: string[]): number {
 /**
  * Compares values to sort them in ascending order.
  */
-function compareAscending (value: any, other: any): number {
+function compareAscending(value: any, other: any): number {
   if (value !== other) {
     const valIsDefined = value !== undefined
     const valIsNull = value === null
@@ -201,7 +226,10 @@ function compareAscending (value: any, other: any): number {
  * Creates an object composed of keys generated from the results of running
  * each element of collection thru iteratee.
  */
-export function groupBy (collection: any[], iteratee: (record: any) => any): any {
+export function groupBy(
+  collection: any[],
+  iteratee: (record: any) => any
+): any {
   return collection.reduce((records, record) => {
     const key = iteratee(record)
 
@@ -218,21 +246,22 @@ export function groupBy (collection: any[], iteratee: (record: any) => any): any
 /**
  * Deep clone the given target object.
  */
-export function cloneDeep<T extends object> (target: T): T {
+export function cloneDeep<T extends object>(target: T): T {
   if (target === null) {
     return target
   }
 
   if (isArray(target)) {
-    const cp = [] as any[];
-
-    (target as any[]).forEach((v) => cp.push(v))
+    const cp = [] as any[]
+    ;(target as any[]).forEach((v) => cp.push(v))
 
     return cp.map((n: any) => cloneDeep<any>(n)) as any
   }
 
   if (typeof target === 'object' && target !== {}) {
-    const cp = { ...(target as { [key: string]: any }) } as { [key: string]: any; }
+    const cp = { ...(target as { [key: string]: any }) } as {
+      [key: string]: any
+    }
 
     Object.keys(cp).forEach((k) => (cp[k] = cloneDeep<any>(cp[k])))
 

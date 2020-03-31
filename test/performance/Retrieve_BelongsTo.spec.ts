@@ -6,7 +6,7 @@ describe('Performance – Retrieve – Belongs To', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -16,7 +16,7 @@ describe('Performance – Retrieve – Belongs To', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null),
@@ -48,7 +48,9 @@ describe('Performance – Retrieve – Belongs To', () => {
 
     const start = +new Date()
 
-    store.getters['entities/posts/query']().with('user').get()
+    store.getters['entities/posts/query']()
+      .with('user')
+      .get()
 
     const end = +new Date()
 

@@ -6,7 +6,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         posts: this.hasMany(Post, 'user_id')
@@ -17,7 +17,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
   class Post extends Model {
     static entity = 'posts'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         user_id: this.attr(null),
@@ -34,12 +34,21 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     await store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
+      data: [
+        { id: 1, user_id: 1 },
+        { id: 2, user_id: 2 },
+        { id: 3, user_id: 2 }
+      ]
     })
 
-    const expected = [{ $id: '1', id: 1, posts: [] }, { $id: '2', id: 2, posts: [] }]
+    const expected = [
+      { $id: '1', id: 1, posts: [] },
+      { $id: '2', id: 2, posts: [] }
+    ]
 
-    const users = store.getters['entities/users/query']().has('posts').get()
+    const users = store.getters['entities/users/query']()
+      .has('posts')
+      .get()
 
     expect(users).toEqual(expected)
   })
@@ -52,12 +61,18 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     await store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
+      data: [
+        { id: 1, user_id: 1 },
+        { id: 2, user_id: 2 },
+        { id: 3, user_id: 2 }
+      ]
     })
 
     const expected = [{ $id: '3', id: 3, posts: [] }]
 
-    const users = store.getters['entities/users/query']().hasNot('posts').get()
+    const users = store.getters['entities/users/query']()
+      .hasNot('posts')
+      .get()
 
     expect(users).toEqual(expected)
   })
@@ -66,7 +81,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           phone: this.hasOne(Phone, 'user_id'),
@@ -78,7 +93,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
     class Phone extends Model {
       static entity = 'phones'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -86,14 +101,22 @@ describe('Feature – Relations – Retrieve – Has', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Phone }, { model: Post }])
+    const store = createStore([
+      { model: User },
+      { model: Phone },
+      { model: Post }
+    ])
 
     await store.dispatch('entities/users/create', {
       data: [{ id: 1 }, { id: 2 }, { id: 3 }]
     })
 
     await store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
+      data: [
+        { id: 1, user_id: 1 },
+        { id: 2, user_id: 2 },
+        { id: 3, user_id: 2 }
+      ]
     })
 
     await store.dispatch('entities/phones/create', {
@@ -123,10 +146,17 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     await store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
+      data: [
+        { id: 1, user_id: 1 },
+        { id: 2, user_id: 2 },
+        { id: 3, user_id: 2 }
+      ]
     })
 
-    const expected = [{ $id: '2', id: 2, posts: [] }, { $id: '3', id: 3, posts: [] }]
+    const expected = [
+      { $id: '2', id: 2, posts: [] },
+      { $id: '3', id: 3, posts: [] }
+    ]
 
     const users = store.getters['entities/users/query']()
       .whereHasNot('posts', (query: Query) => query.where('id', 1))
@@ -143,12 +173,18 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     await store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
+      data: [
+        { id: 1, user_id: 1 },
+        { id: 2, user_id: 2 },
+        { id: 3, user_id: 2 }
+      ]
     })
 
     const expected = [{ $id: '2', id: 2, posts: [] }]
 
-    const users = store.getters['entities/users/query']().has('posts', 2).get()
+    const users = store.getters['entities/users/query']()
+      .has('posts', 2)
+      .get()
 
     expect(users).toEqual(expected)
   })
@@ -161,12 +197,21 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     await store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
+      data: [
+        { id: 1, user_id: 1 },
+        { id: 2, user_id: 2 },
+        { id: 3, user_id: 2 }
+      ]
     })
 
-    const expected = [{ $id: '1', id: 1, posts: [] }, { $id: '3', id: 3, posts: [] }]
+    const expected = [
+      { $id: '1', id: 1, posts: [] },
+      { $id: '3', id: 3, posts: [] }
+    ]
 
-    const users = store.getters['entities/users/query']().hasNot('posts', 2).get()
+    const users = store.getters['entities/users/query']()
+      .hasNot('posts', 2)
+      .get()
 
     expect(users).toEqual(expected)
   })
@@ -175,7 +220,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           phone: this.hasOne(Phone, 'user_id'),
@@ -187,7 +232,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
     class Phone extends Model {
       static entity = 'phones'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -195,29 +240,78 @@ describe('Feature – Relations – Retrieve – Has', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Phone }, { model: Post }])
+    const store = createStore([
+      { model: User },
+      { model: Phone },
+      { model: Post }
+    ])
 
     await store.dispatch('entities/users/create', {
       data: [{ id: 1 }, { id: 2 }, { id: 3 }]
     })
 
     await store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
+      data: [
+        { id: 1, user_id: 1 },
+        { id: 2, user_id: 2 },
+        { id: 3, user_id: 2 }
+      ]
     })
 
     await store.dispatch('entities/phones/create', {
       data: [{ id: 1, user_id: 1 }]
     })
 
-    expect(store.getters['entities/users/query']().has('posts', 1).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }, { $id: '2', id: 2, phone: null, posts: [] }])
-    expect(store.getters['entities/users/query']().has('posts', '=', 1).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
-    expect(store.getters['entities/users/query']().has('posts', '>', 1).get()).toEqual([{ $id: '2', id: 2, phone: null, posts: [] }])
-    expect(store.getters['entities/users/query']().has('posts', '>=', 1).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }, { $id: '2', id: 2, phone: null, posts: [] }])
-    expect(store.getters['entities/users/query']().has('posts', '<', 2).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
-    expect(store.getters['entities/users/query']().has('posts', '<=', 2).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }, { $id: '2', id: 2, phone: null, posts: [] }])
-    expect(store.getters['entities/users/query']().has('posts', 'unknown', 1).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
+    expect(
+      store.getters['entities/users/query']()
+        .has('posts', 1)
+        .get()
+    ).toEqual([
+      { $id: '1', id: 1, phone: null, posts: [] },
+      { $id: '2', id: 2, phone: null, posts: [] }
+    ])
+    expect(
+      store.getters['entities/users/query']()
+        .has('posts', '=', 1)
+        .get()
+    ).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
+    expect(
+      store.getters['entities/users/query']()
+        .has('posts', '>', 1)
+        .get()
+    ).toEqual([{ $id: '2', id: 2, phone: null, posts: [] }])
+    expect(
+      store.getters['entities/users/query']()
+        .has('posts', '>=', 1)
+        .get()
+    ).toEqual([
+      { $id: '1', id: 1, phone: null, posts: [] },
+      { $id: '2', id: 2, phone: null, posts: [] }
+    ])
+    expect(
+      store.getters['entities/users/query']()
+        .has('posts', '<', 2)
+        .get()
+    ).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
+    expect(
+      store.getters['entities/users/query']()
+        .has('posts', '<=', 2)
+        .get()
+    ).toEqual([
+      { $id: '1', id: 1, phone: null, posts: [] },
+      { $id: '2', id: 2, phone: null, posts: [] }
+    ])
+    expect(
+      store.getters['entities/users/query']()
+        .has('posts', 'unknown', 1)
+        .get()
+    ).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
 
-    expect(store.getters['entities/users/query']().has('phone', '=', 1).get()).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
+    expect(
+      store.getters['entities/users/query']()
+        .has('phone', '=', 1)
+        .get()
+    ).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
   })
 
   it('can query data depending on relationship absence with string conditions', async () => {
@@ -228,12 +322,38 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     await store.dispatch('entities/posts/create', {
-      data: [{ id: 1, user_id: 1 }, { id: 2, user_id: 2 }, { id: 3, user_id: 2 }]
+      data: [
+        { id: 1, user_id: 1 },
+        { id: 2, user_id: 2 },
+        { id: 3, user_id: 2 }
+      ]
     })
 
-    expect(store.getters['entities/users/query']().hasNot('posts', '>', 1).get()).toEqual([{ $id: '1', id: 1, posts: [] }, { $id: '3', id: 3, posts: [] }])
-    expect(store.getters['entities/users/query']().hasNot('posts', '>=', 1).get()).toEqual([{ $id: '3', id: 3, posts: [] }])
-    expect(store.getters['entities/users/query']().hasNot('posts', '<', 2).get()).toEqual([{ $id: '2', id: 2, posts: [] }, { $id: '3', id: 3, posts: [] }])
-    expect(store.getters['entities/users/query']().hasNot('posts', '<=', 2).get()).toEqual([{ $id: '3', id: 3, posts: [] }])
+    expect(
+      store.getters['entities/users/query']()
+        .hasNot('posts', '>', 1)
+        .get()
+    ).toEqual([
+      { $id: '1', id: 1, posts: [] },
+      { $id: '3', id: 3, posts: [] }
+    ])
+    expect(
+      store.getters['entities/users/query']()
+        .hasNot('posts', '>=', 1)
+        .get()
+    ).toEqual([{ $id: '3', id: 3, posts: [] }])
+    expect(
+      store.getters['entities/users/query']()
+        .hasNot('posts', '<', 2)
+        .get()
+    ).toEqual([
+      { $id: '2', id: 2, posts: [] },
+      { $id: '3', id: 3, posts: [] }
+    ])
+    expect(
+      store.getters['entities/users/query']()
+        .hasNot('posts', '<=', 2)
+        .get()
+    ).toEqual([{ $id: '3', id: 3, posts: [] }])
   })
 })

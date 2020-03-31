@@ -11,7 +11,7 @@ describe('Feature – Attributes – Boolean', () => {
       // @Bool(true)
       bool!: boolean
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           bool: this.boolean(true)
@@ -39,7 +39,7 @@ describe('Feature – Attributes – Boolean', () => {
       // @Bool(true, { mutator: (value: any) => value })
       bool!: boolean
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           bool: this.boolean(true, (value: any) => !value)
@@ -67,16 +67,16 @@ describe('Feature – Attributes – Boolean', () => {
       // @Bool(true)
       bool!: boolean
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           bool: this.boolean(true)
         }
       }
 
-      static mutators () {
+      static mutators() {
         return {
-          bool (value: any) {
+          bool(value: any) {
             return !value
           }
         }

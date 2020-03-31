@@ -15,12 +15,12 @@ export default abstract class Attribute {
   /**
    * Create a new attribute instance.
    */
-  constructor (model: typeof Model) {
+  constructor(model: typeof Model) {
     this.model = model
   }
 
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  abstract make (value: any, parent: Record, key: string): any
+  abstract make(value: any, parent: Record, key: string): any
 }

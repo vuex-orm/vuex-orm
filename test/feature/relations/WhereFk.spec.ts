@@ -17,7 +17,7 @@ describe('Feature – Retrieve – Where', () => {
     // @Attribute(false)
     active!: boolean
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.attr(''),
@@ -26,7 +26,7 @@ describe('Feature – Retrieve – Where', () => {
       }
     }
 
-    isActive () {
+    isActive() {
       return this.active
     }
   }
