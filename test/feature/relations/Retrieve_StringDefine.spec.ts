@@ -40,13 +40,9 @@ describe('Feature – Relations - String Define', () => {
 
     createStore([{ model: User }, { model: Post }])
 
-    await User.create({
-      data: { id: 1 }
-    })
+    await User.create({ id: 1 })
 
-    await Post.create({
-      data: { id: 2, user_id: 1 }
-    })
+    await Post.create({ id: 2, user_id: 1 })
 
     const user = User.query().with('posts').find(1) as User
 

@@ -62,14 +62,12 @@ describe('Feature – Relations – Retrieve – With', () => {
     createStore([{ model: User }, { model: Phone }, { model: Post }])
 
     await User.create({
-      data: {
-        id: 1,
-        phone: { id: 2, user_id: 1 },
-        posts: [
-          { id: 3, user_id: 1 },
-          { id: 4, user_id: 1 }
-        ]
-      }
+      id: 1,
+      phone: { id: 2, user_id: 1 },
+      posts: [
+        { id: 3, user_id: 1 },
+        { id: 4, user_id: 1 }
+      ]
     })
 
     const user1 = User.query().with('*').first() as User
@@ -148,22 +146,20 @@ describe('Feature – Relations – Retrieve – With', () => {
     createStore([{ model: User }, { model: Phone }, { model: Post }])
 
     await User.create({
-      data: {
-        id: 1,
-        phone: { id: 2, user_id: 1 },
-        posts: [
-          {
-            id: 3,
-            user_id: 1,
-            user: { id: 1 }
-          },
-          {
-            id: 4,
-            user_id: 1,
-            user: { id: 1 }
-          }
-        ]
-      }
+      id: 1,
+      phone: { id: 2, user_id: 1 },
+      posts: [
+        {
+          id: 3,
+          user_id: 1,
+          user: { id: 1 }
+        },
+        {
+          id: 4,
+          user_id: 1,
+          user: { id: 1 }
+        }
+      ]
     })
 
     const user1 = User.query().withAllRecursive().first() as User
@@ -239,30 +235,28 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Post }, { model: Comment }])
+    createStore([{ model: User }, { model: Post }, { model: Comment }])
 
-    await store.dispatch('entities/users/create', {
-      data: {
-        id: 1,
-        posts: [
-          {
-            id: 1,
-            user_id: 1,
-            comments: [
-              { id: 1, post_id: 1 },
-              { id: 2, post_id: 1 }
-            ]
-          },
-          {
-            id: 2,
-            user_id: 1,
-            comments: [
-              { id: 3, post_id: 2 },
-              { id: 4, post_id: 2 }
-            ]
-          }
-        ]
-      }
+    await User.create({
+      id: 1,
+      posts: [
+        {
+          id: 1,
+          user_id: 1,
+          comments: [
+            { id: 1, post_id: 1 },
+            { id: 2, post_id: 1 }
+          ]
+        },
+        {
+          id: 2,
+          user_id: 1,
+          comments: [
+            { id: 3, post_id: 2 },
+            { id: 4, post_id: 2 }
+          ]
+        }
+      ]
     })
 
     const expected = {
@@ -351,28 +345,26 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Post }, { model: Comment }])
+    createStore([{ model: User }, { model: Post }, { model: Comment }])
 
-    await store.dispatch('entities/users/create', {
-      data: [
-        {
-          id: 1,
-          posts: [
-            {
-              id: 1,
-              user_id: 1,
-              comments: [
-                { id: 1, post_id: 1 },
-                { id: 2, post_id: 1 }
-              ]
-            }
-          ]
-        },
-        {
-          id: 2
-        }
-      ]
-    })
+    await User.create([
+      {
+        id: 1,
+        posts: [
+          {
+            id: 1,
+            user_id: 1,
+            comments: [
+              { id: 1, post_id: 1 },
+              { id: 2, post_id: 1 }
+            ]
+          }
+        ]
+      },
+      {
+        id: 2
+      }
+    ])
 
     const expected = [
       {
@@ -397,9 +389,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     ]
 
-    const users = await store.getters['entities/users/query']()
-      .with('posts.comments')
-      .findIn([1, 2]) as User[]
+    const users = User.query().with('posts.comments').findIn([1, 2])
 
     expect(users).toEqual(expected)
   })
@@ -481,30 +471,28 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Post }, { model: Comment }, { model: Like }])
+    createStore([{ model: User }, { model: Post }, { model: Comment }, { model: Like }])
 
-    await store.dispatch('entities/users/create', {
-      data: {
-        id: 1,
-        posts: [
-          {
-            id: 1,
-            user_id: 1,
-            comments: [
-              { id: 1, post_id: 1, likes: [{ id: 1, comment_id: 1 }] },
-              { id: 2, post_id: 1, likes: [{ id: 2, comment_id: 2 }] }
-            ]
-          },
-          {
-            id: 2,
-            user_id: 1,
-            comments: [
-              { id: 3, post_id: 2, likes: [{ id: 3, comment_id: 3 }] },
-              { id: 4, post_id: 2, likes: [{ id: 4, comment_id: 4 }] }
-            ]
-          }
-        ]
-      }
+    await User.create({
+      id: 1,
+      posts: [
+        {
+          id: 1,
+          user_id: 1,
+          comments: [
+            { id: 1, post_id: 1, likes: [{ id: 1, comment_id: 1 }] },
+            { id: 2, post_id: 1, likes: [{ id: 2, comment_id: 2 }] }
+          ]
+        },
+        {
+          id: 2,
+          user_id: 1,
+          comments: [
+            { id: 3, post_id: 2, likes: [{ id: 3, comment_id: 3 }] },
+            { id: 4, post_id: 2, likes: [{ id: 4, comment_id: 4 }] }
+          ]
+        }
+      ]
     })
 
     const expected = {
@@ -532,7 +520,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       ]
     }
 
-    const users = store.getters['entities/users/query']().with('posts.comments.likes').find(1) as User[]
+    const users = User.query().with('posts.comments.likes').find(1)
 
     expect(users).toEqual(expected)
   })
@@ -614,38 +602,36 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Post }, { model: Comment }, { model: Like }])
+    createStore([{ model: User }, { model: Post }, { model: Comment }, { model: Like }])
 
-    await store.dispatch('entities/users/create', {
-      data: {
-        id: 1,
-        posts: [
-          {
-            id: 1,
-            user_id: 1,
-            comments: [
-              { id: 1, post_id: 1 },
-              { id: 2, post_id: 1 }
-            ],
-            likes: [
-              { id: 1, post_id: 1 },
-              { id: 2, post_id: 1 }
-            ]
-          },
-          {
-            id: 2,
-            user_id: 1,
-            comments: [
-              { id: 3, post_id: 2 },
-              { id: 4, post_id: 2 }
-            ],
-            likes: [
-              { id: 3, post_id: 2 },
-              { id: 4, post_id: 2 }
-            ]
-          }
-        ]
-      }
+    await User.create({
+      id: 1,
+      posts: [
+        {
+          id: 1,
+          user_id: 1,
+          comments: [
+            { id: 1, post_id: 1 },
+            { id: 2, post_id: 1 }
+          ],
+          likes: [
+            { id: 1, post_id: 1 },
+            { id: 2, post_id: 1 }
+          ]
+        },
+        {
+          id: 2,
+          user_id: 1,
+          comments: [
+            { id: 3, post_id: 2 },
+            { id: 4, post_id: 2 }
+          ],
+          likes: [
+            { id: 3, post_id: 2 },
+            { id: 4, post_id: 2 }
+          ]
+        }
+      ]
     })
 
     const expected = {
@@ -681,8 +667,8 @@ describe('Feature – Relations – Retrieve – With', () => {
       ]
     }
 
-    const user1 = User.query().with('posts.comments|likes').find(1) as User
-    const user2 = User.query().with('posts.*').find(1) as User
+    const user1 = User.query().with('posts.comments|likes').find(1)
+    const user2 = User.query().with('posts.*').find(1)
 
     expect(user1).toEqual(expected)
     expect(user2).toEqual(expected)
@@ -735,38 +721,36 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Post }, { model: Comment }, { model: Like }])
+    createStore([{ model: User }, { model: Post }, { model: Comment }, { model: Like }])
 
-    await store.dispatch('entities/users/create', {
-      data: {
-        id: 1,
-        posts: [
-          {
-            id: 1,
-            user_id: 1,
-            comments: [
-              { id: 1, post_id: 1 },
-              { id: 2, post_id: 1 }
-            ],
-            likes: [
-              { id: 1, post_id: 1 },
-              { id: 2, post_id: 1 }
-            ]
-          },
-          {
-            id: 2,
-            user_id: 1,
-            comments: [
-              { id: 3, post_id: 2 },
-              { id: 4, post_id: 2 }
-            ],
-            likes: [
-              { id: 3, post_id: 2 },
-              { id: 4, post_id: 2 }
-            ]
-          }
-        ]
-      }
+    await User.create({
+      id: 1,
+      posts: [
+        {
+          id: 1,
+          user_id: 1,
+          comments: [
+            { id: 1, post_id: 1 },
+            { id: 2, post_id: 1 }
+          ],
+          likes: [
+            { id: 1, post_id: 1 },
+            { id: 2, post_id: 1 }
+          ]
+        },
+        {
+          id: 2,
+          user_id: 1,
+          comments: [
+            { id: 3, post_id: 2 },
+            { id: 4, post_id: 2 }
+          ],
+          likes: [
+            { id: 3, post_id: 2 },
+            { id: 4, post_id: 2 }
+          ]
+        }
+      ]
     })
 
     const expected = {
@@ -802,8 +786,8 @@ describe('Feature – Relations – Retrieve – With', () => {
       ]
     }
 
-    const user1 = store.getters['entities/users/query']().with(['posts.comments', 'posts.likes']).find(1)
-    const user2 = store.getters['entities/users/query']().with(['posts.*']).find(1)
+    const user1 = User.query().with(['posts.comments', 'posts.likes']).find(1)
+    const user2 = User.query().with(['posts.*']).find(1)
 
     expect(user1).toEqual(expected)
     expect(user2).toEqual(expected)
@@ -847,12 +831,10 @@ describe('Feature – Relations – Retrieve – With', () => {
     createStore([{ model: User }, { model: Post }])
 
     await User.create({
-      data: {
-        id: 1,
-        posts: [
-          { id: 1, user_id: 1 }
-        ]
-      }
+      id: 1,
+      posts: [
+        { id: 1, user_id: 1 }
+      ]
     })
 
     const user = User.query().with('unknown').first() as User
@@ -897,17 +879,9 @@ describe('Feature – Relations – Retrieve – With', () => {
 
     createStore([{ model: User }, { model: Post }])
 
-    await User.create({
-      data: {
-        id: 1
-      }
-    })
-    await Post.create({
-      data: {
-        id: 1,
-        user_id: null
-      }
-    })
+    await User.create({ id: 1 })
+
+    await Post.create({ id: 1, user_id: null })
 
     const post = Post.query()
       .with('*')

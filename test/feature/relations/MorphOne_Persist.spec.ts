@@ -30,15 +30,13 @@ describe('Features – Relations – Morph One – Persist', () => {
 
     const store = createStore([{ model: Post }, { model: Comment }])
 
-    await store.dispatch('entities/posts/create', {
-      data: {
+    await Post.create({
+      id: 1,
+      comment: {
         id: 1,
-        comment: {
-          id: 1,
-          body: 'The Body',
-          commentable_type: 'posts',
-          commentable_id: 1
-        }
+        body: 'The Body',
+        commentable_type: 'posts',
+        commentable_id: 1
       }
     })
 
@@ -93,10 +91,8 @@ describe('Features – Relations – Morph One – Persist', () => {
     const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
     await Post.create({
-      data: {
-        id: 1,
-        comment: { id: 2, body: 'comment1' }
-      }
+      id: 1,
+      comment: { id: 2, body: 'comment1' }
     })
 
     expect(store.state.entities.posts.data['1'].id).toBe(1)
@@ -144,10 +140,8 @@ describe('Features – Relations – Morph One – Persist', () => {
     const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
     await Post.create({
-      data: {
-        id: 1,
-        comment: { id: 2, body: 'comment1', commentable_id: 1 }
-      }
+      id: 1,
+      comment: { id: 2, body: 'comment1', commentable_id: 1 }
     })
 
     createState({
@@ -204,12 +198,10 @@ describe('Features – Relations – Morph One – Persist', () => {
 
     const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    await Comment.create({
-      data: [
-        { id: 2, body: 'comment1' },
-        { id: 3, body: 'comment2' }
-      ]
-    })
+    await Comment.create([
+      { id: 2, body: 'comment1' },
+      { id: 3, body: 'comment2' }
+    ])
 
     expect(store.state.entities.comments.data['2'].id).toBe(2)
     expect(store.state.entities.comments.data['2'].commentable_id).toBe(null)
@@ -270,14 +262,12 @@ describe('Features – Relations – Morph One – Persist', () => {
     const store = createStore([{ model: User }, { model: Post }, { model: Video }, { model: Comment }])
 
     await User.create({
-      data: {
-        id: 1,
-        posts: [{
-          id: 5,
-          user_id: 1,
-          comment: { id: 2, body: 'comment1', commentable_id: 1 }
-        }]
-      }
+      id: 1,
+      posts: [{
+        id: 5,
+        user_id: 1,
+        comment: { id: 2, body: 'comment1', commentable_id: 1 }
+      }]
     })
 
     createState({
@@ -328,23 +318,21 @@ describe('Features – Relations – Morph One – Persist', () => {
 
     const store = createStore([{ model: Post }, { model: Comment }])
 
-    await store.dispatch('entities/posts/create', {
-      data: [
-        {
+    await Post.create([
+      {
+        id: 1,
+        comment: {
           id: 1,
-          comment: {
-            id: 1,
-            body: 'The Body',
-            commentable_type: 'posts',
-            commentable_id: 1
-          }
-        },
-        {
-          id: 2,
-          comment: null
+          body: 'The Body',
+          commentable_type: 'posts',
+          commentable_id: 1
         }
-      ]
-    })
+      },
+      {
+        id: 2,
+        comment: null
+      }
+    ])
 
     const expected = createState({
       posts: {
@@ -397,11 +385,9 @@ describe('Features – Relations – Morph One – Persist', () => {
 
     const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    await store.dispatch('entities/posts/create', {
-      data: {
-        id: 1,
-        comment: { id: 1, body: 'comment1', commentabe_id: 1, commentable_type: 'posts' }
-      }
+    await Post.create({
+      id: 1,
+      comment: { id: 1, body: 'comment1', commentabe_id: 1, commentable_type: 'posts' }
     })
 
     const post = store.getters['entities/posts/query']().with('comment').find(1)
@@ -410,7 +396,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     expect(post.comment).toBeInstanceOf(Comment)
   })
 
-  it('generates id or type for the moprh relation', async () => {
+  it('generates id or type for the morph relation', async () => {
     class Post extends Model {
       static entity = 'posts'
 
@@ -448,11 +434,9 @@ describe('Features – Relations – Morph One – Persist', () => {
 
     const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
 
-    await store.dispatch('entities/posts/create', {
-      data: {
-        id: 1,
-        comment: { id: 1, body: 'comment1' }
-      }
+    await Post.create({
+      id: 1,
+      comment: { id: 1, body: 'comment1' }
     })
 
     const post = store.getters['entities/posts/query']().with('comment').find(1)

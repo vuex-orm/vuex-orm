@@ -16,12 +16,10 @@ describe('Feature – Models – All', () => {
   it('can fetch all records via static method', async () => {
     createStore([{ model: User }])
 
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
-    })
+    await User.insert([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' }
+    ])
 
     const users = User.all()
 
@@ -37,12 +35,10 @@ describe('Feature – Models – All', () => {
   it('can fetch all records via instance method', async () => {
     createStore([{ model: User }])
 
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
-    })
+    await User.insert([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' }
+    ])
 
     const user = new User()
 

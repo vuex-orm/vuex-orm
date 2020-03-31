@@ -20,9 +20,10 @@ describe('Feature – Basics – Delete Composite Key', () => {
   it('can delete a record by specifying the composite id as an array', async () => {
     const store = getStore()
 
-    await User.create({
-      data: [{ first_id: 1, second_id: 1 }, { first_id: 1, second_id: 2 }]
-    })
+    await User.create([
+      { first_id: 1, second_id: 1 },
+      { first_id: 1, second_id: 2 }
+    ])
 
     await User.delete([1, 1])
 
@@ -38,12 +39,10 @@ describe('Feature – Basics – Delete Composite Key', () => {
   it('deletes itself by instance method even when model has composite primary key', async () => {
     const store = getStore()
 
-    await User.create({
-      data: [
-        { first_id: 1, second_id: 2 },
-        { first_id: 3, second_id: 4 }
-      ]
-    })
+    await User.create([
+      { first_id: 1, second_id: 2 },
+      { first_id: 3, second_id: 4 }
+    ])
 
     const user = User.find([1, 2]) as User
 

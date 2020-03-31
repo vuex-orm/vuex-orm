@@ -28,9 +28,7 @@ describe('Feature - Inheritance - Discriminator field', () => {
 
     createStore([Person, Adult])
 
-    await Person.insert({
-      data: { id: 1, name: 'John Doe', type: 'ADULT' }
-    })
+    await Person.insert({ id: 1, name: 'John Doe', type: 'ADULT' })
 
     expect(Adult.find(1)).toBeInstanceOf(Adult)
   })
@@ -64,9 +62,7 @@ describe('Feature - Inheritance - Discriminator field', () => {
 
     createStore([Person, Adult])
 
-    await Person.insert({
-      data: { id: 1, name: 'John Doe', the_key: 'ADULT' }
-    })
+    await Person.insert({ id: 1, name: 'John Doe', the_key: 'ADULT' })
 
     expect(Adult.find(1)).toBeInstanceOf(Adult)
   })
@@ -104,14 +100,12 @@ describe('Feature - Inheritance - Discriminator field', () => {
 
     createStore([Person, Adult, Child ])
 
-    await Person.insert({
-      data: [
-        { id: 1, name: 'John Doe', type: 'ADULT' },
-        { id: 2, name: 'John Doe Jr', type: 'CHILD' },
-        { id: 3, name: 'Doe', type: 'PERSON' },
-        { id: 4, name: 'Jane Doe', type: 'ADULT' }
-      ]
-    })
+    await Person.insert([
+      { id: 1, name: 'John Doe', type: 'ADULT' },
+      { id: 2, name: 'John Doe Jr', type: 'CHILD' },
+      { id: 3, name: 'Doe', type: 'PERSON' },
+      { id: 4, name: 'Jane Doe', type: 'ADULT' }
+    ])
 
     const adults = Adult.all()
     expect(adults.length).toBe(2)
@@ -155,9 +149,7 @@ describe('Feature - Inheritance - Discriminator field', () => {
     createStore([Person, Adult])
 
     // Inserting through "adult" model.
-    await Adult.create({
-      data: { id: 1, name: 'John Doe' }
-    })
+    await Adult.create({ id: 1, name: 'John Doe' })
 
     const adult = Adult.find(1) as Adult
     expect(adult.type).toBe('ADULT')
@@ -193,12 +185,10 @@ describe('Feature - Inheritance - Discriminator field', () => {
 
     createStore([Person, Adult])
 
-    await Person.create({
-      data: [
-        { id: 1, name: 'John Doe', type: 1 },
-        { id: 2, name: 'Person Doe', type: 0 }
-      ]
-    })
+    await Person.create([
+      { id: 1, name: 'John Doe', type: 1 },
+      { id: 2, name: 'Person Doe', type: 0 }
+    ])
 
     const person = Person.find(2) as Person
     expect(person.name).toBe('Person Doe')

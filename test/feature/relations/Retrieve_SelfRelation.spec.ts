@@ -27,13 +27,8 @@ describe('Feature – Relations – Retrieve – Self Relation', () => {
 
     createStore([{ model: Post }])
 
-    await Post.insert({
-      data: { id: 1, parent_id: null }
-    })
-
-    await Post.insert({
-      data: { id: 2, parent_id: 1 }
-    })
+    await Post.insert({ id: 1, parent_id: null })
+    await Post.insert({ id: 2, parent_id: 1 })
 
     const post = Post.query().with('parent').find(2) as Post
 

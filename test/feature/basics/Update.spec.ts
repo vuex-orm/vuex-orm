@@ -24,15 +24,17 @@ describe('Feature – Basics – Update', () => {
       }
     }
 
-    createStore([{ model: User }])
+    const store = createStore([{ model: User }])
 
-    await User.create({
+    await store.dispatch('entities/users/create', {
       data: { id: 0, name: 'John Doe', age: 30 }
     })
 
-    await User.update({ id: 0, age: 24 })
+    await store.dispatch('entities/users/update', {
+      data: { id: 0, age: 24 }
+    })
 
-    const user = User.find(0) as User
+    const user = store.getters['entities/users/find'](0)
 
     expect(user.name).toBe('John Doe')
     expect(user.age).toBe(24)
@@ -606,13 +608,13 @@ describe('Feature – Basics – Update', () => {
       }
     }
 
-    createStore([{ model: User }])
+    const store = createStore([{ model: User }])
 
-    await User.create({
+    await store.dispatch('entities/users/create', {
       data: { id: 1, name: 'John Doe' }
     })
 
-    await User.update({
+    await store.dispatch('entities/users/update', {
       where: 1,
       data: { id: 2 }
     })

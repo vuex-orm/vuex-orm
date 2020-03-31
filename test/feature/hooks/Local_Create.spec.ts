@@ -30,9 +30,7 @@ describe('Hooks – Local Create', () => {
 
     createStore([{ model: User }])
 
-    await User.create({
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.create({ id: 1, name: 'John Doe', age: 20 })
 
     const expected = { $id: '1', id: 1, name: 'John Doe', age: 30 }
 
@@ -67,9 +65,7 @@ describe('Hooks – Local Create', () => {
 
     createStore([{ model: User }])
 
-    await User.create({
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.create({ id: 1, name: 'John Doe', age: 20 })
 
     const expected = { $id: '1', id: 1, name: 'John Doe', age: 20 }
 
@@ -106,12 +102,10 @@ describe('Hooks – Local Create', () => {
 
     createStore([{ model: User }])
 
-    await User.create({
-      data: [
-        { id: 1, name: 'John Doe', age: 20 },
-        { id: 2, name: 'Jane Doe', age: 24 }
-      ]
-    })
+    await User.create([
+      { id: 1, name: 'John Doe', age: 20 },
+      { id: 2, name: 'Jane Doe', age: 24 }
+    ])
 
     const users = User.all()
 
@@ -148,8 +142,6 @@ describe('Hooks – Local Create', () => {
 
     createStore([{ model: User }])
 
-    await User.create({
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.create({ id: 1, name: 'John Doe', age: 20 })
   })
 })

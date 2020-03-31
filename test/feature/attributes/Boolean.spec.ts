@@ -22,18 +22,16 @@ describe('Feature – Attributes – Boolean', () => {
   it('casts the value to `Boolean` when creating data', async () => {
     const store = createStore([{ model: User }])
 
-    await User.create({
-      data: [
-        { id: 1 },
-        { id: 2, bool: '' },
-        { id: 3, bool: 'string' },
-        { id: 4, bool: '0' },
-        { id: 5, bool: 0 },
-        { id: 6, bool: 1 },
-        { id: 7, bool: true },
-        { id: 8, bool: null }
-      ]
-    })
+    await User.create([
+      { id: 1 },
+      { id: 2, bool: '' },
+      { id: 3, bool: 'string' },
+      { id: 4, bool: '0' },
+      { id: 5, bool: 0 },
+      { id: 6, bool: 1 },
+      { id: 7, bool: true },
+      { id: 8, bool: null }
+    ])
 
     const expected = createState({
       users: {
@@ -54,18 +52,16 @@ describe('Feature – Attributes – Boolean', () => {
   it('casts the value to `Boolean` when retrieving data', async () => {
     createStore([{ model: User }])
 
-    await User.create({
-      data: [
-        { id: 1 },
-        { id: 2, bool: '' },
-        { id: 3, bool: 'string' },
-        { id: 4, bool: '0' },
-        { id: 5, bool: 0 },
-        { id: 6, bool: 1 },
-        { id: 7, bool: true },
-        { id: 8, bool: null }
-      ]
-    })
+    await User.create([
+      { id: 1 },
+      { id: 2, bool: '' },
+      { id: 3, bool: 'string' },
+      { id: 4, bool: '0' },
+      { id: 5, bool: 0 },
+      { id: 6, bool: 1 },
+      { id: 7, bool: true },
+      { id: 8, bool: null }
+    ])
 
     const users = User.all()
 
@@ -99,18 +95,16 @@ describe('Feature – Attributes – Boolean', () => {
 
     createStore([{ model: User }])
 
-    await User.create({
-      data: [
-        { id: 1 },
-        { id: 2, bool: '' },
-        { id: 3, bool: 'string' },
-        { id: 4, bool: '0' },
-        { id: 5, bool: 0 },
-        { id: 6, bool: 1 },
-        { id: 7, bool: true },
-        { id: 8, bool: null }
-      ]
-    })
+    await User.create([
+      { id: 1 },
+      { id: 2, bool: '' },
+      { id: 3, bool: 'string' },
+      { id: 4, bool: '0' },
+      { id: 5, bool: 0 },
+      { id: 6, bool: 1 },
+      { id: 7, bool: true },
+      { id: 8, bool: null }
+    ])
 
     const users = User.all()
 

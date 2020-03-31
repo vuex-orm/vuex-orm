@@ -22,15 +22,13 @@ describe('Feature – Attributes – String', () => {
   it('casts the value to `String` when creating data', async () => {
     const store = createStore([{ model: User }])
 
-    await User.create({
-      data: [
-        { id: 1 },
-        { id: 2, str: 'value' },
-        { id: 3, str: 1 },
-        { id: 4, str: true },
-        { id: 5, str: null }
-      ]
-    })
+    await User.create([
+      { id: 1 },
+      { id: 2, str: 'value' },
+      { id: 3, str: 1 },
+      { id: 4, str: true },
+      { id: 5, str: null }
+    ])
 
     const expected = createState({
       users: {
@@ -48,15 +46,13 @@ describe('Feature – Attributes – String', () => {
   it('casts the value to `String` when retrieving data', async () => {
     createStore([{ model: User }])
 
-    await User.create({
-      data: [
-        { id: 1 },
-        { id: 2, str: 'value' },
-        { id: 3, str: 1 },
-        { id: 4, str: true },
-        { id: 5, str: null }
-      ]
-    })
+    await User.create([
+      { id: 1 },
+      { id: 2, str: 'value' },
+      { id: 3, str: 1 },
+      { id: 4, str: true },
+      { id: 5, str: null }
+    ])
 
     const users = User.all()
 
@@ -87,15 +83,13 @@ describe('Feature – Attributes – String', () => {
 
     createStore([{ model: User }])
 
-    await User.create({
-      data: [
-        { id: 1 },
-        { id: 2, str: 'value' },
-        { id: 3, str: 1 },
-        { id: 4, str: true },
-        { id: 5, str: null }
-      ]
-    })
+    await User.create([
+      { id: 1 },
+      { id: 2, str: 'value' },
+      { id: 3, str: 1 },
+      { id: 4, str: true },
+      { id: 5, str: null }
+    ])
 
     const users = User.all()
 

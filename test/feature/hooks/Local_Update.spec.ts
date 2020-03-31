@@ -30,9 +30,7 @@ describe('Hooks – Local Update', () => {
 
     createStore([{ model: User }])
 
-    await User.insert({
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.insert({ id: 1, name: 'John Doe', age: 20 })
 
     await User.update({ id: 1, name: 'Jane Doe' })
 
@@ -69,9 +67,7 @@ describe('Hooks – Local Update', () => {
 
     createStore([{ model: User }])
 
-    await User.insert({
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.insert({ id: 1, name: 'John Doe', age: 20 })
 
     await User.update({ id: 1, name: 'Jane Doe', age: 30 })
 
@@ -108,12 +104,10 @@ describe('Hooks – Local Update', () => {
 
     createStore([{ model: User }])
 
-    await User.insert({
-      data: [
-        { id: 1, name: 'John Doe', age: 20 },
-        { id: 2, name: 'Jane Doe', age: 24 }
-      ]
-    })
+    await User.insert([
+      { id: 1, name: 'John Doe', age: 20 },
+      { id: 2, name: 'Jane Doe', age: 24 }
+    ])
 
     await User.update({ id: 1, name: 'Johnny Doe' })
 
@@ -158,9 +152,7 @@ describe('Hooks – Local Update', () => {
 
     createStore([{ model: User }])
 
-    await User.insert({
-      data: { id: 1, name: 'John Doe', age: 20 }
-    })
+    await User.insert({ id: 1, name: 'John Doe', age: 20 })
 
     await User.update({ id: 1, age: 30 })
 

@@ -15,11 +15,13 @@ import Mutators from '../attributes/contracts/Mutators'
 import Predicate from '../query/contracts/Predicate'
 import Query from '../query/Query'
 import * as Payloads from '../modules/payloads/Actions'
+import * as PersistOptions from '../modules/options/Actions'
 import Fields from './contracts/Fields'
 import FieldCache from './contracts/FieldCache'
 import ModelState from './contracts/State'
 import InheritanceTypes from './contracts/InheritanceTypes'
 import { toAttributes, toJson } from './Serialize'
+import PayloadBuilder from '../modules/support/PayloadBuilder'
 
 export default class Model {
   /**
@@ -383,29 +385,29 @@ export default class Model {
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.
    */
-  static create<T extends typeof Model> (this: T, payload: Payloads.Create): Promise<Collections> {
-    return this.dispatch('create', payload)
+  static create<T extends typeof Model> (this: T, payload: Payloads.Create, options?: PersistOptions.Create): Promise<Collections> {
+    return this.dispatch('create', PayloadBuilder.normalize(payload, options))
   }
 
   /**
    * Insert records.
    */
-  static insert<T extends typeof Model> (this: T, payload: Payloads.Insert): Promise<Collections> {
-    return this.dispatch('insert', payload)
+  static insert<T extends typeof Model> (this: T, payload: Payloads.Insert, options?: PersistOptions.Insert): Promise<Collections> {
+    return this.dispatch('insert', PayloadBuilder.normalize(payload, options))
   }
 
   /**
    * Update records.
    */
-  static update<T extends typeof Model> (this: T, payload: Payloads.Update): Promise<Collections> {
-    return this.dispatch('update', payload)
+  static update<T extends typeof Model> (this: T, payload: Payloads.Update, options?: PersistOptions.Update): Promise<Collections> {
+    return this.dispatch('update', PayloadBuilder.normalize(payload, options))
   }
 
   /**
    * Insert or update records.
    */
-  static insertOrUpdate<T extends typeof Model> (this: T, payload: Payloads.InsertOrUpdate): Promise<Collections> {
-    return this.dispatch('insertOrUpdate', payload)
+  static insertOrUpdate<T extends typeof Model> (this: T, payload: Payloads.InsertOrUpdate, options?: PersistOptions.InsertOrUpdate): Promise<Collections> {
+    return this.dispatch('insertOrUpdate', PayloadBuilder.normalize(payload, options))
   }
 
   /**
@@ -686,7 +688,7 @@ export default class Model {
   }
 
   /**
-   * Call Vuex Getetrs.
+   * Call Vuex Getters.
    */
   $getters (method: string): any {
     return this.$self().getters(method)
@@ -730,44 +732,48 @@ export default class Model {
   /**
    * Create records.
    */
-  async $create (payload: Payloads.Create): Promise<Collections> {
-    return this.$dispatch('create', payload)
+  async $create (payload: Payloads.Create, options?: PersistOptions.Create): Promise<Collections> {
+    return this.$dispatch('create', PayloadBuilder.normalize(payload, options))
   }
 
   /**
-   * Create records.
+   * Insert records.
    */
-  async $insert (payload: Payloads.Insert): Promise<Collections> {
-    return this.$dispatch('insert', payload)
+  async $insert (payload: Payloads.Insert, options?: PersistOptions.Insert): Promise<Collections> {
+    return this.$dispatch('insert', PayloadBuilder.normalize(payload, options))
   }
 
   /**
    * Update records.
    */
-  async $update (payload: Payloads.Update): Promise<Collections> {
+  async $update (payload: Payloads.Update, options?: PersistOptions.Update): Promise<Collections> {
     if (Utils.isArray(payload)) {
-      return this.$dispatch('update', payload)
+      return this.$dispatch('update', PayloadBuilder.normalize(payload, options))
     }
 
-    if (payload.where !== undefined) {
-      return this.$dispatch('update', payload)
+    if (payload.where !== undefined || (options && options.where !== undefined)) {
+      return this.$dispatch('update', PayloadBuilder.normalize(payload, options))
     }
 
     if (this.$self().getIndexIdFromRecord(payload) === null) {
-      return this.$dispatch('update', {
-        where: this.$self().getIdFromRecord(this),
-        data: payload
-      })
+      /* istanbul ignore else */
+      if (!options) {
+        options = {}
+      }
+
+      options.where = this.$self().getIdFromRecord(this)
+
+      return this.$dispatch('update', PayloadBuilder.normalize(payload, options))
     }
 
-    return this.$dispatch('update', payload)
+    return this.$dispatch('update', PayloadBuilder.normalize(payload, options))
   }
 
   /**
    * Insert or update records.
    */
-  async $insertOrUpdate (payload: Payloads.InsertOrUpdate): Promise<Collections> {
-    return this.$dispatch('insertOrUpdate', payload)
+  async $insertOrUpdate (payload: Payloads.InsertOrUpdate, options?: PersistOptions.InsertOrUpdate): Promise<Collections> {
+    return this.$dispatch('insertOrUpdate', PayloadBuilder.normalize(payload, options))
   }
 
   /**

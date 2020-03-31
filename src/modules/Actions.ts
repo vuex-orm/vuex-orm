@@ -1,4 +1,3 @@
-import { isArray } from '../support/Utils'
 import Item from '../data/Item'
 import Collection from '../data/Collection'
 import Collections from '../data/Collections'
@@ -6,6 +5,7 @@ import Model from '../model/Model'
 import ActionsContract from './contracts/Actions'
 import ActionContext from './contracts/ActionContext'
 import * as Payloads from './payloads/Actions'
+import PayloadBuilder from './support/PayloadBuilder'
 
 /**
  * Create new data with all fields filled by default values.
@@ -25,8 +25,9 @@ async function newRecord (context: ActionContext): Promise<Model> {
 async function create (context: ActionContext, payload: Payloads.Create): Promise<Collections> {
   const state = context.state
   const entity = state.$name
+  const data = PayloadBuilder.createPersistPayload(payload)
 
-  return context.dispatch(`${state.$connection}/create`, { ...payload, entity }, { root: true })
+  return context.dispatch(`${state.$connection}/create`, { entity, ...data }, { root: true })
 }
 
 /**
@@ -37,8 +38,9 @@ async function create (context: ActionContext, payload: Payloads.Create): Promis
 async function insert (context: ActionContext, payload: Payloads.Insert): Promise<Collections> {
   const state = context.state
   const entity = state.$name
+  const data = PayloadBuilder.createPersistPayload(payload)
 
-  return context.dispatch(`${state.$connection}/insert`, { ...payload, entity }, { root: true })
+  return context.dispatch(`${state.$connection}/insert`, { entity, ...data }, { root: true })
 }
 
 /**
@@ -47,22 +49,9 @@ async function insert (context: ActionContext, payload: Payloads.Insert): Promis
 async function update (context: ActionContext, payload: Payloads.Update): Promise<Item | Collection | Collections> {
   const state = context.state
   const entity = state.$name
+  const data = PayloadBuilder.createPersistPayload(payload)
 
-  // If the payload is an array, then the payload should be an array of
-  // data so let's pass the whole payload as data.
-  if (isArray(payload)) {
-    return context.dispatch(`${state.$connection}/update`, { entity, data: payload }, { root: true })
-  }
-
-  // If the payload doesn't have `data` property, we'll assume that
-  // the user has passed the object as the payload so let's define
-  // the whole payload as a data.
-  if (payload.data === undefined) {
-    return context.dispatch(`${state.$connection}/update`, { entity, data: payload }, { root: true })
-  }
-
-  // Else destructure the payload and let root action handle it.
-  return context.dispatch(`${state.$connection}/update`, { entity, ...payload }, { root: true })
+  return context.dispatch(`${state.$connection}/update`, { entity, ...data }, { root: true })
 }
 
 /**
@@ -73,8 +62,9 @@ async function update (context: ActionContext, payload: Payloads.Update): Promis
 async function insertOrUpdate (context: ActionContext, payload: Payloads.InsertOrUpdate): Promise<Collections> {
   const state = context.state
   const entity = state.$name
+  const data = PayloadBuilder.createPersistPayload(payload)
 
-  return context.dispatch(`${state.$connection}/insertOrUpdate`, { entity, ...payload }, { root: true })
+  return context.dispatch(`${state.$connection}/insertOrUpdate`, { entity, ...data }, { root: true })
 }
 
 /**

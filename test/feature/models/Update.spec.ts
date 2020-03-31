@@ -178,13 +178,11 @@ describe('Feature – Models – Update', () => {
 
       const store = createStore([{ model: Role }])
 
-      await Role.insert({
-        data: { key_1: 1, key_2: 2, name: 'John Doe' }
-      })
+      await Role.insert({ key_1: 1, key_2: 2, name: 'John Doe' })
 
-      const user = Role.find([1, 2])
+      const user = Role.find([1, 2]) as Role
 
-      await user?.$update({ name: 'Jane Doe' })
+      await user.$update({ name: 'Jane Doe' })
 
       const expected = createState({
         roles: {
@@ -231,10 +229,7 @@ describe('Feature – Models – Update', () => {
         data: { id: 1, name: 'John Doe' }
       })
 
-      await user.$update({
-        where: 1,
-        data: { name: 'Jane Doe' }
-      })
+      await user.$update({ name: 'Jane Doe' }, { where: 1 })
 
       const expected = createState({
         users: {

@@ -32,13 +32,9 @@ describe('Feature – Hooks – Global Update', () => {
       model.role = 'admin'
     })
 
-    await User.create({
-      data: { id: 1, role: 'user' }
-    })
+    await User.create({ id: 1, role: 'user' })
 
-    await User.update({
-      data: { id: 1, role: 'guest' }
-    })
+    await User.update({ id: 1, role: 'guest' })
 
     const user = User.find(1)
 
@@ -52,13 +48,9 @@ describe('Feature – Hooks – Global Update', () => {
       }
     })
 
-    await User.create({
-      data: { id: 1, role: 'user' }
-    })
+    await User.create({ id: 1, role: 'user' })
 
-    await User.update({
-      data: { id: 1, role: 'admin' }
-    })
+    await User.update({ id: 1, role: 'admin' })
 
     const user = User.find(1)
 
@@ -72,13 +64,9 @@ describe('Feature – Hooks – Global Update', () => {
       hit = true
     })
 
-    await User.create({
-      data: { id: 1, role: 'user' }
-    })
+    await User.create({ id: 1, role: 'user' })
 
-    await User.update({
-      data: { id: 1, role: 'admin' }
-    })
+    await User.update({ id: 1, role: 'admin' })
 
     expect(hit).toBe(true)
   })

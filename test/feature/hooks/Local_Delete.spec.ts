@@ -28,9 +28,7 @@ describe('Hooks – Local Delete', () => {
 
     createStore([{ model: User }])
 
-    await User.create({
-      data: { id: 1, name: 'John Doe' }
-    })
+    await User.create({ id: 1, name: 'John Doe' })
 
     await User.delete(1)
 
@@ -65,12 +63,10 @@ describe('Hooks – Local Delete', () => {
 
     createStore([{ model: User }])
 
-    await User.create({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
-    })
+    await User.create([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' }
+    ])
 
     await User.delete(2)
 
@@ -109,12 +105,10 @@ describe('Hooks – Local Delete', () => {
 
     createStore([{ model: User }])
 
-    await User.create({
-      data: [
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Doe' }
-      ]
-    })
+    await User.create([
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Doe' }
+    ])
 
     await User.delete(2)
 

@@ -40,19 +40,17 @@ describe('Features – Relations – Persist – Nested Morph', () => {
 
     const store = createStore([{ model: User }, { model: Post }, { model: Comment }])
 
-    await store.dispatch('entities/users/create', {
-      data: {
-        id: 1,
-        comments: [
-          {
-            id: 1,
-            user_id: 1,
-            commentable_id: 1,
-            commentable_type: 'posts',
-            commentable: { id: 1 }
-          }
-        ]
-      }
+    await User.create({
+      id: 1,
+      comments: [
+        {
+          id: 1,
+          user_id: 1,
+          commentable_id: 1,
+          commentable_type: 'posts',
+          commentable: { id: 1 }
+        }
+      ]
     })
 
     const expected = createState({
