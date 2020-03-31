@@ -104,9 +104,4 @@ Vuex ORM can be extended via plugins to add additional features. Here is a list 
 - [Vuex ORM Change Flags](https://github.com/vuex-orm/plugin-change-flags) - Vuex ORM plugin for adding IsDirty / IsNew flags to model entities.
 - [Vuex ORM Soft Delete](https://github.com/vuex-orm/plugin-soft-delete) – Vuex ORM plugin for adding soft delete feature to model entities.
 
-## Resources
-
-- [Vue](https://vuejs.org)
-- [Vuex](https://vuex.vuejs.org)
-
 You can find a list of awesome things related to Vuex ORM at [Awesome Vuex ORM](https://github.com/vuex-orm/awesome-vuex-orm).
