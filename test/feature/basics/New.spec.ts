@@ -11,7 +11,7 @@ describe('Feature – Basics – New', () => {
     // @Str('Default Doe')
     name!: string
 
-    static fields () {
+    static fields() {
       return {
         id: this.uid(),
         name: this.attr('Default Doe')
@@ -37,7 +37,7 @@ describe('Feature – Basics – New', () => {
   it('returns newly created instance', async () => {
     createStore([{ model: User }])
 
-    const user = await User.new() as User
+    const user = (await User.new()) as User
 
     expect(user.$id).toBe('$uid3')
     expect(user.id).toBe('$uid3')

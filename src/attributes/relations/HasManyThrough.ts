@@ -42,7 +42,7 @@ export default class HasManyThrough extends Relation {
   /**
    * Create a new has many through instance.
    */
-  constructor (
+  constructor(
     model: typeof Model,
     related: Entity,
     through: Entity,
@@ -64,7 +64,7 @@ export default class HasManyThrough extends Relation {
   /**
    * Define the normalizr schema for the relationship.
    */
-  define (schema: Schema): NormalizrSchema {
+  define(schema: Schema): NormalizrSchema {
     return schema.many(this.related)
   }
 
@@ -72,22 +72,31 @@ export default class HasManyThrough extends Relation {
    * Attach the relational key to the given data. Since has many through
    * relationship doesn't have any foreign key, it would do nothing.
    */
-  attach (_key: any, _record: Record, _data: NormalizedData): void {
+  attach(_key: any, _record: Record, _data: NormalizedData): void {
     return
   }
 
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  make (value: any, _parent: Record, _key: string): Model[] {
+  make(value: any, _parent: Record, _key: string): Model[] {
     return this.makeManyRelation(value, this.related)
   }
 
   /**
    * Load the has many through relationship for the collection.
    */
-  load (query: Query, collection: Collection, name: string, constraints: Constraint[]): void {
-    const relatedQuery = this.getRelation(query, this.related.entity, constraints)
+  load(
+    query: Query,
+    collection: Collection,
+    name: string,
+    constraints: Constraint[]
+  ): void {
+    const relatedQuery = this.getRelation(
+      query,
+      this.related.entity,
+      constraints
+    )
 
     const throughQuery = query.newQuery(this.through.entity)
 
@@ -109,21 +118,21 @@ export default class HasManyThrough extends Relation {
   /**
    * Set the constraints for the through relation.
    */
-  addEagerConstraintForThrough (query: Query, collection: Collection): void {
+  addEagerConstraintForThrough(query: Query, collection: Collection): void {
     query.where(this.firstKey, this.getKeys(collection, this.localKey))
   }
 
   /**
    * Set the constraints for the related relation.
    */
-  addEagerConstraintForRelated (query: Query, collection: Collection): void {
+  addEagerConstraintForRelated(query: Query, collection: Collection): void {
     query.where(this.secondKey, this.getKeys(collection, this.secondLocalKey))
   }
 
   /**
    * Create a new indexed map for the through relation.
    */
-  mapThroughRelations (throughs: Collection, relatedQuery: Query): Records {
+  mapThroughRelations(throughs: Collection, relatedQuery: Query): Records {
     const relations = this.mapManyRelations(relatedQuery.get(), this.secondKey)
 
     return throughs.reduce<Record>((records, record) => {

@@ -7,7 +7,11 @@ export default class Number extends Type {
   /**
    * Create a new number instance.
    */
-  constructor (model: typeof Model, value: number | null, mutator?: Mutator<number | null>) {
+  constructor(
+    model: typeof Model,
+    value: number | null,
+    mutator?: Mutator<number | null>
+  ) {
     /* istanbul ignore next */
     super(model, value, mutator)
   }
@@ -15,14 +19,14 @@ export default class Number extends Type {
   /**
    * Convert given value to the appropriate value for the attribute.
    */
-  make (value: any, _parent: Record, key: string): number | null {
+  make(value: any, _parent: Record, key: string): number | null {
     return this.mutate(this.fix(value), key)
   }
 
   /**
    * Transform given data to the number.
    */
-  fix (value: any): number | null {
+  fix(value: any): number | null {
     if (value === undefined) {
       return this.value
     }

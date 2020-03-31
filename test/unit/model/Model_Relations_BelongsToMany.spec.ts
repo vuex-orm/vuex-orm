@@ -11,7 +11,7 @@ describe('Model – Relations – BelongsToMany', () => {
       // @BelongsTo(Role, RoleUser, 'user_id', 'role_id')
       roles!: Role[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           roles: this.belongsToMany(Role, RoleUser, 'user_id', 'role_id')
@@ -28,7 +28,7 @@ describe('Model – Relations – BelongsToMany', () => {
       // @BelongsToMany(User, RoleUser, 'role_id', 'user_id')
       users!: User[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           users: this.belongsToMany(User, RoleUser, 'role_id', 'user_id')
@@ -39,7 +39,7 @@ describe('Model – Relations – BelongsToMany', () => {
     class RoleUser extends Model {
       static entity = 'roleUser'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           role_id: this.attr(null),

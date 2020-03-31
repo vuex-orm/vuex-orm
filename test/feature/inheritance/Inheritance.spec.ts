@@ -5,7 +5,7 @@ describe('Feature – Inheritance', () => {
   class Person extends Model {
     static entity = 'person'
 
-    static types () {
+    static types() {
       return {
         ADULT: Adult,
         PERSON: Person,
@@ -13,7 +13,7 @@ describe('Feature – Inheritance', () => {
       }
     }
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.attr(''),
@@ -31,7 +31,7 @@ describe('Feature – Inheritance', () => {
 
     static baseEntity = 'person'
 
-    static fields () {
+    static fields() {
       return {
         ...super.fields(),
         job: this.attr('')
@@ -46,7 +46,7 @@ describe('Feature – Inheritance', () => {
 
     static baseEntity = 'person'
 
-    static fields () {
+    static fields() {
       return {
         ...super.fields()
       }
@@ -106,7 +106,7 @@ describe('Feature - Inheritance - No Type Warning', () => {
   class Person extends Model {
     static entity = 'person'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.attr(''),
@@ -120,7 +120,7 @@ describe('Feature - Inheritance - No Type Warning', () => {
 
     static baseEntity = 'person'
 
-    static fields () {
+    static fields() {
       return {
         ...super.fields(),
         job: this.attr('')

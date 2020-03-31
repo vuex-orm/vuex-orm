@@ -8,9 +8,9 @@ describe('Unit – Model', () => {
       // @Attribute('', { mutator: (value: any) => value.toUpperCase() })
       name!: string
 
-      static fields () {
+      static fields() {
         return {
-          name: this.attr('', value => value.toUpperCase())
+          name: this.attr('', (value) => value.toUpperCase())
         }
       }
     }
@@ -25,15 +25,15 @@ describe('Unit – Model', () => {
       // @Attribute('')
       name!: string
 
-      static fields () {
+      static fields() {
         return {
           name: this.attr('')
         }
       }
 
-      static mutators () {
+      static mutators() {
         return {
-          name (value: any) {
+          name(value: any) {
             return value.toUpperCase()
           }
         }
@@ -50,15 +50,15 @@ describe('Unit – Model', () => {
       // @Attribute('', { mutator: (value: any) => value.toUpperCase() })
       name!: string
 
-      static fields () {
+      static fields() {
         return {
-          name: this.attr('', value => value.toUpperCase())
+          name: this.attr('', (value) => value.toUpperCase())
         }
       }
 
-      static mutators () {
+      static mutators() {
         return {
-          name (_value: any) {
+          name(_value: any) {
             return 'Not Expected'
           }
         }

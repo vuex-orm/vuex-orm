@@ -7,7 +7,7 @@ describe('Feature – Basics – Delete Composite Key', () => {
 
     static primaryKey = ['first_id', 'second_id']
 
-    static fields () {
+    static fields() {
       return {
         first_id: this.attr(null),
         second_id: this.attr(null)
@@ -21,7 +21,10 @@ describe('Feature – Basics – Delete Composite Key', () => {
     const store = getStore()
 
     await User.create({
-      data: [{ first_id: 1, second_id: 1 }, { first_id: 1, second_id: 2 }]
+      data: [
+        { first_id: 1, second_id: 1 },
+        { first_id: 1, second_id: 2 }
+      ]
     })
 
     await User.delete([1, 1])

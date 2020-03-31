@@ -15,7 +15,7 @@ describe('Feature – Basics – Update', () => {
       // @Attribute
       age!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -44,7 +44,7 @@ describe('Feature – Basics – Update', () => {
 
       static primaryKey = 'user_id'
 
-      static fields () {
+      static fields() {
         return {
           user_id: this.attr(null),
           name: this.attr(''),
@@ -73,7 +73,7 @@ describe('Feature – Basics – Update', () => {
 
       static primaryKey = ['key_1', 'key_2']
 
-      static fields () {
+      static fields() {
         return {
           key_1: this.attr(null),
           key_2: this.attr(null),
@@ -89,9 +89,16 @@ describe('Feature – Basics – Update', () => {
       data: { key_1: 1, key_2: 2, name: 'John Doe', age: 30 }
     })
 
-    await store.dispatch('entities/users/update', { key_1: 1, key_2: 2, age: 24 })
+    await store.dispatch('entities/users/update', {
+      key_1: 1,
+      key_2: 2,
+      age: 24
+    })
 
-    const user = store.getters['entities/users/query']().where('key_1', 1).where('key_2', 2).first()
+    const user = store.getters['entities/users/query']()
+      .where('key_1', 1)
+      .where('key_2', 2)
+      .first()
 
     expect(user.name).toBe('John Doe')
     expect(user.age).toBe(24)
@@ -101,7 +108,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -137,7 +144,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -175,7 +182,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -205,7 +212,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -222,7 +229,7 @@ describe('Feature – Basics – Update', () => {
 
     await store.dispatch('entities/users/update', {
       where: '1',
-      data (user: any) {
+      data(user: any) {
         user.age = 24
       }
     })
@@ -239,7 +246,7 @@ describe('Feature – Basics – Update', () => {
 
       static primaryKey = ['key_1', 'key_2']
 
-      static fields () {
+      static fields() {
         return {
           key_1: this.attr(null),
           key_2: this.attr(null),
@@ -270,7 +277,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -290,7 +297,7 @@ describe('Feature – Basics – Update', () => {
     })
 
     await store.dispatch('entities/users/update', {
-      where (record: any) {
+      where(record: any) {
         return record.name === 'JD'
       },
       data: { age: 24 }
@@ -307,7 +314,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -328,7 +335,7 @@ describe('Feature – Basics – Update', () => {
 
     await store.dispatch('entities/users/update', {
       where: 1,
-      data (record: any) {
+      data(record: any) {
         record.name = 'John Doe'
         record.age = 24
       }
@@ -344,7 +351,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -356,14 +363,12 @@ describe('Feature – Basics – Update', () => {
     const store = createStore([{ model: User }])
 
     await store.dispatch('entities/users/create', {
-      data: [
-        { id: 1, name: 'JD', age: 30 }
-      ]
+      data: [{ id: 1, name: 'JD', age: 30 }]
     })
 
     await store.dispatch('entities/users/update', {
       where: 2,
-      data (user: any) {
+      data(user: any) {
         user.name = 'John Doe'
         user.age = 24
       }
@@ -378,7 +383,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -398,11 +403,11 @@ describe('Feature – Basics – Update', () => {
     })
 
     await store.dispatch('entities/users/update', {
-      where (record: any) {
+      where(record: any) {
         return record.name === 'JD'
       },
 
-      data (record: any) {
+      data(record: any) {
         record.age = 24
       }
     })
@@ -418,7 +423,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           parameters: this.attr([])
@@ -446,7 +451,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           settings: this.attr({})
@@ -474,7 +479,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -504,7 +509,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -532,7 +537,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -549,12 +554,14 @@ describe('Feature – Basics – Update', () => {
 
     try {
       await store.dispatch('entities/users/update', {
-        data (user: any) {
+        data(user: any) {
           user.age = 24
         }
       })
     } catch (e) {
-      expect(e.message).toBe('You must specify `where` to update records by specifying `data` as a closure.')
+      expect(e.message).toBe(
+        'You must specify `where` to update records by specifying `data` as a closure.'
+      )
     }
   })
 
@@ -564,7 +571,7 @@ describe('Feature – Basics – Update', () => {
 
       static primaryKey = ['id1', 'id2']
 
-      static fields () {
+      static fields() {
         return {
           id1: this.attr(null),
           id2: this.attr(null),
@@ -587,9 +594,9 @@ describe('Feature – Basics – Update', () => {
       })
     } catch (e) {
       expect(e.message).toBe(
-        '[Vuex ORM] You can\'t specify `where` value as `string` or `number` ' +
-        'when you have a composite key defined in your model. Please include ' +
-        'composite keys to the `data` fields.'
+        "[Vuex ORM] You can't specify `where` value as `string` or `number` " +
+          'when you have a composite key defined in your model. Please include ' +
+          'composite keys to the `data` fields.'
       )
     }
   })
@@ -598,7 +605,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -627,7 +634,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -642,7 +649,10 @@ describe('Feature – Basics – Update', () => {
       data: { id: 1, name: 'John Doe', age: 30 }
     })
 
-    const collection = await store.dispatch('entities/users/update', { id: 1, age: 24 })
+    const collection = await store.dispatch('entities/users/update', {
+      id: 1,
+      age: 24
+    })
 
     expect(collection.users[0]).toBeInstanceOf(User)
     expect(collection.users[0].age).toBe(24)
@@ -652,7 +662,7 @@ describe('Feature – Basics – Update', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),

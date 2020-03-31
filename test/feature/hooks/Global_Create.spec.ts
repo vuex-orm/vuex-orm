@@ -12,7 +12,7 @@ describe('Feature – Hooks – Global Create', () => {
     // @Attribute('')
     role!: string
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         role: this.attr('')
@@ -33,7 +33,10 @@ describe('Feature – Hooks – Global Create', () => {
     })
 
     await User.create({
-      data: [{ id: 1, role: 'admin' }, { id: 2, role: 'user' }]
+      data: [
+        { id: 1, role: 'admin' },
+        { id: 2, role: 'user' }
+      ]
     })
 
     const users = User.all()
@@ -43,11 +46,18 @@ describe('Feature – Hooks – Global Create', () => {
   })
 
   it('can process multiple `beforeCreate` hook', async () => {
-    Query.on('beforeCreate', (model: any, _entity: any) => { model.role = 'admin' })
-    Query.on('beforeCreate', (model: any, _entity: any) => { model.role = 'not admin' })
+    Query.on('beforeCreate', (model: any, _entity: any) => {
+      model.role = 'admin'
+    })
+    Query.on('beforeCreate', (model: any, _entity: any) => {
+      model.role = 'not admin'
+    })
 
     await User.create({
-      data: [{ id: 1, role: 'admin' }, { id: 2, role: 'user' }]
+      data: [
+        { id: 1, role: 'admin' },
+        { id: 2, role: 'user' }
+      ]
     })
 
     const users = User.all()
@@ -64,7 +74,10 @@ describe('Feature – Hooks – Global Create', () => {
     })
 
     await User.create({
-      data: [{ id: 1, role: 'admin' }, { id: 2, role: 'user' }]
+      data: [
+        { id: 1, role: 'admin' },
+        { id: 2, role: 'user' }
+      ]
     })
 
     const users = User.all()

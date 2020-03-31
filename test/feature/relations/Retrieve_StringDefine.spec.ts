@@ -13,7 +13,7 @@ describe('Feature – Relations - String Define', () => {
       // @HasMany('posts', 'user_id')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           posts: this.hasMany('posts', 'user_id')
@@ -30,7 +30,7 @@ describe('Feature – Relations - String Define', () => {
       // @Attribute
       user_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -48,7 +48,9 @@ describe('Feature – Relations - String Define', () => {
       data: { id: 2, user_id: 1 }
     })
 
-    const user = User.query().with('posts').find(1) as User
+    const user = User.query()
+      .with('posts')
+      .find(1) as User
 
     expect(user).toBeInstanceOf(User)
     expect(user.id).toBe(1)

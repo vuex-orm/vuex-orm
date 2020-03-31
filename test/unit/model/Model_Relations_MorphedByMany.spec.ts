@@ -8,7 +8,7 @@ describe('Model – Relations – Morphed By Many', () => {
     // @Attribute
     id!: number
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null)
       }
@@ -21,7 +21,7 @@ describe('Model – Relations – Morphed By Many', () => {
     // @Attribute
     id!: number
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null)
       }
@@ -43,12 +43,24 @@ describe('Model – Relations – Morphed By Many', () => {
     // @MorphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
     videos!: Video[]
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.attr(''),
-        posts: this.morphedByMany(Post, Taggable, 'tag_id', 'taggable_id', 'taggable_type'),
-        videos: this.morphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+        posts: this.morphedByMany(
+          Post,
+          Taggable,
+          'tag_id',
+          'taggable_id',
+          'taggable_type'
+        ),
+        videos: this.morphedByMany(
+          Video,
+          Taggable,
+          'tag_id',
+          'taggable_id',
+          'taggable_type'
+        )
       }
     }
   }
@@ -56,7 +68,7 @@ describe('Model – Relations – Morphed By Many', () => {
   class Taggable extends Model {
     static entity = 'taggables'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         tag_id: this.attr(null),
@@ -67,7 +79,12 @@ describe('Model – Relations – Morphed By Many', () => {
   }
 
   it('can resolve morphed by many relation', () => {
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     const tag = new Tag({
       id: 1,

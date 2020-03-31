@@ -13,7 +13,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @HasManyThrough(Post, User, 'country_id', 'user_id')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           posts: this.hasManyThrough(Post, User, 'country_id', 'user_id')
@@ -30,7 +30,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @Attribute
       country_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           country_id: this.attr(null)
@@ -47,7 +47,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @Attribute
       user_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -55,15 +55,16 @@ describe('Features – Relations – Has Many Through', () => {
       }
     }
 
-    const store = createStore([{ model: Country }, { model: User }, { model: Post }])
+    const store = createStore([
+      { model: Country },
+      { model: User },
+      { model: Post }
+    ])
 
     await Country.insert({
       data: {
         id: 1,
-        posts: [
-          { id: 1 },
-          { id: 2 }
-        ]
+        posts: [{ id: 1 }, { id: 2 }]
       }
     })
 
@@ -91,7 +92,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @HasManyThrough(Post, User, 'country_id', 'user_id')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           posts: this.hasManyThrough(Post, User, 'country_id', 'user_id')
@@ -108,7 +109,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @Attribute
       country_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           country_id: this.attr(null)
@@ -125,7 +126,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @Attribute
       user_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -153,13 +154,12 @@ describe('Features – Relations – Has Many Through', () => {
     })
 
     await Country.insert({
-      data: [
-        { id: 1 },
-        { id: 2 }
-      ]
+      data: [{ id: 1 }, { id: 2 }]
     })
 
-    const country = Country.query().with('posts').find(1) as Country
+    const country = Country.query()
+      .with('posts')
+      .find(1) as Country
 
     expect(country).toBeInstanceOf(Country)
     expect(country.posts.length).toBe(3)
@@ -186,7 +186,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @HasManyThrough(Post, User, 'country_id', 'user_id')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.string(''),
           posts: this.hasManyThrough(Post, User, 'country_id', 'user_id')
@@ -203,7 +203,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @Str('')
       country_id!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.string(''),
           country_id: this.string('')
@@ -220,7 +220,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @Str('')
       user_id!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.string(''),
           user_id: this.string('')
@@ -248,13 +248,12 @@ describe('Features – Relations – Has Many Through', () => {
     })
 
     await Country.insert({
-      data: [
-        { id: 'string-id-1' },
-        { id: 'string-id-2' }
-      ]
+      data: [{ id: 'string-id-1' }, { id: 'string-id-2' }]
     })
 
-    const country = Country.query().with('posts').find('string-id-1') as Country
+    const country = Country.query()
+      .with('posts')
+      .find('string-id-1') as Country
 
     expect(country).toBeInstanceOf(Country)
     expect(country.posts.length).toBe(3)
@@ -278,7 +277,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @HasManyThrough(Post, User, 'country_id', 'user_id')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           posts: this.hasManyThrough(Post, User, 'country_id', 'user_id')
@@ -295,7 +294,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @Attribute
       country_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           country_id: this.attr(null)
@@ -312,7 +311,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @Attribute
       user_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -326,7 +325,9 @@ describe('Features – Relations – Has Many Through', () => {
       data: [{ id: 1 }]
     })
 
-    const country = Country.query().with('posts').find(1) as Country
+    const country = Country.query()
+      .with('posts')
+      .find(1) as Country
 
     expect(country.posts.length).toBe(0)
   })
@@ -341,7 +342,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @HasManyThrough(Post, User, 'country_id', 'user_id')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           posts: this.hasManyThrough(Post, User, 'country_id', 'user_id')
@@ -358,7 +359,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @Attribute
       country_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           country_id: this.attr(null)
@@ -375,7 +376,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @Attribute
       user_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -396,7 +397,9 @@ describe('Features – Relations – Has Many Through', () => {
       data: [{ id: 1 }]
     })
 
-    const country = Country.query().with('posts').find(1) as Country
+    const country = Country.query()
+      .with('posts')
+      .find(1) as Country
 
     expect(country.posts.length).toBe(0)
   })
@@ -413,7 +416,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @HasManyThrough(Post, User, 'country_id', 'user_id')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           c_id: this.attr(null),
           posts: this.hasManyThrough(Post, User, 'country_id', 'user_id')
@@ -432,7 +435,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @Attribute
       country_id!: number
 
-      static fields () {
+      static fields() {
         return {
           u_id: this.attr(null),
           country_id: this.attr(null)
@@ -451,7 +454,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @Attribute
       user_id!: number
 
-      static fields () {
+      static fields() {
         return {
           p_id: this.attr(null),
           user_id: this.attr(null)
@@ -478,13 +481,12 @@ describe('Features – Relations – Has Many Through', () => {
     })
 
     await Country.insert({
-      data: [
-        { c_id: 1 },
-        { c_id: 2 }
-      ]
+      data: [{ c_id: 1 }, { c_id: 2 }]
     })
 
-    const country = Country.query().with('posts').find(1) as Country
+    const country = Country.query()
+      .with('posts')
+      .find(1) as Country
 
     expect(country).toBeInstanceOf(Country)
     expect(country.posts.length).toBe(2)
@@ -506,11 +508,18 @@ describe('Features – Relations – Has Many Through', () => {
       // @HasManyThrough(Post, User, 'country_id', 'user_id', 'c_id', 'u_id')
       posts!: Post[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           c_id: this.attr(null),
-          posts: this.hasManyThrough(Post, User, 'country_id', 'user_id', 'c_id', 'u_id')
+          posts: this.hasManyThrough(
+            Post,
+            User,
+            'country_id',
+            'user_id',
+            'c_id',
+            'u_id'
+          )
         }
       }
     }
@@ -527,7 +536,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @Attribute
       country_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           u_id: this.attr(null),
@@ -548,7 +557,7 @@ describe('Features – Relations – Has Many Through', () => {
       // @Attribute
       user_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           p_id: this.attr(null),
@@ -582,7 +591,9 @@ describe('Features – Relations – Has Many Through', () => {
       ]
     })
 
-    const country = Country.query().with('posts').find(11) as Country
+    const country = Country.query()
+      .with('posts')
+      .find(11) as Country
 
     expect(country).toBeInstanceOf(Country)
     expect(country.posts.length).toBe(2)

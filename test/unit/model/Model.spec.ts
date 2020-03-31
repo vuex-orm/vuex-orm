@@ -24,7 +24,7 @@ describe('Unit – Model', () => {
       // @Attribute('john@example.com')
       email!: string
 
-      static fields () {
+      static fields() {
         return {
           name: this.attr('John Doe'),
           email: this.attr('john@example.com')
@@ -47,7 +47,7 @@ describe('Unit – Model', () => {
       // @Attribute(() => counter++)
       id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(() => counter++)
         }
@@ -71,7 +71,7 @@ describe('Unit – Model', () => {
       // @Attribute('john@example.com')
       email!: string
 
-      static fields () {
+      static fields() {
         return {
           name: this.attr('John Doe'),
           email: this.attr('john@example.com')
@@ -88,7 +88,7 @@ describe('Unit – Model', () => {
 
   it('can get a value of the primary key', () => {
     class User extends Model {
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -102,7 +102,7 @@ describe('Unit – Model', () => {
     class Vote extends Model {
       static primaryKey = ['vote_id', 'user_id']
 
-      static fields () {
+      static fields() {
         return {
           vote_id: this.attr(null),
           user_id: this.attr(null)
@@ -119,7 +119,7 @@ describe('Unit – Model', () => {
 
       static primaryKey = ['name', 'email']
 
-      static fields () {
+      static fields() {
         return {
           name: this.attr('John Doe'),
           email: this.attr('john@example.com')
@@ -136,7 +136,7 @@ describe('Unit – Model', () => {
 
       static primaryKey = ['id', 'name', 'email']
 
-      static fields () {
+      static fields() {
         return {
           id: this.uid(),
           name: this.attr(null),
@@ -145,9 +145,13 @@ describe('Unit – Model', () => {
       }
     }
 
-    const user = (new User()).$generatePrimaryId()
+    const user = new User().$generatePrimaryId()
 
-    expect(user.$toJson()).toEqual({ id: '$uid1', name: '$uid2', email: '$uid3' })
+    expect(user.$toJson()).toEqual({
+      id: '$uid1',
+      name: '$uid2',
+      email: '$uid3'
+    })
   })
 
   it('should return right model when getting a model from a record if the record is in a hierarchy', () => {
@@ -156,7 +160,7 @@ describe('Unit – Model', () => {
 
       static typeKey = 'type'
 
-      static types () {
+      static types() {
         return {
           USER: User,
           SUPER: SuperUser
@@ -183,7 +187,7 @@ describe('Unit – Model', () => {
 
       static typeKey = 'type'
 
-      static types () {
+      static types() {
         return {
           USER: User,
           SUPER: SuperUser
@@ -220,7 +224,7 @@ describe('Unit – Model', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           name: this.attr('John Doe'),
           email: this.attr('john@example.com')
@@ -229,7 +233,7 @@ describe('Unit – Model', () => {
     }
 
     const shouldThrow = () => {
-      (User as any).getAttributeClass('blah')
+      ;(User as any).getAttributeClass('blah')
     }
 
     expect(shouldThrow).toThrow()
@@ -239,7 +243,7 @@ describe('Unit – Model', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('Default Doe')
@@ -256,7 +260,7 @@ describe('Unit – Model', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('Default Doe')
@@ -278,7 +282,7 @@ describe('Unit – Model', () => {
       // @Attribute
       id!: string
 
-      static fields () {
+      static fields() {
         return {
           // tslint:disable-next-line:deprecation
           id: this.increment()

@@ -13,7 +13,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @Intermediate
       pivot!: Taggable
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -29,7 +29,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @Intermediate
       pivot!: Taggable
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -51,12 +51,24 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @MorphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
       videos!: Video[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
-          posts: this.morphedByMany(Post, Taggable, 'tag_id', 'taggable_id', 'taggable_type'),
-          videos: this.morphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          posts: this.morphedByMany(
+            Post,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          ),
+          videos: this.morphedByMany(
+            Video,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -79,7 +91,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @Attribute
       is_public!: boolean
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -90,7 +102,12 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Post.create({
       data: [{ id: 1 }, { id: 5 }]
@@ -101,19 +118,49 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
     })
 
     await Tag.create({
-      data: [{ id: 1, name: 'news' }, { id: 3, name: 'without references' }]
+      data: [
+        { id: 1, name: 'news' },
+        { id: 3, name: 'without references' }
+      ]
     })
 
     await Taggable.create({
       data: [
-        { id: 1, tag_id: 1, taggable_id: 1, taggable_type: 'posts', is_public: false },
-        { id: 2, tag_id: 2, taggable_id: 3, taggable_type: 'videos', is_public: true },
-        { id: 3, tag_id: 1, taggable_id: 5, taggable_type: 'posts', is_public: true },
-        { id: 4, tag_id: 1, taggable_id: 4, taggable_type: 'videos', is_public: false }
+        {
+          id: 1,
+          tag_id: 1,
+          taggable_id: 1,
+          taggable_type: 'posts',
+          is_public: false
+        },
+        {
+          id: 2,
+          tag_id: 2,
+          taggable_id: 3,
+          taggable_type: 'videos',
+          is_public: true
+        },
+        {
+          id: 3,
+          tag_id: 1,
+          taggable_id: 5,
+          taggable_type: 'posts',
+          is_public: true
+        },
+        {
+          id: 4,
+          tag_id: 1,
+          taggable_id: 4,
+          taggable_type: 'videos',
+          is_public: false
+        }
       ]
     })
 
-    const tag = Tag.query().with('posts').with('videos').find(1) as Tag
+    const tag = Tag.query()
+      .with('posts')
+      .with('videos')
+      .find(1) as Tag
 
     expect(tag.posts.length).toBe(2)
     expect(tag.posts[0].pivot.is_public).toBe(false)
@@ -121,7 +168,10 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
     expect(tag.videos.length).toBe(1)
     expect(tag.videos[0].pivot.is_public).toBe(false)
 
-    const tagWithoutReferences = Tag.query().with('posts').with('videos').find(3) as Tag
+    const tagWithoutReferences = Tag.query()
+      .with('posts')
+      .with('videos')
+      .find(3) as Tag
 
     expect(tagWithoutReferences.videos.length).toBe(0)
     expect(tagWithoutReferences.posts.length).toBe(0)
@@ -136,7 +186,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @Attribute
       post_id!: number
 
-      static fields () {
+      static fields() {
         return {
           post_id: this.attr(null)
         }
@@ -149,7 +199,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @Attribute
       id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -173,12 +223,24 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @MorphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
       videos!: Video[]
 
-      static fields () {
+      static fields() {
         return {
           tag_id: this.attr(null),
           name: this.attr(''),
-          posts: this.morphedByMany(Post, Taggable, 'tag_id', 'taggable_id', 'taggable_type'),
-          videos: this.morphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          posts: this.morphedByMany(
+            Post,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          ),
+          videos: this.morphedByMany(
+            Video,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -198,7 +260,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @Attribute
       taggable_type!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -208,7 +270,12 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Post.create({
       data: [{ post_id: 1 }, { post_id: 5 }]
@@ -231,7 +298,10 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       ]
     })
 
-    const tag = Tag.query().with('posts').with('videos').find(1) as Tag
+    const tag = Tag.query()
+      .with('posts')
+      .with('videos')
+      .find(1) as Tag
 
     expect(tag.posts.length).toBe(2)
     expect(tag.videos.length).toBe(1)
@@ -247,7 +317,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @Attribute
       post_id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           post_id: this.attr(null)
@@ -261,7 +331,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @Attribute
       id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -286,13 +356,28 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @MorphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type', 'tag_id')
       videos!: Video[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
           name: this.attr(''),
-          posts: this.morphedByMany(Post, Taggable, 'tag_id', 'taggable_id', 'taggable_type', 'tag_id', 'post_id'),
-          videos: this.morphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type', 'tag_id')
+          posts: this.morphedByMany(
+            Post,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type',
+            'tag_id',
+            'post_id'
+          ),
+          videos: this.morphedByMany(
+            Video,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type',
+            'tag_id'
+          )
         }
       }
     }
@@ -312,7 +397,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @Attribute
       taggable_type!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -322,7 +407,12 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Post.create({
       data: [
@@ -348,7 +438,10 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       ]
     })
 
-    const tag = Tag.query().with('posts').with('videos').find(1) as Tag
+    const tag = Tag.query()
+      .with('posts')
+      .with('videos')
+      .find(1) as Tag
 
     expect(tag.posts.length).toBe(2)
     expect(tag.videos.length).toBe(1)
@@ -361,7 +454,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @Attribute
       id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -374,7 +467,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @Attribute
       id!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -393,11 +486,23 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @MorphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
       videos!: Video[]
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
-          posts: this.morphedByMany(Post, Taggable, 'tag_id', 'taggable_id', 'taggable_type'),
-          videos: this.morphedByMany(Video, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+          posts: this.morphedByMany(
+            Post,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          ),
+          videos: this.morphedByMany(
+            Video,
+            Taggable,
+            'tag_id',
+            'taggable_id',
+            'taggable_type'
+          )
         }
       }
     }
@@ -417,7 +522,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       // @Attribute
       taggable_type!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           tag_id: this.attr(null),
@@ -427,7 +532,12 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       }
     }
 
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     await Tag.create({
       data: {
@@ -438,8 +548,12 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
     })
 
     const tag = Tag.query()
-      .with('posts', query => { query.orderBy('id', 'asc') })
-      .with('videos', query => { query.orderBy('id', 'desc') })
+      .with('posts', (query) => {
+        query.orderBy('id', 'asc')
+      })
+      .with('videos', (query) => {
+        query.orderBy('id', 'desc')
+      })
       .find(1) as Tag
 
     expect(tag.posts[0].id).toBe(1)

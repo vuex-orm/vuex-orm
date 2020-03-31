@@ -6,7 +6,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
@@ -17,7 +17,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Comment extends Model {
       static entity = 'comments'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           body: this.attr(''),
@@ -47,7 +47,14 @@ describe('Features – Relations – Morph One – Persist', () => {
         1: { $id: '1', id: 1, comment: null }
       },
       comments: {
-        1: { $id: '1', id: 1, body: 'The Body', commentable_type: 'posts', commentable_id: 1, commentable: null }
+        1: {
+          $id: '1',
+          id: 1,
+          body: 'The Body',
+          commentable_type: 'posts',
+          commentable_id: 1,
+          commentable: null
+        }
       }
     })
 
@@ -58,7 +65,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
@@ -69,7 +76,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Video extends Model {
       static entity = 'videos'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
@@ -80,7 +87,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Comment extends Model {
       static entity = 'comments'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           body: this.attr(''),
@@ -90,7 +97,11 @@ describe('Features – Relations – Morph One – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
+    const store = createStore([
+      { model: Post },
+      { model: Video },
+      { model: Comment }
+    ])
 
     await Post.create({
       data: {
@@ -102,14 +113,16 @@ describe('Features – Relations – Morph One – Persist', () => {
     expect(store.state.entities.posts.data['1'].id).toBe(1)
     expect(store.state.entities.comments.data['2'].id).toBe(2)
     expect(store.state.entities.comments.data['2'].commentable_id).toBe(1)
-    expect(store.state.entities.comments.data['2'].commentable_type).toBe('posts')
+    expect(store.state.entities.comments.data['2'].commentable_type).toBe(
+      'posts'
+    )
   })
 
   it('generates only missing id or types for the morph one relations', async () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
@@ -120,7 +133,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Video extends Model {
       static entity = 'videos'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
@@ -131,7 +144,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Comment extends Model {
       static entity = 'comments'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           body: this.attr(''),
@@ -141,7 +154,11 @@ describe('Features – Relations – Morph One – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
+    const store = createStore([
+      { model: Post },
+      { model: Video },
+      { model: Comment }
+    ])
 
     await Post.create({
       data: {
@@ -156,21 +173,29 @@ describe('Features – Relations – Morph One – Persist', () => {
       },
       videos: {},
       comments: {
-        2: { $id: '2', id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' }
+        2: {
+          $id: '2',
+          id: 2,
+          body: 'comment1',
+          commentable_id: 1,
+          commentable_type: 'posts'
+        }
       }
     })
 
     expect(store.state.entities.posts.data['1'].id).toBe(1)
     expect(store.state.entities.comments.data['2'].id).toBe(2)
     expect(store.state.entities.comments.data['2'].commentable_id).toBe(1)
-    expect(store.state.entities.comments.data['2'].commentable_type).toBe('posts')
+    expect(store.state.entities.comments.data['2'].commentable_type).toBe(
+      'posts'
+    )
   })
 
   it('would not generate id or types for non nested relations', async () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comments: this.morphOne(Comment, 'commentable_id', 'commentable_type')
@@ -181,7 +206,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Video extends Model {
       static entity = 'videos'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comments: this.morphOne(Comment, 'commentable_id', 'commentable_type')
@@ -192,7 +217,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Comment extends Model {
       static entity = 'comments'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           body: this.attr(''),
@@ -202,7 +227,11 @@ describe('Features – Relations – Morph One – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
+    const store = createStore([
+      { model: Post },
+      { model: Video },
+      { model: Comment }
+    ])
 
     await Comment.create({
       data: [
@@ -223,7 +252,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr('null'),
           posts: this.hasMany(Post, 'user_id')
@@ -234,7 +263,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null),
@@ -246,7 +275,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Video extends Model {
       static entity = 'videos'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
@@ -257,7 +286,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Comment extends Model {
       static entity = 'comments'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           body: this.attr(''),
@@ -267,16 +296,23 @@ describe('Features – Relations – Morph One – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: User }, { model: Post }, { model: Video }, { model: Comment }])
+    const store = createStore([
+      { model: User },
+      { model: Post },
+      { model: Video },
+      { model: Comment }
+    ])
 
     await User.create({
       data: {
         id: 1,
-        posts: [{
-          id: 5,
-          user_id: 1,
-          comment: { id: 2, body: 'comment1', commentable_id: 1 }
-        }]
+        posts: [
+          {
+            id: 5,
+            user_id: 1,
+            comment: { id: 2, body: 'comment1', commentable_id: 1 }
+          }
+        ]
       }
     })
 
@@ -289,7 +325,13 @@ describe('Features – Relations – Morph One – Persist', () => {
       },
       videos: {},
       comments: {
-        2: { $id: '2', id: 2, body: 'comment1', commentable_id: 1, commentable_type: 'posts' }
+        2: {
+          $id: '2',
+          id: 2,
+          body: 'comment1',
+          commentable_id: 1,
+          commentable_type: 'posts'
+        }
       }
     })
 
@@ -297,14 +339,16 @@ describe('Features – Relations – Morph One – Persist', () => {
     expect(store.state.entities.posts.data['5'].id).toBe(5)
     expect(store.state.entities.comments.data['2'].id).toBe(2)
     expect(store.state.entities.comments.data['2'].commentable_id).toBe(1)
-    expect(store.state.entities.comments.data['2'].commentable_type).toBe('posts')
+    expect(store.state.entities.comments.data['2'].commentable_type).toBe(
+      'posts'
+    )
   })
 
   it('can create data containing the empty morph one relation', async () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
@@ -315,7 +359,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Comment extends Model {
       static entity = 'comments'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           body: this.attr(''),
@@ -352,7 +396,14 @@ describe('Features – Relations – Morph One – Persist', () => {
         2: { $id: '2', id: 2, comment: null }
       },
       comments: {
-        1: { $id: '1', id: 1, body: 'The Body', commentable_type: 'posts', commentable_id: 1, commentable: null }
+        1: {
+          $id: '1',
+          id: 1,
+          body: 'The Body',
+          commentable_type: 'posts',
+          commentable_id: 1,
+          commentable: null
+        }
       }
     })
 
@@ -363,7 +414,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
@@ -374,7 +425,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Video extends Model {
       static entity = 'videos'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
@@ -385,7 +436,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Comment extends Model {
       static entity = 'comments'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           body: this.attr(''),
@@ -395,16 +446,27 @@ describe('Features – Relations – Morph One – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
+    const store = createStore([
+      { model: Post },
+      { model: Video },
+      { model: Comment }
+    ])
 
     await store.dispatch('entities/posts/create', {
       data: {
         id: 1,
-        comment: { id: 1, body: 'comment1', commentabe_id: 1, commentable_type: 'posts' }
+        comment: {
+          id: 1,
+          body: 'comment1',
+          commentabe_id: 1,
+          commentable_type: 'posts'
+        }
       }
     })
 
-    const post = store.getters['entities/posts/query']().with('comment').find(1)
+    const post = store.getters['entities/posts/query']()
+      .with('comment')
+      .find(1)
 
     expect(post).toBeInstanceOf(Post)
     expect(post.comment).toBeInstanceOf(Comment)
@@ -414,7 +476,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
@@ -425,7 +487,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Video extends Model {
       static entity = 'videos'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           comment: this.morphOne(Comment, 'commentable_id', 'commentable_type')
@@ -436,7 +498,7 @@ describe('Features – Relations – Morph One – Persist', () => {
     class Comment extends Model {
       static entity = 'comments'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           body: this.attr(''),
@@ -446,7 +508,11 @@ describe('Features – Relations – Morph One – Persist', () => {
       }
     }
 
-    const store = createStore([{ model: Post }, { model: Video }, { model: Comment }])
+    const store = createStore([
+      { model: Post },
+      { model: Video },
+      { model: Comment }
+    ])
 
     await store.dispatch('entities/posts/create', {
       data: {
@@ -455,7 +521,9 @@ describe('Features – Relations – Morph One – Persist', () => {
       }
     })
 
-    const post = store.getters['entities/posts/query']().with('comment').find(1)
+    const post = store.getters['entities/posts/query']()
+      .with('comment')
+      .find(1)
 
     expect(post).toBeInstanceOf(Post)
     expect(post.comment).toBeInstanceOf(Comment)

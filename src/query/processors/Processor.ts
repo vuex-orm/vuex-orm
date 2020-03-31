@@ -9,7 +9,7 @@ export default class Processor {
   /**
    * Normalize the given data.
    */
-  static normalize (query: Query, record: Record | Record[]): NormalizedData {
+  static normalize(query: Query, record: Record | Record[]): NormalizedData {
     // First, let's normalize the data.
     let data = Normalizer.process(query, record)
 

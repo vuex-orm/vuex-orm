@@ -11,7 +11,7 @@ describe('Feature – Models – Update', () => {
     // @Attribute('')
     name!: string
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.attr('')
@@ -71,7 +71,7 @@ describe('Feature – Models – Update', () => {
       })
 
       await User.update({
-        where (record) {
+        where(record) {
           return record.name === 'Jane Doe'
         },
 
@@ -103,7 +103,7 @@ describe('Feature – Models – Update', () => {
       await User.update({
         where: 1,
 
-        data (record: User) {
+        data(record: User) {
           record.name = 'Jane Doe'
         }
       })
@@ -167,7 +167,7 @@ describe('Feature – Models – Update', () => {
 
         static primaryKey = ['key_1', 'key_2']
 
-        static fields () {
+        static fields() {
           return {
             key_1: this.uid(),
             key_2: this.uid(),

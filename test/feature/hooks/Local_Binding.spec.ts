@@ -15,7 +15,7 @@ describe('Hooks – Local Binding', () => {
       // @Attribute
       age!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr(''),
@@ -23,11 +23,11 @@ describe('Hooks – Local Binding', () => {
         }
       }
 
-      static beforeCreate (user: User) {
+      static beforeCreate(user: User) {
         this.setAge(user)
       }
 
-      static setAge (user: User) {
+      static setAge(user: User) {
         user.age = 30
       }
     }

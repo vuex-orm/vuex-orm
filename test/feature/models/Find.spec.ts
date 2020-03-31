@@ -6,7 +6,7 @@ describe('Feature – Models – Find', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -76,7 +76,7 @@ describe('Feature – Models – Find', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('')
@@ -154,7 +154,7 @@ describe('Feature – Models – Find', () => {
 
       static primaryKey = ['workspace_id', 'id']
 
-      static fields () {
+      static fields() {
         return {
           workspace_id: this.attr(null),
           id: this.attr(null),
@@ -178,7 +178,12 @@ describe('Feature – Models – Find', () => {
 
         const user = User.find([1, 1])
 
-        const expected = { $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' }
+        const expected = {
+          $id: '[1,1]',
+          id: 1,
+          workspace_id: 1,
+          name: 'John Doe'
+        }
 
         expect(user).toEqual(expected)
         expect(user).toBeInstanceOf(User)
@@ -193,7 +198,10 @@ describe('Feature – Models – Find', () => {
           ]
         })
 
-        const users = User.findIn([[1, 1], [1, 3]])
+        const users = User.findIn([
+          [1, 1],
+          [1, 3]
+        ])
 
         const expected = [
           { $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' },
@@ -227,7 +235,12 @@ describe('Feature – Models – Find', () => {
 
         const user = u.$find([1, 1])
 
-        const expected = { $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' }
+        const expected = {
+          $id: '[1,1]',
+          id: 1,
+          workspace_id: 1,
+          name: 'John Doe'
+        }
 
         expect(user).toEqual(expected)
         expect(user).toBeInstanceOf(User)
@@ -244,7 +257,10 @@ describe('Feature – Models – Find', () => {
 
         const u = new User()
 
-        const users = u.$findIn([[1, 1], [1, 3]])
+        const users = u.$findIn([
+          [1, 1],
+          [1, 3]
+        ])
 
         const expected = [
           { $id: '[1,1]', id: 1, workspace_id: 1, name: 'John Doe' },

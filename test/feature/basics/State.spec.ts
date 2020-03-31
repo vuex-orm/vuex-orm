@@ -10,7 +10,7 @@ describe('Feature – Basics – State', () => {
         fetching: false
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -26,13 +26,13 @@ describe('Feature – Basics – State', () => {
     class User extends Model {
       static entity = 'users'
 
-      static state () {
+      static state() {
         return {
           fetching: false
         }
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -52,7 +52,7 @@ describe('Feature – Basics – State', () => {
         fetching: false
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
@@ -76,13 +76,13 @@ describe('Feature – Basics – State', () => {
         fetching: false
       }
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null)
         }
       }
 
-      static fetching (state: any) {
+      static fetching(state: any) {
         state.fetching = true
       }
     }

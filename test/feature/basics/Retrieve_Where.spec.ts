@@ -18,7 +18,7 @@ describe('Feature – Retrieve – Where', () => {
     // @Attribute(false)
     active!: boolean
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.attr(''),
@@ -27,7 +27,7 @@ describe('Feature – Retrieve – Where', () => {
       }
     }
 
-    isActive () {
+    isActive() {
       return this.active
     }
   }
@@ -67,9 +67,7 @@ describe('Feature – Retrieve – Where', () => {
       ]
     })
 
-    const expected = [
-      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
-    ]
+    const expected = [{ $id: '2', id: 2, name: 'Jane', age: 20, active: true }]
 
     const users = store.getters['entities/users/query']()
       .whereId(2)
@@ -155,9 +153,7 @@ describe('Feature – Retrieve – Where', () => {
       ]
     })
 
-    const expected = [
-      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
-    ]
+    const expected = [{ $id: '2', id: 2, name: 'Jane', age: 20, active: true }]
 
     const users = store.getters['entities/users/query']()
       .whereIdIn([2, 3])
@@ -304,7 +300,9 @@ describe('Feature – Retrieve – Where', () => {
     ]
 
     const users = store.getters['entities/users/query']()
-      .where((_user: User, query: Query) => { query.where('age', 20) })
+      .where((_user: User, query: Query) => {
+        query.where('age', 20)
+      })
       .get()
 
     expect(users).toEqual(expected)
@@ -321,9 +319,7 @@ describe('Feature – Retrieve – Where', () => {
       ]
     })
 
-    const expected = [
-      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
-    ]
+    const expected = [{ $id: '2', id: 2, name: 'Jane', age: 20, active: true }]
 
     const users = store.getters['entities/users/query']()
       .where((_user: User, _query: Query, model: User) => {
@@ -395,9 +391,7 @@ describe('Feature – Retrieve – Where', () => {
       ]
     })
 
-    const expected = [
-      { $id: '2', id: 2, name: 'Jane', age: 20, active: true }
-    ]
+    const expected = [{ $id: '2', id: 2, name: 'Jane', age: 20, active: true }]
 
     const users = store.getters['entities/users/query']()
       .orWhere('id', 2)
@@ -508,9 +502,12 @@ describe('Feature – Retrieve – Where', () => {
     // (A || B || (E && F)) && (C || D)
     const users = store.getters['entities/users/query']()
       .where((_user: User, query: Query) => {
-        query.where('age', 20).orWhere('age', 21).orWhere((_user2: User, q: Query) => {
-          q.where('age', 22).where((u: User) => u.name.indexOf('Jimm') === 0)
-        })
+        query
+          .where('age', 20)
+          .orWhere('age', 21)
+          .orWhere((_user2: User, q: Query) => {
+            q.where('age', 22).where((u: User) => u.name.indexOf('Jimm') === 0)
+          })
       })
       .where((_user: User, query: Query) => {
         query.where('active', true)

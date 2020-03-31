@@ -11,7 +11,7 @@ describe('Model – Relations – MorphMany', () => {
     // @MorphMany(Comment, 'commentable_id', 'commentable_type')
     comments!: Comment[]
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
@@ -34,7 +34,7 @@ describe('Model – Relations – MorphMany', () => {
     // @Attribute
     commentable_type!: string
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         body: this.attr(''),

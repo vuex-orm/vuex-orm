@@ -12,7 +12,7 @@ describe('Model – Relations – Morph To', () => {
     // @MorphMany(Comment, 'commentable_id', 'commentable_type')
     comments!: Comment[]
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
@@ -29,7 +29,7 @@ describe('Model – Relations – Morph To', () => {
     // @MorphMany(Comment, 'commentable_id', 'commentable_type')
     comments!: Comment[]
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         comments: this.morphMany(Comment, 'commentable_id', 'commentable_type')
@@ -55,7 +55,7 @@ describe('Model – Relations – Morph To', () => {
     // @MorphTo('commentable_id', 'commentable_type')
     commentable!: Post | Video
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         body: this.attr(''),

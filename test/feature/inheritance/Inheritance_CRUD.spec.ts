@@ -5,7 +5,7 @@ describe('Feature - Inheritance - CRUD', () => {
   class Person extends Model {
     static entity = 'person'
 
-    static types () {
+    static types() {
       return {
         ADULT: Adult,
         PERSON: Person,
@@ -13,7 +13,7 @@ describe('Feature - Inheritance - CRUD', () => {
       }
     }
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.attr(''),
@@ -31,7 +31,7 @@ describe('Feature - Inheritance - CRUD', () => {
 
     static baseEntity = 'person'
 
-    static fields () {
+    static fields() {
       return {
         ...super.fields(),
         job: this.attr('')
@@ -46,7 +46,7 @@ describe('Feature - Inheritance - CRUD', () => {
 
     static baseEntity = 'person'
 
-    static fields () {
+    static fields() {
       return {
         ...super.fields()
       }
@@ -64,7 +64,9 @@ describe('Feature - Inheritance - CRUD', () => {
       data: { id: 2, name: 'Jane', job: 'Software Engineer' }
     })
 
-    const people = Person.query().orderBy('id').get()
+    const people = Person.query()
+      .orderBy('id')
+      .get()
 
     expect(people.length).toBe(2)
 
@@ -96,7 +98,7 @@ describe('Feature - Inheritance - CRUD', () => {
   })
 
   it('should clean only corresponding entities (and derived ones) when calling create', async () => {
-    createStore([Person, Adult, Child ])
+    createStore([Person, Adult, Child])
 
     await Person.insert({
       data: [

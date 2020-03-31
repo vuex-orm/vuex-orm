@@ -12,8 +12,12 @@ import * as Payloads from './payloads/RootActions'
 /**
  * Create new data with all fields filled by default values.
  */
-async function newRecord (this: Store<any>, _context: ActionContext, payload: Payloads.New): Promise<Model> {
-  return (new Query(this, payload.entity)).new()
+async function newRecord(
+  this: Store<any>,
+  _context: ActionContext,
+  payload: Payloads.New
+): Promise<Model> {
+  return new Query(this, payload.entity).new()
 }
 
 /**
@@ -21,12 +25,16 @@ async function newRecord (this: Store<any>, _context: ActionContext, payload: Pa
  * store. If you want to save data without replacing existing records,
  * use the `insert` method instead.
  */
-async function create (this: Store<any>, _context: ActionContext, payload: Payloads.Create): Promise<Collections> {
+async function create(
+  this: Store<any>,
+  _context: ActionContext,
+  payload: Payloads.Create
+): Promise<Collections> {
   const entity = payload.entity
   const data = payload.data
   const options = OptionsBuilder.createPersistOptions(payload)
 
-  return (new Query(this, entity)).create(data, options)
+  return new Query(this, entity).create(data, options)
 }
 
 /**
@@ -34,24 +42,32 @@ async function create (this: Store<any>, _context: ActionContext, payload: Paylo
  * remove existing data within the state, but it will update the data
  * with the same primary key.
  */
-async function insert (this: Store<any>, _context: ActionContext, payload: Payloads.Insert): Promise<Collections> {
+async function insert(
+  this: Store<any>,
+  _context: ActionContext,
+  payload: Payloads.Insert
+): Promise<Collections> {
   const entity = payload.entity
   const data = payload.data
   const options = OptionsBuilder.createPersistOptions(payload)
 
-  return (new Query(this, entity)).insert(data, options)
+  return new Query(this, entity).insert(data, options)
 }
 
 /**
  * Update data in the store.
  */
-async function update (this: Store<any>, _context: ActionContext, payload: Payloads.Update): Promise<Item | Collection | Collections> {
+async function update(
+  this: Store<any>,
+  _context: ActionContext,
+  payload: Payloads.Update
+): Promise<Item | Collection | Collections> {
   const entity = payload.entity
   const data = payload.data
   const where = payload.where || null
   const options = OptionsBuilder.createPersistOptions(payload)
 
-  return (new Query(this, entity)).update(data, where, options)
+  return new Query(this, entity).update(data, where, options)
 }
 
 /**
@@ -59,12 +75,16 @@ async function update (this: Store<any>, _context: ActionContext, payload: Paylo
  * will not replace existing data within the state, but it will update only
  * the submitted data with the same primary key.
  */
-async function insertOrUpdate (this: Store<any>, _context: ActionContext, payload: Payloads.InsertOrUpdate): Promise<Collections> {
+async function insertOrUpdate(
+  this: Store<any>,
+  _context: ActionContext,
+  payload: Payloads.InsertOrUpdate
+): Promise<Collections> {
   const entity = payload.entity
   const data = payload.data
   const options = OptionsBuilder.createPersistOptions(payload)
 
-  return (new Query(this, entity)).insertOrUpdate(data, options)
+  return new Query(this, entity).insertOrUpdate(data, options)
 }
 
 /**
@@ -72,20 +92,36 @@ async function insertOrUpdate (this: Store<any>, _context: ActionContext, payloa
  * but named `destroy` here because `delete` can't be declared at this
  * scope level.
  */
-async function destroy (this: Store<any>, _context: ActionContext, payload: Payloads.DeleteById): Promise<Item>
-async function destroy (this: Store<any>, _context: ActionContext, payload: Payloads.DeleteByCondition): Promise<Collection>
-async function destroy (this: Store<any>, _context: ActionContext, payload: any): Promise<any> {
+async function destroy(
+  this: Store<any>,
+  _context: ActionContext,
+  payload: Payloads.DeleteById
+): Promise<Item>
+async function destroy(
+  this: Store<any>,
+  _context: ActionContext,
+  payload: Payloads.DeleteByCondition
+): Promise<Collection>
+async function destroy(
+  this: Store<any>,
+  _context: ActionContext,
+  payload: any
+): Promise<any> {
   const { entity, where } = payload
 
-  return (new Query(this, entity)).delete(where)
+  return new Query(this, entity).delete(where)
 }
 
 /**
  * Delete all data from the store.
  */
-async function deleteAll (this: Store<any>, _context: ActionContext, payload?: Payloads.DeleteAll): Promise<void> {
+async function deleteAll(
+  this: Store<any>,
+  _context: ActionContext,
+  payload?: Payloads.DeleteAll
+): Promise<void> {
   if (payload && payload.entity) {
-    (new Query(this, payload.entity)).deleteAll()
+    new Query(this, payload.entity).deleteAll()
 
     return
   }

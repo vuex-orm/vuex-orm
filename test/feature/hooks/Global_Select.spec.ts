@@ -12,7 +12,7 @@ describe('Feature – Hooks – Global Select', () => {
     // @Attribute('')
     role!: string
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         role: this.attr('')
@@ -36,17 +36,17 @@ describe('Feature – Hooks – Global Select', () => {
       ]
     })
 
-    const expected = [
-      { $id: '1', id: 1, role: 'admin' }
-    ]
+    const expected = [{ $id: '1', id: 1, role: 'admin' }]
 
-    const hookId = Query.on('afterWhere', function (records: any, _entity: any) {
+    const hookId = Query.on('afterWhere', function(records: any, _entity: any) {
       expect(records.length).toBe(2)
 
       return records.filter((record: User) => record.id === 1)
     })
 
-    const users = User.query().where('role', 'admin').get()
+    const users = User.query()
+      .where('role', 'admin')
+      .get()
     expect(users).toEqual(expected)
 
     const removeBoolean = Query.off(hookId)

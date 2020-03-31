@@ -5,7 +5,7 @@ describe('Features – Relations – Has Many', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         posts: this.hasMany(Post, 'user_id')
@@ -16,7 +16,7 @@ describe('Features – Relations – Has Many', () => {
   class Post extends Model {
     static entity = 'posts'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         user_id: this.attr(null)
@@ -30,10 +30,7 @@ describe('Features – Relations – Has Many', () => {
     await store.dispatch('entities/users/create', {
       data: {
         id: 1,
-        posts: [
-          { id: 1 },
-          { id: 2 }
-        ]
+        posts: [{ id: 1 }, { id: 2 }]
       }
     })
 
@@ -61,10 +58,7 @@ describe('Features – Relations – Has Many', () => {
       insert: ['posts'],
       data: {
         id: 1,
-        posts: [
-          { id: 1 },
-          { id: 2 }
-        ]
+        posts: [{ id: 1 }, { id: 2 }]
       }
     })
 
@@ -88,10 +82,7 @@ describe('Features – Relations – Has Many', () => {
       data: [
         {
           id: 1,
-          posts: [
-            { id: 1 },
-            { id: 2 }
-          ]
+          posts: [{ id: 1 }, { id: 2 }]
         },
         {
           id: 2,
@@ -116,7 +107,9 @@ describe('Features – Relations – Has Many', () => {
       }
     ]
 
-    const user = store.getters['entities/users/query']().with('posts').all()
+    const user = store.getters['entities/users/query']()
+      .with('posts')
+      .all()
 
     expect(user).toEqual(expected)
   })
@@ -127,7 +120,7 @@ describe('Features – Relations – Has Many', () => {
 
       static primaryKey = 'user_id'
 
-      static fields () {
+      static fields() {
         return {
           user_id: this.attr(null),
           posts: this.hasMany(Post, 'user_id')
@@ -140,10 +133,7 @@ describe('Features – Relations – Has Many', () => {
     await store.dispatch('entities/users/create', {
       data: {
         user_id: 1,
-        posts: [
-          { id: 1 },
-          { id: 2 }
-        ]
+        posts: [{ id: 1 }, { id: 2 }]
       }
     })
 
@@ -156,7 +146,9 @@ describe('Features – Relations – Has Many', () => {
       ]
     }
 
-    const user = store.getters['entities/users/query']().with('posts').find(1)
+    const user = store.getters['entities/users/query']()
+      .with('posts')
+      .find(1)
 
     expect(user).toEqual(expected)
   })
@@ -165,7 +157,7 @@ describe('Features – Relations – Has Many', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           local_key: this.attr(null),
@@ -177,7 +169,7 @@ describe('Features – Relations – Has Many', () => {
     class Post extends Model {
       static entity = 'posts'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           user_id: this.attr(null)
@@ -191,9 +183,7 @@ describe('Features – Relations – Has Many', () => {
       data: {
         id: 1,
         local_key: 'local_key',
-        posts: [
-          { id: 1 }
-        ]
+        posts: [{ id: 1 }]
       }
     })
 

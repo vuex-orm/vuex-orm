@@ -11,10 +11,16 @@ describe('Model – Relations – Morph To Many', () => {
     // @MorphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
     tags!: Tag[]
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
-        tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+        tags: this.morphToMany(
+          Tag,
+          Taggable,
+          'tag_id',
+          'taggable_id',
+          'taggable_type'
+        )
       }
     }
   }
@@ -28,10 +34,16 @@ describe('Model – Relations – Morph To Many', () => {
     // @MorphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
     tags!: Tag[]
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
-        tags: this.morphToMany(Tag, Taggable, 'tag_id', 'taggable_id', 'taggable_type')
+        tags: this.morphToMany(
+          Tag,
+          Taggable,
+          'tag_id',
+          'taggable_id',
+          'taggable_type'
+        )
       }
     }
   }
@@ -45,7 +57,7 @@ describe('Model – Relations – Morph To Many', () => {
     // @Attribute('')
     name!: string
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.attr('')
@@ -56,7 +68,7 @@ describe('Model – Relations – Morph To Many', () => {
   class Taggable extends Model {
     static entity = 'taggables'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         tag_id: this.attr(null),
@@ -67,7 +79,12 @@ describe('Model – Relations – Morph To Many', () => {
   }
 
   it('can resolve morph to many relation', () => {
-    createStore([{ model: Post }, { model: Video }, { model: Tag }, { model: Taggable }])
+    createStore([
+      { model: Post },
+      { model: Video },
+      { model: Tag },
+      { model: Taggable }
+    ])
 
     const post = new Post({
       id: 1,

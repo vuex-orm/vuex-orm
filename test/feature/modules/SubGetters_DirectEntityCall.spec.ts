@@ -6,7 +6,7 @@ describe('Features – Sub Getters – Direct Entity Call', () => {
     class User extends Model {
       static entity = 'users'
 
-      static fields () {
+      static fields() {
         return {
           id: this.attr(null),
           name: this.attr('JD')

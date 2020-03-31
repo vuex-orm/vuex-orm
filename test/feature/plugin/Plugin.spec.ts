@@ -8,7 +8,7 @@ describe('Plugin', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.attr('')
@@ -24,14 +24,14 @@ describe('Plugin', () => {
 
   it('add additional feature to the Model', async () => {
     const plugin = {
-      install (components: any) {
-        components.Model.staticMethod = function () {
+      install(components: any) {
+        components.Model.staticMethod = function() {
           return 'Hello'
         }
 
         components.Model.prototype.instanceProperty = ', world!'
 
-        components.Model.prototype.instanceMethod = function () {
+        components.Model.prototype.instanceMethod = function() {
           return `${this.$self().staticMethod()}${this.instanceProperty}`
         }
       }
@@ -43,7 +43,9 @@ describe('Plugin', () => {
       plugins: [VuexORM.install(database)]
     })
 
-    await store.dispatch('entities/users/create', { data: { id: 1, name: 'John' } })
+    await store.dispatch('entities/users/create', {
+      data: { id: 1, name: 'John' }
+    })
 
     const user = store.getters['entities/users/find'](1)
 
@@ -53,12 +55,12 @@ describe('Plugin', () => {
 
   it('add additional feature to the Query', async () => {
     const plugin = {
-      install (components: any) {
-        components.Query.staticMethod = function () {
+      install(components: any) {
+        components.Query.staticMethod = function() {
           return 'Hello'
         }
 
-        components.Query.prototype.instanceMethod = function () {
+        components.Query.prototype.instanceMethod = function() {
           return `${this.self().staticMethod()}, world!`
         }
       }
@@ -70,7 +72,9 @@ describe('Plugin', () => {
       plugins: [VuexORM.install(database)]
     })
 
-    await store.dispatch('entities/users/create', { data: { id: 1, name: 'John' } })
+    await store.dispatch('entities/users/create', {
+      data: { id: 1, name: 'John' }
+    })
 
     const query = store.getters['entities/users/query']()
 
@@ -79,7 +83,7 @@ describe('Plugin', () => {
 
   it('add additional feature to the rootGetters', () => {
     const plugin = {
-      install (components: any) {
+      install(components: any) {
         components.RootGetters.getName = (state: any) => {
           return state.$name
         }
@@ -97,7 +101,7 @@ describe('Plugin', () => {
 
   it('add additional feature to the subGetters', () => {
     const plugin = {
-      install (components: any) {
+      install(components: any) {
         components.Getters.getName = (state: any) => {
           return state.$name
         }
@@ -115,7 +119,7 @@ describe('Plugin', () => {
 
   it('add additional feature to the rootActions', async () => {
     const plugin = {
-      install (components: any) {
+      install(components: any) {
         components.RootActions.getName = () => {
           return 'John Doe'
         }
@@ -133,7 +137,7 @@ describe('Plugin', () => {
 
   it('add additional feature to the subActions', async () => {
     const plugin = {
-      install (components: any) {
+      install(components: any) {
         components.Actions.getName = () => {
           return 'John Doe'
         }
@@ -151,7 +155,7 @@ describe('Plugin', () => {
 
   it('add additional feature to the mutations', () => {
     const plugin = {
-      install (components: any) {
+      install(components: any) {
         components.RootMutations.setName = (state: any, name: any) => {
           state.name = name
         }
@@ -171,7 +175,7 @@ describe('Plugin', () => {
 
   it('can take extra options', () => {
     const plugin = {
-      install (components: any, options: any) {
+      install(components: any, options: any) {
         components.Query.version = () => options.version
       }
     }

@@ -17,7 +17,7 @@ describe('Feature – Attributes – Uid', () => {
       // @Uid
       id2!: string
 
-      static fields () {
+      static fields() {
         return {
           id: this.uid(),
           id2: this.uid()
@@ -47,7 +47,10 @@ describe('Feature – Attributes – Uid', () => {
       const store = createStore([{ model: User }])
 
       await User.create({
-        data: [{ id: 1, id2: 'id1' }, { id: 2, id2: 'id2' }]
+        data: [
+          { id: 1, id2: 'id1' },
+          { id: 2, id2: 'id2' }
+        ]
       })
 
       const expected = createState({
@@ -71,7 +74,7 @@ describe('Feature – Attributes – Uid', () => {
       // @Uid(() => 2)
       id2!: number
 
-      static fields () {
+      static fields() {
         return {
           id: this.uid(() => 1),
           id2: this.uid(() => 2)

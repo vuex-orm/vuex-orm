@@ -5,7 +5,7 @@ describe('Feature – Basics – Create', () => {
   class User extends Model {
     static entity = 'users'
 
-    static fields () {
+    static fields() {
       return {
         id: this.attr(null),
         name: this.attr('JD')
@@ -147,7 +147,9 @@ describe('Feature – Basics – Create', () => {
   it('returns null when creating empty data', async () => {
     const store = createStore([{ model: User }])
 
-    const collection = await store.dispatch('entities/users/create', { data: {} })
+    const collection = await store.dispatch('entities/users/create', {
+      data: {}
+    })
 
     expect(collection).toEqual({})
   })
