@@ -4,13 +4,13 @@ sidebarDepth: 2
 
 # Container
 
-The Container is the global object that holds Vuex Store instance. The only purpose of the Container is to hold store instance so that we can use it in other places. Please refer to [Database](/api/database/database) to see why we need this global object in the first place.
+The Container holds the Vuex Store instance. The only purpose of the Container is to hold store instance so that it can be used throughout the library. It is tightly coupled with the [Database](/api/database/database) instance.
 
 ## Static Properties
 
-### store
+### `store`
 
-- **`static store: Vuex.Store<any>`**
+- **Type**: `Vuex.Store`
 
   The store instance that Vuex ORM is being installed.
 
@@ -18,12 +18,12 @@ The Container is the global object that holds Vuex Store instance. The only purp
 
 ### register
 
-- **`static register(store: Vuex.Store<any>): void`**
+- **Type**: `(store: Vuex.Store) => void`
 
   Register a store instance to the Container.
 
   ```js
-  Container.register(store)
+  Container.register(new Vuex.Store())
   ```
 
-  This method is called during the Vuex plugin installation, so usually, you would never have to use this method.
+  This method is called during the Vuex plugin installation.

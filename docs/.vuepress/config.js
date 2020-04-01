@@ -69,7 +69,16 @@ const sidebars = {
       title: 'Model',
       collapsable: false,
       children: [
-        '/api/model/model'
+        '/api/model/model',
+        '/api/model/attributes',
+        '/api/model/lifecycle-hooks'
+      ]
+    },
+    {
+      title: 'Query',
+      collapsable: false,
+      children: [
+        '/api/query/query'
       ]
     }
   ]
@@ -77,7 +86,7 @@ const sidebars = {
 
 module.exports = {
   title: 'Vuex ORM',
-  description: 'The Vuex plugin to enable Object-Relational Mapping access to the Vuex Store.',
+  description: 'The Vuex plugin to enable Object-Relational Mapping (ORM) access to the Vuex Store.',
 
   base: '/vuex-orm/',
 

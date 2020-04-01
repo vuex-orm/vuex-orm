@@ -109,7 +109,7 @@ const count = store.state.users.count
 store.commit('entities/users/add', 3)
 ```
 
-## Call Module Methods fom Model
+## Call Module Methods From Model
 
 An alternative to calling store methods directly, you may access the store instance from a model as well to dispatch actions or call getters.
 
