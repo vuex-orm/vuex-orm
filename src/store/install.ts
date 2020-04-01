@@ -70,7 +70,7 @@ function mixinRepoFunction(store: Store<any>): void {
 function mixinDbFunction(store: Store<any>): void {
   store.$db = function(): HackedDatabase {
     /* istanbul ignore next */
-    if (process.env.NODE_ENV !== 'production') {
+    if (__DEV__) {
       console.warn(
         '[Vuex ORM] `store.$db()` method is deprecated. Please use ' +
           '`store.$repo(Model)` method instead.'
