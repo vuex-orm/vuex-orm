@@ -128,7 +128,7 @@ Compile files and generate bundles in `dist` directory.
 $ yarn lint
 ```
 
-Lint files using a rule of Standard JS.
+Lint files using [Prettier](https://prettier.io/).
 
 ```bash
 $ yarn test
