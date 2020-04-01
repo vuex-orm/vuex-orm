@@ -5,17 +5,14 @@
 <h1 align="center">Vuex ORM</h1>
 
 <p align="center">
+  <a href="https://www.npmjs.com/package/@vuex-orm/core">
+    <img alt="npm" src="https://img.shields.io/npm/v/@vuex-orm/core?color=blue" alt="NPM">
+  </a>
   <a href="https://travis-ci.org/vuex-orm/vuex-orm">
     <img src="https://travis-ci.org/vuex-orm/vuex-orm.svg?branch=master" alt="Travis CI">
   </a>
   <a href="https://codecov.io/gh/vuex-orm/vuex-orm">
     <img src="https://codecov.io/gh/vuex-orm/vuex-orm/branch/master/graph/badge.svg" alt="codecov">
-  </a>
-  <a href="https://www.npmjs.com/package/@vuex-orm/core">
-    <img alt="npm" src="https://img.shields.io/npm/v/@vuex-orm/core?color=blue" alt="NPM">
-  </a>
-  <a href="https://standardjs.com">
-    <img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="JavaScript Style Guide">
   </a>
   <a href="https://github.com/vuex-orm/vuex-orm/blob/master/LICENSE">
     <img src="https://img.shields.io/npm/l/@vuex-orm/core.svg" alt="License">
