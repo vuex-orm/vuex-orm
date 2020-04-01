@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2018",
     "module": "esnext",
     "strict": true,
     "importHelpers": true,
@@ -9,9 +9,10 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "rootDir": ".",
-    "outDir": "lib",
+    "outDir": "dist",
     "declaration": true,
     "sourceMap": true,
+    "removeComments": false,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
@@ -22,14 +23,18 @@
 
     "lib": [
       "esnext",
-      "dom",
-      "es2017"
+      "dom"
     ],
 
     "paths": {
       "@/*": ["src/*"],
       "test/*": ["test/*"]
-    }
+    },
+
+    "types": [
+      "node",
+      "jest"
+    ]
   },
 
   "include": [

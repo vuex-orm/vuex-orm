@@ -1,9 +1,9 @@
 /.nyc_output
 /.tmp
 /coverage
+/dist
 /docs/.vuepress/dist
 /docs/node_modules
-/lib
 /node_modules
 .idea/*
 .vscode/*

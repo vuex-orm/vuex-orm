@@ -1,6 +1,9 @@
 module.exports = {
   preset: 'ts-jest',
   rootDir: __dirname,
+  globals: {
+    __DEV__: true
+  },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^test/(.*)$': '<rootDir>/test/$1'
