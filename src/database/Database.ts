@@ -378,7 +378,7 @@ export default class Database {
     // We'll not be logging any warning if it's on a production environment,
     // so let's return here if it is.
     /* istanbul ignore next */
-    if (process.env.NODE_ENV === 'production') {
+    if (!__DEV__) {
       return
     }
 

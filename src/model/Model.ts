@@ -122,7 +122,7 @@ export default class Model {
    */
   static increment(): Attributes.Uid {
     /* istanbul ignore next */
-    if (process.env.NODE_ENV !== 'production') {
+    if (__DEV__) {
       console.warn(
         '[Vuex ORM] Attribute type `increment` has been deprecated and replaced with `uid`.'
       )
