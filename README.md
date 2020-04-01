@@ -32,7 +32,7 @@ Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http
 
 <h4 align="center">Super Love Sponsors</h4>
 
-<div align="center">
+<p align="center">
   <a href="https://github.com/petertoth">
     <img src="https://avatars2.githubusercontent.com/u/3661783?s=460&v=4" alt="Peter Tóth" width="88">
   </a>
@@ -48,7 +48,7 @@ Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http
   <a href="https://github.com/dylancopeland">
     <img src="https://avatars1.githubusercontent.com/u/99355?s=460&v=4" alt="Dylan Copeland" width="88">
   </a>
-</div>
+</p>
 
 <h4 align="center">Big Love Sponsors</h4>
 
