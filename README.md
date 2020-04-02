@@ -77,7 +77,7 @@ Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http
 
 ## Documentation
 
-You can check out the full documentation for Vuex ORM at https://vuex-orm.github.io/vuex-orm.
+You can check out the full documentation for Vuex ORM at https://vuex-orm.org.
 
 ## Questions & Discussions
 

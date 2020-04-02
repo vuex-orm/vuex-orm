@@ -79,7 +79,7 @@ module.exports = {
   title: 'Vuex ORM',
   description: 'The Vuex plugin to enable Object-Relational Mapping access to the Vuex Store.',
 
-  base: '/vuex-orm/',
+  base: '/',
 
   themeConfig: {
     repo: 'vuex-orm/vuex-orm',
