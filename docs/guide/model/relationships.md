@@ -478,7 +478,7 @@ Though `Image` does not contain a `user_id` attribute, the `hasOneThrough` relat
 The `hasOneThrough` relation attribute accepts the following arguments:
 
 ```js
-this.hasManyThrough(
+this.hasOneThrough(
   Image,               // The final model we wish to access.
   Profile,             // The intermediate "through" model.
   'user_id',           // Foreign key on the intermediate "through" model.
