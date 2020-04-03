@@ -434,6 +434,66 @@ user.podcasts.forEach((podcast) => {
 })
 ```
 
+## Has One Through
+
+The "has-one-through" relationship links models through a single intermediate relation. For example, if each `User` has one `Profile`, and each `Profile` is associated with one `Image`, then the `User` may access `Image` through `Profile`. Let's look at the models required to define this relationship:
+
+```js
+class User extends Model {
+  static entity = 'users'
+
+  static fields() {
+    return {
+      id: this.attr(null),
+      image: this.hasOneThrough(Image, Profile, 'user_id', 'profile_id')
+    }
+  }
+}
+
+class Profile extends Model {
+  static entity = 'profiles'
+
+  static fields() {
+    return {
+      id: this.attr(null),
+      user_id: this.attr(null)
+    }
+  }
+}
+
+class Image extends Model {
+  static entity = 'images'
+
+  static fields() {
+    return {
+      id: this.attr(null),
+      profile_id: this.attr(null)
+    }
+  }
+}
+```
+
+Though `Image` does not contain a `user_id` attribute, the `hasOneThrough` relation can provide access to the user's profile image to the `User` model. Vuex ORM can accomplish this by inspecting the `user_id` on the intermediary model, in this case `Profile`, which then goes on to matching it with `Image` models it is associated with.
+
+The `hasOneThrough` relation attribute accepts the following arguments:
+
+```js
+this.hasManyThrough(
+  Image,               // The final model we wish to access.
+  Profile,             // The intermediate "through" model.
+  'user_id',           // Foreign key on the intermediate "through" model.
+  'profile_id',        // Foreign key on the final model.
+  'local_user_id',     // Optional: custom key on the intermediate "through" model.
+  'local_profile_id'   // Optional: custom key on the final model.
+)
+```
+
+::: tip
+When creating data for models containing a `hasOneThrough` relation, you will need to define supporting relations in order to generate intermediate records.
+
+**Further reading**: [Generating Intermediate Records](../data/inserting-and-updating.html#generating-intermediate-records)
+:::
+
 ## Has Many Through
 
 The "has-many-through" relationship provides a convenient shortcut for accessing distant relations via an intermediate relation. For example, a Country might have many Posts through an intermediate User. In this example, you could easily gather all posts for a given country. Let's look at the models required to define this relationship:
@@ -490,7 +550,11 @@ this.hasManyThrough(
 )
 ```
 
-> **NOTE:** When creating data that contains `hasManyThrough` relationship without intermediate relation, the intermediate record will not be generated. [See here](../data/inserting-and-updating.html#generating-pivot-records) for more details.
+::: tip
+When creating data for models containing a `hasManyThrough` relation, you will need to define supporting relations in order to generate intermediate records.
+
+**Further reading**: [Generating Intermediate Records](../data/inserting-and-updating.html#generating-intermediate-records)
+:::
 
 ## One To One (Polymorphic)
 
