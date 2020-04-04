@@ -595,7 +595,11 @@ User.insert({
 }
 ```
 
-However, note that there is a caveat with "Has Many Through" relationship. When creating data that contains "Has Many Through" relationship without intermediate pivot records, the intermediate record will not be generated. Let's say you have the following model definitions.
+### Generating Intermediate Records
+
+When creating data that contains [Has One Through](../model/relationships.md#has-one-through) or [Has Many Through](../model/relationships.md#has-many-through) relations, intermediate records will not be generated without specifying supporting relations that allows Vuex ORM to normalize the data before persisting to the store.
+
+For example, let's take a look at the following `hasManyThrough` relation. The `Country` model can access many `Post` records through a `User` with the support of `hasMany` relations defined on `Country` and `User`.
 
 ```js
 class Country extends Model {
@@ -634,42 +638,7 @@ class Post extends Model {
 }
 ```
 
-And then you try to save the following data.
-
-```js
-Country.create({
-  data: {
-    id: 1,
-    posts: [
-      { id: 1 },
-      { id: 2 }
-    ]
-  }
-})
-```
-
-Vuex ORM will normalize the data and save them to the store as below.
-
-```js
-{
-  countries: {
-    data: {
-      1: { id: 1 }
-    }
-  },
-  users: {
-    data: {}
-  },
-  posts: {
-    data: {
-      1: { id: 1, user_id: null },
-      2: { id: 2, user_id: null }
-    }
-  }
-}
-```
-
-See there is no users record, and `user_id` at `posts` becomes empty. This happens because Vuex ORM wouldn't have any idea how post data relate to the intermediate User. Hence if you create data like this, you wouldn't be able to retrieve them by getters anymore. In such cases, it is recommended to create data with the intermediate records.
+By adding the `hasMany` relation attribute on both `Country` and `User`, the following data structure can generate records for all the models required for the `hasManyThrough` relation.
 
 ```js
 Country.create({
@@ -692,6 +661,10 @@ Country.create({
   }
 })
 ```
+
+The `users` property will populate `User` model through the `users` attribute defined on the `Country` model. Subsequently, nesting `posts` within a user record will populate the `Post` model through the `posts` attribute defined on the `User` model, thus creating `Post` records. This is all made possible by strategically placing the relevant relations as demonstrated.
+
+The same principle applies to the `hasOneThrough` relation, since it is a 1:1 version of `hasManyThrough`, by replacing `hasMany` with `hasOne` relations.
 
 ### Get Newly Inserted Data
 
