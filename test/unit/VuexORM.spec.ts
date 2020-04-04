@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import VuexORM, { Database, Model } from '@/index'
+import VuexORM from '@/index'
+import Database from '@/database/Database'
+import Model from '@/model/Model'
 
-describe('feature/installation/install', () => {
+describe('unit/VuexORM', () => {
   Vue.use(Vuex)
 
   it('installs Vuex ORM to the store', () => {
