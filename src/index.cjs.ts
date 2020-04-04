@@ -1,11 +1,10 @@
 import './polyfills'
 
-import install, { Install } from './store/install'
-import use, { Use } from './plugins/use'
+import { install } from './store'
+import { use } from './plugins/use'
 import Container from './container/Container'
 import Database from './database/Database'
 import Model from './model/Model'
-import Fields from './model/contracts/Fields'
 import Query from './query/Query'
 import Attribute from './attributes/Attribute'
 import Type from './attributes/types/Type'
@@ -33,47 +32,6 @@ import Actions from './modules/Actions'
 import RootGetters from './modules/RootGetters'
 import RootActions from './modules/RootActions'
 import RootMutations from './modules/RootMutations'
-import GettersContract from './modules/contracts/Getters'
-import ActionsContract from './modules/contracts/Actions'
-import RootGettersContract from './modules/contracts/RootGetters'
-import RootActionsContract from './modules/contracts/RootActions'
-import RootMutationsContract from './modules/contracts/RootMutations'
-
-export interface VuexORM {
-  install: Install
-  use: Use
-  Container: typeof Container
-  Database: typeof Database
-  Model: typeof Model
-  Fields: Fields
-  Query: typeof Query
-  Attribute: typeof Attribute
-  Type: typeof Type
-  Attr: typeof Attr
-  String: typeof String
-  Number: typeof Number
-  Boolean: typeof Boolean
-  Uid: typeof Uid
-  Relation: typeof Relation
-  HasOne: typeof HasOne
-  BelongsTo: typeof BelongsTo
-  HasMany: typeof HasMany
-  HasManyBy: typeof HasManyBy
-  BelongsToMany: typeof BelongsToMany
-  HasOneThrough: typeof HasOneThrough
-  HasManyThrough: typeof HasManyThrough
-  MorphTo: typeof MorphTo
-  MorphOne: typeof MorphOne
-  MorphMany: typeof MorphMany
-  MorphToMany: typeof MorphToMany
-  MorphedByMany: typeof MorphedByMany
-  Repository: typeof Repository
-  Getters: GettersContract
-  Actions: ActionsContract
-  RootGetters: RootGettersContract
-  RootActions: RootActionsContract
-  RootMutations: RootMutationsContract
-}
 
 export default {
   install,
@@ -108,4 +66,4 @@ export default {
   RootActions,
   RootMutations,
   Query
-} as VuexORM
+}

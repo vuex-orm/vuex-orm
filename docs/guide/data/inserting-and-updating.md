@@ -372,6 +372,8 @@ class Role extends Model {
 class RoleUser extends Model {
   static entity = 'role_user'
 
+  static primaryKey = ['role_id', 'user_id']
+
   static fields () {
     return {
       id: this.attr(null),

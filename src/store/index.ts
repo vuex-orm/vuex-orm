@@ -4,8 +4,6 @@ import Database from '../database/Database'
 import HackedDatabase from '../database/HackedDatabase'
 import Repository from '../repository/Repository'
 
-export type Install = (database: Database, options?: Options) => Plugin<any>
-
 export interface Options {
   namespace?: string
 }
@@ -13,7 +11,7 @@ export interface Options {
 /**
  * Install Vuex ORM database to the store.
  */
-export default function install(
+export function install(
   database: Database,
   options: Options = {}
 ): Plugin<any> {
@@ -55,8 +53,8 @@ function mixinRepoFunction(store: Store<any>): void {
       throw new Error(
         '[Vuex ORM] The repository was instantiated without a model being ' +
           'set. It happens when you forgot to register the model to the ' +
-          'custom repository. Please check if you have correctly set `model` ' +
-          'property at the repository class.'
+          'custom repository. Please check if you have correctly set ' +
+          '`model` property at the repository class.'
       )
     }
 
