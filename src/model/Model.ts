@@ -473,7 +473,7 @@ export default class Model {
   /**
    * Create new data with all fields filled by default values.
    */
-  static new(): Promise<Model> {
+  static new<T extends typeof Model>(this: T): Promise<InstanceOf<T>> {
     return this.dispatch('new')
   }
 
