@@ -795,7 +795,7 @@ export default class Query<T extends Model = Model> {
   /**
    * Create new data with all fields filled by default values.
    */
-  new(): T {
+  async new(): Promise<T> {
     const model = new this.model().$generateId() as T
 
     this.commitInsert(model.$getAttributes())
@@ -810,8 +810,8 @@ export default class Query<T extends Model = Model> {
    */
   create(
     data: Data.Record | Data.Record[],
-    options: Options.PersistOptions
-  ): Data.Collections {
+    options?: Options.PersistOptions
+  ): Promise<Data.Collections> {
     return this.persist('create', data, options)
   }
 
@@ -831,8 +831,8 @@ export default class Query<T extends Model = Model> {
    */
   insert(
     data: Data.Record | Data.Record[],
-    options: Options.PersistOptions
-  ): Data.Collections {
+    options?: Options.PersistOptions
+  ): Promise<Data.Collections> {
     return this.persist('insert', data, options)
   }
 
@@ -858,7 +858,10 @@ export default class Query<T extends Model = Model> {
     data: Data.Record | Data.Record[] | UpdateClosure,
     condition: UpdateCondition,
     options: Options.PersistOptions
-  ): Data.Item<T> | Data.Collection<T> | Data.Collections {
+  ):
+    | Promise<Data.Item<T>>
+    | Promise<Data.Collection<T>>
+    | Promise<Data.Collections> {
     // If the data is array, simply normalize the data and update them.
     if (Utils.isArray(data)) {
       return this.persist('update', data, options)
@@ -925,10 +928,10 @@ export default class Query<T extends Model = Model> {
   /**
    * Update the state by id.
    */
-  updateById(
+  async updateById(
     data: Data.Record | UpdateClosure,
     id: string | number
-  ): Data.Item<T> {
+  ): Promise<Data.Item<T>> {
     id = typeof id === 'number' ? id.toString() : this.normalizeIndexId(id)
 
     const record = this.state.data[id]
@@ -951,10 +954,10 @@ export default class Query<T extends Model = Model> {
   /**
    * Update the state by condition.
    */
-  updateByCondition(
+  async updateByCondition(
     data: Data.Record | UpdateClosure,
     condition: Contracts.Predicate
-  ): Data.Collection<T> {
+  ): Promise<Data.Collection<T>> {
     const instances = Object.keys(this.state.data).reduce<Data.Instances<T>>(
       (instances, id) => {
         const instance = this.hydrate(this.state.data[id])
@@ -1066,7 +1069,7 @@ export default class Query<T extends Model = Model> {
   insertOrUpdate(
     data: Data.Record | Data.Record[],
     options: Options.PersistOptions
-  ): Data.Collections {
+  ): Promise<Data.Collections> {
     return this.persist('insertOrUpdate', data, options)
   }
 
@@ -1098,11 +1101,11 @@ export default class Query<T extends Model = Model> {
   /**
    * Persist data into the state while preserving it's original structure.
    */
-  persist(
+  async persist(
     method: Options.PersistMethods,
     data: Data.Record | Data.Record[],
-    options: Options.PersistOptions
-  ): Data.Collections {
+    options: Options.PersistOptions = {}
+  ): Promise<Data.Collections> {
     const clonedData = Utils.cloneDeep(data)
 
     const normalizedData = this.normalize(clonedData)
