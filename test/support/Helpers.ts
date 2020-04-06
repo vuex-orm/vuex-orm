@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex, { Store, Module } from 'vuex'
 import VuexORM from '@/index'
 import { mapValues } from '@/support/Utils'
+import { Record, Collection } from '@/data'
 import Database from '@/database/Database'
 import Model from '@/model/Model'
 import State from '@/modules/contracts/State'
@@ -52,12 +53,23 @@ export function createStoreFromDatabase(database: Database): Store<any> {
 }
 
 /**
+ * Fill store data with the given state.
+ */
+export function fillState(store: Store<any>, state: Record): void {
+  for (const entity in state) {
+    store.commit('entities/$mutate', {
+      entity,
+      callback(s: State) {
+        s.data = state[entity]
+      }
+    })
+  }
+}
+
+/**
  * Create a new entity state.
  */
-export function createState(
-  state: Record<string, any>,
-  namespace: string = 'entities'
-) {
+export function createState(state: Record, namespace: string = 'entities') {
   return {
     $name: namespace,
     ...mapValues(state, (data, name) => ({
@@ -68,8 +80,18 @@ export function createState(
   }
 }
 
+/**
+ * Serialize given collection by invoking `$getAttributes` on each model
+ * in the given collection.
+ */
+export function serializeCollection(collection: Collection): Record[] {
+  return collection.map((m) => m.$getAttributes())
+}
+
 export default {
   createStore,
   createStoreFromDatabase,
-  createState
+  fillState,
+  createState,
+  serializeCollection
 }

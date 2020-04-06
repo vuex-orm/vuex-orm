@@ -22,6 +22,8 @@ import ModelState from './contracts/State'
 import InheritanceTypes from './contracts/InheritanceTypes'
 import { toAttributes, toJson } from './Serialize'
 import PayloadBuilder from '../modules/support/PayloadBuilder'
+import { PersistOptions as QueryPersistOptions } from '../query/options'
+import { InsertObject, normalizeInsertPayload } from './support/Payloads'
 
 export default class Model {
   /**
@@ -459,8 +461,8 @@ export default class Model {
   /**
    * Get query instance.
    */
-  static query<T extends typeof Model>(this: T): Query<InstanceOf<T>> {
-    return this.getters('query')()
+  static query<M extends typeof Model>(this: M): Query<InstanceOf<M>> {
+    return new Query(this.store(), this.entity)
   }
 
   /**
@@ -474,7 +476,7 @@ export default class Model {
    * Create new data with all fields filled by default values.
    */
   static new<T extends typeof Model>(this: T): Promise<InstanceOf<T>> {
-    return this.dispatch('new')
+    return this.query().new()
   }
 
   /**
@@ -482,23 +484,25 @@ export default class Model {
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.
    */
-  static create<T extends typeof Model>(
-    this: T,
-    payload: Payloads.Create,
-    options?: PersistOptions.Create
+  static create(
+    data: Record | Record[] | InsertObject,
+    options?: QueryPersistOptions
   ): Promise<Collections> {
-    return this.dispatch('create', PayloadBuilder.normalize(payload, options))
+    const { data: d, options: o } = normalizeInsertPayload(data, options)
+
+    return this.query().create(d, o)
   }
 
   /**
    * Insert records.
    */
-  static insert<T extends typeof Model>(
-    this: T,
-    payload: Payloads.Insert,
-    options?: PersistOptions.Insert
+  static insert(
+    data: Record | Record[] | InsertObject,
+    options?: QueryPersistOptions
   ): Promise<Collections> {
-    return this.dispatch('insert', PayloadBuilder.normalize(payload, options))
+    const { data: d, options: o } = normalizeInsertPayload(data, options)
+
+    return this.query().insert(d, o)
   }
 
   /**

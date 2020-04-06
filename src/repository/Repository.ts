@@ -4,8 +4,11 @@ import Database from '../database/Database'
 import { Record, Item, Collection, Collections } from '../data'
 import Model from '../model/Model'
 import * as Payloads from '../modules/payloads/Actions'
+import PayloadBuilder from '../modules/support/PayloadBuilder'
 import Query from '../query/Query'
 import Predicate from '../query/contracts/Predicate'
+import { PersistOptions } from '../query/options'
+import { InsertObject, normalizeInsertPayload } from './support/Payloads'
 
 interface ConstructorOf<C> extends BaseConstructorOf<C> {
   entity: string
@@ -56,7 +59,7 @@ export default class Repository<M extends Model> {
   }
 
   /**
-   * Call Vuex Getetrs.
+   * Call Vuex Getters.
    */
   getters(method: string): any {
     return this.store.getters[this.namespace(method)]
@@ -101,7 +104,7 @@ export default class Repository<M extends Model> {
    * Get query instance.
    */
   query(): Query<M> {
-    return this.getters('query')()
+    return new Query(this.store, this.model.entity)
   }
 
   /**
@@ -115,7 +118,7 @@ export default class Repository<M extends Model> {
    * Create new data with all fields filled by default values.
    */
   new(): Promise<M> {
-    return this.dispatch('new')
+    return this.query().new()
   }
 
   /**
@@ -123,29 +126,48 @@ export default class Repository<M extends Model> {
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.
    */
-  create(payload: Payloads.Create): Promise<Collections> {
-    return this.dispatch('create', payload)
+  create(
+    data: Record | Record[] | InsertObject,
+    options?: PersistOptions
+  ): Promise<Collections> {
+    const { data: d, options: o } = normalizeInsertPayload(data, options)
+
+    return this.query().create(d, o)
   }
 
   /**
    * Insert records.
    */
-  insert(payload: Payloads.Insert): Promise<Collections> {
-    return this.dispatch('insert', payload)
+  insert(
+    data: Record | Record[] | InsertObject,
+    options?: PersistOptions
+  ): Promise<Collections> {
+    const { data: d, options: o } = normalizeInsertPayload(data, options)
+
+    return this.query().insert(d, o)
   }
 
   /**
    * Update records.
    */
-  update(payload: Payloads.Update): Promise<Collections> {
-    return this.dispatch('update', payload)
+  update(
+    payload: Payloads.Update,
+    options?: PersistOptions
+  ): Promise<Collections> {
+    return this.dispatch('update', PayloadBuilder.normalize(payload, options))
   }
 
   /**
    * Insert or update records.
    */
-  insertOrUpdate(payload: Payloads.InsertOrUpdate): Promise<Collections> {
-    return this.dispatch('insertOrUpdate', payload)
+  insertOrUpdate(
+    payload: Payloads.InsertOrUpdate,
+    options?: PersistOptions
+  ): Promise<Collections> {
+    return this.dispatch(
+      'insertOrUpdate',
+      PayloadBuilder.normalize(payload, options)
+    )
   }
 
   /**
