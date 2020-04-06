@@ -1,6 +1,6 @@
 import { Store } from 'vuex'
 import Connection from '../connections/Connection'
-import RootState from './contracts/RootState'
+import State from './contracts/RootState'
 import MutationsContract from './contracts/RootMutations'
 import * as Payloads from './payloads/RootMutations'
 
@@ -10,24 +10,32 @@ import * as Payloads from './payloads/RootMutations'
  */
 function $mutate(
   this: Store<any>,
-  state: RootState,
+  state: State,
   payload: Payloads.$Mutate
 ): void {
   payload.callback(state[payload.entity])
 }
 
 /**
- * Insert the given record.
+ * Commit the given records by `new` method.
  */
-function insert(this: Store<any>, state: RootState, payload: any): void {
-  const { entity, record } = payload
-  new Connection(this, state.$name, entity).insert(record)
+function newRecord(state: State, payload: Payloads.New): void {
+  const entity = state[payload.entity]
+  entity.data = { ...entity.data, ...payload.data }
+}
+
+/**
+ * Commit the given records by `insert` method.
+ */
+function insert(state: State, payload: Payloads.Insert): void {
+  const entity = state[payload.entity]
+  entity.data = { ...entity.data, ...payload.data }
 }
 
 /**
  * Insert the given records.
  */
-function insertRecords(this: Store<any>, state: RootState, payload: any): void {
+function insertRecords(this: Store<any>, state: State, payload: any): void {
   const { entity, records } = payload
   new Connection(this, state.$name, entity).insertRecords(records)
 }
@@ -37,13 +45,14 @@ function insertRecords(this: Store<any>, state: RootState, payload: any): void {
  * `delete`, but named `destroy` here because `delete` can't be declared at
  * this scope level.
  */
-function destroy(this: Store<any>, state: RootState, payload: any): void {
+function destroy(this: Store<any>, state: State, payload: any): void {
   const { entity, id } = payload
   new Connection(this, state.$name, entity).delete(id)
 }
 
 const RootMutations: MutationsContract = {
   $mutate,
+  new: newRecord,
   insert,
   insertRecords,
   delete: destroy

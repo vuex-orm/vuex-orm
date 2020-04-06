@@ -1,5 +1,5 @@
 import { isArray } from '../support/Utils'
-import Record from '../data/Record'
+import { Record, RecordWithId } from '../data'
 import Item from '../data/Item'
 import Collection from '../data/Collection'
 import Relation from '../attributes/relations/Relation'
@@ -17,12 +17,12 @@ const defaultOption: Option = {
  * Serialize the given model to attributes. This method will ignore
  * relationships, and it includes the index id.
  */
-export function toAttributes(model: Model): Record {
+export function toAttributes(model: Model): RecordWithId {
   const record = toJson(model, { relations: false })
 
   record.$id = model.$id
 
-  return record
+  return record as RecordWithId
 }
 
 /**

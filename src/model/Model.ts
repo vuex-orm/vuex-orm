@@ -4,6 +4,7 @@ import Uid from '../support/Uid'
 import Container from '../container/Container'
 import Database from '../database/Database'
 import Record from '../data/Record'
+import RecordWithId from '../data/RecordWithId'
 import InstanceOf from '../data/InstanceOf'
 import Item from '../data/Item'
 import Collection from '../data/Collection'
@@ -1062,7 +1063,7 @@ export default class Model {
    * value as well. This method is mainly used when saving a model to
    * the store.
    */
-  $getAttributes(): Record {
+  $getAttributes(): RecordWithId {
     return toAttributes(this)
   }
 

@@ -1,6 +1,7 @@
 import { Store } from 'vuex'
 import Utils from '../support/Utils'
 import Database, { Models } from '../database/Database'
+import Connection from '../connections/Connection'
 import * as Data from '../data'
 import Model from '../model/Model'
 import State from '../modules/contracts/State'
@@ -215,6 +216,17 @@ export default class Query<T extends Model = Model> {
     entity = entity || this.entity
 
     return new Query(this.store, entity)
+  }
+
+  /**
+   * Get the new connection instance.
+   */
+  connection(): Connection {
+    return new Connection(
+      this.store,
+      this.database.namespace,
+      this.entity
+    )
   }
 
   /**
@@ -798,7 +810,7 @@ export default class Query<T extends Model = Model> {
   async new(): Promise<T> {
     const model = new this.model().$generateId() as T
 
-    this.commitInsert(model.$getAttributes())
+    this.connection().new(model.$getAttributes())
 
     return model
   }
@@ -844,7 +856,9 @@ export default class Query<T extends Model = Model> {
 
     collection = this.executeMutationHooks('beforeCreate', collection)
 
-    this.commitInsertRecords(this.convertCollectionToRecords(collection))
+    this.connection().insert(
+      collection.map((m) => m.$getAttributes())
+    )
 
     this.executeMutationHooks('afterCreate', collection)
 
@@ -1266,13 +1280,6 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
-   * Commit insert records mutation.
-   */
-  private commitInsertRecords(records: Data.Record): void {
-    this.commit('insertRecords', { records })
-  }
-
-  /**
    * Commit delete mutation.
    */
   private commitDelete(id: string[]): void {
@@ -1367,19 +1374,6 @@ export default class Query<T extends Model = Model> {
     }
 
     return collection
-  }
-
-  /**
-   * Convert given collection to records by using index id as a key.
-   */
-  private convertCollectionToRecords(
-    collection: Data.Collection<T>
-  ): Data.Records {
-    return collection.reduce<Data.Records>((carry, model) => {
-      carry[model['$id'] as string] = model.$getAttributes()
-
-      return carry
-    }, {})
   }
 
   /**

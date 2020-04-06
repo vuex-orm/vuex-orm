@@ -1,4 +1,5 @@
 import Record from './Record'
+import RecordWithId from './RecordWithId'
 import Records from './Records'
 import NormalizedData from './NormalizedData'
 import Instance from './Instance'
@@ -11,6 +12,7 @@ import Collections from './Collections'
 
 export {
   Record,
+  RecordWithId,
   Records,
   NormalizedData,
   InstanceOf,

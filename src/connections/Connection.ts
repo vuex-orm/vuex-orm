@@ -1,6 +1,5 @@
 import { Store } from 'vuex'
-import Record from '../data/Record'
-import Records from '../data/Records'
+import { Records, RecordWithId } from '../data'
 import RootState from '../modules/contracts/RootState'
 import State from '../modules/contracts/State'
 
@@ -42,10 +41,30 @@ export default class Connection {
   }
 
   /**
+   * Commit Vuex Mutation.
+   */
+  private commit(name: string, payload: any): void {
+    this.store.commit(`${this.connection}/${name}`, payload)
+  }
+
+  /**
+   * Commit the given record by `new` method.
+   */
+  new(record: RecordWithId): void {
+    this.commit('new', {
+      entity: this.entity,
+      data: { [record.$id]: record }
+    })
+  }
+
+  /**
    * Insert the given record.
    */
-  insert(record: Record): void {
-    this.state.data = { ...this.state.data, [record.$id]: record }
+  insert(records: RecordWithId[]): void {
+    this.commit('new', {
+      entity: this.entity,
+      data: this.mapRecordToRecords(records)
+    })
   }
 
   /**
@@ -68,5 +87,15 @@ export default class Connection {
     }
 
     this.state.data = data
+  }
+
+  /**
+   * Map the given records to `Records` type object.
+   */
+  private mapRecordToRecords(records: RecordWithId[]): Records {
+    return records.reduce<Records>((carry, record) => {
+      carry[record.$id] = record
+      return carry
+    }, {})
   }
 }
