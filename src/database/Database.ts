@@ -44,7 +44,7 @@ export default class Database {
   /**
    * Connect the store.
    */
-  connectStore(store: Store<any>): this {
+  setStore(store: Store<any>): this {
     this.store = store
 
     return this

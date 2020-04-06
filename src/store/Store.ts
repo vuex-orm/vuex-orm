@@ -46,7 +46,7 @@ function connectDatabase(
   database: Database,
   options: FilledOptions
 ): void {
-  database.connectStore(store).setConnection(options.namespace)
+  database.setStore(store).setConnection(options.namespace)
 
   store.$database = database
 }
