@@ -4,6 +4,8 @@ import Database from '../database/Database'
 import { Record, Item, Collection, Collections } from '../data'
 import Model from '../model/Model'
 import * as Payloads from '../modules/payloads/Actions'
+import * as PersistOptions from '../modules/options/Actions'
+import PayloadBuilder from '../modules/support/PayloadBuilder'
 import Query from '../query/Query'
 import Predicate from '../query/contracts/Predicate'
 
@@ -56,7 +58,7 @@ export default class Repository<M extends Model> {
   }
 
   /**
-   * Call Vuex Getetrs.
+   * Call Vuex Getters.
    */
   getters(method: string): any {
     return this.store.getters[this.namespace(method)]
@@ -123,29 +125,44 @@ export default class Repository<M extends Model> {
    * store. If you want to save data without replacing existing records,
    * use the `insert` method instead.
    */
-  create(payload: Payloads.Create): Promise<Collections> {
-    return this.dispatch('create', payload)
+  create(
+    payload: Payloads.Create,
+    options?: PersistOptions.Create
+  ): Promise<Collections> {
+    return this.dispatch('create', PayloadBuilder.normalize(payload, options))
   }
 
   /**
    * Insert records.
    */
-  insert(payload: Payloads.Insert): Promise<Collections> {
-    return this.dispatch('insert', payload)
+  insert(
+    payload: Payloads.Insert,
+    options?: PersistOptions.Insert
+  ): Promise<Collections> {
+    return this.dispatch('insert', PayloadBuilder.normalize(payload, options))
   }
 
   /**
    * Update records.
    */
-  update(payload: Payloads.Update): Promise<Collections> {
-    return this.dispatch('update', payload)
+  update(
+    payload: Payloads.Update,
+    options?: PersistOptions.Insert
+  ): Promise<Collections> {
+    return this.dispatch('update', PayloadBuilder.normalize(payload, options))
   }
 
   /**
    * Insert or update records.
    */
-  insertOrUpdate(payload: Payloads.InsertOrUpdate): Promise<Collections> {
-    return this.dispatch('insertOrUpdate', payload)
+  insertOrUpdate(
+    payload: Payloads.InsertOrUpdate,
+    options?: PersistOptions.Insert
+  ): Promise<Collections> {
+    return this.dispatch(
+      'insertOrUpdate',
+      PayloadBuilder.normalize(payload, options)
+    )
   }
 
   /**
