@@ -42,7 +42,7 @@ export default class Database {
   }
 
   /**
-   * Connect the store.
+   * Set the store.
    */
   setStore(store: Store<any>): this {
     this.store = store
