@@ -4,11 +4,10 @@ import Database from '../database/Database'
 import { Record, Item, Collection, Collections } from '../data'
 import Model from '../model/Model'
 import * as Payloads from '../modules/payloads/Actions'
+import * as PersistOptions from '../modules/options/Actions'
 import PayloadBuilder from '../modules/support/PayloadBuilder'
 import Query from '../query/Query'
 import Predicate from '../query/contracts/Predicate'
-import { PersistOptions } from '../query/options'
-import { InsertObject, normalizeInsertPayload } from './support/Payloads'
 
 interface ConstructorOf<C> extends BaseConstructorOf<C> {
   entity: string
@@ -104,7 +103,7 @@ export default class Repository<M extends Model> {
    * Get query instance.
    */
   query(): Query<M> {
-    return new Query(this.store, this.model.entity)
+    return this.getters('query')()
   }
 
   /**
@@ -118,7 +117,7 @@ export default class Repository<M extends Model> {
    * Create new data with all fields filled by default values.
    */
   new(): Promise<M> {
-    return this.query().new()
+    return this.dispatch('new')
   }
 
   /**
@@ -127,24 +126,20 @@ export default class Repository<M extends Model> {
    * use the `insert` method instead.
    */
   create(
-    data: Record | Record[] | InsertObject,
-    options?: PersistOptions
+    payload: Payloads.Create,
+    options?: PersistOptions.Create
   ): Promise<Collections> {
-    const { data: d, options: o } = normalizeInsertPayload(data, options)
-
-    return this.query().create(d, o)
+    return this.dispatch('create', PayloadBuilder.normalize(payload, options))
   }
 
   /**
    * Insert records.
    */
   insert(
-    data: Record | Record[] | InsertObject,
-    options?: PersistOptions
+    payload: Payloads.Insert,
+    options?: PersistOptions.Insert
   ): Promise<Collections> {
-    const { data: d, options: o } = normalizeInsertPayload(data, options)
-
-    return this.query().insert(d, o)
+    return this.dispatch('insert', PayloadBuilder.normalize(payload, options))
   }
 
   /**
@@ -152,7 +147,7 @@ export default class Repository<M extends Model> {
    */
   update(
     payload: Payloads.Update,
-    options?: PersistOptions
+    options?: PersistOptions.Insert
   ): Promise<Collections> {
     return this.dispatch('update', PayloadBuilder.normalize(payload, options))
   }
@@ -162,7 +157,7 @@ export default class Repository<M extends Model> {
    */
   insertOrUpdate(
     payload: Payloads.InsertOrUpdate,
-    options?: PersistOptions
+    options?: PersistOptions.Insert
   ): Promise<Collections> {
     return this.dispatch(
       'insertOrUpdate',
