@@ -10,10 +10,7 @@ type FilledOptions = Required<Options>
 /**
  * Install Vuex ORM to the store.
  */
-export function install(
-  database: Database,
-  options?: Options
-): Plugin<any> {
+export function install(database: Database, options?: Options): Plugin<any> {
   return (store) => {
     mixin(store, database, createOptions(options))
   }
