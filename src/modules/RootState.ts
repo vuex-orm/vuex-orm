@@ -1,7 +1,5 @@
 import State from './State'
 
-interface RootState {
+export default interface RootState {
   [entity: string]: State
 }
-
-export default RootState

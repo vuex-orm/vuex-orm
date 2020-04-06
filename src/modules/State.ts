@@ -1,7 +1,5 @@
 import { Records } from '../data/Data'
 
-interface State {
+export default interface State {
   data: Records
 }
-
-export default State
