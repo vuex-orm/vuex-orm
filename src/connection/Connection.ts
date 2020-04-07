@@ -33,6 +33,16 @@ export default class Connection<M extends Model> {
   }
 
   /**
+   * Find a record with the given id.
+   */
+  find(id: string | number): Record | null {
+    const namespace = this.store.$database.connection
+    const entity = this.model.entity
+
+    return this.store.state[namespace][entity].data[id] ?? null
+  }
+
+  /**
    * Commit the store mutation.
    */
   private commit(name: string, payload?: any): void {

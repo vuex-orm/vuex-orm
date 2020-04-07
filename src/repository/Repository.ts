@@ -60,6 +60,13 @@ export default class Repository<M extends Model> {
   }
 
   /**
+   * Find the model with the given id.
+   */
+  find(id: string | number): Data.Item<M> {
+    return this.query().find(id)
+  }
+
+  /**
    * Insert the given record to the store.
    */
   async insert(record: Data.Record | Data.Record[]): Promise<Data.Collections> {

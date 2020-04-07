@@ -1,5 +1,5 @@
 import { Store } from 'vuex'
-import { Record, Collection } from '../data/Data'
+import { Record, Item, Collection } from '../data/Data'
 import Model from '../model/Model'
 import Constructor from '../model/Constructor'
 import Connection from '../connection/Connection'
@@ -35,6 +35,15 @@ export default class Query<M extends Model> {
    */
   get(): Collection<M> {
     return this.getModels()
+  }
+
+  /**
+   * Find the model with the given id.
+   */
+  find(id: string | number): Item<M> {
+    const record = this.connection().find(id)
+
+    return record ? this.hydrateRecord(record) : null
   }
 
   /**
