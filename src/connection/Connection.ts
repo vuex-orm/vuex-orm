@@ -70,6 +70,13 @@ export default class Connection<M extends Model> {
   }
 
   /**
+   * Commit `delete` change to the store.
+   */
+  delete(ids: string[]): void {
+    this.commit('delete', ids)
+  }
+
+  /**
    * Commit `deleteAll` change to the store.
    */
   deleteAll(): void {

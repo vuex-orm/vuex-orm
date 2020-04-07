@@ -146,6 +146,17 @@ export default class Query<M extends Model> {
   }
 
   /**
+   * Delete records that match the query chain.
+   */
+  async delete(): Promise<Collection<M>> {
+    const models = this.get()
+
+    this.connection().delete(this.getIdsFromCollection(models))
+
+    return models
+  }
+
+  /**
    * Delete all records in the store.
    */
   async deleteAll(): Promise<Collection<M>> {
@@ -175,5 +186,12 @@ export default class Query<M extends Model> {
    */
   private dehydrateModels(models: Collection<M>): Record[] {
     return models.map((model) => model.$getAttributes())
+  }
+
+  /**
+   * Get an array of ids from the given collection.
+   */
+  private getIdsFromCollection(models: Collection<M>): string[] {
+    return models.map((model) => model.$getIndexId())
   }
 }

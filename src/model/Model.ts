@@ -84,7 +84,7 @@ export default class Model {
    * used as a index key for records within the store.
    */
   static getIndexId(record: Record): string {
-    return record[this.primaryKey]
+    return String(record[this.primaryKey])
   }
 
   /**
@@ -116,6 +116,13 @@ export default class Model {
     }
 
     return this
+  }
+
+  /**
+   * Get the index id value for the model.
+   */
+  $getIndexId(): string {
+    return this.$self.getIndexId(this)
   }
 
   /**

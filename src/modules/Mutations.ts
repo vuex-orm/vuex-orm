@@ -16,6 +16,21 @@ function insert(state: State, records: Records): void {
 }
 
 /**
+ * Commit `delete` change to the store.
+ */
+function destroy(state: State, ids: string[]): void {
+  const data = {}
+
+  for (const id in state.data) {
+    if (!ids.includes(id)) {
+      data[id] = state.data[id]
+    }
+  }
+
+  state.data = data
+}
+
+/**
  * Commit `deleteAll` change to the store.
  */
 function destroyAll(state: State): void {
@@ -25,5 +40,6 @@ function destroyAll(state: State): void {
 export default {
   mutate,
   insert,
+  delete: destroy,
   deleteAll: destroyAll
 }
