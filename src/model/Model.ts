@@ -1,7 +1,7 @@
 import { Record } from '../data/Data'
 import * as Attributes from './attributes/Attributes'
 
-interface Fields<M extends typeof Model> {
+export interface Fields<M extends typeof Model> {
   [key: string]: Attributes.Attribute<M>
 }
 
