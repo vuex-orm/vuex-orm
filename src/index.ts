@@ -3,6 +3,7 @@ export * from './data/Data'
 import { install, Options } from './store/Store'
 import Database from './database/Database'
 import Model from './model/Model'
+import Attr from './model/decorators/types/Attr'
 import RootModule from './modules/RootModule'
 import RootState from './modules/RootState'
 import Module from './modules/Module'
@@ -13,6 +14,7 @@ export {
   Options,
   Database,
   Model,
+  Attr,
   RootModule,
   RootState,
   Module,
@@ -22,5 +24,6 @@ export {
 export default {
   install,
   Database,
-  Model
+  Model,
+  Attr
 }

@@ -7,11 +7,11 @@ describe('unit/VuexORM', () => {
 
   it('installs Vuex ORM to the store', () => {
     class User extends Model {
-      entity = 'users'
+      static entity = 'users'
     }
 
     class Post extends Model {
-      entity = 'posts'
+      static entity = 'posts'
     }
 
     const database = new Database()
@@ -40,7 +40,7 @@ describe('unit/VuexORM', () => {
 
   it('can customize the namespace', () => {
     class User extends Model {
-      entity = 'users'
+      static entity = 'users'
     }
 
     const database = new Database()

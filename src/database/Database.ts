@@ -1,12 +1,19 @@
-import { Store, Module as VuexModule } from 'vuex'
-import { ConstructorOf } from '../types'
+import { Store, Module as VuexModule, MutationTree } from 'vuex'
+import { schema as Normalizr } from 'normalizr'
+import Schema from '../schema/Schema'
 import Model from '../model/Model'
+import Constructor from '../model/Constructor'
 import RootModule from '../modules/RootModule'
 import Module from '../modules/Module'
 import State from '../modules/State'
+import Mutations from '../modules/Mutations'
 
 interface Models {
-  [name: string]: ConstructorOf<Model>
+  [name: string]: Constructor<Model>
+}
+
+interface Schemas {
+  [name: string]: Normalizr.Entity
 }
 
 export default class Database {
@@ -27,6 +34,11 @@ export default class Database {
   models: Models = {}
 
   /**
+   * The schema definition for the registered models.
+   */
+  schemas: Schemas = {}
+
+  /**
    * Whether the database has already been installed to Vuex or not.
    * The model registration steps depend on its value.
    */
@@ -35,10 +47,8 @@ export default class Database {
   /**
    * Register the given model.
    */
-  register(model: ConstructorOf<Model>): void {
-    const m = new model()
-
-    this.models[m.entity] = model
+  register(model: Constructor<Model>): void {
+    this.models[model.entity] = model
   }
 
   /**
@@ -63,9 +73,43 @@ export default class Database {
    * Initialize the database before a user can start using it.
    */
   start(): void {
+    this.createSchemas()
+
     this.registerModules()
 
     this.started = true
+  }
+
+  /**
+   * Get the model.
+   */
+  getModel<M extends Model>(name: string): Constructor<M> {
+    return this.models[name] as Constructor<M>
+  }
+
+  /**
+   * Get the schema.
+   */
+  getSchema(name: string): Normalizr.Entity {
+    return this.schemas[name]
+  }
+
+  /**
+   * Create the schema definition from registered models and set it to the
+   * `schema` property. This schema will be used by the interpretation
+   * to interpret data before persisting them to the store.
+   */
+  private createSchemas(): void {
+    for (const name in this.models) {
+      this.schemas[name] = this.createSchema(this.models[name])
+    }
+  }
+
+  /**
+   * Create schema from the given model.
+   */
+  private createSchema(model: Constructor<Model>): Normalizr.Entity {
+    return new Schema(model).one()
   }
 
   /**
@@ -104,7 +148,8 @@ export default class Database {
   private createSubModule(): Module {
     return {
       namespaced: true,
-      state: this.createSubState()
+      state: this.createSubState(),
+      mutations: this.createSubMutations()
     }
   }
 
@@ -115,5 +160,12 @@ export default class Database {
     return {
       data: {}
     }
+  }
+
+  /**
+   * Create sub mutations.
+   */
+  private createSubMutations(): MutationTree<State> {
+    return Mutations
   }
 }

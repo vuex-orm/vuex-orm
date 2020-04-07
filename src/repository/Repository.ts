@@ -1,0 +1,130 @@
+import { Store } from 'vuex'
+import * as Data from '../data/Data'
+import Model from '../model/Model'
+import Constructor from '../model/Constructor'
+import Interpretation from '../interpretation/Interpretation'
+import Query from '../query/Query'
+
+interface CollectionPromises {
+  indexes: string[]
+  promises: Promise<Data.Collection<Model>>[]
+}
+
+export default class Repository<M extends Model> {
+  /**
+   * The store instance.
+   */
+  store: Store<any>
+
+  /**
+   * The model object.
+   */
+  model: Constructor<M>
+
+  /**
+   * Create a new repository instance.
+   */
+  constructor(store: Store<any>, model: Constructor<M>) {
+    this.store = store
+    this.model = model
+  }
+
+  /**
+   * Create a new repository instance for the given entity.
+   */
+  newRepository<T extends Model>(entity: string): Repository<T> {
+    const model = this.store.$database.getModel(entity)
+
+    return new Repository(this.store, model) as Repository<T>
+  }
+
+  /**
+   * Create a new interpretation instance.
+   */
+  interpretation(): Interpretation<M> {
+    return new Interpretation(this.store, this.model)
+  }
+
+  /**
+   * Create a new query instance.
+   */
+  query(): Query<M> {
+    return new Query(this.store, this.model)
+  }
+
+  /**
+   * Insert the given record to the store.
+   */
+  async insert(record: Data.Record | Data.Record[]): Promise<Data.Collections> {
+    const normalizedData = this.interpret(record)
+
+    const { indexes, promises } = this.createCollectionPromises(normalizedData)
+
+    return this.resolveCollectionPromises(indexes, promises)
+  }
+
+  /**
+   * Insert the given normalized data.
+   */
+  private insertNormalizedData(
+    records: Data.Records
+  ): Promise<Data.Collection<M>> {
+    return this.query().insert(this.mapNormalizedData(records))
+  }
+
+  /**
+   * Create collection promises for the given normalized data.
+   */
+  private createCollectionPromises(
+    data: Data.NormalizedData
+  ): CollectionPromises {
+    const indexes: string[] = []
+    const promises: Promise<Data.Collection<any>>[] = []
+
+    for (const entity in data) {
+      const records = data[entity]
+      const repository = this.newRepository(entity)
+
+      indexes.push(entity)
+      promises.push(repository.insertNormalizedData(records))
+    }
+
+    return { indexes, promises }
+  }
+
+  /**
+   * Resolve all collection promises and create a new collections object.
+   */
+  private async resolveCollectionPromises(
+    indexes: string[],
+    promises: Promise<Data.Collection<any>>[]
+  ): Promise<Data.Collections> {
+    return (await Promise.all(promises)).reduce<Data.Collections>(
+      (collections, collection, index) => {
+        collections[indexes[index]] = collection
+        return collections
+      },
+      {}
+    )
+  }
+
+  /**
+   * Convert normalized data into an array of records.
+   */
+  private mapNormalizedData(records: Data.Records): Data.Record[] {
+    const items = [] as Data.Record[]
+
+    for (const id in records) {
+      items.push(records[id])
+    }
+
+    return items
+  }
+
+  /**
+   * Normalize the given record.
+   */
+  private interpret(records: Data.Record | Data.Record[]): Data.NormalizedData {
+    return this.interpretation().process(records)
+  }
+}

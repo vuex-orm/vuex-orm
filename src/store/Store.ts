@@ -1,5 +1,8 @@
 import { Store, Plugin } from 'vuex'
 import Database from '../database/Database'
+import Model from '../model/Model'
+import Constructor from '../model/Constructor'
+import Repository from '../repository/Repository'
 
 export interface Options {
   namespace?: string
@@ -35,6 +38,8 @@ function mixin(
 ): void {
   connectDatabase(store, database, options)
 
+  mixinRepoFunction(store)
+
   startDatabase(store)
 }
 
@@ -56,4 +61,15 @@ function connectDatabase(
  */
 function startDatabase(store: Store<any>): void {
   store.$database.start()
+}
+
+/**
+ * Mixin repo function to the store.
+ */
+function mixinRepoFunction(store: Store<any>): void {
+  store.$repo = function<M extends Model>(
+    model: Constructor<M>
+  ): Repository<M> {
+    return new Repository(this, model)
+  }
 }
