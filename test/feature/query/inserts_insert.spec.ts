@@ -6,7 +6,7 @@ describe('feature/query/inserts_insert', () => {
     static entity = 'users'
 
     @Attr() id!: any
-    @Str() name!: string
+    @Str('') name!: string
   }
 
   it('inserts a record to the store', async () => {

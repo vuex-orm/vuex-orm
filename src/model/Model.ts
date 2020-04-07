@@ -52,8 +52,31 @@ export default class Model {
   /**
    * Create a new string attribute class.
    */
-  static string<M extends typeof Model>(this: M): Attributes.String<M> {
-    return new Attributes.String(this)
+  static string<M extends typeof Model>(
+    this: M,
+    value: string | null
+  ): Attributes.String<M> {
+    return new Attributes.String(this, value)
+  }
+
+  /**
+   * Create a new number attribute class.
+   */
+  static number<M extends typeof Model>(
+    this: M,
+    value: number | null
+  ): Attributes.Number<M> {
+    return new Attributes.Number(this, value)
+  }
+
+  /**
+   * Create a new boolean attribute class.
+   */
+  static boolean<M extends typeof Model>(
+    this: M,
+    value: boolean | null
+  ): Attributes.Boolean<M> {
+    return new Attributes.Boolean(this, value)
   }
 
   /**

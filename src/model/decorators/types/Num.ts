@@ -6,16 +6,16 @@ interface Options {
 }
 
 /**
- * Create a str decorator.
+ * Create a num decorator.
  */
-export default function Str(
-  value: string | null,
+export default function Num(
+  value: number | null,
   options: Options = {}
 ): PropertyDecorator {
   return (target, propertyKey) => {
     const model = target.constructor as typeof Model
 
-    const attr = model.string(value)
+    const attr = model.number(value)
 
     if (options.nullable) {
       attr.nullable()
