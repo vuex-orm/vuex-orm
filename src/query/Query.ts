@@ -31,7 +31,15 @@ export default class Query<M extends Model> {
   }
 
   /**
-   * Get all existing records and hydrate them all.
+   * Get records by processing the whole query chain.
+   */
+  get(): Collection<M> {
+    return this.getModels()
+  }
+
+  /**
+   * Get all existing records and hydrate them all. The difference with `get`
+   * method is that this method will not process any query chain.
    */
   getModels(): Collection<M> {
     const records = this.connection().get()

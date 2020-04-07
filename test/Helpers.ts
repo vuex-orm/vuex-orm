@@ -1,6 +1,14 @@
 import Vue from 'vue'
 import Vuex, { Store } from 'vuex'
-import VuexORM, { Database, Model, RootState, State, Records } from '@/index'
+import VuexORM, {
+  Database,
+  Model,
+  RootState,
+  State,
+  Record,
+  Records,
+  Collection
+} from '@/index'
 
 Vue.use(Vuex)
 
@@ -43,4 +51,22 @@ export function fillState(store: Store<any>, entities: Entities): void {
 
 export function assertState(store: Store<any>, entities: Entities): void {
   expect(store.state.entities).toEqual(createState(entities))
+}
+
+export function assertModels<M extends Model>(
+  models: Collection<M>,
+  record: Record[]
+): void {
+  models.forEach((model, index) => {
+    expect(model.$getAttributes()).toEqual(record[index])
+  })
+}
+
+export function assertInstanceOf(
+  collection: Collection<any>,
+  model: typeof Model
+): void {
+  collection.forEach((item) => {
+    expect(item).toBeInstanceOf(model)
+  })
 }

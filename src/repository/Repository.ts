@@ -53,6 +53,13 @@ export default class Repository<M extends Model> {
   }
 
   /**
+   * Get all models from the store.
+   */
+  all(): Data.Collection<M> {
+    return this.query().get()
+  }
+
+  /**
    * Insert the given record to the store.
    */
   async insert(record: Data.Record | Data.Record[]): Promise<Data.Collections> {
