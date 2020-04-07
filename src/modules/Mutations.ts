@@ -1,5 +1,10 @@
+import { MutationTree } from 'vuex'
 import { Records } from '../data/Data'
 import State from './State'
+
+export interface Mutations<S extends State> extends MutationTree<S> {
+  mutate(state: State, callback: (state: S) => void): void
+}
 
 /**
  * Generic mutation.

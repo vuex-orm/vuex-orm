@@ -58,7 +58,7 @@
     "chalk": "^3.0.0",
     "codecov": "^3.6.4",
     "conventional-changelog-cli": "^2.0.31",
-    "core-js": "^2.6.11",
+    "core-js": "^3.6.4",
     "enquirer": "^2.3.4",
     "execa": "^4.0.0",
     "jest": "^25.2.4",

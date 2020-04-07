@@ -145,7 +145,7 @@ export default class Database {
   /**
    * Create sub module.
    */
-  private createSubModule(): Module {
+  private createSubModule(): Module<State, any> {
     return {
       namespaced: true,
       state: this.createSubState(),
