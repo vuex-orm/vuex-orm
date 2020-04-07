@@ -1,7 +1,4 @@
-import {
-  createStore,
-  fillState
-} from 'test/Helpers'
+import { createStore, fillState } from 'test/Helpers'
 import { Model, Attr, Str } from '@/index'
 
 describe('feature/query/retrieves_find', () => {
