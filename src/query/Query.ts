@@ -259,6 +259,13 @@ export default class Query<M extends Model> {
   }
 
   /**
+   * Get an array of ids from the given collection.
+   */
+  private getIdsFromCollection(models: Collection<M>): string[] {
+    return models.map((model) => model.$getIndexId())
+  }
+
+  /**
    * Normalize the given index id. This method will convert the given key to
    * the string since the index key must be a string.
    */
@@ -310,12 +317,5 @@ export default class Query<M extends Model> {
     record: Record
   ): Collection<M> {
     return models.map((model) => model.$fill(record))
-  }
-
-  /**
-   * Get an array of ids from the given collection.
-   */
-  private getIdsFromCollection(models: Collection<M>): string[] {
-    return models.map((model) => model.$getIndexId())
   }
 }
