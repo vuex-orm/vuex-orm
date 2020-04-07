@@ -1,7 +1,7 @@
 import { createStore, fillState, assertState } from 'test/Helpers'
 import { Model, Attr, Str, Num } from '@/index'
 
-describe('feature/query/updates_update', () => {
+describe('feature/query/updates_update_query', () => {
   class User extends Model {
     static entity = 'users'
 
