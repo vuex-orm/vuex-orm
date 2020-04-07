@@ -45,8 +45,15 @@ export default class Model {
   /**
    * Create a new attr attribute class.
    */
-  static attr<M extends typeof Model>(this: M): Attributes.Attribute<M> {
+  static attr<M extends typeof Model>(this: M): Attributes.Attr<M> {
     return new Attributes.Attr(this)
+  }
+
+  /**
+   * Create a new string attribute class.
+   */
+  static string<M extends typeof Model>(this: M): Attributes.String<M> {
+    return new Attributes.String(this)
   }
 
   /**

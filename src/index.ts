@@ -4,6 +4,7 @@ import { install, Options } from './store/Store'
 import Database from './database/Database'
 import Model from './model/Model'
 import Attr from './model/decorators/types/Attr'
+import Str from './model/decorators/types/Str'
 import RootModule from './modules/RootModule'
 import RootState from './modules/RootState'
 import Module from './modules/Module'
@@ -15,6 +16,7 @@ export {
   Database,
   Model,
   Attr,
+  Str,
   RootModule,
   RootState,
   Module,
@@ -25,5 +27,6 @@ export default {
   install,
   Database,
   Model,
-  Attr
+  Attr,
+  Str
 }
