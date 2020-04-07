@@ -71,6 +71,13 @@ export default class Connection<M extends Model> {
   }
 
   /**
+   * Commit `update` change to the store.
+   */
+  update(records: Record[]): void {
+    this.commit('update', this.mapRecords(records))
+  }
+
+  /**
    * Convert the given array of records into records.
    */
   private mapRecords(records: Record[]): Records {

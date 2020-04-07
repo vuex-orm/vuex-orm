@@ -16,5 +16,5 @@ export default abstract class Attribute<M extends typeof Model> {
   /**
    * Make the value for the attribute.
    */
-  abstract make(value: any): any
+  abstract make(value?: any): any
 }

@@ -12,7 +12,7 @@ export default class String<M extends typeof Model> extends Type<M> {
   /**
    * Make the value for the attribute.
    */
-  make(value: any): string | null {
+  make(value?: any): string | null {
     if (value === undefined) {
       return this.value
     }

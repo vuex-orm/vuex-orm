@@ -159,6 +159,17 @@ export default class Query<M extends Model> {
   }
 
   /**
+   * Update records in the store.
+   */
+  async update(record: Record): Promise<Collection<M>> {
+    const models = this.mergeModelsWithRecord(this.get(), record)
+
+    this.connection().update(this.dehydrateModels(models))
+
+    return models
+  }
+
+  /**
    * Delete records that match the query chain.
    */
   async delete(): Promise<Collection<M>> {
@@ -245,6 +256,16 @@ export default class Query<M extends Model> {
    */
   private dehydrateModels(models: Collection<M>): Record[] {
     return models.map((model) => model.$getAttributes())
+  }
+
+  /**
+   * Merge models with the given record.
+   */
+  private mergeModelsWithRecord(
+    models: Collection<M>,
+    record: Record
+  ): Collection<M> {
+    return models.map((model) => model.$fill(record))
   }
 
   /**

@@ -97,7 +97,7 @@ export default class Model {
   /**
    * Get model fields for the model.
    */
-  $fields(): Fields<typeof Model> {
+  get $fields(): Fields<typeof Model> {
     return this.$self.schema
   }
 
@@ -106,16 +106,27 @@ export default class Model {
    * missing field.
    */
   $fill(attributes: Record): this {
-    const fields = this.$fields()
-
-    for (const key in fields) {
-      const attr = fields[key]
-      const value = attributes[key]
-
-      this[key] = attr.make(value)
+    for (const key in this.$fields) {
+      this.$fillField(key, attributes[key])
     }
 
     return this
+  }
+
+  private $fillField(key: string, value: any): void {
+    const attr = this.$fields[key]
+
+    if (value !== undefined) {
+      this[key] = attr.make(value)
+      return
+    }
+
+    if (this[key] !== undefined) {
+      this[key] = this[key]
+      return
+    }
+
+    this[key] = attr.make()
   }
 
   /**
@@ -129,14 +140,10 @@ export default class Model {
    * Get the serialized model attributes.
    */
   $getAttributes(): Record {
-    const fields = this.$fields()
-
     const record = {} as Record
 
-    for (const key in fields) {
-      const value = this[key]
-
-      record[key] = value
+    for (const key in this.$fields) {
+      record[key] = this[key]
     }
 
     return record

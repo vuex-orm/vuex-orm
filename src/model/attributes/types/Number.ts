@@ -12,7 +12,7 @@ export default class Number<M extends typeof Model> extends Type<M> {
   /**
    * Make the value for the attribute.
    */
-  make(value: any): number | null {
+  make(value?: any): number | null {
     if (value === undefined) {
       return this.value
     }

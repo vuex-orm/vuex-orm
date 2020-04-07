@@ -12,7 +12,7 @@ export default class Boolean<M extends typeof Model> extends Type<M> {
   /**
    * Make the value for the attribute.
    */
-  make(value: any): boolean | null {
+  make(value?: any): boolean | null {
     if (value === undefined) {
       return this.value
     }
