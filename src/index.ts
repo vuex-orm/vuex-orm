@@ -5,6 +5,8 @@ import Database from './database/Database'
 import Model from './model/Model'
 import Attr from './model/decorators/types/Attr'
 import Str from './model/decorators/types/Str'
+import Num from './model/decorators/types/Num'
+import Bool from './model/decorators/types/Bool'
 import RootModule from './modules/RootModule'
 import RootState from './modules/RootState'
 import Module from './modules/Module'
@@ -17,6 +19,8 @@ export {
   Model,
   Attr,
   Str,
+  Num,
+  Bool,
   RootModule,
   RootState,
   Module,
@@ -28,5 +32,7 @@ export default {
   Database,
   Model,
   Attr,
-  Str
+  Str,
+  Num,
+  Bool
 }

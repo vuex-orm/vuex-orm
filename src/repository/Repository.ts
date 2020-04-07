@@ -35,7 +35,7 @@ export default class Repository<M extends Model> {
   newRepository<T extends Model>(entity: string): Repository<T> {
     const model = this.store.$database.getModel(entity)
 
-    return new Repository(this.store, model) as Repository<T>
+    return new Repository(this.store, model) as any
   }
 
   /**
@@ -50,6 +50,20 @@ export default class Repository<M extends Model> {
    */
   query(): Query<M> {
     return new Query(this.store, this.model)
+  }
+
+  /**
+   * Add a basic where clause to the query.
+   */
+  where(field: string, value: any): Query<M> {
+    return this.query().where(field, value)
+  }
+
+  /**
+   * Add an "or where" clause to the query.
+   */
+  orWhere(field: string, value: any): Query<M> {
+    return this.query().orWhere(field, value)
   }
 
   /**

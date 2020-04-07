@@ -1,8 +1,10 @@
 import { Store } from 'vuex'
+import { isEmpty, groupBy } from '../support/Utils'
 import { Record, Item, Collection } from '../data/Data'
 import Model from '../model/Model'
 import Constructor from '../model/Constructor'
 import Connection from '../connection/Connection'
+import * as Options from './options/Options'
 
 export default class Query<M extends Model> {
   /**
@@ -14,6 +16,11 @@ export default class Query<M extends Model> {
    * The model object.
    */
   model: Constructor<M>
+
+  /**
+   * The where constraints for the query.
+   */
+  wheres: Options.Where[] = []
 
   /**
    * Create a new query instance.
@@ -31,10 +38,28 @@ export default class Query<M extends Model> {
   }
 
   /**
-   * Get records by processing the whole query chain.
+   * Add a basic where clause to the query.
+   */
+  where(field: string, value: any): this {
+    this.wheres.push({ field, value, boolean: 'and' })
+
+    return this
+  }
+
+  /**
+   * Add an "or where" clause to the query.
+   */
+  orWhere(field: string, value: any): Query<M> {
+    this.wheres.push({ field, value, boolean: 'or' })
+
+    return this
+  }
+
+  /**
+   * Retrieve models by processing whole query chain.
    */
   get(): Collection<M> {
-    return this.getModels()
+    return this.select()
   }
 
   /**
@@ -47,8 +72,8 @@ export default class Query<M extends Model> {
   }
 
   /**
-   * Get all existing records and hydrate them all. The difference with `get`
-   * method is that this method will not process any query chain.
+   * Get all models from the state. The difference with the `get` is that this
+   * method will not process any query chain. It'll always retrieve all models.
    */
   getModels(): Collection<M> {
     const records = this.connection().get()
@@ -60,6 +85,53 @@ export default class Query<M extends Model> {
     }
 
     return collection
+  }
+
+  /**
+   * Retrieve models by processing all filters set to the query chain.
+   */
+  select(): Collection<M> {
+    let models = this.getModels()
+
+    models = this.filterWhere(models)
+
+    return models
+  }
+
+  /**
+   * Filter the given collection by the registered where clause.
+   */
+  private filterWhere(models: Collection<M>): Collection<M> {
+    if (isEmpty(this.wheres)) {
+      return models
+    }
+
+    const comparator = this.getWhereComparator()
+
+    return models.filter((model) => comparator(model))
+  }
+
+  /**
+   * Get comparator for the where clause.
+   */
+  private getWhereComparator(): (model: M) => boolean {
+    const { and, or } = groupBy(this.wheres, (where) => where.boolean)
+
+    return (model) => {
+      const results: boolean[] = []
+
+      and && results.push(and.every((w) => this.whereComparator(model, w)))
+      or && results.push(or.some((w) => this.whereComparator(model, w)))
+
+      return results.indexOf(true) !== -1
+    }
+  }
+
+  /**
+   * The function to compare where clause to the given model.
+   */
+  private whereComparator(model: M, where: Options.Where): boolean {
+    return model[where.field] === where.value
   }
 
   /**
