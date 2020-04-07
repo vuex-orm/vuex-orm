@@ -63,12 +63,25 @@ export default class Query<M extends Model> {
   }
 
   /**
-   * Find the model with the given id.
+   * Find a model by its primary key.
    */
   find(id: string | number): Item<M> {
-    const record = this.connection().find(id)
+    const indexId = this.normalizeIndexId(id)
+
+    const record = this.connection().find(indexId)
 
     return record ? this.hydrateRecord(record) : null
+  }
+
+  /**
+   * Find multiple models by their primary keys.
+   */
+  findIn(ids: (string | number)[]): Collection<M> {
+    const indexIds = this.normalizeIndexIds(ids)
+
+    const records = this.connection().findIn(indexIds)
+
+    return this.hydrateRecords(records)
   }
 
   /**
@@ -165,6 +178,52 @@ export default class Query<M extends Model> {
     this.connection().deleteAll()
 
     return models
+  }
+
+  /**
+   * Destroy the models for the given id.
+   */
+  async destroy(id: string | number): Promise<Item<M>> {
+    const indexId = this.normalizeIndexId(id)
+
+    const model = this.find(indexId)
+
+    if (!model) {
+      return null
+    }
+
+    this.connection().delete([indexId])
+
+    return model
+  }
+
+  /**
+   * Destroy the models for the given id.
+   */
+  async destroyMany(ids: (string | number)[]): Promise<Collection<M>> {
+    const indexIds = this.normalizeIndexIds(ids)
+
+    const models = this.findIn(indexIds)
+
+    this.connection().delete(indexIds)
+
+    return models
+  }
+
+  /**
+   * Normalize the given index id. This method will convert the given key to
+   * the string since the index key must be a string.
+   */
+  private normalizeIndexId(id: string | number): string {
+    return String(id)
+  }
+
+  /**
+   * Normalize the given index ids. This method will convert the given key to
+   * the string since the index key must be a string.
+   */
+  private normalizeIndexIds(ids: (string | number)[]): string[] {
+    return ids.map((id) => String(id))
   }
 
   /**

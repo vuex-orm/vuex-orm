@@ -33,13 +33,24 @@ export default class Connection<M extends Model> {
   }
 
   /**
-   * Find a record with the given id.
+   * Find a model by its primary key.
    */
   find(id: string | number): Record | null {
     const namespace = this.store.$database.connection
     const entity = this.model.entity
 
     return this.store.state[namespace][entity].data[id] ?? null
+  }
+
+  /**
+   * Find multiple models by their primary keys.
+   */
+  findIn(ids: string[]): Record[] {
+    const namespace = this.store.$database.connection
+    const entity = this.model.entity
+    const data = this.store.state[namespace][entity].data
+
+    return ids.map((id) => data[id])
   }
 
   /**

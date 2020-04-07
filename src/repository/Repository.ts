@@ -162,4 +162,18 @@ export default class Repository<M extends Model> {
   deleteAll(): Promise<Data.Collection<M>> {
     return this.query().deleteAll()
   }
+
+  /**
+   * Destroy the models for the given id.
+   */
+  destroy(id: string | number): Promise<Data.Item<M>> {
+    return this.query().destroy(id)
+  }
+
+  /**
+   * Destroy the models for the given ids.
+   */
+  destroyMany(ids: (string | number)[]): Promise<Data.Collection<M>> {
+    return this.query().destroyMany(ids)
+  }
 }
