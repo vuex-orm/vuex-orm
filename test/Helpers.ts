@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex, { Store } from 'vuex'
-import VuexORM, { Database, Model, RootState, Records } from '@/index'
+import VuexORM, { Database, Model, RootState, State, Records } from '@/index'
 
 Vue.use(Vuex)
 
@@ -31,6 +31,14 @@ export function createState(entities: Entities): RootState {
   }
 
   return state
+}
+
+export function fillState(store: Store<any>, entities: Entities): void {
+  for (const entity in entities) {
+    store.commit(`entities/${entity}/mutate`, (state: State): void => {
+      state.data = entities[entity]
+    })
+  }
 }
 
 export function assertState(store: Store<any>, entities: Entities): void {

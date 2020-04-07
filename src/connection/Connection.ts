@@ -23,9 +23,19 @@ export default class Connection<M extends Model> {
   }
 
   /**
+   * Get all existing records.
+   */
+  get(): Records {
+    const namespace = this.store.$database.connection
+    const entity = this.model.entity
+
+    return this.store.state[namespace][entity].data
+  }
+
+  /**
    * Commit the store mutation.
    */
-  private commit(name: string, payload: any): void {
+  private commit(name: string, payload?: any): void {
     const namespace = this.store.$database.connection
     const entity = this.model.entity
 
@@ -47,5 +57,12 @@ export default class Connection<M extends Model> {
       carry[this.model.getIndexId(record)] = record
       return carry
     }, {})
+  }
+
+  /**
+   * Commit `deleteAll` change to the store.
+   */
+  deleteAll(): void {
+    this.commit('deleteAll')
   }
 }

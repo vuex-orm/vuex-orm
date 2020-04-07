@@ -31,6 +31,21 @@ export default class Query<M extends Model> {
   }
 
   /**
+   * Get all existing records and hydrate them all.
+   */
+  getModels(): Collection<M> {
+    const records = this.connection().get()
+
+    const collection = [] as Collection<M>
+
+    for (const id in records) {
+      collection.push(this.hydrateRecord(records[id]))
+    }
+
+    return collection
+  }
+
+  /**
    * Insert the given record to the store.
    */
   async insert(records: Record[]): Promise<Collection<M>> {
@@ -42,10 +57,28 @@ export default class Query<M extends Model> {
   }
 
   /**
+   * Delete all records in the store.
+   */
+  async deleteAll(): Promise<Collection<M>> {
+    const models = this.getModels()
+
+    this.connection().deleteAll()
+
+    return models
+  }
+
+  /**
+   * Instantiate new models with the given record.
+   */
+  private hydrateRecord(record: Record): M {
+    return new this.model(record)
+  }
+
+  /**
    * Instantiate new models with the given collection of records.
    */
   private hydrateRecords(records: Record[]): Collection<M> {
-    return records.map((record) => new this.model(record)) as any
+    return records.map((record) => this.hydrateRecord(record))
   }
 
   /**

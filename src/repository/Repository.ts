@@ -127,4 +127,11 @@ export default class Repository<M extends Model> {
   private interpret(records: Data.Record | Data.Record[]): Data.NormalizedData {
     return this.interpretation().process(records)
   }
+
+  /**
+   * Delete all records in the store.
+   */
+  deleteAll(): Promise<Data.Collection<M>> {
+    return this.query().deleteAll()
+  }
 }
