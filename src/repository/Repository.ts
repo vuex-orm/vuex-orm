@@ -5,6 +5,8 @@ import Constructor from '../model/Constructor'
 import Interpretation from '../interpretation/Interpretation'
 import Query from '../query/Query'
 
+type PersistMethod = 'insert' | 'merge'
+
 interface CollectionPromises {
   indexes: string[]
   promises: Promise<Data.Collection<Model>>[]
@@ -83,27 +85,49 @@ export default class Repository<M extends Model> {
   /**
    * Insert the given record to the store.
    */
-  async insert(record: Data.Record | Data.Record[]): Promise<Data.Collections> {
+  insert(record: Data.Record | Data.Record[]): Promise<Data.Collections> {
+    return this.persist('insert', record)
+  }
+
+  /**
+   * Update records in the store.
+   */
+  update(record: Data.Record | Data.Record[]): Promise<Data.Collections> {
+    return this.persist('merge', record)
+  }
+
+  /**
+   * Persist records to the store by the given method.
+   */
+  private persist(
+    method: PersistMethod,
+    record: Data.Record | Data.Record[]
+  ): Promise<Data.Collections> {
     const normalizedData = this.interpret(record)
 
-    const { indexes, promises } = this.createCollectionPromises(normalizedData)
+    const { indexes, promises } = this.createCollectionPromises(
+      method,
+      normalizedData
+    )
 
     return this.resolveCollectionPromises(indexes, promises)
   }
 
   /**
-   * Insert the given normalized data.
+   * Persist normalized records with the given method.
    */
-  private insertNormalizedData(
+  private persistRecords(
+    method: PersistMethod,
     records: Data.Records
   ): Promise<Data.Collection<M>> {
-    return this.query().insert(this.mapNormalizedData(records))
+    return this.query()[method](this.mapNormalizedData(records))
   }
 
   /**
    * Create collection promises for the given normalized data.
    */
   private createCollectionPromises(
+    method: PersistMethod,
     data: Data.NormalizedData
   ): CollectionPromises {
     const indexes: string[] = []
@@ -114,7 +138,7 @@ export default class Repository<M extends Model> {
       const repository = this.newRepository(entity)
 
       indexes.push(entity)
-      promises.push(repository.insertNormalizedData(records))
+      promises.push(repository.persistRecords(method, records))
     }
 
     return { indexes, promises }

@@ -66,9 +66,7 @@ export default class Query<M extends Model> {
    * Find a model by its primary key.
    */
   find(id: string | number): Item<M> {
-    const indexId = this.normalizeIndexId(id)
-
-    const record = this.connection().find(indexId)
+    const record = this.findRaw(id)
 
     return record ? this.hydrateRecord(record) : null
   }
@@ -77,11 +75,25 @@ export default class Query<M extends Model> {
    * Find multiple models by their primary keys.
    */
   findIn(ids: (string | number)[]): Collection<M> {
+    return this.hydrateRecords(this.findInRaw(ids))
+  }
+
+  /**
+   * Find a record by its primary key.
+   */
+  findRaw(id: string | number): Record | null {
+    const indexId = this.normalizeIndexId(id)
+
+    return this.connection().find(indexId)
+  }
+
+  /**
+   * Find multiple records by their primary keys.
+   */
+  findInRaw(ids: (string | number)[]): Record[] {
     const indexIds = this.normalizeIndexIds(ids)
 
-    const records = this.connection().findIn(indexIds)
-
-    return this.hydrateRecords(records)
+    return this.connection().findIn(indexIds)
   }
 
   /**
@@ -156,6 +168,31 @@ export default class Query<M extends Model> {
     this.connection().insert(this.dehydrateModels(models))
 
     return models
+  }
+
+  /**
+   * Update records in the store by using the primary key of the given records.
+   */
+  async merge(records: Record[]): Promise<Collection<M>> {
+    const models = this.getMergedModels(records)
+
+    this.connection().update(this.dehydrateModels(models))
+
+    return models
+  }
+
+  /**
+   * Get models by merging the records. This method will use the primary key
+   * in the records to fetch models and merge the given record to the model.
+   */
+  private getMergedModels(records: Record[]): Collection<M> {
+    return records.reduce<Collection<M>>((collection, record) => {
+      const model = this.find(this.model.getIndexId(record))
+
+      model && collection.push(this.mergeModelWithRecord(model, record))
+
+      return collection
+    }, [])
   }
 
   /**
@@ -256,6 +293,13 @@ export default class Query<M extends Model> {
    */
   private dehydrateModels(models: Collection<M>): Record[] {
     return models.map((model) => model.$getAttributes())
+  }
+
+  /**
+   * Merge the model with the given record.
+   */
+  private mergeModelWithRecord(model: M, record: Record): M {
+    return model.$fill(record)
   }
 
   /**
