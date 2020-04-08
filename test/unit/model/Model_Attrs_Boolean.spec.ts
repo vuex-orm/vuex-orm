@@ -1,4 +1,4 @@
-import Bool from '@/model/decorators/types/Bool'
+import Bool from '@/model/decorators/attributes/types/Bool'
 import Model from '@/model/Model'
 
 describe('unit/model/Model_Attrs_Boolean', () => {

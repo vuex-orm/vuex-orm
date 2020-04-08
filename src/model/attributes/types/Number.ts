@@ -3,7 +3,7 @@ import Type from './Type'
 
 export default class Number<M extends typeof Model> extends Type<M> {
   /**
-   * Create a new number attribute.
+   * Create a new number attribute instance.
    */
   constructor(model: M, value: number | null) {
     super(model, value)
@@ -12,7 +12,7 @@ export default class Number<M extends typeof Model> extends Type<M> {
   /**
    * Make the value for the attribute.
    */
-  make(value?: any): number | null {
+  make(value: any): number | null {
     if (value === undefined) {
       return this.value
     }

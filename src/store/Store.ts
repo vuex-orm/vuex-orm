@@ -1,7 +1,7 @@
+import { Constructor } from '../types'
 import { Store, Plugin } from 'vuex'
 import Database from '../database/Database'
 import Model from '../model/Model'
-import Constructor from '../model/Constructor'
 import Repository from '../repository/Repository'
 
 export interface Options {

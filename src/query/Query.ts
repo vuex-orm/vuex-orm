@@ -2,7 +2,6 @@ import { Store } from 'vuex'
 import { isEmpty, groupBy } from '../support/Utils'
 import { Record, Item, Collection } from '../data/Data'
 import Model from '../model/Model'
-import Constructor from '../model/Constructor'
 import Connection from '../connection/Connection'
 import * as Options from './options/Options'
 
@@ -15,7 +14,7 @@ export default class Query<M extends Model> {
   /**
    * The model object.
    */
-  model: Constructor<M>
+  model: M
 
   /**
    * The where constraints for the query.
@@ -25,7 +24,7 @@ export default class Query<M extends Model> {
   /**
    * Create a new query instance.
    */
-  constructor(store: Store<any>, model: Constructor<M>) {
+  constructor(store: Store<any>, model: M) {
     this.store = store
     this.model = model
   }
@@ -187,7 +186,7 @@ export default class Query<M extends Model> {
    */
   private getMergedModels(records: Record[]): Collection<M> {
     return records.reduce<Collection<M>>((collection, record) => {
-      const model = this.find(this.model.getIndexId(record))
+      const model = this.find(this.model.$getIndexId(record))
 
       model && collection.push(this.mergeModelWithRecord(model, record))
 
@@ -285,7 +284,7 @@ export default class Query<M extends Model> {
    * Instantiate new models with the given record.
    */
   private hydrateRecord(record: Record): M {
-    return new this.model(record)
+    return this.model.$newInstance(record)
   }
 
   /**

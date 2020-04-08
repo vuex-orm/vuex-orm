@@ -7,15 +7,15 @@ export default abstract class Type<M extends typeof Model> extends Attribute<
   /**
    * The default value for the attribute.
    */
-  value: any
+  protected value: any
 
   /**
    * Whether if the attribute accepts `null` value or not.
    */
-  isNullable: boolean = false
+  protected isNullable: boolean = false
 
   /**
-   * Create a new string attribute.
+   * Create a new type attribute instance.
    */
   constructor(model: M, value: any = null) {
     super(model)

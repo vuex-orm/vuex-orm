@@ -1,3 +1,4 @@
+import { Store } from 'vuex'
 import { Record } from '../data/Data'
 import * as Attributes from './attributes/Attributes'
 
@@ -6,6 +7,11 @@ export interface Fields<M extends typeof Model> {
 }
 
 export default class Model {
+  /**
+   * The store instance.
+   */
+  protected _store!: Store<any>
+
   /**
    * The name of the model.
    */
@@ -25,12 +31,12 @@ export default class Model {
   /**
    * Create a new model instance.
    */
-  constructor(record: Record) {
-    this.$fill(record)
+  constructor(attributes?: Record) {
+    this.$fill(attributes)
   }
 
   /**
-   * Set the attribute.
+   * Set the attribute to the schema.
    */
   static setSchema<M extends typeof Model>(
     this: M,
@@ -43,14 +49,14 @@ export default class Model {
   }
 
   /**
-   * Create a new attr attribute class.
+   * Create a new attr attribute instance.
    */
-  static attr<M extends typeof Model>(this: M): Attributes.Attr<M> {
-    return new Attributes.Attr(this)
+  static attr<M extends typeof Model>(this: M, value: any): Attributes.Attr<M> {
+    return new Attributes.Attr(this, value)
   }
 
   /**
-   * Create a new string attribute class.
+   * Create a new string attribute instance.
    */
   static string<M extends typeof Model>(
     this: M,
@@ -60,7 +66,7 @@ export default class Model {
   }
 
   /**
-   * Create a new number attribute class.
+   * Create a new number attribute instance.
    */
   static number<M extends typeof Model>(
     this: M,
@@ -70,7 +76,7 @@ export default class Model {
   }
 
   /**
-   * Create a new boolean attribute class.
+   * Create a new boolean attribute instance.
    */
   static boolean<M extends typeof Model>(
     this: M,
@@ -80,18 +86,51 @@ export default class Model {
   }
 
   /**
-   * Get the index id from the given record. An index ID is a value that
-   * used as a index key for records within the store.
-   */
-  static getIndexId(record: Record): string {
-    return String(record[this.primaryKey])
-  }
-
-  /**
    * Get the constructor for the model.
    */
   get $self(): typeof Model {
     return this.constructor as typeof Model
+  }
+
+  /**
+   * Get the store instance.
+   */
+  get $store(): Store<any> {
+    return this._store
+  }
+
+  /**
+   * Get the entity for the model.
+   */
+  get $entity(): string {
+    return this.$self.entity
+  }
+
+  /**
+   * Get the primary key for the model.
+   */
+  get $primaryKey(): string {
+    return this.$self.primaryKey
+  }
+
+  /**
+   * Set the store instance.
+   */
+  $setStore(store: Store<any>): this {
+    this._store = store
+
+    return this
+  }
+
+  /**
+   * Create a new instance of the model. This method just provides a convenient
+   * way for us to generate fresh model instances of this current model. It's
+   * particularly useful during the hydration of new objects via the query.
+   */
+  $newInstance(attributes: Record): this {
+    const model = this.$self as any
+
+    return new model(attributes)
   }
 
   /**
@@ -105,7 +144,7 @@ export default class Model {
    * Fill the model by the given attributes. Its default values will fill any
    * missing field.
    */
-  $fill(attributes: Record): this {
+  $fill(attributes: Record = {}): this {
     for (const key in this.$fields) {
       this.$fillField(key, attributes[key])
     }
@@ -130,10 +169,12 @@ export default class Model {
   }
 
   /**
-   * Get the index id value for the model.
+   * Get the index id for the model or the given record.
    */
-  $getIndexId(): string {
-    return this.$self.getIndexId(this)
+  $getIndexId(record?: Record): string {
+    const target = record ?? this
+
+    return String(target[this.$primaryKey])
   }
 
   /**

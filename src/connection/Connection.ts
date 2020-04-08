@@ -1,7 +1,11 @@
 import { Store } from 'vuex'
 import { Record, Records } from '../data/Data'
 import Model from '../model/Model'
-import Constructor from '../model/Constructor'
+
+interface Namespace {
+  connection: string
+  entity: string
+}
 
 export default class Connection<M extends Model> {
   /**
@@ -12,55 +16,65 @@ export default class Connection<M extends Model> {
   /**
    * The model object.
    */
-  model: Constructor<M>
+  model: M
 
   /**
    * Create a new connection instance.
    */
-  constructor(store: Store<any>, model: Constructor<M>) {
+  constructor(store: Store<any>, model: M) {
     this.store = store
     this.model = model
   }
 
   /**
-   * Get all existing records.
+   * Get namespace for the modul
    */
-  get(): Records {
-    const namespace = this.store.$database.connection
-    const entity = this.model.entity
+  private getNamespace(): Namespace {
+    const connection = this.store.$database.connection
+    const entity = this.model.$entity
 
-    return this.store.state[namespace][entity].data
+    return { connection, entity }
   }
 
   /**
-   * Find a model by its primary key.
+   * Get the state object from the store.
    */
-  find(id: string | number): Record | null {
-    const namespace = this.store.$database.connection
-    const entity = this.model.entity
+  private getData(): Records {
+    const { connection, entity } = this.getNamespace()
 
-    return this.store.state[namespace][entity].data[id] ?? null
-  }
-
-  /**
-   * Find multiple models by their primary keys.
-   */
-  findIn(ids: string[]): Record[] {
-    const namespace = this.store.$database.connection
-    const entity = this.model.entity
-    const data = this.store.state[namespace][entity].data
-
-    return ids.map((id) => data[id])
+    return this.store.state[connection][entity].data
   }
 
   /**
    * Commit the store mutation.
    */
   private commit(name: string, payload?: any): void {
-    const namespace = this.store.$database.connection
-    const entity = this.model.entity
+    const { connection, entity } = this.getNamespace()
 
-    this.store.commit(`${namespace}/${entity}/${name}`, payload)
+    this.store.commit(`${connection}/${entity}/${name}`, payload)
+  }
+
+  /**
+   * Get all existing records.
+   */
+  get(): Records {
+    return this.getData()
+  }
+
+  /**
+   * Find a model by its primary key.
+   */
+  find(id: string | number): Record | null {
+    return this.getData()[id] ?? null
+  }
+
+  /**
+   * Find multiple models by their primary keys.
+   */
+  findIn(ids: string[]): Record[] {
+    const data = this.getData()
+
+    return ids.map((id) => data[id])
   }
 
   /**
@@ -82,7 +96,7 @@ export default class Connection<M extends Model> {
    */
   private mapRecords(records: Record[]): Records {
     return records.reduce<Records>((carry, record) => {
-      carry[this.model.getIndexId(record)] = record
+      carry[this.model.$getIndexId(record)] = record
       return carry
     }, {})
   }

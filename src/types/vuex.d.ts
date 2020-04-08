@@ -1,6 +1,6 @@
+import { Constructor } from '../types'
 import Database from '../database/Database'
 import Model from '../model/Model'
-import Constructor from '../model/Constructor'
 import Repository from '../repository/Repository'
 
 declare module 'vuex' {

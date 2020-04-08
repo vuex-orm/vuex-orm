@@ -1,15 +1,15 @@
 import { Store, Module as VuexModule, MutationTree } from 'vuex'
 import { schema as Normalizr } from 'normalizr'
+import { Constructor } from '../types'
 import Schema from '../schema/Schema'
 import Model from '../model/Model'
-import Constructor from '../model/Constructor'
 import RootModule from '../modules/RootModule'
 import Module from '../modules/Module'
 import State from '../modules/State'
 import Mutations from '../modules/Mutations'
 
 interface Models {
-  [name: string]: Constructor<Model>
+  [name: string]: Model
 }
 
 interface Schemas {
@@ -48,7 +48,9 @@ export default class Database {
    * Register the given model.
    */
   register(model: Constructor<Model>): void {
-    this.models[model.entity] = model
+    const instance = new model()
+
+    this.models[instance.$entity] = instance
   }
 
   /**
@@ -73,6 +75,8 @@ export default class Database {
    * Initialize the database before a user can start using it.
    */
   start(): void {
+    this.injectStoreToModels()
+
     this.createSchemas()
 
     this.registerModules()
@@ -83,8 +87,8 @@ export default class Database {
   /**
    * Get the model.
    */
-  getModel<M extends Model>(name: string): Constructor<M> {
-    return this.models[name] as Constructor<M>
+  getModel<M extends Model>(name: string): M {
+    return this.models[name] as M
   }
 
   /**
@@ -92,6 +96,15 @@ export default class Database {
    */
   getSchema(name: string): Normalizr.Entity {
     return this.schemas[name]
+  }
+
+  /**
+   * Inject the store instance to all registered models.
+   */
+  private injectStoreToModels(): void {
+    for (const name in this.models) {
+      this.models[name].$setStore(this.store)
+    }
   }
 
   /**
@@ -108,7 +121,7 @@ export default class Database {
   /**
    * Create schema from the given model.
    */
-  private createSchema(model: Constructor<Model>): Normalizr.Entity {
+  private createSchema<M extends Model>(model: M): Normalizr.Entity {
     return new Schema(model).one()
   }
 

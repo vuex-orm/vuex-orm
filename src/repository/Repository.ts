@@ -1,7 +1,7 @@
 import { Store } from 'vuex'
+import { Constructor } from '../types'
 import * as Data from '../data/Data'
 import Model from '../model/Model'
-import Constructor from '../model/Constructor'
 import Interpretation from '../interpretation/Interpretation'
 import Query from '../query/Query'
 
@@ -21,14 +21,14 @@ export default class Repository<M extends Model> {
   /**
    * The model object.
    */
-  model: Constructor<M>
+  model: M
 
   /**
    * Create a new repository instance.
    */
-  constructor(store: Store<any>, model: Constructor<M>) {
+  constructor(store: Store<any>, model: M | Constructor<M>) {
     this.store = store
-    this.model = model
+    this.model = model instanceof Model ? model : new model()
   }
 
   /**

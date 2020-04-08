@@ -1,18 +1,17 @@
 import { schema as Normalizr } from 'normalizr'
 import { Record } from '../data/Data'
 import Model from '../model/Model'
-import Constructor from '../model/Constructor'
 
 export default class Schema<M extends Model> {
   /**
    * The model instance.
    */
-  model: Constructor<M>
+  model: M
 
   /**
    * Create a new schema instance.
    */
-  constructor(model: Constructor<M>) {
+  constructor(model: M) {
     this.model = model
   }
 
@@ -29,7 +28,7 @@ export default class Schema<M extends Model> {
    * Create a new normalizr entity.
    */
   private newEntity(): Normalizr.Entity {
-    const entity = this.model.entity
+    const entity = this.model.$entity
     const idAttribute = this.idArrtibute.bind(this)
 
     return new Normalizr.Entity(entity, {}, { idAttribute })
@@ -43,6 +42,6 @@ export default class Schema<M extends Model> {
     _parentRecord: Record,
     _key: string
   ): string {
-    return this.model.getIndexId(record)
+    return this.model.$getIndexId(record)
   }
 }

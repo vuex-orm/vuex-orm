@@ -1,4 +1,4 @@
-import Num from '@/model/decorators/types/Num'
+import Num from '@/model/decorators/attributes/types/Num'
 import Model from '@/model/Model'
 
 describe('unit/model/Model_Attrs_Number', () => {
