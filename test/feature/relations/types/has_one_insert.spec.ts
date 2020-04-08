@@ -64,4 +64,37 @@ describe('feature/relations/types/has_one_insert', () => {
       }
     })
   })
+
+  it('can insert a record with missing relational key', async () => {
+    const store = createStore([User, Phone])
+
+    await store.$repo(User).insert({
+      id: 1,
+      name: 'John Doe'
+    })
+
+    assertState(store, {
+      users: {
+        1: { id: 1, name: 'John Doe' }
+      },
+      phones: {}
+    })
+  })
+
+  it('can insert a record with relational key set to `null`', async () => {
+    const store = createStore([User, Phone])
+
+    await store.$repo(User).insert({
+      id: 1,
+      name: 'John Doe',
+      phone: null
+    })
+
+    assertState(store, {
+      users: {
+        1: { id: 1, name: 'John Doe' }
+      },
+      phones: {}
+    })
+  })
 })

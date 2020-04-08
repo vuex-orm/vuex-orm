@@ -40,9 +40,11 @@ export default class HasOne extends Relation {
    * Attach the relational key to the given data.
    */
   attach(id: string | number, record: Record, data: NormalizedData): void {
-    const relatedRecord = data[this.related.$entity][id]
+    const relatedRecord = data[this.related.$entity]?.[id]
 
-    relatedRecord[this.foreignKey] = record[this.localKey]
+    if (relatedRecord) {
+      relatedRecord[this.foreignKey] = record[this.localKey]
+    }
   }
 
   /**
