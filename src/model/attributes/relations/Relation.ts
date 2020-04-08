@@ -4,7 +4,7 @@ import { Record, NormalizedData } from '../../../data/Data'
 import Model from '../../Model'
 import Attribute from '../Attribute'
 
-export default abstract class Relelation extends Attribute {
+export default abstract class Relation extends Attribute {
   /**
    * The parent model.
    */
