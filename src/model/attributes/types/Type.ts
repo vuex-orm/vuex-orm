@@ -1,9 +1,7 @@
 import Model from '../../Model'
 import Attribute from '../Attribute'
 
-export default abstract class Type<M extends typeof Model> extends Attribute<
-  M
-> {
+export default abstract class Type extends Attribute {
   /**
    * The default value for the attribute.
    */
@@ -17,7 +15,7 @@ export default abstract class Type<M extends typeof Model> extends Attribute<
   /**
    * Create a new type attribute instance.
    */
-  constructor(model: M, value: any = null) {
+  constructor(model: Model, value: any = null) {
     super(model)
     this.value = value
   }

@@ -1,11 +1,11 @@
 import Model from '../../Model'
 import Type from './Type'
 
-export default class Boolean<M extends typeof Model> extends Type<M> {
+export default class Boolean extends Type {
   /**
    * Create a new boolean attribute instance.
    */
-  constructor(model: M, value: boolean | null) {
+  constructor(model: Model, value: boolean | null) {
     super(model, value)
   }
 

@@ -1,7 +1,6 @@
-import Model from '../../Model'
 import Type from './Type'
 
-export default class Attr<M extends typeof Model> extends Type<M> {
+export default class Attr extends Type {
   /**
    * Make the value for the attribute.
    */

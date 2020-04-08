@@ -1,26 +1,36 @@
+import { Schema as NormalizrSchema } from 'normalizr'
+import Schema from '../../../schema/Schema'
+import { Record, NormalizedData } from '../../../data/Data'
 import Model from '../../Model'
 import Attribute from '../Attribute'
 
-export default abstract class Relelation<
-  P extends typeof Model,
-  R extends typeof Model
-> extends Attribute<P> {
+export default abstract class Relelation extends Attribute {
   /**
    * The parent model.
    */
-  protected parent: P
+  protected parent: Model
 
   /**
    * The related model.
    */
-  protected related: R
+  protected related: Model
 
   /**
    * Create a new relation instance.
    */
-  constructor(parent: P, related: R) {
+  constructor(parent: Model, related: Model) {
     super(parent)
     this.parent = parent
     this.related = related
   }
+
+  /**
+   * Define the normalizr schema for the relationship.
+   */
+  abstract define(schema: Schema): NormalizrSchema
+
+  /**
+   * Attach the relational key to the given data.
+   */
+  abstract attach(ids: any, record: Record, data: NormalizedData): void
 }

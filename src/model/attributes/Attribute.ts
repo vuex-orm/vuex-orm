@@ -1,15 +1,15 @@
 import Model from '../Model'
 
-export default abstract class Attribute<M extends typeof Model> {
+export default abstract class Attribute {
   /**
    * The model instance.
    */
-  protected model: M
+  protected model: Model
 
   /**
    * Create a new attribute instance.
    */
-  constructor(model: M) {
+  constructor(model: Model) {
     this.model = model
   }
 

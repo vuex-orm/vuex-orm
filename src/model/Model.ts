@@ -1,9 +1,22 @@
 import { Store } from 'vuex'
+import { isObject } from '../support/Utils'
 import { Record } from '../data/Data'
 import * as Attributes from './attributes/Attributes'
 
-export interface Fields<M extends typeof Model> {
-  [key: string]: Attributes.Attribute<M>
+export interface Fields {
+  [key: string]: Attributes.Attribute
+}
+
+interface Schemas {
+  [name: string]: Fields
+}
+
+interface Registries {
+  [name: string]: Registry
+}
+
+interface Registry {
+  [key: string]: () => Attributes.Attribute
 }
 
 export default class Model {
@@ -26,63 +39,117 @@ export default class Model {
    * The schema for the model. It contains the result of the `fields`
    * method or the attributes defined by decorators.
    */
-  protected static schema: Fields<typeof Model> = {}
+  protected static schemas: Schemas = {}
+
+  /**
+   * The registry for the model. It contains predefined model schema generated
+   * by the decorators, and gets evaluated and stored at `schema` property
+   * when registering models to the database
+   */
+  protected static registries: Registries = {}
+
+  /**
+   * The array of booted models.
+   */
+  protected static booted: { [name: string]: boolean } = {}
 
   /**
    * Create a new model instance.
    */
   constructor(attributes?: Record) {
+    this.$boot()
+
     this.$fill(attributes)
   }
 
   /**
-   * Set the attribute to the schema.
+   * Build a schema by evaluating fields and registry.
    */
-  static setSchema<M extends typeof Model>(
-    this: M,
+  static initializeSchema(): void {
+    this.schemas[this.entity] = {}
+
+    const registry = this.registries[this.entity]
+
+    for (const key in registry) {
+      this.schemas[this.entity][key] = registry[key]()
+    }
+  }
+
+  /**
+   * Set the attribute to the registry.
+   */
+  static setRegistry(
     key: string,
-    attribute: Attributes.Attribute<M>
-  ): M {
-    this.schema[key] = attribute
+    attribute: () => Attributes.Attribute
+  ): typeof Model {
+    if (!this.registries[this.entity]) {
+      this.registries[this.entity] = {}
+    }
+
+    this.registries[this.entity][key] = attribute
 
     return this
   }
 
   /**
+   * Clear the list of booted models so they will be re-booted.
+   */
+  static clearBootedModels(): void {
+    this.booted = {}
+    this.schemas = {}
+  }
+
+  /**
    * Create a new attr attribute instance.
    */
-  static attr<M extends typeof Model>(this: M, value: any): Attributes.Attr<M> {
-    return new Attributes.Attr(this, value)
+  static attr(value: any): Attributes.Attr {
+    return new Attributes.Attr(new this(), value)
   }
 
   /**
    * Create a new string attribute instance.
    */
-  static string<M extends typeof Model>(
-    this: M,
-    value: string | null
-  ): Attributes.String<M> {
-    return new Attributes.String(this, value)
+  static string(value: string | null): Attributes.String {
+    return new Attributes.String(new this(), value)
   }
 
   /**
    * Create a new number attribute instance.
    */
-  static number<M extends typeof Model>(
-    this: M,
-    value: number | null
-  ): Attributes.Number<M> {
-    return new Attributes.Number(this, value)
+  static number(value: number | null): Attributes.Number {
+    return new Attributes.Number(new this(), value)
   }
 
   /**
    * Create a new boolean attribute instance.
    */
-  static boolean<M extends typeof Model>(
-    this: M,
-    value: boolean | null
-  ): Attributes.Boolean<M> {
-    return new Attributes.Boolean(this, value)
+  static boolean(value: boolean | null): Attributes.Boolean {
+    return new Attributes.Boolean(new this(), value)
+  }
+
+  /**
+   * Create a new has one relation instance.
+   */
+  static hasOne(
+    related: typeof Model,
+    foreignKey: string,
+    localKey?: string
+  ): Attributes.HasOne {
+    localKey = localKey ?? this.getLocalKey()
+
+    return new Attributes.HasOne(
+      new this(),
+      new related(),
+      foreignKey,
+      localKey
+    )
+  }
+
+  /**
+   * Get the local key for the model.
+   */
+  static getLocalKey(): string {
+    return this.primaryKey
   }
 
   /**
@@ -128,16 +195,36 @@ export default class Model {
    * particularly useful during the hydration of new objects via the query.
    */
   $newInstance(attributes: Record): this {
-    const model = this.$self as any
+    const model = new this.$self(attributes) as this
 
-    return new model(attributes)
+    model.$setStore(model.$store)
+
+    return model
   }
 
   /**
    * Get model fields for the model.
    */
-  get $fields(): Fields<typeof Model> {
-    return this.$self.schema
+  get $fields(): Fields {
+    return this.$self.schemas[this.$entity]
+  }
+
+  /**
+   * Bootstrap the model.
+   */
+  protected $boot(): void {
+    if (!this.$self.booted[this.$entity]) {
+      this.$self.booted[this.$entity] = true
+
+      this.$initializeSchema()
+    }
+  }
+
+  /**
+   * Build a schema by evaluating fields and registry.
+   */
+  protected $initializeSchema(): void {
+    this.$self.initializeSchema()
   }
 
   /**
@@ -146,15 +233,22 @@ export default class Model {
    */
   $fill(attributes: Record = {}): this {
     for (const key in this.$fields) {
-      this.$fillField(key, attributes[key])
+      const attr = this.$fields[key]
+      const value = attributes[key]
+
+      attr instanceof Attributes.Relation
+        ? this.$fillRelationFields(key, attr, value)
+        : this.$fillTypeField(key, attr, value)
     }
 
     return this
   }
 
-  private $fillField(key: string, value: any): void {
-    const attr = this.$fields[key]
-
+  protected $fillTypeField(
+    key: string,
+    attr: Attributes.Attribute,
+    value: any
+  ): void {
     if (value !== undefined) {
       this[key] = attr.make(value)
       return
@@ -166,6 +260,16 @@ export default class Model {
     }
 
     this[key] = attr.make()
+  }
+
+  protected $fillRelationFields(
+    key: string,
+    attr: Attributes.Relation,
+    value: any
+  ): void {
+    if (isObject(value)) {
+      this[key] = attr.make(value)
+    }
   }
 
   /**
@@ -184,9 +288,26 @@ export default class Model {
     const record = {} as Record
 
     for (const key in this.$fields) {
-      record[key] = this[key]
+      if (this[key] !== undefined) {
+        record[key] = this[key]
+      }
     }
 
     return record
+  }
+
+  /**
+   * Check if the model has any relations defined in the schema.
+   */
+  $hasRelation(): boolean {
+    let result = false
+
+    for (const key in this.$fields) {
+      if (this.$fields[key] instanceof Attributes.Relation) {
+        result = true
+      }
+    }
+
+    return result
   }
 }

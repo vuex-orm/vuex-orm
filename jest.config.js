@@ -10,6 +10,9 @@ module.exports = {
   },
   testMatch: ['<rootDir>/test/**/*.spec.ts'],
   testPathIgnorePatterns: ['/node_modules/'],
+  setupFilesAfterEnv: [
+    './test/setup.ts'
+  ],
   coverageDirectory: 'coverage',
   coverageReporters: ['json', 'lcov', 'text-summary', 'clover'],
   collectCoverageFrom: [

@@ -1,7 +1,7 @@
 import { createStore, assertState } from 'test/Helpers'
 import { Model, Attr, Str, HasOne } from '@/index'
 
-describe('feature/relations/has_one_insert', () => {
+describe('feature/relations/types/has_one_insert', () => {
   class User extends Model {
     static entity = 'users'
 
@@ -28,6 +28,7 @@ describe('feature/relations/has_one_insert', () => {
       name: 'John Doe',
       phone: {
         id: 1,
+        userId: 1,
         number: '123-4567-8912'
       }
     })
@@ -37,7 +38,29 @@ describe('feature/relations/has_one_insert', () => {
         1: { id: 1, name: 'John Doe' }
       },
       phones: {
-        1: { id: 1, number: '123-4567-8912' }
+        1: { id: 1, userId: 1, number: '123-4567-8912' }
+      }
+    })
+  })
+
+  it('generates missing foreign key', async () => {
+    const store = createStore([User, Phone])
+
+    await store.$repo(User).insert({
+      id: 1,
+      name: 'John Doe',
+      phone: {
+        id: 1,
+        number: '123-4567-8912'
+      }
+    })
+
+    assertState(store, {
+      users: {
+        1: { id: 1, name: 'John Doe' }
+      },
+      phones: {
+        1: { id: 1, userId: 1, number: '123-4567-8912' }
       }
     })
   })

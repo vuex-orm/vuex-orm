@@ -4,6 +4,10 @@ interface SortableArray<T> {
   value: T
 }
 
+export function isObject(value: any): value is Record<any, any> {
+  return value !== null && typeof value === 'object'
+}
+
 export function isArray(value: any): value is any[] {
   return Array.isArray(value)
 }

@@ -1,11 +1,11 @@
 import Model from '../../Model'
 import Type from './Type'
 
-export default class String<M extends typeof Model> extends Type<M> {
+export default class String extends Type {
   /**
    * Create a new string attribute instance.
    */
-  constructor(model: M, value: string | null) {
+  constructor(model: Model, value: string | null) {
     super(model, value)
   }
 

@@ -1,11 +1,11 @@
 import Model from '../../Model'
 import Type from './Type'
 
-export default class Number<M extends typeof Model> extends Type<M> {
+export default class Number extends Type {
   /**
    * Create a new number attribute instance.
    */
-  constructor(model: M, value: number | null) {
+  constructor(model: Model, value: number | null) {
     super(model, value)
   }
 
