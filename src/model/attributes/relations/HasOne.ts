@@ -3,7 +3,7 @@ import Schema from '../../../schema/Schema'
 import { Record, NormalizedData, Collection } from '../../../data/Data'
 import Query from '../../../query/Query'
 import Model from '../../Model'
-import Relation, { Dictionaly } from './Relation'
+import Relation, { Dictionary } from './Relation'
 
 export default class HasOne extends Relation {
   /**
@@ -76,7 +76,7 @@ export default class HasOne extends Relation {
    * @param  \Illuminate\Database\Eloquent\Collection  $results
    * @return array
    */
-  protected buildDictionary(results: Collection): Dictionaly {
+  protected buildDictionary(results: Collection): Dictionary {
     return this.mapToDictionary(results, (result) => {
       return [result[this.foreignKey], result]
     })

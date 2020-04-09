@@ -62,7 +62,7 @@ export default class Interpretation<M extends Model> {
   }
 
   /**
-   * Attach any missing foreign key to the records.
+   * Attach any missing foreign keys to the records.
    */
   private attachRecords(
     entity: string,
@@ -81,7 +81,7 @@ export default class Interpretation<M extends Model> {
   }
 
   /**
-   * Attach any missing foreign key to the record.
+   * Attach any missing foreign keys to the record.
    */
   private attachRecord(
     model: Model,

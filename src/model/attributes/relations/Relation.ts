@@ -5,7 +5,7 @@ import Query from '../../../query/Query'
 import Model from '../../Model'
 import Attribute from '../Attribute'
 
-export interface Dictionaly {
+export interface Dictionary {
   [id: string]: Model[]
 }
 
@@ -47,12 +47,12 @@ export default abstract class Relation extends Attribute {
   abstract attach(ids: any, record: Record, data: NormalizedData): void
 
   /**
-   * Set the constraints for an eager load of the relation.
+   * Set the constraints for an eager loading relation.
    */
   abstract addEagerConstraints(query: Query, models: Collection): void
 
   /**
-   * Get the relationship for eager loading.
+   * Execute the eager loading query.
    */
   public getEager(query: Query): Collection {
     return query.get()
@@ -80,17 +80,17 @@ export default abstract class Relation extends Attribute {
   protected mapToDictionary(
     models: Collection,
     callback: (model: Model) => [string, Model]
-  ): Dictionaly {
-    return models.reduce<Dictionaly>((dictionaly, model) => {
+  ): Dictionary {
+    return models.reduce<Dictionary>((dictionary, model) => {
       const [key, value] = callback(model)
 
-      if (!dictionaly[key]) {
-        dictionaly[key] = []
+      if (!dictionary[key]) {
+        dictionary[key] = []
       }
 
-      dictionaly[key].push(value)
+      dictionary[key].push(value)
 
-      return dictionaly
+      return dictionary
     }, {})
   }
 }
