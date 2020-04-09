@@ -414,7 +414,7 @@ export default class Query<M extends Model = Model> {
    * Instantiate new models with the given record.
    */
   protected hydrateRecord(record: Record): M {
-    return this.model.$newInstance(record)
+    return this.model.$newInstance(record, { relations: false })
   }
 
   /**

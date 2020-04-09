@@ -5,7 +5,7 @@ import Query from '../../../query/Query'
 import Model from '../../Model'
 import Relation, { Dictionary } from './Relation'
 
-export default class HasOne extends Relation {
+export default class HasMany extends Relation {
   /**
    * The foreign key of the parent model.
    */
@@ -17,7 +17,7 @@ export default class HasOne extends Relation {
   protected localKey: string
 
   /**
-   * Create a new has one relation instance.
+   * Create a new has many relation instance.
    */
   constructor(
     parent: Model,
@@ -34,18 +34,20 @@ export default class HasOne extends Relation {
    * Define the normalizr schema for the relationship.
    */
   define(schema: Schema): NormalizrSchema {
-    return schema.one(this.related)
+    return schema.many(this.related)
   }
 
   /**
    * Attach the relational key to the given data.
    */
-  attach(id: string | number, record: Record, data: NormalizedData): void {
-    const relatedRecord = data[this.related.$entity]?.[id]
+  attach(ids: (string | number)[], record: Record, data: NormalizedData): void {
+    ids.forEach((id) => {
+      const relatedRecord = data[this.related.$entity]?.[id]
 
-    if (relatedRecord) {
-      relatedRecord[this.foreignKey] = record[this.localKey]
-    }
+      if (relatedRecord) {
+        relatedRecord[this.foreignKey] = record[this.localKey]
+      }
+    })
   }
 
   /**
@@ -65,8 +67,8 @@ export default class HasOne extends Relation {
       const key = model[this.localKey]
 
       dictionary[key]
-        ? model.$setRelation(relation, dictionary[key][0])
-        : model.$setRelation(relation, null)
+        ? model.$setRelation(relation, dictionary[key])
+        : model.$setRelation(relation, [])
     })
   }
 

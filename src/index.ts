@@ -12,6 +12,7 @@ import Str from './model/decorators/attributes/types/Str'
 import Num from './model/decorators/attributes/types/Num'
 import Bool from './model/decorators/attributes/types/Bool'
 import HasOne from './model/decorators/attributes/relations/HasOne'
+import HasMany from './model/decorators/attributes/relations/HasMany'
 import RootModule from './modules/RootModule'
 import RootState from './modules/RootState'
 import Module from './modules/Module'
@@ -36,6 +37,7 @@ export {
   Num,
   Bool,
   HasOne,
+  HasMany,
   RootModule,
   RootState,
   Module,

@@ -6,5 +6,16 @@ import Number from './types/Number'
 import Boolean from './types/Boolean'
 import Relation from './relations/Relation'
 import HasOne from './relations/HasOne'
+import HasMany from './relations/HasMany'
 
-export { Attribute, Type, Attr, String, Number, Boolean, Relation, HasOne }
+export {
+  Attribute,
+  Type,
+  Attr,
+  String,
+  Number,
+  Boolean,
+  Relation,
+  HasOne,
+  HasMany
+}

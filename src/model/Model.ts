@@ -1,5 +1,4 @@
 import { Store } from 'vuex'
-import { isObject } from '../support/Utils'
 import { Record } from '../data/Data'
 import * as Attributes from './attributes/Attributes'
 
@@ -17,6 +16,10 @@ interface Registries {
 
 interface Registry {
   [key: string]: () => Attributes.Attribute
+}
+
+interface FillOptions {
+  relations?: boolean
 }
 
 export default class Model {
@@ -56,10 +59,10 @@ export default class Model {
   /**
    * Create a new model instance.
    */
-  constructor(attributes?: Record) {
+  constructor(attributes?: Record, options?: FillOptions) {
     this.$boot()
 
-    this.$fill(attributes)
+    this.$fill(attributes, options)
   }
 
   /**
@@ -146,6 +149,24 @@ export default class Model {
   }
 
   /**
+   * Create a new has many relation instance.
+   */
+  static hasMany(
+    related: typeof Model,
+    foreignKey: string,
+    localKey?: string
+  ): Attributes.HasMany {
+    localKey = localKey ?? this.getLocalKey()
+
+    return new Attributes.HasMany(
+      new this(),
+      new related(),
+      foreignKey,
+      localKey
+    )
+  }
+
+  /**
    * Get the local key for the model.
    */
   static getLocalKey(): string {
@@ -194,8 +215,8 @@ export default class Model {
    * way for us to generate fresh model instances of this current model. It's
    * particularly useful during the hydration of new objects via the query.
    */
-  $newInstance(attributes: Record): this {
-    const model = new this.$self(attributes) as this
+  $newInstance(attributes?: Record, options?: FillOptions): this {
+    const model = new this.$self(attributes, options) as this
 
     model.$setStore(model.$store)
 
@@ -231,23 +252,27 @@ export default class Model {
    * Fill the model by the given attributes. Its default values will fill any
    * missing field.
    */
-  $fill(attributes: Record = {}): this {
+  $fill(attributes: Record = {}, options: FillOptions = {}): this {
+    const fillRelation = options.relations ?? true
+
     for (const key in this.$fields) {
       const attr = this.$fields[key]
       const value = attributes[key]
 
-      attr instanceof Attributes.Relation
-        ? this.$fillRelationFields(key, attr, value)
-        : this.$fillTypeField(key, attr, value)
+      if (attr instanceof Attributes.Relation && !fillRelation) {
+        continue
+      }
+
+      this.$fillField(key, attr, value)
     }
 
     return this
   }
 
   /**
-   * Fill type attribute filed.
+   * Fill the model filed.
    */
-  protected $fillTypeField(
+  protected $fillField(
     key: string,
     attr: Attributes.Attribute,
     value: any
@@ -263,19 +288,6 @@ export default class Model {
     }
 
     this[key] = attr.make()
-  }
-
-  /**
-   * Fill relation attribute filed.
-   */
-  protected $fillRelationFields(
-    key: string,
-    attr: Attributes.Relation,
-    value: any
-  ): void {
-    if (isObject(value)) {
-      this[key] = attr.make(value)
-    }
   }
 
   /**
