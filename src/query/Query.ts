@@ -78,6 +78,13 @@ export default class Query<M extends Model = Model> {
   }
 
   /**
+   * Add a where clause on the primary key to the query.
+   */
+  whereId(ids: string | number | (string | number)[]): this {
+    return this.where(this.model.$getPrimaryKey(), ids)
+  }
+
+  /**
    * Add an "or where" clause to the query.
    */
   orWhere(field: string, value: any): Query<M> {
@@ -333,6 +340,24 @@ export default class Query<M extends Model = Model> {
   }
 
   /**
+   * Destroy the models for the given id.
+   */
+  async destroy(id: string | number): Promise<Item<M>>
+  async destroy(ids: Array<string | number>): Promise<Collection<M>>
+  async destroy(ids: any): Promise<any> {
+    const models = await this.destroyMany(isArray(ids) ? ids : [ids])
+
+    return models[0] ?? null
+  }
+
+  /**
+   * Destroy the models for the given id.
+   */
+  async destroyMany(ids: (string | number)[]): Promise<Collection<M>> {
+    return this.whereId(ids).delete()
+  }
+
+  /**
    * Delete records that match the query chain.
    */
   async delete(): Promise<Collection<M>> {
@@ -350,36 +375,6 @@ export default class Query<M extends Model = Model> {
     const models = this.getModels()
 
     this.connection().deleteAll()
-
-    return models
-  }
-
-  /**
-   * Destroy the models for the given id.
-   */
-  async destroy(id: string | number): Promise<Item<M>> {
-    const indexId = this.normalizeIndexId(id)
-
-    const model = this.find(indexId)
-
-    if (!model) {
-      return null
-    }
-
-    this.connection().delete([indexId])
-
-    return model
-  }
-
-  /**
-   * Destroy the models for the given id.
-   */
-  async destroyMany(ids: (string | number)[]): Promise<Collection<M>> {
-    const indexIds = this.normalizeIndexIds(ids)
-
-    const models = this.findIn(indexIds)
-
-    this.connection().delete(indexIds)
 
     return models
   }

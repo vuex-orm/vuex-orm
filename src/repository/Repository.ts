@@ -190,23 +190,18 @@ export default class Repository<M extends Model> {
   }
 
   /**
+   * Destroy the models for the given id.
+   */
+  destroy(id: string | number): Promise<Data.Item<M>>
+  destroy(ids: (string | number)[]): Promise<Data.Collection<M>>
+  destroy(ids: any): Promise<any> {
+    return this.query().destroy(ids)
+  }
+
+  /**
    * Delete all records in the store.
    */
   deleteAll(): Promise<Data.Collection<M>> {
     return this.query().deleteAll()
-  }
-
-  /**
-   * Destroy the models for the given id.
-   */
-  destroy(id: string | number): Promise<Data.Item<M>> {
-    return this.query().destroy(id)
-  }
-
-  /**
-   * Destroy the models for the given ids.
-   */
-  destroyMany(ids: (string | number)[]): Promise<Data.Collection<M>> {
-    return this.query().destroyMany(ids)
   }
 }

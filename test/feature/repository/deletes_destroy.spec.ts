@@ -61,7 +61,7 @@ describe('feature/repository/deletes_destroy', () => {
       }
     })
 
-    await store.$repo(User).destroyMany([2, 3])
+    await store.$repo(User).destroy([2, 3])
 
     assertState(store, {
       users: {

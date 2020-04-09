@@ -244,6 +244,9 @@ export default class Model {
     return this
   }
 
+  /**
+   * Fill type attribute filed.
+   */
   protected $fillTypeField(
     key: string,
     attr: Attributes.Attribute,
@@ -262,6 +265,9 @@ export default class Model {
     this[key] = attr.make()
   }
 
+  /**
+   * Fill relation attribute filed.
+   */
   protected $fillRelationFields(
     key: string,
     attr: Attributes.Relation,
@@ -270,6 +276,13 @@ export default class Model {
     if (isObject(value)) {
       this[key] = attr.make(value)
     }
+  }
+
+  /**
+   * Get the primary key field name.
+   */
+  $getPrimaryKey(): string {
+    return this.$primaryKey
   }
 
   /**
