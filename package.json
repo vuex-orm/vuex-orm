@@ -13,7 +13,7 @@
   "scripts": {
     "build": "node scripts/build.js",
     "build:dts": "api-extractor run --local --verbose",
-    "clean": "rm -rf dist && rm -rf dist && rm -rf coverage && && rm -rf temp && rm -rf .nyc_output && rm -rf .tmp",
+    "clean": "rm -rf dist && rm -rf dist && rm -rf coverage && rm -rf temp && rm -rf .nyc_output && rm -rf .tmp",
     "lint": "prettier --check --write --parser typescript \"{src,test}/**/*.ts\"",
     "lint:fail": "prettier --check --parser typescript \"{src,test}/**/*.ts\"",
     "test": "jest --testPathIgnorePatterns test/performance",
