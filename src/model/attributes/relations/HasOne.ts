@@ -1,8 +1,9 @@
 import { Schema as NormalizrSchema } from 'normalizr'
 import Schema from '../../../schema/Schema'
-import { Record, NormalizedData } from '../../../data/Data'
+import { Record, NormalizedData, Collection } from '../../../data/Data'
+import Query from '../../../query/Query'
 import Model from '../../Model'
-import Relation from './Relation'
+import Relation, { Dictionaly } from './Relation'
 
 export default class HasOne extends Relation {
   /**
@@ -45,6 +46,40 @@ export default class HasOne extends Relation {
     if (relatedRecord) {
       relatedRecord[this.foreignKey] = record[this.localKey]
     }
+  }
+
+  /**
+   * Set the constraints for an eager load of the relation.
+   */
+  addEagerConstraints(query: Query, models: Collection): void {
+    query.whereIn(this.foreignKey, this.getKeys(models, this.localKey))
+  }
+
+  /**
+   * Match the eagerly loaded results to their parents.
+   */
+  match(relation: string, models: Collection, results: Collection): void {
+    const dictionary = this.buildDictionary(results)
+
+    models.map((model) => {
+      const key = model[this.localKey]
+
+      dictionary[key]
+        ? model.$setRelation(relation, dictionary[key][0])
+        : model.$setRelation(relation, null)
+    })
+  }
+
+  /**
+   * Build model dictionary keyed by the relation's foreign key.
+   *
+   * @param  \Illuminate\Database\Eloquent\Collection  $results
+   * @return array
+   */
+  protected buildDictionary(results: Collection): Dictionaly {
+    return this.mapToDictionary(results, (result) => {
+      return [result[this.foreignKey], result]
+    })
   }
 
   /**

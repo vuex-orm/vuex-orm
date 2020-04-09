@@ -12,9 +12,9 @@ export interface NormalizedData {
   [entity: string]: Records
 }
 
-export type Item<M extends Model> = M | null
+export type Item<M extends Model = Model> = M | null
 
-export type Collection<M extends Model> = M[]
+export type Collection<M extends Model = Model> = M[]
 
 export interface Collections {
   [name: string]: Collection<Model>

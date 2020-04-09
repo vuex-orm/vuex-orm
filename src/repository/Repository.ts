@@ -16,12 +16,12 @@ export default class Repository<M extends Model> {
   /**
    * The store instance.
    */
-  store: Store<any>
+  protected store: Store<any>
 
   /**
    * The model object.
    */
-  model: M
+  protected model: M
 
   /**
    * Create a new repository instance.
@@ -69,6 +69,13 @@ export default class Repository<M extends Model> {
   }
 
   /**
+   * Set the relationships that should be eager loaded.
+   */
+  with(name: string): Query<M> {
+    return this.query().with(name)
+  }
+
+  /**
    * Get all models from the store.
    */
   all(): Data.Collection<M> {
@@ -99,7 +106,7 @@ export default class Repository<M extends Model> {
   /**
    * Persist records to the store by the given method.
    */
-  private persist(
+  protected persist(
     method: PersistMethod,
     record: Data.Record | Data.Record[]
   ): Promise<Data.Collections> {
@@ -116,7 +123,7 @@ export default class Repository<M extends Model> {
   /**
    * Persist normalized records with the given method.
    */
-  private persistRecords(
+  protected persistRecords(
     method: PersistMethod,
     records: Data.Records
   ): Promise<Data.Collection<M>> {
@@ -126,7 +133,7 @@ export default class Repository<M extends Model> {
   /**
    * Create collection promises for the given normalized data.
    */
-  private createCollectionPromises(
+  protected createCollectionPromises(
     method: PersistMethod,
     data: Data.NormalizedData
   ): CollectionPromises {
@@ -147,7 +154,7 @@ export default class Repository<M extends Model> {
   /**
    * Resolve all collection promises and create a new collections object.
    */
-  private async resolveCollectionPromises(
+  protected async resolveCollectionPromises(
     indexes: string[],
     promises: Promise<Data.Collection<any>>[]
   ): Promise<Data.Collections> {
@@ -163,7 +170,7 @@ export default class Repository<M extends Model> {
   /**
    * Convert normalized data into an array of records.
    */
-  private mapNormalizedData(records: Data.Records): Data.Record[] {
+  protected mapNormalizedData(records: Data.Records): Data.Record[] {
     const items = [] as Data.Record[]
 
     for (const id in records) {
@@ -176,7 +183,9 @@ export default class Repository<M extends Model> {
   /**
    * Normalize the given record.
    */
-  private interpret(records: Data.Record | Data.Record[]): Data.NormalizedData {
+  protected interpret(
+    records: Data.Record | Data.Record[]
+  ): Data.NormalizedData {
     return this.interpretation().process(records)
   }
 

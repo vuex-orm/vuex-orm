@@ -53,6 +53,10 @@ export function assertState(store: Store<any>, entities: Entities): void {
   expect(store.state.entities).toEqual(createState(entities))
 }
 
+export function assertModel<M extends Model>(model: M, record: Record): void {
+  expect(model.$getAttributes()).toEqual(record)
+}
+
 export function assertModels<M extends Model>(
   models: Collection<M>,
   record: Record[]

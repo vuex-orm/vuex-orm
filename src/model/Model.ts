@@ -282,21 +282,6 @@ export default class Model {
   }
 
   /**
-   * Get the serialized model attributes.
-   */
-  $getAttributes(): Record {
-    const record = {} as Record
-
-    for (const key in this.$fields) {
-      if (this[key] !== undefined) {
-        record[key] = this[key]
-      }
-    }
-
-    return record
-  }
-
-  /**
    * Check if the model has any relations defined in the schema.
    */
   $hasRelation(): boolean {
@@ -309,5 +294,44 @@ export default class Model {
     }
 
     return result
+  }
+
+  /**
+   * Get the relation instance for the given relation name.
+   */
+  $getRelation(name: string): Attributes.Relation {
+    const relation = this.$fields[name]
+
+    if (!(relation instanceof Attributes.Relation)) {
+      throw new Error(
+        `[Vuex ORM] Relationship [${name}] on model [${this.$entity}] not found.`
+      )
+    }
+
+    return relation
+  }
+
+  /**
+   * Set the given relationship on the model.
+   */
+  $setRelation(relation: string, model: Model | Model[] | null): this {
+    this[relation] = model
+
+    return this
+  }
+
+  /**
+   * Get the serialized model attributes.
+   */
+  $getAttributes(): Record {
+    const record = {} as Record
+
+    for (const key in this.$fields) {
+      if (this[key] !== undefined) {
+        record[key] = this[key]
+      }
+    }
+
+    return record
   }
 }
