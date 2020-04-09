@@ -1,4 +1,9 @@
-import { createStore, fillState, assertInstanceOf, assertModels } from 'test/Helpers'
+import {
+  createStore,
+  fillState,
+  assertInstanceOf,
+  assertModels
+} from 'test/Helpers'
 import { Model, Attr, Str } from '@/index'
 
 describe('feature/repository/retrieves_find', () => {
