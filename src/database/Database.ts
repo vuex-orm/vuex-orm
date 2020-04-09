@@ -1,22 +1,14 @@
-import { Store, Module as VuexModule, MutationTree } from 'vuex'
+import { Store, Module as VuexModule } from 'vuex'
 import { schema as Normalizr } from 'normalizr'
 import { Constructor } from '../types'
-import Schema from '../schema/Schema'
-import Model from '../model/Model'
-import RootModule from '../modules/RootModule'
-import Module from '../modules/Module'
-import State from '../modules/State'
-import Mutations from '../modules/Mutations'
+import { Schema } from '../schema/Schema'
+import { Model } from '../model/Model'
+import { RootModule } from '../modules/RootModule'
+import { Module } from '../modules/Module'
+import { State } from '../modules/State'
+import { mutations, Mutations } from '../modules/Mutations'
 
-interface Models {
-  [name: string]: Model
-}
-
-interface Schemas {
-  [name: string]: Normalizr.Entity
-}
-
-export default class Database {
+export class Database {
   /**
    * The store instance.
    */
@@ -31,12 +23,12 @@ export default class Database {
   /**
    * The list of registered models.
    */
-  models: Models = {}
+  models: Record<string, Model> = {}
 
   /**
    * The schema definition for the registered models.
    */
-  schemas: Schemas = {}
+  schemas: Record<string, Normalizr.Entity> = {}
 
   /**
    * Whether the database has already been installed to Vuex or not.
@@ -88,7 +80,7 @@ export default class Database {
    * Get the model.
    */
   getModel<M extends Model>(name: string): M {
-    return this.models[name] as M
+    return this.models[name] as any
   }
 
   /**
@@ -178,7 +170,7 @@ export default class Database {
   /**
    * Create sub mutations.
    */
-  private createSubMutations(): MutationTree<State> {
-    return Mutations
+  private createSubMutations(): Mutations<State> {
+    return mutations
   }
 }

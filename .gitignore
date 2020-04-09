@@ -5,6 +5,7 @@
 /docs/.vuepress/dist
 /docs/node_modules
 /node_modules
+/temp
 .idea/*
 .vscode/*
 yarn-error.log

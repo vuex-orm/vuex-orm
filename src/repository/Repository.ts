@@ -1,18 +1,25 @@
 import { Store } from 'vuex'
 import { Constructor } from '../types'
-import * as Data from '../data/Data'
-import Model from '../model/Model'
-import Interpretation from '../interpretation/Interpretation'
-import Query from '../query/Query'
+import {
+  Element,
+  Elements,
+  NormalizedData,
+  Item,
+  Collection,
+  Collections
+} from '../data/Data'
+import { Model } from '../model/Model'
+import { Interpretation } from '../interpretation/Interpretation'
+import { Query } from '../query/Query'
 
-type PersistMethod = 'insert' | 'merge'
+export type PersistMethod = 'insert' | 'merge'
 
-interface CollectionPromises {
+export interface CollectionPromises {
   indexes: string[]
-  promises: Promise<Data.Collection<Model>>[]
+  promises: Promise<Collection<Model>>[]
 }
 
-export default class Repository<M extends Model> {
+export class Repository<M extends Model> {
   /**
    * The store instance.
    */
@@ -78,30 +85,30 @@ export default class Repository<M extends Model> {
   /**
    * Get all models from the store.
    */
-  all(): Data.Collection<M> {
+  all(): Collection<M> {
     return this.query().get()
   }
 
   /**
    * Find the model with the given id.
    */
-  find(id: string | number): Data.Item<M>
-  find(ids: (string | number)[]): Data.Collection<M>
-  find(ids: any): Data.Item<any> {
+  find(id: string | number): Item<M>
+  find(ids: (string | number)[]): Collection<M>
+  find(ids: any): Item<any> {
     return this.query().find(ids)
   }
 
   /**
    * Insert the given record to the store.
    */
-  insert(record: Data.Record | Data.Record[]): Promise<Data.Collections> {
+  insert(record: Element | Element[]): Promise<Collections> {
     return this.persist('insert', record)
   }
 
   /**
    * Update records in the store.
    */
-  update(record: Data.Record | Data.Record[]): Promise<Data.Collections> {
+  update(record: Element | Element[]): Promise<Collections> {
     return this.persist('merge', record)
   }
 
@@ -110,8 +117,8 @@ export default class Repository<M extends Model> {
    */
   protected persist(
     method: PersistMethod,
-    record: Data.Record | Data.Record[]
-  ): Promise<Data.Collections> {
+    record: Element | Element[]
+  ): Promise<Collections> {
     const normalizedData = this.interpret(record)
 
     const { indexes, promises } = this.createCollectionPromises(
@@ -125,10 +132,10 @@ export default class Repository<M extends Model> {
   /**
    * Persist normalized records with the given method.
    */
-  protected persistRecords(
+  protected persistElements(
     method: PersistMethod,
-    records: Data.Records
-  ): Promise<Data.Collection<M>> {
+    records: Elements
+  ): Promise<Collection<M>> {
     return this.query()[method](this.mapNormalizedData(records))
   }
 
@@ -137,17 +144,17 @@ export default class Repository<M extends Model> {
    */
   protected createCollectionPromises(
     method: PersistMethod,
-    data: Data.NormalizedData
+    data: NormalizedData
   ): CollectionPromises {
     const indexes: string[] = []
-    const promises: Promise<Data.Collection<any>>[] = []
+    const promises: Promise<Collection<any>>[] = []
 
     for (const entity in data) {
       const records = data[entity]
       const repository = this.newRepository(entity)
 
       indexes.push(entity)
-      promises.push(repository.persistRecords(method, records))
+      promises.push(repository.persistElements(method, records))
     }
 
     return { indexes, promises }
@@ -158,9 +165,9 @@ export default class Repository<M extends Model> {
    */
   protected async resolveCollectionPromises(
     indexes: string[],
-    promises: Promise<Data.Collection<any>>[]
-  ): Promise<Data.Collections> {
-    return (await Promise.all(promises)).reduce<Data.Collections>(
+    promises: Promise<Collection<any>>[]
+  ): Promise<Collections> {
+    return (await Promise.all(promises)).reduce<Collections>(
       (collections, collection, index) => {
         collections[indexes[index]] = collection
         return collections
@@ -172,8 +179,8 @@ export default class Repository<M extends Model> {
   /**
    * Convert normalized data into an array of records.
    */
-  protected mapNormalizedData(records: Data.Records): Data.Record[] {
-    const items = [] as Data.Record[]
+  protected mapNormalizedData(records: Elements): Element[] {
+    const items = [] as Element[]
 
     for (const id in records) {
       items.push(records[id])
@@ -185,17 +192,15 @@ export default class Repository<M extends Model> {
   /**
    * Normalize the given record.
    */
-  protected interpret(
-    records: Data.Record | Data.Record[]
-  ): Data.NormalizedData {
+  protected interpret(records: Element | Element[]): NormalizedData {
     return this.interpretation().process(records)
   }
 
   /**
    * Destroy the models for the given id.
    */
-  destroy(id: string | number): Promise<Data.Item<M>>
-  destroy(ids: (string | number)[]): Promise<Data.Collection<M>>
+  destroy(id: string | number): Promise<Item<M>>
+  destroy(ids: (string | number)[]): Promise<Collection<M>>
   destroy(ids: any): Promise<any> {
     return this.query().destroy(ids)
   }
@@ -203,7 +208,7 @@ export default class Repository<M extends Model> {
   /**
    * Delete all records in the store.
    */
-  deleteAll(): Promise<Data.Collection<M>> {
+  deleteAll(): Promise<Collection<M>> {
     return this.query().deleteAll()
   }
 }

@@ -1,19 +1,22 @@
 import { Constructor } from '../types'
 import { Store, Plugin } from 'vuex'
-import Database from '../database/Database'
-import Model from '../model/Model'
-import Repository from '../repository/Repository'
+import { Database } from '../database/Database'
+import { Model } from '../model/Model'
+import { Repository } from '../repository/Repository'
 
-export interface Options {
+export interface InstallOptions {
   namespace?: string
 }
 
-type FilledOptions = Required<Options>
+type FilledInstallOptions = Required<InstallOptions>
 
 /**
  * Install Vuex ORM to the store.
  */
-export function install(database: Database, options?: Options): Plugin<any> {
+export function install(
+  database: Database,
+  options?: InstallOptions
+): Plugin<any> {
   return (store) => {
     mixin(store, database, createOptions(options))
   }
@@ -22,7 +25,7 @@ export function install(database: Database, options?: Options): Plugin<any> {
 /**
  * Create options by merging the given user-provided options.
  */
-function createOptions(options: Options = {}): FilledOptions {
+function createOptions(options: InstallOptions = {}): FilledInstallOptions {
   return {
     namespace: options.namespace ?? 'entities'
   }
@@ -34,7 +37,7 @@ function createOptions(options: Options = {}): FilledOptions {
 function mixin(
   store: Store<any>,
   database: Database,
-  options: FilledOptions
+  options: FilledInstallOptions
 ): void {
   connectDatabase(store, database, options)
 
@@ -49,7 +52,7 @@ function mixin(
 function connectDatabase(
   store: Store<any>,
   database: Database,
-  options: FilledOptions
+  options: FilledInstallOptions
 ): void {
   database.setStore(store).setConnection(options.namespace)
 
@@ -67,7 +70,7 @@ function startDatabase(store: Store<any>): void {
  * Mixin repo function to the store.
  */
 function mixinRepoFunction(store: Store<any>): void {
-  store.$repo = function<M extends Model>(
+  store.$repo = function <M extends Model>(
     model: Constructor<M>
   ): Repository<M> {
     return new Repository(this, model)

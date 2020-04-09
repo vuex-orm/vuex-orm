@@ -1,19 +1,19 @@
 import Vue from 'vue'
 import Vuex, { Store } from 'vuex'
 import VuexORM, {
+  Element,
+  Elements,
+  Collection,
   Database,
   Model,
   RootState,
-  State,
-  Record,
-  Records,
-  Collection
+  State
 } from '@/index'
 
 Vue.use(Vuex)
 
 interface Entities {
-  [name: string]: Records
+  [name: string]: Elements
 }
 
 export function createStore(models: typeof Model[]): Store<any> {
@@ -53,13 +53,13 @@ export function assertState(store: Store<any>, entities: Entities): void {
   expect(store.state.entities).toEqual(createState(entities))
 }
 
-export function assertModel<M extends Model>(model: M, record: Record): void {
+export function assertModel<M extends Model>(model: M, record: Element): void {
   expect(model.$getAttributes()).toEqual(record)
 }
 
 export function assertModels<M extends Model>(
   models: Collection<M>,
-  record: Record[]
+  record: Element[]
 ): void {
   models.forEach((model, index) => {
     expect(model.$getAttributes()).toEqual(record[index])

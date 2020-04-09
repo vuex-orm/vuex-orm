@@ -32,10 +32,7 @@ describe('feature/relations/types/has_one_retrieve', () => {
       }
     })
 
-    const user = store
-      .$repo(User)
-      .with('phone')
-      .first()!
+    const user = store.$repo(User).with('phone').first()!
 
     expect(user).toBeInstanceOf(User)
     expect(user.phone).toBeInstanceOf(Phone)
@@ -60,10 +57,7 @@ describe('feature/relations/types/has_one_retrieve', () => {
       phones: {}
     })
 
-    const user = store
-      .$repo(User)
-      .with('phone')
-      .first()!
+    const user = store.$repo(User).with('phone').first()!
 
     expect(user).toBeInstanceOf(User)
     assertModel(user, {

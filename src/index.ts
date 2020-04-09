@@ -1,65 +1,73 @@
 import './polyfills/Polyfills'
 
 export * from './data/Data'
+export * from './store/Store'
+export * from './database/Database'
+export * from './schema/Schema'
+export * from './model/Model'
+export * from './model/decorators/attributes/types/Attr'
+export * from './model/decorators/attributes/types/Str'
+export * from './model/decorators/attributes/types/Num'
+export * from './model/decorators/attributes/types/Bool'
+export * from './model/decorators/attributes/relations/HasOne'
+export * from './model/decorators/attributes/relations/HasMany'
+export * from './model/decorators/Contracts'
+export * from './model/attributes/Attribute'
+export * from './model/attributes/types/Type'
+export { Attr as AttrAttr } from './model/attributes/types/Attr'
+export { String as StringAttr } from './model/attributes/types/String'
+export { Number as NumberAttr } from './model/attributes/types/Number'
+export { Boolean as BooleanAttr } from './model/attributes/types/Boolean'
+export * from './model/attributes/relations/Relation'
+export { HasOne as HasOneAttr } from './model/attributes/relations/HasOne'
+export { HasMany as HasManyAttr } from './model/attributes/relations/HasMany'
+export * from './modules/RootModule'
+export * from './modules/RootState'
+export * from './modules/Module'
+export * from './modules/State'
+export * from './modules/Mutations'
+export * from './repository/Repository'
+export * from './interpretation/Interpretation'
+export * from './query/Query'
+export * from './query/Options'
+export * from './connection/Connection'
 
-import { install, Options } from './store/Store'
-import Database from './database/Database'
-import Schema from './schema/Schema'
-import Model, { Fields } from './model/Model'
-import * as Attributes from './model/attributes/Attributes'
-import Attr from './model/decorators/attributes/types/Attr'
-import Str from './model/decorators/attributes/types/Str'
-import Num from './model/decorators/attributes/types/Num'
-import Bool from './model/decorators/attributes/types/Bool'
-import HasOne from './model/decorators/attributes/relations/HasOne'
-import HasMany from './model/decorators/attributes/relations/HasMany'
-import RootModule from './modules/RootModule'
-import RootState from './modules/RootState'
-import Module from './modules/Module'
-import State from './modules/State'
-import Mutations from './modules/Mutations'
-import Repository from './repository/Repository'
-import Interpretation from './interpretation/Interpretation'
-import Query from './query/Query'
-import * as QueryOptions from './query/options/Options'
-import Connection from './connection/Connection'
-
-export {
-  install,
-  Options,
-  Database,
-  Schema,
-  Model,
-  Fields,
-  Attributes,
-  Attr,
-  Str,
-  Num,
-  Bool,
-  HasOne,
-  HasMany,
-  RootModule,
-  RootState,
-  Module,
-  State,
-  Mutations,
-  Repository,
-  Interpretation,
-  Query,
-  QueryOptions,
-  Connection
-}
+import { install } from './store/Store'
+import { Database } from './database/Database'
+import { Schema } from './schema/Schema'
+import { Model } from './model/Model'
+import { Attribute } from './model/attributes/Attribute'
+import { Type } from './model/attributes/types/Type'
+import { Attr as AttrAttr } from './model/attributes/types/Attr'
+import { String as StringAttr } from './model/attributes/types/String'
+import { Number as NumberAttr } from './model/attributes/types/Number'
+import { Boolean as BooleanAttr } from './model/attributes/types/Boolean'
+import { Relation } from './model/attributes/relations/Relation'
+import { HasOne as HasOneAttr } from './model/attributes/relations/HasOne'
+import { HasMany as HasManyAttr } from './model/attributes/relations/HasMany'
+import { mutations } from './modules/Mutations'
+import { Repository } from './repository/Repository'
+import { Interpretation } from './interpretation/Interpretation'
+import { Query } from './query/Query'
+import { Connection } from './connection/Connection'
 
 export default {
   install,
   Database,
   Schema,
   Model,
-  Attributes,
-  Mutations,
+  Attribute,
+  Type,
+  AttrAttr,
+  StringAttr,
+  NumberAttr,
+  BooleanAttr,
+  Relation,
+  HasOneAttr,
+  HasManyAttr,
+  mutations,
   Repository,
   Interpretation,
   Query,
-  QueryOptions,
   Connection
 }

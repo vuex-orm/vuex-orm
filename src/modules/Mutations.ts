@@ -1,9 +1,13 @@
 import { MutationTree } from 'vuex'
-import { Records } from '../data/Data'
-import State from './State'
+import { Elements } from '../data/Data'
+import { State } from './State'
 
 export interface Mutations<S extends State> extends MutationTree<S> {
-  mutate(state: State, callback: (state: S) => void): void
+  mutate(state: S, callback: (state: S) => void): void
+  insert(state: S, records: Elements): void
+  update(state: S, records: Elements): void
+  delete(state: S, ids: string[]): void
+  deleteAll(state: S): void
 }
 
 /**
@@ -16,14 +20,14 @@ function mutate(state: State, callback: (state: State) => void): void {
 /**
  * Commit `insert` change to the store.
  */
-function insert(state: State, records: Records): void {
+function insert(state: State, records: Elements): void {
   state.data = { ...state.data, ...records }
 }
 
 /**
  * Commit `update` change to the store.
  */
-function update(state: State, records: Records): void {
+function update(state: State, records: Elements): void {
   state.data = { ...state.data, ...records }
 }
 
@@ -49,7 +53,7 @@ function destroyAll(state: State): void {
   state.data = {}
 }
 
-export default {
+export const mutations = {
   mutate,
   insert,
   update,

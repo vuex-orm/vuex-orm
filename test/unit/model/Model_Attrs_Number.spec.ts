@@ -1,5 +1,5 @@
-import Num from '@/model/decorators/attributes/types/Num'
-import Model from '@/model/Model'
+import { Num } from '@/model/decorators/attributes/types/Num'
+import { Model } from '@/model/Model'
 
 describe('unit/model/Model_Attrs_Number', () => {
   it('casts the value to `Number` when instantiating the model', () => {

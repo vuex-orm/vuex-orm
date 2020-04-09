@@ -1,10 +1,10 @@
-import Model from '../../../Model'
+import { Model } from '../../../Model'
 import { PropertyDecorator } from '../../Contracts'
 
 /**
  * Create a has one decorator.
  */
-export default function HasOne(
+export function HasOne(
   related: () => typeof Model,
   foreignKey: string,
   localKey?: string

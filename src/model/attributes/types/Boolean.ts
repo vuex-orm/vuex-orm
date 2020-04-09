@@ -1,7 +1,7 @@
-import Model from '../../Model'
-import Type from './Type'
+import { Model } from '../../Model'
+import { Type } from './Type'
 
-export default class Boolean extends Type {
+export class Boolean extends Type {
   /**
    * Create a new boolean attribute instance.
    */

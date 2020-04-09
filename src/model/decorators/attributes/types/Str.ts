@@ -3,7 +3,7 @@ import { PropertyDecorator, TypeOptions } from '../../Contracts'
 /**
  * Create a str decorator.
  */
-export default function Str(
+export function Str(
   value: string | null,
   options: TypeOptions = {}
 ): PropertyDecorator {

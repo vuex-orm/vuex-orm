@@ -1,7 +1,7 @@
-import Model from '../../Model'
-import Type from './Type'
+import { Model } from '../../Model'
+import { Type } from './Type'
 
-export default class Number extends Type {
+export class Number extends Type {
   /**
    * Create a new number attribute instance.
    */

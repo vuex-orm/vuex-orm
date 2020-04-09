@@ -1,21 +1,17 @@
-import Model from '../model/Model'
+import { Model } from '../model/Model'
 
-export interface Record {
-  [key: string]: any
-}
+export type Element = Record<string, any>
 
-export interface Records {
-  [id: string]: Record
+export interface Elements {
+  [id: string]: Element
 }
 
 export interface NormalizedData {
-  [entity: string]: Records
+  [entity: string]: Elements
 }
 
 export type Item<M extends Model = Model> = M | null
 
 export type Collection<M extends Model = Model> = M[]
 
-export interface Collections {
-  [name: string]: Collection<Model>
-}
+export type Collections = Record<string, Collection<Model>>

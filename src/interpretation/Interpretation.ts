@@ -1,11 +1,11 @@
 import { normalize, schema as Normalizr } from 'normalizr'
 import { Store } from 'vuex'
 import { isArray, isEmpty } from '../support/Utils'
-import { Record, Records, NormalizedData } from '../data/Data'
-import Relation from '../model/attributes/relations/Relation'
-import Model from '../model/Model'
+import { Element, Elements, NormalizedData } from '../data/Data'
+import { Relation } from '../model/attributes/relations/Relation'
+import { Model } from '../model/Model'
 
-export default class Interpretation<M extends Model> {
+export class Interpretation<M extends Model> {
   /**
    * The store instance.
    */
@@ -27,7 +27,7 @@ export default class Interpretation<M extends Model> {
   /**
    * Perform interpretation for the given data.
    */
-  process(data: Record | Record[]): NormalizedData {
+  process(data: Element | Element[]): NormalizedData {
     if (isEmpty(data)) {
       return {}
     }
@@ -39,7 +39,7 @@ export default class Interpretation<M extends Model> {
     return normalizedData
   }
 
-  private normalize(data: Record | Record[]): NormalizedData {
+  private normalize(data: Element | Element[]): NormalizedData {
     const schema = isArray(data) ? [this.getSchema()] : this.getSchema()
 
     return normalize(data, schema).entities as NormalizedData
@@ -57,16 +57,16 @@ export default class Interpretation<M extends Model> {
    */
   private attach(data: NormalizedData): void {
     for (const entity in data) {
-      this.attachRecords(entity, data[entity], data)
+      this.attachElements(entity, data[entity], data)
     }
   }
 
   /**
    * Attach any missing foreign keys to the records.
    */
-  private attachRecords(
+  private attachElements(
     entity: string,
-    records: Records,
+    records: Elements,
     data: NormalizedData
   ): void {
     const model = this.store.$database.getModel(entity)
@@ -76,16 +76,16 @@ export default class Interpretation<M extends Model> {
     }
 
     for (const id in records) {
-      this.attachRecord(model, records[id], data)
+      this.attachElement(model, records[id], data)
     }
   }
 
   /**
    * Attach any missing foreign keys to the record.
    */
-  private attachRecord(
+  private attachElement(
     model: Model,
-    record: Record,
+    record: Element,
     data: NormalizedData
   ): void {
     for (const key in record) {

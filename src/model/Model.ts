@@ -1,28 +1,24 @@
 import { Store } from 'vuex'
-import { Record } from '../data/Data'
-import * as Attributes from './attributes/Attributes'
+import { Element } from '../data/Data'
+import { Attribute } from './attributes/Attribute'
+import { Attr } from './attributes/types/Attr'
+import { String as Str } from './attributes/types/String'
+import { Number as Num } from './attributes/types/Number'
+import { Boolean as Bool } from './attributes/types/Boolean'
+import { Relation } from './attributes/relations/Relation'
+import { HasOne } from './attributes/relations/HasOne'
+import { HasMany } from './attributes/relations/HasMany'
 
-export interface Fields {
-  [key: string]: Attributes.Attribute
-}
+export type ModelFields = Record<string, Attribute>
+export type ModelSchemas = Record<string, ModelFields>
+export type ModelRegistries = Record<string, ModelRegistry>
+export type ModelRegistry = Record<string, () => Attribute>
 
-interface Schemas {
-  [name: string]: Fields
-}
-
-interface Registries {
-  [name: string]: Registry
-}
-
-interface Registry {
-  [key: string]: () => Attributes.Attribute
-}
-
-interface FillOptions {
+export interface ModelOptions {
   relations?: boolean
 }
 
-export default class Model {
+export class Model {
   /**
    * The store instance.
    */
@@ -42,14 +38,14 @@ export default class Model {
    * The schema for the model. It contains the result of the `fields`
    * method or the attributes defined by decorators.
    */
-  protected static schemas: Schemas = {}
+  protected static schemas: ModelSchemas = {}
 
   /**
    * The registry for the model. It contains predefined model schema generated
    * by the decorators, and gets evaluated and stored at `schema` property
    * when registering models to the database
    */
-  protected static registries: Registries = {}
+  protected static registries: ModelRegistries = {}
 
   /**
    * The array of booted models.
@@ -59,7 +55,7 @@ export default class Model {
   /**
    * Create a new model instance.
    */
-  constructor(attributes?: Record, options?: FillOptions) {
+  constructor(attributes?: Element, options?: ModelOptions) {
     this.$boot()
 
     this.$fill(attributes, options)
@@ -81,10 +77,7 @@ export default class Model {
   /**
    * Set the attribute to the registry.
    */
-  static setRegistry(
-    key: string,
-    attribute: () => Attributes.Attribute
-  ): typeof Model {
+  static setRegistry(key: string, attribute: () => Attribute): typeof Model {
     if (!this.registries[this.entity]) {
       this.registries[this.entity] = {}
     }
@@ -105,29 +98,29 @@ export default class Model {
   /**
    * Create a new attr attribute instance.
    */
-  static attr(value: any): Attributes.Attr {
-    return new Attributes.Attr(new this(), value)
+  static attr(value: any): Attr {
+    return new Attr(new this(), value)
   }
 
   /**
    * Create a new string attribute instance.
    */
-  static string(value: string | null): Attributes.String {
-    return new Attributes.String(new this(), value)
+  static string(value: string | null): Str {
+    return new Str(new this(), value)
   }
 
   /**
    * Create a new number attribute instance.
    */
-  static number(value: number | null): Attributes.Number {
-    return new Attributes.Number(new this(), value)
+  static number(value: number | null): Num {
+    return new Num(new this(), value)
   }
 
   /**
    * Create a new boolean attribute instance.
    */
-  static boolean(value: boolean | null): Attributes.Boolean {
-    return new Attributes.Boolean(new this(), value)
+  static boolean(value: boolean | null): Bool {
+    return new Bool(new this(), value)
   }
 
   /**
@@ -137,15 +130,10 @@ export default class Model {
     related: typeof Model,
     foreignKey: string,
     localKey?: string
-  ): Attributes.HasOne {
+  ): HasOne {
     localKey = localKey ?? this.getLocalKey()
 
-    return new Attributes.HasOne(
-      new this(),
-      new related(),
-      foreignKey,
-      localKey
-    )
+    return new HasOne(new this(), new related(), foreignKey, localKey)
   }
 
   /**
@@ -155,15 +143,10 @@ export default class Model {
     related: typeof Model,
     foreignKey: string,
     localKey?: string
-  ): Attributes.HasMany {
+  ): HasMany {
     localKey = localKey ?? this.getLocalKey()
 
-    return new Attributes.HasMany(
-      new this(),
-      new related(),
-      foreignKey,
-      localKey
-    )
+    return new HasMany(new this(), new related(), foreignKey, localKey)
   }
 
   /**
@@ -215,7 +198,7 @@ export default class Model {
    * way for us to generate fresh model instances of this current model. It's
    * particularly useful during the hydration of new objects via the query.
    */
-  $newInstance(attributes?: Record, options?: FillOptions): this {
+  $newInstance(attributes?: Element, options?: ModelOptions): this {
     const model = new this.$self(attributes, options) as this
 
     model.$setStore(model.$store)
@@ -226,7 +209,7 @@ export default class Model {
   /**
    * Get model fields for the model.
    */
-  get $fields(): Fields {
+  get $fields(): ModelFields {
     return this.$self.schemas[this.$entity]
   }
 
@@ -249,17 +232,17 @@ export default class Model {
   }
 
   /**
-   * Fill the model by the given attributes. Its default values will fill any
+   * Fill the model by the given  Its default values will fill any
    * missing field.
    */
-  $fill(attributes: Record = {}, options: FillOptions = {}): this {
+  $fill(attributes: Element = {}, options: ModelOptions = {}): this {
     const fillRelation = options.relations ?? true
 
     for (const key in this.$fields) {
       const attr = this.$fields[key]
       const value = attributes[key]
 
-      if (attr instanceof Attributes.Relation && !fillRelation) {
+      if (attr instanceof Relation && !fillRelation) {
         continue
       }
 
@@ -272,11 +255,7 @@ export default class Model {
   /**
    * Fill the model filed.
    */
-  protected $fillField(
-    key: string,
-    attr: Attributes.Attribute,
-    value: any
-  ): void {
+  protected $fillField(key: string, attr: Attribute, value: any): void {
     if (value !== undefined) {
       this[key] = attr.make(value)
       return
@@ -300,7 +279,7 @@ export default class Model {
   /**
    * Get the index id for the model or the given record.
    */
-  $getIndexId(record?: Record): string {
+  $getIndexId(record?: Element): string {
     const target = record ?? this
 
     return String(target[this.$primaryKey])
@@ -313,7 +292,7 @@ export default class Model {
     let result = false
 
     for (const key in this.$fields) {
-      if (this.$fields[key] instanceof Attributes.Relation) {
+      if (this.$fields[key] instanceof Relation) {
         result = true
       }
     }
@@ -324,10 +303,10 @@ export default class Model {
   /**
    * Get the relation instance for the given relation name.
    */
-  $getRelation(name: string): Attributes.Relation {
+  $getRelation(name: string): Relation {
     const relation = this.$fields[name]
 
-    if (!(relation instanceof Attributes.Relation)) {
+    if (!(relation instanceof Relation)) {
       throw new Error(
         `[Vuex ORM] Relationship [${name}] on model [${this.$entity}] not found.`
       )
@@ -348,8 +327,8 @@ export default class Model {
   /**
    * Get the serialized model attributes.
    */
-  $getAttributes(): Record {
-    const record = {} as Record
+  $getAttributes(): Element {
+    const record = {} as Element
 
     for (const key in this.$fields) {
       if (this[key] !== undefined) {

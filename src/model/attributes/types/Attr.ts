@@ -1,6 +1,6 @@
-import Type from './Type'
+import { Type } from './Type'
 
-export default class Attr extends Type {
+export class Attr extends Type {
   /**
    * Make the value for the attribute.
    */

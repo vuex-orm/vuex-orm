@@ -1,15 +1,15 @@
 import { Schema as NormalizrSchema } from 'normalizr'
-import Schema from '../../../schema/Schema'
-import { Record, NormalizedData, Collection } from '../../../data/Data'
-import Query from '../../../query/Query'
-import Model from '../../Model'
-import Attribute from '../Attribute'
+import { Schema } from '../../../schema/Schema'
+import { Element, NormalizedData, Collection } from '../../../data/Data'
+import { Query } from '../../../query/Query'
+import { Model } from '../../Model'
+import { Attribute } from '../Attribute'
 
 export interface Dictionary {
   [id: string]: Model[]
 }
 
-export default abstract class Relation extends Attribute {
+export abstract class Relation extends Attribute {
   /**
    * The parent model.
    */
@@ -44,7 +44,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Attach the relational key to the given data.
    */
-  abstract attach(ids: any, record: Record, data: NormalizedData): void
+  abstract attach(ids: any, record: Element, data: NormalizedData): void
 
   /**
    * Set the constraints for an eager loading relation.

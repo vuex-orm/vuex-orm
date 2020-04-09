@@ -16,6 +16,7 @@ const files = [
 async function run() {
   await build()
   checkAllSizes()
+  generateApiDocs()
 }
 
 async function build() {
@@ -42,6 +43,12 @@ function checkSize(file) {
       chalk.bold(file)
     )} size:${minSize} / gzip:${gzippedSize} / brotli:${compressedSize}`
   )
+}
+
+async function generateApiDocs() {
+  await execa('yarn', ['build:dts'], { stdio: 'inherit' })
+
+  await fs.remove('dist/src')
 }
 
 run()

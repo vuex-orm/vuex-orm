@@ -38,10 +38,7 @@ describe('feature/relations/types/has_many_retrieve', () => {
       }
     })
 
-    const user = store
-      .$repo(User)
-      .with('posts')
-      .first()!
+    const user = store.$repo(User).with('posts').first()!
 
     expect(user).toBeInstanceOf(User)
     assertInstanceOf(user.posts, Post)
@@ -65,10 +62,7 @@ describe('feature/relations/types/has_many_retrieve', () => {
       posts: {}
     })
 
-    const user = store
-      .$repo(User)
-      .with('posts')
-      .first()!
+    const user = store.$repo(User).with('posts').first()!
 
     expect(user).toBeInstanceOf(User)
     assertModel(user, {

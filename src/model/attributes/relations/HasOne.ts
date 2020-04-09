@@ -1,11 +1,11 @@
 import { Schema as NormalizrSchema } from 'normalizr'
-import Schema from '../../../schema/Schema'
-import { Record, NormalizedData, Collection } from '../../../data/Data'
-import Query from '../../../query/Query'
-import Model from '../../Model'
-import Relation, { Dictionary } from './Relation'
+import { Schema } from '../../../schema/Schema'
+import { Element, NormalizedData, Collection } from '../../../data/Data'
+import { Query } from '../../../query/Query'
+import { Model } from '../../Model'
+import { Relation, Dictionary } from './Relation'
 
-export default class HasOne extends Relation {
+export class HasOne extends Relation {
   /**
    * The foreign key of the parent model.
    */
@@ -40,11 +40,11 @@ export default class HasOne extends Relation {
   /**
    * Attach the relational key to the given data.
    */
-  attach(id: string | number, record: Record, data: NormalizedData): void {
-    const relatedRecord = data[this.related.$entity]?.[id]
+  attach(id: string | number, record: Element, data: NormalizedData): void {
+    const relatedElement = data[this.related.$entity]?.[id]
 
-    if (relatedRecord) {
-      relatedRecord[this.foreignKey] = record[this.localKey]
+    if (relatedElement) {
+      relatedElement[this.foreignKey] = record[this.localKey]
     }
   }
 

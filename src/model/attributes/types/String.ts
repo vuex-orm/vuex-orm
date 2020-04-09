@@ -1,7 +1,7 @@
-import Model from '../../Model'
-import Type from './Type'
+import { Model } from '../../Model'
+import { Type } from './Type'
 
-export default class String extends Type {
+export class String extends Type {
   /**
    * Create a new string attribute instance.
    */

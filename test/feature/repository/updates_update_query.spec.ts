@@ -21,10 +21,7 @@ describe('feature/repository/updates_update_query', () => {
       }
     })
 
-    await store
-      .$repo(User)
-      .where('name', 'Jane Doe')
-      .update({ age: 50 })
+    await store.$repo(User).where('name', 'Jane Doe').update({ age: 50 })
 
     assertState(store, {
       users: {

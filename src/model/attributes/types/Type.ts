@@ -1,7 +1,7 @@
-import Model from '../../Model'
-import Attribute from '../Attribute'
+import { Model } from '../../Model'
+import { Attribute } from '../Attribute'
 
-export default abstract class Type extends Attribute {
+export abstract class Type extends Attribute {
   /**
    * The default value for the attribute.
    */

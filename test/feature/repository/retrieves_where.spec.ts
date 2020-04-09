@@ -26,10 +26,7 @@ describe('feature/repository/retrieves_where', () => {
       }
     })
 
-    const users = store
-      .$repo(User)
-      .where('age', 30)
-      .get()
+    const users = store.$repo(User).where('age', 30).get()
 
     const expected = [
       { id: 1, name: 'John Doe', age: 30 },

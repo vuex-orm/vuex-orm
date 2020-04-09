@@ -53,10 +53,7 @@ describe('feature/repository/retrieves_where', () => {
       }
     })
 
-    const users = store
-      .$repo(User)
-      .orWhere('age', 30)
-      .get()
+    const users = store.$repo(User).orWhere('age', 30).get()
 
     const expected = [{ id: 2, name: 'Jane Doe', age: 30 }]
 

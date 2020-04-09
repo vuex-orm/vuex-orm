@@ -1,6 +1,6 @@
-import Model from '../Model'
+import { Model } from '../Model'
 
-export default abstract class Attribute {
+export abstract class Attribute {
   /**
    * The model instance.
    */

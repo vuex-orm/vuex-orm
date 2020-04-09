@@ -1,5 +1,5 @@
-import { Records } from '../data/Data'
+import { Elements } from '../data/Data'
 
-export default interface State {
-  data: Records
+export interface State {
+  data: Elements
 }

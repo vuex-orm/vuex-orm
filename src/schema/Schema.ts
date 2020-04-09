@@ -1,16 +1,12 @@
 import { schema as Normalizr, Schema as NormalizrSchema } from 'normalizr'
-import { Relation } from '../model/attributes/Attributes'
-import Model from '../model/Model'
+import { Relation } from '../model/attributes/relations/Relation'
+import { Model } from '../model/Model'
 
-interface Schemas {
-  [entity: string]: Normalizr.Entity
-}
-
-export default class Schema {
+export class Schema {
   /**
    * List of generated schemas.
    */
-  private schemas: Schemas = {}
+  private schemas: Record<string, Normalizr.Entity> = {}
 
   /**
    * The model instance.

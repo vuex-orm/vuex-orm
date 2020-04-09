@@ -1,4 +1,4 @@
-import Model from '../Model'
+import { Model } from '../Model'
 
 export type PropertyDecorator = (target: Model, propertyKey: string) => void
 

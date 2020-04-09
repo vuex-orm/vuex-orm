@@ -1,13 +1,8 @@
 import { Store } from 'vuex'
-import { Record, Records } from '../data/Data'
-import Model from '../model/Model'
+import { Element, Elements } from '../data/Data'
+import { Model } from '../model/Model'
 
-interface Namespace {
-  connection: string
-  entity: string
-}
-
-export default class Connection<M extends Model> {
+export class Connection<M extends Model> {
   /**
    * The store instance.
    */
@@ -29,7 +24,7 @@ export default class Connection<M extends Model> {
   /**
    * Get namespace for the modul
    */
-  private getNamespace(): Namespace {
+  private getNamespace(): { connection: string; entity: string } {
     const connection = this.store.$database.connection
     const entity = this.model.$entity
 
@@ -39,7 +34,7 @@ export default class Connection<M extends Model> {
   /**
    * Get the state object from the store.
    */
-  private getData(): Records {
+  private getData(): Elements {
     const { connection, entity } = this.getNamespace()
 
     return this.store.state[connection][entity].data
@@ -57,21 +52,21 @@ export default class Connection<M extends Model> {
   /**
    * Get all existing records.
    */
-  get(): Records {
+  get(): Elements {
     return this.getData()
   }
 
   /**
    * Find a model by its primary key.
    */
-  find(id: string): Record | null {
+  find(id: string): Element | null {
     return this.getData()[id] ?? null
   }
 
   /**
    * Find multiple models by their primary keys.
    */
-  findIn(ids: string[]): Record[] {
+  findIn(ids: string[]): Element[] {
     const data = this.getData()
 
     return ids.map((id) => data[id])
@@ -80,22 +75,22 @@ export default class Connection<M extends Model> {
   /**
    * Commit `insert` change to the store.
    */
-  insert(records: Record[]): void {
-    this.commit('insert', this.mapRecords(records))
+  insert(records: Element[]): void {
+    this.commit('insert', this.mapElements(records))
   }
 
   /**
    * Commit `update` change to the store.
    */
-  update(records: Record[]): void {
-    this.commit('update', this.mapRecords(records))
+  update(records: Element[]): void {
+    this.commit('update', this.mapElements(records))
   }
 
   /**
    * Convert the given array of records into records.
    */
-  private mapRecords(records: Record[]): Records {
-    return records.reduce<Records>((carry, record) => {
+  private mapElements(records: Element[]): Elements {
+    return records.reduce<Elements>((carry, record) => {
       carry[this.model.$getIndexId(record)] = record
       return carry
     }, {})

@@ -20,10 +20,7 @@ describe('feature/repository/deletes_delete', () => {
       }
     })
 
-    await store
-      .$repo(User)
-      .where('name', 'Jane Doe')
-      .delete()
+    await store.$repo(User).where('name', 'Jane Doe').delete()
 
     assertState(store, {
       users: {

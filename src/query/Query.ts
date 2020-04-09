@@ -1,12 +1,12 @@
 import { Store } from 'vuex'
 import { isArray, isEmpty, groupBy } from '../support/Utils'
-import { Record, Item, Collection } from '../data/Data'
-import { Relation } from '../model/attributes/Attributes'
-import Model from '../model/Model'
-import Connection from '../connection/Connection'
-import * as Options from './options/Options'
+import { Element, Item, Collection } from '../data/Data'
+import { Relation } from '../model/attributes/relations/Relation'
+import { Model } from '../model/Model'
+import { Connection } from '../connection/Connection'
+import { Where, EagerLoad, EagerLoadConstraint } from './Options'
 
-export default class Query<M extends Model = Model> {
+export class Query<M extends Model = Model> {
   /**
    * The store instance.
    */
@@ -20,7 +20,7 @@ export default class Query<M extends Model = Model> {
   /**
    * The where constraints for the query.
    */
-  protected wheres: Options.Where[] = []
+  protected wheres: Where[] = []
 
   /**
    * The maximum number of records to return.
@@ -35,7 +35,7 @@ export default class Query<M extends Model = Model> {
   /**
    * The relationships that should be eager loaded.
    */
-  protected eagerLoad: Options.EagerLoad = {}
+  protected eagerLoad: EagerLoad = {}
 
   /**
    * Create a new query instance.
@@ -152,20 +152,20 @@ export default class Query<M extends Model = Model> {
 
     const model = this.findRaw(ids)
 
-    return model ? this.hydrateRecord(model) : null
+    return model ? this.hydrateElement(model) : null
   }
 
   /**
    * Find multiple models by their primary keys.
    */
   findIn(ids: (string | number)[]): Collection<M> {
-    return this.hydrateRecords(this.findInRaw(ids))
+    return this.hydrateElements(this.findInRaw(ids))
   }
 
   /**
    * Find a record by its primary key.
    */
-  findRaw(id: string | number): Record | null {
+  findRaw(id: string | number): Element | null {
     const indexId = this.normalizeIndexId(id)
 
     return this.connection().find(indexId)
@@ -174,7 +174,7 @@ export default class Query<M extends Model = Model> {
   /**
    * Find multiple records by their primary keys.
    */
-  findInRaw(ids: (string | number)[]): Record[] {
+  findInRaw(ids: (string | number)[]): Element[] {
     const indexIds = this.normalizeIndexIds(ids)
 
     return this.connection().findIn(indexIds)
@@ -190,7 +190,7 @@ export default class Query<M extends Model = Model> {
     const collection = [] as Collection<M>
 
     for (const id in records) {
-      collection.push(this.hydrateRecord(records[id]))
+      collection.push(this.hydrateElement(records[id]))
     }
 
     return collection
@@ -240,7 +240,7 @@ export default class Query<M extends Model = Model> {
   /**
    * The function to compare where clause to the given model.
    */
-  protected whereComparator(model: M, where: Options.Where): boolean {
+  protected whereComparator(model: M, where: Where): boolean {
     if (isArray(where.value)) {
       return where.value.includes(model[where.field])
     }
@@ -272,7 +272,7 @@ export default class Query<M extends Model = Model> {
   protected eagerLoadRelation(
     models: Collection<M>,
     name: string,
-    constraints: Options.EagerLoadConstraint
+    constraints: EagerLoadConstraint
   ): void {
     // First we will "back up" the existing where conditions on the query so we can
     // add our eager constraints. Then we will merge the wheres that were on the
@@ -301,8 +301,8 @@ export default class Query<M extends Model = Model> {
   /**
    * Insert the given record to the store.
    */
-  async insert(records: Record[]): Promise<Collection<M>> {
-    const models = this.hydrateRecords(records)
+  async insert(records: Element[]): Promise<Collection<M>> {
+    const models = this.hydrateElements(records)
 
     this.connection().insert(this.dehydrateModels(models))
 
@@ -312,7 +312,7 @@ export default class Query<M extends Model = Model> {
   /**
    * Update records in the store by using the primary key of the given records.
    */
-  async merge(records: Record[]): Promise<Collection<M>> {
+  async merge(records: Element[]): Promise<Collection<M>> {
     const models = this.getMergedModels(records)
 
     this.connection().update(this.dehydrateModels(models))
@@ -324,11 +324,11 @@ export default class Query<M extends Model = Model> {
    * Get models by merging the records. This method will use the primary key
    * in the records to fetch models and merge the given record to the model.
    */
-  protected getMergedModels(records: Record[]): Collection<M> {
+  protected getMergedModels(records: Element[]): Collection<M> {
     return records.reduce<Collection<M>>((collection, record) => {
       const model = this.find(this.model.$getIndexId(record))
 
-      model && collection.push(this.mergeModelWithRecord(model, record))
+      model && collection.push(this.mergeModelWithElement(model, record))
 
       return collection
     }, [])
@@ -337,8 +337,8 @@ export default class Query<M extends Model = Model> {
   /**
    * Update records in the store.
    */
-  async update(record: Record): Promise<Collection<M>> {
-    const models = this.mergeModelsWithRecord(this.get(), record)
+  async update(record: Element): Promise<Collection<M>> {
+    const models = this.mergeModelsWithElement(this.get(), record)
 
     this.connection().update(this.dehydrateModels(models))
 
@@ -413,37 +413,37 @@ export default class Query<M extends Model = Model> {
   /**
    * Instantiate new models with the given record.
    */
-  protected hydrateRecord(record: Record): M {
+  protected hydrateElement(record: Element): M {
     return this.model.$newInstance(record, { relations: false })
   }
 
   /**
    * Instantiate new models with the given collection of records.
    */
-  protected hydrateRecords(records: Record[]): Collection<M> {
-    return records.map((record) => this.hydrateRecord(record))
+  protected hydrateElements(records: Element[]): Collection<M> {
+    return records.map((record) => this.hydrateElement(record))
   }
 
   /**
    * Convert all models into the plain record.
    */
-  protected dehydrateModels(models: Collection<M>): Record[] {
+  protected dehydrateModels(models: Collection<M>): Element[] {
     return models.map((model) => model.$getAttributes())
   }
 
   /**
    * Merge the model with the given record.
    */
-  protected mergeModelWithRecord(model: M, record: Record): M {
+  protected mergeModelWithElement(model: M, record: Element): M {
     return model.$fill(record)
   }
 
   /**
    * Merge models with the given record.
    */
-  protected mergeModelsWithRecord(
+  protected mergeModelsWithElement(
     models: Collection<M>,
-    record: Record
+    record: Element
   ): Collection<M> {
     return models.map((model) => model.$fill(record))
   }

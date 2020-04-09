@@ -1,5 +1,5 @@
-import Str from '@/model/decorators/attributes/types/Str'
-import Model from '@/model/Model'
+import { Str } from '@/model/decorators/attributes/types/Str'
+import { Model } from '@/model/Model'
 
 describe('unit/model/Model_Attrs_String', () => {
   it('casts the value to `String` when instantiating the model', () => {

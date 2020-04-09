@@ -1,5 +1,5 @@
-import Bool from '@/model/decorators/attributes/types/Bool'
-import Model from '@/model/Model'
+import { Bool } from '@/model/decorators/attributes/types/Bool'
+import { Model } from '@/model/Model'
 
 describe('unit/model/Model_Attrs_Boolean', () => {
   it('casts the value to `Boolean` when instantiating the model', () => {
