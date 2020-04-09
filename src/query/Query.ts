@@ -143,10 +143,16 @@ export default class Query<M extends Model = Model> {
   /**
    * Find a model by its primary key.
    */
-  find(id: string | number): Item<M> {
-    const record = this.findRaw(id)
+  find(id: string | number): Item<M>
+  find(ids: (string | number)[]): Collection<M>
+  find(ids: any): any {
+    if (isArray(ids)) {
+      return this.findIn(ids)
+    }
 
-    return record ? this.hydrateRecord(record) : null
+    const model = this.findRaw(ids)
+
+    return model ? this.hydrateRecord(model) : null
   }
 
   /**
@@ -345,9 +351,11 @@ export default class Query<M extends Model = Model> {
   async destroy(id: string | number): Promise<Item<M>>
   async destroy(ids: Array<string | number>): Promise<Collection<M>>
   async destroy(ids: any): Promise<any> {
-    const models = await this.destroyMany(isArray(ids) ? ids : [ids])
+    if (isArray(ids)) {
+      return this.destroyMany(ids)
+    }
 
-    return models[0] ?? null
+    return (await this.whereId(ids).delete())[0] ?? null
   }
 
   /**
@@ -380,13 +388,6 @@ export default class Query<M extends Model = Model> {
   }
 
   /**
-   * Get an array of ids from the given collection.
-   */
-  protected getIdsFromCollection(models: Collection<M>): string[] {
-    return models.map((model) => model.$getIndexId())
-  }
-
-  /**
    * Normalize the given index id. This method will convert the given key to
    * the string since the index key must be a string.
    */
@@ -400,6 +401,13 @@ export default class Query<M extends Model = Model> {
    */
   protected normalizeIndexIds(ids: (string | number)[]): string[] {
     return ids.map((id) => String(id))
+  }
+
+  /**
+   * Get an array of ids from the given collection.
+   */
+  protected getIdsFromCollection(models: Collection<M>): string[] {
+    return models.map((model) => model.$getIndexId())
   }
 
   /**

@@ -85,8 +85,10 @@ export default class Repository<M extends Model> {
   /**
    * Find the model with the given id.
    */
-  find(id: string | number): Data.Item<M> {
-    return this.query().find(id)
+  find(id: string | number): Data.Item<M>
+  find(ids: (string | number)[]): Data.Collection<M>
+  find(ids: any): Data.Item<any> {
+    return this.query().find(ids)
   }
 
   /**

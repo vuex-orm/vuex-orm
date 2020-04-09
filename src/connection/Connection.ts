@@ -64,7 +64,7 @@ export default class Connection<M extends Model> {
   /**
    * Find a model by its primary key.
    */
-  find(id: string | number): Record | null {
+  find(id: string): Record | null {
     return this.getData()[id] ?? null
   }
 
