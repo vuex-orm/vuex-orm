@@ -25,7 +25,7 @@ describe('feature/relations/types/has_many_retrieve', () => {
     @Str('') title!: string
   }
 
-  it('can eager load has one relation', async () => {
+  it('can eager load has many relation', async () => {
     const store = createStore([User, Post])
 
     fillState(store, {

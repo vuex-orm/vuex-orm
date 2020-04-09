@@ -49,7 +49,7 @@ export class Query<M extends Model = Model> {
    * Create a new query instance from the given relation.
    */
   protected newQueryForRelation(relation: Relation): Query<Model> {
-    return new Query(this.store, relation.getRelated())
+    return new Query(this.store, relation.getRelated().$setStore(this.store))
   }
 
   /**
@@ -150,16 +150,16 @@ export class Query<M extends Model = Model> {
       return this.findIn(ids)
     }
 
-    const model = this.findRaw(ids)
+    const record = this.findRaw(ids)
 
-    return model ? this.hydrateElement(model) : null
+    return record ? this.hydrate(record) : null
   }
 
   /**
    * Find multiple models by their primary keys.
    */
   findIn(ids: (string | number)[]): Collection<M> {
-    return this.hydrateElements(this.findInRaw(ids))
+    return this.hydrateMany(this.findInRaw(ids))
   }
 
   /**
@@ -190,7 +190,7 @@ export class Query<M extends Model = Model> {
     const collection = [] as Collection<M>
 
     for (const id in records) {
-      collection.push(this.hydrateElement(records[id]))
+      collection.push(this.hydrate(records[id]))
     }
 
     return collection
@@ -302,9 +302,9 @@ export class Query<M extends Model = Model> {
    * Insert the given record to the store.
    */
   async insert(records: Element[]): Promise<Collection<M>> {
-    const models = this.hydrateElements(records)
+    const models = this.hydrateMany(records)
 
-    this.connection().insert(this.dehydrateModels(models))
+    this.connection().insert(this.dehydrate(models))
 
     return models
   }
@@ -315,7 +315,7 @@ export class Query<M extends Model = Model> {
   async merge(records: Element[]): Promise<Collection<M>> {
     const models = this.getMergedModels(records)
 
-    this.connection().update(this.dehydrateModels(models))
+    this.connection().update(this.dehydrate(models))
 
     return models
   }
@@ -340,7 +340,7 @@ export class Query<M extends Model = Model> {
   async update(record: Element): Promise<Collection<M>> {
     const models = this.mergeModelsWithElement(this.get(), record)
 
-    this.connection().update(this.dehydrateModels(models))
+    this.connection().update(this.dehydrate(models))
 
     return models
   }
@@ -413,21 +413,21 @@ export class Query<M extends Model = Model> {
   /**
    * Instantiate new models with the given record.
    */
-  protected hydrateElement(record: Element): M {
+  protected hydrate(record: Element): M {
     return this.model.$newInstance(record, { relations: false })
   }
 
   /**
    * Instantiate new models with the given collection of records.
    */
-  protected hydrateElements(records: Element[]): Collection<M> {
-    return records.map((record) => this.hydrateElement(record))
+  protected hydrateMany(records: Element[]): Collection<M> {
+    return records.map((record) => this.hydrate(record))
   }
 
   /**
    * Convert all models into the plain record.
    */
-  protected dehydrateModels(models: Collection<M>): Element[] {
+  protected dehydrate(models: Collection<M>): Element[] {
     return models.map((model) => model.$getAttributes())
   }
 

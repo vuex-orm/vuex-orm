@@ -70,7 +70,7 @@ export abstract class Relation extends Attribute {
   /**
    * Get all of the primary keys for an array of models.
    */
-  protected getKeys(models: Collection, key: string) {
+  protected getKeys(models: Collection, key: string): (string | number)[] {
     return models.map((model) => model[key])
   }
 

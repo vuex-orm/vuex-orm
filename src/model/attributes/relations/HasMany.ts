@@ -67,7 +67,7 @@ export class HasMany extends Relation {
   match(relation: string, models: Collection, results: Collection): void {
     const dictionary = this.buildDictionary(results)
 
-    models.map((model) => {
+    models.forEach((model) => {
       const key = model[this.localKey]
 
       dictionary[key]

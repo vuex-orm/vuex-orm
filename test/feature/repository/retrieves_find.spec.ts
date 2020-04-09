@@ -2,6 +2,7 @@ import {
   createStore,
   fillState,
   assertInstanceOf,
+  assertModel,
   assertModels
 } from 'test/Helpers'
 import { Model, Attr, Str } from '@/index'
@@ -25,12 +26,10 @@ describe('feature/repository/retrieves_find', () => {
       }
     })
 
-    const user = store.$repo(User).find(2)
-
-    const expected = { id: 2, name: 'Jane Doe' }
+    const user = store.$repo(User).find(2)!
 
     expect(user).toBeInstanceOf(User)
-    expect(user).toEqual(expected)
+    assertModel(user, { id: 2, name: 'Jane Doe' })
   })
 
   it('returns `null` if the reocrd is not found', () => {
@@ -62,13 +61,11 @@ describe('feature/repository/retrieves_find', () => {
 
     const users = store.$repo(User).find([1, 3])
 
-    const expected = [
-      { id: 1, name: 'John Doe' },
-      { id: 3, name: 'Johnny Doe' }
-    ]
-
     expect(users.length).toBe(2)
     assertInstanceOf(users, User)
-    assertModels(users, expected)
+    assertModels(users, [
+      { id: 1, name: 'John Doe' },
+      { id: 3, name: 'Johnny Doe' }
+    ])
   })
 })

@@ -54,7 +54,7 @@ export function assertState(store: Store<any>, entities: Entities): void {
 }
 
 export function assertModel<M extends Model>(model: M, record: Element): void {
-  expect(model.$getAttributes()).toEqual(record)
+  expect(model.$toJson()).toEqual(record)
 }
 
 export function assertModels<M extends Model>(
@@ -62,7 +62,7 @@ export function assertModels<M extends Model>(
   record: Element[]
 ): void {
   models.forEach((model, index) => {
-    expect(model.$getAttributes()).toEqual(record[index])
+    expect(model.$toJson()).toEqual(record[index])
   })
 }
 

@@ -35,7 +35,8 @@ export class Repository<M extends Model> {
    */
   constructor(store: Store<any>, model: M | Constructor<M>) {
     this.store = store
-    this.model = model instanceof Model ? model : new model()
+
+    this.model = model instanceof Model ? model : new model().$setStore(store)
   }
 
   /**

@@ -1,5 +1,6 @@
 import { Store } from 'vuex'
-import { Element } from '../data/Data'
+import { isArray } from '../support/Utils'
+import { Element, Item, Collection } from '../data/Data'
 import { Attribute } from './attributes/Attribute'
 import { Attr } from './attributes/types/Attr'
 import { String as Str } from './attributes/types/String'
@@ -7,6 +8,7 @@ import { Number as Num } from './attributes/types/Number'
 import { Boolean as Bool } from './attributes/types/Boolean'
 import { Relation } from './attributes/relations/Relation'
 import { HasOne } from './attributes/relations/HasOne'
+import { BelongsTo } from './attributes/relations/BelongsTo'
 import { HasMany } from './attributes/relations/HasMany'
 
 export type ModelFields = Record<string, Attribute>
@@ -131,9 +133,26 @@ export class Model {
     foreignKey: string,
     localKey?: string
   ): HasOne {
-    localKey = localKey ?? this.getLocalKey()
+    const model = new this()
 
-    return new HasOne(new this(), new related(), foreignKey, localKey)
+    localKey = localKey ?? model.$getLocalKey()
+
+    return new HasOne(model, new related(), foreignKey, localKey)
+  }
+
+  /**
+   * Create a new belongs to relation instance.
+   */
+  static belongsTo(
+    related: typeof Model,
+    foreignKey: string,
+    ownerKey?: string
+  ): BelongsTo {
+    const instance = new related()
+
+    ownerKey = ownerKey ?? instance.$getLocalKey()
+
+    return new BelongsTo(new this(), instance, foreignKey, ownerKey)
   }
 
   /**
@@ -144,16 +163,11 @@ export class Model {
     foreignKey: string,
     localKey?: string
   ): HasMany {
-    localKey = localKey ?? this.getLocalKey()
+    const model = new this()
 
-    return new HasMany(new this(), new related(), foreignKey, localKey)
-  }
+    localKey = localKey ?? model.$getLocalKey()
 
-  /**
-   * Get the local key for the model.
-   */
-  static getLocalKey(): string {
-    return this.primaryKey
+    return new HasMany(model, new related(), foreignKey, localKey)
   }
 
   /**
@@ -201,7 +215,7 @@ export class Model {
   $newInstance(attributes?: Element, options?: ModelOptions): this {
     const model = new this.$self(attributes, options) as this
 
-    model.$setStore(model.$store)
+    model.$setStore(this.$store)
 
     return model
   }
@@ -286,6 +300,13 @@ export class Model {
   }
 
   /**
+   * Get the local key for the model.
+   */
+  $getLocalKey(): string {
+    return this.$primaryKey
+  }
+
+  /**
    * Check if the model has any relations defined in the schema.
    */
   $hasRelation(): boolean {
@@ -328,14 +349,89 @@ export class Model {
    * Get the serialized model attributes.
    */
   $getAttributes(): Element {
-    const record = {} as Element
+    return this.$toJson(this, { relations: false })
+  }
 
-    for (const key in this.$fields) {
-      if (this[key] !== undefined) {
-        record[key] = this[key]
+  /**
+   * Serialize given model POJO.
+   */
+  $toJson(model?: Model, options: ModelOptions = {}): Element {
+    model = model ?? this
+
+    const withRelation = options.relations ?? true
+
+    const record: Element = {}
+
+    for (const key in model.$fields) {
+      const attr = this.$fields[key]
+      const value = model[key]
+
+      if (!(attr instanceof Relation)) {
+        record[key] = this.serializeValue(value)
+        continue
+      }
+
+      if (withRelation) {
+        record[key] = this.serializeRelation(value)
       }
     }
 
     return record
+  }
+
+  /**
+   * Serialize given value.
+   */
+  protected serializeValue(v: any): any {
+    if (v === null) {
+      return null
+    }
+
+    if (isArray(v)) {
+      return this.serializeArray(v)
+    }
+
+    if (typeof v === 'object') {
+      return this.serializeObject(v)
+    }
+
+    return v
+  }
+
+  /**
+   * Serialize an array into json.
+   */
+  protected serializeArray(a: any[]): any[] {
+    return a.map((v) => this.serializeValue(v))
+  }
+
+  /**
+   * Serialize an object into json.
+   */
+  protected serializeObject(o: object): object {
+    const obj = {}
+
+    for (const key in o) {
+      obj[key] = this.serializeValue(o[key])
+    }
+
+    return obj
+  }
+
+  /**
+   * Serialize given relation into json.
+   */
+  protected serializeRelation(relation: Item): Element | null
+  protected serializeRelation(relation: Collection): Element[]
+  protected serializeRelation(relation: any): any {
+    if (relation === null) {
+      return null
+    }
+
+    if (isArray(relation)) {
+      return relation.map((model) => model.$toJson())
+    }
+
+    return relation.$toJson()
   }
 }

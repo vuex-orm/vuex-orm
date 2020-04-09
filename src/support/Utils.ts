@@ -4,10 +4,23 @@ interface SortableArray<T> {
   value: T
 }
 
+/**
+ * Check if the given value is the type of undefined or null.
+ */
+export function isNullish(value: any): value is undefined | null {
+  return value === undefined || value === null
+}
+
+/**
+ * Check if the given value is the type of object.
+ */
 export function isObject(value: any): value is Record<any, any> {
   return value !== null && typeof value === 'object'
 }
 
+/**
+ * Check if the given value is the type of array.
+ */
 export function isArray(value: any): value is any[] {
   return Array.isArray(value)
 }
