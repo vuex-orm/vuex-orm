@@ -6,7 +6,7 @@ import {
 } from 'test/Helpers'
 import { Model, Attr, Str, Num } from '@/index'
 
-describe('feature/query/retrieves_where', () => {
+describe('feature/repository/retrieves_where', () => {
   class User extends Model {
     static entity = 'users'
 

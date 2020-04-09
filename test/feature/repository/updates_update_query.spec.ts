@@ -1,7 +1,7 @@
 import { createStore, fillState, assertState } from 'test/Helpers'
 import { Model, Attr, Str, Num } from '@/index'
 
-describe('feature/query/updates_update', () => {
+describe('feature/repository/updates_update_query', () => {
   class User extends Model {
     static entity = 'users'
 
@@ -10,7 +10,7 @@ describe('feature/query/updates_update', () => {
     @Num(0) age!: number
   }
 
-  it('updates record by passing record with primary key', async () => {
+  it('updates a record specified by the query chain', async () => {
     const store = createStore([User])
 
     fillState(store, {
@@ -21,7 +21,10 @@ describe('feature/query/updates_update', () => {
       }
     })
 
-    await store.$repo(User).update({ id: 2, age: 50 })
+    await store
+      .$repo(User)
+      .where('name', 'Jane Doe')
+      .update({ age: 50 })
 
     assertState(store, {
       users: {
@@ -32,7 +35,7 @@ describe('feature/query/updates_update', () => {
     })
   })
 
-  it('updates records by passing an array of records with primary key', async () => {
+  it('updates multiple records specified by the query chain', async () => {
     const store = createStore([User])
 
     fillState(store, {
@@ -43,16 +46,17 @@ describe('feature/query/updates_update', () => {
       }
     })
 
-    await store.$repo(User).update([
-      { id: 2, age: 50 },
-      { id: 3, age: 60 }
-    ])
+    await store
+      .$repo(User)
+      .where('name', 'Jane Doe')
+      .orWhere('age', 20)
+      .update({ age: 50 })
 
     assertState(store, {
       users: {
         1: { id: 1, name: 'John Doe', age: 40 },
         2: { id: 2, name: 'Jane Doe', age: 50 },
-        3: { id: 3, name: 'Johnny Doe', age: 60 }
+        3: { id: 3, name: 'Johnny Doe', age: 50 }
       }
     })
   })

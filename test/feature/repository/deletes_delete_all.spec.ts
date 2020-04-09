@@ -1,7 +1,7 @@
 import { createStore, fillState, assertState } from 'test/Helpers'
 import { Model, Attr, Str } from '@/index'
 
-describe('feature/query/deletes_delete_all', () => {
+describe('feature/repository/deletes_delete_all', () => {
   class User extends Model {
     static entity = 'users'
 
