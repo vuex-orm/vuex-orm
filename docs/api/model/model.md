@@ -33,14 +33,14 @@ sidebarDepth: 2
   Call a getter. It will generate module namespace automatically.
 
   ```js
-  const users = User.$getters('all')()
+  const users = User.getters('all')()
   ```
 
 ### namespace
 
 - **`namespace(method: string): string`**
 
-  Get namespaced string to be used for dispathing actions or calling getters.
+  Get namespaced string to be used for dispatching actions or calling getters.
 
   ```js
   const method = User.namespace('create')
@@ -127,7 +127,7 @@ sidebarDepth: 2
 
 - **`$namespace(method: string): string`**
 
-  Get namespaced string to be used for dispathing actions or calling getters.
+  Get namespaced string to be used for dispatching actions or calling getters.
 
   ```js
   const user = new User()
