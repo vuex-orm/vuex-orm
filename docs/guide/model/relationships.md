@@ -541,7 +541,7 @@ class Image extends Model {
 
 Take note of the `imageable_id` and `imageable_type` columns on the images table. The `imageable_id` column will contain the ID value of the post or user, while the `imageable_type` column will contain the class name of the parent Model. The `imageable_type` column is used to determine which "type" of parent model to return when accessing the imageable relation.
 
-`this.morphMany` method defined at both User and Post model is the definition of the relationship. Now you may fetch image for the model as usual.
+`this.morphOne` method defined at both User and Post model is the definition of the relationship. Now you may fetch image for the model as usual.
 
 ```js
 User.query().with('image').find(1)
