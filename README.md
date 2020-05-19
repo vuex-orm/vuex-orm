@@ -32,7 +32,7 @@ Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http
 
 <h4 align="center">Super Love Sponsors</h4>
 
-<div align="center">
+<p align="center">
   <a href="https://github.com/petertoth">
     <img src="https://avatars2.githubusercontent.com/u/3661783?s=460&v=4" alt="Peter Tóth" width="88">
   </a>
@@ -48,7 +48,7 @@ Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http
   <a href="https://github.com/dylancopeland">
     <img src="https://avatars1.githubusercontent.com/u/99355?s=460&v=4" alt="Dylan Copeland" width="88">
   </a>
-</div>
+</p>
 
 <h4 align="center">Big Love Sponsors</h4>
 
@@ -58,6 +58,12 @@ Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http
   </a>
   <a href="https://github.com/cuebit">
     <img src="https://avatars0.githubusercontent.com/u/1493221?s=460&v=4" alt="Cue" width="64">
+  </a>
+  <a href="https://github.com/kazupon">
+    <img src="https://avatars0.githubusercontent.com/u/72989?s=400&u=d333c3048e3d6f8ed2a476a3564dba1fa5288b86&v=4" alt="Kazuya Kawaguchi" width="64">
+  </a>
+  <a href="https://github.com/jShaf">
+    <img src="https://avatars3.githubusercontent.com/u/30289?s=400&u=0460c0bd3a14fdd0a2858c38e4ef9b9bca6feba0&v=4" alt="jShaf" width="64">
   </a>
 </p>
 
@@ -72,6 +78,9 @@ Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](http
   </a>
   <a href="https://github.com/robokozo">
     <img src="https://avatars2.githubusercontent.com/u/1719221?s=400&u=b5739798ee9a3d713f5ca3bd3d6a086c13d229a3&v=4" alt="John" width="48">
+  </a>
+  <a href="https://github.com/mean-cj">
+    <img src="https://avatars3.githubusercontent.com/u/1191385?s=400&u=d32b39fe065ee369e94bec47e5c3bde776262d3d&v=4" alt="mean-cj" width="48">
   </a>
 </p>
 
