@@ -92,7 +92,7 @@ class User extends Model {
 }
 ```
 
-You can learn more about Models at [Defining Models](../components/models.md).
+You can learn more about Models at [Defining Models](../model/defining-models).
 
 ### Register Models to Vuex
 
@@ -137,7 +137,7 @@ Now you are ready to go. Vuex ORM is going to create an `entities` module in Vue
 }
 ```
 
-Learn more about database registration at [Database Registration](../components/database-and-registration.md).
+Learn more about database registration at [Database Registration](../model/database-registration).
 
 ## Inserting Data
 
@@ -202,7 +202,7 @@ With above action, Vuex ORM creates the following schema in the Vuex Store.
 See how `posts` and `users` are decoupled from each other. This is what is meant by "normalizing" the data.
 
 ::: tip WHEN DOING SSR
-You should import models through injected database instance when you're doing SSR like this; `this.$store.$db().model('users')`. Please check out the [Retrieve Models](../model/retrieve-models) section for the detail.
+You should import models through injected database instance when you're doing SSR like this; `this.$store.$db().model('users')`. Please check out the [Retrieve Models](../model/retrieving-models) section for the detail.
 :::
 
 ## Retrieving Data
