@@ -2,7 +2,7 @@
 
 set -e
 
-yarn run docs:build
+yarn docs:build
 
 cp docs/CNAME docs/.vuepress/dist/CNAME
 
