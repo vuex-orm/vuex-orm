@@ -600,14 +600,6 @@ export default class Query<T extends Model = Model> {
 
       const model = this.hydrate(record)
 
-      // Ignore if the model is not current type of model.
-      if (
-        !this.appliedOnBase &&
-        !(this.model.entity === model.$self().entity)
-      ) {
-        return models
-      }
-
       models.push(model)
 
       return models
@@ -1308,7 +1300,7 @@ export default class Query<T extends Model = Model> {
       }
     }
 
-    const newModel = this.model.getModelFromRecord(record) || this.getBaseModel(this.entity)
+    const newModel = this.baseModel.getModelFromRecord(record) || this.getBaseModel(this.entity)
 
     return new newModel(record) as T
   }
