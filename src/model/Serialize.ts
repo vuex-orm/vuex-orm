@@ -61,7 +61,7 @@ function value(v: any): any {
   if (isArray(v)) {
     return array(v)
   }
-  
+
   // 'Invalid Date' will also fall here
   if (v instanceof Date) {
     return v
