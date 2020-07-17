@@ -1001,8 +1001,6 @@ export default class Query<T extends Model = Model> {
    * Commit `update` to the state.
    */
   private performUpdate(models: Data.Instances<T>): Data.Collection<T> {
-    models = this.updateIndexes(models)
-
     const beforeHooks = this.buildHooks(
       'beforeUpdate'
     ) as Contracts.MutationHook[]
@@ -1021,7 +1019,10 @@ export default class Query<T extends Model = Model> {
         continue
       }
 
-      this.commitInsert(model.$getAttributes())
+      this.commitUpdate(
+        String(model.$getIndexIdFromAttributes()),
+        model.$getAttributes()
+      )
 
       afterHooks.forEach((hook) => {
         hook(model, null, this.entity)
@@ -1031,31 +1032,6 @@ export default class Query<T extends Model = Model> {
     }
 
     return updated
-  }
-
-  /**
-   * Update the key of the instances. This is needed when a user updates
-   * record's primary key. We must then update the index key to
-   * correspond with new id value.
-   */
-  private updateIndexes(instances: Data.Instances<T>): Data.Instances<T> {
-    return Object.keys(instances).reduce<Data.Instances<T>>(
-      (instances, key) => {
-        const instance = instances[key]
-        const id = String(this.model.getIndexIdFromRecord(instance))
-
-        if (key !== id) {
-          instance.$id = id
-
-          instances[id] = instance
-
-          delete instances[key]
-        }
-
-        return instances
-      },
-      instances
-    )
   }
 
   /**
@@ -1260,6 +1236,13 @@ export default class Query<T extends Model = Model> {
    */
   private commitInsert(record: Data.Record): void {
     this.commit('insert', { record })
+  }
+
+  /**
+   * Commit update mutation.
+   */
+  private commitUpdate(newId: String, record: Data.Record): void {
+    this.commit('update', { newId, record })
   }
 
   /**

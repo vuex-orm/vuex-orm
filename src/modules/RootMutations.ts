@@ -33,6 +33,14 @@ function insertRecords(this: Store<any>, state: RootState, payload: any): void {
 }
 
 /**
+ * Update the given record.
+ */
+function update(this: Store<any>, state: RootState, payload: any): void {
+  const { entity, record, newId } = payload
+  new Connection(this, state.$name, entity).update(newId, record)
+}
+
+/**
  * Delete records from the store. The actual name for this mutation is
  * `delete`, but named `destroy` here because `delete` can't be declared at
  * this scope level.
@@ -46,6 +54,7 @@ const RootMutations: MutationsContract = {
   $mutate,
   insert,
   insertRecords,
+  update,
   delete: destroy
 }
 
