@@ -38,6 +38,9 @@ Vuex ORM is sponsored by awesome folks. Big love to all of them from the whole V
 <a href="https://github.com/jShaf">
   <img src="https://avatars3.githubusercontent.com/u/30289?s=400&u=0460c0bd3a14fdd0a2858c38e4ef9b9bca6feba0&v=4" alt="jShaf" width="64" style="border-radius: 8px;">
 </a>
+<a href="https://github.com/ibrainventures">
+  <img src="https://avatars3.githubusercontent.com/u/8803626?s=460&u=503790fc336254a8ac7987108996cc6c0b176229&v=4" alt="ibrainventures" width="64" style="border-radius: 8px;">
+</a>
 
 #### A Love Sponsors
 
