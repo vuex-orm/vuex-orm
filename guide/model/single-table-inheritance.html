@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Single Table Inheritance | Vuex ORM</title>
+    <meta name="description" content="The Vuex plugin to enable Object-Relational Mapping access to the Vuex Store.">
+    <meta name="generator" content="VuePress 1.3.0">
+    
+    
+    <link rel="preload" href="/assets/css/0.styles.c8478eaa.css" as="style"><link rel="preload" href="/assets/js/app.4cf7241e.js" as="script"><link rel="preload" href="/assets/js/2.4d1c96b6.js" as="script"><link rel="preload" href="/assets/js/23.93c56be1.js" as="script"><link rel="prefetch" href="/assets/js/10.24ca6f6b.js"><link rel="prefetch" href="/assets/js/11.5acca938.js"><link rel="prefetch" href="/assets/js/12.d3dabc0b.js"><link rel="prefetch" href="/assets/js/13.eb9f8b26.js"><link rel="prefetch" href="/assets/js/14.4f0a17f1.js"><link rel="prefetch" href="/assets/js/15.478cac8b.js"><link rel="prefetch" href="/assets/js/16.d0a4f6ca.js"><link rel="prefetch" href="/assets/js/17.da95ad34.js"><link rel="prefetch" href="/assets/js/18.907eae77.js"><link rel="prefetch" href="/assets/js/19.59c7cc1c.js"><link rel="prefetch" href="/assets/js/20.31489735.js"><link rel="prefetch" href="/assets/js/21.82f532ee.js"><link rel="prefetch" href="/assets/js/22.4d5e9ea6.js"><link rel="prefetch" href="/assets/js/24.078ec311.js"><link rel="prefetch" href="/assets/js/25.4735bc03.js"><link rel="prefetch" href="/assets/js/26.ba7f26da.js"><link rel="prefetch" href="/assets/js/27.16381a16.js"><link rel="prefetch" href="/assets/js/28.a0f23262.js"><link rel="prefetch" href="/assets/js/3.570f6e99.js"><link rel="prefetch" href="/assets/js/4.b0dd307f.js"><link rel="prefetch" href="/assets/js/5.eaca32b8.js"><link rel="prefetch" href="/assets/js/6.c4db8389.js"><link rel="prefetch" href="/assets/js/7.1f6ed3db.js"><link rel="prefetch" href="/assets/js/8.e684c67b.js"><link rel="prefetch" href="/assets/js/9.a13b3bd8.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.c8478eaa.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">Vuex ORM</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/guide/prologue/what-is-vuex-orm.html" class="nav-link">
+  Guide
+</a></div><div class="nav-item"><a href="/api/container/container.html" class="nav-link">
+  API Reference
+</a></div><div class="nav-item"><a href="https://github.com/vuex-orm/vuex-orm/releases" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Release Notes
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <a href="https://github.com/vuex-orm/vuex-orm" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/guide/prologue/what-is-vuex-orm.html" class="nav-link">
+  Guide
+</a></div><div class="nav-item"><a href="/api/container/container.html" class="nav-link">
+  API Reference
+</a></div><div class="nav-item"><a href="https://github.com/vuex-orm/vuex-orm/releases" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Release Notes
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <a href="https://github.com/vuex-orm/vuex-orm" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Prologue</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/prologue/what-is-vuex-orm.html" class="sidebar-link">What is Vuex ORM?</a></li><li><a href="/guide/prologue/installation.html" class="sidebar-link">Installation</a></li><li><a href="/guide/prologue/getting-started.html" class="sidebar-link">Getting Started</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Model</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/model/defining-models.html" class="sidebar-link">Defining Models</a></li><li><a href="/guide/model/relationships.html" class="sidebar-link">Relationships</a></li><li><a href="/guide/model/single-table-inheritance.html" class="active sidebar-link">Single Table Inheritance</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/model/single-table-inheritance.html#inheritance-conventions" class="sidebar-link">Inheritance Conventions</a></li><li class="sidebar-sub-header"><a href="/guide/model/single-table-inheritance.html#interacting-with-data" class="sidebar-link">Interacting with Data</a></li><li class="sidebar-sub-header"><a href="/guide/model/single-table-inheritance.html#discriminator-field" class="sidebar-link">Discriminator Field</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/model/single-table-inheritance.html#discriminator-field-override" class="sidebar-link">Discriminator Field Override</a></li><li class="sidebar-sub-header"><a href="/guide/model/single-table-inheritance.html#exposing-the-discriminator-field" class="sidebar-link">Exposing the Discriminator Field</a></li></ul></li><li class="sidebar-sub-header"><a href="/guide/model/single-table-inheritance.html#relationship-handling" class="sidebar-link">Relationship Handling</a></li><li class="sidebar-sub-header"><a href="/guide/model/single-table-inheritance.html#notes-on-circular-imports" class="sidebar-link">Notes on Circular Imports</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/model/single-table-inheritance.html#initial-setup" class="sidebar-link">Initial setup</a></li><li class="sidebar-sub-header"><a href="/guide/model/single-table-inheritance.html#solution-how-to-break-cycles" class="sidebar-link">Solution: How to Break Cycles</a></li><li class="sidebar-sub-header"><a href="/guide/model/single-table-inheritance.html#default-export" class="sidebar-link">Default Export</a></li></ul></li></ul></li><li><a href="/guide/model/accessors-and-mutators.html" class="sidebar-link">Accessors &amp; Mutators</a></li><li><a href="/guide/model/database-registration.html" class="sidebar-link">Database Registration</a></li><li><a href="/guide/model/retrieving-models.html" class="sidebar-link">Retrieve Models</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Data</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/data/inserting-and-updating.html" class="sidebar-link">Inserting &amp; Updating</a></li><li><a href="/guide/data/retrieving.html" class="sidebar-link">Retrieving</a></li><li><a href="/guide/data/deleting.html" class="sidebar-link">Deleting</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Digging Deeper</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/digging-deeper/vuex-module.html" class="sidebar-link">Vuex Module</a></li><li><a href="/guide/digging-deeper/lifecycle-hooks.html" class="sidebar-link">Lifecycle Hooks</a></li><li><a href="/guide/digging-deeper/serialization.html" class="sidebar-link">Serialization</a></li><li><a href="/guide/digging-deeper/server-side-rendering.html" class="sidebar-link">Server Side Rendering</a></li><li><a href="/guide/digging-deeper/plugins.html" class="sidebar-link">Plugins</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Sponsors</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/sponsors/awesome-folks.html" class="sidebar-link">Awesome Folks</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="single-table-inheritance"><a href="#single-table-inheritance" class="header-anchor">#</a> Single Table Inheritance</h1> <p>Vuex ORM supports Single Table Inheritance (STI) or Sub-classing through ES6 extension (use of the <code>class ... extends ...</code> syntax). STI is a way to emulate object-oriented inheritance in a relational database. If you're coming from Ruby on Rails land, you may be familiar with it.</p> <p>Basically, it will allow you to get different Model instance based on types of records in the same entity. For example, you might have <code>users</code> entity, and you could have a field called <code>type</code> and it could be <code>Person</code>, <code>Adult</code>, or <code>Child</code>. Now, when you fetch these records, sometime it's useful if we can get each type in its own Model instance. Here is where STI comes in to play nicely.</p> <h2 id="inheritance-conventions"><a href="#inheritance-conventions" class="header-anchor">#</a> Inheritance Conventions</h2> <p>In order to define inheritance in Vuex ORM, you need to follow some conventions. On each sub-entity of your hierarchy, you'll need to:</p> <ol><li>Make sure the sub-entity class extends another Vuex ORM Model class.</li> <li>Add a reference to the base entity name along with the <code>static entity</code> reference.</li> <li>Call <code>super.fields()</code> in the <code>static fields</code> method to make sure to merge the sub-entity fields with the base one.</li></ol> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Base entity.</span>
+<span class="token keyword">class</span> <span class="token class-name">Person</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'person'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// Derived entity. You should extend the base entity.</span>
+<span class="token keyword">class</span> <span class="token class-name">Adult</span> <span class="token keyword">extends</span> <span class="token class-name">Person</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'adult'</span>
+
+  <span class="token comment">// Reference to base entity name.</span>
+  <span class="token keyword">static</span> baseEntity <span class="token operator">=</span> <span class="token string">'person'</span> 
+
+  <span class="token comment">// Call `super.fields()`` to merge fields.</span>
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token operator">...</span><span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">fields</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      job<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span> 
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="interacting-with-data"><a href="#interacting-with-data" class="header-anchor">#</a> Interacting with Data</h2> <p>Once you defined a sub-class, you can <code>insert</code> / <code>create</code> / <code>update</code> / <code>get</code> / <code>delete</code> entities using the Model static methods. For instance, to create or insert data:</p> <div class="language-js extra-class"><pre class="language-js"><code>Adult<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span> 
+  data<span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John Doe'</span><span class="token punctuation">,</span> job<span class="token operator">:</span> <span class="token string">'Software Engineer'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>And to fetch data:</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> adults <span class="token operator">=</span> Adult<span class="token punctuation">.</span><span class="token function">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/* 
+[
+  Adult { id: 1, name: 'John Doe', job: 'Software Engineer' },
+  Adult { id: 2, name: 'Jane Doe', job: 'Software Engineer' }
+]
+*/</span>
+</code></pre></div><p>You can also fetch mixed results using the base entity getter:</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> people <span class="token operator">=</span> Person<span class="token punctuation">.</span><span class="token function">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/* 
+[
+  Person { id: 1, name: 'John Doe' },
+  Adult { id: 2, name: 'Jane Doe', job: 'Software Engineer' }
+]
+*/</span>
+</code></pre></div><p>However, using only these, you need to use the sub-entity methods (like <code>Adult.insert</code> in our example) if you want to insert sub-entity. If you want to deal with mixed data from the same hierarchy, you may use a &quot;Discriminator Field&quot; to dispatch entity using the base entity methods.</p> <h2 id="discriminator-field"><a href="#discriminator-field" class="header-anchor">#</a> Discriminator Field</h2> <p>When defining an inheritance model, one can use a discriminator field to dispatch entities based on this field value when inserting data using the base entity <code>insert</code> or <code>create</code> method.</p> <p>By default, the entity field used as a discriminator field is the <code>type</code> field. A <code>static types</code> method also needs to be defined on the base entity. This method should return the mapping between discriminator field value and Model reference.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Base entity.</span>
+<span class="token keyword">class</span> <span class="token class-name">Person</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'person'</span>
+
+  <span class="token keyword">static</span> <span class="token function">types</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token constant">PERSON</span><span class="token operator">:</span> Person<span class="token punctuation">,</span>
+      <span class="token constant">ADULT</span><span class="token operator">:</span> Adult
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// Derived entity.</span>
+<span class="token keyword">class</span> <span class="token class-name">Adult</span> <span class="token keyword">extends</span> <span class="token class-name">Person</span> <span class="token punctuation">{</span> 
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'adult'</span>
+
+  <span class="token keyword">static</span> baseEntity <span class="token operator">=</span> <span class="token string">'person'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token operator">...</span><span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">fields</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      job<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span> 
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p><strong>NOTE:</strong> If you import Models from other files, you might get circular reference error. Please take a look at <a href="#notes-on-circular-imports">this section</a> for more detail and how to avoid it.</p></blockquote> <p>Now, you can create mixed types of records at once.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Creating mixed data.</span>
+Person<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span> 
+  data<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span> type<span class="token operator">:</span><span class="token string">'PERSON'</span><span class="token punctuation">,</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John Doe'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> type<span class="token operator">:</span><span class="token string">'ADULT'</span><span class="token punctuation">,</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane Doe'</span><span class="token punctuation">,</span> job<span class="token operator">:</span> <span class="token string">'Software Engineer'</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> people <span class="token operator">=</span> Person<span class="token punctuation">.</span><span class="token function">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/* 
+[
+  Person { id: 1, name: 'John Doe' },
+  Adult { id: 2, name: 'Jane Doe', job: 'Software Engineer' }
+]
+*/</span>
+</code></pre></div><h3 id="discriminator-field-override"><a href="#discriminator-field-override" class="header-anchor">#</a> Discriminator Field Override</h3> <p>You may define a <code>static typeKey</code> on the base entity of your hierarchy if you want to change the default discriminator field name.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Base entity.</span>
+<span class="token keyword">class</span> <span class="token class-name">Person</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'person'</span>
+
+  <span class="token keyword">static</span> typeKey <span class="token operator">=</span> <span class="token string">'person_type'</span>
+
+  <span class="token keyword">static</span> <span class="token function">types</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token constant">PERSON</span><span class="token operator">:</span> Person<span class="token punctuation">,</span>
+      <span class="token constant">ADULT</span><span class="token operator">:</span> Adult
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// Derived entity.</span>
+<span class="token keyword">class</span> <span class="token class-name">Adult</span> <span class="token keyword">extends</span> <span class="token class-name">Person</span> <span class="token punctuation">{</span> 
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'adult'</span>
+
+  <span class="token keyword">static</span> baseEntity <span class="token operator">=</span> <span class="token string">'person'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token operator">...</span><span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">fields</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      job<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span> 
+<span class="token punctuation">}</span>
+</code></pre></div><p>And now you may use a custom <code>type</code> field when inserting data.</p> <div class="language-js extra-class"><pre class="language-js"><code>Person<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span> 
+  data<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span> person_type<span class="token operator">:</span> <span class="token string">'PERSON'</span><span class="token punctuation">,</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John Doe'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> person_type<span class="token operator">:</span> <span class="token string">'ADULT'</span><span class="token punctuation">,</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane Doe'</span><span class="token punctuation">,</span> job<span class="token operator">:</span> <span class="token string">'Software Engineer'</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> people <span class="token operator">=</span> Person<span class="token punctuation">.</span><span class="token function">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/* 
+[
+  Person { id: 1, name: 'John Doe' },
+  Adult { id: 2, name: 'Jane Doe', job: 'Software Engineer' }
+]
+*/</span>
+</code></pre></div><h3 id="exposing-the-discriminator-field"><a href="#exposing-the-discriminator-field" class="header-anchor">#</a> Exposing the Discriminator Field</h3> <p>Note that if the <code>static fields</code> method doesn't expose the discriminator field (default or custom one), it will not be exposed in the results when fetching data. If you want to be able to read the discriminator field, you'll need to add it to the <code>fields</code> method <strong>on the base entity</strong>:</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Base entity.</span>
+<span class="token keyword">class</span> <span class="token class-name">Person</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'person'</span>
+
+  <span class="token keyword">static</span> <span class="token function">types</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token constant">PERSON</span><span class="token operator">:</span> Person<span class="token punctuation">,</span>
+      <span class="token constant">ADULT</span><span class="token operator">:</span> Adult
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      type<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">'PERSON'</span><span class="token punctuation">)</span> <span class="token comment">// Exposing the discriminator field.</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// Derived entity.</span>
+<span class="token keyword">class</span> <span class="token class-name">Adult</span> <span class="token keyword">extends</span> <span class="token class-name">Person</span> <span class="token punctuation">{</span> 
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'adult'</span>
+  <span class="token keyword">static</span> baseEntity <span class="token operator">=</span> <span class="token string">'person'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token operator">...</span><span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">fields</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      job<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span> 
+<span class="token punctuation">}</span>
+</code></pre></div><p>Then you can fetch the key with its results.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Creating mixed data</span>
+Person<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span> 
+  data<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span> type<span class="token operator">:</span><span class="token string">'PERSON'</span><span class="token punctuation">,</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John Doe'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> type<span class="token operator">:</span><span class="token string">'ADULT'</span><span class="token punctuation">,</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane Doe'</span><span class="token punctuation">,</span> job<span class="token operator">:</span> <span class="token string">'Software Engineer'</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> people <span class="token operator">=</span> Person<span class="token punctuation">.</span><span class="token function">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/* 
+[
+  Person { id: 1, name: 'John Doe', type: 'PERSON' },
+  Adult { id: 2, name: 'Jane Doe', job: 'Software Engineer', type: 'ADULT' }
+]
+*/</span>
+</code></pre></div><h2 id="relationship-handling"><a href="#relationship-handling" class="header-anchor">#</a> Relationship Handling</h2> <p>Inheritance handles relation as any field:</p> <ul><li>If the relation is defined on the base entity, it will be inherited by all sub-entities.</li> <li>If the relation is defined on a derived entity, only instances of this entity will be able to have related data.</li></ul> <p>Querying related data using the <code>with</code> keyword (see <a href="/guide/data/retrieving.html#relationships">this page</a>) will fill the blank only when needed, particularly if you call the base entity getter with relation names specific to a sub-class.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">Person</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'person'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      home_address_id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      home_address<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">belongsTo</span><span class="token punctuation">(</span>Address<span class="token punctuation">,</span> <span class="token string">'home_address_id'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Adult</span> <span class="token keyword">extends</span> <span class="token class-name">Person</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'adult'</span>
+
+  <span class="token keyword">static</span> baseEntity <span class="token operator">=</span> <span class="token string">'person'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token operator">...</span><span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">fields</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> 
+      work_address_id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      job<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      work_address<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">belongsTo</span><span class="token punctuation">(</span>Address<span class="token punctuation">,</span> <span class="token string">'work_address_id'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span> 
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Address</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'address'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    city<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>And let's see what would happen in this case.</p> <div class="language-js extra-class"><pre class="language-js"><code>Address<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> city<span class="token operator">:</span> <span class="token string">'TOKYO'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> city<span class="token operator">:</span> <span class="token string">'PARIS'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> city<span class="token operator">:</span> <span class="token string">'BERLIN'</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+Person<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> home_address_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John Doe'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+Adult<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> home_address_id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> work_address_id<span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane Doe'</span><span class="token punctuation">,</span> job<span class="token operator">:</span> <span class="token string">'Software Engineer'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> people <span class="token operator">=</span> Person<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">with</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'home_address'</span><span class="token punctuation">,</span> <span class="token string">'work_address'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+[
+  Person {
+    id: 1,
+    home_address_id: 1,
+    name: 'John Doe',
+    home_address: Address { id: 1, city: 'TOKYO' },
+  },
+
+  Adult {
+    id: 2,
+    home_address_id: 2,
+    work_address_id: 3,
+    name: 'Jane Doe',
+    job: 'Software Engineer', 
+    home_address: Address { id: 2, city: 'PARIS' },
+    work_address: Address { id: 3, city: 'BERLIN' }
+  }
+]
+*/</span>
+</code></pre></div><h2 id="notes-on-circular-imports"><a href="#notes-on-circular-imports" class="header-anchor">#</a> Notes on Circular Imports</h2> <p>If you decide to declare each entity model in a separate file, and use <code>import</code> calls to cross-reference entity models between your file, you may get an error at runtime saying:</p> <div class="language-bash extra-class"><pre class="language-bash"><code>TypeError: Super expression must either be null or a function, not undefined.
+</code></pre></div><p>If so, it means that you have cycles in your dependency tree and that your bundler doesn't handle them (usually they don't). We describe here a solution, inspired by <a href="https://medium.com/visual-development/how-to-fix-nasty-circular-dependency-issues-once-and-for-all-in-javascript-typescript-a04c987cf0de" target="_blank" rel="noopener noreferrer">Michel Weststrate's article<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>.</p> <h3 id="initial-setup"><a href="#initial-setup" class="header-anchor">#</a> Initial setup</h3> <p>Here is an example of the initial setup you might have:</p> <p><code>Person.js</code> references its child <code>Adult.js</code> because it needs it for type definition.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// File 1: Person.js</span>
+
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Model <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'@vuex-orm/core'</span>
+<span class="token keyword">import</span> Adult <span class="token keyword">from</span> <span class="token string">'./Adult'</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">Person</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'person'</span>
+
+  <span class="token keyword">static</span> <span class="token function">types</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token constant">PERSON</span><span class="token operator">:</span> Person<span class="token punctuation">,</span>
+      <span class="token constant">ADULT</span><span class="token operator">:</span> Adult
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      type<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">'PERSON'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><code>Adult.js</code> references its parent model, through <code>Person.js</code>.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// File 2: Adult.js</span>
+
+<span class="token keyword">import</span> Person <span class="token keyword">from</span> <span class="token string">'./Person'</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">Adult</span> <span class="token keyword">extends</span> <span class="token class-name">Person</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'adult'</span>
+
+  <span class="token keyword">static</span> baseEntity <span class="token operator">=</span> <span class="token string">'person'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token operator">...</span><span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">fields</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      job<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>The store initialization imports all models.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// File 3: file where you initialize your store</span>
+
+<span class="token operator">...</span>
+<span class="token keyword">import</span> Person <span class="token keyword">from</span> <span class="token string">'@/Models/Person'</span>
+<span class="token keyword">import</span> Adult <span class="token keyword">from</span> <span class="token string">'@/Models/Adult'</span>
+<span class="token operator">...</span>
+
+<span class="token keyword">const</span> database <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">VuexORM<span class="token punctuation">.</span>Database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+database<span class="token punctuation">.</span><span class="token function">register</span><span class="token punctuation">(</span>Person<span class="token punctuation">)</span>
+database<span class="token punctuation">.</span><span class="token function">register</span><span class="token punctuation">(</span>Adult<span class="token punctuation">)</span>
+
+<span class="token operator">...</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">new</span> <span class="token class-name">Vuex<span class="token punctuation">.</span>Store</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    plugins<span class="token operator">:</span> <span class="token punctuation">[</span>VuexORM<span class="token punctuation">.</span><span class="token function">install</span><span class="token punctuation">(</span>database<span class="token punctuation">)</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>So even if we import Person first, it tries to import Adult which references Person which hasn't be fully imported yet.</p> <h3 id="solution-how-to-break-cycles"><a href="#solution-how-to-break-cycles" class="header-anchor">#</a> Solution: How to Break Cycles</h3> <p>The solution, as presented in <a href="https://medium.com/visual-development/how-to-fix-nasty-circular-dependency-issues-once-and-for-all-in-javascript-typescript-a04c987cf0de" target="_blank" rel="noopener noreferrer">this article<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>, is to use an intermediate file which imports and exports all entities used in the hierarchy.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// New file: PersonHierarchy.js</span>
+
+<span class="token keyword">export</span> <span class="token operator">*</span> <span class="token keyword">from</span> <span class="token string">'./Person'</span>
+<span class="token keyword">export</span> <span class="token operator">*</span> <span class="token keyword">from</span> <span class="token string">'./Adult'</span>
+</code></pre></div><p>You'll need to change the involved entities files to take into account the changes:</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// File 1: Person.js</span>
+
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Model <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'@vuex-orm/core'</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Adult <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./PersonHierarchy'</span> <span class="token comment">// Here, we change the import.</span>
+
+<span class="token comment">// We export directly the named class.</span>
+<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">Person</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'person'</span>
+
+  <span class="token keyword">static</span> <span class="token function">types</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token constant">PERSON</span><span class="token operator">:</span> Person<span class="token punctuation">,</span>
+      <span class="token constant">ADULT</span><span class="token operator">:</span> Adult
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      type<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">'PERSON'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// We also export a default.</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> Person
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// File 2: Adult.js</span>
+
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Person <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./PersonHierarchy'</span> <span class="token comment">// Here, we change the import.</span>
+
+<span class="token comment">// We export directly the named class.</span>
+<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">Adult</span> <span class="token keyword">extends</span> <span class="token class-name">Person</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'adult'</span>
+
+  <span class="token keyword">static</span> baseEntity <span class="token operator">=</span> <span class="token string">'person'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token operator">...</span><span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">fields</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      job<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// We also export a default.</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> Adult<span class="token punctuation">;</span>
+</code></pre></div><p>And in the store initialization:</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// File 3: File where you initialize your store.</span>
+
+<span class="token operator">...</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Person<span class="token punctuation">,</span> Adult <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'@/models/PersonHierarchy'</span>
+<span class="token operator">...</span>
+
+<span class="token keyword">const</span> database <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">VuexORM<span class="token punctuation">.</span>Database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+database<span class="token punctuation">.</span><span class="token function">register</span><span class="token punctuation">(</span>Person<span class="token punctuation">)</span><span class="token punctuation">;</span>
+database<span class="token punctuation">.</span><span class="token function">register</span><span class="token punctuation">(</span>Adult<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token operator">...</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">new</span> <span class="token class-name">Vuex<span class="token punctuation">.</span>Store</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    plugins<span class="token operator">:</span> <span class="token punctuation">[</span>VuexORM<span class="token punctuation">.</span><span class="token function">install</span><span class="token punctuation">(</span>database<span class="token punctuation">)</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><h3 id="default-export"><a href="#default-export" class="header-anchor">#</a> Default Export</h3> <p>In our solution, we also expose a <code>default</code> export in the different file, which can be used in subsequent files. Indeed, what is important in our case (in comparison with the generic case described in <a href="https://medium.com/visual-development/how-to-fix-nasty-circular-dependency-issues-once-and-for-all-in-javascript-typescript-a04c987cf0de" target="_blank" rel="noopener noreferrer">Michel Weststrate's article<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>) is that the classes of a hierarchy <strong>and</strong> the store initialization file reference the intermediate file. But since all classes are &quot;setup&quot; when declaring the database, there is no risk in referencing the classes directly afterward (without going through the intermediate file).</p> <p>For instance, you may directly import your <em>Adult</em> model like this in a Vue Component:</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">import</span> Adult <span class="token keyword">from</span> <span class="token string">'@/models/Adult'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token function">created</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    Adult<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John Doe'</span><span class="token punctuation">,</span> job<span class="token operator">:</span> <span class="token string">'Software Engineer'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div></div> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/guide/model/relationships.html" class="prev">
+        Relationships
+      </a></span> <span class="next"><a href="/guide/model/accessors-and-mutators.html">
+        Accessors &amp; Mutators
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.4cf7241e.js" defer></script><script src="/assets/js/2.4d1c96b6.js" defer></script><script src="/assets/js/23.93c56be1.js" defer></script>
+  </body>
+</html>

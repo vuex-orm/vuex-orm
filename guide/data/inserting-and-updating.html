@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Inserting &amp; Updating | Vuex ORM</title>
+    <meta name="description" content="The Vuex plugin to enable Object-Relational Mapping access to the Vuex Store.">
+    <meta name="generator" content="VuePress 1.3.0">
+    
+    
+    <link rel="preload" href="/assets/css/0.styles.c8478eaa.css" as="style"><link rel="preload" href="/assets/js/app.4cf7241e.js" as="script"><link rel="preload" href="/assets/js/2.4d1c96b6.js" as="script"><link rel="preload" href="/assets/js/11.5acca938.js" as="script"><link rel="prefetch" href="/assets/js/10.24ca6f6b.js"><link rel="prefetch" href="/assets/js/12.d3dabc0b.js"><link rel="prefetch" href="/assets/js/13.eb9f8b26.js"><link rel="prefetch" href="/assets/js/14.4f0a17f1.js"><link rel="prefetch" href="/assets/js/15.478cac8b.js"><link rel="prefetch" href="/assets/js/16.d0a4f6ca.js"><link rel="prefetch" href="/assets/js/17.da95ad34.js"><link rel="prefetch" href="/assets/js/18.907eae77.js"><link rel="prefetch" href="/assets/js/19.59c7cc1c.js"><link rel="prefetch" href="/assets/js/20.31489735.js"><link rel="prefetch" href="/assets/js/21.82f532ee.js"><link rel="prefetch" href="/assets/js/22.4d5e9ea6.js"><link rel="prefetch" href="/assets/js/23.93c56be1.js"><link rel="prefetch" href="/assets/js/24.078ec311.js"><link rel="prefetch" href="/assets/js/25.4735bc03.js"><link rel="prefetch" href="/assets/js/26.ba7f26da.js"><link rel="prefetch" href="/assets/js/27.16381a16.js"><link rel="prefetch" href="/assets/js/28.a0f23262.js"><link rel="prefetch" href="/assets/js/3.570f6e99.js"><link rel="prefetch" href="/assets/js/4.b0dd307f.js"><link rel="prefetch" href="/assets/js/5.eaca32b8.js"><link rel="prefetch" href="/assets/js/6.c4db8389.js"><link rel="prefetch" href="/assets/js/7.1f6ed3db.js"><link rel="prefetch" href="/assets/js/8.e684c67b.js"><link rel="prefetch" href="/assets/js/9.a13b3bd8.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.c8478eaa.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">Vuex ORM</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/guide/prologue/what-is-vuex-orm.html" class="nav-link">
+  Guide
+</a></div><div class="nav-item"><a href="/api/container/container.html" class="nav-link">
+  API Reference
+</a></div><div class="nav-item"><a href="https://github.com/vuex-orm/vuex-orm/releases" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Release Notes
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <a href="https://github.com/vuex-orm/vuex-orm" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/guide/prologue/what-is-vuex-orm.html" class="nav-link">
+  Guide
+</a></div><div class="nav-item"><a href="/api/container/container.html" class="nav-link">
+  API Reference
+</a></div><div class="nav-item"><a href="https://github.com/vuex-orm/vuex-orm/releases" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Release Notes
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <a href="https://github.com/vuex-orm/vuex-orm" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Prologue</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/prologue/what-is-vuex-orm.html" class="sidebar-link">What is Vuex ORM?</a></li><li><a href="/guide/prologue/installation.html" class="sidebar-link">Installation</a></li><li><a href="/guide/prologue/getting-started.html" class="sidebar-link">Getting Started</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Model</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/model/defining-models.html" class="sidebar-link">Defining Models</a></li><li><a href="/guide/model/relationships.html" class="sidebar-link">Relationships</a></li><li><a href="/guide/model/single-table-inheritance.html" class="sidebar-link">Single Table Inheritance</a></li><li><a href="/guide/model/accessors-and-mutators.html" class="sidebar-link">Accessors &amp; Mutators</a></li><li><a href="/guide/model/database-registration.html" class="sidebar-link">Database Registration</a></li><li><a href="/guide/model/retrieving-models.html" class="sidebar-link">Retrieve Models</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Data</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/data/inserting-and-updating.html" class="active sidebar-link">Inserting &amp; Updating</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/data/inserting-and-updating.html#inserts" class="sidebar-link">Inserts</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/data/inserting-and-updating.html#default-values" class="sidebar-link">Default Values</a></li><li class="sidebar-sub-header"><a href="/guide/data/inserting-and-updating.html#inserting-relationships" class="sidebar-link">Inserting Relationships</a></li><li class="sidebar-sub-header"><a href="/guide/data/inserting-and-updating.html#inserting-many-to-many-relationships" class="sidebar-link">Inserting Many To Many Relationships</a></li><li class="sidebar-sub-header"><a href="/guide/data/inserting-and-updating.html#generating-missing-foreign-keys" class="sidebar-link">Generating Missing Foreign Keys</a></li><li class="sidebar-sub-header"><a href="/guide/data/inserting-and-updating.html#generating-pivot-records" class="sidebar-link">Generating Pivot Records</a></li><li class="sidebar-sub-header"><a href="/guide/data/inserting-and-updating.html#get-newly-inserted-data" class="sidebar-link">Get Newly Inserted Data</a></li></ul></li><li class="sidebar-sub-header"><a href="/guide/data/inserting-and-updating.html#updates" class="sidebar-link">Updates</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/data/inserting-and-updating.html#updating-relationships" class="sidebar-link">Updating Relationships</a></li><li class="sidebar-sub-header"><a href="/guide/data/inserting-and-updating.html#get-updated-data" class="sidebar-link">Get Updated Data</a></li></ul></li><li class="sidebar-sub-header"><a href="/guide/data/inserting-and-updating.html#insert-or-update" class="sidebar-link">Insert or Update</a></li><li class="sidebar-sub-header"><a href="/guide/data/inserting-and-updating.html#insert-method-for-relationships" class="sidebar-link">Insert Method for Relationships</a></li><li class="sidebar-sub-header"><a href="/guide/data/inserting-and-updating.html#save-method" class="sidebar-link">Save Method</a></li><li class="sidebar-sub-header"><a href="/guide/data/inserting-and-updating.html#dispatching-actions-from-root-module" class="sidebar-link">Dispatching Actions from Root Module</a></li></ul></li><li><a href="/guide/data/retrieving.html" class="sidebar-link">Retrieving</a></li><li><a href="/guide/data/deleting.html" class="sidebar-link">Deleting</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Digging Deeper</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/digging-deeper/vuex-module.html" class="sidebar-link">Vuex Module</a></li><li><a href="/guide/digging-deeper/lifecycle-hooks.html" class="sidebar-link">Lifecycle Hooks</a></li><li><a href="/guide/digging-deeper/serialization.html" class="sidebar-link">Serialization</a></li><li><a href="/guide/digging-deeper/server-side-rendering.html" class="sidebar-link">Server Side Rendering</a></li><li><a href="/guide/digging-deeper/plugins.html" class="sidebar-link">Plugins</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Sponsors</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/sponsors/awesome-folks.html" class="sidebar-link">Awesome Folks</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="inserting-updating"><a href="#inserting-updating" class="header-anchor">#</a> Inserting &amp; Updating</h1> <p>You may insert new data or update existing data through various Model methods. All data created through Vuex ORM gets persisted to Vuex Store.</p> <h2 id="inserts"><a href="#inserts" class="header-anchor">#</a> Inserts</h2> <p>To create new data, you can use the <code>insert</code>, <code>create</code> , and <code>new</code> methods. They all insert new records to the Vuex Store but behave in a slightly different manner.</p> <p>The <code>insert</code> method will simply insert new records. You should pass an object containing records in <code>data</code> key to the method.</p> <div class="language-vue extra-class"><pre class="language-vue"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script"><span class="token language-javascript">
+<span class="token keyword">import</span> User <span class="token keyword">from</span> <span class="token string">'@/models/User'</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token function">created</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    User<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span> 
+<span class="token punctuation">}</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><p>You may also pass an array of records.</p> <div class="language-js extra-class"><pre class="language-js"><code>User<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Johnny'</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>After the insert, inside Vuex Store would look something like this.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token number">3</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Johnny'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>The <code>create</code> method would work almost identical to <code>insert</code>. The argument is also the same.</p> <div class="language-js extra-class"><pre class="language-js"><code>User<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>The difference between the <code>insert</code> and <code>create</code> method is whether to keep existing data or not. The <code>create</code> method is going to replace all existing data in the store and replace with the given data, while <code>insert</code> will create new data and leave existing data as is.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Let's say this is the initial State.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// `insert` is going to insert a new record, and keep existing data.</span>
+User<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `insert`.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// `create` is going to replace all existing data with new data.</span>
+User<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Johnny'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `create`.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">3</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Johnny'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>When performing <code>insert</code>, if there is existing data with the same ID, the record will get overwritten.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Initial State.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// `insert` is going to overwrite the record with the same ID.</span>
+User<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `insert`.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Finally, with the <code>new</code> method, you can create a new record with all fields filled by default values. Let's say you have the following Model defined.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'users'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">uid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token string">'Default Name'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>By calling <code>new</code> method on the User Model would create a new record of:</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Create new data with default values.</span>
+User<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `new`</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Default Name'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="default-values"><a href="#default-values" class="header-anchor">#</a> Default Values</h3> <p>If you pass an object that has missing fields defined in the model, that field will be automatically generated with the default value defined in the model.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// When you have this model.</span>
+<span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'users'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      active<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// If you insert object that misses some fields...</span>
+User<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John Doe '</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// Those missing fields will be present with its default value.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+          name<span class="token operator">:</span> <span class="token string">'John Doe'</span><span class="token punctuation">,</span>
+          active<span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Note that records should always be created with the primary key value provided. Leaving the primary key empty (<code>''</code>, <code>undefined</code> or <code>null</code>) will result in index keys <code>_no_key_X</code> and a high probability of inconsistent behavior. This also means that a primary key of type <code>uid</code> is recommended when using the <code>new</code> method. <a href="/guide/model/defining-models.html#primary-key-and-index-key">See here</a> to learn more about primary key and index key.</p> <h3 id="inserting-relationships"><a href="#inserting-relationships" class="header-anchor">#</a> Inserting Relationships</h3> <p>If you pass data with relationships to the <code>insert</code> or <code>create</code> method, those relationships will be normalized and inserted to the store.</p> <p>For &quot;Single Relationship&quot;, such as &quot;Has One&quot; and &quot;Belongs To&quot;, the data should contain an object to its relational field. Let's say you have the following Model definition, where Post Model &quot;Belongs To&quot; User Model.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'users'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Post</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'posts'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      user_id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      title<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      author<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">belongsTo</span><span class="token punctuation">(</span>User<span class="token punctuation">,</span> <span class="token string">'user_id'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>You may insert Post data with its related User like below example.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Create Post data with its related User.</span>
+Post<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span>
+    id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    title<span class="token operator">:</span> <span class="token string">'Post title.'</span><span class="token punctuation">,</span>
+    author<span class="token operator">:</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token string">'John Doe '</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `insert`.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    posts<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John Doe'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>For &quot;Many Relationship&quot;, for example, &quot;Has Many&quot;, the data should contain an array of records to its relational field. Let's say this time you have the following Model definition, where User Model &quot;Has Many&quot; Post Model.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'users'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      posts<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">hasMany</span><span class="token punctuation">(</span>Post<span class="token punctuation">,</span> <span class="token string">'user_id'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Post</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'posts'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      user_id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      title<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Now you may insert User data with many Post data as same as &quot;Single Relationship&quot;.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Create User data with its related Post data.</span>
+User<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span>
+    id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    name<span class="token operator">:</span> <span class="token string">'John Doe '</span><span class="token punctuation">,</span>
+    posts<span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 1'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 2'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `insert`.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    posts<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 1'</span> <span class="token punctuation">}</span>
+        <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 2'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John Doe'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>The insertion method works for all relationship types including complex ones such as &quot;Belongs To Many&quot; or &quot;Morph Many&quot;. Because in the end, all relationships are either &quot;Single&quot; or &quot;Many&quot; from the data tree structure point of view. Vuex ORM will try its best to normalize the data and store each relationship separately into the store.</p> <p>Though there are few things that you should know about when inserting relationship in a slightly complex manner.</p> <h3 id="inserting-many-to-many-relationships"><a href="#inserting-many-to-many-relationships" class="header-anchor">#</a> Inserting Many To Many Relationships</h3> <p>Since 0.36.0+, when inserting many-to-many relationships such as <code>belongsToMany</code> or <code>morphToMany</code>, any data nested under the <code>pivot</code> attribute will be inserted into intermediate models.</p> <p>Let's take a look at an example. Here we have <code>User</code> belonging to many <code>Role</code> through <code>RoleUser</code>.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'users'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      roles<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">belongsToMany</span><span class="token punctuation">(</span>Role<span class="token punctuation">,</span> RoleUser<span class="token punctuation">,</span> <span class="token string">'user_id'</span><span class="token punctuation">,</span> <span class="token string">'role_id'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Role</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'roles'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">RoleUser</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'role_user'</span>
+
+  <span class="token keyword">static</span> primaryKey <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'role_id'</span><span class="token punctuation">,</span> <span class="token string">'user_id'</span><span class="token punctuation">]</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      role_id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      user_id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      level<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">number</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Having these structures, you may include intermediate data (<code>RoleUser</code> data) under <code>pivot</code> attribute.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Create user data with nested roles and its intermediate data.</span>
+User<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span>
+    id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    roles<span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span>
+        id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+        pivot<span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> level<span class="token operator">:</span> <span class="token number">2</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span>
+        id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+        pivot<span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> level<span class="token operator">:</span> <span class="token number">3</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `insert`.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    roles<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    role_user<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> role_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> level<span class="token operator">:</span> <span class="token number">2</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> role_id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> level<span class="token operator">:</span> <span class="token number">3</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Note that you may customize the name of <code>pivot</code> attributes by using the <code>as</code> method when defining the relationship.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'users'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      roles<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">belongsToMany</span><span class="token punctuation">(</span>
+        Role<span class="token punctuation">,</span>
+        RoleUser<span class="token punctuation">,</span>
+        <span class="token string">'user_id'</span><span class="token punctuation">,</span>
+        <span class="token string">'role_id'</span>
+      <span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">as</span><span class="token punctuation">(</span><span class="token string">'permission'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>In this case, you must pass intermediate data to the key that matches the customized name.</p> <div class="language-js extra-class"><pre class="language-js"><code>User<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span>
+    id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    roles<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+      permission<span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> level<span class="token operator">:</span> <span class="token number">2</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><h3 id="generating-missing-foreign-keys"><a href="#generating-missing-foreign-keys" class="header-anchor">#</a> Generating Missing Foreign Keys</h3> <p>If data is missing its foreign keys, Vuex ORM will automatically generate them during the inserting process. For example, let's say you have the following Model definition.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'users'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      posts<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">hasMany</span><span class="token punctuation">(</span>Post<span class="token punctuation">,</span> <span class="token string">'user_id'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Post</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'posts'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      user_id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      title<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>And if you try to insert User with Post without <code>user_id</code> key, Vuex ORM will generate <code>user_id</code> value automatically.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Create User data with its related Post data with `user_id` missing.</span>
+User<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span>
+    id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    name<span class="token operator">:</span> <span class="token string">'John Doe '</span><span class="token punctuation">,</span>
+    posts<span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 1'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 2'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `insert`. See `user_id` is automatically generated.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    posts<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 1'</span> <span class="token punctuation">}</span>
+        <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 2'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John Doe'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="generating-pivot-records"><a href="#generating-pivot-records" class="header-anchor">#</a> Generating Pivot Records</h3> <p>For relationships that require a &quot;Pivot Entity&quot; such as &quot;Belongs To Many&quot;, Vuex ORM will create missing pivot records as well. Again, let's say you have the following Model definition.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'users'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      roles<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">belongsToMany</span><span class="token punctuation">(</span>Role<span class="token punctuation">,</span> RoleUser<span class="token punctuation">,</span> <span class="token string">'user_id'</span><span class="token punctuation">,</span> <span class="token string">'role_id'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Role</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'roles'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">RoleUser</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'role_user'</span>
+
+  <span class="token keyword">static</span> primaryKey <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'role_id'</span><span class="token punctuation">,</span> <span class="token string">'user_id'</span><span class="token punctuation">]</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      role_id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      user_id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>When inserting data, you insert User data and its related Role data but without RoleUser data. Still, in this case, Vuex ORM will generate required intermediate pivot records.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Insert User data with Role data.</span>
+User<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span>
+    id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    name<span class="token operator">:</span> <span class="token string">'John Doe'</span><span class="token punctuation">,</span>
+    roles<span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'admin'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'operator'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `insert`. See there's a intermediate `role_user` records.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John Doe'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    roles<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'admin'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'operator'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    role_user<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token string">'[1,1]'</span><span class="token operator">:</span> <span class="token punctuation">{</span> role_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token string">'[2,1]'</span><span class="token operator">:</span> <span class="token punctuation">{</span> role_id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>However, note that there is a caveat with &quot;Has Many Through&quot; relationship. When creating data that contains &quot;Has Many Through&quot; relationship without intermediate pivot records, the intermediate record will not be generated. Let's say you have the following model definitions.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">Country</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'countries'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      users<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">hasMany</span><span class="token punctuation">(</span>User<span class="token punctuation">,</span> <span class="token string">'country_id'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      posts<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">hasManyThrough</span><span class="token punctuation">(</span>Post<span class="token punctuation">,</span> User<span class="token punctuation">,</span> <span class="token string">'country_id'</span><span class="token punctuation">,</span> <span class="token string">'user_id'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'users'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      country_id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      posts<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">hasMany</span><span class="token punctuation">(</span>Post<span class="token punctuation">,</span> <span class="token string">'user_id'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Post</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'posts'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      user_id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>And then you try to save the following data.</p> <div class="language-js extra-class"><pre class="language-js"><code>Country<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span>
+    id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    posts<span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>Vuex ORM will normalize the data and save them to the store as below.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token punctuation">{</span>
+  countries<span class="token operator">:</span> <span class="token punctuation">{</span>
+    data<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  users<span class="token operator">:</span> <span class="token punctuation">{</span>
+    data<span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  posts<span class="token operator">:</span> <span class="token punctuation">{</span>
+    data<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>See there is no users record, and <code>user_id</code> at <code>posts</code> becomes empty. This happens because Vuex ORM wouldn't have any idea how post data relate to the intermediate User. Hence if you create data like this, you wouldn't be able to retrieve them by getters anymore. In such cases, it is recommended to create data with the intermediate records.</p> <div class="language-js extra-class"><pre class="language-js"><code>Country<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span>
+    id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    users<span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span>
+        id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+        posts<span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span>
+        <span class="token punctuation">]</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span>
+        id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+        posts<span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span> <span class="token punctuation">}</span>
+        <span class="token punctuation">]</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><h3 id="get-newly-inserted-data"><a href="#get-newly-inserted-data" class="header-anchor">#</a> Get Newly Inserted Data</h3> <p>Both <code>insert</code> and <code>create</code> return the inserted data as a Promise so that you can get them as a return value. The return value will contain all of the data that was created.</p> <div class="language-js extra-class"><pre class="language-js"><code>User<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John Doe'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">entities</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>entities<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  {
+    users: [
+      { id: 1, name: 'John Doe' }
+    ]
+  }
+*/</span>
+</code></pre></div><p>If you prefer to use <a href="https://tc39.github.io/ecmascript-asyncawait" target="_blank" rel="noopener noreferrer">async / await<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>, then you can compose inserts like this.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> entities <span class="token operator">=</span> <span class="token keyword">await</span> User<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John Doe'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  {
+    users: [
+      { id: 1, name: 'John Doe' }
+    ]
+  }
+*/</span>
+</code></pre></div><p>Note that the return value will be in normalized shape. For example, when you insert data with relationships, those relationships are detached from each other.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> entities <span class="token operator">=</span> <span class="token keyword">await</span> User<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span>
+    id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    name<span class="token operator">:</span> <span class="token string">'John Doe'</span><span class="token punctuation">,</span>
+    posts<span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 1'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 2'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  {
+    users: [
+      { id: 1, name: 'John Doe' }
+    ],
+    posts: [
+      { id: 1, user_id: 1, title: 'Post title 1' },
+      { id: 2, user_id: 1, title: 'Post title 2' }
+    ]
+  }
+*/</span>
+</code></pre></div><p>The <code>new</code> method will also return the newly created record, but it'll return only one record since it's obvious that there's no relational data.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> <span class="token keyword">await</span> User<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// { id: 1, name: 'Default Name' }</span>
+</code></pre></div><h2 id="updates"><a href="#updates" class="header-anchor">#</a> Updates</h2> <p>To update existing data, you can do so with the <code>update</code> method. Following example is some simple Vue Component handling data update with form data. The <code>update</code> method takes <code>where</code> condition and <code>data</code> as payload.</p> <div class="language-vue extra-class"><pre class="language-vue"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>template</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>label</span><span class="token punctuation">&gt;</span></span>Name<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>label</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">:value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>user.name<span class="token punctuation">&quot;</span></span> <span class="token attr-name">@input</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>updateName<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>template</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script"><span class="token language-javascript">
+<span class="token keyword">import</span> User <span class="token keyword">from</span> <span class="token string">'@/models/User'</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  computed<span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token function">user</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> User<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  methods<span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token function">updateName</span> <span class="token punctuation">(</span><span class="token parameter">e</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      User<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        where<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+        data<span class="token operator">:</span> <span class="token punctuation">{</span>
+          name<span class="token operator">:</span> e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>value
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><p><code>where</code> condition can be a <code>Number</code> or a <code>String</code> representing the value of the primary key of the Model. <code>data</code> is the data you want to update. Let's see some example here to understand how it works.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Initial State.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">30</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// Update data.</span>
+User<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  where<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span> age<span class="token operator">:</span> <span class="token number">24</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `update`</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">24</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>You may also pass <code>Function</code> to the <code>where</code> field to determine the target data. The <code>Function</code> takes the record as the argument and must return <code>Boolean</code>. This approach also lets you update multiple records at once.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Initial State.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span> active<span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span> active<span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">3</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Johnny'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">30</span><span class="token punctuation">,</span> active<span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// Update via function.</span>
+User<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token function-variable function">where</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter">user</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> user<span class="token punctuation">.</span>age <span class="token operator">===</span> <span class="token number">20</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  data<span class="token operator">:</span> <span class="token punctuation">{</span> active<span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `update`.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span> active<span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span> active<span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">3</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Johnny'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">30</span><span class="token punctuation">,</span> active<span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><code>data</code> also could be a <code>Function</code>. The <code>Function</code> will receive the target record as an argument. Then you can modify any properties. This is especially useful when you want to interact with the field that contains <code>Array</code> or <code>Object</code>.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Initial State.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span> keywords<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'sales'</span><span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">30</span><span class="token punctuation">,</span> keywords<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'marketing'</span><span class="token punctuation">]</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// Update data via function.</span>
+User<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  where<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+
+  <span class="token function">data</span> <span class="token punctuation">(</span><span class="token parameter">user</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    user<span class="token punctuation">.</span>name <span class="token operator">=</span> <span class="token string">'Jane Doe'</span>
+    user<span class="token punctuation">.</span>keywords<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token string">'pr'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `update`.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span> keywords<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'sales'</span><span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane Doe'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">30</span><span class="token punctuation">,</span> keywords<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'marketing'</span><span class="token punctuation">,</span> <span class="token string">'PR'</span><span class="token punctuation">]</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>You may also pass the whole data object as a single argument. In this case, the primary key must exist in the data object.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Initial State.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">30</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// Update by passing data object.</span>
+User<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token comment">// &lt;- Primary key must exist.</span>
+  age<span class="token operator">:</span> <span class="token number">24</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `update`.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">24</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>It is also possible to pass an array of objects to the <code>data</code> property when those objects contain the primary key.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Initial State.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">30</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">3</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Harry'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">37</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// Update by passing an array of objects.</span>
+User<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span> 
+      id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token comment">// &lt;- Primary key must exist.</span>
+      age<span class="token operator">:</span> <span class="token number">24</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+      age<span class="token operator">:</span> <span class="token number">40</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span> 
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `update`.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Jane'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">24</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">3</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Harry'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">40</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="updating-relationships"><a href="#updating-relationships" class="header-anchor">#</a> Updating Relationships</h3> <p>Updating relationships works the same as insert methods such as <code>insert</code> and <code>create</code>. Any data you pass to <code>data</code> field will be normalized and updated accordingly in Vuex Store. Note that you can't specify <code>where</code> field for relationships, so don't forget to include the primary key for the relationships.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Initial State.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    posts<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 1'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 2'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// Update data with relationship.</span>
+User<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  where<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span>
+    name<span class="token operator">:</span> <span class="token string">'John Doe'</span><span class="token punctuation">,</span>
+    posts<span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Edited post title'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `update`.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John Doe'</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    posts<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Edited post title'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 2'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="get-updated-data"><a href="#get-updated-data" class="header-anchor">#</a> Get Updated Data</h3> <p>Same as <code>insert</code> or <code>create</code>, the <code>update</code> method also returns updated data as a Promise. However, the data structure that will be returned is different depending on the use of the <code>update</code> method.</p> <p>If you pass the whole object to the <code>update</code> method, it will return all updated entities.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> <span class="token keyword">await</span> User<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">24</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  {
+    users: [{ id: 1, name: 'John Doe', age: 24 }]
+  }
+*/</span>
+</code></pre></div><p>When specifying id value in the <code>where</code> property, it will return a single item that was updated.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> <span class="token keyword">await</span> User<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  where<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span> age<span class="token operator">:</span> <span class="token number">24</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// { id: 1, name: 'John Doe', age: 24 },</span>
+</code></pre></div><p>When updating records by specifying a closure to the <code>where</code> property, the returned data will always be an array containing all updated data.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> <span class="token keyword">await</span> User<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token function-variable function">where</span><span class="token operator">:</span> <span class="token parameter">record</span> <span class="token operator">=&gt;</span> record<span class="token punctuation">.</span>age <span class="token operator">===</span> <span class="token number">30</span><span class="token punctuation">,</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span> age<span class="token operator">:</span> <span class="token number">24</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  [
+    { id: 1, name: 'John Doe', age: 24 },
+    { id: 2, name: 'Jane Doe', age: 24 }
+  ]
+*/</span>
+</code></pre></div><h2 id="insert-or-update"><a href="#insert-or-update" class="header-anchor">#</a> Insert or Update</h2> <p>The <code>insertOrUpdate</code> method will insert new data if any records do not exist in the store, and update the data of records that do exist.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Initial State.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Sales'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// `insertOrUpdate` is going to add new data and update data.</span>
+User<span class="token punctuation">.</span><span class="token function">insertOrUpdate</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Peter'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Hank'</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `insertOrUpdate`.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Peter'</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Sales'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Hank'</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token keyword">null</span>  <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>See how the <code>title</code> of the User ID of 1 is not affected. If we were using the <code>insert</code> method, both User ID 1 and 2 will have the <code>title</code> value set to <code>null</code> (the default value of the field).</p> <p>The <code>insertOrUpdate</code> is also very useful when inserting dynamically embedded relationships. For example, if an API supports dynamic embedding of relationships and doesn't always return all relationships, the relationships would be emptied when missing on <code>insert</code>. This is because insertion methods, <code>insert</code>, <code>create</code> and <code>update</code>, will be applied for all nested relationships.</p> <p>Let's see what we mean by this in the example. What happen if we were to <code>insert</code> User with Posts.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Initial State.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    posts<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 1'</span><span class="token punctuation">,</span> body<span class="token operator">:</span> <span class="token string">'Very long body...'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// We would destroy post's body field if we use `insert`.</span>
+User<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  name<span class="token operator">:</span> <span class="token string">'John'</span><span class="token punctuation">,</span>
+  posts<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 1'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 2'</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `insert`.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    posts<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 1'</span><span class="token punctuation">,</span> body<span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 2'</span><span class="token punctuation">,</span> body<span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>See <code>body</code> of Post ID of 1 got removed. This is because Post ID 1 got &quot;inserted&quot;. This case, we want to &quot;update&quot; the posts. For these cases you can use the <code>insertOrUpdate</code> method:</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Initial State.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    posts<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 1'</span><span class="token punctuation">,</span> body<span class="token operator">:</span> <span class="token string">'Very long body...'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// Using `insertOrUpdate` will update any existing records while inserting new records that don't exist.</span>
+User<span class="token punctuation">.</span><span class="token function">insertOrUpdate</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  name<span class="token operator">:</span> <span class="token string">'John'</span><span class="token punctuation">,</span>
+  posts<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 1'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 2'</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// State after `insertOrUpdate`.</span>
+<span class="token punctuation">{</span>
+  entities<span class="token operator">:</span> <span class="token punctuation">{</span>
+    users<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'John'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    posts<span class="token operator">:</span> <span class="token punctuation">{</span>
+      data<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 1'</span><span class="token punctuation">,</span> body<span class="token operator">:</span> <span class="token string">'Very long body...'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> user_id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'Post title 2'</span><span class="token punctuation">,</span> body<span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="insert-method-for-relationships"><a href="#insert-method-for-relationships" class="header-anchor">#</a> Insert Method for Relationships</h2> <p>As described at &quot;Insert or Update&quot; section, when you insert data with related records included, all of the related records will be inserted using the base method that was called. For example, if you call the <code>create</code> method, all of the related records get &quot;created&quot; into the store.</p> <p>Sometimes you might want the option to choose how Vuex ORM inserts data into the store depending on the relationship. For example, you might want to &quot;create&quot; users but &quot;insert&quot; posts. You may do so by passing additional options to the method.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// `create` users but `insert` posts.</span>
+User<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token operator">...</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  insert<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'posts'</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// `insert` users but `create` posts and `comments`.</span>
+User<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  data<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token operator">...</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  create<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'posts'</span><span class="token punctuation">,</span> <span class="token string">'comments'</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>The available options are:</p> <ul><li><code>create</code></li> <li><code>insert</code></li> <li><code>update</code></li> <li><code>insertOrUpdate</code></li></ul> <p>Note that the value passed to those <code>create</code> or <code>insert</code> options should be <strong>the entity name of the Model</strong>, <em>not</em> the name of the field that defines the relationship in the model.</p> <h2 id="save-method"><a href="#save-method" class="header-anchor">#</a> Save Method</h2> <p>The <code>$save</code> method at Model allows you to insert or update the record to the Store.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+user<span class="token punctuation">.</span>name <span class="token operator">=</span> <span class="token string">'John Doe'</span>
+
+user<span class="token punctuation">.</span><span class="token function">$save</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p>Note that <code>$save</code> method will only save the model itself. It wouldn't save any relationships attached to the Model.</p> <p>Be careful when using the <code>$save</code> method, that you might like the syntax due to its consistency with other ORMs such as Laravel Eloquent, remember you should not mutate the record inside the store. Simply put, never mutate the record you fetched by the getters.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+
+<span class="token comment">// Never do this!</span>
+user<span class="token punctuation">.</span>name <span class="token operator">=</span> <span class="token string">'John Doe'</span>
+</code></pre></div><p>The perfect place to use <code>$save</code> method is when you need to create a fresh new record inside Vue Component like below example.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token function">data</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      user<span class="token operator">:</span> <span class="token keyword">new</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  methods<span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token function">updateName</span> <span class="token punctuation">(</span><span class="token parameter">e</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>user<span class="token punctuation">.</span>name <span class="token operator">=</span> e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>value
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+    <span class="token function">save</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>user<span class="token punctuation">.</span><span class="token function">$save</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="dispatching-actions-from-root-module"><a href="#dispatching-actions-from-root-module" class="header-anchor">#</a> Dispatching Actions from Root Module</h2> <p>You can dispatch action from root module as well. With this syntax, you must specify the entity manually by passing <code>entity</code> field.</p> <div class="language-js extra-class"><pre class="language-js"><code>store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token string">'entities/create'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> entity<span class="token operator">:</span> <span class="token string">'users'</span><span class="token punctuation">,</span> data<span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token comment">/* ... */</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// Above is equivalent to this.</span>
+User<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span> data<span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token comment">/* ... */</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>Note that since the root module needs <code>entity</code>, you can't dispatch <code>update</code> action through root by passing the condition directly.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// This would not work.</span>
+store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token string">'entities/update'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> age<span class="token operator">:</span> <span class="token number">24</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// you must have entity field.</span>
+store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token string">'entities/update'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  entity<span class="token operator">:</span> <span class="token string">'users'</span><span class="token punctuation">,</span>
+  where<span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+  data<span class="token operator">:</span> <span class="token punctuation">{</span> age<span class="token operator">:</span> <span class="token number">24</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div></div> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/guide/model/retrieving-models.html" class="prev">
+        Retrieve Models
+      </a></span> <span class="next"><a href="/guide/data/retrieving.html">
+        Retrieving
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.4cf7241e.js" defer></script><script src="/assets/js/2.4d1c96b6.js" defer></script><script src="/assets/js/11.5acca938.js" defer></script>
+  </body>
+</html>

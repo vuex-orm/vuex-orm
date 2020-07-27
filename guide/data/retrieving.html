@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Retrieving | Vuex ORM</title>
+    <meta name="description" content="The Vuex plugin to enable Object-Relational Mapping access to the Vuex Store.">
+    <meta name="generator" content="VuePress 1.3.0">
+    
+    
+    <link rel="preload" href="/assets/css/0.styles.c8478eaa.css" as="style"><link rel="preload" href="/assets/js/app.4cf7241e.js" as="script"><link rel="preload" href="/assets/js/2.4d1c96b6.js" as="script"><link rel="preload" href="/assets/js/12.d3dabc0b.js" as="script"><link rel="prefetch" href="/assets/js/10.24ca6f6b.js"><link rel="prefetch" href="/assets/js/11.5acca938.js"><link rel="prefetch" href="/assets/js/13.eb9f8b26.js"><link rel="prefetch" href="/assets/js/14.4f0a17f1.js"><link rel="prefetch" href="/assets/js/15.478cac8b.js"><link rel="prefetch" href="/assets/js/16.d0a4f6ca.js"><link rel="prefetch" href="/assets/js/17.da95ad34.js"><link rel="prefetch" href="/assets/js/18.907eae77.js"><link rel="prefetch" href="/assets/js/19.59c7cc1c.js"><link rel="prefetch" href="/assets/js/20.31489735.js"><link rel="prefetch" href="/assets/js/21.82f532ee.js"><link rel="prefetch" href="/assets/js/22.4d5e9ea6.js"><link rel="prefetch" href="/assets/js/23.93c56be1.js"><link rel="prefetch" href="/assets/js/24.078ec311.js"><link rel="prefetch" href="/assets/js/25.4735bc03.js"><link rel="prefetch" href="/assets/js/26.ba7f26da.js"><link rel="prefetch" href="/assets/js/27.16381a16.js"><link rel="prefetch" href="/assets/js/28.a0f23262.js"><link rel="prefetch" href="/assets/js/3.570f6e99.js"><link rel="prefetch" href="/assets/js/4.b0dd307f.js"><link rel="prefetch" href="/assets/js/5.eaca32b8.js"><link rel="prefetch" href="/assets/js/6.c4db8389.js"><link rel="prefetch" href="/assets/js/7.1f6ed3db.js"><link rel="prefetch" href="/assets/js/8.e684c67b.js"><link rel="prefetch" href="/assets/js/9.a13b3bd8.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.c8478eaa.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">Vuex ORM</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/guide/prologue/what-is-vuex-orm.html" class="nav-link">
+  Guide
+</a></div><div class="nav-item"><a href="/api/container/container.html" class="nav-link">
+  API Reference
+</a></div><div class="nav-item"><a href="https://github.com/vuex-orm/vuex-orm/releases" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Release Notes
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <a href="https://github.com/vuex-orm/vuex-orm" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/guide/prologue/what-is-vuex-orm.html" class="nav-link">
+  Guide
+</a></div><div class="nav-item"><a href="/api/container/container.html" class="nav-link">
+  API Reference
+</a></div><div class="nav-item"><a href="https://github.com/vuex-orm/vuex-orm/releases" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Release Notes
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <a href="https://github.com/vuex-orm/vuex-orm" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Prologue</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/prologue/what-is-vuex-orm.html" class="sidebar-link">What is Vuex ORM?</a></li><li><a href="/guide/prologue/installation.html" class="sidebar-link">Installation</a></li><li><a href="/guide/prologue/getting-started.html" class="sidebar-link">Getting Started</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Model</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/model/defining-models.html" class="sidebar-link">Defining Models</a></li><li><a href="/guide/model/relationships.html" class="sidebar-link">Relationships</a></li><li><a href="/guide/model/single-table-inheritance.html" class="sidebar-link">Single Table Inheritance</a></li><li><a href="/guide/model/accessors-and-mutators.html" class="sidebar-link">Accessors &amp; Mutators</a></li><li><a href="/guide/model/database-registration.html" class="sidebar-link">Database Registration</a></li><li><a href="/guide/model/retrieving-models.html" class="sidebar-link">Retrieve Models</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Data</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/data/inserting-and-updating.html" class="sidebar-link">Inserting &amp; Updating</a></li><li><a href="/guide/data/retrieving.html" class="active sidebar-link">Retrieving</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#get-all-data" class="sidebar-link">Get All Data</a></li><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#get-single-data" class="sidebar-link">Get Single Data</a></li><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#get-multiple-data-by-primary-keys" class="sidebar-link">Get Multiple Data by Primary Keys</a></li><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#query-builder" class="sidebar-link">Query Builder</a></li><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#where-clauses" class="sidebar-link">Where Clauses</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#get-data-by-id" class="sidebar-link">Get Data By Id</a></li><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#or-statement" class="sidebar-link">Or Statement</a></li></ul></li><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#exists" class="sidebar-link">Exists</a></li><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#order-by" class="sidebar-link">Order By</a></li><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#limit-offset" class="sidebar-link">Limit &amp; Offset</a></li><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#aggregates" class="sidebar-link">Aggregates</a></li><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#relationships" class="sidebar-link">Relationships</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#load-nested-relation" class="sidebar-link">Load Nested Relation</a></li><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#load-all-relations" class="sidebar-link">Load All Relations</a></li></ul></li><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#relationship-constraints" class="sidebar-link">Relationship Constraints</a></li><li class="sidebar-sub-header"><a href="/guide/data/retrieving.html#relationship-existence-absence" class="sidebar-link">Relationship Existence &amp; Absence</a></li></ul></li><li><a href="/guide/data/deleting.html" class="sidebar-link">Deleting</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Digging Deeper</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/digging-deeper/vuex-module.html" class="sidebar-link">Vuex Module</a></li><li><a href="/guide/digging-deeper/lifecycle-hooks.html" class="sidebar-link">Lifecycle Hooks</a></li><li><a href="/guide/digging-deeper/serialization.html" class="sidebar-link">Serialization</a></li><li><a href="/guide/digging-deeper/server-side-rendering.html" class="sidebar-link">Server Side Rendering</a></li><li><a href="/guide/digging-deeper/plugins.html" class="sidebar-link">Plugins</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Sponsors</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/sponsors/awesome-folks.html" class="sidebar-link">Awesome Folks</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="retrieving"><a href="#retrieving" class="header-anchor">#</a> Retrieving</h1> <p>Vuex ORM provides a handful of methods to retrieve inserted data. In this section, we'll walk through various ways to query the Vuex Store.</p> <p>When querying the data from the store, in most of the cases you want to query data inside <code>computed</code> property. This way, when any data changes, the part of your application where you use those data gets updated reactively. It works as same as Vuex Getters, and in fact, Vuex ORM is retrieving data from the store via Vuex Getters.</p> <div class="language-vue extra-class"><pre class="language-vue"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>template</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ul</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span> <span class="token attr-name">:key</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>user.id<span class="token punctuation">&quot;</span></span> <span class="token attr-name">v-for</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>user in users<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+      {{ user.name }}
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ul</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>template</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script"><span class="token language-javascript">
+<span class="token keyword">import</span> User <span class="token keyword">from</span> <span class="token string">'@/models/User'</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  computed<span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token function">users</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> User<span class="token punctuation">.</span><span class="token function">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><blockquote><p><strong>NOTE:</strong> To retrieve records with its relationships, you must explicitly specify which relationships to fetch by <code>with</code> query chain. For example, if you want to fetch Users with Posts, you must do <code>User.query().with('posts').get()</code>. See <a href="#relationships">Relationships</a> section for more detail.</p></blockquote> <h2 id="get-all-data"><a href="#get-all-data" class="header-anchor">#</a> Get All Data</h2> <p>The <code>all</code> method is going to fetch all data from the store.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// get all users.</span>
+<span class="token keyword">const</span> users <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  [
+    { id: 1, name: 'John' },
+    { id: 2, name: 'Jane' }
+  ]
+*/</span>
+</code></pre></div><h2 id="get-single-data"><a href="#get-single-data" class="header-anchor">#</a> Get Single Data</h2> <p>The <code>find</code> method is going to fetch single data from the store. The argument is the id—primary key value—for the record.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Get a user with id of 1.</span>
+<span class="token keyword">const</span> users <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+
+<span class="token comment">// { id: 1, name: 'John' }</span>
+</code></pre></div><p>If your model has a composite primary key, you can retrieve data by passing an array as the argument. Let's say you have a Subscription model defined like this.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">import</span> <span class="token punctuation">{</span> Model <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'@vuex-orm/core'</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Subscription</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'subscription'</span>
+
+  <span class="token keyword">static</span> primaryKey <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'video_id'</span><span class="token punctuation">,</span> <span class="token string">'user_id'</span><span class="token punctuation">]</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      video_id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      user_id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>Then, you can retrieve Subscription records as below. Remember that the value order in the array is the same as the order you defined in your Model's primary key property. In this case it's <code>['video_id', 'user_id']</code>.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Get a subscription with video_id 1 and user_id 2.</span>
+<span class="token keyword">const</span> subscription <span class="token operator">=</span> Subscription<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+<span class="token comment">// { video_id: 1, user_id: 2 }</span>
+</code></pre></div><h2 id="get-multiple-data-by-primary-keys"><a href="#get-multiple-data-by-primary-keys" class="header-anchor">#</a> Get Multiple Data by Primary Keys</h2> <p>The <code>findIn</code> method is going to fetch array of data from the store. The argument is array of ids—primary key value—for the records.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Retrieve array of records by their primary keys.</span>
+<span class="token keyword">const</span> users <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">findIn</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  [
+    { id: 1, name: 'John' },
+    { id: 2, name: 'Jane' }
+  ]
+*/</span>
+</code></pre></div><p>Similarly to <code>find</code>, if your model has a composite primary key you can pass an array of arrays as the argument.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Retrieve array of records by their composite primary keys.</span>
+<span class="token keyword">const</span> subscriptions <span class="token operator">=</span> Subscription<span class="token punctuation">.</span><span class="token function">findIn</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  [
+    { video_id: 1, user_id: 1 },
+    { video_id: 1, user_id: 2 }
+  ]
+*/</span>
+</code></pre></div><h2 id="query-builder"><a href="#query-builder" class="header-anchor">#</a> Query Builder</h2> <p>The <code>query</code> method will return the Query Builder that provides fluent API to search and fetch data from the store. You can use the Query Builder to construct more complex query conditions.</p> <p>You can obtain Query Builder by calling the <code>query</code> method.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Get Query Builder instance.</span>
+<span class="token keyword">const</span> query <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p>To execute the query, you can either use a <code>get</code> method. The <code>get</code> method will execute all query conditions, and get all records that matched to the condition.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Get all users through Query Builder.</span>
+<span class="token keyword">const</span> users <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  [
+    { id: 1, name: 'John' },
+    { id: 2, name: 'Jane' }
+  ]
+*/</span>
+</code></pre></div><p>You may use <code>first</code> method to fetch a single data for the entity. It will return the very first item of the query results.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Get the first user of the query.</span>
+<span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// { id: 1, name: 'John' }</span>
+</code></pre></div><p>As oppose to <code>first</code> method, the <code>last</code> method returns the last matching data.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">last</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// { id: 2, name: 'Jane' }</span>
+</code></pre></div><h2 id="where-clauses"><a href="#where-clauses" class="header-anchor">#</a> Where Clauses</h2> <p>Where clause is the most generic way of filtering the records. The first argument should be the name of the field, and the second should be the value.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Get users with age of 20.</span>
+<span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string">'age'</span><span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p>You may pass a closure to the 2nd argument when you need more powerful constraints. The argument is the value of the field.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Get users with age higher than 20.</span>
+<span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string">'age'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">value</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> value <span class="token operator">&gt;</span> <span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p>Or, you may pass a closure to the 1st argument to get full control of the condition. The argument is the data itself.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Get users with age higher than 20 and also a female.</span>
+<span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">user</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> user<span class="token punctuation">.</span>age <span class="token operator">&gt;</span> <span class="token number">20</span> <span class="token operator">&amp;&amp;</span> user<span class="token punctuation">.</span>sex <span class="token operator">===</span> <span class="token string">'female'</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><blockquote><p><strong>NOTE:</strong> When returning the result of the condition, you must explicitly return a boolean, <code>true</code> or <code>false</code>. It will not work if you return a falsy value other than <code>false</code>, for example, <code>undefined</code> or <code>null</code>. See <a href="https://github.com/vuex-orm/vuex-orm/issues/402" target="_blank" rel="noopener noreferrer">GitHub Issue #402<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a> for more details.</p></blockquote> <p>When passing a closure to the 1st argument, it will also receive Query Builder as the 2nd argument. By using the Query Builder, you may nest the where clause. This is useful when you want &quot;group&quot; the where clauses.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Retrieve all users with role of user, and age of 20 or id of 1.</span>
+<span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string">'role'</span><span class="token punctuation">,</span> <span class="token string">'user'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">_record<span class="token punctuation">,</span> query</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    query<span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string">'age'</span><span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">orWhere</span><span class="token punctuation">(</span><span class="token string">'id'</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><h3 id="get-data-by-id"><a href="#get-data-by-id" class="header-anchor">#</a> Get Data By Id</h3> <p>Use <code>whereId</code> method to fetch a single data by using its id. This filters data faster than other <code>where</code> methods because it will use direct key lookup. The argument is the id—primary key value—for the record.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">whereId</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p>You may also use <code>whereIdIn</code> method to get multiple records by id look up. The argument is array of ids—primary key values—for the records.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">whereIdIn</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><h4 id="composite-primary-keys"><a href="#composite-primary-keys" class="header-anchor">#</a> Composite Primary Keys</h4> <p>Both <code>whereId</code> and <code>whereIdIn</code> support models with <a href="/guide/model/defining-models.html#primary-key">composite primary keys</a>.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">whereId</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> users <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">whereIdIn</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><h3 id="or-statement"><a href="#or-statement" class="header-anchor">#</a> Or Statement</h3> <p>You may chain where constraints together as well as add <code>or</code> conditions to the query. The <code>orWhere</code> method accepts the same arguments as the <code>where</code> method.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Fetch users with role of `admin`, or name of `John`.</span>
+<span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string">'role'</span><span class="token punctuation">,</span> <span class="token string">'admin'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">orWhere</span><span class="token punctuation">(</span><span class="token string">'name'</span><span class="token punctuation">,</span> <span class="token string">'John'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><h2 id="exists"><a href="#exists" class="header-anchor">#</a> Exists</h2> <p>The <code>exists</code> method allows you to check whether a query chain would return any records. The method will return either <code>true</code> or <code>false</code>.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Check whether the user store contains any data.</span>
+<span class="token keyword">const</span> resultExists <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">exists</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// Check whether an user with id 5 exists.</span>
+<span class="token keyword">const</span> resultExists <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string">'id'</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">exists</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><h2 id="order-by"><a href="#order-by" class="header-anchor">#</a> Order By</h2> <p>The <code>orderBy</code> method allows you to sort the result of the query by a given field. The first argument to the orderBy method should be the column you wish to sort by, while the second argument controls the direction of the sort, and may be either <code>asc</code> or <code>desc</code>. If there is no 2nd argument, the direction is going to be <code>asc</code>.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Order users by name.</span>
+<span class="token keyword">const</span> users <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">orderBy</span><span class="token punctuation">(</span><span class="token string">'name'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  [
+    { id: 2, name: 'Andy' },
+    { id: 1, name: 'John' }
+  ]
+*/</span>
+
+
+<span class="token comment">// You may also chain orderBy.</span>
+<span class="token keyword">const</span> users <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">orderBy</span><span class="token punctuation">(</span><span class="token string">'name'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">orderBy</span><span class="token punctuation">(</span><span class="token string">'age'</span><span class="token punctuation">,</span> <span class="token string">'desc'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  [
+    { id: 4, name: 'Andy', age: 32 },
+    { id: 2, name: 'Andy', age: 27 },
+    { id: 6, name: 'Jane', age: 42 }
+  ]
+*/</span>
+</code></pre></div><p>You may also pass a function as the 1st argument. The function will accept a record that is being sorted, and it should return value to be sorted by.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Sort user name by its 3rd character.</span>
+<span class="token keyword">const</span> users <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">orderBy</span><span class="token punctuation">(</span><span class="token parameter">user</span> <span class="token operator">=&gt;</span> user<span class="token punctuation">.</span>name<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  [
+    { id: 4, name: 'Andy' },
+    { id: 2, name: 'Roger' },
+    { id: 1, name: 'John' }
+  ]
+*/</span>
+</code></pre></div><h2 id="limit-offset"><a href="#limit-offset" class="header-anchor">#</a> Limit &amp; Offset</h2> <p>Use <code>limit</code> method to set the maximum number of records to retrieve.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">limit</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// [{ id: 1, age: 25 }, { id: 2, age: 30 }]</span>
+</code></pre></div><p>Use <code>offset</code> method to set the offset for the data.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">offset</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// [{ id: 3, age: 35 }, { id: 4, age: 40 }]</span>
+</code></pre></div><p>Both <code>offset</code> and <code>limit</code> can be chained together to paginate through data.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">offset</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">limit</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// [{ id: 2, age: 30 }, { id: 3, age: 35 }]</span>
+</code></pre></div><h2 id="aggregates"><a href="#aggregates" class="header-anchor">#</a> Aggregates</h2> <p>The Query Builder also provides aggregate methods. Available methods are <code>count</code>, <code>max</code>, <code>min</code> and <code>sum</code>.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> users <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">count</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> mostLiked <span class="token operator">=</span> Post<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token string">'like'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> cheapest <span class="token operator">=</span> Order<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">min</span><span class="token punctuation">(</span><span class="token string">'price'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> total <span class="token operator">=</span> Order<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">sum</span><span class="token punctuation">(</span><span class="token string">'price'</span><span class="token punctuation">)</span>
+</code></pre></div><p>Of course, you may combine these methods with other clauses.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> users <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string">'role'</span><span class="token punctuation">,</span> <span class="token string">'user'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">count</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><h2 id="relationships"><a href="#relationships" class="header-anchor">#</a> Relationships</h2> <p>You can use the <code>with</code> method to load related model when querying data. The argument to the <code>with</code> method should be the name of the field that defines the relationship, <em>not</em> the entity name of the related model.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">with</span><span class="token punctuation">(</span><span class="token string">'profile'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">with</span><span class="token punctuation">(</span><span class="token string">'posts'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  {
+    id: 1,
+    name: 'John',
+
+    profile: {
+      id: 1,
+      user_id: 1,
+      age: 24
+    },
+
+    posts: [
+      { id: 1, user_id: 1, body: '...' },
+      { id: 2, user_id: 1, body: '...' }
+    ]
+  }
+*/</span>
+</code></pre></div><h3 id="load-nested-relation"><a href="#load-nested-relation" class="header-anchor">#</a> Load Nested Relation</h3> <p>You can load nested relations with dot syntax.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">with</span><span class="token punctuation">(</span><span class="token string">'posts.comments'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  {
+    id: 1,
+    name: 'john',
+
+    posts: [
+      {
+        id: 1,
+        user_id: 1,
+        body: '...',
+
+        comments: [
+          { id: 1, post_id: 1, body: '...' },
+          { id: 2, post_id: 1, body: '...' }
+        ]
+      },
+      {
+        id: 2,
+        user_id: 1,
+        body: '...',
+
+        comments: [
+          { id: 3, post_id: 2, body: '...' },
+          { id: 4, post_id: 2, body: '...' }
+        ]
+      }
+    ]
+  }
+*/</span>
+</code></pre></div><p>You can load multiple sub relations by separating them with <code>|</code> (symbolizing the <code>or</code> syntax):</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Fetching all comments &amp; reviews from user.posts.</span>
+<span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">with</span><span class="token punctuation">(</span><span class="token string">'posts.comments|reviews'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p>Or passing an array of relations (in that case, the full path is needed):</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Fetching all comments &amp; reviews from user.posts + user.profile.</span>
+<span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">with</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'posts.comments'</span><span class="token punctuation">,</span> <span class="token string">'posts.reviews'</span><span class="token punctuation">,</span> <span class="token string">'profile'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><h3 id="load-all-relations"><a href="#load-all-relations" class="header-anchor">#</a> Load All Relations</h3> <p>You can load all relations on a model using the <code>withAll</code> method.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  {
+    id: 1,
+    name: 'john',
+
+    profile: {
+      id: 1,
+      user_id: 1,
+      age: 24
+    },
+
+    posts: [
+      {
+        id: 1,
+        user_id: 1,
+        body: '...'
+      },
+
+      {
+        id: 2,
+        user_id: 1,
+        body: '...'
+      }
+    ]
+  }
+*/</span>
+</code></pre></div><p>Constraints may also be added for more granular control.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withAll</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">query</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  query<span class="token punctuation">.</span><span class="token function">has</span><span class="token punctuation">(</span><span class="token string">'comments'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p>To fetch all sub relations of a relation using the dot syntax, use <code>*</code>.</p> <div class="language-js extra-class"><pre class="language-js"><code> <span class="token comment">// Fetches all relations of all posts.</span>
+<span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">with</span><span class="token punctuation">(</span><span class="token string">'posts.*'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p>To fetch all sub relations to a certain level you can use the <code>withAllRecursive</code> method. You can specify a depth to which relations should be loaded. The depth defaults to 3, so if you call <code>withAllRecursive</code> with no arguments, it will fetch all sub relations of sub relations of sub relations of the queried entity.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withAllRecursive</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  User {
+    id: 1,
+    name: 'john',
+
+    profile: {
+      id: 1,
+      user_id: 1,
+      age: 24
+    },
+
+    posts: [
+      {
+        id: 1,
+        user_id: 1,
+        body: '...',
+
+        comments: [
+          { id: 1, post_id: 1, body: '...' },
+          { id: 2, post_id: 1, body: '...' }
+        ]
+      },
+      {
+        id: 2,
+        user_id: 1,
+        body: '...',
+
+        comments: [
+          { id: 3, post_id: 2, body: '...' },
+          { id: 4, post_id: 2, body: '...' }
+        ]
+      },
+    ]
+  }
+*/</span>
+</code></pre></div><h2 id="relationship-constraints"><a href="#relationship-constraints" class="header-anchor">#</a> Relationship Constraints</h2> <p>To filter the result of relation loaded by the <code>with</code> method, you can pass a closure to the second argument to define additional constraints to the query.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Get all users with posts that have `published` field value of `true`.</span>
+<span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">with</span><span class="token punctuation">(</span><span class="token string">'posts'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">query</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  query<span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string">'published'</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+  [
+    {
+      id: 1,
+      name: 'John',
+      posts: [
+        { id: 1, user_id: 1, body: '...', published: true },
+        { id: 2, user_id: 1, body: '...', published: true }
+      ]
+    }
+  ]
+*/</span>
+</code></pre></div><p>When you add constraints to the &quot;nested&quot; relation, the constraints will be applied to the deepest relationship.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">with</span><span class="token punctuation">(</span><span class="token string">'posts.comments'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">query</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token comment">// This constraint will be applied to the `comments`, not `posts`.</span>
+  query<span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string">'type'</span><span class="token punctuation">,</span> <span class="token string">'review'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p>Similarly, you may add constraints to wildcard relations. For example, <code>posts</code> may have <code>comments</code> and <code>tags</code>, all of which will be ordered by the <code>created_at</code> field.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">with</span><span class="token punctuation">(</span><span class="token string">'posts.*'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">query</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token comment">// This constraint will be applied to all relations belonging to `posts`</span>
+  query<span class="token punctuation">.</span><span class="token function">orderBy</span><span class="token punctuation">(</span><span class="token string">'created_at'</span><span class="token punctuation">,</span> <span class="token string">'desc'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p>If you need to add constraints to each relation, you could always nest constraints. This is the most flexible way of defining constraints to the relationships.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">with</span><span class="token punctuation">(</span><span class="token string">'posts'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">query</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  query<span class="token punctuation">.</span><span class="token function">with</span><span class="token punctuation">(</span><span class="token string">'comments'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">query</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    query<span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string">'type'</span><span class="token punctuation">,</span> <span class="token string">'review'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string">'published'</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><h2 id="relationship-existence-absence"><a href="#relationship-existence-absence" class="header-anchor">#</a> Relationship Existence &amp; Absence</h2> <p>When querying the record, you may wish to limit your results based on the existence of a relationship. For example, imagine you want to retrieve all blog posts that have at least one comment. To do so, you may pass the name of the relationship to the <code>has</code> methods.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Retrieve all posts that have at least one comment.</span>
+Post<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">has</span><span class="token punctuation">(</span><span class="token string">'comments'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p>You may also specify count as well.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Retrieve all posts that have at least 2 comments.</span>
+Post<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">has</span><span class="token punctuation">(</span><span class="token string">'comments'</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p>Also, you may add an operator to customize your query even more. The supported operators are <code>=</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code> and <code>&lt;=</code>.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Retrieve all posts that have more than 2 comments.</span>
+Post<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">has</span><span class="token punctuation">(</span><span class="token string">'comments'</span><span class="token punctuation">,</span> <span class="token string">'&gt;'</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// Retrieve all posts that have less than or exactly 2 comments.</span>
+Post<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">has</span><span class="token punctuation">(</span><span class="token string">'comments'</span><span class="token punctuation">,</span> <span class="token string">'&lt;='</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p>If you need even more power, you may use the <code>whereHas</code> method to put &quot;where&quot; conditions on your <code>has</code> queries. This method allows you to add customized constraints to a relationship constraint, such as checking the content of a comment.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Retrieve all posts that have comment from user_id 1.</span>
+Post<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">whereHas</span><span class="token punctuation">(</span><span class="token string">'comments'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">query</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  query<span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string">'user_id'</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p>To retrieve records depending on the absence of the relationship, use the <code>hasNot</code> and <code>whereHasNot</code> methods. These methods will work the same as <code>has</code> and <code>whereHas</code> but with the opposite result.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Retrieve all posts that doesn't have comments.</span>
+Post<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">hasNot</span><span class="token punctuation">(</span><span class="token string">'comments'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// Retrieve all posts that doesn't have comment with user_id of 1.</span>
+Post<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">whereHasNot</span><span class="token punctuation">(</span><span class="token string">'comments'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">query</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  query<span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string">'user_id'</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div></div> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/guide/data/inserting-and-updating.html" class="prev">
+        Inserting &amp; Updating
+      </a></span> <span class="next"><a href="/guide/data/deleting.html">
+        Deleting
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.4cf7241e.js" defer></script><script src="/assets/js/2.4d1c96b6.js" defer></script><script src="/assets/js/12.d3dabc0b.js" defer></script>
+  </body>
+</html>

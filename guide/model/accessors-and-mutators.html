@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Accessors &amp; Mutators | Vuex ORM</title>
+    <meta name="description" content="The Vuex plugin to enable Object-Relational Mapping access to the Vuex Store.">
+    <meta name="generator" content="VuePress 1.3.0">
+    
+    
+    <link rel="preload" href="/assets/css/0.styles.c8478eaa.css" as="style"><link rel="preload" href="/assets/js/app.4cf7241e.js" as="script"><link rel="preload" href="/assets/js/2.4d1c96b6.js" as="script"><link rel="preload" href="/assets/js/18.907eae77.js" as="script"><link rel="prefetch" href="/assets/js/10.24ca6f6b.js"><link rel="prefetch" href="/assets/js/11.5acca938.js"><link rel="prefetch" href="/assets/js/12.d3dabc0b.js"><link rel="prefetch" href="/assets/js/13.eb9f8b26.js"><link rel="prefetch" href="/assets/js/14.4f0a17f1.js"><link rel="prefetch" href="/assets/js/15.478cac8b.js"><link rel="prefetch" href="/assets/js/16.d0a4f6ca.js"><link rel="prefetch" href="/assets/js/17.da95ad34.js"><link rel="prefetch" href="/assets/js/19.59c7cc1c.js"><link rel="prefetch" href="/assets/js/20.31489735.js"><link rel="prefetch" href="/assets/js/21.82f532ee.js"><link rel="prefetch" href="/assets/js/22.4d5e9ea6.js"><link rel="prefetch" href="/assets/js/23.93c56be1.js"><link rel="prefetch" href="/assets/js/24.078ec311.js"><link rel="prefetch" href="/assets/js/25.4735bc03.js"><link rel="prefetch" href="/assets/js/26.ba7f26da.js"><link rel="prefetch" href="/assets/js/27.16381a16.js"><link rel="prefetch" href="/assets/js/28.a0f23262.js"><link rel="prefetch" href="/assets/js/3.570f6e99.js"><link rel="prefetch" href="/assets/js/4.b0dd307f.js"><link rel="prefetch" href="/assets/js/5.eaca32b8.js"><link rel="prefetch" href="/assets/js/6.c4db8389.js"><link rel="prefetch" href="/assets/js/7.1f6ed3db.js"><link rel="prefetch" href="/assets/js/8.e684c67b.js"><link rel="prefetch" href="/assets/js/9.a13b3bd8.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.c8478eaa.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">Vuex ORM</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/guide/prologue/what-is-vuex-orm.html" class="nav-link">
+  Guide
+</a></div><div class="nav-item"><a href="/api/container/container.html" class="nav-link">
+  API Reference
+</a></div><div class="nav-item"><a href="https://github.com/vuex-orm/vuex-orm/releases" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Release Notes
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <a href="https://github.com/vuex-orm/vuex-orm" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/guide/prologue/what-is-vuex-orm.html" class="nav-link">
+  Guide
+</a></div><div class="nav-item"><a href="/api/container/container.html" class="nav-link">
+  API Reference
+</a></div><div class="nav-item"><a href="https://github.com/vuex-orm/vuex-orm/releases" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Release Notes
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <a href="https://github.com/vuex-orm/vuex-orm" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Prologue</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/prologue/what-is-vuex-orm.html" class="sidebar-link">What is Vuex ORM?</a></li><li><a href="/guide/prologue/installation.html" class="sidebar-link">Installation</a></li><li><a href="/guide/prologue/getting-started.html" class="sidebar-link">Getting Started</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Model</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/model/defining-models.html" class="sidebar-link">Defining Models</a></li><li><a href="/guide/model/relationships.html" class="sidebar-link">Relationships</a></li><li><a href="/guide/model/single-table-inheritance.html" class="sidebar-link">Single Table Inheritance</a></li><li><a href="/guide/model/accessors-and-mutators.html" class="active sidebar-link">Accessors &amp; Mutators</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/model/accessors-and-mutators.html#defining-accessors" class="sidebar-link">Defining Accessors</a></li><li class="sidebar-sub-header"><a href="/guide/model/accessors-and-mutators.html#defining-mutators" class="sidebar-link">Defining Mutators</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/model/accessors-and-mutators.html#via-attribute" class="sidebar-link">Via Attribute</a></li><li class="sidebar-sub-header"><a href="/guide/model/accessors-and-mutators.html#via-mutators-method" class="sidebar-link">Via Mutators Method</a></li></ul></li></ul></li><li><a href="/guide/model/database-registration.html" class="sidebar-link">Database Registration</a></li><li><a href="/guide/model/retrieving-models.html" class="sidebar-link">Retrieve Models</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Data</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/data/inserting-and-updating.html" class="sidebar-link">Inserting &amp; Updating</a></li><li><a href="/guide/data/retrieving.html" class="sidebar-link">Retrieving</a></li><li><a href="/guide/data/deleting.html" class="sidebar-link">Deleting</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Digging Deeper</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/digging-deeper/vuex-module.html" class="sidebar-link">Vuex Module</a></li><li><a href="/guide/digging-deeper/lifecycle-hooks.html" class="sidebar-link">Lifecycle Hooks</a></li><li><a href="/guide/digging-deeper/serialization.html" class="sidebar-link">Serialization</a></li><li><a href="/guide/digging-deeper/server-side-rendering.html" class="sidebar-link">Server Side Rendering</a></li><li><a href="/guide/digging-deeper/plugins.html" class="sidebar-link">Plugins</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Sponsors</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/guide/sponsors/awesome-folks.html" class="sidebar-link">Awesome Folks</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="accessors-mutators"><a href="#accessors-mutators" class="header-anchor">#</a> Accessors &amp; Mutators</h1> <p>Accessors and mutators allow you to format attribute values of the data when retrieving them on a model instance. For example, you might want to modify some value to display nicely on the browser, but you still want to keep actual data as is inside Vuex Store.</p> <h2 id="defining-accessors"><a href="#defining-accessors" class="header-anchor">#</a> Defining Accessors</h2> <p>To define an accessor, just create a getter or a method in the model. In this example, we'll define <code>full_name</code> getter and <code>prefix</code> method to the User model.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'users'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      first_name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      last_name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">/**
+   * Get full name of the user.
+   */</span>
+  <span class="token keyword">get</span> <span class="token function">full_name</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>first_name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>last_name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">/**
+   * Add given prefix to the user's full name.
+   */</span>
+  <span class="token function">prefix</span> <span class="token punctuation">(</span><span class="token parameter">prefix</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>prefix<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>full_name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>As you can see, these are just ordinary JavaScript class definitions. You are free to define anything inside a class to modify data. You may access the value by simply calling those getters or methods.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Let's say you have following user inside Vuex Store.</span>
+<span class="token punctuation">{</span> id<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> first_name<span class="token operator">:</span> <span class="token string">'John'</span><span class="token punctuation">,</span> last_name<span class="token operator">:</span> <span class="token string">'Doe'</span> <span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> user <span class="token operator">=</span> User<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+
+user<span class="token punctuation">.</span>full_name <span class="token comment">// &lt;- 'John Doe'</span>
+
+user<span class="token punctuation">.</span><span class="token function">prefix</span><span class="token punctuation">(</span><span class="token string">'Sir.'</span><span class="token punctuation">)</span> <span class="token comment">// &lt;- 'Sir. John Doe'</span>
+</code></pre></div><h2 id="defining-mutators"><a href="#defining-mutators" class="header-anchor">#</a> Defining Mutators</h2> <p>Vuex ORM lets you define mutators which are going to modify the specific field when instantiating the Model. The difference between accessors and mutators is that mutators are going to modify the field itself. There are two ways to do this.</p> <h3 id="via-attribute"><a href="#via-attribute" class="header-anchor">#</a> Via Attribute</h3> <p>You can pass a closure to the 2nd argument of <code>attr</code>, <code>string</code>, <code>number</code>, and <code>boolean</code> attributes. The closure takes the corresponding value as an argument, and you can modify the value however you want.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">import</span> <span class="token punctuation">{</span> Model <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'@vuex-orm/core'</span>
+
+<span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'users'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      id<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">,</span> <span class="token parameter">value</span> <span class="token operator">=&gt;</span> value<span class="token punctuation">.</span><span class="token function">toUpperCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> user <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token punctuation">{</span> name<span class="token operator">:</span> <span class="token string">'john doe'</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span>name<span class="token punctuation">)</span> <span class="token comment">// &lt;- JOHN DOE</span>
+</code></pre></div><h3 id="via-mutators-method"><a href="#via-mutators-method" class="header-anchor">#</a> Via Mutators Method</h3> <p>You can also define mutators in one place by creating a <code>static mutators</code> method. The <code>mutators</code> method should return an object containing a function with the key of the corresponding field.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">import</span> <span class="token punctuation">{</span> Model <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'@vuex-orm/core'</span>
+
+<span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token keyword">extends</span> <span class="token class-name">Model</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> entity <span class="token operator">=</span> <span class="token string">'users'</span>
+
+  <span class="token keyword">static</span> <span class="token function">fields</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      name<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">static</span> <span class="token function">mutators</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token function">name</span> <span class="token punctuation">(</span><span class="token parameter">value</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> value<span class="token punctuation">.</span><span class="token function">toUpperCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> user <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token punctuation">{</span> name<span class="token operator">:</span> <span class="token string">'john doe'</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span>name<span class="token punctuation">)</span> <span class="token comment">// &lt;- JOHN DOE</span>
+</code></pre></div><p>Note that if you have a mutator defined as the 2nd argument of the <code>attr</code>, and also have a mutators method with the same field name, the mutator at <code>attr</code> takes precedence.</p></div> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/guide/model/single-table-inheritance.html" class="prev">
+        Single Table Inheritance
+      </a></span> <span class="next"><a href="/guide/model/database-registration.html">
+        Database Registration
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.4cf7241e.js" defer></script><script src="/assets/js/2.4d1c96b6.js" defer></script><script src="/assets/js/18.907eae77.js" defer></script>
+  </body>
+</html>
