@@ -57,15 +57,18 @@ export default class MorphMany extends Relation {
   /**
    * Attach the relational key to the given data.
    */
-  attach(key: any, record: Record, data: NormalizedData): void {
-    const relatedItems = data[this.related.entity]
+  attach (key: any, record: Record, data: NormalizedData): void {
+    key.forEach((related: any) => {
+      let relatedItem
 
-    key.forEach((id: any) => {
-      const relatedItem = relatedItems[id]
+      if (typeof related === 'object') {
+        relatedItem = data[(this.related.getTypeModel(related.schema) as typeof Model).entity][related.id]
+      } else {
+        relatedItem = data[this.related.entity][related]
+      }
 
-      relatedItem[this.id] =
-        relatedItem[this.id] || this.related.getIdFromRecord(record)
-      relatedItem[this.type] = relatedItem[this.type] || this.model.entity
+      relatedItem[this.id] = relatedItem[this.id] || this.related.getIdFromRecord(record)
+      relatedItem[this.type] = relatedItem[this.type] || this.model.baseEntity || this.model.entity
     })
   }
 
@@ -91,7 +94,7 @@ export default class MorphMany extends Relation {
       constraints
     )
 
-    this.addEagerConstraintForMorphMany(relatedQuery, collection, query.entity)
+    this.addEagerConstraintForMorphMany(relatedQuery, collection, query.baseModel.entity)
 
     const relations = this.mapManyRelations(relatedQuery.get(), this.id)
 

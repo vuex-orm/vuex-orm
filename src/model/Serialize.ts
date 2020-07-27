@@ -15,14 +15,21 @@ const defaultOption: Option = {
 
 /**
  * Serialize the given model to attributes. This method will ignore
- * relationships, and it includes the index id.
+ * relationships, and it includes the index id. If the record is a derived
+ * STI enitity, include type key as well.
  */
-export function toAttributes(model: Model): Record {
-  const record = toJson(model, { relations: false })
+export function toAttributes (record: Model): Record {
+  const model = Model.getModelFromRecord(record) as typeof Model
+  const serializedRecord = toJson(record, { relations: false })
 
-  record.$id = model.$id
+  serializedRecord.$id = record.$id
 
-  return record
+  if (model.baseEntity && !record[model.typeKey]) {
+    const baseModel = model.database().baseModel(model) as typeof Model
+    serializedRecord[baseModel.typeKey] = baseModel.getTypeKeyValueFromModel(model)
+  }
+
+  return serializedRecord
 }
 
 /**

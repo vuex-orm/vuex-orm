@@ -65,8 +65,21 @@ export default class Schema {
   /**
    * Create an array schema for the given model.
    */
-  many(model: typeof Model): Normalizr.Array {
-    return new Normalizr.Array(this.one(model))
+  many (model: typeof Model): Normalizr.Array {
+    if (model.hasTypes() && !model.baseEntity) {
+      const types = model.types()
+      const schema = Object
+        .values(types)
+        .map(model => ({ [model.entity]: this.one(model) }))
+        .reduce((schema, definition) => Object.assign(schema, definition), {})
+
+      return new Normalizr.Array(
+        { ...schema, [model.entity]: this.one(model) },
+        input => Object.keys(types).includes(input[model.typeKey]) ? types[input[model.typeKey]].entity : model.entity
+      )
+    } else {
+      return new Normalizr.Array(this.one(model))
+    }
   }
 
   /**

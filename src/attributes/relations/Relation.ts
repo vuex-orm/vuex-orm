@@ -135,11 +135,19 @@ export default abstract class Relation extends Attribute {
    * Check if the given record is a single relation, which is an object.
    */
   isOneRelation(record: any): boolean {
-    if (!isArray(record) && record !== null && typeof record === 'object') {
+    if (!isArray(record) && record !== null && typeof record === 'object' && !this.isNormalizedPolymorphicObject(record)) {
       return true
     }
 
     return false
+  }
+
+  /**
+   * Check if the given record is a normalized polymorphic object returned
+   * from normalizr and has exactly this object schema: { id, schema }
+   */
+  isNormalizedPolymorphicObject(record: any): boolean {
+    return Object.keys(record).toString() == 'id,schema'
   }
 
   /**

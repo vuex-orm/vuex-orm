@@ -101,38 +101,3 @@ describe('Feature – Inheritance', () => {
     expect(adult.job).toBe('Software Engineer')
   })
 })
-
-describe('Feature - Inheritance - No Type Warning', () => {
-  class Person extends Model {
-    static entity = 'person'
-
-    static fields() {
-      return {
-        id: this.attr(null),
-        name: this.attr(''),
-        type: this.string('')
-      }
-    }
-  }
-
-  class Adult extends Person {
-    static entity = 'adult'
-
-    static baseEntity = 'person'
-
-    static fields() {
-      return {
-        ...super.fields(),
-        job: this.attr('')
-      }
-    }
-  }
-
-  it('should warn user that no type is defined', () => {
-    const spy = jest.spyOn(global.console, 'warn').mockImplementation()
-
-    createStore([Person, Adult])
-
-    expect(spy).toHaveBeenCalled()
-  })
-})

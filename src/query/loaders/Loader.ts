@@ -3,23 +3,13 @@ import Collection from '../../data/Collection'
 import Relation from '../../attributes/relations/Relation'
 import Constraint from '../contracts/RelationshipConstraint'
 import Query from '../Query'
+import Model from '../../model/Model'
 
 export default class Loader {
   /**
    * Set the relationships that should be eager loaded with the query.
    */
-  static with(
-    query: Query,
-    name: string | string[],
-    constraint: Constraint | null
-  ): void {
-    // If the name of the relation is `*`, we'll load all relationships.
-    if (name === '*') {
-      this.withAll(query, constraint)
-
-      return
-    }
-
+  static with (query: Query, name: string | string[], constraint: Constraint | null): void {
     // If we passed an array, we dispatch the bits to with queries.
     if (isArray(name)) {
       name.forEach((relationName) => this.with(query, relationName, constraint))
@@ -34,12 +24,8 @@ export default class Loader {
   /**
    * Set all relationships to be eager loaded with the query.
    */
-  static withAll(query: Query, constraint: Constraint | null): void {
-    const fields = query.model.getFields()
-
-    for (const field in fields) {
-      fields[field] instanceof Relation && this.with(query, field, constraint)
-    }
+  static withAll (query: Query, constraint: Constraint | null): void {
+    this.with(query, '*', constraint)
   }
 
   /**
@@ -123,29 +109,30 @@ export default class Loader {
     })
   }
 
+
   /**
    * Eager load the relationships for the given collection.
    */
-  static eagerLoadRelations(query: Query, collection: Collection): void {
-    const fields = query.model.getFields()
+  static eagerLoadRelations (query: Query, collection: Collection): void {
+    const collections = collection.reduce((entities, record) => {
+      const entity = (query.model.getModelFromRecord(record) as typeof Model).entity
+      if (!entities[entity]) entities[entity] = []
+      entities[entity].push(record)
+      return entities
+    }, {})
 
-    for (const name in query.load) {
-      const constraints = query.load[name]
-      let relation = fields[name]
+    for (let entity in collections) {
+      const records = collections[entity]
+      const fields = query.newQuery(entity).model.getFields()
 
-      if (relation instanceof Relation) {
-        relation.load(query, collection, name, constraints)
-        continue
-      }
+      const relations = !query.load['*'] ? query.load : Object
+        .keys(fields)
+        .map(field => ({ [field]: query.load['*'] }))
+        .reduce((fields, field) => Object.assign(fields, field), {})
 
-      // If no relation was found on the query, it might be run on the
-      // base entity of a hierarchy. In this case, we try looking up
-      // the relation on the derived entities
-      if (query.model.hasTypes()) {
-        const candidateRelation = query.model.findRelationInSubTypes(name)
-        if (candidateRelation !== null) {
-          candidateRelation.load(query, collection, name, constraints)
-        }
+      for (let name in relations) {
+        const field = fields[name]
+        if (field instanceof Relation) field.load(query, records, name, relations[name])
       }
     }
   }
