@@ -193,6 +193,7 @@ export default class BelongsToMany extends Relation {
               get: () => {
                 return this.pivot.find([model.id, id])
               },
+              /* tslint:disable:no-unused-variable */
               set: (val) => {}
             })
             return model
