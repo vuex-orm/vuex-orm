@@ -1,3 +1,5 @@
+/*eslint no-empty-function: ["error", { "allow": ["setters"] }]*/
+
 import { Schema as NormalizrSchema } from 'normalizr'
 import Schema from '../../schema/Schema'
 import Utils from '../../support/Utils'
@@ -191,7 +193,7 @@ export default class BelongsToMany extends Relation {
               get: () => {
                 return this.pivot.find([model.id, id])
               },
-              set: (val) => { }
+              set: (val) => {}
             })
             return model
           })
