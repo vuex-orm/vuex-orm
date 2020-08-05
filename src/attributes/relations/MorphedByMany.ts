@@ -189,7 +189,7 @@ export default class MorphedByMany extends Relation {
 
       records[id] = records[id].concat(
         related.map((model: Record) => {
-          model[_this.pivotKey] = null
+          model[this.pivotKey] = null
           Object.defineProperty(model, this.pivotKey, {
             get: () => {
               return this.pivot.find([model.id, id])
