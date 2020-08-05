@@ -188,7 +188,13 @@ export default class MorphToMany extends Relation {
 
       records[id] = records[id].concat(
         related.map((model: Record) => {
-          model[this.pivotKey] = record
+          model[_this.pivotKey] = null
+          Object.defineProperty(model, this.pivotKey, {
+            get: () => {
+              return this.pivot.find([model.id, id])
+            },
+            set: (val) => { }
+          })
           return model
         })
       )
