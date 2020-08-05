@@ -193,7 +193,7 @@ export default class MorphToMany extends Relation {
             get: () => {
               return this.pivot.find([model.id, id])
             },
-            set: (val) => { }
+            set: (_val) => { }
           })
           return model
         })
