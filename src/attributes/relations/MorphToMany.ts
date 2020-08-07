@@ -6,6 +6,7 @@ import Model from '../../model/Model'
 import Query from '../../query/Query'
 import Constraint from '../../query/contracts/RelationshipConstraint'
 import Relation from './Relation'
+import PivotModel from "../../model/proxies/PivotModel";
 
 export type Entity = typeof Model | string
 
@@ -188,14 +189,7 @@ export default class MorphToMany extends Relation {
 
       records[id] = records[id].concat(
         related.map((model: Record) => {
-          model[this.pivotKey] = null
-          Object.defineProperty(model, this.pivotKey, {
-            get: () => {
-              return this.pivot.find([model.id, id])
-            },
-            set: (_val) => { }
-          })
-          return model
+          return new PivotModel(model, id, this.pivotKey, this.pivot);
         })
       )
 
