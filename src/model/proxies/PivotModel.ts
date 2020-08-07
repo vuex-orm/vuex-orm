@@ -1,22 +1,22 @@
 class ProxyHandler {
-  _localKeys: Map<any, any>;
+  _pivotMap: Map<any, any>;
   _parentId: number | null = null;
 
   /**
    * Constructor
    * @param id
-   * @param localKeys
+   * @param pivotMap
    */
-  constructor(id: number | null = null, localKeys: object = {}) {
+  constructor(id: number | null = null, pivotMap: object = {}) {
     this._parentId = id;
-    this._localKeys = (new Map()).set('pivot', null);
+    this._pivotMap = new Map();
 
-    for (const key in localKeys) {
-      if (!localKeys.hasOwnProperty(key)) {
+    for (const key in pivotMap) {
+      if (!pivotMap.hasOwnProperty(key)) {
         continue;
       }
 
-      this._localKeys.set(key, localKeys[key])
+      this._pivotMap.set(key, pivotMap[key])
     }
   }
 
@@ -30,8 +30,8 @@ class ProxyHandler {
       return true;
     }
 
-    if ([...this._localKeys.keys()].includes(objectKey)) {
-      return this[objectKey](target);
+    if ([...this._pivotMap.keys()].includes(objectKey)) {
+      return this[objectKey](target, objectKey);
     }
 
     const prop = target[objectKey];
@@ -67,24 +67,26 @@ class ProxyHandler {
 
   /**
    * Query for the actual pivot record against the pivotTable
+   *
    * @param target
+   * @param objectKey
    * @returns {null|*}
    */
-  pivot(target: any) {
-    if (!this._localKeys.get('pivot')) {
+  pivot(target: any, objectKey:string) {
+    if (!this._pivotMap.get(objectKey)) {
       return null
     }
 
-    return this._localKeys.get('pivot').find([target['id'], this._parentId]);
+    return this._pivotMap.get(objectKey).find([target['id'], this._parentId]);
   }
 }
 
 export default class PivotModel {
-  constructor(model: any, parentId: number, pivotClass: any) {
-    const localKeys = {
-      'pivot': pivotClass
+  constructor(model: any, parentId: number, pivotKey: string, pivotClass: any) {
+    const pivotMap = {
+      [pivotKey]: pivotClass
     }
 
-    return new Proxy(model, new ProxyHandler(parentId, localKeys))
+    return new Proxy(model, new ProxyHandler(parentId, pivotMap))
   }
 }
