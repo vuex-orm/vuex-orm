@@ -6,7 +6,7 @@ import Model from '../../model/Model'
 import Query from '../../query/Query'
 import Constraint from '../../query/contracts/RelationshipConstraint'
 import Relation from './Relation'
-import PivotModel from "../../model/proxies/PivotModel";
+import { PivotModel } from '../../model/proxies/ModelProxies'
 
 export type Entity = typeof Model | string
 
@@ -190,7 +190,17 @@ export default class MorphedByMany extends Relation {
 
       records[id] = records[id].concat(
         related.map((model: Record) => {
-          return new PivotModel(model, id, this.pivotKey, this.pivot);
+          const pivotKeyArray = [
+            model.id,
+            id,
+            record[this.type]
+          ]
+
+          const pivotKey = !this.pivot.isCompositePrimaryKey()
+            ? JSON.stringify(pivotKeyArray)
+            : pivotKeyArray
+
+          return new PivotModel(model, pivotKey, this.pivot, this.pivotKey);
         })
       )
 
