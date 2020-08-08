@@ -195,9 +195,7 @@ export default class MorphToMany extends Relation {
             record[this.type]
           ]
 
-          const pivotKey = !this.pivot.isCompositePrimaryKey()
-            ? JSON.stringify(pivotKeyArray)
-            : pivotKeyArray
+          const pivotKey = pivotKeyArray.join('_')
 
           return new PivotModel(model, pivotKey, this.pivot, this.pivotKey);
         })
