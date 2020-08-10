@@ -189,15 +189,7 @@ export default class MorphToMany extends Relation {
 
       records[id] = records[id].concat(
         related.map((model: Record) => {
-          const pivotKeyArray = [
-            id,
-            model.id,
-            record[this.type]
-          ]
-
-          const pivotKey = pivotKeyArray.join('_')
-
-          return new PivotModel(model, pivotKey, this.pivot, this.pivotKey);
+          return new PivotModel(model, record, this.pivotKey)
         })
       )
 

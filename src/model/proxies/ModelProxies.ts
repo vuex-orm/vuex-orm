@@ -1,29 +1,17 @@
-import Model from "../Model"
+import {Record} from "../../data";
 
-class ModelHandler {
-  localMap: Map<any, any>
+class PivotHandler {
+  _pivotKey:any
+  _pivot:any
 
-  /**
-   * Constructor
-   * @param localMap
-   */
-  constructor(localMap: object = {}) {
-    this.localMap = this['localMap'] || new Map()
-
-    for (const key in localMap) {
-      if (!localMap.hasOwnProperty(key)) {
-        continue
-      }
-
-      if (typeof this[key] !== 'function') {
-        continue
-      }
-
-      this.localMap.set(key, Object.assign({
-        model: null,
-        key: null
-      }, localMap[key]))
-    }
+    /**
+     * Constructor
+     * @param pivot
+     * @param pivotKey
+     */
+  constructor(pivot: Record, pivotKey: string) {
+    this._pivotKey = pivotKey
+    this._pivot = pivot
   }
 
   /**
@@ -36,8 +24,8 @@ class ModelHandler {
       return true
     }
 
-    if ([...this.localMap.keys()].includes(objectKey) && typeof this[objectKey] === 'function') {
-      return this[objectKey](objectKey)
+    if (this._pivotKey === objectKey) {
+      return this._pivot
     }
 
     const prop = target[objectKey]
@@ -74,32 +62,8 @@ class ModelHandler {
   }
 }
 
-class PivotModelHandler extends ModelHandler {
-  /**
-   * Query for the actual pivot record against the pivotTable
-   * @param objectKey
-   * @returns {Model|null}
-   */
-  pivot(objectKey: string): Model | null {
-    const pivot = this.localMap.get(objectKey)
-
-    if (!(pivot.model instanceof Model)) {
-      return null
-    }
-
-    return pivot.key ? pivot.model.find(pivot.key) : null
-  }
-}
-
 export class PivotModel {
-  constructor(model: any, pivotKey: any, pivotClass: any, pivotProperty: string) {
-    const pivotKeyModelMap = {
-      [pivotProperty]: {
-        model: pivotClass,
-        key: pivotKey
-      }
-    }
-
-    return new Proxy(model, new PivotModelHandler(pivotKeyModelMap))
+  constructor(model: Record, pivot: Record, pivotKey: string = 'pivot') {
+    return new Proxy(model, new PivotHandler(pivot, pivotKey))
   }
 }

@@ -187,16 +187,7 @@ export default class BelongsToMany extends Relation {
       if (related) {
         records[id] = records[id].concat(
           related.map((model: Record) => {
-            const pivotKeyArray = [
-              model.id,
-              id
-            ]
-
-            const pivotKey = !this.pivot.isCompositePrimaryKey()
-              ? JSON.stringify(pivotKeyArray)
-              : pivotKeyArray
-
-            return new PivotModel(model, pivotKey, this.pivot, this.pivotKey)
+            return new PivotModel(model, record, this.pivotKey)
           })
         )
       }
