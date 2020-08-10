@@ -24,6 +24,10 @@ class PivotHandler {
       return true
     }
 
+    if (objectKey === 'pivotKey') {
+      return this._pivotKey
+    }
+
     if (this._pivotKey === objectKey) {
       return this._pivot
     }
