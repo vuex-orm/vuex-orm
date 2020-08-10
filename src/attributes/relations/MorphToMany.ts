@@ -6,7 +6,7 @@ import Model from '../../model/Model'
 import Query from '../../query/Query'
 import Constraint from '../../query/contracts/RelationshipConstraint'
 import Relation from './Relation'
-import { PivotModel } from "../../model/proxies/ModelProxies";
+import { PivotModel } from '../../model/proxies/ModelProxies'
 
 export type Entity = typeof Model | string
 

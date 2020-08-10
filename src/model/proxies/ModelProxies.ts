@@ -1,14 +1,14 @@
-import {Record} from "../../data";
+import { Record } from '../../data'
 
 class PivotHandler {
-  _pivotKey:any
-  _pivot:any
+  _pivotKey: any
+  _pivot: any
 
-    /**
-     * Constructor
-     * @param pivot
-     * @param pivotKey
-     */
+  /**
+   * Constructor
+   * @param pivot
+   * @param pivotKey
+   */
   constructor(pivot: Record, pivotKey: string) {
     this._pivotKey = pivotKey
     this._pivot = pivot
@@ -20,7 +20,7 @@ class PivotHandler {
    * @param objectKey
    */
   get(target: any, objectKey: PropertyKey): any {
-    if (objectKey === "isProxy") {
+    if (objectKey === 'isProxy') {
       return true
     }
 
@@ -30,11 +30,11 @@ class PivotHandler {
 
     const prop = target[objectKey]
 
-    if (typeof prop === "undefined") {
+    if (typeof prop === 'undefined') {
       return
     }
 
-    if (prop !== null && !prop.isProxy && typeof prop === "object") {
+    if (prop !== null && !prop.isProxy && typeof prop === 'object') {
       return new Proxy(prop, {
         get(obj, prop) {
           return obj[prop]
