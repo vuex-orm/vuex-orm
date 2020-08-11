@@ -64,6 +64,16 @@ class PivotHandler {
     target[objectKey] = value
     return true
   }
+
+  ownKeys(target: any) {
+    const local: any = []
+
+    if (this._pivot) {
+      local.concat([this._pivotKey])
+    }
+
+    return [...new Set(Object.getOwnPropertyNames(target).concat(local))]
+  }
 }
 
 export class PivotModel {
