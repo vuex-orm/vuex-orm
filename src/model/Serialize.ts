@@ -47,8 +47,13 @@ export function toJson(model: Model, option: Option = {}): Record {
     record[key] = value(model[key])
   }
 
-  if (model['isProxy']) {
-    record[model['pivotKey']] = value(model[model['pivotKey']])
+  if (!model['isProxy']) {
+    return record
+  }
+
+  const pivot = model[model['pivotKey']]
+  if (pivot !== null) {
+    record[model['pivotKey']] = relation(pivot)
   }
 
   return record
@@ -87,9 +92,6 @@ function object(o: object): object {
   const obj = {}
 
   for (const key in o) {
-    if (key.startsWith('$') || key.startsWith('_')) {
-      continue
-    }
     obj[key] = value(o[key])
   }
 
