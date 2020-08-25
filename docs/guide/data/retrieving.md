@@ -288,6 +288,9 @@ const users = User.query().orderBy(user => user.name[2]).get()
 */
 ```
 
+> **NOTE:** orderBy can only order by fields that are native to the model that you are running .query() on. If you want to order by a related model's fields, you have to .sort()  the result of the query using your own comparator.
+
+
 ## Limit & Offset
 
 Use `limit` method to set the maximum number of records to retrieve.
