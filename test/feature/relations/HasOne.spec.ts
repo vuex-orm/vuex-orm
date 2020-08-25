@@ -183,9 +183,7 @@ describe('Features – Relations – Has One', () => {
       }
     }
 
-    const user = User.query()
-      .with('phone')
-      .find(1)
+    const user = User.query().with('phone').find(1)
 
     expect(user).toEqual(expected)
     expect(user).toBeInstanceOf(User)
@@ -200,9 +198,7 @@ describe('Features – Relations – Has One', () => {
 
     const expected = { $id: '1', id: 1, phone: null }
 
-    const user = store.getters['entities/users/query']()
-      .with('phone')
-      .find(1)
+    const user = store.getters['entities/users/query']().with('phone').find(1)
 
     expect(user).toEqual(expected)
   })

@@ -65,9 +65,7 @@ describe('Feature - Inheritance - Relations', () => {
       ]
     })
 
-    const adult = Adult.query()
-      .with('jobs')
-      .all()
+    const adult = Adult.query().with('jobs').all()
 
     expect(adult.length).toBe(1)
     expect(adult[0].id).toBe(2)
@@ -139,9 +137,7 @@ describe('Feature - Inheritance - Relations', () => {
       ]
     })
 
-    const job = Job.query()
-      .with('adult')
-      .all()
+    const job = Job.query().with('adult').all()
 
     expect(job.length).toBe(1)
     expect(job[0].adult).not.toBe(null)
@@ -214,9 +210,7 @@ describe('Feature - Inheritance - Relations', () => {
       ]
     })
 
-    const roles = Role.query()
-      .with('people')
-      .all()
+    const roles = Role.query().with('people').all()
     expect(roles.length).toBe(2)
 
     // Checking people have been fetched.
@@ -290,9 +284,7 @@ describe('Feature - Inheritance - Relations', () => {
     })
 
     // Reverse check: getting all people and their associated role.
-    const people = Person.query()
-      .with('role')
-      .all()
+    const people = Person.query().with('role').all()
     expect(people.length).toBe(2)
 
     const firstPerson = people.filter((p) => p.id === 1)[0]
@@ -368,16 +360,12 @@ describe('Feature - Inheritance - Relations', () => {
       ]
     })
 
-    const adults = Adult.query()
-      .with('child')
-      .all()
+    const adults = Adult.query().with('child').all()
     expect(adults.length).toBe(2)
     expect(adults[0].child.id).toBe(3)
     expect(adults[1].child.id).toBe(3)
 
-    const children = Child.query()
-      .with('parents')
-      .all()
+    const children = Child.query().with('parents').all()
     expect(children.length).toBe(1)
     expect(children[0].parents.length).toBe(2)
   })
@@ -444,9 +432,7 @@ describe('Feature - Inheritance - Relations', () => {
       ]
     })
 
-    const persons = Person.query()
-      .with(['jobs', 'dummy'])
-      .all()
+    const persons = Person.query().with(['jobs', 'dummy']).all()
     expect(persons.length).toBe(2)
 
     const adult = persons.filter((p) => p.id === 2)[0] as Adult

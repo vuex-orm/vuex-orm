@@ -545,9 +545,7 @@ describe('Features – Relations – Morph To Many – Persist', () => {
       ]
     })
 
-    const post = store.getters['entities/posts/query']()
-      .with('tags')
-      .find(1)
+    const post = store.getters['entities/posts/query']().with('tags').find(1)
 
     expect(post).toBeInstanceOf(Post)
     expect(post.tags.length).toBe(2)

@@ -24,9 +24,7 @@ describe('Feature – Retrieve – Limit And Offset', () => {
       { $id: '2', id: 2 }
     ]
 
-    const users = store.getters['entities/users/query']()
-      .limit(2)
-      .get()
+    const users = store.getters['entities/users/query']().limit(2).get()
 
     expect(users).toEqual(expected)
   })

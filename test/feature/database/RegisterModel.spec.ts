@@ -80,9 +80,7 @@ describe('Feature – Database - Register Model', () => {
       }
     })
 
-    const hobby = store.getters['entities/hobbies/query']()
-      .with('user')
-      .first()
+    const hobby = store.getters['entities/hobbies/query']().with('user').first()
     const user = store.getters['entities/users/query']().first()
 
     expect(hobby.name).toEqual('my hobby')
@@ -139,9 +137,7 @@ describe('Feature – Database - Register Model', () => {
       }
     })
 
-    const hobby = store.getters['entities/hobbies/query']()
-      .with('user')
-      .first()
+    const hobby = store.getters['entities/hobbies/query']().with('user').first()
     const user = store.getters['entities/users/query']().first()
 
     expect(hobby.name).toEqual('my hobby')

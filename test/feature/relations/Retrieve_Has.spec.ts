@@ -46,9 +46,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
       { $id: '2', id: 2, posts: [] }
     ]
 
-    const users = store.getters['entities/users/query']()
-      .has('posts')
-      .get()
+    const users = store.getters['entities/users/query']().has('posts').get()
 
     expect(users).toEqual(expected)
   })
@@ -70,9 +68,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
 
     const expected = [{ $id: '3', id: 3, posts: [] }]
 
-    const users = store.getters['entities/users/query']()
-      .hasNot('posts')
-      .get()
+    const users = store.getters['entities/users/query']().hasNot('posts').get()
 
     expect(users).toEqual(expected)
   })
@@ -182,9 +178,7 @@ describe('Feature – Relations – Retrieve – Has', () => {
 
     const expected = [{ $id: '2', id: 2, posts: [] }]
 
-    const users = store.getters['entities/users/query']()
-      .has('posts', 2)
-      .get()
+    const users = store.getters['entities/users/query']().has('posts', 2).get()
 
     expect(users).toEqual(expected)
   })
@@ -263,54 +257,38 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     expect(
-      store.getters['entities/users/query']()
-        .has('posts', 1)
-        .get()
+      store.getters['entities/users/query']().has('posts', 1).get()
     ).toEqual([
       { $id: '1', id: 1, phone: null, posts: [] },
       { $id: '2', id: 2, phone: null, posts: [] }
     ])
     expect(
-      store.getters['entities/users/query']()
-        .has('posts', '=', 1)
-        .get()
+      store.getters['entities/users/query']().has('posts', '=', 1).get()
     ).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
     expect(
-      store.getters['entities/users/query']()
-        .has('posts', '>', 1)
-        .get()
+      store.getters['entities/users/query']().has('posts', '>', 1).get()
     ).toEqual([{ $id: '2', id: 2, phone: null, posts: [] }])
     expect(
-      store.getters['entities/users/query']()
-        .has('posts', '>=', 1)
-        .get()
+      store.getters['entities/users/query']().has('posts', '>=', 1).get()
     ).toEqual([
       { $id: '1', id: 1, phone: null, posts: [] },
       { $id: '2', id: 2, phone: null, posts: [] }
     ])
     expect(
-      store.getters['entities/users/query']()
-        .has('posts', '<', 2)
-        .get()
+      store.getters['entities/users/query']().has('posts', '<', 2).get()
     ).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
     expect(
-      store.getters['entities/users/query']()
-        .has('posts', '<=', 2)
-        .get()
+      store.getters['entities/users/query']().has('posts', '<=', 2).get()
     ).toEqual([
       { $id: '1', id: 1, phone: null, posts: [] },
       { $id: '2', id: 2, phone: null, posts: [] }
     ])
     expect(
-      store.getters['entities/users/query']()
-        .has('posts', 'unknown', 1)
-        .get()
+      store.getters['entities/users/query']().has('posts', 'unknown', 1).get()
     ).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
 
     expect(
-      store.getters['entities/users/query']()
-        .has('phone', '=', 1)
-        .get()
+      store.getters['entities/users/query']().has('phone', '=', 1).get()
     ).toEqual([{ $id: '1', id: 1, phone: null, posts: [] }])
   })
 
@@ -330,30 +308,22 @@ describe('Feature – Relations – Retrieve – Has', () => {
     })
 
     expect(
-      store.getters['entities/users/query']()
-        .hasNot('posts', '>', 1)
-        .get()
+      store.getters['entities/users/query']().hasNot('posts', '>', 1).get()
     ).toEqual([
       { $id: '1', id: 1, posts: [] },
       { $id: '3', id: 3, posts: [] }
     ])
     expect(
-      store.getters['entities/users/query']()
-        .hasNot('posts', '>=', 1)
-        .get()
+      store.getters['entities/users/query']().hasNot('posts', '>=', 1).get()
     ).toEqual([{ $id: '3', id: 3, posts: [] }])
     expect(
-      store.getters['entities/users/query']()
-        .hasNot('posts', '<', 2)
-        .get()
+      store.getters['entities/users/query']().hasNot('posts', '<', 2).get()
     ).toEqual([
       { $id: '2', id: 2, posts: [] },
       { $id: '3', id: 3, posts: [] }
     ])
     expect(
-      store.getters['entities/users/query']()
-        .hasNot('posts', '<=', 2)
-        .get()
+      store.getters['entities/users/query']().hasNot('posts', '<=', 2).get()
     ).toEqual([{ $id: '3', id: 3, posts: [] }])
   })
 })

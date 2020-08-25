@@ -70,9 +70,7 @@ describe('Relations – Deep Load', () => {
       }
     })
 
-    const post = store.getters['entities/posts/query']()
-      .withAll()
-      .first()
+    const post = store.getters['entities/posts/query']().withAll().first()
 
     const expected = {
       $id: '1',

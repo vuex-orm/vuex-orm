@@ -147,9 +147,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       ]
     })
 
-    const post = Post.query()
-      .with('tags')
-      .find(1) as Post
+    const post = Post.query().with('tags').find(1) as Post
 
     expect(post.tags.length).toBe(2)
     expect(post.tags[0].name).toBe('news')
@@ -157,9 +155,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
     expect(post.tags[1].name).toBe('cast')
     expect(post.tags[1].pivot.is_public).toBe(false)
 
-    const postWithoutTags = Post.query()
-      .with('tags')
-      .find(6) as Post
+    const postWithoutTags = Post.query().with('tags').find(6) as Post
 
     expect(postWithoutTags.tags.length).toBe(0)
   })
@@ -285,9 +281,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       ]
     })
 
-    const post = Post.query()
-      .with('tags')
-      .find(1) as Post
+    const post = Post.query().with('tags').find(1) as Post
 
     expect(post.tags.length).toBe(2)
     expect(post.tags[0].name).toBe('news')
@@ -421,9 +415,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       ]
     })
 
-    const post = Post.query()
-      .with('tags')
-      .find(1) as Post
+    const post = Post.query().with('tags').find(1) as Post
 
     expect(post.tags.length).toBe(2)
     expect(post.tags[0].name).toBe('news')
@@ -562,9 +554,7 @@ describe('Feature – Relations – Morph To Many – Retrieve', () => {
       ]
     })
 
-    const post = Post.query()
-      .with('tags')
-      .find(1) as Post
+    const post = Post.query().with('tags').find(1) as Post
 
     expect(post.tags.length).toBe(2)
     expect(post.tags[0].name).toBe('news')

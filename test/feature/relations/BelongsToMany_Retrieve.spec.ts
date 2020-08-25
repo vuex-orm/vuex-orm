@@ -81,17 +81,13 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       ]
     })
 
-    const user = User.query()
-      .with('roles')
-      .find(1) as User
+    const user = User.query().with('roles').find(1) as User
 
     expect(user.roles.length).toBe(2)
     expect(user.roles[0].id).toBe(2)
     expect(user.roles[1].id).toBe(3)
 
-    const userWithoutRoles = User.query()
-      .with('roles')
-      .find(2) as User
+    const userWithoutRoles = User.query().with('roles').find(2) as User
     expect(userWithoutRoles.roles.length).toBe(0)
   })
 
@@ -111,9 +107,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       ]
     })
 
-    const user = User.query()
-      .with('roles')
-      .find(1) as User
+    const user = User.query().with('roles').find(1) as User
 
     expect(user.roles.length).toBe(2)
     expect(user.roles[0].id).toBe(2)
@@ -121,9 +115,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
     expect(user.roles[1].id).toBe(3)
     expect(user.roles[1].pivot.level).toBe(2)
 
-    const userWithoutRoles = User.query()
-      .with('roles')
-      .find(2) as User
+    const userWithoutRoles = User.query().with('roles').find(2) as User
     expect(userWithoutRoles.roles.length).toBe(0)
   })
 
@@ -145,9 +137,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       ]
     })
 
-    const role = Role.query()
-      .with('users')
-      .find(2) as Role
+    const role = Role.query().with('users').find(2) as Role
 
     expect(role.users.length).toBe(1)
     expect(role.users[0].id).toBe(1)
@@ -160,9 +150,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       data: { id: 1 }
     })
 
-    const user = User.query()
-      .with('roles')
-      .first() as User
+    const user = User.query().with('roles').first() as User
 
     expect(user.roles).toEqual([])
   })
@@ -178,9 +166,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       data: [{ user_id: 1 }]
     })
 
-    const user = User.query()
-      .with('roles')
-      .first() as User
+    const user = User.query().with('roles').first() as User
 
     expect(user.roles).toEqual([])
   })
@@ -204,9 +190,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       ]
     })
 
-    const roles = Role.query()
-      .has('users')
-      .get()
+    const roles = Role.query().has('users').get()
 
     expect(roles.length).toBe(2)
   })
@@ -356,9 +340,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
 
     await User.create({ data })
 
-    const users = User.query()
-      .with('roles.permissions')
-      .get() as User[]
+    const users = User.query().with('roles.permissions').get() as User[]
 
     expect(users[0].id).toBe(1)
     expect(users[0].roles.length).toBe(1)
@@ -445,9 +427,7 @@ describe('Feature – Relations – Belongs To Many – Retrieve', () => {
       data: { id: 1, user_id: 1, role_id: 1 }
     })
 
-    const users = User.query()
-      .with('roles')
-      .get()
+    const users = User.query().with('roles').get()
 
     expect(users[0].id).toBe(1)
     expect(users[0].roles.length).toBe(1)

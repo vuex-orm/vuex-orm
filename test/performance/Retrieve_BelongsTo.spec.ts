@@ -48,9 +48,7 @@ describe('Performance – Retrieve – Belongs To', () => {
 
     const start = +new Date()
 
-    store.getters['entities/posts/query']()
-      .with('user')
-      .get()
+    store.getters['entities/posts/query']().with('user').get()
 
     const end = +new Date()
 

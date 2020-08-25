@@ -79,9 +79,7 @@ describe('Feature – Retrieve', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    const users = store.getters['entities/users/query']()
-      .where('id', 3)
-      .get()
+    const users = store.getters['entities/users/query']().where('id', 3).get()
 
     expect(users).toEqual([])
   })

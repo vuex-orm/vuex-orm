@@ -25,18 +25,8 @@ describe('Unit – Database', () => {
     const store1 = createStoreFromDatabase(database1)
     const store2 = createStoreFromDatabase(database2)
 
-    expect(
-      store1
-        .$db()
-        .model('users')
-        .database()
-    ).toBe(database1)
-    expect(
-      store2
-        .$db()
-        .model('users')
-        .database()
-    ).toBe(database2)
+    expect(store1.$db().model('users').database()).toBe(database1)
+    expect(store2.$db().model('users').database()).toBe(database2)
   })
 
   it('can fetch all models', () => {

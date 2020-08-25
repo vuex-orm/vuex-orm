@@ -107,9 +107,7 @@ describe('Features – Relations – Has Many', () => {
       }
     ]
 
-    const user = store.getters['entities/users/query']()
-      .with('posts')
-      .all()
+    const user = store.getters['entities/users/query']().with('posts').all()
 
     expect(user).toEqual(expected)
   })
@@ -146,9 +144,7 @@ describe('Features – Relations – Has Many', () => {
       ]
     }
 
-    const user = store.getters['entities/users/query']()
-      .with('posts')
-      .find(1)
+    const user = store.getters['entities/users/query']().with('posts').find(1)
 
     expect(user).toEqual(expected)
   })

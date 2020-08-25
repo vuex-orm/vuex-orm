@@ -157,9 +157,7 @@ describe('Features – Relations – Has Many Through', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    const country = Country.query()
-      .with('posts')
-      .find(1) as Country
+    const country = Country.query().with('posts').find(1) as Country
 
     expect(country).toBeInstanceOf(Country)
     expect(country.posts.length).toBe(3)
@@ -251,9 +249,7 @@ describe('Features – Relations – Has Many Through', () => {
       data: [{ id: 'string-id-1' }, { id: 'string-id-2' }]
     })
 
-    const country = Country.query()
-      .with('posts')
-      .find('string-id-1') as Country
+    const country = Country.query().with('posts').find('string-id-1') as Country
 
     expect(country).toBeInstanceOf(Country)
     expect(country.posts.length).toBe(3)
@@ -325,9 +321,7 @@ describe('Features – Relations – Has Many Through', () => {
       data: [{ id: 1 }]
     })
 
-    const country = Country.query()
-      .with('posts')
-      .find(1) as Country
+    const country = Country.query().with('posts').find(1) as Country
 
     expect(country.posts.length).toBe(0)
   })
@@ -397,9 +391,7 @@ describe('Features – Relations – Has Many Through', () => {
       data: [{ id: 1 }]
     })
 
-    const country = Country.query()
-      .with('posts')
-      .find(1) as Country
+    const country = Country.query().with('posts').find(1) as Country
 
     expect(country.posts.length).toBe(0)
   })
@@ -484,9 +476,7 @@ describe('Features – Relations – Has Many Through', () => {
       data: [{ c_id: 1 }, { c_id: 2 }]
     })
 
-    const country = Country.query()
-      .with('posts')
-      .find(1) as Country
+    const country = Country.query().with('posts').find(1) as Country
 
     expect(country).toBeInstanceOf(Country)
     expect(country.posts.length).toBe(2)
@@ -591,9 +581,7 @@ describe('Features – Relations – Has Many Through', () => {
       ]
     })
 
-    const country = Country.query()
-      .with('posts')
-      .find(11) as Country
+    const country = Country.query().with('posts').find(11) as Country
 
     expect(country).toBeInstanceOf(Country)
     expect(country.posts.length).toBe(2)

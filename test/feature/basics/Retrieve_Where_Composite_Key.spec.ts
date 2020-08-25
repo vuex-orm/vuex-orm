@@ -27,9 +27,7 @@ describe('Feature – Retrieve – Where - Composite Keys', () => {
 
     const expected = { $id: '[1,2]', key_1: 1, key_2: 2 }
 
-    const user = store.getters['entities/users/query']()
-      .whereId([1, 2])
-      .first()
+    const user = store.getters['entities/users/query']().whereId([1, 2]).first()
 
     expect(user).toEqual(expected)
   })
@@ -160,9 +158,7 @@ describe('Feature – Retrieve – Where - Composite Keys', () => {
     const store = createStore([{ model: User }])
 
     expect(() => {
-      store.getters['entities/users/query']()
-        .whereId(2)
-        .get()
+      store.getters['entities/users/query']().whereId(2).get()
     }).toThrowError('[Vuex ORM]')
   })
 
@@ -170,9 +166,7 @@ describe('Feature – Retrieve – Where - Composite Keys', () => {
     const store = createStore([{ model: User }])
 
     expect(() => {
-      store.getters['entities/users/query']()
-        .whereIdIn([2, 2])
-        .get()
+      store.getters['entities/users/query']().whereIdIn([2, 2]).get()
     }).toThrowError('[Vuex ORM]')
   })
 })

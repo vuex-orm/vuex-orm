@@ -48,9 +48,7 @@ describe('Feature – Relations - String Define', () => {
       data: { id: 2, user_id: 1 }
     })
 
-    const user = User.query()
-      .with('posts')
-      .find(1) as User
+    const user = User.query().with('posts').find(1) as User
 
     expect(user).toBeInstanceOf(User)
     expect(user.id).toBe(1)

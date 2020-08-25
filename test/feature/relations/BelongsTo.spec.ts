@@ -149,9 +149,7 @@ describe('Features – Relations – Belongs To', () => {
       }
     }
 
-    const post = store.getters['entities/posts/query']()
-      .with('user')
-      .find(1)
+    const post = store.getters['entities/posts/query']().with('user').find(1)
 
     expect(post).toEqual(expected)
   })
@@ -173,9 +171,7 @@ describe('Features – Relations – Belongs To', () => {
       user: null
     }
 
-    const post = store.getters['entities/posts/query']()
-      .with('user')
-      .find(1)
+    const post = store.getters['entities/posts/query']().with('user').find(1)
 
     expect(post).toEqual(expected)
   })
@@ -200,9 +196,7 @@ describe('Features – Relations – Belongs To', () => {
       }
     }
 
-    const post = store.getters['entities/posts/query']()
-      .with('user')
-      .first()
+    const post = store.getters['entities/posts/query']().with('user').first()
 
     expect(post).toEqual(expected)
   })
@@ -252,9 +246,7 @@ describe('Features – Relations – Belongs To', () => {
       }
     }
 
-    const post = store.getters['entities/posts/query']()
-      .with('user')
-      .find(1)
+    const post = store.getters['entities/posts/query']().with('user').find(1)
 
     expect(post).toEqual(expected)
   })

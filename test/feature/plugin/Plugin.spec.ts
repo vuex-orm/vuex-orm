@@ -25,13 +25,13 @@ describe('Plugin', () => {
   it('add additional feature to the Model', async () => {
     const plugin = {
       install(components: any) {
-        components.Model.staticMethod = function() {
+        components.Model.staticMethod = function () {
           return 'Hello'
         }
 
         components.Model.prototype.instanceProperty = ', world!'
 
-        components.Model.prototype.instanceMethod = function() {
+        components.Model.prototype.instanceMethod = function () {
           return `${this.$self().staticMethod()}${this.instanceProperty}`
         }
       }
@@ -56,11 +56,11 @@ describe('Plugin', () => {
   it('add additional feature to the Query', async () => {
     const plugin = {
       install(components: any) {
-        components.Query.staticMethod = function() {
+        components.Query.staticMethod = function () {
           return 'Hello'
         }
 
-        components.Query.prototype.instanceMethod = function() {
+        components.Query.prototype.instanceMethod = function () {
           return `${this.self().staticMethod()}, world!`
         }
       }

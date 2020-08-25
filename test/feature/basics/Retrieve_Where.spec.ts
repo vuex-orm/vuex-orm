@@ -69,9 +69,7 @@ describe('Feature – Retrieve – Where', () => {
 
     const expected = [{ $id: '2', id: 2, name: 'Jane', age: 20, active: true }]
 
-    const users = store.getters['entities/users/query']()
-      .whereId(2)
-      .get()
+    const users = store.getters['entities/users/query']().whereId(2).get()
 
     expect(users).toEqual(expected)
   })
@@ -393,9 +391,7 @@ describe('Feature – Retrieve – Where', () => {
 
     const expected = [{ $id: '2', id: 2, name: 'Jane', age: 20, active: true }]
 
-    const users = store.getters['entities/users/query']()
-      .orWhere('id', 2)
-      .get()
+    const users = store.getters['entities/users/query']().orWhere('id', 2).get()
 
     expect(users).toEqual(expected)
   })

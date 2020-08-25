@@ -157,10 +157,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       ]
     })
 
-    const tag = Tag.query()
-      .with('posts')
-      .with('videos')
-      .find(1) as Tag
+    const tag = Tag.query().with('posts').with('videos').find(1) as Tag
 
     expect(tag.posts.length).toBe(2)
     expect(tag.posts[0].pivot.is_public).toBe(false)
@@ -298,10 +295,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       ]
     })
 
-    const tag = Tag.query()
-      .with('posts')
-      .with('videos')
-      .find(1) as Tag
+    const tag = Tag.query().with('posts').with('videos').find(1) as Tag
 
     expect(tag.posts.length).toBe(2)
     expect(tag.videos.length).toBe(1)
@@ -438,10 +432,7 @@ describe('Feature – Relations – Morphed By Many – Retrieve', () => {
       ]
     })
 
-    const tag = Tag.query()
-      .with('posts')
-      .with('videos')
-      .find(1) as Tag
+    const tag = Tag.query().with('posts').with('videos').find(1) as Tag
 
     expect(tag.posts.length).toBe(2)
     expect(tag.videos.length).toBe(1)

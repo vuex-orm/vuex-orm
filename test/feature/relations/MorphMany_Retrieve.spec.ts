@@ -110,17 +110,13 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
       ]
     })
 
-    const post = Post.query()
-      .with('comments')
-      .find(1) as Post
+    const post = Post.query().with('comments').find(1) as Post
 
     expect(post.comments.length).toBe(2)
     expect(post.comments[0].body).toBe('comment1')
     expect(post.comments[1].body).toBe('comment3')
 
-    const postWithoutComments = Post.query()
-      .with('comments')
-      .find(6) as Post
+    const postWithoutComments = Post.query().with('comments').find(6) as Post
 
     expect(postWithoutComments.comments.length).toBe(0)
   })
@@ -234,9 +230,7 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
       ]
     })
 
-    const post = Post.query()
-      .with('comments')
-      .find(1) as Post
+    const post = Post.query().with('comments').find(1) as Post
 
     expect(post.comments.length).toBe(2)
     expect(post.comments[0].body).toBe('comment1')
@@ -358,17 +352,13 @@ describe('Feature – Relations – Morph Many – Retrieve', () => {
       ]
     })
 
-    const post = Post.query()
-      .with('comments')
-      .find(2) as Post
+    const post = Post.query().with('comments').find(2) as Post
 
     expect(post.comments.length).toBe(2)
     expect(post.comments[0].body).toBe('comment1')
     expect(post.comments[1].body).toBe('comment3')
 
-    const video = Video.query()
-      .with('comments')
-      .find(4) as Post
+    const video = Video.query().with('comments').find(4) as Post
 
     expect(video.comments.length).toBe(0)
   })

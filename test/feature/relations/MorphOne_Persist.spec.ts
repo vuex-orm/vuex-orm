@@ -464,9 +464,7 @@ describe('Features – Relations – Morph One – Persist', () => {
       }
     })
 
-    const post = store.getters['entities/posts/query']()
-      .with('comment')
-      .find(1)
+    const post = store.getters['entities/posts/query']().with('comment').find(1)
 
     expect(post).toBeInstanceOf(Post)
     expect(post.comment).toBeInstanceOf(Comment)
@@ -521,9 +519,7 @@ describe('Features – Relations – Morph One – Persist', () => {
       }
     })
 
-    const post = store.getters['entities/posts/query']()
-      .with('comment')
-      .find(1)
+    const post = store.getters['entities/posts/query']().with('comment').find(1)
 
     expect(post).toBeInstanceOf(Post)
     expect(post.comment).toBeInstanceOf(Comment)

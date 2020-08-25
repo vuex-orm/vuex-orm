@@ -106,9 +106,7 @@ describe('Feature – Relations – Morph One – Retrieve', () => {
       ]
     })
 
-    const post = Post.query()
-      .with('comment')
-      .find(1) as Post
+    const post = Post.query().with('comment').find(1) as Post
 
     expect(post.comment.body).toBe('comment1')
   })
@@ -183,9 +181,7 @@ describe('Feature – Relations – Morph One – Retrieve', () => {
       data: { id: 3 }
     })
 
-    const post = Post.query()
-      .with('comments')
-      .find(1) as Post
+    const post = Post.query().with('comments').find(1) as Post
 
     expect(post.comments).toBe(null)
   })
@@ -295,9 +291,7 @@ describe('Feature – Relations – Morph One – Retrieve', () => {
       ]
     })
 
-    const post = Post.query()
-      .with('comment')
-      .find(1) as Post
+    const post = Post.query().with('comment').find(1) as Post
 
     expect(post.comment.body).toBe('comment1')
   })
@@ -417,9 +411,7 @@ describe('Feature – Relations – Morph One – Retrieve', () => {
       ]
     })
 
-    const post = Post.query()
-      .with('comment')
-      .find(2) as Post
+    const post = Post.query().with('comment').find(2) as Post
 
     expect(post.comment.body).toBe('comment1')
   })

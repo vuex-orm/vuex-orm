@@ -72,17 +72,13 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     })
 
-    const user1 = User.query()
-      .with('*')
-      .first() as User
+    const user1 = User.query().with('*').first() as User
 
     expect(user1.phone.id).toBe(2)
     expect(user1.posts[0].id).toBe(3)
     expect(user1.posts[1].id).toBe(4)
 
-    const user2 = User.query()
-      .withAll()
-      .first() as User
+    const user2 = User.query().withAll().first() as User
 
     expect(user2.phone.id).toBe(2)
     expect(user2.posts[0].id).toBe(3)
@@ -170,9 +166,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     })
 
-    const user1 = User.query()
-      .withAllRecursive()
-      .first() as User
+    const user1 = User.query().withAllRecursive().first() as User
 
     expect(user1.phone.id).toBe(2)
     expect(user1.posts[0].id).toBe(3)
@@ -180,9 +174,7 @@ describe('Feature – Relations – Retrieve – With', () => {
     expect(user1.posts[1].id).toBe(4)
     expect(user1.posts[1].user.id).toBe(1)
 
-    const user2 = User.query()
-      .withAllRecursive(0)
-      .first() as User
+    const user2 = User.query().withAllRecursive(0).first() as User
 
     expect(user2.phone.id).toBe(2)
     expect(user2.posts[0].id).toBe(3)
@@ -302,9 +294,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       ]
     }
 
-    const users = User.query()
-      .with('posts.comments')
-      .find(1)
+    const users = User.query().with('posts.comments').find(1)
 
     expect(users).toEqual(expected)
   })
@@ -731,12 +721,8 @@ describe('Feature – Relations – Retrieve – With', () => {
       ]
     }
 
-    const user1 = User.query()
-      .with('posts.comments|likes')
-      .find(1) as User
-    const user2 = User.query()
-      .with('posts.*')
-      .find(1) as User
+    const user1 = User.query().with('posts.comments|likes').find(1) as User
+    const user2 = User.query().with('posts.*').find(1) as User
 
     expect(user1).toEqual(expected)
     expect(user2).toEqual(expected)
@@ -916,9 +902,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     })
 
-    const user = User.query()
-      .with('unknown')
-      .first() as User
+    const user = User.query().with('unknown').first() as User
 
     expect(user.posts.length).toBe(0)
   })
@@ -972,9 +956,7 @@ describe('Feature – Relations – Retrieve – With', () => {
       }
     })
 
-    const post = Post.query()
-      .with('*')
-      .first() as Post
+    const post = Post.query().with('*').first() as Post
 
     expect(post.id).toEqual(1)
     expect(post.user_id).toEqual(null)

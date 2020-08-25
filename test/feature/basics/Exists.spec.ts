@@ -35,15 +35,7 @@ describe('Feature – Exists', () => {
       data: [{ id: 1 }, { id: 2 }]
     })
 
-    expect(
-      User.query()
-        .where('id', 3)
-        .exists()
-    ).toBe(false)
-    expect(
-      User.query()
-        .where('id', 1)
-        .exists()
-    ).toBe(true)
+    expect(User.query().where('id', 3).exists()).toBe(false)
+    expect(User.query().where('id', 1).exists()).toBe(true)
   })
 })

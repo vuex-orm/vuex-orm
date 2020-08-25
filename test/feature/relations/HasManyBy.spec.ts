@@ -158,9 +158,7 @@ describe('Features – Relations – Has Many By', () => {
       }
     })
 
-    const user = User.query()
-      .with('posts')
-      .find(1)
+    const user = User.query().with('posts').find(1)
 
     const expected = {
       $id: '1',
@@ -207,9 +205,7 @@ describe('Features – Relations – Has Many By', () => {
       ]
     })
 
-    const users = User.query()
-      .with('posts')
-      .get()
+    const users = User.query().with('posts').get()
 
     const expected = [
       {

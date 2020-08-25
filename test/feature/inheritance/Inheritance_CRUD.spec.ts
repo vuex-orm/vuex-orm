@@ -64,9 +64,7 @@ describe('Feature - Inheritance - CRUD', () => {
       data: { id: 2, name: 'Jane', job: 'Software Engineer' }
     })
 
-    const people = Person.query()
-      .orderBy('id')
-      .get()
+    const people = Person.query().orderBy('id').get()
 
     expect(people.length).toBe(2)
 

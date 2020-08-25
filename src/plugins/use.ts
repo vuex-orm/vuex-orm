@@ -71,7 +71,7 @@ export interface Plugin {
 
 export type Use = (plugin: Plugin, options?: Options) => void
 
-export default function(plugin: Plugin, options: Options = {}): void {
+export default function (plugin: Plugin, options: Options = {}): void {
   const components: PluginComponents = {
     Model,
     Attribute,
