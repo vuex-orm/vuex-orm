@@ -22,6 +22,12 @@
   </a>
 </p>
 
+---
+
+:fire: **HEADS UP!** Currently, [Vuex ORM Next](https://github.com/vuex-orm/vuex-orm-next) project is on going, and we are hoping it is going to be the foundation of the version 1.0.0 release. We're not planning to add features to current v0.36.3 due to focusing more on Vuex ORM Next development. If you're new to Vuex ORM, please try out Vuex ORM Next.
+
+---
+
 Vuex ORM is a plugin for [Vuex](https://github.com/vuejs/vuex) to enable Object-Relational Mapping access to the Vuex Store. Vuex ORM lets you create "normalized" data schema within Vuex Store with relationships such as "Has One" and "Belongs To Many" like any other usual ORM library. It also provides fluent API to get, search and update Store state.
 
 Vuex ORM is heavily inspired by Redux recipe of ["Normalizing State Shape"](https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape) and ["Updating Normalized Data"](https://redux.js.org/recipes/structuring-reducers/updating-normalized-data). Learn more about the concept and motivation of Vuex ORM at [What is Vuex ORM?](https://vuex-orm.github.io/vuex-orm/guide/prologue/what-is-vuex-orm.html).
