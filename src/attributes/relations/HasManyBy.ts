@@ -8,6 +8,11 @@ import Relation from './Relation'
 
 export default class HasManyBy extends Relation {
   /**
+   * Hardcoded type for introspection
+   */
+  readonly className: string = 'HasManyBy'
+
+  /**
    * The related model.
    */
   parent: typeof Model

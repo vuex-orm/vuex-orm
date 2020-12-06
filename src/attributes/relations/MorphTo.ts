@@ -10,6 +10,11 @@ export type Entity = typeof Model | string
 
 export default class MorphTo extends Relation {
   /**
+   * Hardcoded type for introspection
+   */
+  readonly className: string = 'MorphTo'
+
+  /**
    * The field name that contains id of the parent model.
    */
   id: string

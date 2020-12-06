@@ -5,6 +5,11 @@ import Type from './Type'
 
 export default class Attr extends Type {
   /**
+   * Hardcoded type for introspection
+   */
+  readonly className: string = 'Attr'
+
+  /**
    * Create a new attr instance.
    */
   constructor(model: typeof Model, value: any, mutator?: Mutator<any>) {

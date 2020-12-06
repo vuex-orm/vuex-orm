@@ -11,6 +11,11 @@ export type Entity = typeof Model | string
 
 export default class MorphedByMany extends Relation {
   /**
+   * Hardcoded type for introspection
+   */
+  readonly className: string = 'MorphedByMany'
+
+  /**
    * The related model.
    */
   related: typeof Model

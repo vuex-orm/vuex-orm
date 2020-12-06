@@ -20,6 +20,11 @@ export interface PivotRecord {
 
 export default class BelongsToMany extends Relation {
   /**
+   * Hardcoded type for introspection
+   */
+  readonly className: string = 'BelongsToMany'
+
+  /**
    * The related model.
    */
   related: typeof Model

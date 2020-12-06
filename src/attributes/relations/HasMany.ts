@@ -9,6 +9,11 @@ import Relation from './Relation'
 
 export default class HasMany extends Relation {
   /**
+   * Hardcoded type for introspection
+   */
+  readonly className: string = 'HasMany'
+
+  /**
    * The related model.
    */
   related: typeof Model

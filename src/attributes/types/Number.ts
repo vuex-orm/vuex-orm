@@ -5,6 +5,11 @@ import Type from './Type'
 
 export default class Number extends Type {
   /**
+   * Hardcoded type for introspection
+   */
+  readonly className: string = 'Number'
+
+  /**
    * Create a new number instance.
    */
   constructor(

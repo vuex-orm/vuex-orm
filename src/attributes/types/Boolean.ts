@@ -5,6 +5,11 @@ import Type from './Type'
 
 export default class Boolean extends Type {
   /**
+   * Hardcoded type for introspection
+   */
+  readonly className: string = 'Boolean'
+
+  /**
    * Create a new number instance.
    */
   constructor(

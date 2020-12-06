@@ -295,4 +295,22 @@ describe('Unit – Model', () => {
     expect(user.id).toBe('$uid1')
     expect(spy).toHaveBeenCalled()
   })
+
+  it('can returns field classname with .className', () => {
+    class User extends Model {
+      static entity = 'users'
+
+      static fields() {
+        return {
+          id: this.attr(null),
+          str: this.string(''),
+          num: this.number(1)
+        }
+      }
+    }
+
+    expect(User.fields().id.className).toEqual('Attr')
+    expect(User.fields().str.className).toEqual('String')
+    expect(User.fields().num.className).toEqual('Number')
+  })
 })

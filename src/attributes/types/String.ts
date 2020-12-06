@@ -5,6 +5,11 @@ import Type from './Type'
 
 export default class String extends Type {
   /**
+   * Hardcoded type for introspection
+   */
+  readonly className: string = 'String'
+
+  /**
    * Create a new string instance.
    */
   constructor(

@@ -4,6 +4,11 @@ import Type from './Type'
 
 export default class Uid extends Type {
   /**
+   * Hardcoded type for introspection
+   */
+  readonly className: string = 'Uid'
+
+  /**
    * Create a new uid instance.
    */
   constructor(model: typeof Model, value?: () => string | number) {

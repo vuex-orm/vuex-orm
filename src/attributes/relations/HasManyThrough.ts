@@ -10,6 +10,11 @@ export type Entity = typeof Model | string
 
 export default class HasManyThrough extends Relation {
   /**
+   * Hardcoded type for introspection
+   */
+  readonly className: string = 'HasManyThrough'
+
+  /**
    * The related model.
    */
   related: typeof Model

@@ -9,6 +9,11 @@ import Relation from './Relation'
 
 export default class BelongsTo extends Relation {
   /**
+   * Hardcoded type for introspection
+   */
+  readonly className: string = 'BelongsTo'
+
+  /**
    * The parent model.
    */
   parent: typeof Model
