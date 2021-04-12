@@ -99,7 +99,11 @@ export default class Database {
   model(model: string): typeof Model
   model(model: typeof Model | string): typeof Model | string {
     const name = typeof model === 'string' ? model : model.entity
-    const m = this.models()[name]
+    const entity = this.entities.find((entity) => {
+      return entity.name === name
+    })
+
+    const m = entity ? entity.model : null
 
     if (!m) {
       throw new Error(
@@ -118,7 +122,11 @@ export default class Database {
   baseModel(model: string): typeof Model
   baseModel(model: typeof Model | string): typeof Model | string {
     const name = typeof model === 'string' ? model : model.entity
-    const m = this.baseModels()[name]
+    const entity = this.entities.find((entity) => {
+      return entity.name === name
+    })
+
+    const m = entity ? this.model(entity.base) : null
 
     if (!m) {
       throw new Error(
