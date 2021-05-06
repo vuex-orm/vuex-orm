@@ -9,14 +9,10 @@ const currentVersion = require('../package.json').version
 const versionIncrements = [
   'patch',
   'minor',
-  'major',
-  'prepatch',
-  'preminor',
-  'premajor',
-  'prerelease'
+  'major'
 ]
 
-const inc = (i) => semver.inc(currentVersion, i, 'beta')
+const inc = (i) => semver.inc(currentVersion, i, 'latest')
 const bin = (name) => path.resolve(__dirname, `../node_modules/.bin/${name}`)
 const run = (bin, args, opts = {}) => execa(bin, args, { stdio: 'inherit', ...opts })
 const step = (msg) => console.log(chalk.cyan(msg))
@@ -74,6 +70,16 @@ async function main() {
   step('\nGenerating the changelog...')
   await run('yarn', ['changelog'])
 
+  const { yes: changelogOk } = await prompt({
+    type: 'confirm',
+    name: 'yes',
+    message: `Changelog generated. Does it look good?`
+  })
+
+  if (!changelogOk) {
+    return
+  }
+
   // Commit changes to the Git.
   step('\nCommitting changes...')
   await run('git', ['add', '-A'])
@@ -81,7 +87,10 @@ async function main() {
 
   // Publish the package.
   step('\nPublishing the package...')
-  await run('npm', ['publish'])
+  await run ('yarn', [
+    'publish', '--tag', 'latest', '--new-version', targetVersion,
+    '--no-commit-hooks', '--no-git-tag-version'
+  ])
 
   // Push to GitHub.
   step('\nPushing to GitHub...')
