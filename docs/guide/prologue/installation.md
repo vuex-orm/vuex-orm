@@ -4,13 +4,13 @@ You can install Vuex ORM via NPM, Yarn, or download it directly. Remember since 
 
 ## NPM
 
-```console
+```sh
 $ npm install vue vuex @vuex-orm/core --save
 ```
 
 ## Yarn
 
-```console
+```sh
 $ yarn add vue vuex @vuex-orm/core
 ```
 
@@ -32,7 +32,7 @@ Include Vuex ORM from an HTML script.
 
 You have to clone directly from GitHub and build vuex yourself if you want to use the latest dev build.
 
-```console
+```sh
 $ git clone https://github.com/vuex-orm/vuex-orm.git node_modules/vuex-orm
 $ cd node_modules/vuex-orm
 $ npm install
