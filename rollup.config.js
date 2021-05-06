@@ -23,6 +23,7 @@ function createEntry(config) {
     input: config.input,
     plugins: [],
     output: {
+      exports: 'auto',
       file: config.file,
       format: config.format,
       globals: {
@@ -41,6 +42,7 @@ function createEntry(config) {
   }
 
   c.plugins.push(replace({
+    preventAssignment: true,
     __DEV__: config.format === 'es' && !config.browser
       ? `(process.env.NODE_ENV !== 'production')`
       : config.env !== 'production'
