@@ -1,3 +1,10 @@
+## [0.36.4](https://github.com/vuex-orm/vuex-orm/compare/v0.36.3...v0.36.4) (2021-05-07)
+
+### Bug Fixes
+
+* **database:** improve performance with entity lookup ([#718](https://github.com/vuex-orm/vuex-orm/issues/718)) ([8b5f104](https://github.com/vuex-orm/vuex-orm/commit/8b5f10443d86d95980715d613a152413e6ad3867))
+* `withAll` should observe constraints ([f3fdf02](https://github.com/vuex-orm/vuex-orm/commit/f3fdf02cb2a41791073dd8835b408b68ccab03d7))
+
 ## [0.36.3](https://github.com/vuex-orm/vuex-orm/compare/v0.36.2...v0.36.3) (2020-03-12)
 
 
