@@ -1,5 +1,9 @@
 ## [0.36.4](https://github.com/vuex-orm/vuex-orm/compare/v0.36.3...v0.36.4) (2021-05-07)
 
+### BREAKING CHANGES
+
+* As of this release, Vuex ORM no longer exposes internals in **`@vuex-orm/core/lib`**. Types should now be imported from **`@vuex-orm/core/dist/src`**.
+
 ### Bug Fixes
 
 * **database:** improve performance with entity lookup ([#718](https://github.com/vuex-orm/vuex-orm/issues/718)) ([8b5f104](https://github.com/vuex-orm/vuex-orm/commit/8b5f10443d86d95980715d613a152413e6ad3867))
