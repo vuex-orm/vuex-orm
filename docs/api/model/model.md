@@ -163,7 +163,7 @@ sidebarDepth: 2
 
   /*
     {
-      username: {
+      id: {
         value: null,     // default value
         ...
       },
