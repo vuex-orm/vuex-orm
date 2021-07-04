@@ -625,9 +625,11 @@ describe('Feature – Basics – Update', () => {
     })
 
     const user: any = User.find(2)
+    const count: any = User.query().count()
 
     expect(user.$id).toBe('2')
     expect(user.id).toBe(2)
+    expect(count).toBe(1)
   })
 
   it('returns a updated object', async () => {

@@ -56,6 +56,15 @@ export default class Connection {
   }
 
   /**
+   * Updates the given record.
+   */
+  update(newId: String, record: Record): void {
+    delete this.state.data[record.$id]
+    record.$id = newId
+    this.state.data = { ...this.state.data, [record.$id]: record }
+  }
+
+  /**
    * Delete records that matches the given id.
    */
   delete(id: string[]): void {
