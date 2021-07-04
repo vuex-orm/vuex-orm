@@ -329,6 +329,25 @@ export default class Query<T extends Model = Model> {
   }
 
   /**
+   * Runs a query conditionally.
+   */
+  when(
+    conditional: any,
+    callback: (query: this, conditional: any) => void | this,
+    defaultCallback?: (query: this, conditional: any) => void | this
+  ): this {
+    if (conditional) {
+      return callback(this, conditional) || this
+    }
+
+    if (defaultCallback) {
+      return defaultCallback(this, conditional) || this
+    }
+
+    return this
+  }
+
+  /**
    * Add a and where clause to the query.
    */
   where(field: any, value?: any): this {

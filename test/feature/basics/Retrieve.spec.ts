@@ -134,6 +134,77 @@ describe('Feature – Retrieve', () => {
     expect(user).toEqual(expected)
   })
 
+  it('can query when a conditional is truthy', async () => {
+    createStore([{ model: User }])
+
+    await User.insert({
+      data: [{ id: 1 }, { id: 2 }]
+    })
+
+    const expected = [{ $id: '2', id: 2 }]
+
+    const user = User.query()
+      .when(true, (query, conditional) => {
+        query.where('id', 2)
+
+        expect(conditional).toBe(true)
+      })
+      .all()
+
+    expect(user).toEqual(expected)
+  })
+
+  it('will not query when a conditional is falsy', async () => {
+    createStore([{ model: User }])
+
+    await User.insert({
+      data: [{ id: 1 }, { id: 2 }]
+    })
+
+    const expected = [
+      { $id: '1', id: 1 },
+      { $id: '2', id: 2 }
+    ]
+
+    const user = User.query()
+      .when(false, (query, conditional) => {
+        query.where('id', 2)
+
+        expect(conditional).toBe(false)
+      })
+      .all()
+
+    expect(user).toEqual(expected)
+  })
+
+  it('uses a fallback query when the conditional is falsy', async () => {
+    createStore([{ model: User }])
+
+    await User.insert({
+      data: [{ id: 1 }, { id: 2 }]
+    })
+
+    const expected = [{ $id: '1', id: 1 }]
+
+    const user = User.query()
+      .when(
+        false,
+        (query, conditional) => {
+          query.where('id', 2)
+
+          expect(conditional).toBe(false)
+        },
+        (query, conditional) => {
+          query.where('id', 1)
+
+          expect(conditional).toBe(false)
+        }
+      )
+      .all()
+
+    expect(user).toEqual(expected)
+  })
+
   describe('#first', () => {
     it('can retrieve the first item from the store', async () => {
       createStore([{ model: User }])
