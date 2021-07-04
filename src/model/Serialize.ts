@@ -62,6 +62,11 @@ function value(v: any): any {
     return array(v)
   }
 
+  // 'Invalid Date' will also fall here
+  if (v instanceof Date) {
+    return v
+  }
+
   if (typeof v === 'object') {
     return object(v)
   }
