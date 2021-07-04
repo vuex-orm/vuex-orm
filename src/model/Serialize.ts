@@ -47,6 +47,15 @@ export function toJson(model: Model, option: Option = {}): Record {
     record[key] = value(model[key])
   }
 
+  if (!model['isProxy']) {
+    return record
+  }
+
+  const pivot = model[model['pivotKey']]
+  if (pivot !== null) {
+    record[model['pivotKey']] = relation(pivot)
+  }
+
   return record
 }
 
