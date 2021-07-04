@@ -1,6 +1,8 @@
 # Inserting & Updating
 
-You may insert new data or update existing data through various Model methods. All data created through Vuex ORM gets persisted to Vuex Store.
+You may insert new data or update existing data through various Model methods. All data created through Vuex ORM gets persisted to Vuex Store.  
+
+Model methods are defined as both class methods (`Model.update`) and as instance methods (`modelInstance.$update`).  These methods have identical behavior except for utilizing a different source for the object ID (passed parameter vs. object instance).
 
 ## Inserts
 
